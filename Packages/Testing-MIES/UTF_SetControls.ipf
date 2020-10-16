@@ -7,6 +7,9 @@ static Function SC_SetControls1_Setter(device)
 
 	Make/FREE/T payload = {"Pre DAQ", "1"}
 	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "unknown_ctrl", wv=payload)
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "group_DataAcq_ClampMode", wv=payload)
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "valdisp_DataAcq_SweepsActiveSet", wv=payload)
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Title_DataAcq_Bridge", wv=payload)
 End
 
 // ignores invalid control
@@ -24,11 +27,17 @@ static Function SC_SetControls1_REENTRY([str])
 	string str
 
 	variable sweepNo
+	string contents
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	contents = GetNotebookText("HistoryCarbonCopy")
+	CHECK(strsearch(contents, "The analysis parameter group_DataAcq_ClampMode is a control which can not be set.", 0) > 0)
+	CHECK(strsearch(contents, "The analysis parameter valdisp_DataAcq_SweepsActiveSet is a control which can not be set.", 0) > 0)
+	CHECK(strsearch(contents, "The analysis parameter Title_DataAcq_Bridge is a control which can not be set.", 0) > 0)
 End
 
 static Function SC_SetControls2_Setter(device)
