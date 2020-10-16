@@ -1583,13 +1583,9 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 		Redimension/N=(numChannels, numRegions) avgBuffer
 		Multithread/NT=(numThreads) avgBuffer[][] = MIES_fWaveAverage(source[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
 	endif
-	dest[][] = PA_ExtractAverageOnly(avgBuffer[p][q])
+	dest[][] = WaveRef(avgBuffer[p][q], row = 0)
 
 	return [dest, source]
-End
-
-threadsafe static Function/WAVE PA_ExtractAverageOnly(WAVE/WAVE w)
-	return w[0]
 End
 
 threadsafe static Function/WAVE PA_ExtractSumsCountsOnly(WAVE/WAVE w)
