@@ -910,9 +910,8 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	KillWindows(RemoveFromList(usedTraceGraphs + usedImageGraphs, preExistingGraphs))
 End
 
-static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable region, [variable mode, variable removeFailedPulses])
+static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable region, [variable removeFailedPulses])
 
-	mode = ParamIsDefault(mode) ? 0 : mode
 	removeFailedPulses = ParamIsDefault(removeFailedPulses) ? 0 : !!removeFailedPulses
 
 	WAVE setIndizes = GetPulseAverageSetIndizes(dfr, channelNumber, region)
@@ -920,12 +919,15 @@ static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable 
 	WAVE properties = GetPulseAverageProperties(dfr)
 	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(dfr)
 
-	return PA_GetSetWaves_TS(properties, propertiesWaves, setIndizes, mode, removeFailedPulses)
+	return WaveRef(PA_GetSetWaves_TS(properties, propertiesWaves, setIndizes, PA_GETSETWAVES_ALL, removeFailedPulses), row = 0)
 End
 
-threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE propertiesWaves, WAVE setIndizes, variable mode, variable removeFailedPulses)
+/// @brief returns a 1D wave ref wave containing the refs to the setwave refs of all / new / old sets, depending on combined getModes.
+threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE propertiesWaves, WAVE setIndizes, variable getMode, variable removeFailedPulses)
 
-	variable numWaves, i, numNewPulses, startIndexNewPulses, index
+	variable numWaves, i, startIndexNewPulses, index
+	variable numNewPulses, numOldPulses, numAllPulses
+	variable lblPulseHasFailed
 
 	numWaves = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
 
@@ -933,47 +935,53 @@ threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE pro
 		return $""
 	endif
 
-	if(mode == POST_PLOT_ADDED_SWEEPS)
-		startIndexNewPulses = GetNumberFromWaveNote(properties, NOTE_PA_NEW_PULSES_START)
-		Make/FREE/N=(numWaves)/WAVE setWaves
+	lblPulseHasFailed = FindDimLabel(properties, COLS, "PulseHasFailed")
 
-		if(removeFailedPulses)
-			for(i = 0; i < numWaves; i += 1)
-				index = setIndizes[i]
-				if(index >= startIndexNewPulses && !properties[index][%PulseHasFailed])
-					setWaves[numNewPulses] = propertiesWaves[index]
-					numNewPulses += 1
-				endif
-			endfor
-		else
-			for(i = 0; i < numWaves; i += 1)
-				index = setIndizes[i]
-				if(index >= startIndexNewPulses)
-					setWaves[numNewPulses] = propertiesWaves[index]
-					numNewPulses += 1
-				endif
-			endfor
+	if(getMode & PA_GETSETWAVES_NEW)
+		Make/FREE/N=(numWaves)/WAVE setWavesNew
+	endif
+	if(getMode & PA_GETSETWAVES_OLD)
+		Make/FREE/N=(numWaves)/WAVE setWavesOld
+	endif
+	if(getMode & PA_GETSETWAVES_ALL)
+		Make/FREE/N=(numWaves)/WAVE setWavesAll
+	endif
+
+	startIndexNewPulses = GetNumberFromWaveNote(properties, NOTE_PA_NEW_PULSES_START)
+
+	for(i = 0; i < numWaves; i += 1)
+		index = setIndizes[i]
+		if(getMode & PA_GETSETWAVES_NEW && index >= startIndexNewPulses && !(properties[index][lblPulseHasFailed] == 1 && removeFailedPulses))
+			setWavesNew[numNewPulses] = propertiesWaves[index]
+			numNewPulses += 1
 		endif
-		Redimension/N=(numNewPulses) setWaves
+		if(getMode & PA_GETSETWAVES_OLD && index < startIndexNewPulses && !(properties[index][lblPulseHasFailed] == 1 && removeFailedPulses))
+			setWavesOld[numOldPulses] = propertiesWaves[index]
+			numOldPulses += 1
+		endif
+		if(getMode & PA_GETSETWAVES_ALL && !(properties[index][lblPulseHasFailed] == 1 && removeFailedPulses))
+			setWavesAll[numAllPulses] = propertiesWaves[index]
+			numAllPulses += 1
+		endif
+	endfor
+	if(numNewPulses)
+		Redimension/N=(numNewPulses) setWavesNew
 	else
-		Make/FREE/N=(numWaves)/WAVE setWaves = propertiesWaves[setIndizes[p]]
-
-		if(!removeFailedPulses)
-			return setWaves
-		endif
-
-		for(i = numWaves - 1; i >= 0; i -= 1)
-			if(properties[setIndizes[i]][%PulseHasFailed])
-				DeletePoints/M=(ROWS) i, 1, setWaves
-			endif
-		endfor
+		WAVE setWavesNew = $""
+	endif
+	if(numOldPulses)
+		Redimension/N=(numOldPulses) setWavesOld
+	else
+		WAVE setWavesOld = $""
+	endif
+	if(numAllPulses)
+		Redimension/N=(numAllPulses) setWavesAll
+	else
+		WAVE setWavesAll = $""
 	endif
 
-	if(DimSize(setWaves, ROWS) == 0)
-		return $""
-	endif
-
-	return setWaves
+	Make/FREE/WAVE setWavesComponents = {setWavesAll, setWavesNew, setWavesOld}
+	return setWavesComponents
 End
 
 /// @brief Handle marking pulses as failed/passed if required
@@ -1559,6 +1567,7 @@ End
 static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa, variable mode)
 
 	variable numChannels, numRegions, i, j, channelNumber, region, numThreads
+	string keyAll, keyOld
 
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
 
@@ -1569,23 +1578,40 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
 	numRegions = DimSize(regions, ROWS)
 
-	Make/FREE/WAVE/N=(numChannels, numRegions) source, dest, setIndices
+	Make/FREE/WAVE/N=(numChannels, numRegions) sourceOld, sourceAll, sourceNew, sourceCombined, dest, setIndices, avg
 	numThreads = min(numRegions * numChannels, ThreadProcessorCount)
 
 	setIndices[][] = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channels[p], regions[q])
-	Multithread/NT=(numThreads) source[][] = PA_GetSetWaves_TS(properties, propertiesWaves, setIndices[p][q], mode, 1)
 
-	WAVE/WAVE avgBuffer = GetPAAverageBuffer()
+	Multithread/NT=(numThreads) sourceCombined[][] = PA_GetSetWaves_TS(properties, propertiesWaves, setIndices[p][q], PA_GETSETWAVES_OLD | PA_GETSETWAVES_NEW | PA_GETSETWAVES_ALL, 1)
 
-	if(mode == POST_PLOT_ADDED_SWEEPS)
-		Multithread/NT=(numThreads) avgBuffer[][] = MIES_fWaveAverage(source[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1, prevAvgData = PA_ExtractSumsCountsOnly(avgBuffer[p][q]))
+	Multithread/NT=(numThreads) sourceAll[][] = WaveRef(sourceCombined[p][q], row = 0)
+	keyAll = CA_AveragingWaveModKey(sourceAll)
+	WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(keyAll, options = CA_OPTS_NO_DUPLICATE)
+	if(!WaveExists(cache))
+		// we have to calculate
+		if(mode == POST_PLOT_ADDED_SWEEPS)
+			Multithread/NT=(numThreads) sourceOld[][] = WaveRef(sourceCombined[p][q], row = 2)
+			keyOld = CA_AveragingWaveModKey(sourceOld)
+			WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(keyOld, options = CA_OPTS_NO_DUPLICATE)
+			if(WaveExists(cache))
+				Multithread/NT=(numThreads) sourceNew[][] = WaveRef(sourceCombined[p][q], row = 1)
+				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(sourceNew[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1, prevAvgData = PA_ExtractSumsCountsOnly(cache[p][q]))
+				WAVE sourceAll = sourceNew
+			else
+				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(sourceAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
+			endif
+		else
+			Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(sourceAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
+		endif
+		CA_StoreEntryIntoCache(keyAll, avg, options = CA_OPTS_NO_DUPLICATE)
 	else
-		Redimension/N=(numChannels, numRegions) avgBuffer
-		Multithread/NT=(numThreads) avgBuffer[][] = MIES_fWaveAverage(source[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
+		WAVE/WAVE avg = cache
 	endif
-	dest[][] = WaveRef(avgBuffer[p][q], row = 0)
 
-	return [dest, source]
+	dest[][] = WaveRef(avg[p][q], row = 0)
+
+	return [dest, sourceAll]
 End
 
 threadsafe static Function/WAVE PA_ExtractSumsCountsOnly(WAVE/WAVE w)

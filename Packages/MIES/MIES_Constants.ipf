@@ -1290,3 +1290,14 @@ StrConstant NOTE_NEEDS_UPDATE = "NeedsUpdate"
 Constant GRAPH_DIV_SPACING = 0.03
 
 StrConstant NOTE_PA_NEW_PULSES_START = "StartIndexOfNewPulses"
+
+/// @name Modes for what PA_GetSetWaves returns
+/// @anchor PAGetSetWavesModes
+///
+/// @{
+
+Constant PA_GETSETWAVES_ALL = 0x01
+Constant PA_GETSETWAVES_OLD = 0x02
+Constant PA_GETSETWAVES_NEW = 0x04
+
+/// @}
