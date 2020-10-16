@@ -100,10 +100,10 @@ Function/S CA_PulseStartTimes(wv, fullPath, channelNumber, totalOnsetDelay)
 
 	variable crc
 
-	crc = StringCRC(crc, num2str(ModDate(wv)))
-	crc = StringCRC(crc, num2str(WaveModCountWrapper(wv)))
+	crc = StringCRC(crc, num2istr(ModDate(wv)))
+	crc = StringCRC(crc, num2istr(WaveModCountWrapper(wv)))
 	crc = StringCRC(crc, fullPath)
-	crc = StringCRC(crc, num2str(channelNumber))
+	crc = StringCRC(crc, num2istr(channelNumber))
 	crc = StringCRC(crc, num2str(totalOnsetDelay))
 
 	return num2istr(crc) + "Version 1"
