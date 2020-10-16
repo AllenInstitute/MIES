@@ -166,6 +166,65 @@ Function/S CA_AveragingKey(waveRefs)
 	return CA_WaveCRCs(waveRefs, includeWaveScalingAndUnits=1, dims=ROWS) + "Version 6"
 End
 
+/// @brief Cache key generator for averaging info from non-free waves
+Function/S CA_AveragingWaveModKey(WAVE wv)
+	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
+End
+
+Function CA_RecursiveWavemodCRC(WAVE/Z wv, [variable prevCRC])
+
+	variable rows_, cols_, layers_, chunks_
+	variable i, j, k, l
+
+	prevCRC = ParamIsDefault(prevCRC) ? 0 : prevCRC
+
+	if(!WaveExists(wv))
+		// prevents getting the same key when the internal layout of the multi dimensional
+		// wave reference wave changes due to additional null waves, while the sub set and order of
+		// existing waves stays the same
+		// e.g. original input:
+		// w1, w2
+		// w3, w4
+		// new input:
+		// null, null, null
+		// null,   w1,   w2
+		// null,   w3,   w4
+		return StringCRC(prevCRC, "null wave")
+	endif
+
+	if(IsWaveRefWave(wv))
+		WAVE/WAVE wvRef = wv
+
+		rows_ = DimSize(wv, ROWS)
+		cols_ = DimSize(wv, COLS)
+		layers_ = DimSize(wv, LAYERS)
+		chunks_ = DimSize(wv, CHUNKS)
+
+		chunks_ = chunks_ ? chunks_ : 1
+		layers_ = layers_ ? layers_ : 1
+		cols_ = cols_ ? cols_ : 1
+
+		for(l = 0; l < chunks_; l += 1)
+			for(k = 0; k < layers_; k += 1)
+				for(j = 0; j < cols_; j += 1)
+					for(i = 0; i < rows_; i += 1)
+						prevCRC = CA_RecursiveWavemodCRC(wvRef[i][j][k][l], prevCRC = prevCRC)
+					endfor
+				endfor
+			endfor
+		endfor
+	else
+		prevCRC = CA_GetWaveModCRC(wv, prevCRC)
+	endif
+
+	return prevCRC
+End
+
+static Function CA_GetWaveModCRC(WAVE wv, variable crc)
+
+	return StringCRC(crc, num2istr(ModDate(wv)) + num2istr(WaveModCountWrapper(wv)) + GetWavesDataFolder(wv, 2))
+End
+
 /// @brief Calculate the CRC of all metadata of all or the given dimension
 threadsafe static Function CA_WaveScalingCRC(crc, wv, [dimension])
 	variable crc, dimension
