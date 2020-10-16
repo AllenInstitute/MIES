@@ -16,7 +16,10 @@ def get_version():
     return "({branch}) {version}".format(branch=branchString.decode('ascii'), version=revString.decode('ascii'))
 
 # sphinx config
-extensions = ['sphinx.ext.mathjax', 'sphinx.ext.todo', 'breathe', 'sphinxcontrib.fulltoc', 'sphinxcontrib.images']
+extensions = ['sphinx.ext.mathjax', 'sphinx.ext.todo', 'breathe', \
+              'sphinxcontrib.fulltoc', 'sphinxcontrib.images',    \
+              'sphinxembeddedvideos.youtube']
+
 master_doc = "index"
 project= "MIES Igor"
 
