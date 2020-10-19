@@ -5928,13 +5928,15 @@ End
 /// Preserves the WaveNote and adds the entry NOTE_KEY_ZEROED
 ///
 /// 2D waves are zeroed along each row
+///
+/// @return 0 if nothing was done, 1 if zeroed
 threadsafe Function ZeroWave(wv)
 	WAVE wv
 
 	string wavenote
 
 	if(GetNumberFromWaveNote(wv, NOTE_KEY_ZEROED) == 1)
-		return NaN
+		return 0
 	endif
 
 	wavenote = note(wv)
@@ -5944,6 +5946,8 @@ threadsafe Function ZeroWave(wv)
 
 	Note/K wv, wavenote
 	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
+
+	return 1
 End
 
 /// @name Decimation methods
