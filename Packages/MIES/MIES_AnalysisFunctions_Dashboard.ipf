@@ -422,7 +422,7 @@ static Function/S AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 	WaveTransform/O zapNaNs, daScaleExc
 
 	if(Sum(daScaleExc) > 0)
-		return "Failure due to DAScale value exceeded"
+		return "Max DA scale exceeded failure"
 	endif
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES, query = 1)
@@ -451,7 +451,7 @@ static Function/S AD_GetFastRheoEst(WAVE numericalValues, variable sweepNo, vari
 	if(WaveExists(daScaleExc))
 		WaveTransform/O zapNaNs, daScaleExc
 		if(Sum(daScaleExc) > 0)
-			return "Failure due to DAScale value exceeded"
+			return "Max DA scale exceeded failure"
 		endif
 	endif
 
