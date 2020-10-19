@@ -207,7 +207,8 @@ static Function AD_FillWaves(panelTitle, list, info)
 
 			list[index][0] = stimset
 			list[index][1] = anaFunc
-			list[index][2] = msg
+			list[index][2] = num2str(headstage)
+			list[index][3] = msg
 
 			// get the passing/failing sweeps
 			// PSQ_DA PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE: use PSQ_FMT_LBN_SWEEP_PASS
