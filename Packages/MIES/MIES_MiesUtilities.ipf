@@ -5933,18 +5933,13 @@ End
 threadsafe Function ZeroWave(wv)
 	WAVE wv
 
-	string wavenote
-
 	if(GetNumberFromWaveNote(wv, NOTE_KEY_ZEROED) == 1)
 		return 0
 	endif
 
-	wavenote = note(wv)
-
 	Differentiate/DIM=0/EP=1 wv
 	Integrate/DIM=0 wv
 
-	Note/K wv, wavenote
 	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
 
 	return 1
