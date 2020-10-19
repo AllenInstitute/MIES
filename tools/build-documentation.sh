@@ -16,6 +16,16 @@ function Failed {
 
 case $(uname) in
     Linux)
+      ;;
+    *)
+      # install the correct packages
+      # this is more convenient for users
+      pip install -r $top_level/tools/docker/requirements.txt > /dev/null || Failed
+      ;;
+esac
+
+case $(uname) in
+    Linux)
       ZIP_EXE=zip
       ;;
     *)
@@ -92,15 +102,6 @@ done
 
 if hash sphinx-build 2>/dev/null; then
   echo "Start sphinx-build"
-
-  sphinx_version=$(sphinx-build --version 2>&1 | cut -f 2 -d " ")
-  sphinx_version_required=3.0.0
-
-  if [[ "$sphinx_version" != "$sphinx_version_required" ]]; then
-    echo "Errors building the documentation" 1>&2
-    echo "sphinx-build version is wrong, we require exactly $sphinx_version_required but got $sphinx_version" 1>&2
-    Failed
-  fi
 
   rm -f sphinx-output.log
 

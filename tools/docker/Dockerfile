@@ -18,12 +18,10 @@ RUN DEBIAN_FRONTEND=noninteractive \
       zip &&                       \
     apt-get clean
 
+COPY requirements.txt .
+
 RUN DEBIAN_FRONTEND=noninteractive \
-  pip3 install                     \
-    breathe==4.15.0                \
-    sphinx==3.0.0                  \
-    sphinxcontrib-fulltoc==1.1     \
-    sphinxcontrib-images==0.9.2
+  pip3 install -r requirements.txt
 
 # [optional] IPNWB submodule script
 #
