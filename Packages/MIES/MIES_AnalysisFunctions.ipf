@@ -1217,11 +1217,22 @@ Function SetControlInEvent(panelTitle, s)
 					endif
 
 					controlType = GetControlType(win, guiElem)
-					if(controlType == CONTROL_TYPE_SETVARIABLE || controlType == CONTROL_TYPE_POPUPMENU)
-						PGC_SetAndActivateControl(win, guiElem, str = valueStr)
-					else
-						PGC_SetAndActivateControl(win, guiElem, val = str2numSafe(valueStr))
-					endif
+					switch(controlType)
+						case CONTROL_TYPE_SETVARIABLE:
+						case CONTROL_TYPE_POPUPMENU:
+							PGC_SetAndActivateControl(win, guiElem, str = valueStr)
+							break
+						case CONTROL_TYPE_VALDISPLAY:
+						case CONTROL_TYPE_CHART:
+						case CONTROL_TYPE_GROUPBOX:
+						case CONTROL_TYPE_TITLEBOX:
+							printf "(%s): The analysis parameter %s is a control which can not be set. Please fix the stimulus set.\r", panelTitle, guiElem
+							ControlWindowToFront()
+							break
+						default:
+							PGC_SetAndActivateControl(win, guiElem, val = str2numSafe(valueStr))
+							break
+					endswitch
 					break
 				case WINTYPE_NOTEBOOK:
 					ReplaceNotebookText(win, NormalizeToEOL(valueStr, "\r"))
