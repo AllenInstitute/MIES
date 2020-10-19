@@ -1179,6 +1179,7 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	                   && pa.autoTimeAlignment == paOld.autoTimeAlignment       \
 	                   && pa.enabled == paOld.enabled                           \
 	                   && pa.hideFailedPulses == paOld.hideFailedPulses         \
+	                   && pa.failedPulsesLevel ==  paOld.failedPulsesLevel      \
 	                   && pa.searchFailedPulses == paOld.searchFailedPulses     \
 	                   && pa.deconvolution.enable == paOld.deconvolution.enable \
 	                   && pa.deconvolution.smth == pa.deconvolution.smth        \
