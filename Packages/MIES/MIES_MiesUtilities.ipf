@@ -4077,10 +4077,20 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 	endif
 	SetNumberInWaveNote(freeAverageWave, "WaveMaximum", WaveMax(freeAverageWave), format = "%.15f")
 
-	Duplicate/O freeAverageWave, averageDataFolder:$wvName/WAVE=permAverageWave
 	CA_StoreEntryIntoCache(key, freeAverageWave, options=CA_OPTS_NO_DUPLICATE)
 
-	return permAverageWave
+	return ConvertFreeWaveToPermanent(freeAverageWave, averageDataFolder, wvName)
+End
+
+/// @brief Converts a free wave to a permanent wave with Overwrite
+/// @param[in] freeWave wave that should be converted to a permanent wave
+/// @param[in] dfr data folder where permanent wave is stored
+/// @param[in] wName name of permanent wave that is created
+/// @returns wave reference to the permanent wave
+Function/WAVE ConvertFreeWaveToPermanent(WAVE freeWave, DFREF dfr, string wName)
+
+	Duplicate/O freeWave, dfr:$wName/WAVE=permWave
+	return permWave
 End
 
 /// @brief Zero all given traces
