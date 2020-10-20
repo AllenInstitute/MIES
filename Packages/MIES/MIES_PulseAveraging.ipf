@@ -1579,6 +1579,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 	numRegions = DimSize(regions, ROWS)
 
 	Make/FREE/WAVE/N=(numChannels, numRegions) sourceOld, sourceAll, sourceNew, sourceCombined, dest, setIndices, avg
+	Make/FREE/N=(numChannels, numRegions) junk
 	numThreads = min(numRegions * numChannels, ThreadProcessorCount)
 
 	setIndices[][] = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channels[p], regions[q])
@@ -1604,6 +1605,8 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 		else
 			Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(sourceAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
 		endif
+
+		Multithread junk[][] = PA_StoreMaxAndUnitsInWaveNote(WaveRef(avg[p][q], row = 0), WaveRef(sourceAll[p][q], row = 0))
 		CA_StoreEntryIntoCache(keyAll, avg, options = CA_OPTS_NO_DUPLICATE)
 	else
 		WAVE/WAVE avg = cache
@@ -1612,6 +1615,32 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 	dest[][] = WaveRef(avg[p][q], row = 0)
 
 	return [dest, sourceAll]
+End
+
+threadsafe static Function/WAVE PA_ExtractSource(WAVE/WAVE sourceWithNotes)
+
+	if(!WaveExists(sourceWithNotes))
+		return $""
+	endif
+
+	Duplicate/FREE/RMD=[][0] sourceWithNotes, source
+	Redimension/N=(-1) source
+	return source
+End
+
+threadsafe static Function PA_StoreMaxAndUnitsInWaveNote(WAVE/Z w, WAVE/Z unitSource)
+
+	if(!WaveExists(w))
+		return 1
+	endif
+
+	if(!WaveExists(unitSource))
+		ASSERT_TS(0, "Attempt to set data units in existing wave, but data unit source wave is null.")
+	endif
+
+	SetScale d, 0, 0, WaveUnits(unitSource, -1), w
+	SetNumberInWaveNote(w, "WaveMaximum", WaveMax(w), format = "%.15f")
+	return 0
 End
 
 threadsafe static Function/WAVE PA_ExtractSumsCountsOnly(WAVE/WAVE w)
