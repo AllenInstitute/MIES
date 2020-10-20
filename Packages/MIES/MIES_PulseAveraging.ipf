@@ -1243,11 +1243,12 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	                   && pa.autoTimeAlignment == paOld.autoTimeAlignment       \
 	                   && pa.enabled == paOld.enabled                           \
 	                   && pa.hideFailedPulses == paOld.hideFailedPulses         \
+	                   && pa.failedPulsesLevel ==  paOld.failedPulsesLevel      \
 	                   && pa.searchFailedPulses == paOld.searchFailedPulses     \
 	                   && pa.deconvolution.enable == paOld.deconvolution.enable \
-	                   && pa.deconvolution.smth == pa.deconvolution.smth        \
-	                   && pa.deconvolution.tau == pa.deconvolution.tau          \
-	                   && pa.deconvolution.range == pa.deconvolution.range)
+	                   && pa.deconvolution.smth == paOld.deconvolution.smth     \
+	                   && pa.deconvolution.tau == paOld.deconvolution.tau       \
+	                   && pa.deconvolution.range == paOld.deconvolution.range)
 
 	cs.traces = (generalSettings == 1                            \
 	             && cs.singlePulse == 1                          \
