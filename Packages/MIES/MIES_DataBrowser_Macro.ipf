@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(437.25,555.5,872.25,863.75)/K=1  as "DataBrowser"
+	Display /W=(357,155,789,460.25)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel,title="<<"
 	Button button_BSP_open,help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)= A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -65,7 +65,6 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=1/W=(399,0,0,414)  as " "
 	ModifyPanel fixedSize=0
-	SetDrawLayer UserBack
 	GroupBox group_properties_sweepFormula,pos={5.00,85.00},size={388.00,328.00},disable=3
 	GroupBox group_properties_sweepFormula,userdata(tabnum)=  "5"
 	GroupBox group_properties_sweepFormula,userdata(tabcontrol)=  "Settings"
@@ -170,10 +169,10 @@ Window DataBrowser() : Graph
 	GroupBox group_channelSel_DA,userdata(ResizeControlsInfo)= A"!!,FG!!#>2!!#>>!!#A]z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_channelSel_DA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_channelSel_DA,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_properties_pulse,pos={9.00,85.00},size={380.00,320.00},disable=3
+	GroupBox group_properties_pulse,pos={9.00,84.00},size={380.00,329.00},disable=3
 	GroupBox group_properties_pulse,userdata(tabnum)=  "4"
 	GroupBox group_properties_pulse,userdata(tabcontrol)=  "Settings"
-	GroupBox group_properties_pulse,userdata(ResizeControlsInfo)= A"!!,@s!!#?c!!#C#!!#BZz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_properties_pulse,userdata(ResizeControlsInfo)= A"!!,@s!!#?a!!#C#!!#B^J,fQL!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_properties_pulse,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_properties_pulse,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	GroupBox group_enable_pulse,pos={9.00,25.00},size={380.00,50.00},disable=1,title="Pulse Averaging"
@@ -538,27 +537,27 @@ Window DataBrowser() : Graph
 	CheckBox check_highlightRanges,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_highlightRanges,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_highlightRanges,value= 0
-	SetVariable setvar_pulseAver_overridePulseLength,pos={214.00,276.00},size={136.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Override length"
+	SetVariable setvar_pulseAver_overridePulseLength,pos={214.00,296.00},size={136.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Override length"
 	SetVariable setvar_pulseAver_overridePulseLength,help={"Pulse To Pulse length in ms for edge cases which can not be computed or when the override checkbox is active."}
 	SetVariable setvar_pulseAver_overridePulseLength,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_overridePulseLength,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_pulseAver_overridePulseLength,userdata(ResizeControlsInfo)= A"!!,Gf!!#BD!!#@l!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	SetVariable setvar_pulseAver_overridePulseLength,userdata(ResizeControlsInfo)= A"!!,Gf!!#BN!!#@l!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_overridePulseLength,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_overridePulseLength,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_overridePulseLength,value= _NUM:10
-	SetVariable setvar_pulseAver_endPulse,pos={218.00,234.00},size={122.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Ending pulse"
+	SetVariable setvar_pulseAver_endPulse,pos={218.00,254.00},size={122.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Ending pulse"
 	SetVariable setvar_pulseAver_endPulse,help={"Index of the last pulse to display"}
 	SetVariable setvar_pulseAver_endPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_endPulse,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_pulseAver_endPulse,userdata(ResizeControlsInfo)= A"!!,Gj!!#B$!!#@X!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	SetVariable setvar_pulseAver_endPulse,userdata(ResizeControlsInfo)= A"!!,Gj!!#B8!!#@X!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_endPulse,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_endPulse,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_endPulse,value= _NUM:inf
-	SetVariable setvar_pulseAver_startPulse,pos={214.00,212.00},size={126.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Starting pulse"
+	SetVariable setvar_pulseAver_startPulse,pos={214.00,232.00},size={126.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Starting pulse"
 	SetVariable setvar_pulseAver_startPulse,help={"Index of the first pulse to display"}
 	SetVariable setvar_pulseAver_startPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_startPulse,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_pulseAver_startPulse,userdata(ResizeControlsInfo)= A"!!,Gf!!#Ac!!#@`!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	SetVariable setvar_pulseAver_startPulse,userdata(ResizeControlsInfo)= A"!!,Gf!!#B\"!!#@`!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_startPulse,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_startPulse,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_startPulse,value= _NUM:0
@@ -594,11 +593,11 @@ Window DataBrowser() : Graph
 	CheckBox check_pulseAver_indPulses,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_indPulses,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_indPulses,value= 1
-	CheckBox check_pulseAver_deconv,pos={71.00,290.00},size={94.00,15.00},disable=1,proc=PA_CheckProc_Deconvolution,title="Deconvolution"
+	CheckBox check_pulseAver_deconv,pos={71.00,308.00},size={94.00,15.00},disable=1,proc=PA_CheckProc_Deconvolution,title="Deconvolution"
 	CheckBox check_pulseAver_deconv,help={"Show Deconvolution: tau * dV/dt + V "}
 	CheckBox check_pulseAver_deconv,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_deconv,userdata(tabcontrol)=  "Settings"
-	CheckBox check_pulseAver_deconv,userdata(ResizeControlsInfo)= A"!!,EH!!#BK!!#?u!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_pulseAver_deconv,userdata(ResizeControlsInfo)= A"!!,EH!!#BT!!#?u!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_pulseAver_deconv,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_deconv,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_deconv,value= 0
@@ -610,34 +609,34 @@ Window DataBrowser() : Graph
 	CheckBox check_pulseAver_timeAlign,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_timeAlign,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_timeAlign,value= 0
-	SetVariable setvar_pulseAver_deconv_tau,pos={79.00,309.00},size={98.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Tau [ms]"
+	SetVariable setvar_pulseAver_deconv_tau,pos={79.00,327.00},size={98.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Tau [ms]"
 	SetVariable setvar_pulseAver_deconv_tau,help={"Deconvolution time tau: tau * dV/dt + V"}
 	SetVariable setvar_pulseAver_deconv_tau,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_tau,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_pulseAver_deconv_tau,userdata(ResizeControlsInfo)= A"!!,EX!!#BTJ,hpS!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	SetVariable setvar_pulseAver_deconv_tau,userdata(ResizeControlsInfo)= A"!!,EX!!#B]J,hpS!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_deconv_tau,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_deconv_tau,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_deconv_tau,limits={0,inf,0},value= _NUM:15
-	SetVariable setvar_pulseAver_deconv_smth,pos={65.00,333.00},size={112.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Smoothing"
+	SetVariable setvar_pulseAver_deconv_smth,pos={65.00,351.00},size={112.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Smoothing"
 	SetVariable setvar_pulseAver_deconv_smth,help={"Smoothing factor to use before the deconvolution is calculated. Set to 1 to do the calculation without smoothing."}
 	SetVariable setvar_pulseAver_deconv_smth,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_smth,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_pulseAver_deconv_smth,userdata(ResizeControlsInfo)= A"!!,E<!!#B`J,hpo!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	SetVariable setvar_pulseAver_deconv_smth,userdata(ResizeControlsInfo)= A"!!,E<!!#BiJ,hpo!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_deconv_smth,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_deconv_smth,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_deconv_smth,limits={1,inf,0},value= _NUM:1000
-	SetVariable setvar_pulseAver_deconv_range,pos={59.00,354.00},size={118.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Display [ms]"
+	SetVariable setvar_pulseAver_deconv_range,pos={59.00,372.00},size={118.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Display [ms]"
 	SetVariable setvar_pulseAver_deconv_range,help={"Time in ms from the beginning of the pulse that is used for the calculation"}
 	SetVariable setvar_pulseAver_deconv_range,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_range,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_pulseAver_deconv_range,userdata(ResizeControlsInfo)= A"!!,E&!!#Bk!!#@P!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	SetVariable setvar_pulseAver_deconv_range,userdata(ResizeControlsInfo)= A"!!,E&!!#Bt!!#@P!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_deconv_range,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_deconv_range,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_deconv_range,limits={0,inf,0},value= _NUM:inf
-	GroupBox group_pulseAver_deconv,pos={39.00,285.00},size={156.00,105.00},disable=3
+	GroupBox group_pulseAver_deconv,pos={39.00,303.00},size={156.00,105.00},disable=3
 	GroupBox group_pulseAver_deconv,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_deconv,userdata(tabcontrol)=  "Settings"
-	GroupBox group_pulseAver_deconv,userdata(ResizeControlsInfo)= A"!!,D+!!#BHJ,hqV!!#@6z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_pulseAver_deconv,userdata(ResizeControlsInfo)= A"!!,D+!!#BQJ,hqV!!#@6z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_pulseAver_deconv,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_pulseAver_deconv,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_OVS,pos={164.00,47.00},size={51.00,15.00},disable=1,proc=BSP_CheckProc_OverlaySweeps,title="enable"
@@ -885,7 +884,7 @@ Window DataBrowser() : Graph
 	ValDisplay status_sweepFormula_parser,help={"Current parsing status of the entered formula."}
 	ValDisplay status_sweepFormula_parser,userdata(tabnum)=  "5"
 	ValDisplay status_sweepFormula_parser,userdata(tabcontrol)=  "Settings"
-	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo)= A"!!,FW!!#C'J,hkX!!#:bz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"QBk2=!z"
+	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo)= A"!!,FW!!#C'J,hkX!!#:bz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ValDisplay status_sweepFormula_parser,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (0,65535,0),lowColor= (0,0,0),zeroColor= (65535,0,0)
@@ -978,27 +977,27 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGlAStpcCh5qOGZ8U#zzzzzzzz"
 	CheckBox check_channelSel_AD_All,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGlAStpcCh5qOGX?=jFDl!rzzzzzzzzzz!!!"
 	CheckBox check_channelSel_AD_All,value= 0
-	CheckBox check_pulseAver_searchFailedPulses,pos={214.00,320.00},size={119.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Search failed pulses"
+	CheckBox check_pulseAver_searchFailedPulses,pos={214.00,340.00},size={119.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Search failed pulses"
 	CheckBox check_pulseAver_searchFailedPulses,help={"Failed pulses don't have a signal above the given level in the diagonal elements"}
 	CheckBox check_pulseAver_searchFailedPulses,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_searchFailedPulses,userdata(tabcontrol)=  "Settings"
-	CheckBox check_pulseAver_searchFailedPulses,userdata(ResizeControlsInfo)= A"!!,Gf!!#BZ!!#@R!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_pulseAver_searchFailedPulses,userdata(ResizeControlsInfo)= A"!!,Gf!!#Bd!!#@R!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_pulseAver_searchFailedPulses,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_searchFailedPulses,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_searchFailedPulses,value= 0
-	CheckBox check_pulseAver_hideFailedPulses,pos={214.00,339.00},size={109.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Hide failed pulses"
+	CheckBox check_pulseAver_hideFailedPulses,pos={214.00,359.00},size={109.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Hide failed pulses"
 	CheckBox check_pulseAver_hideFailedPulses,help={"Hide the failed pulses"}
 	CheckBox check_pulseAver_hideFailedPulses,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_hideFailedPulses,userdata(tabcontrol)=  "Settings"
-	CheckBox check_pulseAver_hideFailedPulses,userdata(ResizeControlsInfo)= A"!!,Gf!!#BcJ,hpi!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_pulseAver_hideFailedPulses,userdata(ResizeControlsInfo)= A"!!,Gf!!#BmJ,hpi!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_pulseAver_hideFailedPulses,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_hideFailedPulses,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_hideFailedPulses,value= 0
-	SetVariable setvar_pulseAver_failedPulses_level,pos={214.00,358.00},size={81.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Level"
+	SetVariable setvar_pulseAver_failedPulses_level,pos={214.00,378.00},size={81.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Level"
 	SetVariable setvar_pulseAver_failedPulses_level,help={"Signal level for failed pulses search, every pulse not reaching that level is considered as failed."}
 	SetVariable setvar_pulseAver_failedPulses_level,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_failedPulses_level,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_pulseAver_failedPulses_level,userdata(ResizeControlsInfo)= A"!!,Gf!!#Bm!!#?[!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	SetVariable setvar_pulseAver_failedPulses_level,userdata(ResizeControlsInfo)= A"!!,Gf!!#C\"!!#?[!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_failedPulses_level,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_failedPulses_level,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_failedPulses_level,limits={-inf,inf,0},value= _NUM:0
@@ -1010,30 +1009,30 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_vert_scale_bar,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_vert_scale_bar,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_vert_scale_bar,value= _NUM:1
-	CheckBox check_pulseAver_ShowImage,pos={52.00,186.00},size={111.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Enable image plot"
+	CheckBox check_pulseAver_ShowImage,pos={52.00,205.00},size={111.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Enable image plot"
 	CheckBox check_pulseAver_ShowImage,help={"Enable the image plot which is *much* faster than the trace plot"}
 	CheckBox check_pulseAver_ShowImage,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_ShowImage,userdata(tabcontrol)=  "Settings"
-	CheckBox check_pulseAver_ShowImage,userdata(ResizeControlsInfo)= A"!!,D_!!#AI!!#@B!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_pulseAver_ShowImage,userdata(ResizeControlsInfo)= A"!!,D_!!#A\\!!#@B!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_pulseAver_ShowImage,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_ShowImage,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_ShowImage,value= 0
-	GroupBox group_pulseAver_general,pos={199.00,89.00},size={173.00,301.00},disable=3,title="General"
+	GroupBox group_pulseAver_general,pos={199.00,89.00},size={174.00,318.00},disable=3,title="General"
 	GroupBox group_pulseAver_general,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_general,userdata(tabcontrol)=  "Settings"
-	GroupBox group_pulseAver_general,userdata(ResizeControlsInfo)= A"!!,GW!!#?k!!#A<!!#BPJ,fQL!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_pulseAver_general,userdata(ResizeControlsInfo)= A"!!,GW!!#?k!!#A=!!#BYz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_pulseAver_general,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_pulseAver_general,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_pulseAver_trace_settings,pos={39.00,90.00},size={155.00,80.00},disable=3,title="Trace settings"
+	GroupBox group_pulseAver_trace_settings,pos={39.00,90.00},size={155.00,96.00},disable=3,title="Trace settings"
 	GroupBox group_pulseAver_trace_settings,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_trace_settings,userdata(tabcontrol)=  "Settings"
-	GroupBox group_pulseAver_trace_settings,userdata(ResizeControlsInfo)= A"!!,D+!!#?m!!#A*!!#?Yz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_pulseAver_trace_settings,userdata(ResizeControlsInfo)= A"!!,D+!!#?m!!#A*!!#@$z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_pulseAver_trace_settings,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_pulseAver_trace_settings,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_pulseAver_image_settings,pos={39.00,167.00},size={155.00,114.00},disable=3,title="Image settings"
+	GroupBox group_pulseAver_image_settings,pos={39.00,186.00},size={155.00,114.00},disable=3,title="Image settings"
 	GroupBox group_pulseAver_image_settings,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_image_settings,userdata(tabcontrol)=  "Settings"
-	GroupBox group_pulseAver_image_settings,userdata(ResizeControlsInfo)= A"!!,D+!!#A6!!#A*!!#@Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_pulseAver_image_settings,userdata(ResizeControlsInfo)= A"!!,D+!!#AI!!#A*!!#@Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_pulseAver_image_settings,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_pulseAver_image_settings,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_showTraces,pos={48.00,109.00},size={104.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Enable trace plot"
@@ -1044,48 +1043,48 @@ Window DataBrowser() : Graph
 	CheckBox check_pulseAver_showTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_showTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_showTraces,value= 1
-	PopupMenu popup_pulseAver_colorscales,pos={46.00,233.00},size={140.00,19.00},bodyWidth=140,disable=1,proc=PA_PopMenuProc_ColorScale
+	PopupMenu popup_pulseAver_colorscales,pos={46.00,224.00},size={140.00,19.00},bodyWidth=140,disable=1,proc=PA_PopMenuProc_ColorScale
 	PopupMenu popup_pulseAver_colorscales,help={"Select the color scale used for the image display"}
-	PopupMenu popup_pulseAver_colorscales,userdata(ResizeControlsInfo)= A"!!,DG!!#B#!!#@p!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	PopupMenu popup_pulseAver_colorscales,userdata(ResizeControlsInfo)= A"!!,DG!!#Ao!!#@p!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_pulseAver_colorscales,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_pulseAver_colorscales,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_pulseAver_colorscales,userdata(tabnum)=  "4"
 	PopupMenu popup_pulseAver_colorscales,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_pulseAver_colorscales,mode=8,value= #"\"*COLORTABLEPOP*\""
-	CheckBox check_pulseAver_drawXZeroLine,pos={52.00,210.00},size={100.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Draw X zero line"
+	CheckBox check_pulseAver_drawXZeroLine,pos={213.00,202.00},size={100.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Draw X zero line"
 	CheckBox check_pulseAver_drawXZeroLine,help={"Draw a vertical line at the X=0 crossing (only available with time alignment)"}
 	CheckBox check_pulseAver_drawXZeroLine,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_drawXZeroLine,userdata(tabcontrol)=  "Settings"
-	CheckBox check_pulseAver_drawXZeroLine,userdata(ResizeControlsInfo)= A"!!,D_!!#Aa!!#@,!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_pulseAver_drawXZeroLine,userdata(ResizeControlsInfo)= A"!!,Ge!!#AY!!#@,!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_pulseAver_drawXZeroLine,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_drawXZeroLine,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_drawXZeroLine,value= 0
-	CheckBox check_pulseAver_fixedPulseLength,pos={217.00,257.00},size={112.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Fixed pulse length"
+	CheckBox check_pulseAver_fixedPulseLength,pos={217.00,277.00},size={112.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Fixed pulse length"
 	CheckBox check_pulseAver_fixedPulseLength,help={"Use the fixed pulse length instead of the computed one"}
 	CheckBox check_pulseAver_fixedPulseLength,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_fixedPulseLength,userdata(tabcontrol)=  "Settings"
-	CheckBox check_pulseAver_fixedPulseLength,userdata(ResizeControlsInfo)= A"!!,Gi!!#B:J,hpo!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_pulseAver_fixedPulseLength,userdata(ResizeControlsInfo)= A"!!,Gi!!#BDJ,hpo!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_pulseAver_fixedPulseLength,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_fixedPulseLength,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_fixedPulseLength,value= 0
-	PopupMenu popup_pulseAver_pulseSortOrder,pos={48.00,255.00},size={137.00,19.00},bodyWidth=82,disable=1,proc=PA_PopMenuProc_Common,title="Sort order"
+	PopupMenu popup_pulseAver_pulseSortOrder,pos={48.00,246.00},size={137.00,19.00},bodyWidth=82,disable=1,proc=PA_PopMenuProc_Common,title="Sort order"
 	PopupMenu popup_pulseAver_pulseSortOrder,help={"Sorting order for the pulses"}
-	PopupMenu popup_pulseAver_pulseSortOrder,userdata(ResizeControlsInfo)= A"!!,DO!!#B9!!#@m!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	PopupMenu popup_pulseAver_pulseSortOrder,userdata(ResizeControlsInfo)= A"!!,DO!!#B0!!#@m!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_pulseAver_pulseSortOrder,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_pulseAver_pulseSortOrder,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_pulseAver_pulseSortOrder,userdata(tabnum)=  "4"
 	PopupMenu popup_pulseAver_pulseSortOrder,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_pulseAver_pulseSortOrder,mode=1,popvalue="Sweep",value= #"\"Sweep;PulseIndex\""
-	GroupBox group_pulseAver_failedPulses,pos={206.00,304.00},size={158.00,77.00},disable=3,title="Failed Pulses"
+	GroupBox group_pulseAver_failedPulses,pos={206.00,324.00},size={158.00,77.00},disable=3,title="Failed Pulses"
 	GroupBox group_pulseAver_failedPulses,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_failedPulses,userdata(tabcontrol)=  "Settings"
-	GroupBox group_pulseAver_failedPulses,userdata(ResizeControlsInfo)= A"!!,G^!!#BR!!#A-!!#?Sz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_pulseAver_failedPulses,userdata(ResizeControlsInfo)= A"!!,G^!!#B\\!!#A-!!#?Sz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_pulseAver_failedPulses,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_pulseAver_failedPulses,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_pulseAver_singlePulse,pos={205.00,196.00},size={158.00,107.00},disable=3,title=" Pulses"
+	GroupBox group_pulseAver_singlePulse,pos={205.00,216.00},size={158.00,107.00},disable=3,title=" Pulses"
 	GroupBox group_pulseAver_singlePulse,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_singlePulse,userdata(tabcontrol)=  "Settings"
-	GroupBox group_pulseAver_singlePulse,userdata(ResizeControlsInfo)= A"!!,G]!!#AS!!#A-!!#@:z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_pulseAver_singlePulse,userdata(ResizeControlsInfo)= A"!!,G]!!#Ag!!#A-!!#@:z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_pulseAver_singlePulse,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_pulseAver_singlePulse,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	DefineGuide UGVL={FL,15},UGVR={FR,-20},UGVT={FT,113},UGVB={FB,-50},enableBoxTop={FT,25}
@@ -1105,7 +1104,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxBottom)=  "NAME:MainBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:414.00;GUIDE1:FB;GUIDE2:;RELPOSITION:3;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxTop)=  "NAME:MainBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:85.00;GUIDE1:enableBoxBottom;GUIDE2:;RELPOSITION:10;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={305.25,330,inf,inf}" // sizeLimit requires Igor 7 or later
-	NewNotebook /F=0 /N=sweepFormula_json /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=12
+	NewNotebook /F=0 /N=sweepFormula_json /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=12 
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -1116,7 +1115,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	RenameWindow #,sweepFormula_json
 	SetActiveSubwindow ##
-	NewNotebook /F=0 /N=sweepFormula_formula /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
+	NewNotebook /F=0 /N=sweepFormula_formula /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 
 	Notebook kwTopWin, defaultTab=20, autoSave= 1, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z*!1@=S>)+F`2^BZWLb84b@(eDO%R/Lo%!.b8RgERN@q:!Q;Rb=g(\\Ea=4.iptUKJmo0`?;1F7@M*q"
@@ -1129,7 +1128,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	RenameWindow #,sweepFormula_formula
 	SetActiveSubwindow ##
-	NewNotebook /F=1 /N=sweepFormula_help /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=4
+	NewNotebook /F=1 /N=sweepFormula_help /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=4 
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1, showRuler=0, rulerUnits=2
 	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,245}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -1140,7 +1139,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	RenameWindow #,sweepFormula_help
 	SetActiveSubwindow ##
-	NewNotebook /F=0 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,FB) /HOST=# /V=0 /OPTS=10
+	NewNotebook /F=0 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,FB) /HOST=# /V=0 /OPTS=10 
 	Notebook kwTopWin, defaultTab=36, autoSave= 0, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -1189,7 +1188,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)=  "NAME:UGV0;WIN:DataBrowser#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:401.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-187;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={447,110.25,inf,inf}" // sizeLimit requires Igor 7 or later
-	Display/W=(200,187,395,501)/FG=(FL,FT,UGV0,FB)/HOST=#
+	Display/W=(200,187,395,501)/FG=(FL,FT,UGV0,FB)/HOST=# 
 	ModifyGraph margin(right)=74
 	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
 	RenameWindow #,LabNoteBook

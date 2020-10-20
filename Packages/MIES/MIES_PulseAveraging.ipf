@@ -1125,6 +1125,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 	PA_DrawScaleBars(win, pa, PA_DISPLAYMODE_TRACES, PA_USE_WAVE_SCALES)
 	PA_LayoutGraphs(win, PA_DISPLAYMODE_TRACES, regions, channels, pa)
+	PA_DrawXZeroLines(win, PA_DISPLAYMODE_TRACES, regions, channels, pa)
 
 	return usedGraphs
 End
@@ -1172,6 +1173,7 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	                  && pa.fixedPulseLength == paOld.fixedPulseLength)
 
 	generalSettings = (pa.showIndividualPulses == paOld.showIndividualPulses    \
+	                   && pa.drawXZeroLine == paOld.drawXZeroLine               \
 	                   && pa.showAverage == paOld.showAverage                   \
 	                   && pa.regionSlider == paOld.regionSlider                 \
 	                   && pa.multipleGraphs == paOld.multipleGraphs             \
@@ -1193,7 +1195,6 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	cs.images = (generalSettings == 1                          \
 	             && cs.singlePulse == 1                        \
 	             && pa.showImages == paOld.showImages          \
-	             && pa.drawXZeroLine == paOld.drawXZeroLine    \
 	             && pa.pulseSortOrder == paOld.pulseSortOrder)
 
 	return [cs]
@@ -2512,10 +2513,12 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				Redimension/N=(DimSize(firstPulse, ROWS), -1) img
 				Make/FREE/N=(MAX_DIMENSION_COUNT) newSizes = DimSize(img, p)
 
-				if(mode != POST_PLOT_ADDED_SWEEPS || !EqualWaves(oldSizes, newSizes, 1) || pa.pulseSortOrder != PA_PULSE_SORTING_ORDER_SWEEP)
+				if(mode != POST_PLOT_ADDED_SWEEPS                                        \
+				   || !EqualWaves(oldSizes, newSizes, 1)                                 \
+				   || pa.pulseSortOrder != PA_PULSE_SORTING_ORDER_SWEEP                  \
+				   || (WaveExists(additionalData) && DimSize(additionalData, ROWS) > 1))
 					Multithread img[][] = NaN
 				else
-					ASSERT(WaveExists(additionalData) && DimSize(additionalData, ROWS) == 1, "Unexpected additionalData")
 					newSweep = additionalData[0]
 					Make/FREE/N=(numPulses) sweeps = properties[setIndizes[p]][%Sweep]
 					FindValue/Z/V=(newSweep) sweeps
@@ -2588,7 +2591,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 	PA_DrawScaleBars(win, pa, PA_DISPLAYMODE_IMAGES, PA_USE_WAVE_SCALES)
 	PA_AddColorScales(win, regions, channels, pa)
-	PA_DrawXZeroLines(win, regions, channels, pa)
+	PA_DrawXZeroLines(win, PA_DISPLAYMODE_IMAGES, regions, channels, pa)
 
 	return usedGraphs
 End
@@ -2716,7 +2719,7 @@ Function PA_ImageWindowHook(s)
 	return 0
 End
 
-static Function PA_DrawXZeroLines(string win, WAVE regions, WAVE channels, STRUCT PulseAverageSettings &pa)
+static Function PA_DrawXZeroLines(string win, variable displayMode, WAVE regions, WAVE channels, STRUCT PulseAverageSettings &pa)
 
 	variable i, j, numChannels, numRegions, channelNumber, activeChanCount, activeRegionCount, region
 	string vertAxis, horizAxis, graph
@@ -2733,7 +2736,7 @@ static Function PA_DrawXZeroLines(string win, WAVE regions, WAVE channels, STRUC
 			activeRegionCount = j + 1
 
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
-				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, region, activeRegionCount, activeChanCount, numRegions)
+				graph = PA_GetGraph(win, pa, displayMode, channelNumber, region, activeRegionCount, activeChanCount, numRegions)
 				SetDrawLayer/W=$graph/K $PA_DRAWLAYER_XZEROLINE
 			endif
 
