@@ -289,30 +289,92 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 		totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 	endif
 
-	fullPath = traceData[idx][%fullPath]
-	DFREF singleSweepFolder = GetWavesDataFolderDFR($fullPath)
-	ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
-
-	// get the DA wave in that folder
-	WAVE DACs = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
-
-	channel = DACs[region]
-	if(IsNaN(channel))
-		return $""
+	WAVE/Z/T epochs = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+	if(WaveExists(epochs))
+		WAVE/Z pulseStartTimes = PA_RetrievePulseStartTimesFromEpochs(epochs[region])
 	endif
 
-	WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, ITC_XOP_CHANNEL_TYPE_DAC, channel)
-	WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, fullPath, channel, totalOnsetDelay)
+#ifdef AUTOMATED_TESTING
+	WAVE DBG_pulseStartTimesEpochs = pulseStartTimes
+	WAVE/Z pulseStartTimes = $""
+#endif
 
 	if(!WaveExists(pulseStartTimes))
-		return $""
-	endif
 
-	sprintf str, "Calculated pulse starting times for headstage %d", region
-	DEBUGPRINT(str)
+		fullPath = traceData[idx][%fullPath]
+		DFREF singleSweepFolder = GetWavesDataFolderDFR($fullPath)
+		ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
+
+		WAVE DACs = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+		channel = DACs[region]
+		if(IsNaN(channel))
+			return $""
+		endif
+
+		WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, ITC_XOP_CHANNEL_TYPE_DAC, channel)
+		WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, fullPath, channel, totalOnsetDelay)
+
+#ifdef AUTOMATED_TESTING
+		variable i
+		variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 1.5
+
+		WAVE DBG_pulseStartTimesCalc = pulseStartTimes
+		if(DimSize(DBG_pulseStartTimesEpochs, ROWS) != DimSize(DBG_pulseStartTimesCalc, ROWS))
+			print/D "Warn: Pulse start time from epochs:\r", DBG_pulseStartTimesEpochs, "\r from Calculation:\r", DBG_pulseStartTimesCalc
+		else
+			for(i = 0; i < DimSize(DBG_pulseStartTimesEpochs, ROWS); i += 1)
+				if(abs(DBG_pulseStartTimesEpochs[i] - DBG_pulseStartTimesCalc[i]) > warnDiffms)
+					print/D "Warn: Pulse start time from epochs:\r", DBG_pulseStartTimesEpochs, "from Calculation:\r", DBG_pulseStartTimesCalc
+					break
+				endif
+			endfor
+		endif
+#endif
+
+		sprintf str, "Calculated pulse starting times for headstage %d", region
+		DEBUGPRINT(str)
+
+		if(!WaveExists(pulseStartTimes))
+			return $""
+		endif
+	endif
 
 	pulseStartTimes[] -= totalOnsetDelay
 
+	return pulseStartTimes
+End
+
+/// @brief Extracts the pulse start times from the lab notebook and returns them as wave
+/// @param[in] epochInfo epoch data to extract pulse starting times
+/// @returns 1D wave with pulse starting times in [ms] or null wave
+static Function/WAVE PA_RetrievePulseStartTimesFromEpochs(string epochInfo)
+
+	variable numRawEpochs, numPulseStarts, i
+	string epochStr, pulseInfo
+
+	if(IsEmpty(epochInfo))
+		return $""
+	endif
+
+	WAVE/T rawEpochs = ListToTextWave(epochInfo, ":")
+	numRawEpochs = DimSize(rawEpochs, ROWS)
+	Make/FREE/D/N=(numRawEpochs) pulseStartTimes
+	for(i = 0; i < numRawEpochs; i += 1)
+		epochStr = rawEpochs[i]
+
+		epochInfo = StringFromList(EPOCH_COL_NAME, epochStr, ",")
+		pulseInfo = StringByKey("Pulse", epochInfo, "=", ";")
+		if(!IsEmpty(pulseInfo) && NumberByKey("Amplitude", epochInfo, "=", ";") > 0)
+			pulseStartTimes[numPulseStarts] = str2num(StringFromList(EPOCH_COL_STARTTIME, epochStr, ";")) * 1E3
+			numPulseStarts += 1
+		endif
+	endfor
+
+	if(!numPulseStarts)
+		return $""
+	endif
+
+	Redimension/N=(numPulseStarts) pulseStartTimes
 	return pulseStartTimes
 End
 
