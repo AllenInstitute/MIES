@@ -1088,7 +1088,7 @@ static Function [variable idx, variable traceCount] PA_GetTraceCountFromGraphDat
 	return [idx, 0]
 End
 
-static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, WAVE/Z targetForAverageGeneric, WAVE/Z sourceForAverageGeneric, variable mode, WAVE/Z additionalData)
+static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, WAVE/WAVE targetForAverage, WAVE/WAVE sourceForAverage, variable mode, WAVE/Z additionalData)
 
 	string pulseTrace, str, graph, key
 	variable numChannels, i, j, sweepNo, headstage, numTotalPulses, pulse, xPos, yPos
@@ -1113,9 +1113,6 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	elseif(cs.traces)
 		return PA_GetGraphs(win, PA_DISPLAYMODE_TRACES)
 	endif
-
-	WAVE/WAVE/Z targetForAverage = targetForAverageGeneric
-	WAVE/WAVE/Z sourceForAverage = sourceForAverageGeneric
 
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
@@ -1280,27 +1277,14 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 			isDiagonalElement = (i == j)
 
-			if(WaveExists(targetForAverage))
-				WAVE/Z freeAverageWave = targetForAverage[i][j]
-
-				if(!WaveExists(freeAverageWave))
-					continue
-				endif
-
-				baseName = PA_BaseName(channelNumber, region)
-				WAVE averageWave = PA_Average(sourceForAverage[i][j], pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName, \
-				                              inputAverage = freeAverageWave)
-				WaveClear freeAverageWave
-			else
-				WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region, removeFailedPulses = 1)
-
-				if(!WaveExists(setWaves))
-					continue
-				endif
-
-				baseName = PA_BaseName(channelNumber, region)
-				WAVE averageWave = PA_Average(setWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
+			WAVE/Z freeAverageWave = targetForAverage[i][j]
+			if(!WaveExists(freeAverageWave))
+				continue
 			endif
+
+			baseName = PA_BaseName(channelNumber, region)
+			WAVE averageWave = ConvertFreeWaveToPermanent(freeAverageWave, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
+			WaveClear freeAverageWave
 
 			activeChanCount = i + 1
 			activeRegionCount = j + 1
@@ -1555,13 +1539,9 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 
 	PA_AutomaticTimeAlignment(win, pa)
 
-	if(mode != POST_PLOT_CONSTANT_SWEEPS || !cs.singlePulse)
-		WAVE/WAVE/Z dest, source
-		[dest, source] = PA_CalculateAllAverages(pa, mode)
-		return [dest, source, 1]
-	endif
-
-	return [$"", $"", 1]
+	WAVE/WAVE/Z dest, source
+	[dest, source] = PA_CalculateAllAverages(pa, mode)
+	return [dest, source, 1]
 End
 
 static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa, variable mode)
