@@ -564,16 +564,10 @@ Function BSP_ClosePanelHook(s)
 	STRUCT WMWinHookStruct &s
 
 	string mainPanel
-	string panels
 
 	switch(s.eventCode)
 		case 17: // killVote
 			mainPanel = GetMainWindow(s.winName)
-			panels = AddListItem(BSP_GetPanel(mainPanel), panels)
-			panels = AddListItem(BSP_GetSweepControlsPanel(mainPanel), panels)
-
-			ASSERT(FindListItem(s.winName, panels) >= 0, "this hook is only available for specific BSP panel.")
-
 			SetWindow $s.winName hide=1
 
 			BSP_MainPanelButtonToggle(mainPanel, 1)
