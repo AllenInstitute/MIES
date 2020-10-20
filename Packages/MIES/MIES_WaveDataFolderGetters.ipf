@@ -5619,7 +5619,7 @@ Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, regio
 	DFREF dfr
 	variable length, channelType, pulseIndex, channelNumber, region
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	string wvName
 
 	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
@@ -5629,11 +5629,44 @@ Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, regio
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
+		// clear the wave note so that it is invalidated for cache checks through mod
+		Note/K wv
+	else
+		Make/N=(length) dfr:$wvName/WAVE=wv
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return a wave reference to the single pulse defined by the given parameters
+///
+/// @param dfr           datafolder reference where to create the empty wave if it does not exist
+/// @param length        Length in points of the new wave
+/// @param channelType   ITC XOP numeric channel type
+/// @param channelNumber channel number
+/// @param region        region index (a region is the range with data in a dDAQ/oodDAQ measurement)
+/// @param pulseIndex    pulse number, 0-based
+Function/WAVE GetPulseAverageWaveNoteWave(dfr, length, channelType, channelNumber, region, pulseIndex)
+	DFREF dfr
+	variable length, channelType, pulseIndex, channelNumber, region
+
+	variable versionOfNewWave = 1
+	string wvName
+
+	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
+	wvName = PA_GeneratePulseWaveName(channelType, channelNumber, region, pulseIndex) + PULSEWAVE_NOTE_SUFFIX
+
+	WAVE/SDFR=dfr/Z wv = $wvName
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
 		// clear the wave note so that it is regenerated
 		// by PA_CreateAndFillPulseWaveIfReq()
 		Note/K wv
 	else
-		Make/R/N=(length) dfr:$wvName/WAVE=wv
+		Make/N=0 dfr:$wvName/WAVE=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -5773,7 +5806,7 @@ End
 /// Belongs to GetPulseAverageProperties() and also has the same
 /// `NOTE_INDEX` count stored there.
 Function/WAVE GetPulseAveragePropertiesWaves(DFREF dfr)
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/WAVE/Z/SDFR=dfr wv = propertiesWaves
@@ -5783,10 +5816,13 @@ Function/WAVE GetPulseAveragePropertiesWaves(DFREF dfr)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/WAVE/N=(MINIMUM_WAVE_SIZE_LARGE) dfr:propertiesWaves/Wave=wv
+		Make/WAVE/N=(MINIMUM_WAVE_SIZE_LARGE, 2) dfr:propertiesWaves/Wave=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
+	SetDimLabel COLS, 0, PULSE, wv
+	SetDimLabel COLS, 1, PULSENOTE, wv
+
 	return wv
 End
 

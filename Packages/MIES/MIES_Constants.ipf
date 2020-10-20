@@ -1301,3 +1301,5 @@ Constant PA_GETSETWAVES_OLD = 0x02
 Constant PA_GETSETWAVES_NEW = 0x04
 
 /// @}
+
+StrConstant PULSEWAVE_NOTE_SUFFIX = "_note"
