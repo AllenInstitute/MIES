@@ -1287,7 +1287,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 			AccelerateHideTraces(hiddenTracesGraphs[j], hiddenTracesNames, DimSize(hiddenTracesNames, ROWS))
 		endfor
 		JSON_Release(hideTraceJsonID)
-	else
+	elseif(!IsEmpty(graph))
 		AccelerateHideTraces(graph, hiddenTraces, hiddenTracesCount)
 	endif
 	JSON_Release(jsonID)
