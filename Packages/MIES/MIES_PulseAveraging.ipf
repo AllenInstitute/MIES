@@ -1948,8 +1948,7 @@ threadsafe static Function PA_ZeroWave(WAVE wv, WAVE noteWave)
 		return 0
 	endif
 
-	Differentiate/DIM=0/EP=1 wv
-	Integrate/DIM=0 wv
+	ZeroWaveImpl(wv)
 
 	SetNumberInWaveNote(noteWave, NOTE_KEY_ZEROED, 1)
 

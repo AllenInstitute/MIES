@@ -5972,12 +5972,18 @@ threadsafe Function ZeroWave(wv)
 		return 0
 	endif
 
-	Differentiate/DIM=0/EP=1 wv
-	Integrate/DIM=0 wv
+	ZeroWaveImpl(wv)
 
 	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
 
 	return 1
+End
+
+/// @brief Zeroes a wave in place
+threadsafe Function ZeroWaveImpl(WAVE wv)
+
+	Differentiate/DIM=0/EP=1 wv
+	Integrate/DIM=0 wv
 End
 
 /// @name Decimation methods
