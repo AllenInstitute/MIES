@@ -997,7 +997,7 @@ End
 
 /// @brief Handle marking pulses as failed/passed if required
 static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, STRUCT PulseAverageSettings &pa)
-	variable numTotalPulses, i, isDiagonalElement, sweepNo
+	variable numTotalPulses, i, sweepNo
 	variable region, pulse, pulseHasFailed, jsonID, referencePulseHasFailed
 	variable lblPWPULSENOTE, lblDiagonalElement, lblSweep, lblRegion, lblPulse, lblPulseHasFailed
 	string key
@@ -1031,10 +1031,7 @@ static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, 
 	// this is done by PA_PulseHasFailed which either uses the wave note
 	// or uses FindLevel if required.
 	for(i = 0; i < numTotalPulses; i += 1)
-
-		isDiagonalElement = properties[i][lblDiagonalElement]
-
-		if(!isDiagonalElement)
+		if(!properties[i][lblDiagonalElement])
 			continue
 		endif
 
