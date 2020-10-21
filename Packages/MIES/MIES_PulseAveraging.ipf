@@ -507,7 +507,7 @@ End
 static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
 
 	variable startingPulseSett, endingPulseSett, isDiagonalElement, pulseHasFailed, newChannel
-	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, numPulses, startingPulse, endingPulse
+	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, startingPulse, endingPulse
 	variable headstage, pulseToPulseLength, totalOnsetDelay, numChannelTypeTraces, totalPulseCounter, jsonID, lastSweep
 	variable activeRegionCount, activeChanCount, channelNumber, first, length, dictId, channelType, numChannels, numRegions
 	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep
@@ -641,6 +641,14 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 				continue
 			endif
 
+			numPulsesTotal = DimSize(pulseStartTimes, ROWS)
+			startingPulse  = max(0, startingPulseSett)
+			endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
+			numPulseCreate = endingPulse - startingPulse + 1
+			if(numPulseCreate <= 0)
+				continue
+			endif
+
 			sweepNoStr = traceData[idx][lblTraceSweepNumber]
 			sweepNo = str2num(sweepNoStr)
 			experiment = traceData[idx][lblTraceExperiment]
@@ -672,11 +680,6 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 				JSON_SetVariable(jsonID, key, lastSweep)
 			endif
 
-			numPulsesTotal = DimSize(pulseStartTimes, ROWS)
-			startingPulse  = max(0, startingPulseSett)
-			endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
-			numPulses = endingPulse - startingPulse + 1
-
 			pulseToPulseLength = PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, pa.overridePulseLength, pa.fixedPulseLength)
 
 			WAVE numericalValues = $traceData[idx][lblTracenumericalValues]
@@ -687,7 +690,6 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 			DFREF singlePulseFolder = GetSingleSweepFolder(pulseAverageDFR, sweepNo)
 			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 			// number of pulses that might be created
-			numPulseCreate = endingPulse - startingPulse
 			if(numPulseCreate)
 				numPulseCreate += totalPulseCounter
 				EnsureLargeEnoughWave(properties, minimumSize = numPulseCreate, initialValue = NaN)
