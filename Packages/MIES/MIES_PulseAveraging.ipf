@@ -1736,8 +1736,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, va
 				continue
 			endif
 
-			avgWaveName = PA_AVERAGE_WAVE_PREFIX + PA_BaseName(channelNumber, region)
-			WAVE/Z/SDFR=pulseAverageDFR averageWave = $avgWaveName
+			WAVE/Z averageWave = PA_GetAverageWave(pulseAverageDFR, channelNumber, region)
 			if(WaveExists(averageWave))
 				maximum = GetNumberFromWaveNote(averageWave, "WaveMaximum")
 				length  = pa.yScaleBarLength * (IsFinite(maximum) ? sign(maximum) : +1)
@@ -1753,6 +1752,16 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, va
 			                       activeChanCount, numChannels, activeRegionCount, numRegions)
 		endfor
 	endfor
+End
+
+static Function/WAVE PA_GetAverageWave(DFREF pulseAverageDFR, variable channelNumber, variable region)
+
+	string avgWaveName
+
+	avgWaveName = PA_AVERAGE_WAVE_PREFIX + PA_BaseName(channelNumber, region)
+	WAVE/Z/SDFR=pulseAverageDFR averageWave = $avgWaveName
+
+	return averageWave
 End
 
 static Function	[variable vert_min, variable vert_max, variable horiz_min, variable horiz_max] PA_GetMinAndMax(WAVE/WAVE setWaves)
