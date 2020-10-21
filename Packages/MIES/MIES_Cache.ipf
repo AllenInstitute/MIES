@@ -139,7 +139,7 @@ Function/S CA_Deconv(wv, tau)
 	variable crc
 
 	crc = WaveCRC(0, wv)
-	crc = CA_WaveScalingCRC(crc, wv, dimension=ROWS)
+	crc = StringCRC(crc, num2str(DimDelta(wv, ROWS)))
 	crc = StringCRC(crc, num2str(tau))
 
 

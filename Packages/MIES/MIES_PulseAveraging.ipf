@@ -1969,6 +1969,9 @@ static Function/WAVE PA_SmoothDeconv(input, deconvolution)
 	key = CA_SmoothDeconv(input, smoothingFactor, range_pnts)
 	WAVE/Z cache = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 	if(WaveExists(cache))
+		if(DimOffset(input, ROWS) != DimOffset(cache, ROWS))
+			CopyScales/P input, cache
+		endif
 		return cache
 	endif
 
@@ -1993,6 +1996,12 @@ static Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, deconv
 	key = CA_Deconv(smoothed, deconvolution.tau)
 	WAVE/Z cache = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 	if(WaveExists(cache))
+		// CA_Deconv relies on data content and DimDelta of input
+		// In the case where time alignment changed the DimOffset of input (based on averaging of the pulses),
+		// we can reuse the cached wave, but we need to transfer the DimOffset.
+		if(DimOffset(average, ROWS) != DimOffset(cache, ROWS))
+			CopyScales/P average, cache
+		endif
 		Duplicate/O cache outputDFR:$outputWaveName/WAVE=wv
 		return wv
 	endif
