@@ -1932,8 +1932,8 @@ static Function PA_ZeroPulses(WAVE/WAVE set, STRUCT PulseAverageSettings &pa)
 
 	numPulses = DimSize(set, ROWS)
 
-	Make/FREE/N=(numPulses) junkWave
-	MultiThread junkWave = PA_ZeroWave(set[p][0], set[p][1]) && PA_UpdateMinAndMax(set[p][0], set[p][1])
+	Make/FREE/N=(numPulses) junk
+	Multithread junk = PA_ZeroWave(set[p][0], set[p][1])
 End
 
 /// @brief Zero the wave using differentiation and integration
@@ -1949,6 +1949,8 @@ threadsafe static Function PA_ZeroWave(WAVE wv, WAVE noteWave)
 	endif
 
 	ZeroWaveImpl(wv)
+
+	PA_UpdateMinAndMax(wv, noteWave)
 
 	SetNumberInWaveNote(noteWave, NOTE_KEY_ZEROED, 1)
 
