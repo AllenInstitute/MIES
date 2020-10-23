@@ -576,6 +576,9 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 		ASSERT(numNewSweeps > 0, "Set POST_PLOT_ADDED_SWEEPS, but found no new sweep(s) in additionlData")
 		for(i = 0; i < numNewSweeps; i += 1)
 			WAVE/Z indizesNewSweep = FindIndizes(traceData, colLabel="SweepNumber", str=num2str(additionalData[i]))
+			if(!WaveExists(indizesNewSweep))
+				continue
+			endif
 			WAVE indizesToAddNewSweep = GetSetIntersection(indizesChannelType, indizesNewSweep)
 			numNewIndicesSweep = DimSize(indizesToAddNewSweep, ROWS)
 			indizesToAdd[j, j + numNewIndicesSweep - 1] = indizesToAddNewSweep[p - j]
