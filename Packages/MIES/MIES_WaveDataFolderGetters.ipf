@@ -6450,7 +6450,7 @@ End
 Function/WAVE GetAnaFuncDashboardListWave(dfr)
 	DFREF dfr
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/T/Z/SDFR=dfr wv = dashboardListWave
@@ -6458,14 +6458,15 @@ Function/WAVE GetAnaFuncDashboardListWave(dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		// handle upgrade
+		Redimension/N=(-1, 4) wv
 	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, 3) dfr:dashboardListWave/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:dashboardListWave/Wave=wv
 	endif
 
 	SetDimLabel COLS, 0, $"Stimset", wv
 	SetDimLabel COLS, 1, $"Analysis function", wv
-	SetDimLabel COLS, 2, $"Result", wv
+	SetDimLabel COLS, 2, $"Headstage", wv
+	SetDimLabel COLS, 3, $"Result", wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
@@ -6505,7 +6506,7 @@ End
 Function/WAVE GetAnaFuncDashboardSelWave(dfr)
 	DFREF dfr
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/B/Z/SDFR=dfr wv = dashboardSelWave
@@ -6513,9 +6514,9 @@ Function/WAVE GetAnaFuncDashboardSelWave(dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		// handle upgrade
+		Redimension/N=(-1, 4, -1) wv
 	else
-		Make/B/N=(MINIMUM_WAVE_SIZE, 3, 2) dfr:dashboardSelWave/Wave=wv
+		Make/B/N=(MINIMUM_WAVE_SIZE, 4, 2) dfr:dashboardSelWave/Wave=wv
 	endif
 
 	SetDimLabel LAYERS, 1, foreColors, wv
@@ -6529,7 +6530,7 @@ End
 Function/WAVE GetAnaFuncDashboardColorWave(dfr)
 	DFREF dfr
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/W/U/Z/SDFR=dfr wv = dashboardColorWave
@@ -6537,9 +6538,9 @@ Function/WAVE GetAnaFuncDashboardColorWave(dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		// handle upgrade
+		Redimension/N=(4, -1) wv
 	else
-		Make/W/U/N=(3, 3) dfr:dashboardColorWave/Wave=wv
+		Make/W/U/N=(4, 3) dfr:dashboardColorWave/Wave=wv
 	endif
 
 	wv[0][0]= {0, 65535, 0}

@@ -207,7 +207,8 @@ static Function AD_FillWaves(panelTitle, list, info)
 
 			list[index][0] = stimset
 			list[index][1] = anaFunc
-			list[index][2] = msg
+			list[index][2] = num2str(headstage)
+			list[index][3] = msg
 
 			// get the passing/failing sweeps
 			// PSQ_DA PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE: use PSQ_FMT_LBN_SWEEP_PASS
@@ -422,7 +423,7 @@ static Function/S AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 	WaveTransform/O zapNaNs, daScaleExc
 
 	if(Sum(daScaleExc) > 0)
-		return "Failure due to DAScale value exceeded"
+		return "Max DA scale exceeded failure"
 	endif
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES, query = 1)
@@ -451,7 +452,7 @@ static Function/S AD_GetFastRheoEst(WAVE numericalValues, variable sweepNo, vari
 	if(WaveExists(daScaleExc))
 		WaveTransform/O zapNaNs, daScaleExc
 		if(Sum(daScaleExc) > 0)
-			return "Failure due to DAScale value exceeded"
+			return "Max DA scale exceeded failure"
 		endif
 	endif
 
