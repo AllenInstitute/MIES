@@ -553,6 +553,10 @@ static Function AD_SelectResult(win, [index])
 
 	numEntries = DimSize(sweeps, ROWS)
 
+	if(!numEntries)
+		WaveClear sweeps
+	endif
+
 	WAVE/T ovsListWave = GetOverlaySweepsListWave(dfr)
 	WAVE ovsSelWave    = GetOverlaySweepsListSelWave(dfr)
 
@@ -574,16 +578,7 @@ static Function AD_SelectResult(win, [index])
 		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_DAC", val = 1)
 	endif
 
-	ovsSelWave[][%$"Sweep"] = ClearBit(ovsSelWave[p][%$"Sweep"], LISTBOX_CHECKBOX_SELECTED)
-
-	for(i = 0; i < numEntries;i += 1)
-		WAVE/Z indizes = FindIndizes(ovsListWave, col = 0, var = sweeps[i])
-		ASSERT(WaveExists(indizes), "Could not find sweep")
-		ASSERT(DimSize(indizes, ROWS) == 1, "Invalid number of matches")
-		ovsSelWave[indizes[0]][%$"Sweep"] = SetBit(ovsSelWave[indizes[0]][%$"Sweep"], LISTBOX_CHECKBOX_SELECTED)
-	endfor
-
-	UpdateSweepPlot(win)
+	OVS_ChangeSweepSelectionState(win, 1, sweeps = sweeps, invertOthers = 1)
 End
 
 Function AD_ListBoxProc(lba) : ListBoxControl
