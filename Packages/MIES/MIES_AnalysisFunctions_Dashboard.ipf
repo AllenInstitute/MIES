@@ -183,7 +183,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 						msg = "Failure"
 						break
 					case MSQ_FAST_RHEO_EST:
-						msg = AD_GetFastRheoEst(numericalValues, sweepNo, headstage)
+						msg = AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
 						break
 					case PSQ_DA_SCALE:
 						msg = AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
@@ -442,7 +442,7 @@ static Function/S AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 	return msg
 End
 
-static Function/S AD_GetFastRheoEst(WAVE numericalValues, variable sweepNo, variable headstage)
+static Function/S AD_GetFastRheoEstFailMsg(WAVE numericalValues, variable sweepNo, variable headstage)
 
 	string key
 
