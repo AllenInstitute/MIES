@@ -5512,3 +5512,27 @@ Function/S SanitizeFilename(string name)
 
 	return result
 End
+
+/// @brief Merges list l1 into l2. Double entries in l2 are kept.
+/// "a;b;c;" with "a;d;d;f;" -> "a;d;d;f;b;c;"
+Function/S MergeLists(string l1, string l2, [string sep])
+
+	variable numL1, i
+	string item
+
+	if(ParamIsDefault(sep))
+		sep = ";"
+	else
+		ASSERT(!IsEmpty(sep), "separator string is empty")
+	endif
+
+	numL1 = ItemsInList(l1, sep)
+	for(i = 0; i < numL1; i += 1)
+		item = StringFromList(i, l1, sep)
+		if(WhichListItem(item, l2, sep) == -1)
+			l2 = AddListItem(item, l2, sep, inf)
+		endif
+	endfor
+
+	return l2
+End
