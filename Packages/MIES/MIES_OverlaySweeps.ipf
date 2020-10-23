@@ -278,18 +278,29 @@ End
 ///
 /// Triggers a update for the affected sweep.
 ///
-/// @param win      panel
-/// @param sweepNo  [optional] sweep number
-/// @param index    [optional] index into the listbox wave
-/// @param newState new checkbox state of the given sweep.
+/// @param win          panel
+/// @param sweepNo      [optional] sweep number
+/// @param sweeps       [optional] sweeps to change, can be `$""`
+/// @param index        [optional] index into the listbox wave
+/// @param newState     new checkbox state of the given sweeps
+/// @param invertOthers [optional, default to false] set the other sweeps to !newState if true
 ///
 /// One of `sweepNo`/`index` is required.
-Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index])
+Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, invertOthers])
 	string win
-	variable sweepNo, index, newState
+	variable sweepNo, index, newState, invertOthers
+	WAVE/Z sweeps
+
+	variable i, numEntries
 
 	if(!OVS_IsActive(win))
 		return NaN
+	endif
+
+	if(ParamIsDefault(invertOthers))
+		invertOthers = 0
+	else
+		invertOthers = !!invertOthers
 	endif
 
 	// coerce to 0/1
@@ -301,9 +312,24 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index])
 
 	if(!ParamIsDefault(sweepNo))
 		FindValue/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
+		ASSERT(V_Value >= 0, "Could not find sweep")
+		Make/FREE indices = {V_Value, 0}
 		index = V_Value
 	elseif(!ParamIsDefault(index))
-		// do nothing
+		Make/FREE indices = {index, 0}
+	elseif(!ParamIsDefault(sweeps))
+		if(WaveExists(sweeps))
+			numEntries = DimSize(sweeps, ROWS)
+
+			Make/FREE/N=(numEntries, 2) indices
+
+			for(i = 0; i < numEntries; i += 1)
+				sweepNo = sweeps[i]
+				FindValue/RMD=[][0]/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
+				ASSERT(V_Value >= 0, "Could not find sweep")
+				indices[i][0] = V_Value
+			endfor
+		endif
 	else
 		ASSERT(0, "Requires one of index or sweepNo")
 	endif
@@ -312,14 +338,28 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index])
 		return NaN
 	endif
 
+	WAVE updateHandle = OVS_BeginIncrementalUpdate(win)
+
 	if(newState)
-		listboxSelWave[index] = SetBit(listboxSelWave[index], LISTBOX_CHECKBOX_SELECTED)
+		if(invertOthers)
+			listboxSelWave[][0] = ClearBit(listboxSelWave[p], LISTBOX_CHECKBOX_SELECTED)
+		endif
+
+		if(WaveExists(indices))
+			// Indexing with a index wave, indices is 2D
+			listboxSelWave[indices] = SetBit(listboxSelWave[p], LISTBOX_CHECKBOX_SELECTED)
+		endif
 	else
-		listboxSelWave[index] = ClearBit(listboxSelWave[index], LISTBOX_CHECKBOX_SELECTED)
+		if(invertOthers)
+			listboxSelWave[][] = SetBit(listboxSelWave[p], LISTBOX_CHECKBOX_SELECTED)
+		endif
+
+		if(WaveExists(indices))
+			listboxSelWave[indices] = ClearBit(listboxSelWave[p], LISTBOX_CHECKBOX_SELECTED)
+		endif
 	endif
 
-	UpdateSweepInGraph(win, index)
-	PostPlotTransformations(win, newState ? POST_PLOT_ADDED_SWEEPS : POST_PLOT_REMOVED_SWEEPS, additionalData = {index})
+	OVS_EndIncrementalUpdate(win, updateHandle)
 End
 
 /// checks if OVS is active.
