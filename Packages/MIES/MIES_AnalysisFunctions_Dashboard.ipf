@@ -545,6 +545,12 @@ static Function AD_SelectResult(win, [index])
 		endif
 	endif
 
+	if(IsNull(list))
+		print "Select the Passed/Failed checkboxes to display these sweeps"
+		ControlWindowToFront()
+		return NaN
+	endif
+
 	numEntries = DimSize(sweeps, ROWS)
 
 	WAVE/T ovsListWave = GetOverlaySweepsListWave(dfr)
