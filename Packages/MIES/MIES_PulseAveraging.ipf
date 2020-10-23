@@ -514,7 +514,7 @@ End
 static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
 
 	variable startingPulseSett, endingPulseSett, isDiagonalElement, pulseHasFailed, newChannel
-	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, startingPulse, endingPulse
+	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, endingPulse
 	variable headstage, pulseToPulseLength, totalOnsetDelay, numChannelTypeTraces, totalPulseCounter, jsonID, lastSweep
 	variable activeRegionCount, activeChanCount, channelNumber, first, length, dictId, channelType, numChannels, numRegions
 	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep, incrementalMode, layoutChanged
@@ -654,9 +654,8 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 			endif
 
 			numPulsesTotal = DimSize(pulseStartTimes, ROWS)
-			startingPulse  = max(0, startingPulseSett)
 			endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
-			numPulseCreate = endingPulse - startingPulse + 1
+			numPulseCreate = endingPulse - startingPulseSett + 1
 			if(numPulseCreate <= 0)
 				continue
 			endif
@@ -692,7 +691,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 				JSON_SetVariable(jsonID, key, lastSweep)
 			endif
 
-			pulseToPulseLength = PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, pa.overridePulseLength, pa.fixedPulseLength)
+			pulseToPulseLength = PA_GetPulseLength(pulseStartTimes, startingPulseSett, endingPulse, pa.overridePulseLength, pa.fixedPulseLength)
 
 			WAVE numericalValues = $traceData[idx][lblTracenumericalValues]
 			DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][lblTraceFullpath])
@@ -710,7 +709,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 			endif
 
 			prevTotalPulseCounter = totalPulseCounter
-			for(k = startingPulse; k <= endingPulse; k += 1)
+			for(k = startingPulseSett; k <= endingPulse; k += 1)
 
 				// ignore wave offset, as it is only used for display purposes
 				// but use the totalOnsetDelay of this sweep
