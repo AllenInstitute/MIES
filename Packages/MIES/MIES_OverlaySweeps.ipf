@@ -311,7 +311,7 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, i
 	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
 	if(!ParamIsDefault(sweepNo))
-		FindValue/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
+		FindValue/RMD=[][0]/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
 		ASSERT(V_Value >= 0, "Could not find sweep")
 		Make/FREE indices = {V_Value, 0}
 		index = V_Value
