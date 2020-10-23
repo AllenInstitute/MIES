@@ -64,6 +64,13 @@ static Constant PA_PULSE_SORTING_ORDER_PULSE = 0x1
 static Constant PA_AVGERAGE_PLOT_LSIZE = 1.5
 static Constant PA_DECONVOLUTION_PLOT_LSIZE = 2
 
+static StrConstant PA_PROPERTIES_KEY_REGIONS = "Regions"
+static StrConstant PA_PROPERTIES_KEY_CHANNELS = "Channels"
+static StrConstant PA_PROPERTIES_KEY_SWEEPS = "Sweeps"
+static StrConstant PA_PROPERTIES_KEY_LAYOUTCHANGE = "LayoutChanged"
+static StrConstant PA_PROPERTIES_STRLIST_SEP = ","
+
+
 // comment out to show all the axes, useful for debugging
 #define PA_HIDE_AXIS
 
@@ -510,11 +517,12 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, startingPulse, endingPulse
 	variable headstage, pulseToPulseLength, totalOnsetDelay, numChannelTypeTraces, totalPulseCounter, jsonID, lastSweep
 	variable activeRegionCount, activeChanCount, channelNumber, first, length, dictId, channelType, numChannels, numRegions
-	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep
+	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep, incrementalMode, layoutChanged
 	variable lblIndex, lblSweep, lblChannelType, lblChannelNumber, lblRegion, lblHeadstage, lblPulse, lblDiagonalElement, lblActiveRegionCount, lblActiveChanCount, lblLastSweep, lblExperiment
 	variable lblTraceHeadstage, lblTraceExperiment, lblTraceSweepNumber, lblTraceChannelNumber, lblTracenumericalValues, lblTraceFullpath
 	variable lblPWPULSE, lblPWPULSENOTE
-	string channelTypeStr, channelList, channelNumberStr, key, regionList, baseName, sweepList, sweepNoStr, experiment
+	string channelTypeStr, channelList, regionChannelList, channelNumberStr, key, regionList, baseName, sweepList, sweepNoStr, experiment
+	string oldRegionList, oldChannelList
 
 	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.singlePulse)
 		// nothing to do
@@ -526,6 +534,8 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	if(!WaveExists(traceData))
 		return NaN
 	endif
+
+	incrementalMode = mode == POST_PLOT_ADDED_SWEEPS && WaveExists(additionalData)
 
 	if(pa.startingPulse >= 0)
 		startingPulseSett = pa.startingPulse
@@ -551,10 +561,11 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 	WAVE/Z indizesChannelType = FindIndizes(traceData, colLabel="channelType", str=channelTypeStr)
 
-	if(mode == POST_PLOT_ADDED_SWEEPS && WaveExists(additionalData))
+	if(incrementalMode)
 		Make/FREE/N=(DimSize(indizesChannelType, ROWS)) indizesToAdd
 		j = 0
 		numNewSweeps = DimSize(additionalData, ROWS)
+		ASSERT(numNewSweeps > 0, "Set POST_PLOT_ADDED_SWEEPS, but found no new sweep(s) in additionlData")
 		for(i = 0; i < numNewSweeps; i += 1)
 			WAVE/Z indizesNewSweep = FindIndizes(traceData, colLabel="SweepNumber", str=num2str(additionalData[i]))
 			WAVE indizesToAddNewSweep = GetSetIntersection(indizesChannelType, indizesNewSweep)
@@ -605,6 +616,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 	regionList = ""
 	sweepList  = ""
+	channelList = ""
 
 	jsonID = JSON_New()
 
@@ -619,10 +631,10 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 		activeRegionCount += 1
 
-		regionList = AddListItem(num2str(region), regionList, ";", inf)
+		regionList = AddListItem(num2str(region), regionList, PA_PROPERTIES_STRLIST_SEP, inf)
 
 		activeChanCount = 0
-		channelList = ""
+		regionChannelList = ""
 
 		// we have the starting times for one channel type and headstage combination
 		// iterate now over all channels of the same type and extract all
@@ -655,16 +667,16 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 			channelNumberStr = traceData[idx][lblTraceChannelNumber]
 			channelNumber = str2num(channelNumberStr)
 
-			if(WhichListItem(channelNumberStr, channelList) == -1)
+			if(WhichListItem(channelNumberStr, regionChannelList) == -1)
 				activeChanCount += 1
-				channelList = AddListItem(channelNumberStr, channelList, ";", inf)
-				newChannel = 1
-			else
-				newChannel = 0
+				regionChannelList = AddListItem(channelNumberStr, regionChannelList, ";", inf)
+			endif
+			if(WhichListItem(channelNumberStr, channelList, PA_PROPERTIES_STRLIST_SEP) == -1)
+				channelList = AddListItem(channelNumberStr, channelList, PA_PROPERTIES_STRLIST_SEP, inf)
 			endif
 
-			if(WhichListItem(sweepNoStr, sweepList) == -1)
-				sweepList = AddListItem(sweepNoStr, sweepList, ";", inf)
+			if(WhichListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP) == -1)
+				sweepList = AddListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP, inf)
 			endif
 
 			isDiagonalElement = (activeRegionCount == activeChanCount)
@@ -748,9 +760,31 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 	SetNumberInWaveNote(properties, NOTE_INDEX, totalPulseCounter)
 	SetNumberInWaveNote(propertiesText, NOTE_INDEX, totalPulseCounter)
-	SetStringInWaveNote(properties, "Regions", ReplaceString(";", regionList, ","))
-	SetStringInWaveNote(properties, "Channels", ReplaceString(";", channelList, ","))
-	SetStringInWaveNote(properties, "Sweeps", ReplaceString(";", sweepList, ","))
+
+	if(incrementalMode)
+		oldRegionList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS)
+		regionList = MergeLists(regionList, oldRegionList, sep = PA_PROPERTIES_STRLIST_SEP)
+		if(CmpStr(oldRegionList, regionList))
+			SetStringInWaveNote(properties, PA_PROPERTIES_KEY_REGIONS, regionList)
+			layoutChanged = 1
+		endif
+
+		oldChannelList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS)
+		channelList = MergeLists(channelList, oldChannelList, sep = PA_PROPERTIES_STRLIST_SEP)
+		if(CmpStr(oldChannelList, channelList))
+			SetStringInWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS, channelList)
+			layoutChanged = 1
+		endif
+		if(layoutChanged)
+			SetNumberInWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE, 1)
+		endif
+
+		SetStringInWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS, GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS) + sweepList)
+	else
+		SetStringInWaveNote(properties, PA_PROPERTIES_KEY_REGIONS, regionList)
+		SetStringInWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS, channelList)
+		SetStringInWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS, sweepList)
+	endif
 
 	JSON_Release(jsonID)
 End
