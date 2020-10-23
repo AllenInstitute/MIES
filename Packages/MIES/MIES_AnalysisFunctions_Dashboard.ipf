@@ -12,7 +12,7 @@
 /// @brief Update the dashboards of all databrowsers
 Function AD_UpdateAllDatabrowser()
 
-	string win, panelList
+	string win, panelList, browserType
 	variable i, numEntries
 
 	panelList = WinList("DB_*", ";", "WIN:1")
@@ -20,7 +20,10 @@ Function AD_UpdateAllDatabrowser()
 
 	for(i = 0; i < numEntries; i += 1)
 		win = StringFromList(i, panelList)
-		AD_Update(win)
+		browserType = BSP_GetBrowserType(win)
+		if(!IsEmpty(browserType))
+			AD_Update(win)
+		endif
 	endfor
 End
 

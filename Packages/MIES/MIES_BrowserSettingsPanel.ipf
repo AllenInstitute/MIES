@@ -391,7 +391,7 @@ End
 /// @param win 	name of external panel or main window
 ///
 /// @return D for DataBrowser or S for SweepBrowser
-static Function/S BSP_GetBrowserType(win)
+Function/S BSP_GetBrowserType(win)
 	string win
 
 	string mainPanel
