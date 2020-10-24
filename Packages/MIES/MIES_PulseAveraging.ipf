@@ -1692,7 +1692,7 @@ static Function PA_ZeroPulses(WAVE/WAVE set, STRUCT PulseAverageSettings &pa)
 	endif
 
 	Make/FREE/N=(DimSize(set, ROWS)) junkWave
-	MultiThread junkWave = ZeroWave(set[p]) + PA_UpdateMinAndMax(set[p])
+	MultiThread junkWave = ZeroWave(set[p]) && PA_UpdateMinAndMax(set[p])
 End
 
 /// @brief calculate the average wave from a @p listOfWaves
