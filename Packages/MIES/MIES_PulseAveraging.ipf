@@ -123,7 +123,7 @@ End
 static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, variable displayMode, variable channelNumber, variable region, variable activeRegionCount, variable activeChanCount, variable numRegions)
 
 	variable top, left, bottom, right, i
-	variable width, height, width_spacing, height_spacing, width_offset, height_offset
+	variable width, height, width_spacing, height_spacing, width_offset, height_offset, junk
 	string win, winAbove
 
 	win = PA_GetGraphName(mainWin, pa, displayMode, channelNumber, activeRegionCount)
@@ -156,7 +156,7 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 		bottom += height_offset
 		Display/W=(left, top, right, bottom)/K=1/N=$win
 		SetWindow $win, userdata($MIES_BSP_PA_MAINPANEL) = mainWin
-		TUD_Init(win)
+		[junk, junk] = PA_GetTraceCountFromGraphData(win, clear = 1)
 		if(displayMode == PA_DISPLAYMODE_IMAGES && (!pa.multipleGraphs || activeRegionCount == numRegions))
 			SetWindow $win hook(marginResizeHook)=PA_ImageWindowHook
 			NewPanel/HOST=#/EXT=0/W=(0, 0, PA_COLORSCALE_PANEL_WIDTH, bottom - top) as ""
@@ -1408,6 +1408,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 
 	variable numChannels, numRegions, i, j, region, channelNumber
 	variable constantSinglePulseSettings, numTotalPulses
+	variable graphDataIndex, traceCount
 	string preExistingGraphs, graph
 
 	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
@@ -1415,17 +1416,6 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 
 	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
-		return [$"", $"", 0]
-	endif
-
-	if(TUD_GetTraceCount(graph) == 0) // no traces
-		// fake one graph
-		if(IsEmpty(preExistingGraphs))
-			preExistingGraphs = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, 1, 1, 1, 1, 1)
-		endif
-
-		PA_ClearGraphs(preExistingGraphs)
-
 		return [$"", $"", 0]
 	endif
 
@@ -2613,6 +2603,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 	variable activeRegionCount, activeChanCount, requiredEntries, specialEntries, numPulses
 	variable singlePulseColumnOffset, failedMarkerStartRow, xPos, yPos, newSweep, numGraphs
 	variable vert_min, vert_max, horiz_min, horiz_max, firstPulseIndex
+	variable graphDataIndex, junk, lblIMAGELIST
 	string vertAxis, horizAxis, graph, basename, imageName, msg, graphWithImage
 	string image
 	string usedGraphs = ""
@@ -2638,6 +2629,9 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
 	numRegions = DimSize(regions, ROWS)
+
+	WAVE/T paGraphData = GetPAGraphData()
+	lblIMAGELIST = FindDimLabel(paGraphData, COLS, "IMAGELIST")
 
 	for(i = 0; i < numChannels; i += 1)
 		channelNumber = channels[i]
@@ -2779,9 +2773,10 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 			graphsWithImages = RemoveFromList(graph + "#" + imageName, graphsWithImages)
 
-			if(!TUD_TraceIsOnGraph(graph, imageName))
+			[graphDataIndex, junk] = PA_GetTraceCountFromGraphData(graph)
+			if(WhichListItem(imageName, paGraphData[graphDataIndex][lblIMAGELIST]) == -1)
 				AppendImage/W=$graph/L=$vertAxis/B=$horizAxis img
-				TUD_SetUserData(graph, imageName, "traceType", "Image")
+				paGraphData[graphDataIndex][lblIMAGELIST] = AddListItem(imageName, paGraphData[graphDataIndex][lblIMAGELIST])
 			endif
 
 			PA_HighligthFailedPulsesInImage(graph, pa, vertAxis, horizAxis, img, properties, setIndizes, numPulses, singlePulseColumnOffset)
