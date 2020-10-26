@@ -511,6 +511,7 @@ End
 /// - Now gather the pulse starting time from the region and create single pulse waves for all of them
 ///
 /// The result is feed into GetPulseAverageProperties() and GetPulseAveragepropertiesWaves() for further consumption.
+/// Returns the mode, because the mode may change from incremental to full update because incremental update fails due to layout changes
 static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
 
 	variable startingPulseSett, endingPulseSett, isDiagonalElement, pulseHasFailed, newChannel
@@ -526,13 +527,13 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.singlePulse)
 		// nothing to do
-		return NaN
+		return mode
 	endif
 
 	WAVE/T/Z traceData = GetTraceInfos(GetMainWindow(win))
 
 	if(!WaveExists(traceData))
-		return NaN
+		return mode
 	endif
 
 	incrementalMode = mode == POST_PLOT_ADDED_SWEEPS && WaveExists(additionalData)
@@ -546,6 +547,10 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	endif
 
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
+	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
+	oldRegionList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS)
+	oldChannelList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS)
 
 	if(mode != POST_PLOT_ADDED_SWEEPS)
 		KillorMoveToTrash(dfr = GetDevicePulseAverageHelperFolder(pa.dfr))
@@ -560,6 +565,9 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	channelTypeStr = StringFromList(channelType, ITC_CHANNEL_NAMES)
 
 	WAVE/Z indizesChannelType = FindIndizes(traceData, colLabel="channelType", str=channelTypeStr)
+	if(!WaveExists(indizesChannelType))
+		return mode
+	endif
 
 	if(incrementalMode)
 		Make/FREE/N=(DimSize(indizesChannelType, ROWS)) indizesToAdd
@@ -583,7 +591,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	WAVE/Z headstages         = PA_GetUniqueHeadstages(traceData, indizesChannelType)
 
 	if(!WaveExists(headstages))
-		return NaN
+		return mode
 	endif
 
 	lblIndex = -1
@@ -761,31 +769,35 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	SetNumberInWaveNote(propertiesText, NOTE_INDEX, totalPulseCounter)
 
 	if(incrementalMode)
-		oldRegionList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS)
 		regionList = MergeLists(regionList, oldRegionList, sep = PA_PROPERTIES_STRLIST_SEP)
-		if(CmpStr(oldRegionList, regionList))
-			SetStringInWaveNote(properties, PA_PROPERTIES_KEY_REGIONS, regionList)
-			layoutChanged = 1
-		endif
-
-		oldChannelList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS)
 		channelList = MergeLists(channelList, oldChannelList, sep = PA_PROPERTIES_STRLIST_SEP)
-		if(CmpStr(oldChannelList, channelList))
-			SetStringInWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS, channelList)
-			layoutChanged = 1
-		endif
+		layoutChanged = CmpStr(oldRegionList, regionList) || CmpStr(oldChannelList, channelList)
 		if(layoutChanged)
-			SetNumberInWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE, 1)
-		endif
+			// We need to recalculate the distribution of every pulse in the layout
+			PA_GenerateAllPulseWaves(win, pa, cs, POST_PLOT_FULL_UPDATE, $"")
 
-		SetStringInWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS, GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS) + sweepList)
+			DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+			WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
+		else
+			SetStringInWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS, GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS) + sweepList)
+		endif
 	else
+		layoutChanged = CmpStr(oldRegionList, regionList) || CmpStr(oldChannelList, channelList)
 		SetStringInWaveNote(properties, PA_PROPERTIES_KEY_REGIONS, regionList)
 		SetStringInWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS, channelList)
 		SetStringInWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS, sweepList)
+		SetNumberInWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE, 0)
 	endif
 
+	SetNumberInWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE, layoutChanged)
+
 	JSON_Release(jsonID)
+
+	if(incrementalMode && layoutChanged)
+		return POST_PLOT_FULL_UPDATE
+	endif
+
+	return mode
 End
 
 static Function PA_ApplyPulseSortingOrder(string win, STRUCT PulseAverageSettings &pa)
@@ -934,7 +946,7 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 
 	s1 = stopmstimer(-2)
 	WAVE/WAVE/Z targetForAverage, sourceForAverage
-	[targetForAverage, sourceForAverage, needsPlotting] = PA_PreProcessPulses(win, current, cs, mode, additionalData)
+	[targetForAverage, sourceForAverage, needsPlotting, mode] = PA_PreProcessPulses(win, current, cs, mode, additionalData)
 	e1 = stopmstimer(-2)
 
 	if(!needsPlotting)
@@ -1526,7 +1538,8 @@ End
 /// @retval dest          wave reference wave with average data for each set or $""
 /// @retval source        wave reference wave with the data for each set or $""
 /// @retval needsPlotting boolean denoting if there are pulses to plot
-static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
+/// @retval retMode       returned mode, as it can fallback to full update
+static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, variable retMode] PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
 
 	variable numChannels, numRegions, i, j, region, channelNumber
 	variable constantSinglePulseSettings, numTotalPulses
@@ -1543,8 +1556,10 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
 		KillOrMoveToTrash(dfr = pulseAverageHelperDFR)
-		return [$"", $"", 0]
+		return [$"", $"", 0, mode]
 	endif
+
+	s = stopmstimer(-2)
 
 	PA_GenerateAllPulseWaves(win, pa, cs, mode, additionalData)
 
@@ -1569,14 +1584,14 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 	numRegions = DimSize(regions, ROWS)
 
 	if(numChannels != numRegions)
-		return [$"", $"", 0]
+		return [$"", $"", 0, mode]
 	endif
 
 	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
 
 	if(numTotalPulses == 0)
 		PA_ClearGraphs(preExistingGraphs)
-		return [$"", $"", 0]
+		return [$"", $"", 0, mode]
 	endif
 
 	s = stopmstimer(-2)
@@ -1636,7 +1651,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 
 	print/D "PA_CalculateAllAverages", (stopmstimer(-2) - s) / 1E6
 
-	return [dest, source, 1]
+	return [dest, source, 1, mode]
 End
 
 static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa, variable mode)
