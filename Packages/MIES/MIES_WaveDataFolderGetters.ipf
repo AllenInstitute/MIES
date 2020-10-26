@@ -5826,6 +5826,31 @@ Function/WAVE GetPulseAveragePropertiesWaves(DFREF dfr)
 	return wv
 End
 
+/// @brief Return the mapping wave for pulse averaging between region/channel to activeRegion/activeChannel
+///
+/// Belongs to GetPulseAverageProperties() and also has the same
+/// `NOTE_INDEX` count stored there.
+Function/WAVE GetPulseAverageDisplayMapping(DFREF dfr)
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/D/Z/SDFR=dfr wv = displayMapping
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(NUM_HEADSTAGES, NUM_MAX_CHANNELS, 2) dfr:displayMapping/Wave=wv
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetDimLabel LAYERS, 0, ACTIVEREGION, wv
+	SetDimLabel LAYERS, 1, ACTIVECHANNEL, wv
+
+	return wv
+End
+
 /// @brief Return the artefact removal listbox wave for the
 ///        databrowser or the sweepbrowser
 Function/WAVE GetArtefactRemovalListWave(dfr)

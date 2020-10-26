@@ -66,10 +66,22 @@ static Constant PA_DECONVOLUTION_PLOT_LSIZE = 2
 
 static StrConstant PA_PROPERTIES_KEY_REGIONS = "Regions"
 static StrConstant PA_PROPERTIES_KEY_CHANNELS = "Channels"
+static StrConstant PA_PROPERTIES_KEY_PREVREGIONS = "PreviousRegions"
+static StrConstant PA_PROPERTIES_KEY_PREVCHANNELS = "PreviousChannels"
 static StrConstant PA_PROPERTIES_KEY_SWEEPS = "Sweeps"
 static StrConstant PA_PROPERTIES_KEY_LAYOUTCHANGE = "LayoutChanged"
 static StrConstant PA_PROPERTIES_STRLIST_SEP = ","
+static StrConstant PA_SETINDICES_KEY_ACTIVECHANCOUNT = "ActiveChanCount"
+static StrConstant PA_SETINDICES_KEY_ACTIVEREGIONCOUNT = "ActiveRegionCount"
+static StrConstant PA_SETINDICES_KEY_DISPCHANGE = "DisplayChange"
 
+static Constant PA_UPDATEINDICES_TYPE_PREV = 1
+static Constant PA_UPDATEINDICES_TYPE_CURR = 2
+
+static Constant PA_INDICESCHANGE_NONE = 0
+static Constant PA_INDICESCHANGE_MOVED = 1
+static Constant PA_INDICESCHANGE_REMOVED = 2
+static Constant PA_INDICESCHANGE_ADDED = 3
 
 // comment out to show all the axes, useful for debugging
 #define PA_HIDE_AXIS
@@ -521,7 +533,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep, incrementalMode, layoutChanged
 	variable lblIndex, lblSweep, lblChannelType, lblChannelNumber, lblRegion, lblHeadstage, lblPulse, lblDiagonalElement, lblActiveRegionCount, lblActiveChanCount, lblLastSweep, lblExperiment
 	variable lblTraceHeadstage, lblTraceExperiment, lblTraceSweepNumber, lblTraceChannelNumber, lblTracenumericalValues, lblTraceFullpath
-	variable lblPWPULSE, lblPWPULSENOTE
+	variable lblPWPULSE, lblPWPULSENOTE, lblACTIVEREGION, lblACTIVECHANNEL
 	string channelTypeStr, channelList, regionChannelList, channelNumberStr, key, regionList, baseName, sweepList, sweepNoStr, experiment
 	string oldRegionList, oldChannelList
 
@@ -586,6 +598,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 		endfor
 		Redimension/N=(j) indizesToAdd
 
+		WAVE indizesChannelTypeAll = indizesChannelType
 		WAVE indizesChannelType = indizesToAdd
 		totalPulseCounter = GetNumberFromWaveNote(properties, NOTE_INDEX)
 		SetNumberInWaveNote(properties, NOTE_PA_NEW_PULSES_START, totalPulseCounter)
@@ -596,6 +609,10 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	if(!WaveExists(headstages))
 		return mode
 	endif
+
+	WAVE prevDisplayMapping = GetPulseAverageDisplayMapping(pulseAverageDFR)
+	Duplicate/FREE prevDisplayMapping, currentDisplayMapping
+	FastOp currentDisplayMapping = 0
 
 	lblIndex = -1
 
@@ -624,6 +641,9 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 	numChannelTypeTraces = DimSize(indizesChannelType, ROWS)
 	numHeadstages        = DimSize(headstages, ROWS)
+
+	lblACTIVEREGION = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVEREGION")
+	lblACTIVECHANNEL = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVECHANNEL")
 
 	regionList = ""
 	sweepList  = ""
@@ -765,34 +785,78 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 			EnsureLargeEnoughWave(setIndizes, minimumSize = idx + numPulseCreate, initialValue = NaN)
 			setIndizes[idx, idx + numPulseCreate - 1][lblIndex] = prevTotalPulseCounter + p - idx
 			SetNumberInWaveNote(setIndizes, NOTE_INDEX, idx + numPulseCreate)
+
+			currentDisplayMapping[region][channelNumber][lblACTIVEREGION] = activeRegionCount
+			currentDisplayMapping[region][channelNumber][lblACTIVECHANNEL] = activeChanCount
+
 		endfor
 	endfor
-
 	SetNumberInWaveNote(properties, NOTE_INDEX, totalPulseCounter)
 	SetNumberInWaveNote(propertiesText, NOTE_INDEX, totalPulseCounter)
 
 	if(incrementalMode)
+		sweepList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS) + sweepList
 		regionList = MergeLists(regionList, oldRegionList, sep = PA_PROPERTIES_STRLIST_SEP)
 		channelList = MergeLists(channelList, oldChannelList, sep = PA_PROPERTIES_STRLIST_SEP)
 		layoutChanged = CmpStr(oldRegionList, regionList) || CmpStr(oldChannelList, channelList)
 		if(layoutChanged)
 			// We need to recalculate the distribution of every pulse in the layout
-			PA_GenerateAllPulseWaves(win, pa, cs, POST_PLOT_FULL_UPDATE, $"")
+			regionList = SortList(regionList, PA_PROPERTIES_STRLIST_SEP, 2)
+			channelList = SortList(channelList, PA_PROPERTIES_STRLIST_SEP, 2)
 
-			DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
-			WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-		else
-			SetStringInWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS, GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS) + sweepList)
+			FastOp currentDisplayMapping = 0
+			WAVE indizesChannelType = indizesChannelTypeAll
+			numChannelTypeTraces = DimSize(indizesChannelType, ROWS)
+			activeRegionCount = 0
+			// the following loop must use the same logic as the upper loop to fill mapRegChanToActive
+			for(i = 0; i < numHeadstages; i += 1)
+				region = headstages[i]
+				if(!IsFinite(region)) // duplicated headstages in traceData
+					continue
+				endif
+				activeRegionCount += 1
+				activeChanCount = 0
+				regionChannelList = ""
+				for(j = 0; j < numChannelTypeTraces; j += 1)
+					idx       = indizesChannelType[j]
+					headstage = str2num(traceData[idx][lblTraceHeadstage])
+					if(!IsFinite(headstage)) // ignore unassociated channels or duplicated headstages in traceData
+						continue
+					endif
+					WAVE/Z pulseStartTimes = PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
+					if(!WaveExists(pulseStartTimes))
+						continue
+					endif
+					numPulsesTotal = DimSize(pulseStartTimes, ROWS)
+					endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
+					numPulseCreate = endingPulse - startingPulseSett + 1
+					if(numPulseCreate <= 0)
+						continue
+					endif
+					channelNumberStr = traceData[idx][lblTraceChannelNumber]
+					channelNumber = str2num(channelNumberStr)
+					if(WhichListItem(channelNumberStr, regionChannelList) == -1)
+						activeChanCount += 1
+						regionChannelList = AddListItem(channelNumberStr, regionChannelList, ";", inf)
+					endif
+
+					currentDisplayMapping[region][channelNumber][lblACTIVEREGION] = activeRegionCount
+					currentDisplayMapping[region][channelNumber][lblACTIVECHANNEL] = activeChanCount
+				endfor
+			endfor
 		endif
 	else
 		layoutChanged = CmpStr(oldRegionList, regionList) || CmpStr(oldChannelList, channelList)
-		SetStringInWaveNote(properties, PA_PROPERTIES_KEY_REGIONS, regionList)
-		SetStringInWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS, channelList)
-		SetStringInWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS, sweepList)
-		SetNumberInWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE, 0)
 	endif
-
+	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_REGIONS, regionList)
+	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS, channelList)
+	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_PREVREGIONS, oldRegionList)
+	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_PREVCHANNELS, oldChannelList)
+	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS, sweepList)
 	SetNumberInWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE, layoutChanged)
+
+	PA_UpdateIndiceNotes(pulseAverageHelperDFR, currentDisplayMapping, prevDisplayMapping, layoutChanged)
+	Duplicate/O currentDisplayMapping, prevDisplayMapping
 
 	JSON_Release(jsonID)
 
@@ -801,6 +865,89 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	endif
 
 	return mode
+End
+
+static Function [WAVE/WAVE setIndices, WAVE channels, WAVE regions, WAVE indexHelper] PA_GetSetIndicesHelper(DFREF pulseAverageHelperDFR, variable prevIndices)
+
+	variable numChannels, numRegions
+	string keyChannels, keyRegions
+
+	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
+	prevIndices = !!prevIndices
+
+	if(prevIndices)
+		keyChannels = PA_PROPERTIES_KEY_PREVCHANNELS
+		keyRegions = PA_PROPERTIES_KEY_PREVREGIONS
+	else
+		keyChannels = PA_PROPERTIES_KEY_CHANNELS
+		keyRegions = PA_PROPERTIES_KEY_REGIONS
+	endif
+
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, keyChannels), PA_PROPERTIES_STRLIST_SEP)
+	numChannels = DimSize(channels, ROWS)
+	if(!numChannels)
+		return [$"", $"", $"", $""]
+	endif
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, keyRegions), PA_PROPERTIES_STRLIST_SEP)
+	numRegions = DimSize(regions, ROWS)
+	Make/FREE/WAVE/N=(numChannels, numRegions) setIndices
+	Make/FREE/N=(numChannels, numRegions) junk
+	setIndices[][] = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channels[p], regions[q])
+
+	return [setIndices, channels, regions, junk]
+End
+
+static Function PA_UpdateIndiceNotes(DFREF pulseAverageHelperDFR, WAVE currentDisplayMapping, WAVE prevDisplayMapping, variable layoutChanged)
+
+	WAVE/WAVE/Z setIndices
+	WAVE/Z channels, regions, indexHelper
+	if(layoutChanged)
+		[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 1)
+		if(WaveExists(setIndices))
+			indexHelper[][] = PA_UpdateIndiceNotesImpl(setIndices[p][q], currentDisplayMapping, prevDisplayMapping, channels[p], regions[q], layoutChanged, PA_UPDATEINDICES_TYPE_PREV)
+		endif
+	endif
+	[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 0)
+	indexHelper[][] = PA_UpdateIndiceNotesImpl(setIndices[p][q], currentDisplayMapping, prevDisplayMapping, channels[p], regions[q], layoutChanged, PA_UPDATEINDICES_TYPE_CURR)
+End
+
+/// @brief Evaluate the previous and current mapping and set the display change in the wave note of the indice sets as well as activeChanCount, activeRegionCount.
+///        IMPORTANT: To have a consistent state for the case the layout changed the function must be called with the current and the previous indices. Otherwise removed sets wont be flagged properly.
+static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE oldMap, variable channel, variable region, variable layoutChanged, variable indiceType)
+
+	if(layoutChanged)
+		if(indiceType == PA_UPDATEINDICES_TYPE_CURR)
+			// currentMap is here always valid
+			if(oldMap[region][channel][0])
+				if(!(oldMap[region][channel][0] == currentMap[region][channel][0] && oldMap[region][channel][1] == currentMap[region][channel][1]))
+					// it is in prev and current but has moved
+					SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_MOVED)
+				else
+					SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_NONE)
+				endif
+			else
+				// set got added in display
+				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_ADDED)
+			endif
+		elseif(indiceType == PA_UPDATEINDICES_TYPE_PREV)
+			// prevMap is here always valid
+			if(!currentMap[region][channel][0])
+				// set got removed in display
+				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_REMOVED)
+				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVEREGIONCOUNT, NaN)
+				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVECHANCOUNT, NaN)
+			endif
+		else
+			ASSERT_TS(0, "unknown indiceType")
+		endif
+	else
+		SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_NONE)
+	endif
+
+	if(indiceType == PA_UPDATEINDICES_TYPE_CURR)
+		SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVEREGIONCOUNT, currentMap[region][channel][0])
+		SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVECHANCOUNT, currentMap[region][channel][1])
+	endif
 End
 
 static Function PA_ApplyPulseSortingOrder(string win, STRUCT PulseAverageSettings &pa)
