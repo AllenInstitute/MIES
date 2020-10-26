@@ -201,7 +201,7 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, fullPath, channelNumber, to
 	string fullPath
 	variable totalOnsetDelay
 
-	variable level, delta
+	variable level, delta, searchStart
 	string key
 	ASSERT(totalOnsetDelay >= 0, "Invalid onsetDelay")
 
@@ -214,14 +214,17 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, fullPath, channelNumber, to
 	WaveStats/Q/M=1/R=(totalOnsetDelay, inf) DA
 	level = V_min + (V_Max - V_Min) * 0.1
 
+	delta = DimDelta(DA, ROWS)
+	if(totalOnsetDelay >= delta)
+		searchStart = totalOnsetDelay - delta
+	endif
+
 	MAKE/FREE/D levels
-	FindLevels/Q/R=(totalOnsetDelay, inf)/EDGE=1/DEST=levels DA, level
+	FindLevels/Q/R=(searchStart, inf)/EDGE=1/DEST=levels DA, level
 
 	if(DimSize(levels, ROWS) == 0)
 		return $""
 	endif
-
-	delta = DimDelta(DA, ROWS)
 
 	// FindLevels interpolates between two points and searches for a rising edge
 	// so the returned value is commonly a bit too large
