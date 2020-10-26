@@ -811,10 +811,10 @@ static Function PA_ApplyPulseSortingOrder(string win, STRUCT PulseAverageSetting
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
 
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
 	numChannels = DimSize(channels, ROWS)
 
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
 	numRegions = DimSize(regions, ROWS)
 
 	Make/FREE/N=(0, 3) elems
@@ -1198,10 +1198,10 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
 	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
 
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
 	numChannels = DimSize(channels, ROWS)
 
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
 	numRegions = DimSize(regions, ROWS)
 
 	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
@@ -1580,10 +1580,10 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
 	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
 
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
 	numChannels = DimSize(channels, ROWS)
 
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
 	numRegions = DimSize(regions, ROWS)
 
 	if(numChannels != numRegions)
@@ -1666,9 +1666,9 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
 	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
 	numChannels = DimSize(channels, ROWS)
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
 	numRegions = DimSize(regions, ROWS)
 
 	Make/FREE/WAVE/N=(numChannels, numRegions) sourceOld, sourceAll, sourceNew, sourceCombined, dest, setIndices, avg
@@ -1797,10 +1797,10 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, va
 
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
 
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
 	numChannels = DimSize(channels, ROWS)
 
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
 	numRegions = DimSize(regions, ROWS)
 
 	numChannels = DimSize(channels, ROWS)
@@ -2277,10 +2277,10 @@ static Function PA_AutomaticTimeAlignment(string win, STRUCT PulseAverageSetting
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
 	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
 
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
 	numChannels = DimSize(channels, ROWS)
 
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
 	numRegions = DimSize(regions, ROWS)
 
 	lblPWPULSE = FindDimLabel(propertiesWaves, COLS, "PULSE")
@@ -2868,10 +2868,10 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
 
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
 	numChannels = DimSize(channels, ROWS)
 
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
 	numRegions = DimSize(regions, ROWS)
 
 	WAVE/T paGraphData = GetPAGraphData()
