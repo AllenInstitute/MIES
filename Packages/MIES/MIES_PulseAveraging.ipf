@@ -1168,7 +1168,7 @@ End
 static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, WAVE/WAVE targetForAverage, WAVE/WAVE sourceForAverage, variable mode, WAVE/Z additionalData)
 
 	string pulseTrace, str, graph, key
-	variable numChannels, i, j, sweepNo, headstage, numTotalPulses, pulse, xPos, yPos
+	variable numChannels, i, j, sweepNo, numTotalPulses, xPos, yPos
 	variable first, numEntries, startingPulse, endingPulse, traceCount, step, isDiagonalElement
 	variable channelNumber, region, channelType, length, newSweepCount
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay, pulseHasFailed
@@ -1176,11 +1176,11 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	variable hiddenTracesCount, userDataCount, avgPlotCount, deconPlotCount
 	variable jsonID, hideTraceJsonID, graphDataIndex, numHiddenTracesGraphs, graphHasChanged, tmpVal
 	variable startIndexNewPulses, numPlotPulses
-	variable lblSweep, lblExperiment, lblChannelNumber, lblRegion, lblHeadstage, lblPulse
+	variable lblSweep, lblChannelNumber, lblRegion, lblHeadstage
 	variable lblDiagonalElement, lblActiveRegionCount, lblActiveChanCount, lblPulseHasFailed, lblLastSweep, lblTRACES_AVERAGE, lblTRACECOUNT, lblTRACES_DECONV
 	variable lblTRACES_AVERAGE_XAXIS, lblTRACES_AVERAGE_YAXIS, lblTRACES_AVERAGE_WAVES, lblTRACES_AVERAGEFORDECONV, lblPWPULSE
 	string jsonPath
-	string vertAxis, horizAxis, experiment
+	string vertAxis, horizAxis
 	string baseName, traceName, tagName
 	string usedGraphs = ""
 	string previousGraph = ""
@@ -1215,11 +1215,9 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	WAVE/T paGraphData = GetPAGraphData()
 
 	lblSweep = FindDimLabel(properties, COLS, "Sweep")
-	lblExperiment = FindDimLabel(propertiesText, COLS, "Experiment")
 	lblChannelNumber = FindDimLabel(properties, COLS, "ChannelNumber")
 	lblRegion = FindDimLabel(properties, COLS, "Region")
 	lblHeadstage = FindDimLabel(properties, COLS, "Headstage")
-	lblPulse = FindDimLabel(properties, COLS, "Pulse")
 	lblDiagonalElement = FindDimLabel(properties, COLS, "DiagonalElement")
 	lblActiveRegionCount = FindDimLabel(properties, COLS, "ActiveRegionCount")
 	lblActiveChanCount = FindDimLabel(properties, COLS, "ActiveChanCount")
@@ -1245,18 +1243,16 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 	for(i = startIndexNewPulses; i < numTotalPulses; i += 1)
 
-		sweepNo = properties[i][lblSweep]
-		experiment = propertiesText[i][lblExperiment]
-		channelNumber = properties[i][lblChannelNumber]
 		region = properties[i][lblRegion]
-		headstage = properties[i][lblHeadstage]
-		pulse = properties[i][lblPulse]
-		isDiagonalElement = properties[i][lblDiagonalElement]
+		if(pa.regionSlider != -1 && pa.regionSlider != region) // unselected region in ddaq viewing mode
+			continue
+		endif
+
 		activeRegionCount = properties[i][lblActiveRegionCount]
 		activeChanCount = properties[i][lblActiveChanCount]
-		pulseHasFailed = properties[i][lblPulseHasFailed]
-		lastSweep = properties[i][lblLastSweep]
+		[vertAxis, horizAxis] = PA_GetAxes(pa, activeRegionCount, activeChanCount)
 
+		channelNumber = properties[i][lblChannelNumber]
 		if(!pa.multipleGraphs && i == startIndexNewPulses || pa.multipleGraphs)
 			graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, activeRegionCount, activeChanCount, numRegions)
 			graphHasChanged = CmpStr(graph, previousGraph)
@@ -1269,18 +1265,12 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 			endif
 		endif
 
-		if(pa.regionSlider != -1 && pa.regionSlider != region) // unselected region in ddaq viewing mode
-			continue
-		endif
-
-		[vertAxis, horizAxis] = PA_GetAxes(pa, activeRegionCount, activeChanCount)
-
 		if(WhichListItem(graph, usedGraphs) == -1)
 			if(mode != POST_PLOT_ADDED_SWEEPS)
 				RemoveTracesFromGraph(graph)
+				RemoveAnnotationsFromGraph(graph)
 				[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph, clear = 1)
 			endif
-			RemoveAnnotationsFromGraph(graph)
 			usedGraphs = AddListItem(graph, usedGraphs, ";", inf)
 		endif
 
@@ -1288,8 +1278,10 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 		if(pa.showIndividualPulses)
 
+			isDiagonalElement = properties[i][lblDiagonalElement]
 			step = isDiagonalElement ? 1 : PA_PLOT_STEPPING
 
+			pulseHasFailed = properties[i][lblPulseHasFailed]
 			if(pulseHasFailed)
 				hideTrace = pa.hideFailedPulses
 				s.red   = 65535
@@ -1298,7 +1290,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				alpha = 65535
 			else
 				hideTrace = 0
-				[s] = GetTraceColor(headstage)
+				[s] = GetTraceColor(properties[i][lblHeadstage])
 				alpha = 65535 * 0.2
 			endif
 
@@ -1323,6 +1315,8 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				endif
 			endif
 
+			sweepNo = properties[i][lblSweep]
+			lastSweep = properties[i][lblLastSweep]
 			if(pulseHasFailed && isDiagonalElement && (sweepNo == lastSweep))
 				sprintf tagName "tag_%s_AD%d_R%d", vertAxis, channelNumber, region
 				if(WhichListItem(tagName, AnnotationList(graph)) == -1)
