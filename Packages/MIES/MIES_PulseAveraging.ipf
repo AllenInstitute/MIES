@@ -1469,8 +1469,11 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
 	graph = GetMainWindow(win)
 
+	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+
 	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
+		KillOrMoveToTrash(dfr = pulseAverageHelperDFR)
 		return [$"", $"", 0]
 	endif
 
@@ -1479,7 +1482,6 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 	PA_ApplyPulseSortingOrder(win, pa)
 
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
-	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
 
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
 	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
