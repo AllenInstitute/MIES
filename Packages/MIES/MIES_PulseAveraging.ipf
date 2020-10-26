@@ -566,6 +566,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 		WAVE indizesChannelType = indizesToAdd
 		totalPulseCounter = GetNumberFromWaveNote(properties, NOTE_INDEX)
+		SetNumberInWaveNote(properties, NOTE_PA_NEW_PULSES_START, totalPulseCounter)
 	endif
 
 	WAVE/Z headstages         = PA_GetUniqueHeadstages(traceData, indizesChannelType)
@@ -1056,13 +1057,14 @@ End
 static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, WAVE/Z targetForAverageGeneric, WAVE/Z sourceForAverageGeneric, variable mode, WAVE/Z additionalData)
 
 	string pulseTrace, str, graph, key
-	variable numChannels, i, j, sweepNo, headstage, numTotalPulses, pulse, xPos, yPos, needsPlotting
+	variable numChannels, i, j, sweepNo, headstage, numTotalPulses, pulse, xPos, yPos
 	variable first, numEntries, startingPulse, endingPulse, traceCount, step, isDiagonalElement
 	variable channelNumber, region, channelType, length, newSweepCount
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay, pulseHasFailed
 	variable numRegions, hideTrace, lastSweep, alpha, constantSinglePulseSettings
 	variable hiddenTracesCount, userDataCount, avgPlotCount, deconPlotCount
 	variable jsonID, hideTraceJsonID, graphDataIndex, numHiddenTracesGraphs, graphHasChanged, tmpVal
+	variable startIndexNewPulses, numPlotPulses
 	variable lblSweep, lblExperiment, lblChannelNumber, lblRegion, lblHeadstage, lblPulse
 	variable lblDiagonalElement, lblActiveRegionCount, lblActiveChanCount, lblPulseHasFailed, lblLastSweep, lblTRACES_AVERAGE, lblTRACECOUNT, lblTRACES_DECONV
 	variable lblTRACES_AVERAGE_XAXIS, lblTRACES_AVERAGE_YAXIS, lblTRACES_AVERAGE_WAVES, lblTRACES_AVERAGEFORDECONV
@@ -1097,16 +1099,10 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
 
 	if(mode == POST_PLOT_ADDED_SWEEPS)
-		newSweepCount = DimSize(additionalData, ROWS)
-		Make/R/FREE/N=(newSweepCount) newSweeps
-		Make/T/FREE/N=(newSweepCount) newExperiments
-
-		for(i = 0; i < newSweepCount; i += 1)
-			[sweepNo, experiment] = OVS_GetSweepAndExperiment(win, additionalData[i])
-			newSweeps[i] = sweepNo
-			newExperiments[i] = experiment
-		endfor
+		startIndexNewPulses = GetNumberFromWaveNote(properties, NOTE_PA_NEW_PULSES_START)
+		ASSERT(!IsNaN(startIndexNewPulses), "Add sweep plots mode is missing new pulse start information.")
 	endif
+	numPlotPulses = numTotalPulses - startIndexNewPulses
 
 	WAVE/T paGraphData = GetPAGraphData()
 
@@ -1135,7 +1131,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		hideTraceJsonID = JSON_Parse("{}")
 	endif
 
-	for(i = 0; i < numTotalPulses; i += 1)
+	for(i = startIndexNewPulses; i < numTotalPulses; i += 1)
 
 		sweepNo = properties[i][lblSweep]
 		experiment = propertiesText[i][lblExperiment]
@@ -1149,7 +1145,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		pulseHasFailed = properties[i][lblPulseHasFailed]
 		lastSweep = properties[i][lblLastSweep]
 
-		if(!pa.multipleGraphs && i == 0 || pa.multipleGraphs)
+		if(!pa.multipleGraphs && i == startIndexNewPulses || pa.multipleGraphs)
 			graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, activeRegionCount, activeChanCount, numRegions)
 			graphHasChanged = CmpStr(graph, previousGraph)
 			if(graphHasChanged)
@@ -1163,17 +1159,6 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 		if(pa.regionSlider != -1 && pa.regionSlider != region) // unselected region in ddaq viewing mode
 			continue
-		endif
-
-		if(mode == POST_PLOT_ADDED_SWEEPS)
-			if(DimSize(newSweeps, ROWS) == 1)
-				ASSERT(DimSize(newExperiments, ROWS) == 1, "Invalid new wave combination")
-				needsPlotting = (newSweeps[0] == sweepNo && !cmpstr(newExperiments[0], experiment))
-			else
-				needsPlotting = IsFinite(GetRowIndex(newSweeps, val=sweepNo)) && IsFinite(GetRowIndex(newExperiments, str=experiment))
-			endif
-		else
-			needsPlotting = 1
 		endif
 
 		[vertAxis, horizAxis] = PA_GetAxes(pa, activeRegionCount, activeChanCount)
@@ -1205,26 +1190,24 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				alpha = 65535 * 0.2
 			endif
 
-			if(needsPlotting)
-				WAVE plotWave = propertiesWaves[i]
-				sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, traceCount, NameOfWave(plotWave)
-				traceCount += 1
+			WAVE plotWave = propertiesWaves[i]
+			sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, traceCount, NameOfWave(plotWave)
+			traceCount += 1
 
-				jsonPath = graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(s.red) + "/" + num2str(s.green) + "/" + num2str(s.blue) + "/" + num2str(alpha) + "/" + num2str(step) + "/"
-				JSON_AddTreeArray(jsonID, jsonPath + "index")
-				JSON_AddTreeArray(jsonID, jsonPath + "traceName")
-				JSON_AddVariable(jsonID, jsonPath + "index", i)
-				JSON_AddString(jsonID, jsonPath + "traceName", pulseTrace)
+			jsonPath = graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(s.red) + "/" + num2str(s.green) + "/" + num2str(s.blue) + "/" + num2str(alpha) + "/" + num2str(step) + "/"
+			JSON_AddTreeArray(jsonID, jsonPath + "index")
+			JSON_AddTreeArray(jsonID, jsonPath + "traceName")
+			JSON_AddVariable(jsonID, jsonPath + "index", i)
+			JSON_AddString(jsonID, jsonPath + "traceName", pulseTrace)
 
-				if(hideTrace)
-					if(pa.multipleGraphs)
-						jsonPath = graph + "/hiddenTraces"
-						JSON_AddTreeArray(hideTraceJsonID, jsonPath)
-						JSON_AddString(hideTraceJsonID, jsonPath, pulseTrace)
-					else
-						hiddenTraces[hiddenTracesCount] = pulseTrace
-						hiddenTracesCount += 1
-					endif
+			if(hideTrace)
+				if(pa.multipleGraphs)
+					jsonPath = graph + "/hiddenTraces"
+					JSON_AddTreeArray(hideTraceJsonID, jsonPath)
+					JSON_AddString(hideTraceJsonID, jsonPath, pulseTrace)
+				else
+					hiddenTraces[hiddenTracesCount] = pulseTrace
+					hiddenTracesCount += 1
 				endif
 			endif
 
@@ -1477,7 +1460,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 		return [$"", $"", 0]
 	endif
 
-	PA_GenerateAllPulseWaves(win, pa, cs, mode)
+	PA_GenerateAllPulseWaves(win, pa, cs, mode, additionalData)
 
 	PA_ApplyPulseSortingOrder(win, pa)
 

@@ -1288,3 +1288,5 @@ Constant PA_IMAGE_SPECIAL_ENTRIES_RANGE = 0.05
 StrConstant NOTE_NEEDS_UPDATE = "NeedsUpdate"
 
 Constant GRAPH_DIV_SPACING = 0.03
+
+StrConstant NOTE_PA_NEW_PULSES_START = "StartIndexOfNewPulses"
