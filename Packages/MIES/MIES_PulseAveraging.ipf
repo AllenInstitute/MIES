@@ -1320,6 +1320,7 @@ static Function PA_ClearGraphs(string graphs)
 
 	string graph
 	variable numEntries, i
+	variable junk
 
 	numEntries = ItemsInList(graphs)
 	for(i = 0; i < numEntries; i += 1)
@@ -1328,7 +1329,7 @@ static Function PA_ClearGraphs(string graphs)
 		RemoveTracesFromGraph(graph)
 		RemoveImagesFromGraph(graph)
 		RemoveAnnotationsFromGraph(graph)
-		TUD_Clear(graph)
+		[junk, junk] = PA_GetTraceCountFromGraphData(graph, clear = 1)
 	endfor
 End
 
