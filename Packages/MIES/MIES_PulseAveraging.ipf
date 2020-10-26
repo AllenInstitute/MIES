@@ -879,6 +879,9 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	string graph, preExistingGraphs, usedTraceGraphs, usedImageGraphs
 	variable jsonIDOld, needsPlotting
 
+	variable s1, e1, s2, e2
+	variable s = stopmstimer(-2)
+
 	if(ParamIsDefault(additionalData))
 		WAVE/Z additionalData = $""
 	endif
@@ -896,8 +899,10 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	STRUCT PA_ConstantSettings cs
 	[cs] = PA_DetermineConstantSettings(current, old, mode)
 
+	s1 = stopmstimer(-2)
 	WAVE/WAVE/Z targetForAverage, sourceForAverage
 	[targetForAverage, sourceForAverage, needsPlotting] = PA_PreProcessPulses(win, current, cs, mode, additionalData)
+	e1 = stopmstimer(-2)
 
 	if(!needsPlotting)
 		return NaN
@@ -905,7 +910,9 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 
 	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
 
+	s2 = stopmstimer(-2)
 	usedTraceGraphs = PA_ShowPulses(graph, current, cs, targetForAverage, sourceForAverage, mode, additionalData)
+	e2 = stopmstimer(-2)
 
 	try
 		usedImageGraphs = PA_ShowImage(graph, current, cs, targetForAverage, sourceForAverage, mode, additionalData); AbortOnRTE
@@ -915,6 +922,9 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	endtry
 
 	KillWindows(RemoveFromList(usedTraceGraphs + usedImageGraphs, preExistingGraphs))
+	print/D "Preprocess", (e1 - s1) / 1E6
+	print/D "Showpulses", (e2 - s2) / 1E6
+	print/D "All", (stopmstimer(-2) - s) / 1E6
 End
 
 static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable region, [variable removeFailedPulses])
@@ -1490,6 +1500,8 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 	variable graphDataIndex, traceCount
 	string preExistingGraphs, graph
 
+	variable s
+
 	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
 	graph = GetMainWindow(win)
 
@@ -1503,7 +1515,13 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 
 	PA_GenerateAllPulseWaves(win, pa, cs, mode, additionalData)
 
+	print/D "PA_GenerateAllPulseWaves", (stopmstimer(-2) - s) / 1E6
+
+	s = stopmstimer(-2)
+
 	PA_ApplyPulseSortingOrder(win, pa)
+
+	print/D "PA_ApplyPulseSortingOrder", (stopmstimer(-2) - s) / 1E6
 
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
 
@@ -1528,6 +1546,8 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 		return [$"", $"", 0]
 	endif
 
+	s = stopmstimer(-2)
+
 	for(i = 0; i < numChannels; i += 1)
 		channelNumber = channels[i]
 		for(j = 0; j < numRegions; j += 1)
@@ -1543,7 +1563,15 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 		endfor
 	endfor
 
+	print/D "PA_ResetWavesIfRequired", (stopmstimer(-2) - s) / 1E6
+
+	s = stopmstimer(-2)
+
 	PA_MarkFailedPulses(properties, propertiesWaves, pa)
+
+	print/D "PA_MarkFailedPulses", (stopmstimer(-2) - s) / 1E6
+
+	s = stopmstimer(-2)
 
 	for(i = 0; i < numChannels; i += 1)
 		channelNumber = channels[i]
@@ -1560,10 +1588,21 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 		endfor
 	endfor
 
+	print/D "PA_ZeroPulses", (stopmstimer(-2) - s) / 1E6
+
+	s = stopmstimer(-2)
+
 	PA_AutomaticTimeAlignment(win, pa)
+
+	print/D "PA_AutomaticTimeAlignment", (stopmstimer(-2) - s) / 1E6
+
+	s = stopmstimer(-2)
 
 	WAVE/WAVE/Z dest, source
 	[dest, source] = PA_CalculateAllAverages(pa, mode)
+
+	print/D "PA_CalculateAllAverages", (stopmstimer(-2) - s) / 1E6
+
 	return [dest, source, 1]
 End
 
@@ -1593,6 +1632,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 	keyAll = CA_AveragingWaveModKey(sourceAll)
 	WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(keyAll, options = CA_OPTS_NO_DUPLICATE)
 	if(!WaveExists(cache))
+		print "Cache Miss All"
 		// we have to calculate
 		if(mode == POST_PLOT_ADDED_SWEEPS)
 			Multithread/NT=(numThreads) sourceOld[][] = PA_ExtractSource(WaveRef(sourceCombined[p][q], row = 2))
@@ -2023,6 +2063,7 @@ static Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, deconv
 	MultiThread wv = step * (smoothed[p + 1] - smoothed[p]) + smoothed[p]
 
 	CA_StoreEntryIntoCache(key, wv)
+
 	return wv
 End
 
