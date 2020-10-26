@@ -59,9 +59,6 @@ static Constant PA_PULSE_SORTING_ORDER_PULSE = 0x1
 static Constant PA_AVGERAGE_PLOT_LSIZE = 1.5
 static Constant PA_DECONVOLUTION_PLOT_LSIZE = 2
 
-static Constant PA_PLOTTYPE_AVERAGE = 0x01
-static Constant PA_PLOTTYPE_DECONVOLUTION = 0x02
-
 // comment out to show all the axes, useful for debugging
 #define PA_HIDE_AXIS
 
@@ -964,32 +961,57 @@ static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, 
 	Multithread junkWave[] = SetNumberInWaveNote(propertiesWaves[p], NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
 End
 
-static Function [variable idx, variable traceCount] PA_GetTraceCountFromGraph(string graph)
+/// @brief This function returns data from the light-weight data storage for PA graph data
+/// @param[in] graph name of PA graph
+/// @param[in] clear [optional, default = 0] when set reinitializes the data for the given graph
+/// @retval idx row index of the wave where the graph data is stored
+/// @retval traceCount traceCount for this graph
+static Function [variable idx, variable traceCount] PA_GetTraceCountFromGraphData(string graph, [variable clear])
 
-	WAVE tc = GetPAGraphTraceCounts()
-	idx = FindDimLabel(tc, ROWS, graph)
+	clear = ParamIsDefault(clear) ? 0 : !!clear
+
+	WAVE/T graphData = GetPAGraphData()
+	idx = FindDimLabel(graphData, ROWS, graph)
 	if(idx >= 0)
-		return [idx, tc[idx][0]]
+		if(clear)
+			graphData[idx][%TRACECOUNT] = "0"
+			graphData[idx][%TRACES_AVERAGE] = ""
+			graphData[idx][%TRACES_DECONV] = ""
+			graphData[idx][%TRACES_AVERAGEFORDECONV] = ""
+			graphData[idx][%TRACES_AVERAGE_XAXIS] = ""
+			graphData[idx][%TRACES_AVERAGE_YAXIS] = ""
+			graphData[idx][%TRACES_AVERAGE_WAVES] = ""
+			graphData[idx][%IMAGELIST] = ""
+		endif
+		return [idx, str2num(graphData[idx][0])]
 	endif
 
-	idx = DimSize(tc, ROWS)
-	Redimension/N=(idx + 1, -1) tc
-	SetDimLabel ROWS, idx, $graph, tc
+	idx = DimSize(graphData, ROWS)
+	Redimension/N=(idx + 1, -1) graphData
+	SetDimLabel ROWS, idx, $graph, graphData
+	graphData[idx][%TRACECOUNT] = "0"
 
 	return [idx, 0]
 End
 
 static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, WAVE/Z targetForAverageGeneric, WAVE/Z sourceForAverageGeneric, variable mode, WAVE/Z additionalData)
 
-	string pulseTrace, channelTypeStr, str, graph, key
+	string pulseTrace, str, graph, key
 	variable numChannels, i, j, sweepNo, headstage, numTotalPulses, pulse, xPos, yPos, needsPlotting
 	variable first, numEntries, startingPulse, endingPulse, traceCount, step, isDiagonalElement
 	variable channelNumber, region, channelType, length, newSweepCount
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay, pulseHasFailed
 	variable numRegions, hideTrace, lastSweep, alpha, constantSinglePulseSettings
-	string vertAxis, horizAxis, channelNumberStr, experiment
-	string baseName, traceName, fullPath, tagName
+	variable hiddenTracesCount, userDataCount, avgPlotCount, deconPlotCount
+	variable jsonID, hideTraceJsonID, graphDataIndex, numHiddenTracesGraphs, graphHasChanged, tmpVal
+	variable lblSweep, lblExperiment, lblChannelNumber, lblRegion, lblHeadstage, lblPulse
+	variable lblDiagonalElement, lblActiveRegionCount, lblActiveChanCount, lblPulseHasFailed, lblLastSweep, lblTRACES_AVERAGE, lblTRACECOUNT, lblTRACES_DECONV
+	variable lblTRACES_AVERAGE_XAXIS, lblTRACES_AVERAGE_YAXIS, lblTRACES_AVERAGE_WAVES, lblTRACES_AVERAGEFORDECONV
+	string jsonPath
+	string vertAxis, horizAxis, experiment
+	string baseName, traceName, tagName
 	string usedGraphs = ""
+	string previousGraph = ""
 
 	if(!pa.showTraces)
 		return usedGraphs
@@ -999,9 +1021,6 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 	WAVE/WAVE/Z targetForAverage = targetForAverageGeneric
 	WAVE/WAVE/Z sourceForAverage = sourceForAverageGeneric
-
-	Make/FREE/T userDataKeys = {"fullPath", "sweepNumber", "headstage", "region", "channelNumber", "channelType",                           \
-	                            "pulseIndex", "traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}
 
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
@@ -1030,26 +1049,57 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		endfor
 	endif
 
+	WAVE/T paGraphData = GetPAGraphData()
+
+	lblSweep = FindDimLabel(properties, COLS, "Sweep")
+	lblExperiment = FindDimLabel(propertiesText, COLS, "Experiment")
+	lblChannelNumber = FindDimLabel(properties, COLS, "ChannelNumber")
+	lblRegion = FindDimLabel(properties, COLS, "Region")
+	lblHeadstage = FindDimLabel(properties, COLS, "Headstage")
+	lblPulse = FindDimLabel(properties, COLS, "Pulse")
+	lblDiagonalElement = FindDimLabel(properties, COLS, "DiagonalElement")
+	lblActiveRegionCount = FindDimLabel(properties, COLS, "ActiveRegionCount")
+	lblActiveChanCount = FindDimLabel(properties, COLS, "ActiveChanCount")
+	lblPulseHasFailed = FindDimLabel(properties, COLS, "PulseHasFailed")
+	lblLastSweep = FindDimLabel(properties, COLS, "LastSweep")
+	lblTRACECOUNT = FindDimLabel(paGraphData, COLS, "TRACECOUNT")
+	lblTRACES_AVERAGE = FindDimLabel(paGraphData, COLS, "TRACES_AVERAGE")
+	lblTRACES_DECONV = FindDimLabel(paGraphData, COLS, "TRACES_DECONV")
+	lblTRACES_AVERAGE_XAXIS = FindDimLabel(paGraphData, COLS, "TRACES_AVERAGE_XAXIS")
+	lblTRACES_AVERAGE_YAXIS = FindDimLabel(paGraphData, COLS, "TRACES_AVERAGE_YAXIS")
+	lblTRACES_AVERAGE_WAVES = FindDimLabel(paGraphData, COLS, "TRACES_AVERAGE_WAVES")
+	lblTRACES_AVERAGEFORDECONV = FindDimLabel(paGraphData, COLS, "TRACES_AVERAGEFORDECONV")
+
+	Make/T/FREE/N=(numTotalPulses) plotTraces, hiddenTraces
+	jsonID = JSON_Parse("{}")
+	if(pa.multipleGraphs)
+		hideTraceJsonID = JSON_Parse("{}")
+	endif
+
 	for(i = 0; i < numTotalPulses; i += 1)
 
-		sweepNo = properties[i][%Sweep]
-		experiment = propertiesText[i][%Experiment]
-		channelType = properties[i][%ChannelType]
-		channelTypeStr = StringFromList(channelType, ITC_CHANNEL_NAMES)
-		channelNumber = properties[i][%ChannelNumber]
-		channelNumberStr = num2str(channelNumber)
-		region = properties[i][%Region]
-		headstage = properties[i][%Headstage]
-		pulse = properties[i][%Pulse]
-		isDiagonalElement = properties[i][%DiagonalElement]
-		activeRegionCount = properties[i][%ActiveRegionCount]
-		activeChanCount = properties[i][%ActiveChanCount]
-		pulseHasFailed = properties[i][%PulseHasFailed]
-		lastSweep = properties[i][%LastSweep]
+		sweepNo = properties[i][lblSweep]
+		experiment = propertiesText[i][lblExperiment]
+		channelNumber = properties[i][lblChannelNumber]
+		region = properties[i][lblRegion]
+		headstage = properties[i][lblHeadstage]
+		pulse = properties[i][lblPulse]
+		isDiagonalElement = properties[i][lblDiagonalElement]
+		activeRegionCount = properties[i][lblActiveRegionCount]
+		activeChanCount = properties[i][lblActiveChanCount]
+		pulseHasFailed = properties[i][lblPulseHasFailed]
+		lastSweep = properties[i][lblLastSweep]
 
 		if(!pa.multipleGraphs && i == 0 || pa.multipleGraphs)
 			graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, activeRegionCount, activeChanCount, numRegions)
-			traceCount = TUD_GetTraceCount(graph)
+			graphHasChanged = CmpStr(graph, previousGraph)
+			if(graphHasChanged)
+				if(!IsEmpty(previousGraph))
+					paGraphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceCount)
+				endif
+				[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph)
+				previousGraph = graph
+			endif
 		endif
 
 		if(pa.regionSlider != -1 && pa.regionSlider != region) // unselected region in ddaq viewing mode
@@ -1072,14 +1122,11 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		if(WhichListItem(graph, usedGraphs) == -1)
 			if(mode != POST_PLOT_ADDED_SWEEPS)
 				RemoveTracesFromGraph(graph)
-				TUD_Clear(graph)
+				[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph, clear = 1)
 			endif
 			RemoveAnnotationsFromGraph(graph)
 			usedGraphs = AddListItem(graph, usedGraphs, ";", inf)
 		endif
-
-		WAVE plotWave = propertiesWaves[i]
-		fullPath = GetWavesDataFolder(plotWave, 2)
 
 		STRUCT RGBColor s
 
@@ -1100,19 +1147,26 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 			endif
 
 			if(needsPlotting)
+				WAVE plotWave = propertiesWaves[i]
 				sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, traceCount, NameOfWave(plotWave)
 				traceCount += 1
 
 				AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue, alpha) plotWave[0,inf;step]/TN=$pulseTrace
+				JSON_AddTreeArray(jsonID, jsonPath + "index")
+				JSON_AddTreeArray(jsonID, jsonPath + "traceName")
+				JSON_AddVariable(jsonID, jsonPath + "index", i)
+				JSON_AddString(jsonID, jsonPath + "traceName", pulseTrace)
 
 				if(hideTrace)
-					ModifyGraph/W=$graph hideTrace($pulseTrace)=hideTrace
+					if(pa.multipleGraphs)
+						jsonPath = graph + "/hiddenTraces"
+						JSON_AddTreeArray(hideTraceJsonID, jsonPath)
+						JSON_AddString(hideTraceJsonID, jsonPath, pulseTrace)
+					else
+						hiddenTraces[hiddenTracesCount] = pulseTrace
+						hiddenTracesCount += 1
+					endif
 				endif
-
-				TUD_SetUserDataFromWaves(graph, pulseTrace, userDataKeys,                                                       \
-							             {fullPath, num2str(sweepNo), num2str(headstage), num2str(region), channelNumberStr,    \
-							             channelTypeStr, num2str(pulse), "Sweep", "0",                                          \
-							             horizAxis, vertAxis, num2str(isDiagonalElement)})
 			endif
 
 			if(pulseHasFailed && isDiagonalElement && (sweepNo == lastSweep))
@@ -1126,7 +1180,23 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 			endif
 		endif
 	endfor
+	paGraphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceCount)
 
+	PA_AccelerateAppendTraces(jsonID, propertiesWaves)
+	if(pa.multipleGraphs)
+		WAVE/T hiddenTracesGraphs = JSON_GetKeys(hideTraceJsonID, "")
+		numHiddenTracesGraphs = DimSize(hiddenTracesGraphs, ROWS)
+		for(j = 0; j < numHiddenTracesGraphs; j += 1)
+			WAVE/T hiddenTracesNames = JSON_GetTextWave(hideTraceJsonID, hiddenTracesGraphs[j] + "/hiddenTraces")
+			AccelerateHideTraces(hiddenTracesGraphs[j], hiddenTracesNames, DimSize(hiddenTracesNames, ROWS))
+		endfor
+		JSON_Release(hideTraceJsonID)
+	else
+		AccelerateHideTraces(graph, hiddenTraces, hiddenTracesCount)
+	endif
+	JSON_Release(jsonID)
+
+	Make/T/FREE/N=(numChannels * numRegions) avgPlotTraces, deconPlotTraces
 	for(i = 0; i < numChannels; i += 1)
 		channelNumber = channels[i]
 		for(j = 0; j < numRegions; j += 1)
@@ -1158,14 +1228,14 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 			activeChanCount = i + 1
 			activeRegionCount = j + 1
+			[vertAxis, horizAxis] = PA_GetAxes(pa, activeRegionCount, activeChanCount)
 
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
 				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, activeRegionCount, activeChanCount, numRegions)
-				traceCount = TUD_GetTraceCount(graph)
-				WAVE/T/Z averageTraceNames = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Average"})
-				WAVE/T/Z deconvolutionTraceNames = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Deconvolution"})
+				[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph)
+				WAVE/T averageTraceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";")
+				WAVE/T deconvolutionTraceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_DECONV], ";")
 			endif
-			[vertAxis, horizAxis] = PA_GetAxes(pa, activeRegionCount, activeChanCount)
 
 			if(pa.showAverage)
 				if(WaveExists(averageTraceNames))
@@ -1177,18 +1247,31 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				if(!WaveExists(foundAverageTraces))
 					sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_AVERAGE_WAVE_PREFIX, baseName
 					traceCount += 1
+					paGraphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceCount)
 
 					[s] = GetTraceColor(NUM_HEADSTAGES + 1)
-					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue) averageWave/TN=$traceName
-					ModifyGraph/W=$graph lsize($traceName)=1.5
 
-					TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
-					                         {"Average", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
-					TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(averageWave, 2))
+					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue) averageWave/TN=$traceName
+
+					if(pa.multipleGraphs)
+						ModifyGraph/W=$graph lsize($traceName)=PA_AVGERAGE_PLOT_LSIZE
+					else
+						avgPlotTraces[avgPlotCount] = traceName
+						avgPlotCount += 1
+					endif
+
+					paGraphData[graphDataIndex][lblTRACES_AVERAGE] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";", Inf)
+					if(!isDiagonalElement)
+						paGraphData[graphDataIndex][lblTRACES_AVERAGEFORDECONV] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_AVERAGEFORDECONV], ";", Inf)
+						paGraphData[graphDataIndex][lblTRACES_AVERAGE_XAXIS] = AddListItem(horizAxis, paGraphData[graphDataIndex][lblTRACES_AVERAGE_XAXIS], ";", Inf)
+						paGraphData[graphDataIndex][lblTRACES_AVERAGE_YAXIS] = AddListItem(vertAxis, paGraphData[graphDataIndex][lblTRACES_AVERAGE_YAXIS], ";", Inf)
+						paGraphData[graphDataIndex][lblTRACES_AVERAGE_WAVES] = AddListItem(GetWavesDataFolder(averageWave, 2), paGraphData[graphDataIndex][lblTRACES_AVERAGE_WAVES], ";", Inf)
+					endif
 				endif
 			endif
 
 			if(pa.deconvolution.enable && !isDiagonalElement)
+
 				if(WaveExists(deconvolutionTraceNames))
 					WAVE/Z foundDeconvolution = GrepTextWave(deconvolutionTraceNames, ".*\\E" + PA_DECONVOLUTION_WAVE_PREFIX + basename + "\\Q" + "$")
 				else
@@ -1201,17 +1284,26 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 					sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_DECONVOLUTION_WAVE_PREFIX, baseName
 					traceCount += 1
+					paGraphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceCount)
 
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv[0,inf;PA_PLOT_STEPPING]/TN=$traceName
-					ModifyGraph/W=$graph lsize($traceName)=2
 
-					TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
-					                         {"Deconvolution", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
-					TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
+					if(pa.multipleGraphs)
+						ModifyGraph/W=$graph lsize($traceName)=PA_DECONVOLUTION_PLOT_LSIZE
+					else
+						deconPlotTraces[deconPlotCount] = traceName
+						deconPlotCount += 1
+					endif
+
+					paGraphData[graphDataIndex][lblTRACES_DECONV] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_DECONV], ";", Inf)
 				endif
 			endif
 		endfor
 	endfor
+	if(!pa.multipleGraphs)
+		AccelerateModLineSizeTraces(graph, avgPlotTraces, avgPlotCount, PA_AVGERAGE_PLOT_LSIZE)
+		AccelerateModLineSizeTraces(graph, deconPlotTraces, deconPlotCount, PA_DECONVOLUTION_PLOT_LSIZE)
+	endif
 
 	PA_DrawScaleBars(win, pa, PA_DISPLAYMODE_TRACES, PA_USE_WAVE_SCALES)
 	PA_LayoutGraphs(win, PA_DISPLAYMODE_TRACES, regions, channels, pa)
@@ -1860,6 +1952,7 @@ static Function PA_UpdateDeconvolution(win)
 	string traceName, fullPath, avgTrace
 	string baseName
 	variable i, numGraphs, j, numTraces, traceIndex
+	variable graphDataIndex, lblTRACES_DECONV, lblTRACECOUNT
 	STRUCT PulseAverageSettings pa
 	PA_GatherSettings(win, pa)
 
@@ -1877,23 +1970,28 @@ static Function PA_UpdateDeconvolution(win)
 	endif
 
 	graphs = PA_GetGraphs(win, PA_DISPLAYMODE_TRACES)
+
+	WAVE/T graphData = GetPAGraphData()
+	lblTRACES_DECONV = FindDimLabel(graphData, COLS, "TRACES_DECONV")
+	lblTRACECOUNT = FindDimLabel(graphData, COLS, "TRACECOUNT")
 	numGraphs = ItemsInList(graphs)
 	for(i = 0; i < numGraphs; i += 1)
 		graph = StringFromList(i, graphs)
 
 		if(pa.deconvolution.enable)
-			WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType", "DiagonalElement"}, values = {"Average", "0"})
-
-			traceIndex = TUD_GetTraceCount(graph)
-
-			numTraces = WaveExists(traces) ? DimSize(traces, ROWS) : 0
+			[graphDataIndex, traceIndex] = PA_GetTraceCountFromGraphData(graph)
+			WAVE/T traces = ListToTextWave(graphData[graphDataIndex][%TRACES_AVERAGEFORDECONV], ";")
+			WAVE/T horizAxes = ListToTextWave(graphData[graphDataIndex][%TRACES_AVERAGE_XAXIS], ";")
+			WAVE/T vertAxes = ListToTextWave(graphData[graphDataIndex][%TRACES_AVERAGE_YAXIS], ";")
+			WAVE/T avgWaves = ListToTextWave(graphData[graphDataIndex][%TRACES_AVERAGE_WAVES], ";")
+			numTraces = DimSize(traces, ROWS)
+			graphData[graphDataIndex][lblTRACES_DECONV] = ""
 			for(j = 0; j < numTraces; j += 1)
 				avgTrace = traces[j]
 
-				vertAxis  = TUD_GetUserData(graph, avgTrace, "YAXIS")
-				horizAxis = TUD_GetUserData(graph, avgTrace, "XAXIS")
-
-				fullPath = TUD_GetUserData(graph, avgTrace, "fullPath")
+				vertAxis = vertAxes[j]
+				horizAxis = horizAxes[j]
+				fullPath = avgWaves[j]
 				WAVE averageWave = $fullPath
 				DFREF pulseAverageDFR = GetWavesDataFolderDFR(averageWave)
 
@@ -1908,20 +2006,19 @@ static Function PA_UpdateDeconvolution(win)
 				AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv/TN=$traceName
 				ModifyGraph/W=$graph lsize($traceName)=2
 
-				TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
-							             {"Deconvolution", "0", horizAxis, vertAxis, "0"})
-				TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
+				graphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceIndex)
+				graphData[graphDataIndex][lblTRACES_DECONV] = AddListItem(traceName, graphData[graphDataIndex][lblTRACES_DECONV], ";", Inf)
 			endfor
 		else // !pa.deconvolution.enable
-			WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Deconvolution"})
-
-			numTraces = WaveExists(traces) ? DimSize(traces, ROWS) : 0
+			WAVE/T traces = ListToTextWave(graphData[%$graph][lblTRACES_DECONV], ";")
+			numTraces = DimSize(traces, ROWS)
 			for(j = 0; j < numTraces; j += 1)
 				traceName = traces[j]
 
 				RemoveFromGraph/W=$graph $traceName
-				TUD_RemoveUserData(graph, traceName)
 			endfor
+			graphData[graphDataIndex][lblTRACECOUNT] = num2istr(str2num(graphData[graphDataIndex][lblTRACECOUNT]) - numTraces)
+			graphData[%$graph][lblTRACES_DECONV] = ""
 		endif
 	endfor
 End

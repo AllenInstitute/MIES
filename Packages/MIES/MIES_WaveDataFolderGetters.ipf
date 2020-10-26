@@ -6701,25 +6701,36 @@ End
 /// @brief Return the wave for trace counts per graph for pulse averaging plot
 /// rows one per graph, dimlabel is graph name
 /// col 0 number of traces in graph
-/// col 1 bit encoded what plots are shown
-Function/WAVE GetPAGraphTraceCounts()
+/// col 1 trace names of all average traces
+/// col 2 trace names of average traces in non-diagonal locations
+/// col 3 trace names of all deconvolution traces
+/// col 4 x axis names of average traces in non-diagonal location
+/// col 5 y axis names of average traces in non-diagonal location
+/// col 6 full path wave names of average waves shown in non-diagonal locations
+Function/WAVE GetPAGraphData()
 
 	variable versionOfNewWave = 1
 	DFREF dfr = GetGraphUserDataFolderDFR()
-	string name = "PATraceCounts"
-	WAVE/D/Z/SDFR=dfr wv = $name
+	string name = "PAGraphData"
+	WAVE/T/Z/SDFR=dfr wv = $name
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/D/N=(0, 2) dfr:$name/WAVE=wv
+		Make/T/N=(0, 8) dfr:$name/WAVE=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetDimLabel COLS, 0, TRACECOUNT, wv
-	SetDimLabel COLS, 1, PLOTTYPESSHOWN, wv
+	SetDimLabel COLS, 1, TRACES_AVERAGE, wv
+	SetDimLabel COLS, 2, TRACES_AVERAGEFORDECONV, wv
+	SetDimLabel COLS, 3, TRACES_DECONV, wv
+	SetDimLabel COLS, 4, TRACES_AVERAGE_XAXIS, wv
+	SetDimLabel COLS, 5, TRACES_AVERAGE_YAXIS, wv
+	SetDimLabel COLS, 6, TRACES_AVERAGE_WAVES, wv
+	SetDimLabel COLS, 7, IMAGELIST, wv
 
 	return wv
 End
