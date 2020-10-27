@@ -953,6 +953,7 @@ static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE old
 			else
 				// set got added in display
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_ADDED)
+				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPSTART, 0)
 				DEBUGPRINT("Layout: Add " + debugMsg)
 			endif
 		elseif(indiceType == PA_UPDATEINDICES_TYPE_PREV)
@@ -962,6 +963,7 @@ static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE old
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_REMOVED)
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVEREGIONCOUNT, NaN)
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVECHANCOUNT, NaN)
+				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPSTART, 0)
 				DEBUGPRINT("Layout: Remove " + debugMsg)
 			endif
 		else
