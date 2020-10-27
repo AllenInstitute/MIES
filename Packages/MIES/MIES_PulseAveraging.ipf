@@ -962,6 +962,7 @@ static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE old
 	if(indiceType == PA_UPDATEINDICES_TYPE_CURR)
 		SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVEREGIONCOUNT, currentMap[region][channel][0])
 		SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVECHANCOUNT, currentMap[region][channel][1])
+		SetNumberInWaveNote(indices, NOTE_KEY_PULSE_SORT_ORDER, NaN)
 	endif
 End
 
