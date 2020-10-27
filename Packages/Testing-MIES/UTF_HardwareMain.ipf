@@ -100,7 +100,7 @@ Function/WAVE DeviceNameGeneratorMD0()
 
 #ifdef TESTS_WITH_NI_HARDWARE
 	// NI Hardware has no single device support
-	Make/FREE/N=0 data
+	Make/FREE/T/N=0 data
 	return data
 #endif
 
@@ -108,7 +108,7 @@ Function/WAVE DeviceNameGeneratorMD0()
 
 #ifdef TESTS_WITH_YOKING
 	// Yoking with ITC hardware is only supported in multi device mode
-	Make/FREE/N=0 data
+	Make/FREE/T/N=0 data
 	return data
 #else
 	return DeviceNameGeneratorMD1()
@@ -120,7 +120,7 @@ Function/WAVE DeviceNameGeneratorMD0()
 
 #ifdef TESTS_WITH_YOKING
 	// Yoking with ITC hardware is only supported in multi device mode
-	Make/FREE/N=0 data
+	Make/FREE/T/N=0 data
 	return data
 #else
 	return DeviceNameGeneratorMD1()
