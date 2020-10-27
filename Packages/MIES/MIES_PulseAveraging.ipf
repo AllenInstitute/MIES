@@ -965,69 +965,58 @@ static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE old
 	endif
 End
 
-static Function PA_ApplyPulseSortingOrder(string win, STRUCT PulseAverageSettings &pa)
+static Function PA_ApplyPulseSortingOrder(STRUCT PulseAverageSettings &pa)
 
-	variable numRegions, numChannels, i, j, region, channelNumber, numEntries, pulseSortOrder
-
-	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
 
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
-	numChannels = DimSize(channels, ROWS)
+	WAVE/WAVE/Z setIndices
+	WAVE/Z channels, regions, indexHelper
+	[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 0)
+	Multithread indexHelper[][] = PA_ApplyPulseSortingOrderImpl(setIndices[p][q], channels[p], regions[q], properties, pa)
+End
 
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
-	numRegions = DimSize(regions, ROWS)
+threadsafe static Function PA_ApplyPulseSortingOrderImpl(WAVE setIndices, variable channelNumber, variable region, WAVE properties, STRUCT PulseAverageSettings &pa)
 
-	Make/FREE/N=(0, 3) elems
+	variable numEntries, pulseSortOrder
+	variable lblSweep, lblPulse
 
-	for(i = 0; i < numChannels; i += 1)
-		channelNumber = channels[i]
-		for(j = 0; j < numRegions; j += 1)
-			region = regions[j]
+	numEntries = GetNumberFromWaveNote(setIndices, NOTE_INDEX)
+	if(!numEntries)
+		return NaN
+	endif
 
-			WAVE setIndizes = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channelNumber, region)
-			numEntries = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
+	pulseSortOrder = GetNumberFromWaveNote(setIndices, NOTE_KEY_PULSE_SORT_ORDER)
+	if(IsFinite(pulseSortOrder) && pulseSortOrder == pa.pulseSortOrder)
+		return NaN
+	endif
 
-			if(!numEntries)
-				continue
-			endif
+	lblSweep = FindDimLabel(properties, COLS, "Sweep")
+	lblPulse = FindDimLabel(properties, COLS, "Pulse")
 
-			pulseSortOrder = GetNumberFromWaveNote(setIndizes, NOTE_KEY_PULSE_SORT_ORDER)
+	Make/FREE/N=(numEntries, 3) elems
 
-			if(IsFinite(pulseSortOrder) && pulseSortOrder == pa.pulseSortOrder)
-				continue
-			endif
+	elems[][0] = properties[setIndices[p]][lblSweep]
+	elems[][1] = properties[setIndices[p]][lblPulse]
+	elems[][2] = setIndices[p]
 
-			if(DimSize(elems, ROWS) != numEntries)
-				Redimension/N=(numEntries, -1)/E=1 elems
-			else
-				// correct size
-			endif
+	switch(pa.pulseSortOrder)
+		case PA_PULSE_SORTING_ORDER_SWEEP:
+			// first sweep then pulse
+			SortColumns/KNDX={0, 1} sortWaves={elems}
+			break
+		case PA_PULSE_SORTING_ORDER_PULSE:
+			// first pulse then sweep
+			SortColumns/KNDX={1, 0} sortWaves={elems}
+			break
+		default:
+			ASSERT_TS(0, "Invalid sorting order")
+	endswitch
 
-			Multithread elems[][0] = properties[setIndizes[p]][%Sweep]
-			Multithread elems[][1] = properties[setIndizes[p]][%Pulse]
-			Multithread elems[][2] = setIndizes[p]
+	// copy sorted result back
+	setIndices[0, numEntries - 1] = elems[p][2]
 
-			switch(pa.pulseSortOrder)
-				case PA_PULSE_SORTING_ORDER_SWEEP:
-					// first sweep than pulse
-					SortColumns/KNDX={0, 1} sortWaves={elems}
-					break
-				case PA_PULSE_SORTING_ORDER_PULSE:
-					// first pulse than sweep
-					SortColumns/KNDX={1, 0} sortWaves={elems}
-					break
-				default:
-					ASSERT(0, "Invalid sorting order")
-			endswitch
-
-			// copy sorted result back
-			Multithread setIndizes[0, numEntries - 1] = elems[p][2]
-
-			SetNumberInWaveNote(setIndizes, NOTE_KEY_PULSE_SORT_ORDER, pa.pulseSortOrder)
-		endfor
-	endfor
+	SetNumberInWaveNote(setIndices, NOTE_KEY_PULSE_SORT_ORDER, pa.pulseSortOrder)
 End
 
 /// @brief Populates pps.pulseAverSett with the user selection from the panel
@@ -1726,7 +1715,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 
 	s = stopmstimer(-2)
 
-	PA_ApplyPulseSortingOrder(win, pa)
+	PA_ApplyPulseSortingOrder(pa)
 
 	print/D "PA_ApplyPulseSortingOrder", (stopmstimer(-2) - s) / 1E6
 
