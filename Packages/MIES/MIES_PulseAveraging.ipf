@@ -525,7 +525,7 @@ End
 ///
 /// The result is feed into GetPulseAverageProperties() and GetPulseAveragepropertiesWaves() for further consumption.
 /// Returns the mode, because the mode may change from incremental to full update because incremental update fails due to layout changes
-static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
+static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
 
 	variable startingPulseSett, endingPulseSett, isDiagonalElement, pulseHasFailed, newChannel
 	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, endingPulse
@@ -540,13 +540,13 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.singlePulse)
 		// nothing to do
-		return mode
+		return [pasi]
 	endif
 
 	WAVE/T/Z traceData = GetTraceInfos(GetMainWindow(win))
 
 	if(!WaveExists(traceData))
-		return mode
+		return [pasi]
 	endif
 
 	incrementalMode = mode == POST_PLOT_ADDED_SWEEPS && WaveExists(additionalData)
@@ -579,7 +579,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 	WAVE/Z indizesChannelType = FindIndizes(traceData, colLabel="channelType", str=channelTypeStr)
 	if(!WaveExists(indizesChannelType))
-		return mode
+		return [pasi]
 	endif
 
 	if(incrementalMode)
@@ -616,7 +616,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	WAVE/Z headstages         = PA_GetUniqueHeadstages(traceData, indizesChannelType)
 
 	if(!WaveExists(headstages))
-		return mode
+		return [pasi]
 	endif
 
 	WAVE prevDisplayMapping = GetPulseAverageDisplayMapping(pulseAverageDFR)
@@ -683,6 +683,8 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 			idx       = indizesChannelType[j]
 			headstage = str2num(traceData[idx][lblTraceHeadstage])
 
+			// We only use associated headstages and only one AD channel can be associated to one headstage
+			// This always results in a quadratic display with equal number of channels and regions
 			if(!IsFinite(headstage)) // ignore unassociated channels or duplicated headstages in traceData
 				continue
 			endif
@@ -864,16 +866,20 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS, sweepList)
 	SetNumberInWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE, layoutChanged)
 
-	PA_UpdateIndiceNotes(pulseAverageHelperDFR, currentDisplayMapping, prevDisplayMapping, layoutChanged)
+	WAVE/WAVE/Z setIndices
+	WAVE/Z channels, regions, indexHelper
+	[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 0)
+	pasi.setIndices = setIndices
+	pasi.channels = channels
+	pasi.regions = regions
+	pasi.indexHelper = indexHelper
+
+	PA_UpdateIndiceNotes(pulseAverageHelperDFR, currentDisplayMapping, prevDisplayMapping, pasi, layoutChanged)
 	Duplicate/O currentDisplayMapping, prevDisplayMapping
 
 	JSON_Release(jsonID)
 
-	if(incrementalMode && layoutChanged)
-		return POST_PLOT_FULL_UPDATE
-	endif
-
-	return mode
+	return [pasi]
 End
 
 /// @brief For incremental display update copy current size of of setIndices to new display start
@@ -912,18 +918,17 @@ static Function [WAVE/WAVE setIndices, WAVE channels, WAVE regions, WAVE indexHe
 	return [setIndices, channels, regions, junk]
 End
 
-static Function PA_UpdateIndiceNotes(DFREF pulseAverageHelperDFR, WAVE currentDisplayMapping, WAVE prevDisplayMapping, variable layoutChanged)
+static Function PA_UpdateIndiceNotes(DFREF pulseAverageHelperDFR, WAVE currentDisplayMapping, WAVE prevDisplayMapping, STRUCT PulseAverageSetIndices &pasi, variable layoutChanged)
 
-	WAVE/WAVE/Z setIndices
-	WAVE/Z channels, regions, indexHelper
 	if(layoutChanged)
+		WAVE/WAVE/Z setIndices
+		WAVE/Z channels, regions, indexHelper
 		[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 1)
 		if(WaveExists(setIndices))
 			indexHelper[][] = PA_UpdateIndiceNotesImpl(setIndices[p][q], currentDisplayMapping, prevDisplayMapping, channels[p], regions[q], layoutChanged, PA_UPDATEINDICES_TYPE_PREV)
 		endif
 	endif
-	[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 0)
-	indexHelper[][] = PA_UpdateIndiceNotesImpl(setIndices[p][q], currentDisplayMapping, prevDisplayMapping, channels[p], regions[q], layoutChanged, PA_UPDATEINDICES_TYPE_CURR)
+	pasi.indexHelper[][] = PA_UpdateIndiceNotesImpl(pasi.setIndices[p][q], currentDisplayMapping, prevDisplayMapping, pasi.channels[p], pasi.regions[q], layoutChanged, PA_UPDATEINDICES_TYPE_CURR)
 End
 
 /// @brief Evaluate the previous and current mapping and set the display change in the wave note of the indice sets as well as activeChanCount, activeRegionCount.

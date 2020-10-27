@@ -93,6 +93,13 @@ Structure PulseAverageDeconvSettings
 	variable enable, smth, tau, range
 EndStructure
 
+Structure PulseAverageSetIndices
+	WAVE/WAVE setIndices
+	WAVE channels
+	WAVE regions
+	WAVE indexHelper
+EndStructure
+
 /// @brief Parameter to #CreateTiledChannelGraph
 Structure TiledGraphSettings
 	int16 displayDAC
