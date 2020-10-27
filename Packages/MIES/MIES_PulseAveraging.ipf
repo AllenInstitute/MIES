@@ -1767,20 +1767,9 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 
 	s = stopmstimer(-2)
 
-	for(i = 0; i < numChannels; i += 1)
-		channelNumber = channels[i]
-		for(j = 0; j < numRegions; j += 1)
-			region = regions[j]
-
-			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
-
-			if(!WaveExists(setWaves))
-				continue
-			endif
-
-			PA_ZeroPulses(setWaves, pa)
-		endfor
-	endfor
+	if(pa.zeroPulses)
+		pasi.indexHelper[][] = PA_ZeroPulses(setWaves[p][q])
+	endif
 
 	print/D "PA_ZeroPulses", (stopmstimer(-2) - s) / 1E6
 
@@ -2167,17 +2156,15 @@ static Function/S PA_BaseName(channelNumber, headStage)
 End
 
 /// @brief Zero single pulses using @c ZeroWave
-static Function PA_ZeroPulses(WAVE/WAVE set, STRUCT PulseAverageSettings &pa)
+threadsafe static Function PA_ZeroPulses(WAVE/Z setWave)
 
-	variable numPulses
-
-	if(!pa.zeroPulses)
+	if(!WaveExists(setWave))
 		return NaN
 	endif
 
-	numPulses = DimSize(set, ROWS)
+	WAVE/WAVE set = setWave
 
-	Make/FREE/N=(numPulses) junk
+	Make/FREE/N=(DimSize(set, ROWS)) junk
 	Multithread junk = PA_ZeroWave(set[p][0], set[p][1])
 End
 
