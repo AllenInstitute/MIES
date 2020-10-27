@@ -930,6 +930,9 @@ End
 ///        IMPORTANT: To have a consistent state for the case the layout changed the function must be called with the current and the previous indices. Otherwise removed sets wont be flagged properly.
 static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE oldMap, variable channel, variable region, variable layoutChanged, variable indiceType)
 
+	string debugMsg
+	sprintf debugMsg, "channel: %d region: %d", channel, region
+
 	if(layoutChanged)
 		if(indiceType == PA_UPDATEINDICES_TYPE_CURR)
 			// currentMap is here always valid
@@ -937,12 +940,15 @@ static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE old
 				if(!(oldMap[region][channel][0] == currentMap[region][channel][0] && oldMap[region][channel][1] == currentMap[region][channel][1]))
 					// it is in prev and current but has moved
 					SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_MOVED)
+					DEBUGPRINT("Layout: Move " + debugMsg)
 				else
 					SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_NONE)
+					DEBUGPRINT("Layout: Stay " + debugMsg)
 				endif
 			else
 				// set got added in display
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_ADDED)
+				DEBUGPRINT("Layout: Add " + debugMsg)
 			endif
 		elseif(indiceType == PA_UPDATEINDICES_TYPE_PREV)
 			// prevMap is here always valid
@@ -951,6 +957,7 @@ static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE old
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_REMOVED)
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVEREGIONCOUNT, NaN)
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVECHANCOUNT, NaN)
+				DEBUGPRINT("Layout: Remove " + debugMsg)
 			endif
 		else
 			ASSERT_TS(0, "unknown indiceType")
