@@ -74,6 +74,7 @@ static StrConstant PA_PROPERTIES_STRLIST_SEP = ","
 static StrConstant PA_SETINDICES_KEY_ACTIVECHANCOUNT = "ActiveChanCount"
 static StrConstant PA_SETINDICES_KEY_ACTIVEREGIONCOUNT = "ActiveRegionCount"
 static StrConstant PA_SETINDICES_KEY_DISPCHANGE = "DisplayChange"
+static StrConstant PA_SETINDICES_KEY_DISPSTART = "DisplayStart"
 
 static Constant PA_UPDATEINDICES_TYPE_PREV = 1
 static Constant PA_UPDATEINDICES_TYPE_CURR = 2
@@ -602,6 +603,14 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 		WAVE indizesChannelType = indizesToAdd
 		totalPulseCounter = GetNumberFromWaveNote(properties, NOTE_INDEX)
 		SetNumberInWaveNote(properties, NOTE_PA_NEW_PULSES_START, totalPulseCounter)
+
+		WAVE/WAVE/Z setIndices
+		WAVE/Z channels, regions, indexHelper
+		[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 0)
+		if(WaveExists(setIndices))
+			indexHelper[][] = PA_CopySetIndiceSizeDispRestart(setIndices[p][q])
+		endif
+
 	endif
 
 	WAVE/Z headstages         = PA_GetUniqueHeadstages(traceData, indizesChannelType)
@@ -865,6 +874,12 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	endif
 
 	return mode
+End
+
+/// @brief For incremental display update copy current size of of setIndices to new display start
+static Function PA_CopySetIndiceSizeDispRestart(WAVE/WAVE setIndices)
+
+	SetNumberInWaveNote(setIndices, PA_SETINDICES_KEY_DISPSTART, GetNumberFromWaveNote(setIndices, NOTE_INDEX))
 End
 
 static Function [WAVE/WAVE setIndices, WAVE channels, WAVE regions, WAVE indexHelper] PA_GetSetIndicesHelper(DFREF pulseAverageHelperDFR, variable prevIndices)
