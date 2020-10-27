@@ -1775,7 +1775,9 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 
 	s = stopmstimer(-2)
 
-	PA_AutomaticTimeAlignment(win, pa)
+	if(pa.autoTimeAlignment)
+		PA_AutomaticTimeAlignment(properties, propertiesWaves, pasi)
+	endif
 
 	print/D "PA_AutomaticTimeAlignment", (stopmstimer(-2) - s) / 1E6
 
@@ -2393,69 +2395,47 @@ End
 /// \rst
 /// See :ref:`db_paplot_timealignment` for an explanation of the algorithm.
 /// \endrst
-static Function PA_AutomaticTimeAlignment(string win, STRUCT PulseAverageSettings& pa)
+static Function PA_AutomaticTimeAlignment(WAVE properties, WAVE/WAVE propertiesWaves, STRUCT PulseAverageSetIndices &pasi)
 
 	variable i, j, numChannels, numRegions, jsonID, numEntries
-	variable region, channelNumber
-	variable lblPWPULSE, lblPWPULSENOTE
+	variable lblPWPULSE, lblPWPULSENOTE, lblSweep, lblPulse
 
-	if(!pa.autoTimeAlignment)
-		return NaN
-	endif
-
-	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
-	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
-
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
-	numChannels = DimSize(channels, ROWS)
-
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
-	numRegions = DimSize(regions, ROWS)
+	numChannels = DimSize(pasi.channels, ROWS)
+	numRegions = DimSize(pasi.regions, ROWS)
 
 	lblPWPULSE = FindDimLabel(propertiesWaves, COLS, "PULSE")
 	lblPWPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
-
-	ASSERT(numChannels == numRegions, "Non-square input")
+	lblSweep = FindDimLabel(properties, COLS, "Sweep")
+	lblPulse = FindDimLabel(properties, COLS, "Pulse")
 
 	jsonID = JSON_New()
+	Make/D/FREE/N=0 featurePos, junk
+	Make/T/FREE/N=0 keys
 
 	for(i = 0; i < numRegions; i += 1)
-		region = regions[i]
 		// diagonal element for the given region
-		channelNumber = channels[i]
-
 		// gather feature positions for all pulses diagonal set
-		WAVE setIndizes = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channelNumber, region)
-
+		WAVE setIndizes = pasi.setIndices[i][i]
 		numEntries = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
-
 		if(numEntries == 0)
 			continue
 		endif
 
-		Make/D/FREE/N=(numEntries) featurePos, junk
-
+		Redimension/N=(numEntries) featurePos, junk, keys
 		Multithread featurePos[] = PA_GetFeaturePosition(propertiesWaves[setIndizes[p]][lblPWPULSE], propertiesWaves[setIndizes[p]][lblPWPULSENOTE])
-
-		Make/FREE/T/N=(numEntries) keys = "/" + num2str(properties[setIndizes[p]][%Sweep]) + "-" + num2str(properties[setIndizes[p]][%Pulse])
-
+		Multithread keys = "/" + num2str(properties[setIndizes[p]][lblSweep]) + "-" + num2str(properties[setIndizes[p]][lblPulse])
 		// store featurePos using sweep and pulse combination as key
 		junk[] = JSON_SetVariable(jsonID, keys[p], featurePos[p])
 
 		for(j = 0; j < numChannels; j += 1)
-			channelNumber = channels[j]
-			WAVE setIndizes = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channelNumber, region)
-
+			WAVE setIndizes = pasi.setIndices[j][i]
 			numEntries = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
-
 			if(numEntries == 0)
 				continue
 			endif
 
 			Redimension/N=(numEntries) keys, junk
-
-			Multithread keys[] = "/" + num2str(properties[setIndizes[p]][%Sweep]) + "-" + num2str(properties[setIndizes[p]][%Pulse])
+			Multithread keys[] = "/" + num2str(properties[setIndizes[p]][lblSweep]) + "-" + num2str(properties[setIndizes[p]][lblPulse])
 			Multithread junk[] = PA_SetFeaturePosition(propertiesWaves[setIndizes[p]][lblPWPULSE], propertiesWaves[setIndizes[p]][lblPWPULSENOTE], JSON_GetVariable(jsonID, keys[p], ignoreErr=1))
 		endfor
 	endfor
