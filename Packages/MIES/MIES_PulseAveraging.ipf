@@ -1724,34 +1724,19 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 
 	s = stopmstimer(-2)
 
-	PA_GenerateAllPulseWaves(win, pa, cs, mode, additionalData)
+	STRUCT PulseAverageSetIndices pasi
+	[pasi] = PA_GenerateAllPulseWaves(win, pa, cs, mode, additionalData)
 
 	print/D "PA_GenerateAllPulseWaves", (stopmstimer(-2) - s) / 1E6
 
-	s = stopmstimer(-2)
+	numChannels = DimSize(pasi.channels, ROWS)
+	numRegions = DimSize(pasi.regions, ROWS)
 
-	PA_ApplyPulseSortingOrder(pa)
-
-	print/D "PA_ApplyPulseSortingOrder", (stopmstimer(-2) - s) / 1E6
+	ASSERT(numChannels == numRegions, "Number of channels must equal number of regions")
 
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
-
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
-	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
-
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
-	numChannels = DimSize(channels, ROWS)
-
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
-	numRegions = DimSize(regions, ROWS)
-
-	if(numChannels != numRegions)
-		return [$"", $"", 0, mode]
-	endif
-
 	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
-
 	if(numTotalPulses == 0)
 		PA_ClearGraphs(preExistingGraphs)
 		return [$"", $"", 0, mode]
@@ -1759,22 +1744,20 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 
 	s = stopmstimer(-2)
 
-	for(i = 0; i < numChannels; i += 1)
-		channelNumber = channels[i]
-		for(j = 0; j < numRegions; j += 1)
-			region = regions[j]
+	PA_ApplyPulseSortingOrder(pa)
 
-			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
+	print/D "PA_ApplyPulseSortingOrder", (stopmstimer(-2) - s) / 1E6
 
-			if(!WaveExists(setWaves))
-				continue
-			endif
+	s = stopmstimer(-2)
 
-			PA_ResetWavesIfRequired(setWaves, pa)
-		endfor
-	endfor
+	Make/FREE/WAVE/N=(numChannels, numRegions) setWaves
+	setWaves[][] = PA_GetSetWaves(pulseAverageHelperDFR, pasi.channels[p], pasi.regions[q])
+	pasi.indexHelper[][] = PA_ResetWavesIfRequired(setWaves[p][q], pa)
 
 	print/D "PA_ResetWavesIfRequired", (stopmstimer(-2) - s) / 1E6
+
+	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
+	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
 
 	s = stopmstimer(-2)
 
@@ -2533,17 +2516,23 @@ threadsafe static Function PA_SetFeaturePosition(WAVE wv, WAVE noteWave, variabl
 	SetNumberInWaveNote(noteWave, NOTE_KEY_TIMEALIGN, 1)
 End
 
-/// @brief Reset All Waves from a list of waves to its original state if they are outdated
+/// @brief Reset All pulse and pulse note waves from a set to its original state if they are outdated
 ///
 // PA waves get an entry to their wave note as soon as they are modified. If
 // this entry does not match the current panel selection, they are resetted to
 // redo the calculation from the beginning.
 //
-// @param set  a set of waves that need to be tested
-// @param pa           Filled PulseAverageSettings structure. @see PA_GatherSettings
-static Function PA_ResetWavesIfRequired(WAVE/WAVE set, STRUCT PulseAverageSettings &pa)
+// @param setWave  a set of waves that need to be tested
+// @param pa       Filled PulseAverageSettings structure. @see PA_GatherSettings
+static Function PA_ResetWavesIfRequired(WAVE/Z setWave, STRUCT PulseAverageSettings &pa)
 	variable i, statusZero, statusTimeAlign, numEntries, statusSearchFailedPulse
 	variable failedPulseLevel
+
+	if(!WaveExists(setWave))
+		return NaN
+	endif
+
+	WAVE/WAVE set = setWave
 
 	numEntries = DimSize(set, ROWS)
 	for(i = 0; i < numEntries; i += 1)
