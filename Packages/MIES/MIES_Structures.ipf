@@ -100,6 +100,7 @@ Structure PulseAverageSetIndices
 	WAVE/T propertiesText
 	WAVE/WAVE propertiesWaves
 	DFREF pulseAverageHelperDFR
+	DFREF pulseAverageDFR
 	WAVE channels
 	WAVE regions
 	WAVE numEntries
