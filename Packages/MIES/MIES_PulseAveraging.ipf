@@ -527,10 +527,10 @@ End
 /// Returns the mode, because the mode may change from incremental to full update because incremental update fails due to layout changes
 static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
 
-	variable startingPulseSett, endingPulseSett, isDiagonalElement, pulseHasFailed, newChannel
+	variable startingPulseSett, endingPulseSett, pulseHasFailed, numActive
 	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, endingPulse
 	variable headstage, pulseToPulseLength, totalOnsetDelay, numChannelTypeTraces, totalPulseCounter, jsonID, lastSweep
-	variable activeRegionCount, activeChanCount, channelNumber, first, length, dictId, channelType, numChannels, numRegions
+	variable activeRegionCount, activeChanCount, channelNumber, first, length, channelType, numChannels, numRegions
 	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep, incrementalMode, layoutChanged
 	variable lblIndex, lblSweep, lblChannelType, lblChannelNumber, lblRegion, lblHeadstage, lblPulse, lblDiagonalElement, lblActiveRegionCount, lblActiveChanCount, lblLastSweep, lblExperiment
 	variable lblTraceHeadstage, lblTraceExperiment, lblTraceSweepNumber, lblTraceChannelNumber, lblTracenumericalValues, lblTraceFullpath
@@ -720,8 +720,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				sweepList = AddListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP, inf)
 			endif
 
-			isDiagonalElement = (activeRegionCount == activeChanCount)
-
 			// we want to find the last acquired sweep from the experiment/device combination
 			// by just using the path to the numerical labnotebook we can achieve that
 			key = experiment + "_" + traceData[idx][lblTracenumericalValues]
@@ -772,9 +770,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				properties[totalPulseCounter][lblRegion]                      = region
 				properties[totalPulseCounter][lblHeadstage]                   = headstage
 				properties[totalPulseCounter][lblPulse]                       = k
-				properties[totalPulseCounter][lblDiagonalElement]             = IsDiagonalElement
-				properties[totalPulseCounter][lblActiveRegionCount]           = activeRegionCount
-				properties[totalPulseCounter][lblActiveChanCount]             = activeChanCount
 				properties[totalPulseCounter][lblLastSweep]                   = lastSweep
 
 				propertiesText[totalPulseCounter][lblExperiment] = experiment
@@ -869,7 +864,9 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	WAVE/WAVE/Z setIndices
 	WAVE/Z channels, regions, indexHelper
 	[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 0)
-	ASSERT(DimSize(channels, ROWS) == DimSize(regions, ROWS), "Number of channels must equal number of regions")
+	numActive = DimSize(channels, ROWS)
+	ASSERT(numActive == DimSize(regions, ROWS), "Number of channels must equal number of regions")
+
 	pasi.setIndices = setIndices
 	pasi.channels = channels
 	pasi.regions = regions
@@ -877,6 +874,12 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 	PA_UpdateIndiceNotes(pulseAverageHelperDFR, currentDisplayMapping, prevDisplayMapping, pasi, layoutChanged)
 	Duplicate/O currentDisplayMapping, prevDisplayMapping
+
+	Make/FREE/D/N=(numActive, numActive) numEntries, startEntry
+	numEntries[][] = GetNumberFromWaveNote(setIndices[p][q], NOTE_INDEX)
+	startEntry[][] = GetNumberFromWaveNote(setIndices[p][q], PA_SETINDICES_KEY_DISPSTART)
+	pasi.numEntries = numEntries
+	pasi.startEntry = startEntry
 
 	JSON_Release(jsonID)
 
@@ -1227,17 +1230,12 @@ static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, 
 	variable numTotalPulses, sweepNo
 	variable region, pulse, pulseHasFailed, jsonID, referencePulseHasFailed
 	variable lblPWPULSENOTE, lblSweep, lblPulse, lblPulseHasFailed
-	variable numActive, numEntries, i, j, k, idx
+	variable numActive, numEntries, i, j, k, idx, startEntry
 	string key
-
-// Change to iterate over setIndices
-	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
-	if(numTotalPulses == 0)
-		return NaN
-	endif
 
 	lblPWPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
 	// update the wave notes
+	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
 	Make/FREE/N=(numTotalPulses) indexHelper
 	Multithread indexHelper[] = SetNumberInWaveNote(propertiesWaves[p][lblPWPULSENOTE], NOTE_KEY_SEARCH_FAILED_PULSE, pa.searchFailedPulses)
 
@@ -1261,8 +1259,9 @@ static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, 
 		region = pasi.regions[i]
 
 		WAVE indices = pasi.setIndices[i][i]
-		numEntries = GetNumberFromWaveNote(indices, NOTE_INDEX)
-		for(j = 0; j < numEntries; j += 1)
+		numEntries = pasi.numEntries[i][i]
+		startEntry = pasi.startEntry[i][i]
+		for(j = startEntry; j < numEntries; j += 1)
 			idx = indices[j]
 
 			WAVE noteWave = propertiesWaves[idx][lblPWPULSENOTE]
@@ -1284,8 +1283,9 @@ static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, 
 			endif
 
 			WAVE indices = pasi.setIndices[j][i]
-			numEntries = GetNumberFromWaveNote(indices, NOTE_INDEX)
-			for(k = 0; k < numEntries; k += 1)
+			numEntries = pasi.numEntries[j][i]
+			startEntry = pasi.startEntry[j][i]
+			for(k = startEntry; k < numEntries; k += 1)
 				idx = indices[k]
 				sweepNo = properties[idx][lblSweep]
 				pulse   = properties[idx][lblPulse]
@@ -1741,10 +1741,9 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 
 	print/D "PA_GenerateAllPulseWaves", (stopmstimer(-2) - s) / 1E6
 
-	numActive = DimSize(pasi.channels, ROWS)
-
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
+
 	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
 	if(numTotalPulses == 0)
 		PA_ClearGraphs(preExistingGraphs)
@@ -1759,9 +1758,12 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 
 	s = stopmstimer(-2)
 
+	numActive = DimSize(pasi.channels, ROWS)
 	Make/FREE/WAVE/N=(numActive, numActive) setWaves
 	setWaves[][] = PA_GetSetWaves(pulseAverageHelperDFR, pasi.channels[p], pasi.regions[q])
-	pasi.indexHelper[][] = PA_ResetWavesIfRequired(setWaves[p][q], pa)
+	pasi.setWaves = setWaves
+
+	pasi.indexHelper[][] = PA_ResetWavesIfRequired(pasi.setWaves[p][q], pa)
 
 	print/D "PA_ResetWavesIfRequired", (stopmstimer(-2) - s) / 1E6
 
@@ -1779,7 +1781,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 	s = stopmstimer(-2)
 
 	if(pa.zeroPulses)
-		pasi.indexHelper[][] = PA_ZeroPulses(setWaves[p][q])
+		pasi.indexHelper[][] = PA_ZeroPulses(pasi.setWaves[p][q])
 	endif
 
 	print/D "PA_ZeroPulses", (stopmstimer(-2) - s) / 1E6
@@ -2408,11 +2410,10 @@ End
 /// \endrst
 static Function PA_AutomaticTimeAlignment(WAVE properties, WAVE/WAVE propertiesWaves, STRUCT PulseAverageSetIndices &pasi)
 
-	variable i, j, numChannels, numRegions, jsonID, numEntries
+	variable i, j, numActive, jsonID, numEntries
 	variable lblPWPULSE, lblPWPULSENOTE, lblSweep, lblPulse
 
-	numChannels = DimSize(pasi.channels, ROWS)
-	numRegions = DimSize(pasi.regions, ROWS)
+	numActive = DimSize(pasi.channels, ROWS)
 
 	lblPWPULSE = FindDimLabel(propertiesWaves, COLS, "PULSE")
 	lblPWPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
@@ -2423,11 +2424,11 @@ static Function PA_AutomaticTimeAlignment(WAVE properties, WAVE/WAVE propertiesW
 	Make/D/FREE/N=0 featurePos, junk
 	Make/T/FREE/N=0 keys
 
-	for(i = 0; i < numRegions; i += 1)
+	for(i = 0; i < numActive; i += 1)
 		// diagonal element for the given region
 		// gather feature positions for all pulses diagonal set
 		WAVE setIndizes = pasi.setIndices[i][i]
-		numEntries = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
+		numEntries = pasi.numEntries[i][i]
 		if(numEntries == 0)
 			continue
 		endif
@@ -2438,9 +2439,9 @@ static Function PA_AutomaticTimeAlignment(WAVE properties, WAVE/WAVE propertiesW
 		// store featurePos using sweep and pulse combination as key
 		junk[] = JSON_SetVariable(jsonID, keys[p], featurePos[p])
 
-		for(j = 0; j < numChannels; j += 1)
+		for(j = 0; j < numActive; j += 1)
 			WAVE setIndizes = pasi.setIndices[j][i]
-			numEntries = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
+			numEntries = pasi.numEntries[j][i]
 			if(numEntries == 0)
 				continue
 			endif

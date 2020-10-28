@@ -95,8 +95,11 @@ EndStructure
 
 Structure PulseAverageSetIndices
 	WAVE/WAVE setIndices
+	WAVE/WAVE setWaves
 	WAVE channels
 	WAVE regions
+	WAVE numEntries
+	WAVE startEntry
 	WAVE indexHelper
 EndStructure
 
