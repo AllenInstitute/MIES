@@ -95,7 +95,11 @@ EndStructure
 
 Structure PulseAverageSetIndices
 	WAVE/WAVE setIndices
-	WAVE/WAVE setWaves
+	WAVE/WAVE setWaves2
+	WAVE properties
+	WAVE/T propertiesText
+	WAVE/WAVE propertiesWaves
+	DFREF pulseAverageHelperDFR
 	WAVE channels
 	WAVE regions
 	WAVE numEntries

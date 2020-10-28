@@ -861,9 +861,14 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS, sweepList)
 	SetNumberInWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE, layoutChanged)
 
+	pasi.pulseAverageHelperDFR = pulseAverageHelperDFR
+	pasi.properties = properties
+	pasi.propertiesText = propertiesText
+	pasi.propertiesWaves = propertiesWaves
+
 	WAVE/WAVE/Z setIndices
 	WAVE/Z channels, regions, indexHelper
-	[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 0)
+	[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pasi.pulseAverageHelperDFR, 0)
 	numActive = DimSize(channels, ROWS)
 	ASSERT(numActive == DimSize(regions, ROWS), "Number of channels must equal number of regions")
 
@@ -872,7 +877,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	pasi.regions = regions
 	pasi.indexHelper = indexHelper
 
-	PA_UpdateIndiceNotes(pulseAverageHelperDFR, currentDisplayMapping, prevDisplayMapping, pasi, layoutChanged)
+	PA_UpdateIndiceNotes(currentDisplayMapping, prevDisplayMapping, pasi, layoutChanged)
 	Duplicate/O currentDisplayMapping, prevDisplayMapping
 
 	Make/FREE/D/N=(numActive, numActive) numEntries, startEntry
@@ -916,18 +921,18 @@ static Function [WAVE/WAVE setIndices, WAVE channels, WAVE regions, WAVE indexHe
 	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, keyRegions), PA_PROPERTIES_STRLIST_SEP)
 	numRegions = DimSize(regions, ROWS)
 	Make/FREE/WAVE/N=(numChannels, numRegions) setIndices
-	Make/FREE/N=(numChannels, numRegions) junk
+	Make/FREE/N=(numChannels, numRegions) indexHelper
 	setIndices[][] = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channels[p], regions[q])
 
-	return [setIndices, channels, regions, junk]
+	return [setIndices, channels, regions, indexHelper]
 End
 
-static Function PA_UpdateIndiceNotes(DFREF pulseAverageHelperDFR, WAVE currentDisplayMapping, WAVE prevDisplayMapping, STRUCT PulseAverageSetIndices &pasi, variable layoutChanged)
+static Function PA_UpdateIndiceNotes(WAVE currentDisplayMapping, WAVE prevDisplayMapping, STRUCT PulseAverageSetIndices &pasi, variable layoutChanged)
 
 	if(layoutChanged)
 		WAVE/WAVE/Z setIndices
 		WAVE/Z channels, regions, indexHelper
-		[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 1)
+		[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pasi.pulseAverageHelperDFR, 1)
 		if(WaveExists(setIndices))
 			indexHelper[][] = PA_UpdateIndiceNotesImpl(setIndices[p][q], currentDisplayMapping, prevDisplayMapping, channels[p], regions[q], layoutChanged, PA_UPDATEINDICES_TYPE_PREV)
 		endif
@@ -1145,6 +1150,7 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	print/D "All", (stopmstimer(-2) - s) / 1E6
 End
 
+/// @brief Returns the two column setWave with pulse/pulsenote
 static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable region, [variable removeFailedPulses])
 
 	removeFailedPulses = ParamIsDefault(removeFailedPulses) ? 0 : !!removeFailedPulses
@@ -1226,12 +1232,15 @@ threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE pro
 End
 
 /// @brief Handle marking pulses as failed/passed if required
-static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi)
+static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi)
 	variable numTotalPulses, sweepNo
 	variable region, pulse, pulseHasFailed, jsonID, referencePulseHasFailed
 	variable lblPWPULSENOTE, lblSweep, lblPulse, lblPulseHasFailed
 	variable numActive, numEntries, i, j, k, idx, startEntry
 	string key
+
+	WAVE properties = pasi.properties
+	WAVE/WAVE propertiesWaves = pasi.propertiesWaves
 
 	lblPWPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
 	// update the wave notes
@@ -1759,11 +1768,11 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 	s = stopmstimer(-2)
 
 	numActive = DimSize(pasi.channels, ROWS)
-	Make/FREE/WAVE/N=(numActive, numActive) setWaves
-	setWaves[][] = PA_GetSetWaves(pulseAverageHelperDFR, pasi.channels[p], pasi.regions[q])
-	pasi.setWaves = setWaves
+	Make/FREE/WAVE/N=(numActive, numActive) setWaves2
+	setWaves2[][] = PA_GetSetWaves(pasi.pulseAverageHelperDFR, pasi.channels[p], pasi.regions[q])
+	pasi.setWaves2 = setWaves2
 
-	pasi.indexHelper[][] = PA_ResetWavesIfRequired(pasi.setWaves[p][q], pa)
+	pasi.indexHelper[][] = PA_ResetWavesIfRequired(pasi.setWaves2[p][q], pa)
 
 	print/D "PA_ResetWavesIfRequired", (stopmstimer(-2) - s) / 1E6
 
@@ -1773,7 +1782,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 	s = stopmstimer(-2)
 
 	if(!cs.failedPulses)
-		PA_MarkFailedPulses(properties, propertiesWaves, pa, pasi)
+		PA_MarkFailedPulses(pa, pasi)
 	endif
 
 	print/D "PA_MarkFailedPulses", (stopmstimer(-2) - s) / 1E6
@@ -1781,7 +1790,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 	s = stopmstimer(-2)
 
 	if(pa.zeroPulses)
-		pasi.indexHelper[][] = PA_ZeroPulses(pasi.setWaves[p][q])
+		pasi.indexHelper[][] = PA_ZeroPulses(pasi.setWaves2[p][q])
 	endif
 
 	print/D "PA_ZeroPulses", (stopmstimer(-2) - s) / 1E6
@@ -1789,7 +1798,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 	s = stopmstimer(-2)
 
 	if(pa.autoTimeAlignment)
-		PA_AutomaticTimeAlignment(properties, propertiesWaves, pasi)
+		PA_AutomaticTimeAlignment(pasi)
 	endif
 
 	print/D "PA_AutomaticTimeAlignment", (stopmstimer(-2) - s) / 1E6
@@ -1797,71 +1806,74 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 	s = stopmstimer(-2)
 
 	WAVE/WAVE/Z dest, source
-	[dest, source] = PA_CalculateAllAverages(pasi, properties, propertiesWaves, mode)
+	[dest, source] = PA_CalculateAllAverages(pasi, mode)
 
 	print/D "PA_CalculateAllAverages", (stopmstimer(-2) - s) / 1E6
 
 	return [dest, source, 1, mode]
 End
 
-static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, WAVE properties, WAVE/WAVE propertiesWaves, variable mode)
+static Function [WAVE/WAVE avgRet, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, variable mode)
 
 	variable numThreads, numActive
 	string keyAll, keyOld
 
+	WAVE properties = pasi.properties
+	WAVE/WAVE propertiesWaves = pasi.propertiesWaves
+
 	numActive = DimSize(pasi.channels, ROWS)
 
-	Make/FREE/WAVE/N=(numActive, numActive) sourceOld, sourceAll, sourceNew, sourceCombined, dest, avg
+	Make/FREE/WAVE/N=(numActive, numActive) setWavesOld, setWavesAll, setWavesNew, setWaves2Combined, avgRet, avg
 	numThreads = min(numActive * numActive, ThreadProcessorCount)
 
 	// TODO if we get in pasi the two column setWaves instead of the one column setWaves,
 	// we can use them here and need to get in combined only OLD and NEW.
 
-	Multithread/NT=(numThreads) sourceCombined[][] = PA_GetSetWaves_TS(properties, propertiesWaves, pasi.setIndices[p][q], PA_GETSETWAVES_OLD | PA_GETSETWAVES_NEW | PA_GETSETWAVES_ALL, 1)
+	Multithread/NT=(numThreads) setWaves2Combined[][] = PA_GetSetWaves_TS(properties, propertiesWaves, pasi.setIndices[p][q], PA_GETSETWAVES_OLD | PA_GETSETWAVES_NEW | PA_GETSETWAVES_ALL, 1)
 
-	Multithread/NT=(numThreads) sourceAll[][] = PA_ExtractSource(WaveRef(sourceCombined[p][q], row = 0))
-	keyAll = CA_AveragingWaveModKey(sourceAll)
+	Multithread/NT=(numThreads) setWavesAll[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2Combined[p][q], row = 0))
+	keyAll = CA_AveragingWaveModKey(setWavesAll)
 	WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(keyAll, options = CA_OPTS_NO_DUPLICATE)
 	if(!WaveExists(cache))
 		print "Cache Miss All"
 		// we have to calculate
 		if(mode == POST_PLOT_ADDED_SWEEPS)
-			Multithread/NT=(numThreads) sourceOld[][] = PA_ExtractSource(WaveRef(sourceCombined[p][q], row = 2))
-			keyOld = CA_AveragingWaveModKey(sourceOld)
+			Multithread/NT=(numThreads) setWavesOld[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2Combined[p][q], row = 2))
+			keyOld = CA_AveragingWaveModKey(setWavesOld)
 			WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(keyOld, options = CA_OPTS_NO_DUPLICATE)
 			if(WaveExists(cache))
-				Multithread/NT=(numThreads) sourceNew[][] = PA_ExtractSource(WaveRef(sourceCombined[p][q], row = 1))
-				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(sourceNew[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1, prevAvgData = PA_ExtractSumsCountsOnly(cache[p][q]))
+				Multithread/NT=(numThreads) setWavesNew[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2Combined[p][q], row = 1))
+				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesNew[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1, prevAvgData = PA_ExtractSumsCountsOnly(cache[p][q]))
 				WAVE sourceAll = sourceNew
 			else
-				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(sourceAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
+				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
 			endif
 		else
-			Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(sourceAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
+			Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
 		endif
 
 		WAVE indexHelper = pasi.indexHelper
-		Multithread indexHelper[][] = PA_StoreMaxAndUnitsInWaveNote(WaveRef(avg[p][q], row = 0), WaveRef(sourceAll[p][q], row = 0))
+		Multithread indexHelper[][] = PA_StoreMaxAndUnitsInWaveNote(WaveRef(avg[p][q], row = 0), WaveRef(setWavesAll[p][q], row = 0))
 		CA_StoreEntryIntoCache(keyAll, avg, options = CA_OPTS_NO_DUPLICATE)
 	else
 		print "Cache Hit All"
 		WAVE/WAVE avg = cache
 	endif
 
-	dest[][] = WaveRef(avg[p][q], row = 0)
+	avgRet[][] = WaveRef(avg[p][q], row = 0)
 
-	return [dest, sourceAll]
+	return [avgRet, setWavesAll]
 End
 
-threadsafe static Function/WAVE PA_ExtractSource(WAVE/WAVE sourceWithNotes)
+threadsafe static Function/WAVE PA_ExtractPulseSetFromSetWaves2(WAVE/WAVE setWave2)
 
-	if(!WaveExists(sourceWithNotes))
+	if(!WaveExists(setWave2))
 		return $""
 	endif
 
-	Duplicate/FREE/RMD=[][0] sourceWithNotes, source
-	Redimension/N=(-1) source
-	return source
+	Duplicate/FREE/RMD=[][0] setWave2, setWave
+	Redimension/N=(-1) setWave
+	return setWave
 End
 
 threadsafe static Function PA_StoreMaxAndUnitsInWaveNote(WAVE/Z w, WAVE/Z unitSource)
@@ -2165,16 +2177,16 @@ static Function/S PA_BaseName(channelNumber, headStage)
 End
 
 /// @brief Zero single pulses using @c ZeroWave
-threadsafe static Function PA_ZeroPulses(WAVE/Z setWave)
+threadsafe static Function PA_ZeroPulses(WAVE/Z setWave2)
 
-	if(!WaveExists(setWave))
+	if(!WaveExists(setWave2))
 		return NaN
 	endif
 
-	WAVE/WAVE set = setWave
+	WAVE/WAVE set2 = setWave2
 
-	Make/FREE/N=(DimSize(set, ROWS)) junk
-	Multithread junk = PA_ZeroWave(set[p][0], set[p][1])
+	Make/FREE/N=(DimSize(set2, ROWS)) junk
+	Multithread junk = PA_ZeroWave(set2[p][0], set2[p][1])
 End
 
 /// @brief Zero the wave using differentiation and integration
@@ -2402,10 +2414,13 @@ End
 /// \rst
 /// See :ref:`db_paplot_timealignment` for an explanation of the algorithm.
 /// \endrst
-static Function PA_AutomaticTimeAlignment(WAVE properties, WAVE/WAVE propertiesWaves, STRUCT PulseAverageSetIndices &pasi)
+static Function PA_AutomaticTimeAlignment(STRUCT PulseAverageSetIndices &pasi)
 
 	variable i, j, numActive, jsonID, numEntries
 	variable lblPWPULSE, lblPWPULSENOTE, lblSweep, lblPulse
+
+	WAVE properties = pasi.properties
+	WAVE/WAVE propertiesWaves = pasi.propertiesWaves
 
 	numActive = DimSize(pasi.channels, ROWS)
 
@@ -2495,21 +2510,21 @@ End
 // this entry does not match the current panel selection, they are resetted to
 // redo the calculation from the beginning.
 //
-// @param setWave  a set of waves that need to be tested
+// @param setWave2  a set of waves that need to be tested
 // @param pa       Filled PulseAverageSettings structure. @see PA_GatherSettings
-static Function PA_ResetWavesIfRequired(WAVE/Z setWave, STRUCT PulseAverageSettings &pa)
+static Function PA_ResetWavesIfRequired(WAVE/Z setWave2, STRUCT PulseAverageSettings &pa)
 	variable i, statusZero, statusTimeAlign, numEntries, statusSearchFailedPulse
 	variable failedPulseLevel
 
-	if(!WaveExists(setWave))
+	if(!WaveExists(setWave2))
 		return NaN
 	endif
 
-	WAVE/WAVE set = setWave
+	WAVE/WAVE set2 = setWave2
 
-	numEntries = DimSize(set, ROWS)
+	numEntries = DimSize(set2, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		WAVE noteWave = set[i][1]
+		WAVE noteWave = set2[i][1]
 
 		statusZero = GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED)
 		statusTimeAlign = GetNumberFromWaveNote(noteWave, NOTE_KEY_TIMEALIGN)
@@ -2532,8 +2547,8 @@ static Function PA_ResetWavesIfRequired(WAVE/Z setWave, STRUCT PulseAverageSetti
 			endif
 		endif
 
-		ReplaceWaveWithBackup(set[i][0], nonExistingBackupIsFatal = 1, keepBackup = 1)
-		ReplaceWaveWithBackup(set[i][1], nonExistingBackupIsFatal = 1, keepBackup = 1)
+		ReplaceWaveWithBackup(set2[i][0], nonExistingBackupIsFatal = 1, keepBackup = 1)
+		ReplaceWaveWithBackup(set2[i][1], nonExistingBackupIsFatal = 1, keepBackup = 1)
 	endfor
 End
 
