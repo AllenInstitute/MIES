@@ -869,6 +869,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	WAVE/WAVE/Z setIndices
 	WAVE/Z channels, regions, indexHelper
 	[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 0)
+	ASSERT(DimSize(channels, ROWS) == DimSize(regions, ROWS), "Number of channels must equal number of regions")
 	pasi.setIndices = setIndices
 	pasi.channels = channels
 	pasi.regions = regions
@@ -1704,7 +1705,7 @@ End
 /// @retval retMode       returned mode, as it can fallback to full update
 static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, variable retMode] PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
 
-	variable numChannels, numRegions, i, j, region, channelNumber
+	variable numActive, i, j
 	variable constantSinglePulseSettings, numTotalPulses
 	variable graphDataIndex, traceCount
 	string preExistingGraphs, graph
@@ -1729,10 +1730,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 
 	print/D "PA_GenerateAllPulseWaves", (stopmstimer(-2) - s) / 1E6
 
-	numChannels = DimSize(pasi.channels, ROWS)
-	numRegions = DimSize(pasi.regions, ROWS)
-
-	ASSERT(numChannels == numRegions, "Number of channels must equal number of regions")
+	numActive = DimSize(pasi.channels, ROWS)
 
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
@@ -1750,7 +1748,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 
 	s = stopmstimer(-2)
 
-	Make/FREE/WAVE/N=(numChannels, numRegions) setWaves
+	Make/FREE/WAVE/N=(numActive, numActive) setWaves
 	setWaves[][] = PA_GetSetWaves(pulseAverageHelperDFR, pasi.channels[p], pasi.regions[q])
 	pasi.indexHelper[][] = PA_ResetWavesIfRequired(setWaves[p][q], pa)
 
