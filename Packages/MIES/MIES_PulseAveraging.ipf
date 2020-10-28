@@ -1138,8 +1138,7 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
 
 	s2 = stopmstimer(-2)
-	WAVE/WAVE/Z targetForAverage, sourceForAverage
-	usedTraceGraphs = PA_ShowPulses(graph, current, cs, targetForAverage, sourceForAverage, mode, additionalData)
+	usedTraceGraphs = PA_ShowPulses(graph, current, cs, pasi, mode)
 	e2 = stopmstimer(-2)
 
 	try
@@ -1352,19 +1351,19 @@ static Function [variable idx, variable traceCount] PA_GetTraceCountFromGraphDat
 	return [idx, 0]
 End
 
-static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, WAVE/WAVE targetForAverage, WAVE/WAVE sourceForAverage, variable mode, WAVE/Z additionalData)
+static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, STRUCT PulseAverageSetIndices &pasi, variable mode)
 
-	string pulseTrace, str, graph, key
-	variable numChannels, i, j, sweepNo, numTotalPulses, xPos, yPos
-	variable first, numEntries, startingPulse, endingPulse, traceCount, step, isDiagonalElement
-	variable channelNumber, region, channelType, length, newSweepCount
-	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay, pulseHasFailed
-	variable numRegions, hideTrace, lastSweep, alpha, constantSinglePulseSettings
-	variable hiddenTracesCount, userDataCount, avgPlotCount, deconPlotCount
-	variable jsonID, hideTraceJsonID, graphDataIndex, numHiddenTracesGraphs, graphHasChanged, tmpVal
-	variable startIndexNewPulses, numPlotPulses
+	string pulseTrace, graph
+	variable numActive, i, j, k, sweepNo, numTotalPulses, numPlotPulses, xPos, yPos
+	variable traceCount, step
+	variable channelNumber, region
+	variable pulseHasFailed
+	variable hideTrace, lastSweep, alpha
+	variable hiddenTracesCount, avgPlotCount, deconPlotCount
+	variable jsonID, hideTraceJsonID, graphDataIndex, numHiddenTracesGraphs, graphHasChanged
+	variable startEntry, numEntries, idx
 	variable lblSweep, lblChannelNumber, lblRegion, lblHeadstage
-	variable lblDiagonalElement, lblActiveRegionCount, lblActiveChanCount, lblPulseHasFailed, lblLastSweep, lblTRACES_AVERAGE, lblTRACECOUNT, lblTRACES_DECONV
+	variable lblPulseHasFailed, lblLastSweep, lblTRACES_AVERAGE, lblTRACECOUNT, lblTRACES_DECONV
 	variable lblTRACES_AVERAGE_XAXIS, lblTRACES_AVERAGE_YAXIS, lblTRACES_AVERAGE_WAVES, lblTRACES_AVERAGEFORDECONV, lblPWPULSE
 	string jsonPath
 	string vertAxis, horizAxis
@@ -1373,31 +1372,18 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	string previousGraph = ""
 
 	if(!pa.showTraces)
-		return usedGraphs
+		return ""
 	elseif(cs.traces)
 		return PA_GetGraphs(win, PA_DISPLAYMODE_TRACES)
 	endif
 
-	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
-	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+	WAVE properties = pasi.properties
+	WAVE/WAVE propertiesWaves = pasi.propertiesWaves
 
-	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
-	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
-
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
-	numChannels = DimSize(channels, ROWS)
-
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
-	numRegions = DimSize(regions, ROWS)
+	numActive = DimSize(pasi.channels, ROWS)
 
 	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
-
-	if(mode == POST_PLOT_ADDED_SWEEPS)
-		startIndexNewPulses = GetNumberFromWaveNote(properties, NOTE_PA_NEW_PULSES_START)
-		ASSERT(!IsNaN(startIndexNewPulses), "Add sweep plots mode is missing new pulse start information.")
-	endif
-	numPlotPulses = numTotalPulses - startIndexNewPulses
+	numPlotPulses = numTotalPulses - GetNumberFromWaveNote(properties, NOTE_PA_NEW_PULSES_START)
 
 	WAVE/T paGraphData = GetPAGraphData()
 
@@ -1405,9 +1391,6 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	lblChannelNumber = FindDimLabel(properties, COLS, "ChannelNumber")
 	lblRegion = FindDimLabel(properties, COLS, "Region")
 	lblHeadstage = FindDimLabel(properties, COLS, "Headstage")
-	lblDiagonalElement = FindDimLabel(properties, COLS, "DiagonalElement")
-	lblActiveRegionCount = FindDimLabel(properties, COLS, "ActiveRegionCount")
-	lblActiveChanCount = FindDimLabel(properties, COLS, "ActiveChanCount")
 	lblPulseHasFailed = FindDimLabel(properties, COLS, "PulseHasFailed")
 	lblLastSweep = FindDimLabel(properties, COLS, "LastSweep")
 
@@ -1421,99 +1404,107 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 	lblPWPULSE = FindDimLabel(propertiesWaves, COLS, "PULSE")
 
-	Make/T/FREE/N=(numTotalPulses) plotTraces, hiddenTraces
+	Make/T/FREE/N=(numPlotPulses) hiddenTraces
 	Duplicate/FREE/RMD=[][lblPWPULSE] propertiesWaves, pulseWaves
 	jsonID = JSON_Parse("{}")
 	if(pa.multipleGraphs)
 		hideTraceJsonID = JSON_Parse("{}")
 	endif
 
-	for(i = startIndexNewPulses; i < numTotalPulses; i += 1)
-
-		region = properties[i][lblRegion]
+	for(i = 0; i < numActive; i += 1)
+		region = pasi.regions[i]
 		if(pa.regionSlider != -1 && pa.regionSlider != region) // unselected region in ddaq viewing mode
 			continue
 		endif
 
-		activeRegionCount = properties[i][lblActiveRegionCount]
-		activeChanCount = properties[i][lblActiveChanCount]
-		[vertAxis, horizAxis] = PA_GetAxes(pa, activeRegionCount, activeChanCount)
-
-		channelNumber = properties[i][lblChannelNumber]
-		if(!pa.multipleGraphs && i == startIndexNewPulses || pa.multipleGraphs)
-			graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, activeRegionCount, activeChanCount, numRegions)
-			graphHasChanged = CmpStr(graph, previousGraph)
-			if(graphHasChanged)
-				if(!IsEmpty(previousGraph))
-					paGraphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceCount)
+		for(j = 0; j < numActive; j += 1)
+			channelNumber = pasi.channels[j]
+			// graph change logic
+			if(!pa.multipleGraphs && j == 0 && i == 0 || pa.multipleGraphs)
+				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, i + 1, j + 1, numActive)
+				graphHasChanged = CmpStr(graph, previousGraph)
+				if(graphHasChanged)
+					if(!IsEmpty(previousGraph))
+						paGraphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceCount)
+					endif
+					[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph)
+					previousGraph = graph
 				endif
-				[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph)
-				previousGraph = graph
 			endif
-		endif
-
-		if(WhichListItem(graph, usedGraphs) == -1)
-			if(mode != POST_PLOT_ADDED_SWEEPS)
-				RemoveTracesFromGraph(graph)
-				RemoveAnnotationsFromGraph(graph)
-				[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph, clear = 1)
-			endif
-			usedGraphs = AddListItem(graph, usedGraphs, ";", inf)
-		endif
-
-		STRUCT RGBColor s
-
-		if(pa.showIndividualPulses)
-
-			isDiagonalElement = properties[i][lblDiagonalElement]
-			step = isDiagonalElement ? 1 : PA_PLOT_STEPPING
-
-			pulseHasFailed = properties[i][lblPulseHasFailed]
-			if(pulseHasFailed)
-				hideTrace = pa.hideFailedPulses
-				s.red   = 65535
-				s.green = 0
-				s.blue  = 0
-				alpha = 65535
-			else
-				hideTrace = 0
-				[s] = GetTraceColor(properties[i][lblHeadstage])
-				alpha = 65535 * 0.2
+			// build list of used graphs, when not incremental we clear it on first encounter
+			if(WhichListItem(graph, usedGraphs) == -1)
+				if(mode != POST_PLOT_ADDED_SWEEPS)
+					RemoveTracesFromGraph(graph)
+					RemoveAnnotationsFromGraph(graph)
+					[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph, clear = 1)
+				endif
+				usedGraphs = AddListItem(graph, usedGraphs, ";", inf)
 			endif
 
-			WAVE plotWave = propertiesWaves[i][lblPWPULSE]
-			sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, traceCount, NameOfWave(plotWave)
-			traceCount += 1
+			if(!pa.showIndividualPulses)
+				continue
+			endif
 
-			jsonPath = graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(s.red) + "/" + num2str(s.green) + "/" + num2str(s.blue) + "/" + num2str(alpha) + "/" + num2str(step) + "/"
-			JSON_AddTreeArray(jsonID, jsonPath + "index")
-			JSON_AddTreeArray(jsonID, jsonPath + "traceName")
-			JSON_AddVariable(jsonID, jsonPath + "index", i)
-			JSON_AddString(jsonID, jsonPath + "traceName", pulseTrace)
+			[vertAxis, horizAxis] = PA_GetAxes(pa, i + 1, j + 1)
+			step = (i == j) ? 1 : PA_PLOT_STEPPING
 
-			if(hideTrace)
-				if(pa.multipleGraphs)
-					jsonPath = graph + "/hiddenTraces"
-					JSON_AddTreeArray(hideTraceJsonID, jsonPath)
-					JSON_AddString(hideTraceJsonID, jsonPath, pulseTrace)
+			WAVE indices = pasi.setIndices[j][i]
+			numEntries = pasi.numEntries[j][i]
+			startEntry = pasi.startEntry[j][i]
+
+			for(k = startEntry; k < numEntries; k += 1)
+				idx = indices[k]
+	
+				STRUCT RGBColor s
+	
+				pulseHasFailed = properties[idx][lblPulseHasFailed]
+				if(pulseHasFailed)
+					hideTrace = pa.hideFailedPulses
+					s.red   = 65535
+					s.green = 0
+					s.blue  = 0
+					alpha = 65535
 				else
-					hiddenTraces[hiddenTracesCount] = pulseTrace
-					hiddenTracesCount += 1
+					hideTrace = 0
+					[s] = GetTraceColor(properties[idx][lblHeadstage])
+					alpha = 65535 * 0.2
 				endif
-			endif
 
-			sweepNo = properties[i][lblSweep]
-			lastSweep = properties[i][lblLastSweep]
-			if(pulseHasFailed && isDiagonalElement && (sweepNo == lastSweep))
-				sprintf tagName "tag_%s_AD%d_R%d", vertAxis, channelNumber, region
-				if(WhichListItem(tagName, AnnotationList(graph)) == -1)
-					xPos = (activeRegionCount / numRegions) * 100 - 2
-					yPos = (activeChanCount / numChannels) * 100  - (1 / numChannels) * 100 / 2
-					Textbox/W=$graph/K/N=$tagName
-					Textbox/W=$graph/N=$tagName/F=0/A=LT/L=0/X=(xPos)/Y=(ypos)/E=2 "☣️"
+				WAVE plotWave = propertiesWaves[idx][lblPWPULSE]
+				sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, traceCount, NameOfWave(plotWave)
+				traceCount += 1
+
+				jsonPath = graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(s.red) + "/" + num2str(s.green) + "/" + num2str(s.blue) + "/" + num2str(alpha) + "/" + num2str(step) + "/"
+				JSON_AddTreeArray(jsonID, jsonPath + "index")
+				JSON_AddTreeArray(jsonID, jsonPath + "traceName")
+				JSON_AddVariable(jsonID, jsonPath + "index", idx)
+				JSON_AddString(jsonID, jsonPath + "traceName", pulseTrace)
+
+				if(hideTrace)
+					if(pa.multipleGraphs)
+						jsonPath = graph + "/hiddenTraces"
+						JSON_AddTreeArray(hideTraceJsonID, jsonPath)
+						JSON_AddString(hideTraceJsonID, jsonPath, pulseTrace)
+					else
+						hiddenTraces[hiddenTracesCount] = pulseTrace
+						hiddenTracesCount += 1
+					endif
 				endif
-			endif
-		endif
+
+				sweepNo = properties[idx][lblSweep]
+				lastSweep = properties[idx][lblLastSweep]
+				if(pulseHasFailed && (i == j) && (sweepNo == lastSweep))
+					sprintf tagName "tag_%s_AD%d_R%d", vertAxis, channelNumber, region
+					if(WhichListItem(tagName, AnnotationList(graph)) == -1)
+						xPos = ((i + 1) / numActive) * 100 - 2
+						yPos = ((j + 1) / numActive) * 100  - (1 / numActive) * 100 / 2
+						Textbox/W=$graph/K/N=$tagName
+						Textbox/W=$graph/N=$tagName/F=0/A=LT/L=0/X=(xPos)/Y=(ypos)/E=2 "☣️"
+					endif
+				endif
+
+			endfor
+		endfor
 	endfor
 	paGraphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceCount)
 
@@ -1531,29 +1522,22 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	endif
 	JSON_Release(jsonID)
 
-	Make/T/FREE/N=(numChannels * numRegions) avgPlotTraces, deconPlotTraces
-	for(i = 0; i < numChannels; i += 1)
-		channelNumber = channels[i]
-		for(j = 0; j < numRegions; j += 1)
-			region = regions[j]
+	Make/T/FREE/N=(numActive * numActive) avgPlotTraces, deconPlotTraces
+	for(i = 0; i < numActive; i += 1)
+		region = pasi.regions[i]
+		for(j = 0; j < numActive; j += 1)
+			channelNumber = pasi.channels[j]
 
-			isDiagonalElement = (i == j)
-
-			WAVE/Z freeAverageWave = targetForAverage[i][j]
-			if(!WaveExists(freeAverageWave))
+			WAVE/Z averageWave
+			[averageWave, baseName] = PA_GetPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
+			if(!WaveExists(averageWave))
 				continue
 			endif
 
-			baseName = PA_BaseName(channelNumber, region)
-			WAVE averageWave = ConvertFreeWaveToPermanent(freeAverageWave, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
-			WaveClear freeAverageWave
-
-			activeChanCount = i + 1
-			activeRegionCount = j + 1
-			[vertAxis, horizAxis] = PA_GetAxes(pa, activeRegionCount, activeChanCount)
+			[vertAxis, horizAxis] = PA_GetAxes(pa, i + 1, j + 1)
 
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
-				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, activeRegionCount, activeChanCount, numRegions)
+				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, i + 1, j + 1, numActive)
 				[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph)
 				WAVE/T averageTraceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";")
 				WAVE/T deconvolutionTraceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_DECONV], ";")
@@ -1582,7 +1566,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					endif
 
 					paGraphData[graphDataIndex][lblTRACES_AVERAGE] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";", Inf)
-					if(!isDiagonalElement)
+					if(!(i == j))
 						paGraphData[graphDataIndex][lblTRACES_AVERAGEFORDECONV] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_AVERAGEFORDECONV], ";", Inf)
 						paGraphData[graphDataIndex][lblTRACES_AVERAGE_XAXIS] = AddListItem(horizAxis, paGraphData[graphDataIndex][lblTRACES_AVERAGE_XAXIS], ";", Inf)
 						paGraphData[graphDataIndex][lblTRACES_AVERAGE_YAXIS] = AddListItem(vertAxis, paGraphData[graphDataIndex][lblTRACES_AVERAGE_YAXIS], ";", Inf)
@@ -1591,7 +1575,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				endif
 			endif
 
-			if(pa.deconvolution.enable && !isDiagonalElement)
+			if(pa.deconvolution.enable && !(i == j))
 
 				if(WaveExists(deconvolutionTraceNames))
 					WAVE/Z foundDeconvolution = GrepTextWave(deconvolutionTraceNames, ".*\\E" + PA_DECONVOLUTION_WAVE_PREFIX + basename + "\\Q" + "$")
@@ -1599,7 +1583,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					WAVE/Z foundDeconvolution = $""
 				endif
 
-				WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
+				WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
 
 				if(!WaveExists(foundDeconvolution))
 
@@ -1627,8 +1611,8 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	endif
 
 	PA_DrawScaleBars(win, pa, PA_DISPLAYMODE_TRACES, PA_USE_WAVE_SCALES)
-	PA_LayoutGraphs(win, PA_DISPLAYMODE_TRACES, regions, channels, pa)
-	PA_DrawXZeroLines(win, PA_DISPLAYMODE_TRACES, regions, channels, pa)
+	PA_LayoutGraphs(win, PA_DISPLAYMODE_TRACES, pasi.regions, pasi.channels, pa)
+	PA_DrawXZeroLines(win, PA_DISPLAYMODE_TRACES, pasi.regions, pasi.channels, pa)
 
 	return usedGraphs
 End
@@ -1860,11 +1844,14 @@ static Function PA_MakeAverageWavePermanent(DFREF dfr, WAVE avg, variable channe
 	ConvertFreeWaveToPermanent(avg, dfr, PA_AVERAGE_WAVE_PREFIX + PA_BaseName(channel, region))
 End
 
-static Function/WAVE PA_GetPermanentAverageWave(DFREF dfr, variable channel, variable region)
+static Function [WAVE avg_, string baseName_] PA_GetPermanentAverageWave(DFREF dfr, variable channel, variable region)
 
-	string wName = PA_AVERAGE_WAVE_PREFIX + PA_BaseName(channel, region)
+	string baseName, wName
+
+	baseName = PA_BaseName(channel, region)
+	wName = PA_AVERAGE_WAVE_PREFIX + baseName
 	WAVE avg = dfr:$wName
-	return avg
+	return [avg, baseName]
 End
 
 threadsafe static Function/WAVE PA_ExtractPulseSetFromSetWaves2(WAVE/WAVE setWave2)
