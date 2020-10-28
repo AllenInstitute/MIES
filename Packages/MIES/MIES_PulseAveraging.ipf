@@ -610,7 +610,8 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		if(WaveExists(setIndices))
 			indexHelper[][] = PA_CopySetIndiceSizeDispRestart(setIndices[p][q])
 		endif
-
+	else
+		SetNumberInWaveNote(properties, NOTE_PA_NEW_PULSES_START, 0)
 	endif
 
 	WAVE/Z headstages         = PA_GetUniqueHeadstages(traceData, indizesChannelType)
