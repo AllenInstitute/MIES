@@ -1223,80 +1223,86 @@ threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE pro
 End
 
 /// @brief Handle marking pulses as failed/passed if required
-static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, STRUCT PulseAverageSettings &pa)
-	variable numTotalPulses, i, sweepNo
+static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi)
+	variable numTotalPulses, sweepNo
 	variable region, pulse, pulseHasFailed, jsonID, referencePulseHasFailed
-	variable lblPWPULSENOTE, lblDiagonalElement, lblSweep, lblRegion, lblPulse, lblPulseHasFailed
+	variable lblPWPULSENOTE, lblSweep, lblPulse, lblPulseHasFailed
+	variable numActive, numEntries, i, j, k, idx
 	string key
 
+// Change to iterate over setIndices
 	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
-
 	if(numTotalPulses == 0)
 		return NaN
 	endif
 
 	lblPWPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
 	// update the wave notes
-	Make/FREE/N=(numTotalPulses) junkWave
-	Multithread junkWave[] = SetNumberInWaveNote(propertiesWaves[p][lblPWPULSENOTE], NOTE_KEY_SEARCH_FAILED_PULSE, pa.searchFailedPulses)
+	Make/FREE/N=(numTotalPulses) indexHelper
+	Multithread indexHelper[] = SetNumberInWaveNote(propertiesWaves[p][lblPWPULSENOTE], NOTE_KEY_SEARCH_FAILED_PULSE, pa.searchFailedPulses)
 
 	lblPulseHasFailed = FindDimLabel(properties, COLS, "PulseHasFailed")
-
 	if(!pa.searchFailedPulses)
 		Multithread properties[][lblPulseHasFailed] = NaN
 		return NaN
 	endif
 
-	lblDiagonalElement = FindDimLabel(properties, COLS, "DiagonalElement")
 	lblSweep = FindDimLabel(properties, COLS, "Sweep")
-	lblRegion = FindDimLabel(properties, COLS, "Region")
 	lblPulse = FindDimLabel(properties, COLS, "Pulse")
 
 	jsonID = JSON_New()
 
+	numActive = DimSize(pasi.channels, ROWS)
+
 	// mark pulses in the diagonal elements for failed/passed
 	// this is done by PA_PulseHasFailed which either uses the wave note
 	// or uses FindLevel if required.
-	for(i = 0; i < numTotalPulses; i += 1)
-		if(!properties[i][lblDiagonalElement])
-			continue
-		endif
+	for(i = 0; i < numActive; i += 1)
+		region = pasi.regions[i]
 
-		sweepNo = properties[i][lblSweep]
-		region  = properties[i][lblRegion]
-		pulse   = properties[i][lblPulse]
+		WAVE indices = pasi.setIndices[i][i]
+		numEntries = GetNumberFromWaveNote(indices, NOTE_INDEX)
+		for(j = 0; j < numEntries; j += 1)
+			idx = indices[j]
 
-		WAVE noteWaves = propertiesWaves[i][lblPWPULSENOTE]
+			WAVE noteWave = propertiesWaves[idx][lblPWPULSENOTE]
+			pulseHasFailed = PA_PulseHasFailed(noteWave, pa)
+			properties[i][lblPulseHasFailed] = pulseHasFailed
 
-		pulseHasFailed = PA_PulseHasFailed(noteWaves, pa)
-		properties[i][lblPulseHasFailed] = pulseHasFailed
-
-		key = PA_GenerateFailedPulseKey(sweepNo, region, pulse)
-		JSON_SetVariable(jsonID, key, pulseHasFailed)
+			sweepNo = properties[idx][lblSweep]
+			pulse   = properties[idx][lblPulse]
+			key = PA_GenerateFailedPulseKey(sweepNo, region, pulse)
+			JSON_SetVariable(jsonID, key, pulseHasFailed)
+		endfor
 	endfor
 
-	// mark all other failed pulses
-	// this uses the JSON document for fast lookup
-	for(i = 0; i < numTotalPulses; i += 1)
-		if(properties[i][lblDiagonalElement])
-			continue
-		endif
+	for(i = 0; i < numActive; i += 1)
+		region = pasi.regions[i]
+		for(j = 0; j < numActive; j += 1)
+			if(i == j)
+				continue
+			endif
 
-		sweepNo = properties[i][lblSweep]
-		region  = properties[i][lblRegion]
-		pulse   = properties[i][lblPulse]
+			WAVE indices = pasi.setIndices[j][i]
+			numEntries = GetNumberFromWaveNote(indices, NOTE_INDEX)
+			for(k = 0; k < numEntries; k += 1)
+				idx = indices[k]
+				sweepNo = properties[idx][lblSweep]
+				pulse   = properties[idx][lblPulse]
 
-		key = PA_GenerateFailedPulseKey(sweepNo, region, pulse)
-		referencePulseHasFailed = JSON_GetVariable(jsonID, key, ignoreErr = 1)
-		// NaN: reference trace could not be found, this happens
-		// when a headstage is not displayed (channel selection, OVS HS removal)
-		properties[i][lblPulseHasFailed] = IsNaN(referencePulseHasFailed) ? 0 : referencePulseHasFailed
+				key = PA_GenerateFailedPulseKey(sweepNo, region, pulse)
+				referencePulseHasFailed = JSON_GetVariable(jsonID, key, ignoreErr = 1)
+				// NaN: reference trace could not be found, this happens
+				// when a headstage is not displayed (channel selection, OVS HS removal)
+				properties[idx][lblPulseHasFailed] = IsNaN(referencePulseHasFailed) ? 0 : referencePulseHasFailed
+			endfor
+		endfor
 	endfor
 
 	JSON_Release(jsonID)
 
-	// need to do that at the end, as PA_PulseHasFailed uses that entry for checking if it needs to rerun
-	Multithread junkWave[] = SetNumberInWaveNote(propertiesWaves[p][lblPWPULSENOTE], NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
+	// Set current level, need to do that at the end, as PA_PulseHasFailed uses that entry for checking if it needs to rerun
+	Multithread indexHelper[] = SetNumberInWaveNote(propertiesWaves[p][lblPWPULSENOTE], NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
 End
 
 /// @brief This function returns data from the light-weight data storage for PA graph data
@@ -1636,6 +1642,7 @@ static Structure PA_ConstantSettings
 	variable singlePulse
 	variable traces // includes general and single pulse settings
 	variable images // includes general and single pulse settings
+	variable failedPulses // includes search on/off and level change or mode == POST_PLOT_CONSTANT_SWEEPS
 EndStructure
 
 /// @brief Returns a filled structure #PA_ConstantSettings which has 1 for all
@@ -1681,6 +1688,10 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	             && cs.singlePulse == 1                        \
 	             && pa.showImages == paOld.showImages          \
 	             && pa.pulseSortOrder == paOld.pulseSortOrder)
+
+	cs.failedPulses = (		pa.searchFailedPulses == paOld.searchFailedPulses \
+							&& pa.failedPulsesLevel ==  paOld.failedPulsesLevel  \
+							&& mode == POST_PLOT_CONSTANT_SWEEPS)
 
 	return [cs]
 End
@@ -1759,7 +1770,9 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 
 	s = stopmstimer(-2)
 
-	PA_MarkFailedPulses(properties, propertiesWaves, pa)
+	if(!cs.failedPulses)
+		PA_MarkFailedPulses(properties, propertiesWaves, pa, pasi)
+	endif
 
 	print/D "PA_MarkFailedPulses", (stopmstimer(-2) - s) / 1E6
 
