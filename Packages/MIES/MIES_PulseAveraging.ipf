@@ -885,6 +885,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	Make/FREE/D/N=(numActive, numActive) numEntries, startEntry
 	numEntries[][] = GetNumberFromWaveNote(setIndices[p][q], NOTE_INDEX)
 	startEntry[][] = GetNumberFromWaveNote(setIndices[p][q], PA_SETINDICES_KEY_DISPSTART)
+	startEntry[][] = IsNaN(startEntry[p][q]) ? 0 : startEntry[p][q]
 	WAVE pasi.numEntries = numEntries
 	WAVE pasi.startEntry = startEntry
 
@@ -896,7 +897,11 @@ End
 /// @brief For incremental display update copy current size of of setIndices to new display start
 static Function PA_CopySetIndiceSizeDispRestart(WAVE/WAVE setIndices)
 
-	SetNumberInWaveNote(setIndices, PA_SETINDICES_KEY_DISPSTART, GetNumberFromWaveNote(setIndices, NOTE_INDEX))
+	variable displayStart
+
+	displayStart = GetNumberFromWaveNote(setIndices, NOTE_INDEX)
+	displayStart = IsNaN(displayStart) ? 0 : displayStart
+	SetNumberInWaveNote(setIndices, PA_SETINDICES_KEY_DISPSTART, displayStart)
 End
 
 static Function [WAVE/WAVE setIndices, WAVE channels, WAVE regions, WAVE indexHelper] PA_GetSetIndicesHelper(DFREF pulseAverageHelperDFR, variable prevIndices)
@@ -964,7 +969,6 @@ static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE old
 			else
 				// set got added in display
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_ADDED)
-				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPSTART, 0)
 				DEBUGPRINT("Layout: Add " + debugMsg)
 			endif
 		elseif(indiceType == PA_UPDATEINDICES_TYPE_PREV)
@@ -974,7 +978,6 @@ static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE old
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPCHANGE, PA_INDICESCHANGE_REMOVED)
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVEREGIONCOUNT, NaN)
 				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_ACTIVECHANCOUNT, NaN)
-				SetNumberInWaveNote(indices, PA_SETINDICES_KEY_DISPSTART, 0)
 				DEBUGPRINT("Layout: Remove " + debugMsg)
 			endif
 		else
