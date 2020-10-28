@@ -1797,34 +1797,27 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting, varia
 	s = stopmstimer(-2)
 
 	WAVE/WAVE/Z dest, source
-	[dest, source] = PA_CalculateAllAverages(pa, mode)
+	[dest, source] = PA_CalculateAllAverages(pasi, properties, propertiesWaves, mode)
 
 	print/D "PA_CalculateAllAverages", (stopmstimer(-2) - s) / 1E6
 
 	return [dest, source, 1, mode]
 End
 
-static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa, variable mode)
+static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, WAVE properties, WAVE/WAVE propertiesWaves, variable mode)
 
-	variable numChannels, numRegions, i, j, channelNumber, region, numThreads
+	variable numThreads, numActive
 	string keyAll, keyOld
 
-	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+	numActive = DimSize(pasi.channels, ROWS)
 
-	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS), ",")
-	numChannels = DimSize(channels, ROWS)
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_REGIONS), ",")
-	numRegions = DimSize(regions, ROWS)
+	Make/FREE/WAVE/N=(numActive, numActive) sourceOld, sourceAll, sourceNew, sourceCombined, dest, avg
+	numThreads = min(numActive * numActive, ThreadProcessorCount)
 
-	Make/FREE/WAVE/N=(numChannels, numRegions) sourceOld, sourceAll, sourceNew, sourceCombined, dest, setIndices, avg
-	Make/FREE/N=(numChannels, numRegions) junk
-	numThreads = min(numRegions * numChannels, ThreadProcessorCount)
+	// TODO if we get in pasi the two column setWaves instead of the one column setWaves,
+	// we can use them here and need to get in combined only OLD and NEW.
 
-	setIndices[][] = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channels[p], regions[q])
-
-	Multithread/NT=(numThreads) sourceCombined[][] = PA_GetSetWaves_TS(properties, propertiesWaves, setIndices[p][q], PA_GETSETWAVES_OLD | PA_GETSETWAVES_NEW | PA_GETSETWAVES_ALL, 1)
+	Multithread/NT=(numThreads) sourceCombined[][] = PA_GetSetWaves_TS(properties, propertiesWaves, pasi.setIndices[p][q], PA_GETSETWAVES_OLD | PA_GETSETWAVES_NEW | PA_GETSETWAVES_ALL, 1)
 
 	Multithread/NT=(numThreads) sourceAll[][] = PA_ExtractSource(WaveRef(sourceCombined[p][q], row = 0))
 	keyAll = CA_AveragingWaveModKey(sourceAll)
@@ -1847,7 +1840,8 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 			Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(sourceAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
 		endif
 
-		Multithread junk[][] = PA_StoreMaxAndUnitsInWaveNote(WaveRef(avg[p][q], row = 0), WaveRef(sourceAll[p][q], row = 0))
+		WAVE indexHelper = pasi.indexHelper
+		Multithread indexHelper[][] = PA_StoreMaxAndUnitsInWaveNote(WaveRef(avg[p][q], row = 0), WaveRef(sourceAll[p][q], row = 0))
 		CA_StoreEntryIntoCache(keyAll, avg, options = CA_OPTS_NO_DUPLICATE)
 	else
 		print "Cache Hit All"
