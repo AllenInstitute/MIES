@@ -1106,6 +1106,7 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 
 	string graph, preExistingGraphs, usedTraceGraphs, usedImageGraphs
 	variable jsonIDOld, needsPlotting
+	STRUCT PulseAverageSetIndices pasi
 
 	variable s1, e1, s2, e2
 	variable s = stopmstimer(-2)
@@ -1128,7 +1129,8 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	[cs] = PA_DetermineConstantSettings(current, old, mode)
 
 	s1 = stopmstimer(-2)
-	if(!PA_PreProcessPulses(win, current, cs, mode, additionalData))
+	[pasi, needsPlotting] = PA_PreProcessPulses(win, current, cs, mode, additionalData)
+	if(!needsPlotting)
 		return NaN
 	endif
 	e1 = stopmstimer(-2)
@@ -1722,8 +1724,9 @@ End
 /// - Time alignment
 /// - Averaging
 ///
-/// @returns dest boolean denoting if there are pulses to plot
-static Function PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
+/// @retval pasi structure keeping references to current PA data set
+/// @retval needsPlotting dest boolean denoting if there are pulses to plot
+static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
 
 	variable numActive
 	variable numTotalPulses
@@ -1739,12 +1742,11 @@ static Function PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa,
 	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
 		KillOrMoveToTrash(dfr = pulseAverageHelperDFR)
-		return 0
+		return [pasi, 0]
 	endif
 
 	s = stopmstimer(-2)
 
-	STRUCT PulseAverageSetIndices pasi
 	[pasi] = PA_GenerateAllPulseWaves(win, pa, cs, mode, additionalData)
 
 	print/D "PA_GenerateAllPulseWaves", (stopmstimer(-2) - s) / 1E6
@@ -1755,7 +1757,7 @@ static Function PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa,
 	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
 	if(numTotalPulses == 0)
 		PA_ClearGraphs(preExistingGraphs)
-		return 0
+		return [pasi, 0]
 	endif
 
 	s = stopmstimer(-2)
@@ -1808,7 +1810,7 @@ static Function PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa,
 
 	print/D "PA_CalculateAllAverages", (stopmstimer(-2) - s) / 1E6
 
-	return 1
+	return [pasi, 1]
 End
 
 static Function PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, variable mode)
