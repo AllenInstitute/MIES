@@ -1818,9 +1818,10 @@ static Function PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, var
 	variable numThreads, numActive
 	string keyAll, keyOld
 
+	WAVE indexHelper = pasi.indexHelper
 	numActive = DimSize(pasi.channels, ROWS)
 
-	Make/FREE/WAVE/N=(numActive, numActive) setWavesOld, setWavesAll, setWavesNew, setWaves2OldNew, avgRet, avg
+	Make/FREE/WAVE/N=(numActive, numActive) setWavesOld, setWavesAll, setWavesNew, setWaves2OldNew, avg
 	numThreads = min(numActive * numActive, ThreadProcessorCount)
 
 	Multithread/NT=(numThreads) setWavesAll[][] = PA_ExtractPulseSetFromSetWaves2(pasi.setWaves2[p][q])
@@ -1837,7 +1838,6 @@ static Function PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, var
 			if(WaveExists(cache))
 				Multithread/NT=(numThreads) setWavesNew[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2OldNew[p][q], row = 1))
 				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesNew[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1, prevAvgData = PA_ExtractSumsCountsOnly(cache[p][q]))
-				WAVE sourceAll = sourceNew
 			else
 				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
 			endif
@@ -1845,7 +1845,6 @@ static Function PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, var
 			Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
 		endif
 
-		WAVE indexHelper = pasi.indexHelper
 		Multithread indexHelper[][] = PA_StoreMaxAndUnitsInWaveNote(WaveRef(avg[p][q], row = 0), WaveRef(setWavesAll[p][q], row = 0))
 		CA_StoreEntryIntoCache(keyAll, avg, options = CA_OPTS_NO_DUPLICATE)
 	else
