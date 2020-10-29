@@ -168,7 +168,7 @@ End
 /// 			endif
 /// 		else
 /// 			Make/R/N=(10, 2) dfr:myWave/Wave=wv
-/// 		end
+/// 		endif
 ///
 /// 		SetWaveVersion(wv, versionOfNewWave)
 ///
