@@ -3768,7 +3768,7 @@ End
 ///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncMeasurementWave()
 
-	Make/FREE/N=(1,8, LABNOTEBOOK_LAYER_COUNT) wv
+	Make/D/FREE/N=(1,8, LABNOTEBOOK_LAYER_COUNT) wv
 	wv = NaN
 
 	SetDimLabel 1, 0, MeasVal0, wv
@@ -3900,7 +3900,7 @@ End
 ///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncSettingsWave()
 
-	Make/N=(1, 40, LABNOTEBOOK_LAYER_COUNT)/FREE wv
+	Make/D/N=(1, 40, LABNOTEBOOK_LAYER_COUNT)/FREE wv
 	wv = Nan
 
 	SetDimLabel 1, 0, ADOnOff0, wv
