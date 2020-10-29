@@ -5349,7 +5349,7 @@ End
 ///
 /// row, col, layer, chunk are evaluated in this order until one argument is not given.
 ///
-/// @param wv input wave ref wave
+/// @param w input wave ref wave
 /// @param row [optional, default = n/a] when param set returns wv[row] typed
 /// @param col [optional, default = n/a] when param row and this set returns wv[row][col] typed
 /// @param layer [optional, default = n/a] when param row, col and this set returns wv[row][col][layer] typed
