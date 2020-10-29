@@ -501,7 +501,7 @@ Function/Wave GetChannelClampMode(panelTitle)
 		wv[][%DAC][1] = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
 		wv[][%ADC][1] = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
 	else
-		Make/N=(NUM_AD_CHANNELS, 2, 2) dfr:ChannelClampMode/Wave=wv
+		Make/R/N=(NUM_AD_CHANNELS, 2, 2) dfr:ChannelClampMode/Wave=wv
 		wv = NaN
 	endif
 
@@ -532,7 +532,7 @@ Function/WAVE GetHSProperties(panelTitle)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/N=(NUM_HEADSTAGES, 4) dfr:HSProperties/Wave=wv
+		Make/R/N=(NUM_HEADSTAGES, 4) dfr:HSProperties/Wave=wv
 	endif
 
 	wv = NaN
@@ -745,6 +745,7 @@ Function/WAVE GetNIDAQChannelWave(panelTitle, channel)
 		return wv
 	endif
 
+	// type does not matter as we change it in DC_MakeNIChannelWave anyway
 	Make/N=(0) dfr:$name/WAVE=wv
 
 	return wv
@@ -3159,7 +3160,7 @@ Function/WAVE GetTestPulse()
 	endif
 
 	/// create dummy wave
-	Make/N=(0) dfr:TestPulse/Wave=wv
+	Make/R/N=(0) dfr:TestPulse/Wave=wv
 
 	return wv
 End
@@ -3663,7 +3664,7 @@ Function/Wave GetEpochID()
 		return wv
 	endif
 
-	Make/N=(100, 2) dfr:epochID/Wave=wv
+	Make/R/N=(100, 2) dfr:epochID/Wave=wv
 
 	SetDimLabel COLS, 0, timeBegin, wv
 	SetDimLabel COLS, 1, timeEnd, wv
@@ -3682,7 +3683,7 @@ Function/Wave GetWaveBuilderDispWave()
 		return wv
 	endif
 
-	Make/N=(0) dfr:dispData/Wave=wv
+	Make/R/N=(0) dfr:dispData/Wave=wv
 
 	return wv
 End
@@ -3723,7 +3724,7 @@ Function/Wave GetSegmentWave([duration])
 
 	// optimization: recreate the wave only if necessary or just resize it
 	if(!WaveExists(SegmentWave))
-		Make/N=(numPoints) dfr:SegmentWave/Wave=SegmentWave
+		Make/R/N=(numPoints) dfr:SegmentWave/Wave=SegmentWave
 	elseif(numPoints != DimSize(SegmentWave, ROWS))
 		Redimension/N=(numPoints) SegmentWave
 	endif
@@ -4777,7 +4778,7 @@ Function/Wave GetAnalysisChannelStorage(dataFolder, device)
 	elseif(ExistsWithCorrectLayoutVersion(wv, 1))
 		// update Dimension label
 	else
-		Make/O/N=(MINIMUM_WAVE_SIZE, 1)/WAVE dfr:channelStorage/Wave=wv
+		Make/R/O/N=(MINIMUM_WAVE_SIZE, 1)/WAVE dfr:channelStorage/Wave=wv
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
 
@@ -4952,7 +4953,7 @@ Function/Wave GetExperimentBrowserGUISel()
 		return wv
 	endif
 
-	Make/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE) dfr:expBrowserSel/Wave=wv
+	Make/R/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE) dfr:expBrowserSel/Wave=wv
 
 	return wv
 End
@@ -5091,7 +5092,7 @@ Function/Wave GetIndexingStorageWave(panelTitle)
 		return wv
 	endif
 
-	Make/N=(2, 2, NUM_DA_TTL_CHANNELS) dfr:IndexingStorageWave/Wave=wv
+	Make/R/N=(2, 2, NUM_DA_TTL_CHANNELS) dfr:IndexingStorageWave/Wave=wv
 
 	SetDimLabel ROWS, 0, CHANNEL_TYPE_DAC, wv
 	SetDimLabel ROWS, 1, CHANNEL_TYPE_TTL, wv
@@ -5163,7 +5164,7 @@ Function/WAVE GetActiveDevicesTPMD()
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, 3) dfr:ActiveDevicesTPMD/Wave=wv
+		Make/R/N=(MINIMUM_WAVE_SIZE, 3) dfr:ActiveDevicesTPMD/Wave=wv
 		wv = NaN
 	endif
 
@@ -5512,7 +5513,8 @@ Function/WAVE GetDistDAQPreloadWave(panelTitle)
 	if(WaveExists(wv))
 		return wv
 	else
-		Make/N=(0) dfr:$wvName/Wave=wv
+		// wave type is overwritten in OOD_StorePreload
+		Make/R/N=(0) dfr:$wvName/Wave=wv
 	endif
 
 	return wv
@@ -5563,7 +5565,7 @@ Function/WAVE GetPressureTypeWv(panelTitle)
 		return wv
 	endif
 
-	Make/N=(NUM_HEADSTAGES) dfr:pressureType/Wave=wv
+	Make/R/N=(NUM_HEADSTAGES) dfr:pressureType/Wave=wv
 
 	return wv
 End
@@ -5624,7 +5626,7 @@ Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, regio
 		// by PA_CreateAndFillPulseWaveIfReq()
 		Note/K wv
 	else
-		Make/N=(length) dfr:$wvName/WAVE=wv
+		Make/R/N=(length) dfr:$wvName/WAVE=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -5941,7 +5943,7 @@ Function/WAVE GetChannelSelectionWave(dfr)
 	elseif(WaveExists(wv))
 		Redimension/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) wv
 	else
-		Make/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) dfr:channelSelection/Wave=wv
+		Make/R/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) dfr:channelSelection/Wave=wv
 
 		// by default all channels are selected
 		wv = 1
