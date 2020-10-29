@@ -29,6 +29,7 @@ static StrConstant PSQ_RA_LBN_PREFIX = "Ramp"
 
 static StrConstant MSQ_FRE_LBN_PREFIX = "F Rheo E"
 static StrConstant MSQ_DS_LBN_PREFIX  = "Da Scale"
+static StrConstant MSQ_SC_LBN_PREFIX  = "Spike Control"
 
 Menu "GraphMarquee"
 	"Horiz Expand (VisX)", HorizExpandWithVisX()
@@ -6632,6 +6633,8 @@ Function MapAnaFuncToConstant(anaFunc)
 			return MSQ_FAST_RHEO_EST
 		case "MSQ_DAScale":
 			return MSQ_DA_SCALE
+		case "MSQ_SpikeControl":
+			return MSQ_SPIKE_CONTROL
 		default:
 			return NaN
 	endswitch
@@ -6655,6 +6658,9 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 			break
 		case MSQ_FAST_RHEO_EST:
 			prefix = MSQ_FRE_LBN_PREFIX
+			break
+		case MSQ_SPIKE_CONTROL:
+			prefix = MSQ_SC_LBN_PREFIX
 			break
 		case PSQ_DA_SCALE:
 			prefix = PSQ_DS_LBN_PREFIX

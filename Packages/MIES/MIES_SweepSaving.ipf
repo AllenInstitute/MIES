@@ -48,18 +48,18 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 		NWB_AppendSweep(panelTitle, sweepWave, configWave, sweepNo, DAG_GetNumericalValue(panelTitle, "Popup_Settings_NwbVersion"))
 	endif
 
+	SWS_AfterSweepDataChangeHook(panelTitle)
+
 	if(!forcedStop)
 		AFM_CallAnalysisFunctions(panelTitle, POST_SWEEP_EVENT)
 		AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	endif
-
-	SWS_AfterSweepDataSaveHook(panelTitle)
 End
 
-/// @brief General hook function which gets always executed after sweep data saving
+/// @brief General hook function which gets always executed after sweep data was added or removed
 ///
 /// @param panelTitle device name
-static Function SWS_AfterSweepDataSaveHook(panelTitle)
+static Function SWS_AfterSweepDataChangeHook(panelTitle)
 	string panelTitle
 
 	string databrowser, scPanel
@@ -231,6 +231,8 @@ Function SWS_DeleteDataWaves(panelTitle)
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)
+
+	SWS_AfterSweepDataChangeHook(panelTitle)
 End
 
 /// @brief Return the floating point type for storing the raw data

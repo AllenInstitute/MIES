@@ -391,7 +391,7 @@ End
 /// @param win 	name of external panel or main window
 ///
 /// @return D for DataBrowser or S for SweepBrowser
-static Function/S BSP_GetBrowserType(win)
+Function/S BSP_GetBrowserType(win)
 	string win
 
 	string mainPanel
@@ -1148,7 +1148,9 @@ Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 			BSP_SetOVSControlStatus(bsPanel)
 			OVS_UpdatePanel(graph, fullUpdate = 1)
 
-			if(OVS_IsActive(graph))
+			WAVE/Z sweeps = GetPlainSweepList(graph)
+
+			if(OVS_IsActive(graph) && WaveExists(sweeps))
 				if(BSP_IsDataBrowser(graph))
 					sweepNo = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
 					OVS_ChangeSweepSelectionState(bsPanel, CHECKBOX_SELECTED, sweepNo=sweepNo)

@@ -935,6 +935,7 @@ Constant PSQ_RAMP          = 0x08
 /// @{
 Constant MSQ_FAST_RHEO_EST = 0x10
 Constant MSQ_DA_SCALE      = 0x20
+Constant MSQ_SPIKE_CONTROL = 0x40
 /// @}
 
 /// @}
@@ -1004,6 +1005,9 @@ StrConstant MSQ_FMT_LBN_SWEEP_PASS        = "%s Sweep QC"
 StrConstant MSQ_FMT_LBN_SET_PASS          = "%s Set QC"
 StrConstant MSQ_FMT_LBN_PULSE_DUR         = "%s Pulse duration"
 StrConstant MSQ_FMT_LBN_ACTIVE_HS         = "%s Active Headstage"
+StrConstant MSQ_FMT_LBN_FAILED_PULSES     = "%s Failed Pulses"
+StrConstant MSQ_FMT_LBN_RERUN_TRIAL       = "%s Rerun Trials"
+StrConstant MSQ_FMT_LBN_RERUN_TRIAL_EXC   = "%s Rerun Trials exceeded"
 /// @}
 
 Constant TP_MD_THREAD_DEAD_MAX_RETRIES = 10

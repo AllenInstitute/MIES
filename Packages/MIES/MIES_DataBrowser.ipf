@@ -710,7 +710,7 @@ End
 Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	string lbGraph, popStr, win, device, ctrl
+	string lbGraph, popStr, win, device
 	variable lnbType
 
 	switch(pa.eventCode)
@@ -718,7 +718,6 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 			win = pa.win
 			lbGraph = DB_GetLabNoteBookGraph(win)
 			popStr     = pa.popStr
-			ctrl       = pa.ctrlName
 			if(!CmpStr(popStr, NONE))
 				break
 			endif

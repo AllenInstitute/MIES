@@ -12,7 +12,7 @@
 /// @brief Update the dashboards of all databrowsers
 Function AD_UpdateAllDatabrowser()
 
-	string win, panelList
+	string win, panelList, browserType
 	variable i, numEntries
 
 	panelList = WinList("DB_*", ";", "WIN:1")
@@ -20,7 +20,10 @@ Function AD_UpdateAllDatabrowser()
 
 	for(i = 0; i < numEntries; i += 1)
 		win = StringFromList(i, panelList)
-		AD_Update(win)
+		browserType = BSP_GetBrowserType(win)
+		if(!IsEmpty(browserType))
+			AD_Update(win)
+		endif
 	endfor
 End
 
@@ -163,6 +166,11 @@ static Function AD_FillWaves(panelTitle, list, info)
 				// - MSQ_FMT_LBN_DASCALE_EXC present (optional)
 				// - Not enough sweeps
 
+				// MSQ_SC
+				// - MSQ_FMT_LBN_RERUN_TRIALS_EXC present
+				// - Failed pulses
+				// - Not enough sweeps
+
 				// PSQ_DA
 				// - needs at least $NUM_DA_SCALES passing sweeps
 				//   and for supra mode if the FinalSlopePercent parameter is present this has to be reached as well
@@ -183,7 +191,10 @@ static Function AD_FillWaves(panelTitle, list, info)
 						msg = "Failure"
 						break
 					case MSQ_FAST_RHEO_EST:
-						msg = AD_GetFastRheoEst(numericalValues, sweepNo, headstage)
+						msg = AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
+						break
+					case MSQ_SPIKE_CONTROL:
+						msg = AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
 						break
 					case PSQ_DA_SCALE:
 						msg = AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
@@ -211,7 +222,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 			list[index][3] = msg
 
 			// get the passing/failing sweeps
-			// PSQ_DA PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE: use PSQ_FMT_LBN_SWEEP_PASS
+			// PSQ_DA PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE, MSQ_SC: use PSQ_FMT_LBN_SWEEP_PASS
 			// PSQ_RB: If passed use last spiking/non-spiking duo
 			//     If not passed, all are failing
 
@@ -223,6 +234,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 				case PSQ_SQUARE_PULSE:
 				case MSQ_DA_SCALE:
 				case MSQ_FAST_RHEO_EST:
+				case MSQ_SPIKE_CONTROL:
 					key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 					WAVE sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 					ASSERT(DimSize(sweeps, ROWS) == DimSize(sweepPass, ROWS), "Unexpected wave sizes")
@@ -442,7 +454,7 @@ static Function/S AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 	return msg
 End
 
-static Function/S AD_GetFastRheoEst(WAVE numericalValues, variable sweepNo, variable headstage)
+static Function/S AD_GetFastRheoEstFailMsg(WAVE numericalValues, variable sweepNo, variable headstage)
 
 	string key
 
@@ -453,6 +465,23 @@ static Function/S AD_GetFastRheoEst(WAVE numericalValues, variable sweepNo, vari
 		WaveTransform/O zapNaNs, daScaleExc
 		if(Sum(daScaleExc) > 0)
 			return "Max DA scale exceeded failure"
+		endif
+	endif
+
+	return "Failure as we ran out of sweeps"
+End
+
+static Function/S AD_GetSpikeControlFailMsg(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable headstage)
+
+	string key, msg
+
+	key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC, query = 1)
+	WAVE/Z trialsExceeded = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(WaveExists(trialsExceeded))
+		WaveTransform/O zapNaNs, trialsExceeded
+		if(Sum(trialsExceeded) > 0)
+			return "Maximum number of rerun trials exceeded"
 		endif
 	endif
 
@@ -545,7 +574,17 @@ static Function AD_SelectResult(win, [index])
 		endif
 	endif
 
+	if(IsNull(list))
+		print "Select the Passed/Failed checkboxes to display these sweeps"
+		ControlWindowToFront()
+		return NaN
+	endif
+
 	numEntries = DimSize(sweeps, ROWS)
+
+	if(!numEntries)
+		WaveClear sweeps
+	endif
 
 	WAVE/T ovsListWave = GetOverlaySweepsListWave(dfr)
 	WAVE ovsSelWave    = GetOverlaySweepsListSelWave(dfr)
@@ -568,16 +607,7 @@ static Function AD_SelectResult(win, [index])
 		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_DAC", val = 1)
 	endif
 
-	ovsSelWave[][%$"Sweep"] = ClearBit(ovsSelWave[p][%$"Sweep"], LISTBOX_CHECKBOX_SELECTED)
-
-	for(i = 0; i < numEntries;i += 1)
-		WAVE/Z indizes = FindIndizes(ovsListWave, col = 0, var = sweeps[i])
-		ASSERT(WaveExists(indizes), "Could not find sweep")
-		ASSERT(DimSize(indizes, ROWS) == 1, "Invalid number of matches")
-		ovsSelWave[indizes[0]][%$"Sweep"] = SetBit(ovsSelWave[indizes[0]][%$"Sweep"], LISTBOX_CHECKBOX_SELECTED)
-	endfor
-
-	UpdateSweepPlot(win)
+	OVS_ChangeSweepSelectionState(win, 1, sweeps = sweeps, invertOthers = 1)
 End
 
 Function AD_ListBoxProc(lba) : ListBoxControl
