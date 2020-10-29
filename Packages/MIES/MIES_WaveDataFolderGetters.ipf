@@ -4501,17 +4501,17 @@ End
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
-	variable versionOfNewWave = 7
+	variable versionOfNewWave = 8
 	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-	Wave/Z/SDFR=dfr wv=PressureData
+	Wave/D/Z/SDFR=dfr wv=PressureData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(8, 48) wv
+		Redimension/D/N=(8, 48) wv
 		SetPressureWaveDimLabels(wv)
 	else
-		Make/N=(8, 48) dfr:PressureData/Wave=wv
+		Make/D/N=(8, 48) dfr:PressureData/Wave=wv
 
 		SetPressureWaveDimLabels(wv)
 
