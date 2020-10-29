@@ -39,16 +39,16 @@ Function/Wave GetChanAmpAssign(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
-	Wave/Z/SDFR=dfr wv = ChanAmpAssign
+	Wave/D/Z/SDFR=dfr wv = ChanAmpAssign
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(10, NUM_HEADSTAGES, -1, -1) wv
+		Redimension/D/N=(10, NUM_HEADSTAGES, -1, -1) wv
 	else
-		Make/N=(10, NUM_HEADSTAGES) dfr:ChanAmpAssign/Wave=wv
+		Make/D/N=(10, NUM_HEADSTAGES) dfr:ChanAmpAssign/Wave=wv
 		wv = NaN
 
 		// we don't have dimension labels yet
