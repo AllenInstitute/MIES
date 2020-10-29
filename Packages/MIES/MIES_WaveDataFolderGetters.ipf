@@ -4628,16 +4628,16 @@ End
 
 /// @brief Return the data folder reference to the device specific lab notebook folder for temporary waves
 Function/DF GetDevSpecLabNBTempFolder(panelTitle)
-	   string panelTitle
+	string panelTitle
 
-	   return createDFWithAllParents(GetDevSpecLabNBTempFolderAS(panelTitle))
+	return createDFWithAllParents(GetDevSpecLabNBTempFolderAS(panelTitle))
 End
 
 /// @brief Return the full path to the device specific lab notebook temp folder, e.g. root:MIES:LabNoteBook:ITC18USB:Device0:Temp
 Function/S GetDevSpecLabNBTempFolderAS(panelTitle)
-	   string panelTitle
+	string panelTitle
 
-	   return GetDevSpecLabNBFolderAsString(panelTitle) + ":Temp"
+	return GetDevSpecLabNBFolderAsString(panelTitle) + ":Temp"
 End
 
 /// @name Analysis Browser
