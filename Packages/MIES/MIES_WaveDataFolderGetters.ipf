@@ -3147,8 +3147,8 @@ End
 
 /// @brief Return the testpulse wave
 ///
-/// This wave will be written in DC_UpdateTestPulseWave()/
-/// DC_UpdateTestPulseWaveMD() and will use the real sampling interval.
+/// This wave will be written in TP_CreateTestPulseWave() and will use the real
+/// sampling interval.
 Function/WAVE GetTestPulse()
 
 	dfref dfr = GetWBSvdStimSetDAPath()
