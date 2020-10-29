@@ -1,10 +1,12 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=WB_Testing
 
 static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	string testCase
+
+	AdditionalExperimentCleanupAfterTest()
 
 	KillDataFolder/Z GetWBSvdStimSetDAPath()
 
@@ -265,4 +267,48 @@ Function WB_StimsetRecreation3()
 
 	// but the mod count logic kicks in nevertheless
 	CHECK_EQUAL_VAR(MIES_WB#WB_ParameterWvsNewerThanStim(setName), 1)
+End
+
+Function WB_EditingExistingKeepsPrecision()
+	string panel = "WaveBuilder"
+	string setName = "Ref6_b_DA_0"
+
+	WAVE/Z WP = WB_GetWaveParamForSet(setName)
+	CHECK_WAVE(WP, NORMAL_WAVE, minorType = FLOAT_WAVE)
+
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
+	CHECK_WAVE(SegWvType, NORMAL_WAVE, minorType = FLOAT_WAVE)
+
+	// this forces wave version upgrades
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	CHECK_WAVE(stimset, NORMAL_WAVE)
+
+	WAVE/Z WP = WB_GetWaveParamForSet(setName)
+	CHECK_WAVE(WP, NORMAL_WAVE, minorType = FLOAT_WAVE)
+
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
+	CHECK_WAVE(SegWvType, NORMAL_WAVE, minorType = FLOAT_WAVE)
+
+	WBP_CreateWaveBuilderPanel()
+	PGC_SetAndActivateControl(panel, "popup_WaveBuilder_SetList", str = setName)
+
+	// change tau rise delta
+	PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_P11", val = 0.1)
+
+	string newSetName = "newSet"
+	PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_baseName", str = newSetName)
+	PGC_SetAndActivateControl(panel, "button_WaveBuilder_SaveSet")
+
+	newSetName += "_DA_0"
+
+	// now the new WP and SegWvType must still be float
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(newSetName)
+	CHECK_WAVE(stimset, NORMAL_WAVE)
+
+	WAVE/Z WP = WB_GetWaveParamForSet(newSetName)
+	CHECK_WAVE(WP, NORMAL_WAVE, minorType = FLOAT_WAVE)
+
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(newSetName)
+	CHECK_WAVE(SegWvType, NORMAL_WAVE, minorType = FLOAT_WAVE)
 End

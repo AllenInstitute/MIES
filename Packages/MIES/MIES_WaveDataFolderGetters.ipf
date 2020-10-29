@@ -3165,7 +3165,7 @@ Function/WAVE GetTestPulse()
 	return wv
 End
 
-static Constant WP_WAVE_LAYOUT_VERSION = 10
+static Constant WP_WAVE_LAYOUT_VERSION = 11
 
 /// @brief Automated testing helper
 static Function GetWPVersion()
@@ -3216,6 +3216,9 @@ Function UpgradeWaveParam(wv)
 		Multithread wv[70,85][][] = wv[40][q][r]
 		wv[40][][] = NaN
 	endif
+
+	// upgrade to wave version 11
+	// nothing to do as we keep them float
 
 	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
 End
@@ -3353,7 +3356,8 @@ Function/WAVE GetWaveBuilderWaveParam()
 	if(WaveExists(wv))
 		UpgradeWaveParam(wv)
 	else
-		Make/N=(86, 100, EPOCH_TYPES_TOTAL_NUMBER) dfr:WP/Wave=wv
+		Make/D/N=(86, 100, EPOCH_TYPES_TOTAL_NUMBER) dfr:WP/Wave=wvDouble
+		WAVE wv = wvDouble
 
 		// noise low/high pass filter to off
 		wv[20][][EPOCH_TYPE_NOISE] = 0
@@ -3577,7 +3581,7 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 	return wv
 End
 
-static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 6
+static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 7
 
 /// @brief Automated testing helper
 static Function GetSegWvTypeVersion()
@@ -3593,6 +3597,8 @@ Function UpgradeSegWvType(wv)
 	if(ExistsWithCorrectLayoutVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION))
 		return NaN
 	endif
+
+	// no upgrade to double precision
 
 	AddDimLabelsToSegWvType(wv)
 	SetWaveVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION)
@@ -3641,7 +3647,8 @@ Function/Wave GetSegmentTypeWave()
 	if(WaveExists(wv))
 		UpgradeSegWvType(wv)
 	else
-		Make/N=102 dfr:SegWvType/Wave=wv
+		Make/N=102/D dfr:SegWvType/Wave=wvDouble
+		WAVE wv = wvDouble
 
 		wv[100] = 1
 		wv[101] = 1
