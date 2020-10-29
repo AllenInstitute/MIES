@@ -393,6 +393,23 @@ Function SkipToEndDuringITI_IGNORE(s)
 	return 0
 End
 
+Function SkipSweepBackDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
+
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		CHECK_EQUAL_VAR(AFH_GetLastSweepAcquired(device), 0)
+		RA_SkipSweeps(device, -1)
+		return 1
+	endif
+
+	return 0
+End
+
 Function StopAcq_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
