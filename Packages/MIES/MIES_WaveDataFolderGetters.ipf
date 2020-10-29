@@ -167,7 +167,7 @@ End
 /// 				Redimension/D/N=(10, -1, -1, -1) wv
 /// 			endif
 /// 		else
-/// 			Make/N=(10, 2) dfr:myWave/Wave=wv
+/// 			Make/R/N=(10, 2) dfr:myWave/Wave=wv
 /// 		end
 ///
 /// 		SetWaveVersion(wv, versionOfNewWave)
@@ -364,7 +364,7 @@ End
 ///			elseif(WaveExists(wv))
 ///				// handle upgrade
 ///			else
-///				Make/N=(10, 2) newDFR:newName/Wave=wv
+///				Make/R/N=(10, 2) newDFR:newName/Wave=wv
 ///			end
 ///
 ///			SetWaveVersion(wv, versionOfNewWave)
