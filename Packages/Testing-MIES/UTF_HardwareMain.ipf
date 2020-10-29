@@ -377,7 +377,7 @@ Function StartTPDuringITI_IGNORE(s)
 	return 0
 End
 
-Function ExecuteDuringITI_IGNORE(s)
+Function SkipToEndDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
 	SVAR devices = $GetDevicePanelTitleList()

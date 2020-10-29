@@ -1789,7 +1789,7 @@ Function SkipSweepsDuringITI_SD([str])
 	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s, str)
 
-	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=ExecuteDuringITI_IGNORE
+	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipToEndDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
 	PGC_SetAndActivateControl(str, "SetVar_DataAcq_ITI", val = 5)
@@ -1818,7 +1818,7 @@ Function SkipSweepsDuringITI_MD([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s, str)
 
-	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=ExecuteDuringITI_IGNORE
+	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=SkipToEndDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
 	PGC_SetAndActivateControl(str, "SetVar_DataAcq_ITI", val = 5)
