@@ -5813,17 +5813,17 @@ End
 Function/WAVE GetArtefactRemovalDataWave(dfr)
 	DFREF dfr
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
-	WAVE/Z/SDFR=dfr wv = artefactRemovalDataWave
+	WAVE/D/Z/SDFR=dfr wv = artefactRemovalDataWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(MINIMUM_WAVE_SIZE, 4) wv
+		Redimension/D/N=(MINIMUM_WAVE_SIZE, 4) wv
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, 4) dfr:artefactRemovalDataWave/Wave=wv
+		Make/D/N=(MINIMUM_WAVE_SIZE, 4) dfr:artefactRemovalDataWave/Wave=wv
 	endif
 
 	SetDimLabel COLS, 0, $"ArtefactPosition", wv
