@@ -1712,7 +1712,7 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	p.name    = "sweepSettingsWave"
 	p.newName = newName
 
-	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
+	WAVE/D/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, SWEEP_SETTINGS_WAVE_VERSION))
 		return wv
@@ -1722,9 +1722,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	numCols = DimSize(keyWave, COLS)
 
 	if(WaveExists(wv))
-		Redimension/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/D/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/D/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
