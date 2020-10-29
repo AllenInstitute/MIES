@@ -180,7 +180,7 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 		bottom += height_offset
 		Display/W=(left, top, right, bottom)/K=1/N=$win
 		SetWindow $win, userdata($MIES_BSP_PA_MAINPANEL) = mainWin
-		[junk, junk] = PA_GetTraceCountFromGraphData(win, clear = 1)
+		PA_GetTraceCountFromGraphData(win, clear = 1)
 		if(displayMode == PA_DISPLAYMODE_IMAGES && (!pa.multipleGraphs || activeRegionCount == numRegions))
 			SetWindow $win hook(marginResizeHook)=PA_ImageWindowHook
 			NewPanel/HOST=#/EXT=0/W=(0, 0, PA_COLORSCALE_PANEL_WIDTH, bottom - top) as ""
@@ -1161,12 +1161,17 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	usedTraceGraphs = PA_ShowPulses(graph, current, cs, pasi, mode)
 	e2 = stopmstimer(-2)
 
+	if(0)
+
+	WAVE/Z targetForAverage, sourceForAverage
 	try
 		usedImageGraphs = PA_ShowImage(graph, current, cs, targetForAverage, sourceForAverage, mode, additionalData); AbortOnRTE
 	catch
 		ASSERT(V_AbortCode == -3, "Unexpected abort")
 		usedImageGraphs = PA_ShowImage(graph, current, cs, targetForAverage, sourceForAverage, POST_PLOT_FULL_UPDATE, $"")
 	endtry
+	endif
+	usedImageGraphs = ""
 
 	KillWindows(RemoveFromList(usedTraceGraphs + usedImageGraphs, preExistingGraphs))
 	print/D "Preprocess", (e1 - s1) / 1E6
@@ -1195,6 +1200,8 @@ threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE pro
 	variable numNewPulses, numOldPulses, numAllPulses
 	variable lblPulseHasFailed, lblPULSE, lblPULSENOTE
 
+	// Since we have pasi now we can assemble the parts directly from using the information in pasi.setIndices[p][q]
+	// and index into properties, instead of going through properties
 	numWaves = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
 
 	if(numWaves == 0)
@@ -1341,9 +1348,10 @@ End
 /// @brief This function returns data from the light-weight data storage for PA graph data
 /// @param[in] graph name of PA graph
 /// @param[in] clear [optional, default = 0] when set reinitializes the data for the given graph
-/// @retval idx row index of the wave where the graph data is stored
-/// @retval traceCount traceCount for this graph
-static Function [variable idx, variable traceCount] PA_GetTraceCountFromGraphData(string graph, [variable clear])
+/// @return row index of the wave where the graph data is stored
+static Function PA_GetTraceCountFromGraphData(string graph, [variable clear])
+
+	variable idx
 
 	clear = ParamIsDefault(clear) ? 0 : !!clear
 
@@ -1351,31 +1359,25 @@ static Function [variable idx, variable traceCount] PA_GetTraceCountFromGraphDat
 	idx = FindDimLabel(graphData, ROWS, graph)
 	if(idx >= 0)
 		if(clear)
-			graphData[idx][%TRACECOUNT] = "0"
 			graphData[idx][%TRACES_AVERAGE] = ""
 			graphData[idx][%TRACES_DECONV] = ""
-			graphData[idx][%TRACES_AVERAGEFORDECONV] = ""
-			graphData[idx][%TRACES_AVERAGE_XAXIS] = ""
-			graphData[idx][%TRACES_AVERAGE_YAXIS] = ""
-			graphData[idx][%TRACES_AVERAGE_WAVES] = ""
 			graphData[idx][%IMAGELIST] = ""
 		endif
-		return [idx, str2num(graphData[idx][0])]
+		return idx
 	endif
 
 	idx = DimSize(graphData, ROWS)
 	Redimension/N=(idx + 1, -1) graphData
 	SetDimLabel ROWS, idx, $graph, graphData
-	graphData[idx][%TRACECOUNT] = "0"
 
-	return [idx, 0]
+	return idx
 End
 
 static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, STRUCT PulseAverageSetIndices &pasi, variable mode)
 
 	string pulseTrace, graph
 	variable numActive, i, j, k, sweepNo, numTotalPulses, numPlotPulses, xPos, yPos
-	variable traceCount, step
+	variable traceCount, step, graphWasReset
 	variable channelNumber, region
 	variable pulseHasFailed
 	variable hideTrace, lastSweep, alpha
@@ -1385,11 +1387,12 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	variable lblSweep, lblChannelNumber, lblRegion, lblHeadstage
 	variable lblPulseHasFailed, lblLastSweep, lblTRACES_AVERAGE, lblTRACECOUNT, lblTRACES_DECONV
 	variable lblTRACES_AVERAGE_XAXIS, lblTRACES_AVERAGE_YAXIS, lblTRACES_AVERAGE_WAVES, lblTRACES_AVERAGEFORDECONV, lblPWPULSE
+	STRUCT RGBColor s
 	string jsonPath
 	string vertAxis, horizAxis
 	string baseName, traceName, tagName
 	string usedGraphs = ""
-	string previousGraph = ""
+	string resetGraphs = ""
 
 	if(!pa.showTraces)
 		return ""
@@ -1431,115 +1434,135 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		hideTraceJsonID = JSON_Parse("{}")
 	endif
 
-	for(i = 0; i < numActive; i += 1)
-		region = pasi.regions[i]
-		if(pa.regionSlider != -1 && pa.regionSlider != region) // unselected region in ddaq viewing mode
-			continue
-		endif
-
-		for(j = 0; j < numActive; j += 1)
-			channelNumber = pasi.channels[j]
-			// graph change logic
-			if(!pa.multipleGraphs && j == 0 && i == 0 || pa.multipleGraphs)
-				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, i + 1, j + 1, numActive)
-				graphHasChanged = CmpStr(graph, previousGraph)
-				if(graphHasChanged)
-					if(!IsEmpty(previousGraph))
-						paGraphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceCount)
-					endif
-					[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph)
-					previousGraph = graph
-				endif
-			endif
-			// build list of used graphs, when not incremental we clear it on first encounter
-			if(WhichListItem(graph, usedGraphs) == -1)
-				if(mode != POST_PLOT_ADDED_SWEEPS)
-					RemoveTracesFromGraph(graph)
-					RemoveAnnotationsFromGraph(graph)
-					[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph, clear = 1)
-				endif
-				usedGraphs = AddListItem(graph, usedGraphs, ";", inf)
-			endif
-
-			if(!pa.showIndividualPulses)
+	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.failedPulses && cs.multipleGraphs && cs.hideFailedPulses)
+		usedGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_TRACES)
+	else
+		for(i = 0; i < numActive; i += 1)
+			region = pasi.regions[i]
+			if(pa.regionSlider != -1 && pa.regionSlider != region) // unselected region in ddaq viewing mode
 				continue
 			endif
 
-			[vertAxis, horizAxis] = PA_GetAxes(pa, i + 1, j + 1)
-			step = (i == j) ? 1 : PA_PLOT_STEPPING
+			for(j = 0; j < numActive; j += 1)
+				channelNumber = pasi.channels[j]
+				// graph change logic
+				if(!pa.multipleGraphs && j == 0 && i == 0 || pa.multipleGraphs)
+					graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, i + 1, j + 1, numActive)
+				endif
+				// build list of used graphs, when not incremental we clear it on first encounter
+				if(WhichListItem(graph, usedGraphs) == -1)
+					// we want to keep the graphs for ADDED_SWEEPS or we have a change of hideFailedPulses
+					if(!(mode == POST_PLOT_ADDED_SWEEPS || (mode == POST_PLOT_CONSTANT_SWEEPS && !cs.hideFailedPulses)))
+						RemoveTracesFromGraph(graph)
+						RemoveAnnotationsFromGraph(graph)
+						graphDataIndex = PA_GetTraceCountFromGraphData(graph, clear = 1)
+						resetGraphs = AddListItem(graph, resetGraphs, ";", inf)
+					endif
+					usedGraphs = AddListItem(graph, usedGraphs, ";", inf)
+				endif
 
-			WAVE indices = pasi.setIndices[j][i]
-			numEntries = pasi.numEntries[j][i]
-			startEntry = pasi.startEntry[j][i]
+				if(!pa.showIndividualPulses)
+					continue
+				endif
 
-			for(k = startEntry; k < numEntries; k += 1)
-				idx = indices[k]
-	
-				STRUCT RGBColor s
-	
-				pulseHasFailed = properties[idx][lblPulseHasFailed]
-				if(pulseHasFailed)
-					hideTrace = pa.hideFailedPulses
-					s.red   = 65535
-					s.green = 0
-					s.blue  = 0
-					alpha = 65535
+				[vertAxis, horizAxis] = PA_GetAxes(pa, i + 1, j + 1)
+				step = (i == j) ? 1 : PA_PLOT_STEPPING
+
+				WAVE indices = pasi.setIndices[j][i]
+				numEntries = pasi.numEntries[j][i]
+				startEntry = pasi.startEntry[j][i]
+				if(mode == POST_PLOT_CONSTANT_SWEEPS && !cs.hideFailedPulses)
+					// Change hidden state only, maybe we can gather failed pulses already in the analysis routine?
+					for(k = startEntry; k < numEntries; k += 1)
+						idx = indices[k]
+						if(properties[idx][lblPulseHasFailed])
+							sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, idx, NameOfWave(propertiesWaves[idx][lblPWPULSE])
+							if(pa.multipleGraphs)
+								jsonPath = graph + "/hiddenTraces"
+								JSON_AddTreeArray(hideTraceJsonID, jsonPath)
+								JSON_AddString(hideTraceJsonID, jsonPath, pulseTrace)
+							else
+								hiddenTraces[hiddenTracesCount] = pulseTrace
+								hiddenTracesCount += 1
+							endif
+						endif
+					endfor
 				else
-					hideTrace = 0
-					[s] = GetTraceColor(properties[idx][lblHeadstage])
-					alpha = 65535 * 0.2
+
+					for(k = startEntry; k < numEntries; k += 1)
+						idx = indices[k]
+						pulseHasFailed = properties[idx][lblPulseHasFailed]
+						if(pulseHasFailed)
+							hideTrace = pa.hideFailedPulses
+							s.red   = 65535
+							s.green = 0
+							s.blue  = 0
+							alpha = 65535
+						else
+							hideTrace = 0
+							[s] = GetTraceColor(properties[idx][lblHeadstage])
+							alpha = 65535 * 0.2
+						endif
+
+						WAVE plotWave = propertiesWaves[idx][lblPWPULSE]
+						sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, idx, NameOfWave(plotWave)
+						traceCount += 1
+
+						jsonPath = graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(s.red) + "/" + num2str(s.green) + "/" + num2str(s.blue) + "/" + num2str(alpha) + "/" + num2str(step) + "/"
+						JSON_AddTreeArray(jsonID, jsonPath + "index")
+						JSON_AddTreeArray(jsonID, jsonPath + "traceName")
+						JSON_AddVariable(jsonID, jsonPath + "index", idx)
+						JSON_AddString(jsonID, jsonPath + "traceName", pulseTrace)
+
+						if(hideTrace)
+							if(pa.multipleGraphs)
+								jsonPath = graph + "/hiddenTraces"
+								JSON_AddTreeArray(hideTraceJsonID, jsonPath)
+								JSON_AddString(hideTraceJsonID, jsonPath, pulseTrace)
+							else
+								hiddenTraces[hiddenTracesCount] = pulseTrace
+								hiddenTracesCount += 1
+							endif
+						endif
+
+						sweepNo = properties[idx][lblSweep]
+						lastSweep = properties[idx][lblLastSweep]
+						if(pulseHasFailed && (i == j) && (sweepNo == lastSweep))
+							sprintf tagName "tag_%s_AD%d_R%d", vertAxis, channelNumber, region
+							if(WhichListItem(tagName, AnnotationList(graph)) == -1)
+								xPos = ((i + 1) / numActive) * 100 - 2
+								yPos = ((j + 1) / numActive) * 100  - (1 / numActive) * 100 / 2
+								Textbox/W=$graph/K/N=$tagName
+								Textbox/W=$graph/N=$tagName/F=0/A=LT/L=0/X=(xPos)/Y=(ypos)/E=2 "☣️"
+							endif
+						endif
+
+					endfor
 				endif
-
-				WAVE plotWave = propertiesWaves[idx][lblPWPULSE]
-				sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, traceCount, NameOfWave(plotWave)
-				traceCount += 1
-
-				jsonPath = graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(s.red) + "/" + num2str(s.green) + "/" + num2str(s.blue) + "/" + num2str(alpha) + "/" + num2str(step) + "/"
-				JSON_AddTreeArray(jsonID, jsonPath + "index")
-				JSON_AddTreeArray(jsonID, jsonPath + "traceName")
-				JSON_AddVariable(jsonID, jsonPath + "index", idx)
-				JSON_AddString(jsonID, jsonPath + "traceName", pulseTrace)
-
-				if(hideTrace)
-					if(pa.multipleGraphs)
-						jsonPath = graph + "/hiddenTraces"
-						JSON_AddTreeArray(hideTraceJsonID, jsonPath)
-						JSON_AddString(hideTraceJsonID, jsonPath, pulseTrace)
-					else
-						hiddenTraces[hiddenTracesCount] = pulseTrace
-						hiddenTracesCount += 1
-					endif
-				endif
-
-				sweepNo = properties[idx][lblSweep]
-				lastSweep = properties[idx][lblLastSweep]
-				if(pulseHasFailed && (i == j) && (sweepNo == lastSweep))
-					sprintf tagName "tag_%s_AD%d_R%d", vertAxis, channelNumber, region
-					if(WhichListItem(tagName, AnnotationList(graph)) == -1)
-						xPos = ((i + 1) / numActive) * 100 - 2
-						yPos = ((j + 1) / numActive) * 100  - (1 / numActive) * 100 / 2
-						Textbox/W=$graph/K/N=$tagName
-						Textbox/W=$graph/N=$tagName/F=0/A=LT/L=0/X=(xPos)/Y=(ypos)/E=2 "☣️"
-					endif
-				endif
-
 			endfor
 		endfor
-	endfor
-	paGraphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceCount)
+	endif
 
-	PA_AccelerateAppendTraces(jsonID, pulseWaves)
+	// Execute Append of traces and hide/unhide
+	if(mode == POST_PLOT_CONSTANT_SWEEPS && !cs.hideFailedPulses)
+		hideTrace = pa.hideFailedPulses
+	else
+		PA_AccelerateAppendTraces(jsonID, pulseWaves)
+		hideTrace = 1
+	endif
+
 	if(pa.multipleGraphs)
 		WAVE/T hiddenTracesGraphs = JSON_GetKeys(hideTraceJsonID, "")
 		numHiddenTracesGraphs = DimSize(hiddenTracesGraphs, ROWS)
 		for(j = 0; j < numHiddenTracesGraphs; j += 1)
 			WAVE/T hiddenTracesNames = JSON_GetTextWave(hideTraceJsonID, hiddenTracesGraphs[j] + "/hiddenTraces")
-			AccelerateHideTraces(hiddenTracesGraphs[j], hiddenTracesNames, DimSize(hiddenTracesNames, ROWS))
+			AccelerateHideTraces(hiddenTracesGraphs[j], hiddenTracesNames, DimSize(hiddenTracesNames, ROWS), hideTrace)
 		endfor
 		JSON_Release(hideTraceJsonID)
 	elseif(!IsEmpty(graph))
-		AccelerateHideTraces(graph, hiddenTraces, hiddenTracesCount)
+		AccelerateHideTraces(graph, hiddenTraces, hiddenTracesCount, hideTrace)
 	endif
+
 	JSON_Release(jsonID)
 
 	Make/T/FREE/N=(numActive * numActive) avgPlotTraces, deconPlotTraces
@@ -1558,22 +1581,22 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
 				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, i + 1, j + 1, numActive)
-				[graphDataIndex, traceCount] = PA_GetTraceCountFromGraphData(graph)
+				graphDataIndex = PA_GetTraceCountFromGraphData(graph)
 				WAVE/T averageTraceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";")
 				WAVE/T deconvolutionTraceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_DECONV], ";")
+				graphWasReset = WhichListItem(graph, resetGraphs, ";") != -1
 			endif
 
-			if(pa.showAverage)
+			if(!(cs.showAverage && cs.multipleGraphs) || graphWasReset)
 				if(WaveExists(averageTraceNames))
-					WAVE/Z foundAverageTraces = GrepTextWave(averageTraceNames, ".*\\E" + PA_AVERAGE_WAVE_PREFIX + basename + "\\Q" + "$")
+					WAVE/T/Z foundTraces = GrepTextWave(averageTraceNames, "^.*" + PA_AVERAGE_WAVE_PREFIX + basename + "$")
 				else
-					WAVE/Z foundAverageTraces = $""
+					WAVE/T/Z foundTraces = $""
 				endif
 
-				if(!WaveExists(foundAverageTraces))
-					sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_AVERAGE_WAVE_PREFIX, baseName
+				if(!WaveExists(foundTraces) && pa.showAverage)
+					sprintf traceName, "A%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_AVERAGE_WAVE_PREFIX, baseName
 					traceCount += 1
-					paGraphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceCount)
 
 					[s] = GetTraceColor(NUM_HEADSTAGES + 1)
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue) averageWave/TN=$traceName
@@ -1586,30 +1609,27 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					endif
 
 					paGraphData[graphDataIndex][lblTRACES_AVERAGE] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";", Inf)
-					if(!(i == j))
-						paGraphData[graphDataIndex][lblTRACES_AVERAGEFORDECONV] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_AVERAGEFORDECONV], ";", Inf)
-						paGraphData[graphDataIndex][lblTRACES_AVERAGE_XAXIS] = AddListItem(horizAxis, paGraphData[graphDataIndex][lblTRACES_AVERAGE_XAXIS], ";", Inf)
-						paGraphData[graphDataIndex][lblTRACES_AVERAGE_YAXIS] = AddListItem(vertAxis, paGraphData[graphDataIndex][lblTRACES_AVERAGE_YAXIS], ";", Inf)
-						paGraphData[graphDataIndex][lblTRACES_AVERAGE_WAVES] = AddListItem(GetWavesDataFolder(averageWave, 2), paGraphData[graphDataIndex][lblTRACES_AVERAGE_WAVES], ";", Inf)
-					endif
+				elseif(WaveExists(foundTraces) && !pa.showAverage)
+					ASSERT(DimSize(foundTraces, ROWS) == 1, "Found multiple drawn average traces for this set.")
+					RemoveFromGraph/W=$graph $foundTraces[0]
+					paGraphData[graphDataIndex][lblTRACES_AVERAGE] = RemoveFromList(foundTraces[0], paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";")
 				endif
 			endif
 
-			if(pa.deconvolution.enable && !(i == j))
+			if(!(i == j) && (!(cs.deconvolution && cs.multipleGraphs) || graphWasReset))
 
 				if(WaveExists(deconvolutionTraceNames))
-					WAVE/Z foundDeconvolution = GrepTextWave(deconvolutionTraceNames, ".*\\E" + PA_DECONVOLUTION_WAVE_PREFIX + basename + "\\Q" + "$")
+					WAVE/T/Z foundTraces = GrepTextWave(deconvolutionTraceNames, "^.*" + PA_DECONVOLUTION_WAVE_PREFIX + basename + "$")
 				else
-					WAVE/Z foundDeconvolution = $""
+					WAVE/T/Z foundTraces = $""
 				endif
 
 				WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
 
-				if(!WaveExists(foundDeconvolution))
+				if(!WaveExists(foundTraces) && pa.deconvolution.enable)
 
-					sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_DECONVOLUTION_WAVE_PREFIX, baseName
+					sprintf traceName, "D%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_DECONVOLUTION_WAVE_PREFIX, baseName
 					traceCount += 1
-					paGraphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceCount)
 
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv[0,inf;PA_PLOT_STEPPING]/TN=$traceName
 
@@ -1621,6 +1641,10 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					endif
 
 					paGraphData[graphDataIndex][lblTRACES_DECONV] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_DECONV], ";", Inf)
+				elseif(WaveExists(foundTraces) && !pa.deconvolution.enable)
+					ASSERT(DimSize(foundTraces, ROWS) == 1, "Found multiple drawn deconvolution traces for this set.")
+					RemoveFromGraph/W=$graph $foundTraces[0]
+					paGraphData[graphDataIndex][lblTRACES_DECONV] = RemoveFromList(foundTraces[0], paGraphData[graphDataIndex][lblTRACES_DECONV], ";")
 				endif
 			endif
 		endfor
@@ -1651,7 +1675,7 @@ static Function PA_ClearGraphs(string graphs)
 		RemoveTracesFromGraph(graph)
 		RemoveImagesFromGraph(graph)
 		RemoveAnnotationsFromGraph(graph)
-		[junk, junk] = PA_GetTraceCountFromGraphData(graph, clear = 1)
+		PA_GetTraceCountFromGraphData(graph, clear = 1)
 	endfor
 End
 
@@ -1660,7 +1684,12 @@ static Structure PA_ConstantSettings
 	variable singlePulse
 	variable traces // includes general and single pulse settings
 	variable images // includes general and single pulse settings
-	variable failedPulses // includes search on/off and level change or mode == POST_PLOT_CONSTANT_SWEEPS
+	variable failedPulses // includes search on/off and level change and mode == POST_PLOT_CONSTANT_SWEEPS
+	variable dontResetWaves
+	variable multipleGraphs
+	variable showAverage
+	variable deconvolution
+	variable hideFailedPulses
 EndStructure
 
 /// @brief Returns a filled structure #PA_ConstantSettings which has 1 for all
@@ -1673,6 +1702,12 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 		cs.singlePulse = 0
 		cs.traces = 0
 		cs.images = 0
+		cs.dontResetWaves = 0
+		cs.failedPulses = 0
+		cs.multipleGraphs = 0
+		cs.showAverage = 0
+		cs.deconvolution = 0
+		cs.hideFailedPulses = 0
 		return [cs]
 	endif
 
@@ -1708,8 +1743,22 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	             && pa.pulseSortOrder == paOld.pulseSortOrder)
 
 	cs.failedPulses = (		pa.searchFailedPulses == paOld.searchFailedPulses \
-							&& pa.failedPulsesLevel ==  paOld.failedPulsesLevel  \
-							&& mode == POST_PLOT_CONSTANT_SWEEPS)
+							&& pa.failedPulsesLevel ==  paOld.failedPulsesLevel)
+
+	cs.dontResetWaves = (pa.zeroPulses == paOld.zeroPulses                 \
+							&& pa.autoTimeAlignment == paOld.autoTimeAlignment \
+							&& cs.failedPulses)
+
+	cs.multipleGraphs = pa.multipleGraphs == paOld.multipleGraphs
+
+	cs.showAverage = pa.showAverage == paOld.showAverage
+
+	cs.deconvolution = (pa.deconvolution.enable == paOld.deconvolution.enable \
+							&& pa.deconvolution.smth == paOld.deconvolution.smth   \
+							&& pa.deconvolution.tau == paOld.deconvolution.tau     \
+							&& pa.deconvolution.range == paOld.deconvolution.range)
+
+	cs.hideFailedPulses = pa.hideFailedPulses == paOld.hideFailedPulses
 
 	return [cs]
 End
@@ -1759,36 +1808,45 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 		return [pasi, 0]
 	endif
 
-	s = stopmstimer(-2)
-	WAVE indexHelper = pasi.indexHelper
-	Multithread indexHelper[][] = PA_ApplyPulseSortingOrder(pasi.setIndices[p][q], pasi.channels[p], pasi.regions[q], pasi.properties, pa)
-	print/D "PA_ApplyPulseSortingOrder", (stopmstimer(-2) - s) / 1E6
+	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.images))
+		s = stopmstimer(-2)
+		// if CONSTANT_SWEEPS and not changed or no image shown, no need to call
+		WAVE indexHelper = pasi.indexHelper
+		Multithread indexHelper[][] = PA_ApplyPulseSortingOrder(pasi.setIndices[p][q], pasi.channels[p], pasi.regions[q], pasi.properties, pa)
+		print/D "PA_ApplyPulseSortingOrder", (stopmstimer(-2) - s) / 1E6
+	endif
 
-	s = stopmstimer(-2)
-	pasi.indexHelper[][] = PA_ResetWavesIfRequired(pasi.setWaves2[p][q], pa)
-	print/D "PA_ResetWavesIfRequired", (stopmstimer(-2) - s) / 1E6
+	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves))
+		s = stopmstimer(-2)
+		pasi.indexHelper[][] = PA_ResetWavesIfRequired(pasi.setWaves2[p][q], pa)
+		print/D "PA_ResetWavesIfRequired", (stopmstimer(-2) - s) / 1E6
+	endif
 
-	if(!cs.failedPulses)
+	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.failedPulses))
 		s = stopmstimer(-2)
 		PA_MarkFailedPulses(pa, pasi)
 		print/D "PA_MarkFailedPulses", (stopmstimer(-2) - s) / 1E6
 	endif
 
-	if(pa.zeroPulses)
+	// cs.dontResetWaves contains that zeroPulse setting did not change
+	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves) && pa.zeroPulses)
 		s = stopmstimer(-2)
 		pasi.indexHelper[][] = PA_ZeroPulses(pasi.setWaves2[p][q])
 		print/D "PA_ZeroPulses", (stopmstimer(-2) - s) / 1E6
 	endif
 
-	if(pa.autoTimeAlignment)
+	// cs.dontResetWaves contains that autoTimeAlignment setting did not change
+	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves) && pa.autoTimeAlignment)
 		s = stopmstimer(-2)
 		PA_AutomaticTimeAlignment(pasi)
 		print/D "PA_AutomaticTimeAlignment", (stopmstimer(-2) - s) / 1E6
 	endif
 
-	s = stopmstimer(-2)
-	PA_CalculateAllAverages(pasi, mode)
-	print/D "PA_CalculateAllAverages", (stopmstimer(-2) - s) / 1E6
+	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves && cs.failedPulses))
+		s = stopmstimer(-2)
+		PA_CalculateAllAverages(pasi, mode)
+		print/D "PA_CalculateAllAverages", (stopmstimer(-2) - s) / 1E6
+	endif
 
 	return [pasi, 1]
 End
@@ -1855,7 +1913,7 @@ threadsafe static Function/WAVE PA_ExtractPulseSetFromSetWaves2(WAVE/WAVE setWav
 	if(!WaveExists(setWave2))
 		return $""
 	endif
-
+	// Maybe SplitWave is faster
 	Duplicate/FREE/RMD=[][0] setWave2, setWave
 	Redimension/N=(-1) setWave
 	return setWave
@@ -2266,18 +2324,6 @@ Function PA_CheckProc_Common(cba) : CheckBoxControl
 	return 0
 End
 
-Function PA_CheckProc_Deconvolution(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	switch( cba.eventCode )
-		case 2: // mouse up
-			PA_UpdateDeconvolution(cba.win)
-			break
-	endswitch
-
-	return 0
-End
-
 Function PA_SetVarProc_Common(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
@@ -2314,84 +2360,6 @@ Function PA_PopMenuProc_Common(pa) : PopupMenuControl
 	endswitch
 
 	return 0
-End
-
-static Function PA_UpdateDeconvolution(win)
-	string win
-
-	string graph, graphs, horizAxis, vertAxis
-	string traceName, fullPath, avgTrace
-	string baseName
-	variable i, numGraphs, j, numTraces, traceIndex
-	variable graphDataIndex, lblTRACES_DECONV, lblTRACECOUNT
-	STRUCT PulseAverageSettings pa
-	PA_GatherSettings(win, pa)
-
-	if(!pa.enabled)
-		return NaN
-	endif
-
-	if(pa.showImages)
-		STRUCT PA_ConstantSettings cs
-		PA_ShowImage(win, pa, cs, $"", $"", POST_PLOT_FULL_UPDATE, $"")
-	endif
-
-	if(!pa.showTraces)
-		return NaN
-	endif
-
-	graphs = PA_GetGraphs(win, PA_DISPLAYMODE_TRACES)
-
-	WAVE/T graphData = GetPAGraphData()
-	lblTRACES_DECONV = FindDimLabel(graphData, COLS, "TRACES_DECONV")
-	lblTRACECOUNT = FindDimLabel(graphData, COLS, "TRACECOUNT")
-	numGraphs = ItemsInList(graphs)
-	for(i = 0; i < numGraphs; i += 1)
-		graph = StringFromList(i, graphs)
-
-		if(pa.deconvolution.enable)
-			[graphDataIndex, traceIndex] = PA_GetTraceCountFromGraphData(graph)
-			WAVE/T traces = ListToTextWave(graphData[graphDataIndex][%TRACES_AVERAGEFORDECONV], ";")
-			WAVE/T horizAxes = ListToTextWave(graphData[graphDataIndex][%TRACES_AVERAGE_XAXIS], ";")
-			WAVE/T vertAxes = ListToTextWave(graphData[graphDataIndex][%TRACES_AVERAGE_YAXIS], ";")
-			WAVE/T avgWaves = ListToTextWave(graphData[graphDataIndex][%TRACES_AVERAGE_WAVES], ";")
-			numTraces = DimSize(traces, ROWS)
-			graphData[graphDataIndex][lblTRACES_DECONV] = ""
-			for(j = 0; j < numTraces; j += 1)
-				avgTrace = traces[j]
-
-				vertAxis = vertAxes[j]
-				horizAxis = horizAxes[j]
-				fullPath = avgWaves[j]
-				WAVE averageWave = $fullPath
-				DFREF pulseAverageDFR = GetWavesDataFolderDFR(averageWave)
-
-				SplitString/E=(PA_AVERAGE_WAVE_PREFIX + "(.*)") NameOfWave(averageWave), baseName
-				ASSERT(V_flag == 1, "Unexpected Trace Name")
-
-				sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceIndex, PA_DECONVOLUTION_WAVE_PREFIX, baseName
-				traceIndex += 1
-
-				WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, pa.deconvolution)
-
-				AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv/TN=$traceName
-				ModifyGraph/W=$graph lsize($traceName)=2
-
-				graphData[graphDataIndex][lblTRACECOUNT] = num2istr(traceIndex)
-				graphData[graphDataIndex][lblTRACES_DECONV] = AddListItem(traceName, graphData[graphDataIndex][lblTRACES_DECONV], ";", Inf)
-			endfor
-		else // !pa.deconvolution.enable
-			WAVE/T traces = ListToTextWave(graphData[%$graph][lblTRACES_DECONV], ";")
-			numTraces = DimSize(traces, ROWS)
-			for(j = 0; j < numTraces; j += 1)
-				traceName = traces[j]
-
-				RemoveFromGraph/W=$graph $traceName
-			endfor
-			graphData[graphDataIndex][lblTRACECOUNT] = num2istr(str2num(graphData[graphDataIndex][lblTRACECOUNT]) - numTraces)
-			graphData[%$graph][lblTRACES_DECONV] = ""
-		endif
-	endfor
 End
 
 /// @brief Time alignment for PA single pulses
@@ -2536,6 +2504,7 @@ static Function PA_ResetWavesIfRequired(WAVE/Z setWave2, STRUCT PulseAverageSett
 		ReplaceWaveWithBackup(set2[i][1], nonExistingBackupIsFatal = 1, keepBackup = 1)
 	endfor
 End
+
 
 static Function PA_LayoutGraphs(string win, variable displayMode, WAVE regions, WAVE channels, STRUCT PulseAverageSettings &pa)
 
@@ -3127,7 +3096,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 			graphsWithImages = RemoveFromList(graph + "#" + imageName, graphsWithImages)
 
-			[graphDataIndex, junk] = PA_GetTraceCountFromGraphData(graph)
+			graphDataIndex = PA_GetTraceCountFromGraphData(graph)
 			if(WhichListItem(imageName, paGraphData[graphDataIndex][lblIMAGELIST]) == -1)
 				AppendImage/W=$graph/L=$vertAxis/B=$horizAxis img
 				paGraphData[graphDataIndex][lblIMAGELIST] = AddListItem(imageName, paGraphData[graphDataIndex][lblIMAGELIST])

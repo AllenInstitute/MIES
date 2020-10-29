@@ -593,7 +593,7 @@ Window DataBrowser() : Graph
 	CheckBox check_pulseAver_indPulses,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_indPulses,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_indPulses,value= 1
-	CheckBox check_pulseAver_deconv,pos={71.00,308.00},size={94.00,15.00},disable=1,proc=PA_CheckProc_Deconvolution,title="Deconvolution"
+	CheckBox check_pulseAver_deconv,pos={71.00,308.00},size={94.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Deconvolution"
 	CheckBox check_pulseAver_deconv,help={"Show Deconvolution: tau * dV/dt + V "}
 	CheckBox check_pulseAver_deconv,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_deconv,userdata(tabcontrol)=  "Settings"
