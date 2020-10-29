@@ -84,6 +84,9 @@ static Constant PA_INDICESCHANGE_MOVED = 1
 static Constant PA_INDICESCHANGE_REMOVED = 2
 static Constant PA_INDICESCHANGE_ADDED = 3
 
+static Constant PA_PASIINIT_BASE = 0x01
+static Constant PA_PASIINIT_INDICEMETA = 0x02
+
 // comment out to show all the axes, useful for debugging
 #define PA_HIDE_AXIS
 
@@ -525,7 +528,7 @@ End
 ///
 /// The result is feed into GetPulseAverageProperties() and GetPulseAveragepropertiesWaves() for further consumption.
 /// Returns the mode, because the mode may change from incremental to full update because incremental update fails due to layout changes
-static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
+static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, variable mode, WAVE/Z additionalData)
 
 	variable startingPulseSett, endingPulseSett, pulseHasFailed, numActive
 	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, endingPulse
@@ -538,13 +541,8 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	string channelTypeStr, channelList, regionChannelList, channelNumberStr, key, regionList, baseName, sweepList, sweepNoStr, experiment
 	string oldRegionList, oldChannelList
 
-	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.singlePulse)
-		// nothing to do
-		return [pasi]
-	endif
-
+	// possibly a TUD function
 	WAVE/T/Z traceData = GetTraceInfos(GetMainWindow(win))
-
 	if(!WaveExists(traceData))
 		return [pasi]
 	endif
@@ -862,34 +860,67 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS, sweepList)
 	SetNumberInWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE, layoutChanged)
 
-	DFREF pasi.pulseAverageDFR = pulseAverageDFR
-	DFREF pasi.pulseAverageHelperDFR = pulseAverageHelperDFR
-	WAVE pasi.properties = properties
-	WAVE/T pasi.propertiesText = propertiesText
-	WAVE/WAVE pasi.propertiesWaves = propertiesWaves
+	[pasi] = PA_InitPASIInParts(pa, PA_PASIINIT_BASE, 0)
+	if(WaveExists(pasi.setIndices))
+		ASSERT(DimSize(pasi.channels, ROWS) == DimSize(pasi.regions, ROWS), "Number of channels must equal number of regions")
 
-	WAVE/WAVE/Z setIndices
-	WAVE/Z channels, regions, indexHelper
-	[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pasi.pulseAverageHelperDFR, 0)
-	numActive = DimSize(channels, ROWS)
-	ASSERT(numActive == DimSize(regions, ROWS), "Number of channels must equal number of regions")
+		PA_UpdateIndiceNotes(currentDisplayMapping, prevDisplayMapping, pasi, layoutChanged)
+		Duplicate/O currentDisplayMapping, prevDisplayMapping
 
-	WAVE/WAVE pasi.setIndices = setIndices
-	WAVE pasi.channels = channels
-	WAVE pasi.regions = regions
-	WAVE pasi.indexHelper = indexHelper
-
-	PA_UpdateIndiceNotes(currentDisplayMapping, prevDisplayMapping, pasi, layoutChanged)
-	Duplicate/O currentDisplayMapping, prevDisplayMapping
-
-	Make/FREE/D/N=(numActive, numActive) numEntries, startEntry
-	numEntries[][] = GetNumberFromWaveNote(setIndices[p][q], NOTE_INDEX)
-	startEntry[][] = GetNumberFromWaveNote(setIndices[p][q], PA_SETINDICES_KEY_DISPSTART)
-	startEntry[][] = IsNaN(startEntry[p][q]) ? 0 : startEntry[p][q]
-	WAVE pasi.numEntries = numEntries
-	WAVE pasi.startEntry = startEntry
+		[pasi] = PA_InitPASIInParts(pa, PA_PASIINIT_INDICEMETA, 0)
+	endif
 
 	JSON_Release(jsonID)
+
+	return [pasi]
+End
+
+static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT PulseAverageSettings &pa, variable part, variable disableIncremental)
+
+	variable numActive
+
+	disableIncremental = !!disableIncremental
+
+	if(part & PA_PASIINIT_BASE)
+		DFREF pasi.pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
+		DFREF pasi.pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+
+		WAVE pasi.properties = GetPulseAverageProperties(pasi.pulseAverageHelperDFR)
+		WAVE/T pasi.propertiesText = GetPulseAveragePropertiesText(pasi.pulseAverageHelperDFR)
+		WAVE/WAVE pasi.propertiesWaves = GetPulseAveragePropertiesWaves(pasi.pulseAverageHelperDFR)
+
+		WAVE/WAVE/Z setIndices
+		WAVE/Z channels, regions, indexHelper
+		[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pasi.pulseAverageHelperDFR, 0)
+		if(!WaveExists(setIndices))
+			return [pasi]
+		endif
+
+		WAVE/WAVE pasi.setIndices = setIndices
+		WAVE pasi.channels = channels
+		WAVE pasi.regions = regions
+		WAVE pasi.indexHelper = indexHelper
+
+		numActive = DimSize(pasi.channels, ROWS)
+		Make/FREE/WAVE/N=(numActive, numActive) setWaves2
+		setWaves2[][] = PA_GetSetWaves(pasi.pulseAverageHelperDFR, pasi.channels[p], pasi.regions[q])
+		WAVE/WAVE pasi.setWaves2 = setWaves2
+	endif
+
+	if(part & PA_PASIINIT_INDICEMETA)
+		if(!WaveExists(pasi.channels))
+			return [pasi]
+		endif
+		numActive = DimSize(pasi.channels, ROWS)
+		Make/FREE/D/N=(numActive, numActive) numEntries, startEntry
+		numEntries[][] = GetNumberFromWaveNote(pasi.setIndices[p][q], NOTE_INDEX)
+		if(!disableIncremental)
+			startEntry[][] = GetNumberFromWaveNote(pasi.setIndices[p][q], PA_SETINDICES_KEY_DISPSTART)
+			startEntry[][] = IsNaN(startEntry[p][q]) ? 0 : startEntry[p][q]
+		endif
+		WAVE pasi.numEntries = numEntries
+		WAVE pasi.startEntry = startEntry
+	endif
 
 	return [pasi]
 End
@@ -994,18 +1025,7 @@ static Function PA_UpdateIndiceNotesImpl(WAVE indices, WAVE currentMap, WAVE old
 	endif
 End
 
-static Function PA_ApplyPulseSortingOrder(STRUCT PulseAverageSettings &pa)
-
-	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
-	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-
-	WAVE/WAVE/Z setIndices
-	WAVE/Z channels, regions, indexHelper
-	[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 0)
-	Multithread indexHelper[][] = PA_ApplyPulseSortingOrderImpl(setIndices[p][q], channels[p], regions[q], properties, pa)
-End
-
-threadsafe static Function PA_ApplyPulseSortingOrderImpl(WAVE setIndices, variable channelNumber, variable region, WAVE properties, STRUCT PulseAverageSettings &pa)
+threadsafe static Function PA_ApplyPulseSortingOrder(WAVE setIndices, variable channelNumber, variable region, WAVE properties, STRUCT PulseAverageSettings &pa)
 
 	variable numEntries, pulseSortOrder
 	variable lblSweep, lblPulse
@@ -1712,8 +1732,6 @@ End
 /// @retval needsPlotting dest boolean denoting if there are pulses to plot
 static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
 
-	variable numActive
-	variable numTotalPulses
 	string preExistingGraphs, graph
 
 	variable s
@@ -1721,77 +1739,55 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
 	graph = GetMainWindow(win)
 
-	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
-
 	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
+		DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
 		KillOrMoveToTrash(dfr = pulseAverageHelperDFR)
 		return [pasi, 0]
 	endif
 
-	s = stopmstimer(-2)
+	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.singlePulse)
+		[pasi] = PA_InitPASIInParts(pa, PA_PASIINIT_BASE | PA_PASIINIT_INDICEMETA, 1)
+	else
+		s = stopmstimer(-2)
+		[pasi] = PA_GenerateAllPulseWaves(win, pa, mode, additionalData)
+		print/D "PA_GenerateAllPulseWaves", (stopmstimer(-2) - s) / 1E6
+	endif
 
-	[pasi] = PA_GenerateAllPulseWaves(win, pa, cs, mode, additionalData)
-
-	print/D "PA_GenerateAllPulseWaves", (stopmstimer(-2) - s) / 1E6
-
-	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
-	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-
-	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
-	if(numTotalPulses == 0)
+	if(!WaveExists(pasi.setIndices))
 		PA_ClearGraphs(preExistingGraphs)
 		return [pasi, 0]
 	endif
 
 	s = stopmstimer(-2)
-
-	PA_ApplyPulseSortingOrder(pa)
-
+	WAVE indexHelper = pasi.indexHelper
+	Multithread indexHelper[][] = PA_ApplyPulseSortingOrder(pasi.setIndices[p][q], pasi.channels[p], pasi.regions[q], pasi.properties, pa)
 	print/D "PA_ApplyPulseSortingOrder", (stopmstimer(-2) - s) / 1E6
 
 	s = stopmstimer(-2)
-
-	numActive = DimSize(pasi.channels, ROWS)
-	Make/FREE/WAVE/N=(numActive, numActive) setWaves2
-	setWaves2[][] = PA_GetSetWaves(pasi.pulseAverageHelperDFR, pasi.channels[p], pasi.regions[q])
-	WAVE/WAVE pasi.setWaves2 = setWaves2
-
 	pasi.indexHelper[][] = PA_ResetWavesIfRequired(pasi.setWaves2[p][q], pa)
-
 	print/D "PA_ResetWavesIfRequired", (stopmstimer(-2) - s) / 1E6
 
-	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
-	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
-
-	s = stopmstimer(-2)
-
 	if(!cs.failedPulses)
+		s = stopmstimer(-2)
 		PA_MarkFailedPulses(pa, pasi)
+		print/D "PA_MarkFailedPulses", (stopmstimer(-2) - s) / 1E6
 	endif
-
-	print/D "PA_MarkFailedPulses", (stopmstimer(-2) - s) / 1E6
-
-	s = stopmstimer(-2)
 
 	if(pa.zeroPulses)
+		s = stopmstimer(-2)
 		pasi.indexHelper[][] = PA_ZeroPulses(pasi.setWaves2[p][q])
+		print/D "PA_ZeroPulses", (stopmstimer(-2) - s) / 1E6
 	endif
-
-	print/D "PA_ZeroPulses", (stopmstimer(-2) - s) / 1E6
-
-	s = stopmstimer(-2)
 
 	if(pa.autoTimeAlignment)
+		s = stopmstimer(-2)
 		PA_AutomaticTimeAlignment(pasi)
+		print/D "PA_AutomaticTimeAlignment", (stopmstimer(-2) - s) / 1E6
 	endif
 
-	print/D "PA_AutomaticTimeAlignment", (stopmstimer(-2) - s) / 1E6
-
 	s = stopmstimer(-2)
-
 	PA_CalculateAllAverages(pasi, mode)
-
 	print/D "PA_CalculateAllAverages", (stopmstimer(-2) - s) / 1E6
 
 	return [pasi, 1]
