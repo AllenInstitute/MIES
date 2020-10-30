@@ -1175,12 +1175,7 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	usedTraceGraphs = PA_ShowPulses(graph, current, cs, pasi, mode)
 	e2 = stopmstimer(-2)
 
-	try
-		usedImageGraphs = PA_ShowImage(graph, current, cs, pasi, mode, additionalData); AbortOnRTE
-	catch
-		ASSERT(V_AbortCode == -3, "Unexpected abort")
-		usedImageGraphs = PA_ShowImage(graph, current, cs, pasi, POST_PLOT_FULL_UPDATE, $"")
-	endtry
+	usedImageGraphs = PA_ShowImage(graph, current, cs, pasi, mode, additionalData)
 
 	KillWindows(RemoveFromList(usedTraceGraphs + usedImageGraphs, preExistingGraphs))
 	print/D "Preprocess", (e1 - s1) / 1E6
@@ -2978,8 +2973,8 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 	variable channelNumber, region, numActive, i, j, k, err
 	variable requiredEntries, specialEntries, numPulses
 	variable singlePulseColumnOffset, failedMarkerStartRow, xPos, yPos, newSweep, numGraphs
-	variable vert_min, vert_max, horiz_min, horiz_max, firstPulseIndex
-	variable graphDataIndex, junk, lblIMAGELIST
+	variable vert_min, vert_max, horiz_min, horiz_max, firstPulseIndex, layoutChanged
+	variable graphDataIndex, junk, lblIMAGELIST, resetImage
 	string vertAxis, horizAxis, graph, basename, imageName, msg, graphWithImage
 	string image
 	string usedGraphs = ""
@@ -2993,6 +2988,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 	numActive = DimSize(pasi.channels, ROWS)
 	WAVE properties = pasi.properties
+	layoutChanged = GetNumberFromWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE)
 
 	WAVE/T paGraphData = GetPAGraphData()
 	lblIMAGELIST = FindDimLabel(paGraphData, COLS, "IMAGELIST")
@@ -3042,40 +3038,37 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			if(numPulses == 0)
 				Multithread img[][] = NaN
 			else
-				WAVE firstPulse = WaveRef(pasi.setWaves2[0][0], row = 0)
-				CopyScales/P firstPulse, img
+				CopyScales/P averageWave, img
 
 				Make/FREE/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(img, p)
 				EnsureLargeEnoughWave(img, minimumSize = requiredEntries, dimension = COLS, initialValue=NaN)
-				Redimension/N=(DimSize(firstPulse, ROWS), -1) img
+				Redimension/N=(DimSize(averageWave, ROWS), -1) img
 				Make/FREE/N=(MAX_DIMENSION_COUNT) newSizes = DimSize(img, p)
 
-				if(mode != POST_PLOT_ADDED_SWEEPS                                        \
+				if(!(mode != POST_PLOT_ADDED_SWEEPS                                        \
 				   || !EqualWaves(oldSizes, newSizes, 1)                                 \
-				   || pa.pulseSortOrder != PA_PULSE_SORTING_ORDER_SWEEP)
-					Multithread img[][] = NaN
-				else
-					// algorithm:
-					// we search the entry in setIndizes which has smallest of the new sweeps
-					// this does *not* require properties to be sorted,
-					// only setIndizes must be sorted in ascending sweep order
-					// and then copy everything from firstPulseIndex to requiredEntries - 1 into img
+				   || pa.pulseSortOrder != PA_PULSE_SORTING_ORDER_SWEEP						\
+				   || layoutChanged))
+
 					newSweep = WaveMin(additionalData)
 					Make/FREE/N=(numPulses) sweeps = properties[setIndizes[p]][%Sweep]
 					FindValue/Z/V=(newSweep) sweeps
 					if(V_Value > 0)
 						firstPulseIndex = V_Value
+						singlePulseColumnOffset += firstPulseIndex
 					else
 						// we can have no match with removed headstages on the new sweep
 						// caller needs to retry with POST_PLOT_FULL_UPDATE
-						Abort
+						resetImage = 1
 					endif
 					WaveClear sweeps
+				else
+					resetImage = 1
+				endif
+				if(resetImage)
+					Multithread img[][] = NaN
 				endif
 			endif
-
-			// @todo axis naming needs to be based on channel numbers and regions and not active indizes
-			// when adding a new sweep with more headstages this currently messes up everything
 
 			if(pa.showIndividualPulses && numPulses > 0)
 				WAVE/WAVE set = WaveRef(pasi.setWaves2[i][j])
@@ -3100,7 +3093,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 			if(pa.deconvolution.enable && !(i == j) && WaveExists(averageWave))
 				baseName = PA_BaseName(channelNumber, region)
-				WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
+				WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
 				Multithread img[][specialEntries, 2 * specialEntries - 1] = limit(deconv(x), vert_min, vert_max); err = GetRTError(1)
 			endif
 
@@ -3137,6 +3130,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 		graph = StringFromList(0, graphWithImage, "#")
 		image = StringFromList(1, graphWithImage, "#")
 		RemoveImage/W=$graph $image
+		paGraphData[graphDataIndex][lblIMAGELIST] = RemoveFromList(image, paGraphData[graphDataIndex][lblIMAGELIST], ";")
 	endfor
 
 	PA_DrawScaleBars(win, pa, pasi, PA_DISPLAYMODE_IMAGES, PA_USE_WAVE_SCALES)
