@@ -1992,7 +1992,7 @@ Function PA_AxisHook(s)
 	// so it needs to be robust
 	try
 		ClearRTError()
-//		PA_UpdateScaleBars(s.win); AbortOnRTE
+		PA_UpdateScaleBars(s.win); AbortOnRTE
 	catch
 		printf "Encountered error/abort (%s)\r", GetRTErrMessage()
 		ClearRTError()
@@ -2001,25 +2001,27 @@ Function PA_AxisHook(s)
 	return 0
 End
 
-//static Function PA_UpdateScaleBars(string win)
-//
-//	variable displayMode
-//	string bsPanel
-//
-//	if(GrepString(win, PA_GRAPH_PREFIX))
-//		bsPanel = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
-//	else
-//		bsPanel = BSP_GetPanel(win)
-//	endif
-//
-//	ASSERT(WindowExists(win), "Missing window")
-//
-//	displayMode = ItemsInList(ImageNameList(win, ";")) > 0 ? PA_DISPLAYMODE_IMAGES : PA_DISPLAYMODE_TRACES
-//
-//	STRUCT PulseAverageSettings pa
-//	PA_GatherSettings(bsPanel, pa)
-//	PA_DrawScaleBars(bsPanel, pa, displayMode, PA_USE_AXIS_SCALES)
-//End
+static Function PA_UpdateScaleBars(string win)
+
+	variable displayMode
+	string bsPanel
+	STRUCT PulseAverageSetIndices pasi
+
+	if(GrepString(win, PA_GRAPH_PREFIX))
+		bsPanel = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
+	else
+		bsPanel = BSP_GetPanel(win)
+	endif
+
+	ASSERT(WindowExists(win), "Missing window")
+
+	displayMode = ItemsInList(ImageNameList(win, ";")) > 0 ? PA_DISPLAYMODE_IMAGES : PA_DISPLAYMODE_TRACES
+
+	STRUCT PulseAverageSettings pa
+	PA_GatherSettings(bsPanel, pa)
+	[pasi] = PA_InitPASIInParts(pa, PA_PASIINIT_BASE | PA_PASIINIT_INDICEMETA, 1)
+	PA_DrawScaleBars(bsPanel, pa, pasi, displayMode, PA_USE_AXIS_SCALES)
+End
 
 static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable displayMode, variable axisMode)
 
