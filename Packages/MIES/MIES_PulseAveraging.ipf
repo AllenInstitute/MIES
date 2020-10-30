@@ -963,7 +963,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	string pulseTrace, channelTypeStr, str, graph, key
 	variable numChannels, i, j, sweepNo, headstage, numTotalPulses, pulse, xPos, yPos, needsPlotting
 	variable first, numEntries, startingPulse, endingPulse, traceCount, step, isDiagonalElement
-	variable red, green, blue, channelNumber, region, channelType, length, newSweepCount
+	variable channelNumber, region, channelType, length, newSweepCount
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay, pulseHasFailed
 	variable numRegions, hideTrace, lastSweep, alpha, constantSinglePulseSettings
 	string vertAxis, horizAxis, channelNumberStr, experiment
@@ -1060,19 +1060,21 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		WAVE plotWave = propertiesWaves[i]
 		fullPath = GetWavesDataFolder(plotWave, 2)
 
+		STRUCT RGBColor s
+
 		if(pa.showIndividualPulses)
 
 			step = isDiagonalElement ? 1 : PA_PLOT_STEPPING
 
 			if(pulseHasFailed)
 				hideTrace = pa.hideFailedPulses
-				red   = 65535
-				green = 0
-				blue  = 0
+				s.red   = 65535
+				s.green = 0
+				s.blue  = 0
 				alpha = 65535
 			else
 				hideTrace = 0
-				GetTraceColor(headstage, red, green, blue)
+				[s] = GetTraceColor(headstage)
 				alpha = 65535 * 0.2
 			endif
 
@@ -1080,7 +1082,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, traceCount, NameOfWave(plotWave)
 				traceCount += 1
 
-				AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, alpha) plotWave[0,inf;step]/TN=$pulseTrace
+				AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue, alpha) plotWave[0,inf;step]/TN=$pulseTrace
 
 				if(hideTrace)
 					ModifyGraph/W=$graph hideTrace($pulseTrace)=hideTrace
@@ -1155,8 +1157,8 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_AVERAGE_WAVE_PREFIX, baseName
 					traceCount += 1
 
-					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
-					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave/TN=$traceName
+					[s] = GetTraceColor(NUM_HEADSTAGES + 1)
+					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue) averageWave/TN=$traceName
 					ModifyGraph/W=$graph lsize($traceName)=1.5
 
 					TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
@@ -2056,8 +2058,9 @@ End
 static Function PA_LayoutGraphs(string win, variable displayMode, WAVE regions, WAVE channels, STRUCT PulseAverageSettings &pa)
 
 	variable i, j, numRegions, numChannels, activeRegionCount, activeChanCount, numPulsesInSet
-	variable channelNumber, headstage, red, green, blue, region, xStart
+	variable channelNumber, headstage, region, xStart
 	string graph, str, horizAxis, vertAxis
+	STRUCT RGBColor s
 
 	numRegions = DimSize(regions, ROWS)
 	numChannels = DimSize(channels, ROWS)
@@ -2127,8 +2130,8 @@ static Function PA_LayoutGraphs(string win, variable displayMode, WAVE regions, 
 			sprintf str, "\\Z08\\Zr075#Pulses %g / #Swps. %d", DimSize(pulses, ROWS), DimSize(sweeps, ROWS)
 			Textbox/W=$graph/C/N=leg/X=-5.00/Y=-5.00 str
 
-			GetTraceColor(headstage, red, green, blue)
-			sprintf str, "\\k(%d, %d, %d)\\K(%d, %d, %d)\\W555\\k(0, 0, 0)\\K(0, 0, 0)", red, green, blue, red, green, blue
+			[s] = GetTraceColor(headstage)
+			sprintf str, "\\k(%d, %d, %d)\\K(%d, %d, %d)\\W555\\k(0, 0, 0)\\K(0, 0, 0)", s.red, s.green, s.blue, s.red, s.green, s.blue
 
 			sprintf str, "AD%d / Reg. %d HS%s", channelNumber, region, str
 			AppendText/W=$graph str

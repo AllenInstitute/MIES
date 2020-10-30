@@ -677,94 +677,92 @@ End
 ///
 /// The colors are "Twenty two colors of maximum contrast" by L. Kelly, see http://www.iscc.org/pdf/PC54_1724_001.pdf,
 /// where the color white has been removed.
-Function GetTraceColor(index, red, green, blue)
-	variable index
-	variable &red, &green, &blue
+Function [STRUCT RGBColor s] GetTraceColor(variable index)
 
 	index = mod(index, 21)
 	switch(index)
 		case 0:
-			red = 7967; green=7710; blue=7710
+			s.red = 7967; s.green=7710; s.blue=7710
 			break
 
 		case 1:
-			red = 60395; green=52685; blue=15934
+			s.red = 60395; s.green=52685; s.blue=15934
 			break
 
 		case 2:
-			red = 28527; green=12336; blue=35723
+			s.red = 28527; s.green=12336; s.blue=35723
 			break
 
 		case 3:
-			red = 56283; green=27242; blue=10537
+			s.red = 56283; s.green=27242; s.blue=10537
 			break
 
 		case 4:
-			red = 38807; green=52942; blue=59110
+			s.red = 38807; s.green=52942; s.blue=59110
 			break
 
 		case 5:
-			red = 47545; green=8224; blue=13878
+			s.red = 47545; s.green=8224; s.blue=13878
 			break
 
 		case 6:
-			red = 49858; green=48316; blue=33410
+			s.red = 49858; s.green=48316; s.blue=33410
 			break
 
 		case 7:
-			red = 32639; green=32896; blue=33153
+			s.red = 32639; s.green=32896; s.blue=33153
 			break
 
 		case 8:
-			red = 25186; green=42662; blue=18247
+			s.red = 25186; s.green=42662; s.blue=18247
 			break
 
 		case 9:
-			red = 54227; green=34438; blue=45746
+			s.red = 54227; s.green=34438; s.blue=45746
 			break
 
 		case 10:
-			red = 17733; green=30840; blue=46003
+			s.red = 17733; s.green=30840; s.blue=46003
 			break
 
 		case 11:
-			red = 56540; green=33924; blue=25957
+			s.red = 56540; s.green=33924; s.blue=25957
 			break
 
 		case 12:
-			red = 18504; green=14392; blue=38550
+			s.red = 18504; s.green=14392; s.blue=38550
 			break
 
 		case 13:
-			red = 57825; green=41377; blue=12593
+			s.red = 57825; s.green=41377; s.blue=12593
 			break
 
 		case 14:
-			red = 37265; green=10023; blue=35723
+			s.red = 37265; s.green=10023; s.blue=35723
 			break
 
 		case 15:
-			red = 59881; green=59624; blue=22359
+			s.red = 59881; s.green=59624; s.blue=22359
 			break
 
 		case 16:
-			red = 32125; green=5911; blue=5654
+			s.red = 32125; s.green=5911; s.blue=5654
 			break
 
 		case 17:
-			red = 37779; green=44461; blue=15420
+			s.red = 37779; s.green=44461; s.blue=15420
 			break
 
 		case 18:
-			red = 28270; green=13621; blue=5397
+			s.red = 28270; s.green=13621; s.blue=5397
 			break
 
 		case 19:
-			red = 53713; green=11565; blue=10023
+			s.red = 53713; s.green=11565; s.blue=10023
 			break
 
 		case 20:
-			red = 11308; green=13878; blue=5911
+			s.red = 11308; s.green=13878; s.blue=5911
 			break
 
 		default:

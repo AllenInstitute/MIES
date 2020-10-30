@@ -392,9 +392,10 @@ Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 	string panelTitle
 	variable dataAcqOrTP, activeHeadStage
 
-	variable adc, i, headStage, red, green, blue
+	variable adc, i, headStage
 	variable numADChannels
 	string leftAxis, style, color, unit, labelStr, graph, axList
+	STRUCT RGBColor s
 
 	graph = SCOPE_GetGraph(panelTitle)
 
@@ -420,13 +421,13 @@ Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 		headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
 		if(isFinite(headStage))
 			labelStr = "HS" + num2str(headstage)
-			GetTraceColor(headStage, red, green, blue)
+			[s] = GetTraceColor(headStage)
 		else
 			labelStr = AXIS_SCOPE_AD + num2str(adc)
-			GetTraceColor(NUM_HEADSTAGES, red, green, blue)
+			[s] = GetTraceColor(NUM_HEADSTAGES)
 		endif
 
-		sprintf color, "\K(%d,%d,%d)" red, green, blue
+		sprintf color, "\K(%d,%d,%d)" s.red, s.green, s.blue
 		if(activeHeadStage == headStage)
 			style = "\f05"
 		else
