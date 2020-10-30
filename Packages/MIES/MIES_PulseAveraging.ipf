@@ -1437,7 +1437,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		hideTraceJsonID = JSON_Parse("{}")
 	endif
 
-	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.failedPulses && cs.multipleGraphs && cs.hideFailedPulses && cs.showIndividualPulses)
+	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.failedPulses && cs.multipleGraphs && cs.hideFailedPulses && cs.showIndividualPulses && cs.showTraces)
 		usedGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_TRACES)
 	else
 		for(i = 0; i < numActive; i += 1)
@@ -1710,6 +1710,7 @@ static Structure PA_ConstantSettings
 	variable deconvolution
 	variable hideFailedPulses
 	variable showIndividualPulses
+	variable showTraces
 EndStructure
 
 /// @brief Returns a filled structure #PA_ConstantSettings which has 1 for all
@@ -1729,6 +1730,7 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 		cs.deconvolution = 0
 		cs.hideFailedPulses = 0
 		cs.showIndividualPulses = 0
+		cs.showTraces = 0
 		return [cs]
 	endif
 
@@ -1782,6 +1784,8 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	cs.hideFailedPulses = pa.hideFailedPulses == paOld.hideFailedPulses
 
 	cs.showIndividualPulses = pa.showIndividualPulses == paOld.showIndividualPulses
+
+	cs.showTraces = pa.showTraces == paOld.showTraces
 
 	return [cs]
 End
