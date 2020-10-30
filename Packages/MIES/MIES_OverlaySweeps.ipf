@@ -314,9 +314,9 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, i
 		FindValue/RMD=[][0]/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
 		ASSERT(V_Value >= 0, "Could not find sweep")
 		Make/FREE/N=(1, 2) indices = {{V_Value}, {0}}
-		index = V_Value
 	elseif(!ParamIsDefault(index))
 		Make/FREE/N=(1, 2) indices = {{index}, {0}}
+		ASSERT(index >= 0 && index < DimSize(listboxWave, ROWS), "Could not find index")
 	elseif(!ParamIsDefault(sweeps))
 		if(WaveExists(sweeps))
 			numEntries = DimSize(sweeps, ROWS)
@@ -332,10 +332,6 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, i
 		endif
 	else
 		ASSERT(0, "Requires one of index or sweepNo")
-	endif
-
-	if(index < 0 || index >= DimSize(listBoxWave, ROWS) || !IsFinite(index))
-		return NaN
 	endif
 
 	WAVE updateHandle = OVS_BeginIncrementalUpdate(win)
