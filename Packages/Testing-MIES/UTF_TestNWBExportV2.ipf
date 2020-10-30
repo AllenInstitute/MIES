@@ -444,7 +444,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 
 		gain_ref = gains[params.electrodeNumber]
 		gain = IPNWB#ReadDatasetAsNumber(channelGroupID, "gain")
-		CHECK_EQUAL_VAR(gain, gain_ref)
+		CHECK_CLOSE_VAR(gain, gain_ref, tol = 1e-6)
 	endif
 
 	// data.resolution
