@@ -34,6 +34,9 @@ static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 static StrConstant PA_SETTINGS = "PulseAverageSettings"
 
 static StrConstant PA_USER_DATA_X_START_RELATIVE_PREFIX = "XAxisStartPlotRelative_"
+static StrConstant PA_USER_DATA_CALC_XLENGTH = "CalculatedXBarLength"
+static StrConstant PA_USER_DATA_CALC_YLENGTH = "CalculatedYBarLength"
+static StrConstant PA_USER_DATA_USER_YLENGTH = "UserYBarLength"
 
 /// Only present for diagonal pulses
 static StrConstant PA_NOTE_KEY_PULSE_FAILED = "PulseHasFailed"
@@ -1708,7 +1711,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	endif
 
 	PA_LayoutGraphs(win, pa, pasi, PA_DISPLAYMODE_TRACES)
-	PA_DrawScaleBars(win, pa, pasi, PA_DISPLAYMODE_TRACES, PA_USE_WAVE_SCALES)
+	PA_DrawScaleBars(win, pa, pasi, PA_DISPLAYMODE_TRACES, PA_USE_WAVE_SCALES, resetToUserLength = 1)
 	PA_DrawXZeroLines(win, pa, pasi, PA_DISPLAYMODE_TRACES)
 
 	return usedGraphs
@@ -2055,17 +2058,21 @@ threadsafe static Function/WAVE PA_ExtractSumsCountsOnly(WAVE/WAVE w)
 	return result
 End
 
-static Function PA_UpdateScaleBars(string win)
-
+/// @brief Update the scale bars of the passed plot
+///
+/// @param win               PA trace or image plot
+/// @param resetToUserLength Reset the scale bars to the user upplied values
+///
+/// This functions is non-statc as it is called from the operation queue.  This
+/// is necessary as the window hooks listen to the mouse wheel event, and we
+/// want to update only after the mouse wheel triggered the axis range change.
+/// And that is only possible with the operation queue.
+Function PA_UpdateScaleBars(string win, variable resetToUserLength)
 	variable displayMode
 	string bsPanel
 	STRUCT PulseAverageSetIndices pasi
 
-	if(GrepString(win, PA_GRAPH_PREFIX))
-		bsPanel = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
-	else
-		bsPanel = BSP_GetPanel(win)
-	endif
+	bsPanel = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
 
 	ASSERT(WindowExists(win), "Missing window")
 
@@ -2074,14 +2081,20 @@ static Function PA_UpdateScaleBars(string win)
 	STRUCT PulseAverageSettings pa
 	PA_GatherSettings(bsPanel, pa)
 	[pasi] = PA_InitPASIInParts(pa, PA_PASIINIT_BASE | PA_PASIINIT_INDICEMETA, 1)
-	PA_DrawScaleBars(bsPanel, pa, pasi, displayMode, PA_USE_AXIS_SCALES)
+	PA_DrawScaleBars(bsPanel, pa, pasi, displayMode, PA_USE_AXIS_SCALES, resetToUserLength = resetToUserLength)
 End
 
-static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable displayMode, variable axisMode)
+static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable displayMode, variable axisMode, [variable resetToUserLength])
 
 	variable i, j, numActive, region, channelNumber, drawXScaleBarOverride
 	variable maximum, length, drawYScaleBarOverride
 	string graph, vertAxis, horizAxis, xUnit, yUnit, baseName
+
+	if(ParamIsDefault(resetToUserLength))
+		resetToUserLength = 0
+	else
+		resetToUserLength = !!resetToUserLength
+	endif
 
 	if((!pa.showIndividualPulses && !pa.showAverage && !pa.deconvolution.enable) \
 	   || (!pa.showTraces && displayMode == PA_DISPLAYMODE_TRACES)               \
@@ -2125,7 +2138,8 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, ST
 				yUnit  = "n. a."
 			endif
 
-			PA_DrawScaleBarsHelper(graph, axisMode, displayMode, pasi.setWaves2Unsorted[i][j], vertAxis, horizAxis, length, xUnit, yUnit, i + 1, j + 1, numActive)
+			PA_DrawScaleBarsHelper(graph, axisMode, displayMode, pasi.setWaves2Unsorted[i][j], \
+			                       vertAxis, horizAxis, length, xUnit, yUnit, i + 1, j + 1, numActive, resetToUserLength)
 		endfor
 	endfor
 End
@@ -2143,13 +2157,60 @@ static Function	[variable vert_min, variable vert_max, variable horiz_min, varia
 	return [WaveMin(vertDataMin), WaveMax(vertDataMax), WaveMin(horizDataMin), WaveMax(horizDataMax)]
 End
 
-static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable displayMode, WAVE/WAVE setWaves2, string vertAxis, string horizAxis, variable ylength, string xUnit, string yUnit, variable activeChanCount, variable activeRegionCount, variable numActive)
+/// @brief Determine if we need a scale bar label
+///
+/// Without any optional parameters we always need a label if we have a stored entry
+/// `userDataName` and that differs from `physicalLength`.
+///
+/// With the optional parameters we prioritize `userLength` if it has changed compared to the
+/// stored value `userLengthName` or if it needs resetting on a new plot. Otherwise we use the same approach as above.
+static Function [variable forceScaleBar, variable physicalLengthCorr] PA_NeedsForcedScaleBar(string win, string userDataName, variable physicalLength, variable axisMinimum, variable axisMaximum, [variable userLength, string userLengthName, variable resetToUserLength])
 
-	string graph, msg, str
+	variable originalBarLength, userLengthStored
+	string msg
+
+	originalBarLength = str2num(GetUserData(win, "", userDataName))
+
+	if(!ParamIsDefault(userLength) && !ParamIsDefault(userLengthName) && !ParamIsDefault(resetToUserLength))
+		userLengthStored = str2num(GetUserData(win, "", userLengthName))
+
+		// - first run
+		// - new user length
+		// - complete reset, mostly due to Strg+A
+		if(IsNaN(userLengthStored)                        \
+		   || !CheckIfClose(userLengthStored, userLength) \
+		   || resetToUserLength)
+			SetWindow $win, userdata($userLengthName) = num2str(userLength)
+			SetWindow $win, userdata($userDataName) = num2str(physicalLength)
+			return [0, userLength]
+		endif
+
+		sprintf msg, "%s, min_axis %d, max_axis %d, physicalLength %g, userLength %g\r", userDataName, axisMinimum, axisMaximum, physicalLength, userLength
+		DEBUGPRINT(msg)
+
+		if(CheckIfClose(originalBarLength, physicalLength))
+			return [0, userLength]
+		endif
+	else
+		userLength = NaN
+	endif
+
+	if(IsNaN(originalBarLength))
+		SetWindow $win, userdata($userDataName) = num2str(physicalLength)
+	endif
+
+	forceScaleBar      = !CheckIfClose(originalBarLength, physicalLength) && !CheckIfClose(userLength, physicalLength) && !IsNaN(originalBarLength)
+	physicalLengthCorr = physicalLength
+End
+
+static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable displayMode, WAVE/WAVE setWaves2, string vertAxis, string horizAxis, variable ylength, string xUnit, string yUnit, variable activeChanCount, variable activeRegionCount, variable numActive, variable resetToUserLength)
+
+	string graph, msg, str, name, userLengthName
 	variable vertAxis_y, vertAxis_x, xLength
 	variable vert_min, vert_max, horiz_min, horiz_max, drawLength
 	variable xBarBottom, xBarTop, yBarBottom, yBarTop, labelOffset
 	variable xBarLeft, xBarRight, yBarLeft, yBarRight, drawXScaleBar, drawYScaleBar
+	variable userLength, forceScaleBar
 
 	drawXScaleBar = (activeChanCount == numActive)
 	drawYScaleBar = (activeChanCount != activeRegionCount) && (displayMode != PA_DISPLAYMODE_IMAGES)
@@ -2202,6 +2263,13 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 		sprintf str, "scalebar_Y_R%d_C%d", activeRegionCount, activeChanCount
 		SetDrawEnv/W=$graph gstart, gname=$str
 
+		userLength = ylength
+		yLength = sign(userLength) * CalculateNiceLength(0.10 * abs(vert_max - vert_min), abs(userLength))
+
+		name = PA_USER_DATA_CALC_YLENGTH + "_" + vertAxis
+		userLengthName = PA_USER_DATA_USER_YLENGTH + "_" + vertAxis
+		[forceScaleBar, yLength] = PA_NeedsForcedScaleBar(win, name, ylength, vert_min, vert_max, userLength = userLength, userLengthName = userLengthName, resetToUserLength = resetToUserLength)
+
 		xBarBottom = str2num(GetUserData(win, "", PA_USER_DATA_X_START_RELATIVE_PREFIX + horizAxis))
 		xBarTop    = xBarBottom
 
@@ -2217,7 +2285,7 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 		sprintf msg, "Y: (R%d, C%d), xBarBottom %g, xBarTop %g\r", activeRegionCount, activeChanCount, xBarBottom, xBarTop
 		DEBUGPRINT(msg)
 
-		drawLength = (activeChanCount == numActive) && (activeRegionCount == 1)
+		drawLength = forceScaleBar || ((activeChanCount == numActive) && (activeRegionCount == 1))
 
 		DrawScaleBar(graph, xBarBottom, yBarBottom, xBarTop, yBarTop, unit=yUnit, drawLength=drawLength, labelOffset=labelOffset, newlineBeforeUnit=1)
 
@@ -2244,7 +2312,10 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 		sprintf msg, "X: (R%d, C%d)\r", activeRegionCount, activeChanCount
 		DEBUGPRINT(msg)
 
-		drawLength = (activeChanCount == numActive) && (activeRegionCount == numActive)
+		name = PA_USER_DATA_CALC_XLENGTH + "_" + horizAxis
+		[forceScaleBar, xLength] = PA_NeedsForcedScaleBar(win, name, xlength, horiz_min, horiz_max)
+
+		drawLength = forceScaleBar || ((activeChanCount == numActive) && (activeRegionCount == numActive))
 
 		DrawScaleBar(graph, xBarLeft, yBarLeft, xBarRight, yBarRight, unit=xUnit, drawLength=drawLength)
 
@@ -3374,7 +3445,13 @@ Function PA_TraceWindowHook(s)
 		case 22: // mouse wheel
 		case 6: // resize
 			traceGraph = s.winName
-			PA_UpdateScaleBars(traceGraph)
+			Execute/P/Q "PA_UpdateScaleBars(\"" + traceGraph + "\", 0)"
+			break
+		case 10: // menu
+			if(!cmpstr(s.menuName, "Graph") && !cmpstr(s.menuItem, "Autoscale Axes"))
+				traceGraph = s.winName
+				Execute/P/Q "PA_UpdateScaleBars(\"" + traceGraph + "\", 1)"
+			endif
 			break
 	endswitch
 
@@ -3390,7 +3467,13 @@ Function PA_ImageWindowHook(s)
 		case 6: // resize
 			imageGraph = s.winName
 			PA_ResizeColorScalePanel(imageGraph)
-			PA_UpdateScaleBars(imageGraph)
+			Execute/P/Q "PA_UpdateScaleBars(\"" + imageGraph + "\", 0)"
+			break
+		case 10: // menu
+			if(!cmpstr(s.menuName, "Graph") && !cmpstr(s.menuItem, "Autoscale Axes"))
+				imageGraph = s.winName
+				Execute/P/Q "PA_UpdateScaleBars(\"" + imageGraph + "\", 1)"
+			endif
 			break
 	endswitch
 
