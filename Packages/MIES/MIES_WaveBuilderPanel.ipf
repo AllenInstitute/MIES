@@ -171,9 +171,9 @@ End
 static Function WBP_DisplaySetInPanel()
 
 	variable i, epoch, numEpochs, numSweeps
-	variable red, green, blue
 	string trace
 	variable maxYValue, minYValue
+	STRUCT RGBColor s
 
 	if(!HasPanelLatestVersion(panel, WAVEBUILDER_PANEL_VERSION))
 		DoAbortNow("Wavebuilder panel is out of date. Please close and reopen it.")
@@ -213,8 +213,8 @@ static Function WBP_DisplaySetInPanel()
 	for(i = 0; i < numSweeps; i += 1)
 		trace = NameOfWave(displayData) + "_S" + num2str(i)
 		AppendToGraph/W=$waveBuilderGraph displayData[][i]/TN=$trace
-		WBP_GetSweepColor(i, red, green, blue)
-		ModifyGraph/W=$waveBuilderGraph rgb($trace) = (red, green, blue)
+		[s] = WBP_GetSweepColor(i)
+		ModifyGraph/W=$waveBuilderGraph rgb($trace) = (s.red, s.green, s.blue)
 	endfor
 
 	maxYValue = WaveMax(displayData)
@@ -1796,7 +1796,7 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 	DEBUGPRINT("sweep=", var=sweep)
 
 	string extPanel, graphMag, graphPhase, trace
-	variable red, green, blue
+	STRUCT RGBColor s
 
 	if(!WindowExists(panel))
 		return NaN
@@ -1874,9 +1874,9 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 	ModifyGraph/W=$graphPhase log(bottom)=1
 	ModifyGraph/W=$graphPhase mode=4
 
-	WBP_GetSweepColor(sweep, red, green, blue)
-	ModifyGraph/W=$graphMag rgb($trace)   = (red, green, blue)
-	ModifyGraph/W=$graphPhase rgb($trace) = (red, green, blue)
+	[s] = WBP_GetSweepColor(sweep)
+	ModifyGraph/W=$graphMag rgb($trace)   = (s.red, s.green, s.blue)
+	ModifyGraph/W=$graphPhase rgb($trace) = (s.red, s.green, s.blue)
 
 	SetAxesRanges(graphMag, axesRangesMag)
 	SetAxesRanges(graphPhase, axesRangesPhase)
@@ -1887,15 +1887,9 @@ End
 /// @brief Return distinct colors the sweeps of the wavebuilder
 ///
 /// These are backwards compared to the trace colors
-static Function WBP_GetSweepColor(sweep, red, green, blue)
-	variable sweep, &red, &green, &blue
+static Function [STRUCT RGBColor s] WBP_GetSweepColor(variable sweep)
 
-	STRUCT RGBColor s
 	[s] = GetTraceColor(20 - mod(sweep, 20))
-
-	red   = s.red
-	green = s.green
-	blue  = s.blue
 End
 
 /// @brief Add an analysis function parameter to the given stimset
