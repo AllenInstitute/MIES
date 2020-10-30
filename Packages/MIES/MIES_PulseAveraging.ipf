@@ -1380,7 +1380,7 @@ End
 static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, STRUCT PulseAverageSetIndices &pasi, variable mode)
 
 	string pulseTrace, graph
-	variable numActive, i, j, k, sweepNo, numTotalPulses, numPlotPulses, xPos, yPos
+	variable numActive, i, j, k, sweepNo, numTotalPulses, numPlotPulses, xPos, yPos, numTraces
 	variable step, graphWasReset
 	variable channelNumber, region
 	variable pulseHasFailed
@@ -1579,6 +1579,8 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				continue
 			endif
 
+			sprintf traceName, "Ovl_%s%s", PA_AVERAGE_WAVE_PREFIX, baseName
+
 			WAVE/T axesNames = pasi.axesNames[j][i]
 			vertAxis = axesNames[0]
 			horizAxis = axesNames[1]
@@ -1599,7 +1601,6 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				endif
 
 				if(!WaveExists(foundTraces) && pa.showAverage)
-					sprintf traceName, "Ovl_%s%s", PA_AVERAGE_WAVE_PREFIX, baseName
 
 					[s] = GetTraceColor(NUM_HEADSTAGES + 1)
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue) averageWave/TN=$traceName
@@ -1622,7 +1623,11 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					pasi.ovlTracesAvg[j][i] = WaveExists(foundTraces)
 				endif
 			endif
+			if(pa.multipleGraphs)
+				ReOrderTraces/W=$graph _front_, {$traceName}
+			endif
 
+			sprintf traceName, "Ovl_%s%s", PA_DECONVOLUTION_WAVE_PREFIX, baseName
 			if(	graphwasReset			\
 				|| layoutChanged			\
 				|| !cs.multipleGraphs	\
@@ -1637,9 +1642,6 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
 
 				if(!WaveExists(foundTraces) && pa.deconvolution.enable && !(i == j))
-
-					sprintf traceName, "Ovl_%s%s", PA_DECONVOLUTION_WAVE_PREFIX, baseName
-
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv[0,inf;PA_PLOT_STEPPING]/TN=$traceName
 					pasi.ovlTracesDeconv[j][i] = 1
 
@@ -1661,11 +1663,33 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					pasi.ovlTracesDeconv[j][i] = WaveExists(foundTraces)
 				endif
 			endif
+			if(pa.multipleGraphs)
+				ReOrderTraces/W=$graph _front_, {$traceName}
+			endif
+
 		endfor
 	endfor
 	if(!pa.multipleGraphs)
 		AccelerateModLineSizeTraces(graph, avgPlotTraces, avgPlotCount, PA_AVGERAGE_PLOT_LSIZE)
 		AccelerateModLineSizeTraces(graph, deconPlotTraces, deconPlotCount, PA_DECONVOLUTION_PLOT_LSIZE)
+	endif
+
+	// ReOrder step
+	if(!pa.multipleGraphs)
+		if(pa.showAverage)
+			WAVE/T traceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";")
+			numTraces = DimSize(traceNames, ROWS)
+			for(i = 0; i < numTraces; i += 1)
+				ReOrderTraces/W=$graph _front_, {$traceNames[i]}
+			endfor
+		endif
+		if(pa.deconvolution.enable)
+			WAVE/T traceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_DECONV], ";")
+			numTraces = DimSize(traceNames, ROWS)
+			for(i = 0; i < numTraces; i += 1)
+				ReOrderTraces/W=$graph _front_, {$traceNames[i]}
+			endfor
+		endif
 	endif
 
 	PA_DrawScaleBars(win, pa, pasi, PA_DISPLAYMODE_TRACES, PA_USE_WAVE_SCALES)
