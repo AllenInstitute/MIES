@@ -392,18 +392,22 @@ Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 	string panelTitle
 	variable dataAcqOrTP, activeHeadStage
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	variable adc, i, headStage, red, green, blue
-	variable numADChannels = DimSize(ADCs, ROWS)
-	string leftAxis, style, color, unit, labelStr
-	string graph = SCOPE_GetGraph(panelTitle)
+	variable numADChannels
+	string leftAxis, style, color, unit, labelStr, graph, axList
+
+	graph = SCOPE_GetGraph(panelTitle)
 
 	if(!windowExists(graph))
 		return NaN
 	endif
 
-	string axList = AxisList(graph)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+
+	numADChannels = DimSize(ADCs, ROWS)
+
+	axList = AxisList(graph)
 
 	for(i = 0; i < numADChannels; i += 1)
 		adc    = ADCs[i]
