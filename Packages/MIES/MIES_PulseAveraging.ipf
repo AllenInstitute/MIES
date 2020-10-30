@@ -2605,12 +2605,17 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			// @todo axis naming needs to be based on channel numbers and regions and not active indizes
 			// when adding a new sweep with more headstages this currently messes up everything
 
-			if(pa.showIndividualPulses && numPulses > 0)
-				Multithread img[][singlePulseColumnOffset, requiredEntries - 1] = WaveRef(setWaves[q - singlePulseColumnOffset])(x); err = GetRTError(1)
-			endif
+			if(WaveExists(setWaves))
+				if(pa.showIndividualPulses && numPulses > 0)
+					Multithread img[][singlePulseColumnOffset, requiredEntries - 1] = WaveRef(setWaves[q - singlePulseColumnOffset])(x); err = GetRTError(1)
+				endif
 
-			// write min and max of the single pulses into the wave note
-			[vert_min, vert_max, horiz_min, horiz_max] = PA_GetMinAndMax(setWaves)
+				// write min and max of the single pulses into the wave note
+				[vert_min, vert_max, horiz_min, horiz_max] = PA_GetMinAndMax(setWaves)
+			else
+				vert_min = NaN
+				vert_max = NaN
+			endif
 
 			SetNumberInWaveNote(img, "PulsesMinimum", vert_min)
 			SetNumberInWaveNote(img, "PulsesMaximum", vert_max)
