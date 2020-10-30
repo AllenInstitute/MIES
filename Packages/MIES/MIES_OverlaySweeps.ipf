@@ -313,10 +313,10 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, i
 	if(!ParamIsDefault(sweepNo))
 		FindValue/RMD=[][0]/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
 		ASSERT(V_Value >= 0, "Could not find sweep")
-		Make/FREE indices = {V_Value, 0}
+		Make/FREE/N=(1, 2) indices = {{V_Value}, {0}}
 		index = V_Value
 	elseif(!ParamIsDefault(index))
-		Make/FREE indices = {index, 0}
+		Make/FREE/N=(1, 2) indices = {{index}, {0}}
 	elseif(!ParamIsDefault(sweeps))
 		if(WaveExists(sweeps))
 			numEntries = DimSize(sweeps, ROWS)
