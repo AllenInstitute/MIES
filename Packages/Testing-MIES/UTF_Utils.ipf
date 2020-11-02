@@ -4473,3 +4473,53 @@ Function ZWI_Works3()
 End
 
 /// @}
+
+/// GetUserDataKeys
+/// @{
+
+Function GUD_ReturnsNullWaveIfNothingFound()
+	string recMacro, win
+
+	Display
+	win = s_name
+
+	recMacro = WinRecreation(win, 0)
+	WAVE/T/Z userDataKeys = GetUserdataKeys(recMacro)
+
+	CHECK_WAVE(userDataKeys, NULL_WAVE)
+End
+
+Function GUD_ReturnsFoundEntries()
+	string recMacro, win
+
+	Display
+	win = s_name
+	SetWindow $win, userdata(abcd)="123"
+	SetWindow $win, userData(efgh)="456"
+
+	recMacro = WinRecreation(win, 0)
+	WAVE/T userDataKeys = GetUserdataKeys(recMacro)
+
+	CHECK_EQUAL_TEXTWAVES(userDataKeys, {"abcd", "efgh"})
+End
+
+Function GUD_ReturnsFoundEntriesWithoutDuplicates()
+	string recMacro, win
+
+	Display
+	win = s_name
+
+	// create lines a la
+	//
+	//	SetWindow kwTopWin,userdata(abcd)=  "123456                                                                                              "
+	//	SetWindow kwTopWin,userdata(abcd) +=  "                                                                                                    "
+	SetWindow $win, userdata(abcd)="123"
+	SetWindow $win, userData(abcd)+=PadString("456", 1e3, 0x20)
+
+	recMacro = WinRecreation(win, 0)
+	WAVE/T userDataKeys = GetUserdataKeys(recMacro)
+
+	CHECK_EQUAL_TEXTWAVES(userDataKeys, {"abcd"})
+End
+
+/// @}
