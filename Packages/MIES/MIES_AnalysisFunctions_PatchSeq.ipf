@@ -1967,7 +1967,7 @@ Function PSQ_Rheobase(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed
+	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed, diff
 	variable baselineQCPassed, finalDAScale, initialDAScale, stepSize, previousStepSize
 	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, multiplier
@@ -2122,12 +2122,12 @@ Function PSQ_Rheobase(panelTitle, s)
 
 				if(IsFinite(currentSweepHasSpike) && IsFinite(lastSweepHasSpike) \
 				   && (currentSweepHasSpike != lastSweepHasSpike)                \
-				   && (stepSize == previousStepSize))
+				   && (CheckIfClose(stepSize, previousStepSize)))
 
 					key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 					stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
-					if(DAScale <= PSQ_RB_DASCALE_SMALL_BORDER && stepSize == PSQ_RB_DASCALE_STEP_LARGE)
+					if(DAScale <= PSQ_RB_DASCALE_SMALL_BORDER && CheckIfClose(stepSize, PSQ_RB_DASCALE_STEP_LARGE))
 						PSQ_StoreStepSizeInLBN(panelTitle, PSQ_RHEOBASE, s.sweepNo, PSQ_RB_DASCALE_STEP_SMALL, future = 1)
 					else
 						// mark the set as passed
@@ -2157,7 +2157,7 @@ Function PSQ_Rheobase(panelTitle, s)
 
 			if(CheckIfSmall(DaScale, tol = 1e-14) && currentSweepHasSpike)
 				// future DAScale would be zero
-				if(stepSize == PSQ_RB_DASCALE_STEP_SMALL)
+				if(CheckIfClose(stepSize, PSQ_RB_DASCALE_STEP_SMALL))
 					// mark set as failure
 					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 					key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
@@ -2174,7 +2174,7 @@ Function PSQ_Rheobase(panelTitle, s)
 
 					DEBUGPRINT("Set has failed")
 					break
-				elseif(stepSize == PSQ_RB_DASCALE_STEP_LARGE)
+				elseif(CheckIfClose(stepSize, PSQ_RB_DASCALE_STEP_LARGE))
 					// retry with much smaller values
 					PSQ_StoreStepSizeInLBN(panelTitle, PSQ_RHEOBASE, s.sweepNo, PSQ_RB_DASCALE_STEP_SMALL, future = 1)
 
@@ -2190,7 +2190,8 @@ Function PSQ_Rheobase(panelTitle, s)
 			key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 			initialDAScale = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
-			if(abs(DAScale - initialDAScale) >= PSQ_RB_MAX_DASCALE_DIFF)
+			diff = abs(DAScale - initialDAScale)
+			if(diff > PSQ_RB_MAX_DASCALE_DIFF || CheckIfClose(diff, PSQ_RB_MAX_DASCALE_DIFF))
 				// mark set as failure
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 				key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
