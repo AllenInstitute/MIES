@@ -24,7 +24,7 @@ includes general and specialized electrophysiology functions.
 Relevant Colors
 """""""""""""""
 
-.. figure:: RelevantColors.png
+.. figure:: ScreenShots/RelevantColors.png
    :align: center
 
    Color scheme used throughout the DataBrowser and other panels which display information
