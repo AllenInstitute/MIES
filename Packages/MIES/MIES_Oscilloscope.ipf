@@ -421,11 +421,11 @@ Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 		headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
 		if(isFinite(headStage))
 			labelStr = "HS" + num2str(headstage)
-			[s] = GetTraceColor(headStage)
 		else
 			labelStr = AXIS_SCOPE_AD + num2str(adc)
-			[s] = GetTraceColor(NUM_HEADSTAGES)
 		endif
+
+		[s] = GetHeadstageColor(headstage)
 
 		sprintf color, "\K(%d,%d,%d)" s.red, s.green, s.blue
 		if(activeHeadStage == headStage)

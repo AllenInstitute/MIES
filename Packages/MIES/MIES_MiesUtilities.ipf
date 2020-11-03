@@ -2393,7 +2393,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable axisIndex, numChannels, offset
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
 	variable moreData, chan, numHorizWaves, numVertWaves, idx
-	variable numTTLBits, colorIndex, headstage
+	variable numTTLBits, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
 	variable numRegions, numEntries, numRangesPerEntry
@@ -2669,20 +2669,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 				// 11-14: TTL bits (single) rack zero
 				// 15:    TTL bits (sum) rack one
 				// 16-19: TTL bits (single) rack one
-				if(IsFinite(headstage))
-					colorIndex = headstage
-				elseif(!cmpstr(channelID, "TTL"))
-					colorIndex = 10 + activeChanCount[i] * 5 + j
-				else
-					colorIndex = NUM_HEADSTAGES
-				endif
 
-				[s] = GetTraceColor(colorIndex)
-
-				sprintf str, "colorIndex=%d", colorIndex
-				DEBUGPRINT(str)
-
-				DEBUGPRINT("")
+				[s] = GetHeadstageColor(headstage, channelType = channelID, activeChannelCount = activeChanCount[i], channelSubNumber = j)
 				first = 0
 
 				// number of horizontally distributed
@@ -2826,6 +2814,31 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			activeChanCount[i] += 1
 		endfor
 	while(moreData)
+End
+
+/// @brief Return the color of the given headstage
+///
+/// @param headstage          Headstage, can be NaN for non-associated channels
+/// @param channelType        [optional, empty by default] The channel type for non-associated channels, currently only "TTL" is supported
+/// @param activeChannelCount [optional, empty by default] For plotting "TTL" channels only
+/// @param channelSubNumber   [optional, empty by default] For plotting "TTL" channels only, "TTL Bit" information when plotting each on its own
+Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [string channelType, variable activeChannelCount, variable channelSubNumber])
+
+	string str
+	variable colorIndex
+
+	if(IsFinite(headstage))
+		colorIndex = headstage
+	elseif(!ParamIsDefault(channelType) && !cmpstr(channelType, "TTL"))
+		colorIndex = 10 + activeChannelCount * 5 + channelSubNumber
+	else
+		colorIndex = NUM_HEADSTAGES
+	endif
+
+	sprintf str, "colorIndex=%d", colorIndex
+	DEBUGPRINT(str)
+
+	[s] = GetTraceColor(colorIndex)
 End
 
 /// @brief Return a wave with all keys in the labnotebook key wave
