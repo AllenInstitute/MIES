@@ -32,11 +32,11 @@ static Constant FROM_PANEL_TO_WAVE = 0x1
 static Constant FROM_WAVE_TO_PANEL = 0x2
 /// @}
 
-Function WBP_CreateWaveBuilderPanel()
+Function/S WBP_CreateWaveBuilderPanel()
 
 	if(windowExists(panel))
 		DoWindow/F $panel
-		return NaN
+		return panel
 	endif
 
 	// create all necessary data folders
@@ -57,6 +57,8 @@ Function WBP_CreateWaveBuilderPanel()
 
 	NVAR JSONid = $GetSettingsJSONid()
 	PS_InitCoordinates(JSONid, panel, "wavebuilder")
+
+	return panel
 End
 
 Function WBP_StartupSettings()
