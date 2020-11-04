@@ -2581,8 +2581,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 				if(mode != POST_PLOT_ADDED_SWEEPS                                        \
 				   || !EqualWaves(oldSizes, newSizes, 1)                                 \
-				   || pa.pulseSortOrder != PA_PULSE_SORTING_ORDER_SWEEP                  \
-				   || (WaveExists(additionalData) && DimSize(additionalData, ROWS) > 1))
+				   || pa.pulseSortOrder != PA_PULSE_SORTING_ORDER_SWEEP)
 					Multithread img[][] = NaN
 				else
 					// algorithm:
@@ -2590,7 +2589,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 					// this does *not* require properties to be sorted,
 					// only setIndizes must be sorted in ascending sweep order
 					// and then copy everything from firstPulseIndex to requiredEntries - 1 into img
-					newSweep = additionalData[0]
+					newSweep = WaveMin(additionalData)
 					Make/FREE/N=(numPulses) sweeps = properties[setIndizes[p]][%Sweep]
 					FindValue/Z/V=(newSweep) sweeps
 					if(V_Value > 0)
