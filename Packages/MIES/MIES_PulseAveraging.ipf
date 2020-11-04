@@ -300,7 +300,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	endif
 
 #ifdef AUTOMATED_TESTING
-	WAVE DBG_pulseStartTimesEpochs = pulseStartTimes
+	WAVE/Z DBG_pulseStartTimesEpochs = pulseStartTimes
 	WAVE/Z pulseStartTimes = $""
 #endif
 
@@ -321,7 +321,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 
 #ifdef AUTOMATED_TESTING
 		variable i
-		variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 1.5
+		variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 2
 
 		WAVE DBG_pulseStartTimesCalc = pulseStartTimes
 		if(DimSize(DBG_pulseStartTimesEpochs, ROWS) != DimSize(DBG_pulseStartTimesCalc, ROWS))
