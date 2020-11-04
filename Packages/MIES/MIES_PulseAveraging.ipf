@@ -2585,6 +2585,11 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				   || (WaveExists(additionalData) && DimSize(additionalData, ROWS) > 1))
 					Multithread img[][] = NaN
 				else
+					// algorithm:
+					// we search the entry in setIndizes which has smallest of the new sweeps
+					// this does *not* require properties to be sorted,
+					// only setIndizes must be sorted in ascending sweep order
+					// and then copy everything from firstPulseIndex to requiredEntries - 1 into img
 					newSweep = additionalData[0]
 					Make/FREE/N=(numPulses) sweeps = properties[setIndizes[p]][%Sweep]
 					FindValue/Z/V=(newSweep) sweeps
@@ -2596,9 +2601,6 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 						Abort
 					endif
 					WaveClear sweeps
-
-					singlePulseColumnOffset = 2 * specialEntries + firstPulseIndex
-					requiredEntries = singlePulseColumnOffset + (numPulses - firstPulseIndex)
 				endif
 			endif
 
@@ -2607,7 +2609,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 			if(WaveExists(setWaves))
 				if(pa.showIndividualPulses && numPulses > 0)
-					Multithread img[][singlePulseColumnOffset, requiredEntries - 1] = WaveRef(setWaves[q - singlePulseColumnOffset])(x); err = GetRTError(1)
+					Multithread img[][singlePulseColumnOffset + firstPulseIndex, requiredEntries - 1] = WaveRef(setWaves[q - (singlePulseColumnOffset + firstPulseIndex)])(x); err = GetRTError(1)
 				endif
 
 				// write min and max of the single pulses into the wave note
@@ -2645,7 +2647,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				TUD_SetUserData(graph, imageName, "traceType", "Image")
 			endif
 
-			PA_HighligthFailedPulsesInImage(graph, pa, vertAxis, horizAxis, img, properties, setIndizes, firstPulseIndex, numPulses, singlePulseColumnOffset)
+			PA_HighligthFailedPulsesInImage(graph, pa, vertAxis, horizAxis, img, properties, setIndizes, numPulses, singlePulseColumnOffset)
 		endfor
 	endfor
 
@@ -2667,7 +2669,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 	return usedGraphs
 End
 
-static Function PA_HighligthFailedPulsesInImage(string graph, STRUCT PulseAverageSettings &pa, string vertAxis, string horizAxis, WAVE img, WAVE properties, WAVE setIndizes, variable firstPulseIndex, variable numPulses, variable singlePulseColumnOffset)
+static Function PA_HighligthFailedPulsesInImage(string graph, STRUCT PulseAverageSettings &pa, string vertAxis, string horizAxis, WAVE img, WAVE properties, WAVE setIndizes, variable numPulses, variable singlePulseColumnOffset)
 
 	variable failedMarkerStartRow, i, xPos, yPos, fillValue, numFailedPulses
 
@@ -2683,7 +2685,7 @@ static Function PA_HighligthFailedPulsesInImage(string graph, STRUCT PulseAverag
 		fillValue = Inf
 	endif
 
-	for(i = firstPulseIndex; i < numPulses; i += 1)
+	for(i = 0; i < numPulses; i += 1)
 		if(!properties[setIndizes[i]][%PulseHasFailed])
 			continue
 		endif
