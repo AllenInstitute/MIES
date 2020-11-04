@@ -632,6 +632,21 @@ Function SkipSweepsAdvanced(panelTitle, s)
 	endif
 End
 
+Function TrackActiveSetCountsAndEvents(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType][s.headstage] += 1
+
+	WAVE anaFuncActiveSetCount = GetTrackActiveSetCount()
+
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	anaFuncActiveSetCount[s.sweepNo][s.headstage] = activeSetCount
+End
+
 Function WriteIntoLBNOnPreDAQ(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3& s

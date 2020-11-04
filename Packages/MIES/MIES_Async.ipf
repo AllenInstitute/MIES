@@ -6,7 +6,7 @@
 #pragma ModuleName=MIES_ASYNC
 #endif
 
-/// @file MIES_ASYNC.ipf
+/// @file MIES_Async.ipf
 /// @brief __ASYNC__ This file holds the asynchronous execution framework
 ///
 /// \rst
