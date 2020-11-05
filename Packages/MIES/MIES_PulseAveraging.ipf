@@ -33,6 +33,8 @@ static StrConstant PA_SETTINGS = "PulseAverageSettings"
 /// Only present for diagonal pulses
 static StrConstant PA_NOTE_KEY_PULSE_FAILED = "PulseHasFailed"
 
+static StrConstant PA_NOTE_KEY_IMAGE_COL_OFFSET = "SinglePulseColumnOffset"
+
 static Constant PA_USE_WAVE_SCALES = 0x01
 static Constant PA_USE_AXIS_SCALES = 0x02
 
@@ -2563,9 +2565,17 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			// average
 			//
 			// we reserve 5% of the total columns for average and 5% for deconvolution
-			specialEntries  = limit(round(0.05 * numPulses), 1, inf)
+			singlePulseColumnOffset = GetNumberFromWaveNote(img, PA_NOTE_KEY_IMAGE_COL_OFFSET)
+			if(IsNaN(singlePulseColumnOffset) || mode == POST_PLOT_FULL_UPDATE)
+				specialEntries  = limit(round(0.05 * numPulses), 1, inf)
+				singlePulseColumnOffset = 2 * specialEntries
+			else
+				// keep the existing singlePulseColumnOffset when doing an incremental update
+				specialEntries = singlePulseColumnOffset / 2
+				ASSERT(IsInteger(specialEntries), "singlePulseColumnOffset is not even.")
+			endif
+
 			firstPulseIndex = 0
-			singlePulseColumnOffset = 2 * specialEntries
 			requiredEntries = singlePulseColumnOffset + numPulses
 
 			if(numPulses == 0)
@@ -2635,6 +2645,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			endif
 
 			SetNumberInWaveNote(img, NOTE_INDEX, requiredEntries)
+			SetNumberInWaveNote(img, PA_NOTE_KEY_IMAGE_COL_OFFSET, singlePulseColumnOffset)
 
 			imageName = NameOfWave(img)
 
