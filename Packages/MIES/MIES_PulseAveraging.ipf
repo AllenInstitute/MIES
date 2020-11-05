@@ -2608,7 +2608,9 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 			if(WaveExists(setWaves))
 				if(pa.showIndividualPulses && numPulses > 0)
-					Multithread img[][singlePulseColumnOffset + firstPulseIndex, requiredEntries - 1] = WaveRef(setWaves[q - (singlePulseColumnOffset + firstPulseIndex)])(x); err = GetRTError(1)
+					// img has average and deconvolution in the first singlePulseColumnOffset columns
+					// setWaves starts immediately with the pulses
+					Multithread img[][singlePulseColumnOffset + firstPulseIndex, requiredEntries - 1] = WaveRef(setWaves[q - singlePulseColumnOffset])(x); err = GetRTError(1)
 				endif
 
 				// write min and max of the single pulses into the wave note
