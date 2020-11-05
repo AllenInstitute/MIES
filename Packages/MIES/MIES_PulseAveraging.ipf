@@ -2212,8 +2212,15 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 
 		xBarBottom = GetNumFromModifyStr(AxisInfo(graph, horizAxis), "axisEnab", "{", 0) - PA_X_AXIS_OFFSET
 		xBarTop    = xBarBottom
-		yBarBottom = 0
-		yBarTop    = ylength
+
+		if(sign(vert_min) != sign(vert_max))
+			yBarBottom = 0
+		else
+			// zero is not in range, use vert_min
+			yBarBottom = vert_min
+		endif
+
+		yBarTop = yBarBottom + ylength
 
 		sprintf msg, "Y: (R%d, C%d)\r", activeRegionCount, activeChanCount
 		DEBUGPRINT(msg)
