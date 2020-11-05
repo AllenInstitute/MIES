@@ -10,6 +10,7 @@ DataBrowser
   databrowser_overlaysweeps
   databrowser_channelselection
   databrowser_settings
+  databrowser_sweepcontrol
 
 The DataBrowser allows the user to view acquired sweeps and metadata during and
 after an experiment. It has several display modes that facilitate recording
