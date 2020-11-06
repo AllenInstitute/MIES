@@ -113,10 +113,12 @@ End
 
 /// @brief Update the overlay sweep waves
 ///
+/// @param win        databrowser panel or graph
+/// @param fullUpdate [optional, defaults to false] Performs a full update instead
+///                   of an incremental one. Selects the first sweep if nothing is selected as well.
+///
 /// Must be called after the sweeps changed.
-Function OVS_UpdatePanel(win, [fullUpdate])
-	string win
-	variable fullUpdate
+Function OVS_UpdatePanel(string win, [variable fullUpdate])
 
 	variable i, numEntries, sweepNo, lastEntry, newCycleHasStartedRAC, newCycleHasStartedSCI
 	string extPanel
@@ -177,6 +179,14 @@ Function OVS_UpdatePanel(win, [fullUpdate])
 		listBoxSelWave[lastEntry][%Sweep] = LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED
 	else
 		listBoxSelWave[][%Sweep] = listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED ? LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED : LISTBOX_CHECKBOX
+	endif
+
+	// we select the first sweep when doing a fullUpdate and nothing selected
+	if(OVS_IsActive(win) && fullUpdate)
+		FindValue/I=(LISTBOX_CHECKBOX_SELECTED)/RMD=[][0] listBoxSelWave
+		if(V_Value == -1)
+			listBoxSelWave[0][%Sweep] = SetBit(listBoxSelWave[0][%Sweep], LISTBOX_CHECKBOX_SELECTED)
+		endif
 	endif
 
 	OVS_EndIncrementalUpdate(win, updateHandle)
