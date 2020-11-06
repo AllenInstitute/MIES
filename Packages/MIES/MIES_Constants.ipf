@@ -620,7 +620,7 @@ Constant WAVEBUILDER_PANEL_VERSION         = 9
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 41
+Constant LABNOTEBOOK_VERSION = 42
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
@@ -882,6 +882,7 @@ StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"
 StrConstant RA_ACQ_CYCLE_ID_KEY      = "Repeated Acq Cycle ID"
 StrConstant STIMSET_ACQ_CYCLE_ID_KEY = "Stimset Acq Cycle ID"
 StrConstant SWEEP_ROLLBACK_KEY       = "Sweep Rollback"
+StrConstant SKIP_SWEEPS_KEY          = "Skip Sweeps"
 
 /// @name Update flags for DAP_UpdateDAQControls()
 ///

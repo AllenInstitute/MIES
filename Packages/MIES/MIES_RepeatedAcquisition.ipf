@@ -446,9 +446,11 @@ End
 /// @param limitToSetBorder [optional, defaults to false] Limits skipCount so
 ///                         that we don't skip further than after the last sweep of the
 ///                         stimset with the most number of sweeps.
-Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder])
+/// @param document         [optional, defaults to false] Add labnotebook
+///                         entries to document the sweep skipping.
+Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder, document])
 	string panelTitle
-	variable skipCount, limitToSetBorder
+	variable skipCount, limitToSetBorder, document
 
 	variable numFollower, i, sweepsInSet, recalculatedCount
 	string followerPanelTitle, msg
@@ -466,6 +468,12 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder])
 		limitToSetBorder = 0
 	else
 		limitToSetBorder = !!limitToSetBorder
+	endif
+
+	if(ParamIsDefault(document))
+		document = 0
+	else
+		document = !!document
 	endif
 
 	sprintf msg, "skipCount (as passed) %d, limitToSetBorder %d, count %d, activeSetCount %d", skipCount, limitToSetBorder, count, activeSetCount
@@ -489,6 +497,10 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder])
 	sprintf msg, "skipCount (possibly clipped) %g, activeSetCount (adjusted) %d, count (adjusted) %d\r", skipCount, activeSetCount, count
 	DEBUGPRINT(msg)
 
+	if(document)
+		RA_DocumentSweepSkipping(panelTitle, skipCount)
+	endif
+
 	RA_StepSweepsRemaining(panelTitle)
 
 	if(DeviceHasFollower(panelTitle))
@@ -498,9 +510,34 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder])
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 			NVAR followerCount = $GetCount(followerPanelTitle)
 			followerCount = RA_SkipSweepCalc(followerPanelTitle, skipCount)
+
+			if(document)
+				RA_DocumentSweepSkipping(panelTitle, skipCount)
+			endif
+
 			RA_StepSweepsRemaining(followerPanelTitle)
 		endfor
 	endif
+End
+
+/// @brief Document the number of skipped sweeps
+static Function RA_DocumentSweepSkipping(string panelTitle, variable skipCount)
+
+	variable sweepNo, skipCountExisting
+
+	sweepNo = AS_GetSweepNumber(panelTitle)
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	skipCountExisting = GetLastSettingIndep(numericalValues, sweepNo, SKIP_SWEEPS_KEY, UNKNOWN_MODE, defValue = 0)
+
+	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
+	vals[0][0][INDEP_HEADSTAGE] = skipCountExisting + skipCount
+	Make/T/FREE/N=(3, 1) keys
+	keys[0] = SKIP_SWEEPS_KEY
+	keys[1] = "a. u."
+	keys[2] = "0.1"
+
+	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, panelTitle, UNKNOWN_MODE)
 End
 
 ///@brief Returns valid count after adding skipCount
