@@ -72,7 +72,7 @@ present.
       -  ``Packages\MIES``
 
    -  In ``Igor Procedures`` a shortcut pointing to
-      Packages\MIES_Include.ipf
+      ``Packages\MIES_Include.ipf``
    -  In ``Igor Extensions (64-bit)`` a shortcut pointing to
 
       -  ``XOPs-IP8-64bit\HDF5-64.xop``
