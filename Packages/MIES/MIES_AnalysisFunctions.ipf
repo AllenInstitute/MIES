@@ -764,7 +764,7 @@ Function PlotResistanceGraph(panelTitle)
 	string panelTitle
 
 	variable deltaVCol, DAScaleCol, i, j, sweepNo, idx, numEntries
-	variable red, green, blue, lastWrittenSweep
+	variable lastWrittenSweep
 	string graph, textBoxString, trace
 
 	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
@@ -875,16 +875,16 @@ Function PlotResistanceGraph(panelTitle)
 
 			trace = "HS_" + num2str(i)
 			AppendToGraph/W=$RESISTANCE_GRAPH/L=VertCrossing/B=HorizCrossing storageDeltaV[][i]/TN=$trace vs storageDeltaI[][i]
-			GetTraceColor(i, red, green, blue)
-			ModifyGraph/W=$RESISTANCE_GRAPH rgb($trace)=(red, green, blue)
+			STRUCT RGBColor s
+			[s] = GetTraceColor(i)
+			ModifyGraph/W=$RESISTANCE_GRAPH rgb($trace)=(s.red, s.green, s.blue)
 			ModifyGraph/W=$RESISTANCE_GRAPH mode($trace)=3
 
 			WAVE curveFitWave = GetAnalysisFuncDAScaleResFit(panelTitle, i)
 			trace = "fit_HS_" + num2str(i)
 			AppendToGraph/W=$RESISTANCE_GRAPH/L=VertCrossing/B=HorizCrossing curveFitWave/TN=$trace
-			ModifyGraph/W=$RESISTANCE_GRAPH rgb($trace)=(red, green, blue)
+			ModifyGraph/W=$RESISTANCE_GRAPH rgb($trace)=(s.red, s.green, s.blue)
 			ModifyGraph/W=$RESISTANCE_GRAPH freePos(VertCrossing)={0,HorizCrossing},freePos(HorizCrossing)={0,VertCrossing}, lblLatPos=-50
-
 		endfor
 	endif
 

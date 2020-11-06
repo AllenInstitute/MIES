@@ -2211,14 +2211,14 @@ static Function AB_ScanFolder(win)
 	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
 End
 
-Function AB_OpenAnalysisBrowser()
+Function/S AB_OpenAnalysisBrowser()
 
 	string panel = "AnalysisBrowser"
 	string directory
 
 	if(windowExists(panel))
 		DoWindow/F $panel
-		return NaN
+		return panel
 	endif
 
 	WAVE/T list = GetExperimentBrowserGUIList()
@@ -2233,6 +2233,8 @@ Function AB_OpenAnalysisBrowser()
 	directory = JSON_GetString(jsonID, "/analysisbrowser/directory")
 	SetSetVariableString(panel, "setvar_baseFolder", directory)
 	PS_InitCoordinates(JSONid, panel, "analysisbrowser")
+
+	return panel
 End
 
 Window AnalysisBrowser() : Panel

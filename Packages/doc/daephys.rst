@@ -9,7 +9,7 @@ such as the DAC, amplifier, and pressure regulators.
 
 .. _Figure DA Ephys panel:
 
-.. figure:: DA_Ephys.png
+.. figure:: ScreenShots/DAEphys-Data_Acquisition.png
    :align: center
 
    Main data acquisition panel

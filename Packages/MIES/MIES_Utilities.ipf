@@ -5440,3 +5440,29 @@ Function IsConstant(WAVE wv, variable val)
 
 	return (minimum == val && maximum == val) || (IsNaN(minimum) && IsNaN(maximum) && IsNaN(val))
 End
+
+/// @brief Sanitize the given name so that it is a nice file name
+Function/S SanitizeFilename(string name)
+
+	variable numChars, i
+	string result, regexp
+
+	numChars = strlen(name)
+
+	ASSERT(numChars > 0, "name can not be empty")
+
+	result	 = ""
+	regexp = "^[A-Za-z_\-0-9\.]+$"
+
+	for(i = 0; i < numChars; i += 1)
+		if(GrepString(name[i], regexp))
+			result[i] = name[i]
+		else
+			result[i] = "_"
+		endif
+	endfor
+
+	ASSERT(GrepString(result, regexp), "Invalid file name")
+
+	return result
+End

@@ -39,7 +39,7 @@ overlayed, see :ref:`db_overlaysweeps`, and time alignment and zeroing turned on
 Trace plot
 """"""""""
 
-.. figure:: PulseAverage_traces.png
+.. figure:: ScreenShots/PulseAverage_traces.png
    :align: center
    :width: 75%
 
@@ -55,12 +55,12 @@ the headstage, see also :ref:`Figure Relevant Colors`.
 Image plot
 """"""""""
 
-.. figure:: PulseAverage_images.png
+.. figure:: ScreenShots/PulseAverage_images.png
    :scale: 50%
    :figwidth: 70%
    :align: left
 
-.. figure:: PulseAverage_images_colorscales.png
+.. figure:: ScreenShots/PulseAverage_images_colorscales.png
    :height: 870px
    :align: right
 
@@ -147,7 +147,7 @@ data browser PA settings tab (shown below).
 
 .. _Figure Pulse Average Browser Settings:
 
-.. figure:: BrowserSettingsPanel-PA-plot.png
+.. figure:: ScreenShots/BrowserSettingsPanel-PA-plot.png
    :align: center
 
    Settings for the pulse average plot

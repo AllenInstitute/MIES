@@ -392,18 +392,23 @@ Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 	string panelTitle
 	variable dataAcqOrTP, activeHeadStage
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	variable adc, i, headStage, red, green, blue
-	variable numADChannels = DimSize(ADCs, ROWS)
-	string leftAxis, style, color, unit, labelStr
-	string graph = SCOPE_GetGraph(panelTitle)
+	variable adc, i, headStage
+	variable numADChannels
+	string leftAxis, style, color, unit, labelStr, graph, axList
+	STRUCT RGBColor s
+
+	graph = SCOPE_GetGraph(panelTitle)
 
 	if(!windowExists(graph))
 		return NaN
 	endif
 
-	string axList = AxisList(graph)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+
+	numADChannels = DimSize(ADCs, ROWS)
+
+	axList = AxisList(graph)
 
 	for(i = 0; i < numADChannels; i += 1)
 		adc    = ADCs[i]
@@ -416,13 +421,13 @@ Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 		headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
 		if(isFinite(headStage))
 			labelStr = "HS" + num2str(headstage)
-			GetTraceColor(headStage, red, green, blue)
 		else
 			labelStr = AXIS_SCOPE_AD + num2str(adc)
-			GetTraceColor(NUM_HEADSTAGES, red, green, blue)
 		endif
 
-		sprintf color, "\K(%d,%d,%d)" red, green, blue
+		[s] = GetHeadstageColor(headstage)
+
+		sprintf color, "\K(%d,%d,%d)" s.red, s.green, s.blue
 		if(activeHeadStage == headStage)
 			style = "\f05"
 		else

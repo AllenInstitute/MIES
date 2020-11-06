@@ -2390,17 +2390,17 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	string experiment
 	WAVE channelSelWave
 
-	variable red, green, blue, axisIndex, numChannels, offset
+	variable axisIndex, numChannels, offset
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
 	variable moreData, chan, numHorizWaves, numVertWaves, idx
-	variable numTTLBits, colorIndex, headstage
+	variable numTTLBits, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
 	variable numRegions, numEntries, numRangesPerEntry
 	variable totalXRange = NaN
-
 	string trace, traceType, channelID, axisLabel, entry, range, traceRange, traceColor
 	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis, freeAxis
+	STRUCT RGBColor s
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
@@ -2669,20 +2669,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 				// 11-14: TTL bits (single) rack zero
 				// 15:    TTL bits (sum) rack one
 				// 16-19: TTL bits (single) rack one
-				if(IsFinite(headstage))
-					colorIndex = headstage
-				elseif(!cmpstr(channelID, "TTL"))
-					colorIndex = 10 + activeChanCount[i] * 5 + j
-				else
-					colorIndex = NUM_HEADSTAGES
-				endif
 
-				GetTraceColor(colorIndex, red, green, blue)
-
-				sprintf str, "colorIndex=%d", colorIndex
-				DEBUGPRINT(str)
-
-				DEBUGPRINT("")
+				[s] = GetHeadstageColor(headstage, channelType = channelID, activeChannelCount = activeChanCount[i], channelSubNumber = j)
 				first = 0
 
 				// number of horizontally distributed
@@ -2759,16 +2747,16 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					sprintf str, "i=%d, j=%d, k=%d, vertAxis=%s, traceType=%s, name=%s", i, j, k, vertAxis, traceType, name
 					DEBUGPRINT(str)
 
-					sprintf traceColor, "(%d, %d, %d, %d)", red, green, blue, 65535
+					sprintf traceColor, "(%d, %d, %d, %d)", s.red, s.green, s.blue, 65535
 
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
 						horizAxis = "bottom"
 						traceRange = "[][0]"
-						AppendToGraph/W=$graph/B=$horizAxis/L=$vertAxis/C=(red, green, blue, 65535) wv[][0]/TN=$trace
+						AppendToGraph/W=$graph/B=$horizAxis/L=$vertAxis/C=(s.red, s.green, s.blue, 65535) wv[][0]/TN=$trace
 					else
 						horizAxis = vertAxis + "_b"
 						sprintf traceRange, "[%g,%g][0]", xRangeStart, xRangeEnd
-						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535) wv[xRangeStart, xRangeEnd][0]/TN=$trace
+						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue, 65535) wv[xRangeStart, xRangeEnd][0]/TN=$trace
 						first = first
 						last  = first + (xRangeEnd - xRangeStart) / totalXRange
 						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}
@@ -2826,6 +2814,31 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			activeChanCount[i] += 1
 		endfor
 	while(moreData)
+End
+
+/// @brief Return the color of the given headstage
+///
+/// @param headstage          Headstage, can be NaN for non-associated channels
+/// @param channelType        [optional, empty by default] The channel type for non-associated channels, currently only "TTL" is supported
+/// @param activeChannelCount [optional, empty by default] For plotting "TTL" channels only
+/// @param channelSubNumber   [optional, empty by default] For plotting "TTL" channels only, "TTL Bit" information when plotting each on its own
+Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [string channelType, variable activeChannelCount, variable channelSubNumber])
+
+	string str
+	variable colorIndex
+
+	if(IsFinite(headstage))
+		colorIndex = headstage
+	elseif(!ParamIsDefault(channelType) && !cmpstr(channelType, "TTL"))
+		colorIndex = 10 + activeChannelCount * 5 + channelSubNumber
+	else
+		colorIndex = NUM_HEADSTAGES
+	endif
+
+	sprintf str, "colorIndex=%d", colorIndex
+	DEBUGPRINT(str)
+
+	[s] = GetTraceColor(colorIndex)
 End
 
 /// @brief Return a wave with all keys in the labnotebook key wave
@@ -3100,7 +3113,8 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 	string unit, lbl, axis, trace, text, tagString, tmp
 	string traceList = ""
 	variable i, j, numEntries, row, col, numRows, sweepCol
-	variable red, green, blue, isTimeAxis, isTextData, xPos
+	variable isTimeAxis, isTextData, xPos
+	STRUCT RGBColor s
 
 	if(GetKeyWaveParameterAndUnit(keys, key, lbl, unit, col))
 		return NaN
@@ -3147,8 +3161,8 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 
 		ModifyGraph/W=$graph userData($trace)={key, USERDATA_MODIFYGRAPH_REPLACE, key}
 
-		GetTraceColor(i, red, green, blue)
-		ModifyGraph/W=$graph rgb($trace)=(red, green, blue), marker($trace)=i
+		[s] = GetTraceColor(i)
+		ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue), marker($trace)=i
 		SetAxis/W=$graph/A=2 $axis
 	endfor
 
@@ -3173,8 +3187,8 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 					continue
 				endif
 
-				GetTraceColor(j, red, green, blue)
-				sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", red, green, blue, j + 1
+				[s] = GetTraceColor(j)
+				sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", s.red, s.green, s.blue, j + 1
 				text = ReplaceString("\\", text, "\\\\")
 				tagString = tagString + tmp + text + "\r"
 			endfor
@@ -3851,9 +3865,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 	string averageWaveName, listOfWaves, listOfChannelTypes, listOfChannelNumbers, listOfHeadstages
 	string range, listOfRanges, firstXAxis, listOfClampModes, xAxis, yAxis
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
-	variable red, green, blue, column, first, last, orientation
+	variable column, first, last, orientation
 	string axis, trace, axList, baseName, clampMode, traceName, headstage
 	string channelType, channelNumber, fullPath, panel
+	STRUCT RGBColor s
 
 	referenceTime = DEBUG_TIMER_START()
 
@@ -3961,9 +3976,9 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		WAVE averageWave = CalculateAverage(wavesToAverage, averageDataFolder, averageWaveName)
 
 		if(WaveListHasSameWaveNames(listOfHeadstages, headstage)&& hideSweep)
-			GetTraceColor(str2num(headstage), red, green, blue)
+			[s] = GetTraceColor(str2num(headstage))
 		else
-			GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
+			[s] = GetTraceColor(NUM_HEADSTAGES + 1)
 		endif
 
 		if(IsFinite(first) && IsFinite(last))
@@ -3971,9 +3986,9 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			first = ScaleToIndex(averageWave, first, ROWS)
 			last  = ScaleToIndex(averageWave, last, ROWS)
 
-			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis/C=(red, green, blue, 0.80 * 65535) averageWave[first, last]/TN=$traceName
+			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis/C=(s.red, s.green, s.blue, 0.80 * 65535) averageWave[first, last]/TN=$traceName
 		else
-			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis/C=(red, green, blue, 0.80 * 65535) averageWave/TN=$traceName
+			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis/C=(s.red, s.green, s.blue, 0.80 * 65535) averageWave/TN=$traceName
 		endif
 
 		if(ListHasOnlyOneUniqueEntry(listOfClampModes))

@@ -99,7 +99,6 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, activeADC, adc, key)
 
 	string lbl, axis, trace, graph, columns, traceList
 	variable idx
-	variable red, green, blue
 	variable numExistingTraces
 
 	graph = GetMainWindow(panel)
@@ -124,8 +123,9 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, activeADC, adc, key)
 	trace = CleanupName(lbl + "_" + num2str(idx), 1)
 
 	AppendToGraph/W=$graph/L=$axis TPStorage[][idx][%$key]/TN=$trace vs TPStorage[][idx][%DeltaTimeInSeconds]
-	GetTraceColor(numExistingTraces, red, green, blue)
-	ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
+	STRUCT RGBColor s
+	[s] = GetTraceColor(numExistingTraces)
+	ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue)
 	ModifyGraph/W=$graph marker=8,msize=2
 	ModifyGraph/W=$graph userData($trace)={key, USERDATA_MODIFYGRAPH_REPLACE, key}
 	ModifyGraph/W=$graph userData($trace)={activeADC, USERDATA_MODIFYGRAPH_REPLACE, num2str(activeADC)}
