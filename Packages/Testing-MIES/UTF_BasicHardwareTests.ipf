@@ -1702,6 +1702,10 @@ Function SweepSkipping_REENTRY([str])
 	WAVE/Z sweepCounts = GetLastSettingEachRAC(numericalValues, sweepNo, "Set Sweep Count", headstage, DATA_ACQUISITION_MODE)
 	REQUIRE_WAVE(sweepCounts, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(sweepCounts, {0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z skippingSweeps = GetLastSettingIndepEachRAC(numericalValues, sweepNo, SKIP_SWEEPS_KEY, UNKNOWN_MODE)
+	REQUIRE_WAVE(skippingSweeps, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(skippingSweeps, {2, 0, 1, 2}, mode = WAVE_DATA)
 End
 
 Function SkipSweepsStimsetsAdvancedP_IGNORE(device)

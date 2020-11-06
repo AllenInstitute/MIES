@@ -153,3 +153,32 @@ static Function AS_EnsureCorrectState(variable oldAcqState, variable newAcqState
 	sprintf msg, "Invalid state transition: old %s, new %s, candidates %s\r", AS_StateToString(oldAcqState), AS_StateToString(newAcqState), TextWaveToList(candidatesLabel, ";")
 	ASSERT(IsFinite(GetRowIndex(candidates, val = newAcqState)), msg)
 End
+
+// @todo why is that now duplicated wrt AFH_GetLastSweepAcquired??
+Function AS_GetCurrentSweepNumber(string panelTitle)
+
+	variable acqState, sweepNo
+
+	acqState = ROVAR(GetAcquisitionState(panelTitle))
+
+	// same sweep number derivation logic as in AFM_CallAnalysisFunction
+	switch(acqState)
+		case AS_INACTIVE:
+		case AS_PRE_DAQ:
+		case AS_PRE_SWEEP:
+		case AS_MID_SWEEP:  // fallthrough-by-design
+			sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
+			break
+		case AS_POST_SWEEP:
+		case AS_ITI:
+		case AS_POST_DAQ:  // fallthrough-by-design
+			sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep") - 1
+			break
+		default:
+			ASSERT(0, "Invalid acqState")
+	endswitch
+
+	ASSERT(IsValidSweepNumber(sweepNo), "Could not derive a valid sweep number")
+
+	return sweepNo
+End

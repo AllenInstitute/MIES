@@ -594,16 +594,26 @@ Function SkipSweeps(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3& s
 
+	variable skipCountExisting
+
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType][s.headstage] += 1
 
-	if(s.eventType != POST_SWEEP_EVENT)
-		return NaN
-	endif
+	// we want to trigger that RA_DocumentSweepSkipping reads back the current value
+	// of SKIP_SWEEPS_KEY and uses that as basis
+	// therefore we call it twice: Once during mid sweep with +1 and then after the sweep with inf
+	if(s.eventType == MID_SWEEP_EVENT)
+		WAVE numericalValues = GetLBNumericalValues(panelTitle)
+		skipCountExisting = GetLastSettingIndep(numericalValues, s.sweepNo, SKIP_SWEEPS_KEY, UNKNOWN_MODE)
 
-	RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+		if(IsNaN(skipCountExisting))
+			RA_SkipSweeps(panelTitle, 1, limitToSetBorder = 1, document = 1)
+		endif
+	elseif(s.eventType == POST_SWEEP_EVENT)
+		RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1, document = 1)
+	endif
 End
 
 Function SkipSweepsAdvanced(panelTitle, s)
