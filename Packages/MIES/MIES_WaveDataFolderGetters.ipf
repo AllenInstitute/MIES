@@ -39,16 +39,16 @@ Function/Wave GetChanAmpAssign(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
-	Wave/Z/SDFR=dfr wv = ChanAmpAssign
+	Wave/D/Z/SDFR=dfr wv = ChanAmpAssign
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(10, NUM_HEADSTAGES, -1, -1) wv
+		Redimension/D/N=(10, NUM_HEADSTAGES, -1, -1) wv
 	else
-		Make/N=(10, NUM_HEADSTAGES) dfr:ChanAmpAssign/Wave=wv
+		Make/D/N=(10, NUM_HEADSTAGES) dfr:ChanAmpAssign/Wave=wv
 		wv = NaN
 
 		// we don't have dimension labels yet
@@ -167,8 +167,8 @@ End
 /// 				Redimension/D/N=(10, -1, -1, -1) wv
 /// 			endif
 /// 		else
-/// 			Make/N=(10, 2) dfr:myWave/Wave=wv
-/// 		end
+/// 			Make/R/N=(10, 2) dfr:myWave/Wave=wv
+/// 		endif
 ///
 /// 		SetWaveVersion(wv, versionOfNewWave)
 ///
@@ -364,7 +364,7 @@ End
 ///			elseif(WaveExists(wv))
 ///				// handle upgrade
 ///			else
-///				Make/N=(10, 2) newDFR:newName/Wave=wv
+///				Make/R/N=(10, 2) newDFR:newName/Wave=wv
 ///			end
 ///
 ///			SetWaveVersion(wv, versionOfNewWave)
@@ -501,7 +501,7 @@ Function/Wave GetChannelClampMode(panelTitle)
 		wv[][%DAC][1] = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
 		wv[][%ADC][1] = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
 	else
-		Make/N=(NUM_AD_CHANNELS, 2, 2) dfr:ChannelClampMode/Wave=wv
+		Make/R/N=(NUM_AD_CHANNELS, 2, 2) dfr:ChannelClampMode/Wave=wv
 		wv = NaN
 	endif
 
@@ -532,7 +532,7 @@ Function/WAVE GetHSProperties(panelTitle)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/N=(NUM_HEADSTAGES, 4) dfr:HSProperties/Wave=wv
+		Make/R/N=(NUM_HEADSTAGES, 4) dfr:HSProperties/Wave=wv
 	endif
 
 	wv = NaN
@@ -745,6 +745,7 @@ Function/WAVE GetNIDAQChannelWave(panelTitle, channel)
 		return wv
 	endif
 
+	// type does not matter as we change it in DC_MakeNIChannelWave anyway
 	Make/N=(0) dfr:$name/WAVE=wv
 
 	return wv
@@ -1711,7 +1712,7 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	p.name    = "sweepSettingsWave"
 	p.newName = newName
 
-	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
+	WAVE/D/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, SWEEP_SETTINGS_WAVE_VERSION))
 		return wv
@@ -1721,9 +1722,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	numCols = DimSize(keyWave, COLS)
 
 	if(WaveExists(wv))
-		Redimension/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/D/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/D/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -3147,8 +3148,8 @@ End
 
 /// @brief Return the testpulse wave
 ///
-/// This wave will be written in DC_UpdateTestPulseWave()/
-/// DC_UpdateTestPulseWaveMD() and will use the real sampling interval.
+/// This wave will be written in TP_CreateTestPulseWave() and will use the real
+/// sampling interval.
 Function/WAVE GetTestPulse()
 
 	dfref dfr = GetWBSvdStimSetDAPath()
@@ -3159,12 +3160,12 @@ Function/WAVE GetTestPulse()
 	endif
 
 	/// create dummy wave
-	Make/N=(0) dfr:TestPulse/Wave=wv
+	Make/R/N=(0) dfr:TestPulse/Wave=wv
 
 	return wv
 End
 
-static Constant WP_WAVE_LAYOUT_VERSION = 10
+static Constant WP_WAVE_LAYOUT_VERSION = 11
 
 /// @brief Automated testing helper
 static Function GetWPVersion()
@@ -3215,6 +3216,9 @@ Function UpgradeWaveParam(wv)
 		Multithread wv[70,85][][] = wv[40][q][r]
 		wv[40][][] = NaN
 	endif
+
+	// upgrade to wave version 11
+	// nothing to do as we keep them float
 
 	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
 End
@@ -3352,7 +3356,8 @@ Function/WAVE GetWaveBuilderWaveParam()
 	if(WaveExists(wv))
 		UpgradeWaveParam(wv)
 	else
-		Make/N=(86, 100, EPOCH_TYPES_TOTAL_NUMBER) dfr:WP/Wave=wv
+		Make/D/N=(86, 100, EPOCH_TYPES_TOTAL_NUMBER) dfr:WP/Wave=wvDouble
+		WAVE wv = wvDouble
 
 		// noise low/high pass filter to off
 		wv[20][][EPOCH_TYPE_NOISE] = 0
@@ -3576,7 +3581,7 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 	return wv
 End
 
-static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 6
+static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 7
 
 /// @brief Automated testing helper
 static Function GetSegWvTypeVersion()
@@ -3592,6 +3597,8 @@ Function UpgradeSegWvType(wv)
 	if(ExistsWithCorrectLayoutVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION))
 		return NaN
 	endif
+
+	// no upgrade to double precision
 
 	AddDimLabelsToSegWvType(wv)
 	SetWaveVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION)
@@ -3640,7 +3647,8 @@ Function/Wave GetSegmentTypeWave()
 	if(WaveExists(wv))
 		UpgradeSegWvType(wv)
 	else
-		Make/N=102 dfr:SegWvType/Wave=wv
+		Make/N=102/D dfr:SegWvType/Wave=wvDouble
+		WAVE wv = wvDouble
 
 		wv[100] = 1
 		wv[101] = 1
@@ -3663,7 +3671,7 @@ Function/Wave GetEpochID()
 		return wv
 	endif
 
-	Make/N=(100, 2) dfr:epochID/Wave=wv
+	Make/R/N=(100, 2) dfr:epochID/Wave=wv
 
 	SetDimLabel COLS, 0, timeBegin, wv
 	SetDimLabel COLS, 1, timeEnd, wv
@@ -3682,7 +3690,7 @@ Function/Wave GetWaveBuilderDispWave()
 		return wv
 	endif
 
-	Make/N=(0) dfr:dispData/Wave=wv
+	Make/R/N=(0) dfr:dispData/Wave=wv
 
 	return wv
 End
@@ -3723,7 +3731,7 @@ Function/Wave GetSegmentWave([duration])
 
 	// optimization: recreate the wave only if necessary or just resize it
 	if(!WaveExists(SegmentWave))
-		Make/N=(numPoints) dfr:SegmentWave/Wave=SegmentWave
+		Make/R/N=(numPoints) dfr:SegmentWave/Wave=SegmentWave
 	elseif(numPoints != DimSize(SegmentWave, ROWS))
 		Redimension/N=(numPoints) SegmentWave
 	endif
@@ -3760,7 +3768,7 @@ End
 ///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncMeasurementWave()
 
-	Make/FREE/N=(1,8, LABNOTEBOOK_LAYER_COUNT) wv
+	Make/D/FREE/N=(1,8, LABNOTEBOOK_LAYER_COUNT) wv
 	wv = NaN
 
 	SetDimLabel 1, 0, MeasVal0, wv
@@ -3892,7 +3900,7 @@ End
 ///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncSettingsWave()
 
-	Make/N=(1, 40, LABNOTEBOOK_LAYER_COUNT)/FREE wv
+	Make/D/N=(1, 40, LABNOTEBOOK_LAYER_COUNT)/FREE wv
 	wv = Nan
 
 	SetDimLabel 1, 0, ADOnOff0, wv
@@ -4493,17 +4501,17 @@ End
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
-	variable versionOfNewWave = 7
+	variable versionOfNewWave = 8
 	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-	Wave/Z/SDFR=dfr wv=PressureData
+	Wave/D/Z/SDFR=dfr wv=PressureData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(8, 48) wv
+		Redimension/D/N=(8, 48) wv
 		SetPressureWaveDimLabels(wv)
 	else
-		Make/N=(8, 48) dfr:PressureData/Wave=wv
+		Make/D/N=(8, 48) dfr:PressureData/Wave=wv
 
 		SetPressureWaveDimLabels(wv)
 
@@ -4620,16 +4628,16 @@ End
 
 /// @brief Return the data folder reference to the device specific lab notebook folder for temporary waves
 Function/DF GetDevSpecLabNBTempFolder(panelTitle)
-	   string panelTitle
+	string panelTitle
 
-	   return createDFWithAllParents(GetDevSpecLabNBTempFolderAS(panelTitle))
+	return createDFWithAllParents(GetDevSpecLabNBTempFolderAS(panelTitle))
 End
 
 /// @brief Return the full path to the device specific lab notebook temp folder, e.g. root:MIES:LabNoteBook:ITC18USB:Device0:Temp
 Function/S GetDevSpecLabNBTempFolderAS(panelTitle)
-	   string panelTitle
+	string panelTitle
 
-	   return GetDevSpecLabNBFolderAsString(panelTitle) + ":Temp"
+	return GetDevSpecLabNBFolderAsString(panelTitle) + ":Temp"
 End
 
 /// @name Analysis Browser
@@ -4777,7 +4785,7 @@ Function/Wave GetAnalysisChannelStorage(dataFolder, device)
 	elseif(ExistsWithCorrectLayoutVersion(wv, 1))
 		// update Dimension label
 	else
-		Make/O/N=(MINIMUM_WAVE_SIZE, 1)/WAVE dfr:channelStorage/Wave=wv
+		Make/R/O/N=(MINIMUM_WAVE_SIZE, 1)/WAVE dfr:channelStorage/Wave=wv
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
 
@@ -4952,7 +4960,7 @@ Function/Wave GetExperimentBrowserGUISel()
 		return wv
 	endif
 
-	Make/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE) dfr:expBrowserSel/Wave=wv
+	Make/R/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE) dfr:expBrowserSel/Wave=wv
 
 	return wv
 End
@@ -5091,7 +5099,7 @@ Function/Wave GetIndexingStorageWave(panelTitle)
 		return wv
 	endif
 
-	Make/N=(2, 2, NUM_DA_TTL_CHANNELS) dfr:IndexingStorageWave/Wave=wv
+	Make/R/N=(2, 2, NUM_DA_TTL_CHANNELS) dfr:IndexingStorageWave/Wave=wv
 
 	SetDimLabel ROWS, 0, CHANNEL_TYPE_DAC, wv
 	SetDimLabel ROWS, 1, CHANNEL_TYPE_TTL, wv
@@ -5163,7 +5171,7 @@ Function/WAVE GetActiveDevicesTPMD()
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, 3) dfr:ActiveDevicesTPMD/Wave=wv
+		Make/R/N=(MINIMUM_WAVE_SIZE, 3) dfr:ActiveDevicesTPMD/Wave=wv
 		wv = NaN
 	endif
 
@@ -5512,7 +5520,8 @@ Function/WAVE GetDistDAQPreloadWave(panelTitle)
 	if(WaveExists(wv))
 		return wv
 	else
-		Make/N=(0) dfr:$wvName/Wave=wv
+		// wave type is overwritten in OOD_StorePreload
+		Make/R/N=(0) dfr:$wvName/Wave=wv
 	endif
 
 	return wv
@@ -5563,7 +5572,7 @@ Function/WAVE GetPressureTypeWv(panelTitle)
 		return wv
 	endif
 
-	Make/N=(NUM_HEADSTAGES) dfr:pressureType/Wave=wv
+	Make/R/N=(NUM_HEADSTAGES) dfr:pressureType/Wave=wv
 
 	return wv
 End
@@ -5624,7 +5633,7 @@ Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, regio
 		// by PA_CreateAndFillPulseWaveIfReq()
 		Note/K wv
 	else
-		Make/N=(length) dfr:$wvName/WAVE=wv
+		Make/R/N=(length) dfr:$wvName/WAVE=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -5811,17 +5820,17 @@ End
 Function/WAVE GetArtefactRemovalDataWave(dfr)
 	DFREF dfr
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
-	WAVE/Z/SDFR=dfr wv = artefactRemovalDataWave
+	WAVE/D/Z/SDFR=dfr wv = artefactRemovalDataWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(MINIMUM_WAVE_SIZE, 4) wv
+		Redimension/D/N=(MINIMUM_WAVE_SIZE, 4) wv
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, 4) dfr:artefactRemovalDataWave/Wave=wv
+		Make/D/N=(MINIMUM_WAVE_SIZE, 4) dfr:artefactRemovalDataWave/Wave=wv
 	endif
 
 	SetDimLabel COLS, 0, $"ArtefactPosition", wv
@@ -5941,7 +5950,7 @@ Function/WAVE GetChannelSelectionWave(dfr)
 	elseif(WaveExists(wv))
 		Redimension/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) wv
 	else
-		Make/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) dfr:channelSelection/Wave=wv
+		Make/R/N=(max(NUM_DA_TTL_CHANNELS, NUM_AD_CHANNELS, NUM_HEADSTAGES), 3) dfr:channelSelection/Wave=wv
 
 		// by default all channels are selected
 		wv = 1

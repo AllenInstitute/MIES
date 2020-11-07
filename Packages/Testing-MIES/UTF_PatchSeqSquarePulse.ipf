@@ -127,7 +127,7 @@ static Function PS_SP1_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 20)
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
-	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
@@ -184,7 +184,7 @@ static Function PS_SP2_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 20)
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
-	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
@@ -241,7 +241,7 @@ static Function PS_SP3_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 20)
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
-	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
@@ -298,7 +298,7 @@ static Function PS_SP4_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 20)
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
-	CHECK_EQUAL_WAVES(stimScale, {100,200,150,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(stimScale, {100,200,150,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, NaN, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
@@ -356,7 +356,7 @@ static Function PS_SP5_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 4)
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
-	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
@@ -415,7 +415,7 @@ static Function PS_SP6_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 5)
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
-	CHECK_EQUAL_WAVES(stimScale, {100, 50, 0, 0, 10}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(stimScale, {100, 50, 0, 0, 10}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {-50e-12, NaN, NaN, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
@@ -472,7 +472,7 @@ static Function PS_SP7_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 5)
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
-	CHECK_EQUAL_WAVES(stimScale, {100, 50, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(stimScale, {100, 50, 0, 0, 0}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {-50e-12, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
