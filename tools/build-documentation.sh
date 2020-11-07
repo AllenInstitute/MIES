@@ -100,6 +100,11 @@ do
   sed -i "1s/^/.. _File ${name}:\n\n/" $i
 done
 
+# create rst substitutions for up-to-date IP nightly links
+grep "IgorPro[0-9]Nightly" $top_level/Packages/MIES_Include.ipf \
+  | sed -e "s/^\/\/ //"                                         \
+  > $top_level/Packages/doc/installation_subst.txt
+
 if hash sphinx-build 2>/dev/null; then
   echo "Start sphinx-build"
 

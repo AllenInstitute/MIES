@@ -2,27 +2,118 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
-// Igor Pro nightly installation:
-// - Download from https://www.byte-physics.de/Downloads/WinIgor8_06MAY2020.zip
-// - Close Igor Pro 8
-// - Extract the contents into C:\Program Files\WaveMetrics\Igor Pro 8 Folder (overwriting existing files, requires Administrator access)
-// - Restart Igor Pro 8
-//
-// By ignoring the error and *commenting out* the below check you will certainly break MIES.
-#if (NumberByKey("BUILD", IgorInfo(0)) < 35712)
-#define *** Too old Igor Pro 8 version, click "Edit procedure" for instructions
-#pragma IgorVersion=8.04
-#endif
-
-#if IgorVersion() >= 9.0
-#if (NumberByKey("BUILD", IgorInfo(0)) < 36145)
-#define *** Too old Igor Pro 9 version, click "Edit procedure" for instructions
-#pragma IgorVersion=9.00
-#endif
-#endif
-
 /// @file MIES_Include.ipf
 /// @brief Main include
+///
+/// Developer instructions for raising the required nightly versions:
+///
+/// - Update the revision numbers for IP8 and or IP9 below in the expression involving "BUILD"
+/// - Upload the nightly zip package to the FTP (Thomas' job). Don't delete the
+///   old zip packages, we still need them.
+/// - Update the below URLs
+
+// These are sphinx substitutions destined for Packages/doc/installation_subst.txt.
+// They are defined here so that we can parse them from within IP.
+//
+// .. |IgorPro8Nightly| replace:: `Igor Pro 8 <https://www.byte-physics.de/Downloads/WinIgor8_06MAY2020.zip>`__
+// .. |IgorPro9Nightly| replace:: `Igor Pro 9 <https://www.byte-physics.de/Downloads/WinIgor9_06NOV2020.zip>`__
+
+#pragma IgorVersion=8.04
+
+#if IgorVersion() >= 9.0
+#if (NumberByKey("BUILD", IgorInfo(0)) < 36607)
+#define TOO_OLD_IGOR
+#endif
+#else
+#if (NumberByKey("BUILD", IgorInfo(0)) < 35712)
+#define TOO_OLD_IGOR
+#endif
+#endif
+
+#ifdef TOO_OLD_IGOR
+
+Window OpenPanelWithDocumentationLink() : Panel
+	PauseUpdate; Silent 1		// building window...
+	NewPanel /K=1 /W=(435,461,735,661) as "OpenPanelWithDocumentationLink"
+	Button button0,pos={38.00,14.00},size={223.00,89.00},proc=ButtonProc_OpenMiesDocuUpdateNightly,title="Open MIES documentation for\r update instructions"
+	Button button1,pos={51.00,133.00},size={195.00,29.00},proc=ButtonProc_DownloadNightly,title="Download Igor Pro nightly build"
+EndMacro
+
+Function ButtonProc_OpenMiesDocuUpdateNightly(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			BrowseURL "https://alleninstitute.github.io/MIES/installation.html#igor-pro-update-nightly"
+			break
+	endswitch
+
+	return 0
+End
+
+static Function/S GetDownloadLink()
+
+	string igorMajorVersion, text, lineWithLink, url
+
+	igorMajorVersion = StringByKey("IGORVERS", IgorInfo(0))[0]
+
+	text = ProcedureText("", 0, "MIES_Include.ipf")
+	lineWithLink = GrepList(text, "\\Q|IgorPro" + igorMajorVersion + "Nightly|\\E", 0, "\r")
+	SplitString/E=".*<(.*)>.*" lineWithLink, url
+
+	if(V_Flag != 1)
+		Abort "Please manually download the nightly build from the documentation link."
+	endif
+
+	return url
+End
+
+static Function/S GetFileNameFromURL(string url)
+
+	variable pos
+
+	pos = strsearch(url, "/", inf, 1)
+
+	return url[pos + 1, inf]
+End
+
+static Function/S GetDestinationIgorPath()
+
+	string path = "tmpPath"
+	NewPath/C/O $path, SpecialDirPath("Temporary", 0, 0, 1) + ":IgorNightlyDownloads"
+
+	return path
+End
+
+Function ButtonProc_DownloadNightly(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string url, filename, path
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			url = GetDownloadLink()
+			path = GetDestinationIgorPath()
+			printf "Please wait while we download %s.\r", url
+			filename = GetFileNameFromURL(url)
+			URLRequest/O/P=$path/FILE=filename url=url
+			PathInfo/SHOW $path
+			break
+	endswitch
+
+	return 0
+End
+
+static Function AfterCompiledHook()
+
+	string igorMajorVersion
+
+	igorMajorVersion = StringByKey("IGORVERS", IgorInfo(0))[0]
+	printf "Your Igor Pro %s version is too old to be usable for MIES.\r", igorMajorVersion
+	Execute "OpenPanelWithDocumentationLink()"
+End
+
+#else
 
 // stock igor
 #include <Resize Controls>
@@ -120,3 +211,5 @@
 #include "MIES_WaveBuilderPanel"
 #include "MIES_WaveBuilder_Macro"
 #include "MIES_WaveDataFolderGetters"
+
+#endif
