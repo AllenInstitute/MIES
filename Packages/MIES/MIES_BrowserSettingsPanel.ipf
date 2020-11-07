@@ -1136,29 +1136,15 @@ End
 Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string graph, bsPanel, scPanel
-	variable index, sweepNo
+	string graph, bsPanel
 
 	switch(cba.eventCode)
 		case 2: // mouse up
 			graph   = GetMainWindow(cba.win)
 			bsPanel = BSP_GetPanel(graph)
-			scPanel = BSP_GetSweepControlsPanel(graph)
 
 			BSP_SetOVSControlStatus(bsPanel)
 			OVS_UpdatePanel(graph, fullUpdate = 1)
-
-			WAVE/Z sweeps = GetPlainSweepList(graph)
-
-			if(OVS_IsActive(graph) && WaveExists(sweeps))
-				if(BSP_IsDataBrowser(graph))
-					sweepNo = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
-					OVS_ChangeSweepSelectionState(bsPanel, CHECKBOX_SELECTED, sweepNo=sweepNo)
-				else
-					index = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
-					OVS_ChangeSweepSelectionState(bsPanel, CHECKBOX_SELECTED, index=index)
-				endif
-			endif
 
 			break
 	endswitch
