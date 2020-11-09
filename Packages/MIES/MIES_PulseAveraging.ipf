@@ -2155,7 +2155,7 @@ End
 
 static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable displayMode, WAVE/WAVE setWaves2, string vertAxis, string horizAxis, variable ylength, string xUnit, string yUnit, variable activeChanCount, variable activeRegionCount, variable numActive)
 
-	string graph, msg, str, axList
+	string graph, msg, str
 	variable vertAxis_y, vertAxis_x, xLength
 	variable vert_min, vert_max, horiz_min, horiz_max, drawLength
 	variable xBarBottom, xBarTop, yBarBottom, yBarTop, labelOffset
@@ -2232,10 +2232,6 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 	endif
 
 	if(drawXScaleBar)
-
-		axList = AxisList(graph)
-		ASSERT(WhichListItem(horizAxis, axList) != -1, "Missing horizontal axis")
-		ASSERT(WhichListItem(vertAxis, axList) != -1, "Missing vertical axis")
 
 		SetDrawEnv/W=$graph xcoord=$horizAxis, ycoord=$vertAxis
 		SetDrawEnv/W=$graph save
