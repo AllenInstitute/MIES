@@ -33,6 +33,8 @@ static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 
 static StrConstant PA_SETTINGS = "PulseAverageSettings"
 
+static StrConstant PA_USER_DATA_X_START_RELATIVE_PREFIX = "XAxisStartPlotRelative_"
+
 /// Only present for diagonal pulses
 static StrConstant PA_NOTE_KEY_PULSE_FAILED = "PulseHasFailed"
 
@@ -1698,8 +1700,8 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		AccelerateModLineSizeTraces(graph, deconPlotTraces, deconPlotCount, PA_DECONVOLUTION_PLOT_LSIZE)
 	endif
 
-	PA_DrawScaleBars(win, pa, pasi, PA_DISPLAYMODE_TRACES, PA_USE_WAVE_SCALES)
 	PA_LayoutGraphs(win, pa, pasi, PA_DISPLAYMODE_TRACES)
+	PA_DrawScaleBars(win, pa, pasi, PA_DISPLAYMODE_TRACES, PA_USE_WAVE_SCALES)
 	PA_DrawXZeroLines(win, pa, pasi, PA_DISPLAYMODE_TRACES)
 
 	return usedGraphs
@@ -2209,7 +2211,7 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 		sprintf str, "scalebar_Y_R%d_C%d", activeRegionCount, activeChanCount
 		SetDrawEnv/W=$graph gstart, gname=$str
 
-		xBarBottom = GetNumFromModifyStr(AxisInfo(graph, horizAxis), "axisEnab", "{", 0) - PA_X_AXIS_OFFSET
+		xBarBottom = str2num(GetUserData(win, "", PA_USER_DATA_X_START_RELATIVE_PREFIX + horizAxis))
 		xBarTop    = xBarBottom
 
 		if(sign(vert_min) != sign(vert_max))
@@ -2595,7 +2597,7 @@ End
 static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable displayMode)
 
 	variable i, j, numActive, numEntries
-	variable channelNumber, headstage, red, green, blue, region, xStart
+	variable channelNumber, headstage, region, xStart, xAxisPlotRelative
 	string graph, str, horizAxis, vertAxis, allAxes, vertAxes, horizAxes
 	STRUCT RGBColor s
 
@@ -2640,7 +2642,9 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 				horizAxis = axesNames[1]
 
 				xStart = GetNumFromModifyStr(AxisInfo(graph, horizAxis), "axisEnab", "{", 0)
-				ModifyGraph/W=$graph/Z freePos($vertAxis)={xStart - PA_X_AXIS_OFFSET,kwFraction}
+				xAxisPlotRelative = xStart - PA_X_AXIS_OFFSET
+				SetWindow $graph, userData($(PA_USER_DATA_X_START_RELATIVE_PREFIX + horizAxis)) = num2str(xAxisPlotRelative)
+				ModifyGraph/W=$graph/Z freePos($vertAxis)={xAxisPlotRelative, kwFraction}
 			endfor
 
 			ModifyGraph/W=$graph/Z freePos($horizAxis)=0
