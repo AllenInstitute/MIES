@@ -2198,6 +2198,9 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 	SetDrawEnv/W=$graph push
 	SetDrawEnv/W=$graph linefgc=(0,0,0), textrgb=(0,0,0), fsize=10, linethick=1.5
 
+	sprintf msg, "win %s, horizAxis %s [%g, %g], vertAxis %s [%g, %g]\r", win, horizAxis, horiz_min, horiz_max, vertAxis, vert_min, vert_max
+	DEBUGPRINT(msg)
+
 	if(drawYScaleBar)
 		// only for non-diagonal elements
 
@@ -2223,7 +2226,7 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 
 		yBarTop = yBarBottom + ylength
 
-		sprintf msg, "Y: (R%d, C%d)\r", activeRegionCount, activeChanCount
+		sprintf msg, "Y: (R%d, C%d), xBarBottom %g, xBarTop %g\r", activeRegionCount, activeChanCount, xBarBottom, xBarTop
 		DEBUGPRINT(msg)
 
 		drawLength = (activeChanCount == numActive) && (activeRegionCount == 1)
