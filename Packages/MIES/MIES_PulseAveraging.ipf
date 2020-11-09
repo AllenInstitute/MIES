@@ -182,7 +182,6 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 		SetWindow $win, userdata($MIES_BSP_PA_MAINPANEL) = mainWin
 		PA_GetTraceCountFromGraphData(win, clear = 1)
 		if(displayMode == PA_DISPLAYMODE_IMAGES && (!pa.multipleGraphs || activeRegionCount == numRegions))
-			SetWindow $win hook(marginResizeHook)=PA_ImageWindowHook
 			NewPanel/HOST=#/EXT=0/W=(0, 0, PA_COLORSCALE_PANEL_WIDTH, bottom - top) as ""
 			Display/FG=(FL,FT,FR,FB)/HOST=#
 		endif
