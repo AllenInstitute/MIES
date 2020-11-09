@@ -203,9 +203,16 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 		NVAR JSONid = $GetSettingsJSONid()
 		PS_InitCoordinates(JSONid, win, win)
 
-		if(displayMode == PA_DISPLAYMODE_IMAGES)
-			SetWindow $win hook(marginResizeHook)=PA_ImageWindowHook
-		endif
+		switch(displayMode)
+			case PA_DISPLAYMODE_IMAGES:
+				SetWindow $win hook(resizeHookAndScalebar)=PA_ImageWindowHook
+				break
+			case PA_DISPLAYMODE_TRACES:
+				SetWindow $win hook(resizeHookAndScalebar)=PA_TraceWindowHook
+				break
+			default:
+				ASSERT(0, "Invalid display mode")
+		endswitch
 	endif
 
 	return win
@@ -2048,22 +2055,6 @@ threadsafe static Function/WAVE PA_ExtractSumsCountsOnly(WAVE/WAVE w)
 	return result
 End
 
-Function PA_AxisHook(s)
-	STRUCT WMAxisHookStruct &s
-
-	// Called during experiment load
-	// so it needs to be robust
-	try
-		ClearRTError()
-		PA_UpdateScaleBars(s.win); AbortOnRTE
-	catch
-		printf "Encountered error/abort (%s)\r", GetRTErrMessage()
-		ClearRTError()
-	endtry
-
-	return 0
-End
-
 static Function PA_UpdateScaleBars(string win)
 
 	variable displayMode
@@ -2118,9 +2109,6 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, ST
 			horizAxis = axesNames[1]
 
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
-				NewFreeAxis/R/O/W=$graph fakeAxis
-				ModifyFreeAxis/W=$graph fakeAxis, master=$horizAxis, hook=PA_AxisHook
-				ModifyGraph/W=$graph nticks(fakeAxis)=0, noLabel(fakeAxis)=2, axthick(fakeAxis)=0
 				SetDrawLayer/K/W=$graph $PA_DRAWLAYER_SCALEBAR
 			endif
 
@@ -3377,16 +3365,32 @@ static Function PA_ResizeColorScalePanel(string imageGraph)
 	MoveSubWindow/W=$colorScalePanel fnum=(0, 0, PA_COLORSCALE_PANEL_WIDTH, graphHeight)
 End
 
+Function PA_TraceWindowHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string traceGraph
+
+	switch(s.eventcode)
+		case 22: // mouse wheel
+		case 6: // resize
+			traceGraph = s.winName
+			PA_UpdateScaleBars(traceGraph)
+			break
+	endswitch
+
+	return 0
+End
+
 Function PA_ImageWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
-	string imageGraph, browser
+	string imageGraph
 
 	switch(s.eventcode)
 		case 6: // resize
 			imageGraph = s.winName
 			PA_ResizeColorScalePanel(imageGraph)
-			return 1
+			PA_UpdateScaleBars(imageGraph)
 			break
 	endswitch
 
