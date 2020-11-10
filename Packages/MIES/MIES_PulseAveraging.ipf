@@ -2570,7 +2570,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			// we reserve 5% of the total columns for average and 5% for deconvolution
 			singlePulseColumnOffset = GetNumberFromWaveNote(img, PA_NOTE_KEY_IMAGE_COL_OFFSET)
 			if(IsNaN(singlePulseColumnOffset) || mode == POST_PLOT_FULL_UPDATE)
-				specialEntries  = limit(round(0.05 * numPulses), 1, inf)
+				specialEntries  = limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * numPulses), 1, inf)
 				singlePulseColumnOffset = 2 * specialEntries
 			else
 				// keep the existing singlePulseColumnOffset when doing an incremental update
