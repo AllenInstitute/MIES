@@ -586,6 +586,26 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		return [pasi]
 	endif
 
+	WAVE/Z headstages         = PA_GetUniqueHeadstages(traceData, indizesChannelType)
+	if(!WaveExists(headstages))
+		return [pasi]
+	endif
+
+	// Determine our current region list in correct order
+	// iterate over all headstages, ignores duplicates from overlay sweeps
+	regionList = ""
+	numHeadstages = DimSize(headstages, ROWS)
+	for(i = 0; i < numHeadstages; i += 1)
+		region = headstages[i]
+		if(!IsFinite(region)) // duplicated headstages in traceData
+			continue
+		endif
+		regionList = AddListItem(num2istr(region), regionList, PA_PROPERTIES_STRLIST_SEP, inf)
+	endfor
+	WAVE regions = ListToNumericWave(regionList, PA_PROPERTIES_STRLIST_SEP)
+	numRegions = DimSize(regions, ROWS)
+
+	// In incremental mode get only new part of the indices
 	if(incrementalMode)
 		Make/FREE/N=(DimSize(indizesChannelType, ROWS)) indizesToAdd
 		j = 0
@@ -618,12 +638,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		SetNumberInWaveNote(properties, NOTE_PA_NEW_PULSES_START, 0)
 	endif
 
-	WAVE/Z headstages         = PA_GetUniqueHeadstages(traceData, indizesChannelType)
-
-	if(!WaveExists(headstages))
-		return [pasi]
-	endif
-
 	WAVE prevDisplayMapping = GetPulseAverageDisplayMapping(pulseAverageDFR)
 	Duplicate/FREE prevDisplayMapping, currentDisplayMapping
 	FastOp currentDisplayMapping = 0
@@ -654,29 +668,18 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	lblPWPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
 
 	numChannelTypeTraces = DimSize(indizesChannelType, ROWS)
-	numHeadstages        = DimSize(headstages, ROWS)
 
 	lblACTIVEREGION = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVEREGION")
 	lblACTIVECHANNEL = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVECHANNEL")
 
-	regionList = ""
 	sweepList  = ""
 	channelList = ""
 
 	jsonID = JSON_New()
 
-	// iterate over all headstages, ignores duplicates from overlay sweeps
-	for(i = 0; i < numHeadstages; i += 1)
-
-		region = headstages[i]
-
-		if(!IsFinite(region)) // duplicated headstages in traceData
-			continue
-		endif
-
-		activeRegionCount += 1
-
-		regionList = AddListItem(num2str(region), regionList, PA_PROPERTIES_STRLIST_SEP, inf)
+	for(i = 0; i < numRegions; i += 1)
+		region = regions[i]
+		activeRegionCount = i + 1
 
 		activeChanCount = 0
 		regionChannelList = ""
@@ -689,7 +692,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			headstage = str2num(traceData[idx][lblTraceHeadstage])
 
 			// We only use associated headstages and only one AD channel can be associated to one headstage
-			// This always results in a quadratic display with equal number of channels and regions
 			if(!IsFinite(headstage)) // ignore unassociated channels or duplicated headstages in traceData
 				continue
 			endif
