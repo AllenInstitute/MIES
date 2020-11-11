@@ -5982,8 +5982,18 @@ End
 /// @brief Zeroes a wave in place
 threadsafe Function ZeroWaveImpl(WAVE wv)
 
-	Differentiate/DIM=0/EP=1 wv
-	Integrate/DIM=0 wv
+	variable numRows, offset
+
+	numRows = DimSize(wv, ROWS)
+
+	if(numRows == 0)
+		return NaN
+	endif
+
+	ASSERT_TS(IsFloatingPointWave(wv), "Can only work with floating point waves")
+
+	offset = wv[0]
+	Multithread wv = wv - offset
 End
 
 /// @name Decimation methods
