@@ -3736,7 +3736,7 @@ Function GetNumFromModifyStr(info, key, listChar, item)
 
 	escapedListChar = "\\Q" + listChar + "\\E"
 
-	sprintf regexp, "(?i)\\Q%s\\E\([^=]+\)=%s([^});]+)", key, escapedListChar
+	sprintf regexp, "(?i)\\b\\Q%s\\E\([^=]+\)=%s([^});]+)", key, escapedListChar
 
 	SplitString/E=regexp info, list
 
