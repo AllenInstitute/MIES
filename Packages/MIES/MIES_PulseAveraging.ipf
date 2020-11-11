@@ -2,6 +2,10 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_PA
+#endif
+
 /// @file MIES_PulseAveraging.ipf
 ///
 /// @brief __PA__ Routines for dealing with pulse averaging.
@@ -300,7 +304,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	endif
 
 #ifdef AUTOMATED_TESTING
-	WAVE DBG_pulseStartTimesEpochs = pulseStartTimes
+	WAVE/Z DBG_pulseStartTimesEpochs = pulseStartTimes
 	WAVE/Z pulseStartTimes = $""
 #endif
 
@@ -321,7 +325,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 
 #ifdef AUTOMATED_TESTING
 		variable i
-		variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 1.5
+		variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 2
 
 		WAVE DBG_pulseStartTimesCalc = pulseStartTimes
 		if(DimSize(DBG_pulseStartTimesEpochs, ROWS) != DimSize(DBG_pulseStartTimesCalc, ROWS))
@@ -2570,7 +2574,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			// we reserve 5% of the total columns for average and 5% for deconvolution
 			singlePulseColumnOffset = GetNumberFromWaveNote(img, PA_NOTE_KEY_IMAGE_COL_OFFSET)
 			if(IsNaN(singlePulseColumnOffset) || mode == POST_PLOT_FULL_UPDATE)
-				specialEntries  = limit(round(0.05 * numPulses), 1, inf)
+				specialEntries  = limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * numPulses), 1, inf)
 				singlePulseColumnOffset = 2 * specialEntries
 			else
 				// keep the existing singlePulseColumnOffset when doing an incremental update

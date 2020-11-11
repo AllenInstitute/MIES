@@ -1834,6 +1834,13 @@ Function GNMS_Works2()
 	CHECK_EQUAL_VAR(MIES_UTILS#GetNumFromModifyStr(str, "abcd", "(", 1), 789.10)
 End
 
+Function GNMS_Works3()
+
+	string str = "abcdefgh(ijjk)=(1),efgh(ijk)=(2)"
+
+	CHECK_EQUAL_VAR(MIES_UTILS#GetNumFromModifyStr(str, "efgh", "(", 0), 2)
+End
+
 /// @}
 
 /// @{
