@@ -456,8 +456,16 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 
 			name = StringFromList(j, list)
 			WAVE/SDFR=dfr sweepWave = $name
-			WAVE configWave = GetConfigWave(sweepWave)
+			WAVE/Z configWave = GetConfigWave(sweepWave)
+
 			sweep = ExtractSweepNumber(name)
+
+			if(!WaveExists(configWave))
+				printf "Sweep %d can not be exported as the config wave is missing.", sweep
+				ControlWindowToFront()
+				continue
+			endif
+
 			NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, sweepWave, configWave, sweep, compressionMode = compressionMode)
 			stimsetList += NWB_GetStimsetFromPanel(panelTitle, sweep)
 		endfor
