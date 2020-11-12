@@ -2492,7 +2492,7 @@ End
 ///        Non-existing axes are taken into account on the distribution, but are skipped when the graph is accessed.
 ///        Also removing images from a graph does not update AxisList until the graph is updated,
 ///        so we can not rely on Axislist here as we do the Layout after pending changes
-static Function PA_EquallySpaceAxis(string graph, string allAxes, string distAxes, variable sortOrder, [variable axisOffset])
+static Function PA_EquallySpaceAxis(string graph, string allAxes, string distAxes, [variable axisOffset])
 
 	variable numAxes, i
 	string axis
@@ -2505,7 +2505,6 @@ static Function PA_EquallySpaceAxis(string graph, string allAxes, string distAxe
 
 	numAxes = ItemsInList(distAxes, ";")
 	if(numAxes > 0)
-		distAxes = SortList(distAxes, ";", sortOrder)
 		WAVE/Z axisStart, axisEnd
 		[axisStart, axisEnd] = DistributeElements(numAxes, offset = axisOffset)
 		for(i = 0; i < numAxes; i += 1)
@@ -2548,16 +2547,16 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 			axisWave[j] = wt[1]
 		endfor
 		horizAxes = TextWaveToList(axisWave, ";")
-		PA_EquallySpaceAxis(graph, allAxes, horizAxes, 0, axisOffset=PA_X_AXIS_OFFSET)
+		PA_EquallySpaceAxis(graph, allAxes, horizAxes, axisOffset=PA_X_AXIS_OFFSET)
 
 		for(i = 0; i < numActive; i += 1)
 			axisWaveRef[] = pasi.axesNames[p][i]
 			for(j = 0; j < numActive; j += 1)
 				WAVE/T wt = axisWaveRef[j]
-				axisWave[j] = wt[0]
+				axisWave[numActive - j - 1] = wt[0]
 			endfor
 			vertAxes = TextWaveToList(axisWave, ";")
-			PA_EquallySpaceAxis(graph, allAxes, vertAxes, 17)
+			PA_EquallySpaceAxis(graph, allAxes, vertAxes)
 			for(j = 0; j < numActive; j += 1)
 
 				WAVE/T axesNames = pasi.axesNames[j][i]
