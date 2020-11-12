@@ -38,16 +38,10 @@ Menu "Macros"
 	"Mass convert PXPs to NWBv2", /Q, StartMultiExperimentProcess()
 End
 
-// NOTE: If you use these procedures for your own purposes, change the package name
-// to a distinctive name so that you don't clash with other people's preferences.
 static StrConstant kPackageName = "MIES PXP to NWBv2"
 static StrConstant kPreferencesFileName = "ProcessPrefsMIESNWBv2.bin"
 static Constant kPrefsRecordID = 0    // The recordID is a unique number identifying a record within the preference file.
-// In this example we store only one record in the preference file.
 
-// The structure stored in preferences to keep track of what experiment to load next.
-// If you add, remove or change fields you must delete your old prefs file. See the help
-// topic "Saving Package Preferences" for details.
 static Structure MultiExperimentProcessPrefs
 	uint32 version          // Prefs version
 	uint32 processRunning   // Truth that we are running the mult-experiment process
@@ -85,8 +79,6 @@ static Function SavePackagePrefs(prefs)
 	SavePackagePreferences kPackageName, kPreferencesFileName, kPrefsRecordID, prefs
 End
 
-//  This is the routine that you would need to change to use this procedure file for your own purposes.
-//  See comments about labeled "TO USE FOR YOUR OWN PURPOSES".
 static Function ProcessCurrentExperiment(prefs)
 	STRUCT MultiExperimentProcessPrefs &prefs
 
