@@ -3031,7 +3031,6 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 					FindValue/Z/V=(newSweep) sweeps
 					if(V_Value > 0)
 						firstPulseIndex = V_Value
-						singlePulseColumnOffset += firstPulseIndex
 					else
 						// we can have no match with removed headstages on the new sweep
 						// caller needs to retry with POST_PLOT_FULL_UPDATE
@@ -3048,7 +3047,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 			if(pa.showIndividualPulses && numPulses > 0)
 				WAVE/WAVE set = WaveRef(pasi.setWaves2[i][j])
-				Multithread img[][singlePulseColumnOffset, requiredEntries - 1] = WaveRef(set[q - singlePulseColumnOffset][0])(x); err = GetRTError(1)
+				Multithread img[][singlePulseColumnOffset + firstPulseIndex, requiredEntries - 1] = WaveRef(set[q - singlePulseColumnOffset][0])(x); err = GetRTError(1)
 			endif
 
 			if(numPulses > 0)
