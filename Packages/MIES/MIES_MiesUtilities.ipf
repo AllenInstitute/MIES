@@ -2407,7 +2407,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",               \
 			  					"textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType", \
-								"occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR"}
+								"occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage"}
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -2807,7 +2807,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					                         {GetWavesDataFolder(wv, 2), channelID, num2str(chan), num2str(sweepNo), num2str(headstage),   \
 					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                \
 								              num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep",             \
-												  num2str(k), horizAxis, vertAxis, traceRange, traceColor})
+												  num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsFinite(headstage))})
 				endfor
 			endfor
 
