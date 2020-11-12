@@ -3014,11 +3014,18 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			if(numPulses == 0)
 				Multithread img[][] = NaN
 			else
-				CopyScales/P averageWave, img
+
+				if(WaveExists(averageWave))
+					WAVE scaleRefWave = averageWave
+				else
+					WAVE/WAVE set = WaveRef(pasi.setWaves2[i][j])
+					WAVE scaleRefWave = set[0][0]
+				endif
+				CopyScales/P scaleRefWave, img
 
 				Make/FREE/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(img, p)
 				EnsureLargeEnoughWave(img, minimumSize = requiredEntries, dimension = COLS, initialValue=NaN)
-				Redimension/N=(DimSize(averageWave, ROWS), -1) img
+				Redimension/N=(DimSize(scaleRefWave, ROWS), -1) img
 				Make/FREE/N=(MAX_DIMENSION_COUNT) newSizes = DimSize(img, p)
 
 				if(!(mode != POST_PLOT_ADDED_SWEEPS                                        \
