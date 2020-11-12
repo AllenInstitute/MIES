@@ -6535,7 +6535,7 @@ Function/WAVE GetTraceInfos(string graph)
 		return $""
 	endif
 
-	WAVE matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = {"traceType", "occurence"}, values = {"Sweep", "0"})
+	WAVE matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = {"traceType", "occurence", "channelType", "AssociatedHeadstage"}, values = {"Sweep", "0", "AD", "1"})
 
 	WAVE/T graphUserData = GetGraphUserData(graph)
 
