@@ -1590,12 +1590,14 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				endif
 			endif
 
-			sprintf traceName, "Ovl_%s%s", PA_DECONVOLUTION_WAVE_PREFIX, baseName
-			if((	graphwasReset			\
+			if((	graphwasReset		\
 				|| layoutChanged			\
 				|| !cs.multipleGraphs	\
 				|| !cs.deconvolution   \
+				|| !cs.failedPulses    \
 				|| plottedAvgTraces) && (i != j))
+
+				sprintf traceName, "Ovl_%s%s", PA_DECONVOLUTION_WAVE_PREFIX, baseName
 
 				if(WaveExists(deconvolutionTraceNames))
 					WAVE/T/Z foundTraces = GrepTextWave(deconvolutionTraceNames, "^.*" + PA_DECONVOLUTION_WAVE_PREFIX + basename + "$")
