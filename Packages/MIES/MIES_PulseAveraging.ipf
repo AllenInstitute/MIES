@@ -536,21 +536,22 @@ End
 static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, variable mode, WAVE/Z additionalData)
 
 	variable startingPulseSett, endingPulseSett, pulseHasFailed, numActive
-	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, endingPulse
+	variable i, j, k, region, sweepNo, idx, numPulsesTotal, endingPulse
 	variable headstage, pulseToPulseLength, totalOnsetDelay, numChannelTypeTraces, totalPulseCounter, jsonID, lastSweep
-	variable activeRegionCount, activeChanCount, channelNumber, first, length, channelType, numChannels, numRegions
+	variable activeChanCount, channelNumber, first, length, channelType, numChannels, numRegions
 	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep, incrementalMode, layoutChanged
-	variable lblIndex, lblSweep, lblChannelType, lblChannelNumber, lblRegion, lblHeadstage, lblPulse, lblDiagonalElement, lblActiveRegionCount, lblActiveChanCount, lblLastSweep, lblExperiment
+	variable lblIndex, lblSweep, lblChannelType, lblChannelNumber, lblRegion, lblHeadstage, lblPulse, lblLastSweep, lblExperiment
 	variable lblTraceHeadstage, lblTraceExperiment, lblTraceSweepNumber, lblTraceChannelNumber, lblTracenumericalValues, lblTraceFullpath
 	variable lblPWPULSE, lblPWPULSENOTE, lblACTIVEREGION, lblACTIVECHANNEL
-	string channelTypeStr, channelList, regionChannelList, channelNumberStr, key, regionList, baseName, sweepList, sweepNoStr, experiment
+	string channelTypeStr, channelList, regionChannelList, channelNumberStr, key, regionList, sweepList, sweepNoStr, experiment
 	string oldRegionList, oldChannelList
 
-	// possibly a TUD function
 	WAVE/T/Z traceData = GetTraceInfos(GetMainWindow(win))
 	if(!WaveExists(traceData))
+		KillorMoveToTrash(dfr = GetDevicePulseAverageHelperFolder(pa.dfr))
 		return [pasi]
 	endif
+	numChannelTypeTraces = DimSize(traceData, ROWS)
 
 	incrementalMode = mode == POST_PLOT_ADDED_SWEEPS && WaveExists(additionalData)
 
@@ -577,36 +578,29 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
 	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
 
-	channelType = ITC_XOP_CHANNEL_TYPE_ADC
-	channelTypeStr = StringFromList(channelType, ITC_CHANNEL_NAMES)
-
-	WAVE/Z indizesChannelType = FindIndizes(traceData, colLabel="channelType", str=channelTypeStr)
-	if(!WaveExists(indizesChannelType))
+	// Get regions of all traces
+	WAVE/Z regions = PA_GetUniqueHeadstages(traceData)
+	if(!WaveExists(regions))
 		return [pasi]
 	endif
-
-	WAVE/Z headstages         = PA_GetUniqueHeadstages(traceData, indizesChannelType)
-	if(!WaveExists(headstages))
-		return [pasi]
-	endif
-
-	// Determine our current region list in correct order
-	// iterate over all headstages, ignores duplicates from overlay sweeps
-	regionList = ""
-	numHeadstages = DimSize(headstages, ROWS)
-	for(i = 0; i < numHeadstages; i += 1)
-		region = headstages[i]
-		if(!IsFinite(region)) // duplicated headstages in traceData
-			continue
-		endif
-		regionList = AddListItem(num2istr(region), regionList, PA_PROPERTIES_STRLIST_SEP, inf)
-	endfor
-	WAVE regions = ListToNumericWave(regionList, PA_PROPERTIES_STRLIST_SEP)
 	numRegions = DimSize(regions, ROWS)
+	regionList = ""
+	for(i = 0; i < numRegions; i += 1)
+		regionList = AddListItem(num2istr(regions[i]), regionList, PA_PROPERTIES_STRLIST_SEP, inf)
+	endfor
 
+	// There is one case where we generate errorneous output:
+	// If we have multiple sweeps that are acquired with more than 1 HS and
+	// on a subsequent sweep the channels previously associated to the headstages are now swapped.
+	// Then we have the same layout for both sweeps, but swapped data due to the new channel association.
+	// Currently we accept that as an edge case.
+	// A fix would be to find association changed by iterating over the sweeps and flag sweeps to be skipped.
+	// Then get only traces for non-skipped sweeps.
+
+	Make/FREE/N=(numChannelTypeTraces) indizesChannelType = p
 	// In incremental mode get only new part of the indices
 	if(incrementalMode)
-		Make/FREE/N=(DimSize(indizesChannelType, ROWS)) indizesToAdd
+		Make/FREE/N=(numChannelTypeTraces) indizesToAdd
 		j = 0
 		numNewSweeps = DimSize(additionalData, ROWS)
 		ASSERT(numNewSweeps > 0, "Set POST_PLOT_ADDED_SWEEPS, but found no new sweep(s) in additionlData")
@@ -624,12 +618,14 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 		WAVE indizesChannelTypeAll = indizesChannelType
 		WAVE indizesChannelType = indizesToAdd
+		numChannelTypeTraces = DimSize(indizesChannelType, ROWS)
+
 		totalPulseCounter = GetNumberFromWaveNote(properties, NOTE_INDEX)
 		SetNumberInWaveNote(properties, NOTE_PA_NEW_PULSES_START, totalPulseCounter)
 
 		WAVE/WAVE/Z setIndices
-		WAVE/Z channels, regions, indexHelper
-		[setIndices, channels, regions, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 0)
+		WAVE/Z junk1, junk2, indexHelper
+		[setIndices, junk1, junk2, indexHelper] = PA_GetSetIndicesHelper(pulseAverageHelperDFR, 0)
 		if(WaveExists(setIndices))
 			indexHelper[][] = PA_CopySetIndiceSizeDispRestart(setIndices[p][q])
 		endif
@@ -649,9 +645,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	lblRegion = FindDimLabel(properties, COLS, "Region")
 	lblHeadstage = FindDimLabel(properties, COLS, "Headstage")
 	lblPulse = FindDimLabel(properties, COLS, "Pulse")
-	lblDiagonalElement = FindDimLabel(properties, COLS, "DiagonalElement")
-	lblActiveRegionCount = FindDimLabel(properties, COLS, "ActiveRegionCount")
-	lblActiveChanCount = FindDimLabel(properties, COLS, "ActiveChanCount")
 	lblLastSweep = FindDimLabel(properties, COLS, "LastSweep")
 
 	lblExperiment = FindDimLabel(propertiesText, COLS, "Experiment")
@@ -666,11 +659,11 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	lblPWPULSE = FindDimLabel(propertiesWaves, COLS, "PULSE")
 	lblPWPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
 
-	numChannelTypeTraces = DimSize(indizesChannelType, ROWS)
-
 	lblACTIVEREGION = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVEREGION")
 	lblACTIVECHANNEL = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVECHANNEL")
 
+	channelType = ITC_XOP_CHANNEL_TYPE_ADC
+	channelTypeStr = StringFromList(channelType, ITC_CHANNEL_NAMES)
 	sweepList  = ""
 	channelList = ""
 
@@ -678,7 +671,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 	for(i = 0; i < numRegions; i += 1)
 		region = regions[i]
-		activeRegionCount = i + 1
 
 		activeChanCount = 0
 		regionChannelList = ""
@@ -687,33 +679,11 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		// iterate now over all channels of the same type and extract all
 		// requested pulses for them
 		for(j = 0; j < numChannelTypeTraces; j += 1)
-			idx       = indizesChannelType[j]
-			headstage = str2num(traceData[idx][lblTraceHeadstage])
+			idx = indizesChannelType[j]
 
-			// We only use associated headstages and only one AD channel can be associated to one headstage
-			if(!IsFinite(headstage)) // ignore unassociated channels or duplicated headstages in traceData
-				continue
-			endif
-
-			WAVE/Z pulseStartTimes = PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
-
-			if(!WaveExists(pulseStartTimes))
-				continue
-			endif
-
-			numPulsesTotal = DimSize(pulseStartTimes, ROWS)
-			endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
-			numPulseCreate = endingPulse - startingPulseSett + 1
-			if(numPulseCreate <= 0)
-				continue
-			endif
-
-			sweepNoStr = traceData[idx][lblTraceSweepNumber]
-			sweepNo = str2num(sweepNoStr)
-			experiment = traceData[idx][lblTraceExperiment]
+			// get channel number and update local and global list
 			channelNumberStr = traceData[idx][lblTraceChannelNumber]
 			channelNumber = str2num(channelNumberStr)
-
 			if(WhichListItem(channelNumberStr, regionChannelList) == -1)
 				activeChanCount += 1
 				regionChannelList = AddListItem(channelNumberStr, regionChannelList, ";", inf)
@@ -721,11 +691,25 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			if(WhichListItem(channelNumberStr, channelList, PA_PROPERTIES_STRLIST_SEP) == -1)
 				channelList = AddListItem(channelNumberStr, channelList, PA_PROPERTIES_STRLIST_SEP, inf)
 			endif
-
+			// get pulse start times and from that number of pulses
+			WAVE/Z pulseStartTimes = PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
+			if(!WaveExists(pulseStartTimes))
+				continue
+			endif
+			numPulsesTotal = DimSize(pulseStartTimes, ROWS)
+			endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
+			numPulseCreate = endingPulse - startingPulseSett + 1
+			if(numPulseCreate <= 0)
+				continue
+			endif
+			// get sweep number
+			sweepNoStr = traceData[idx][lblTraceSweepNumber]
+			sweepNo = str2num(sweepNoStr)
 			if(WhichListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP) == -1)
 				sweepList = AddListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP, inf)
 			endif
 
+			experiment = traceData[idx][lblTraceExperiment]
 			// we want to find the last acquired sweep from the experiment/device combination
 			// by just using the path to the numerical labnotebook we can achieve that
 			key = experiment + "_" + traceData[idx][lblTracenumericalValues]
@@ -754,6 +738,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				EnsureLargeEnoughWave(propertiesWaves, minimumSize = numPulseCreate)
 			endif
 
+			headstage = str2num(traceData[idx][lblTraceHeadstage])
 			prevTotalPulseCounter = totalPulseCounter
 			for(k = startingPulseSett; k <= endingPulse; k += 1)
 
@@ -798,7 +783,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			setIndizes[idx, idx + numPulseCreate - 1][lblIndex] = prevTotalPulseCounter + p - idx
 			SetNumberInWaveNote(setIndizes, NOTE_INDEX, idx + numPulseCreate)
 
-			currentDisplayMapping[region][channelNumber][lblACTIVEREGION] = activeRegionCount
+			currentDisplayMapping[region][channelNumber][lblACTIVEREGION] = i + 1
 			currentDisplayMapping[region][channelNumber][lblACTIVECHANNEL] = activeChanCount
 
 		endfor
@@ -808,51 +793,30 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 	if(incrementalMode)
 		sweepList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS) + sweepList
-		regionList = MergeLists(regionList, oldRegionList, sep = PA_PROPERTIES_STRLIST_SEP)
-		channelList = MergeLists(channelList, oldChannelList, sep = PA_PROPERTIES_STRLIST_SEP)
+		// in traceData the sort order is channelType, channelNumber, Sweep, Headstage. With channelType always AD, we can say that
+		// channelsNumbers are always sorted. This allows us to take the shortcut and sort the merged lists here.
+		channelList = SortList(MergeLists(channelList, oldChannelList, sep = PA_PROPERTIES_STRLIST_SEP), PA_PROPERTIES_STRLIST_SEP, 2)
 		layoutChanged = CmpStr(oldRegionList, regionList) || CmpStr(oldChannelList, channelList)
 		if(layoutChanged)
-			// We need to recalculate the distribution of every pulse in the layout
-			regionList = SortList(regionList, PA_PROPERTIES_STRLIST_SEP, 2)
-			channelList = SortList(channelList, PA_PROPERTIES_STRLIST_SEP, 2)
 
 			FastOp currentDisplayMapping = 0
 			WAVE indizesChannelType = indizesChannelTypeAll
 			numChannelTypeTraces = DimSize(indizesChannelType, ROWS)
-			activeRegionCount = 0
 			// the following loop must use the same logic as the upper loop to fill mapRegChanToActive
-			for(i = 0; i < numHeadstages; i += 1)
-				region = headstages[i]
-				if(!IsFinite(region)) // duplicated headstages in traceData
-					continue
-				endif
-				activeRegionCount += 1
+			for(i = 0; i < numRegions; i += 1)
+				region = regions[i]
+
 				activeChanCount = 0
 				regionChannelList = ""
 				for(j = 0; j < numChannelTypeTraces; j += 1)
-					idx       = indizesChannelType[j]
-					headstage = str2num(traceData[idx][lblTraceHeadstage])
-					if(!IsFinite(headstage)) // ignore unassociated channels or duplicated headstages in traceData
-						continue
-					endif
-					WAVE/Z pulseStartTimes = PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
-					if(!WaveExists(pulseStartTimes))
-						continue
-					endif
-					numPulsesTotal = DimSize(pulseStartTimes, ROWS)
-					endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
-					numPulseCreate = endingPulse - startingPulseSett + 1
-					if(numPulseCreate <= 0)
-						continue
-					endif
-					channelNumberStr = traceData[idx][lblTraceChannelNumber]
-					channelNumber = str2num(channelNumberStr)
+					channelNumberStr = traceData[j][lblTraceChannelNumber]
 					if(WhichListItem(channelNumberStr, regionChannelList) == -1)
 						activeChanCount += 1
 						regionChannelList = AddListItem(channelNumberStr, regionChannelList, ";", inf)
 					endif
 
-					currentDisplayMapping[region][channelNumber][lblACTIVEREGION] = activeRegionCount
+					channelNumber = str2num(channelNumberStr)
+					currentDisplayMapping[region][channelNumber][lblACTIVEREGION] = i + 1
 					currentDisplayMapping[region][channelNumber][lblACTIVECHANNEL] = activeChanCount
 				endfor
 			endfor
@@ -860,6 +824,8 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	else
 		layoutChanged = CmpStr(oldRegionList, regionList) || CmpStr(oldChannelList, channelList)
 	endif
+	ASSERT(ItemsInList(regionList) == ItemsInList(channelList), "An AD or DA channel that was previously used on one headstage was used with a different headstage in a subsequent sweep. This is not supported.")
+
 	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_REGIONS, regionList)
 	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS, channelList)
 	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_PREVREGIONS, oldRegionList)
@@ -869,7 +835,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 	[pasi] = PA_InitPASIInParts(pa, PA_PASIINIT_BASE, 0)
 	if(WaveExists(pasi.setIndices))
-		ASSERT(DimSize(pasi.channels, ROWS) == DimSize(pasi.regions, ROWS), "Number of channels must equal number of regions")
 
 		PA_UpdateIndiceNotes(currentDisplayMapping, prevDisplayMapping, pasi, layoutChanged)
 		Duplicate/O currentDisplayMapping, prevDisplayMapping
