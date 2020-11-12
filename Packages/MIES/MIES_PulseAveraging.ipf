@@ -276,24 +276,23 @@ End
 
 /// @brief Return a wave with headstage numbers, duplicates replaced with NaN
 ///        so that the indizes still correspond the ones in traceData
-///
-///        Returns an invalid wave reference in case indizesChannelType does not exist.
-static Function/WAVE PA_GetUniqueHeadstages(traceData, indizesChannelType)
-	WAVE/T traceData
-	WAVE/Z indizesChannelType
+static Function/WAVE PA_GetUniqueHeadstages(WAVE/T traceData)
 
-	if(!WaveExists(indizesChannelType))
+	variable size
+
+	size = DimSize(traceData, ROWS)
+	if(size == 0)
 		return $""
 	endif
 
-	Make/D/FREE/N=(DimSize(indizesChannelType, ROWS)) headstages = str2num(traceData[indizesChannelType[p]][%headstage])
+	Make/D/FREE/N=(size) headstages = str2num(traceData[p][%headstage])
 
 	if(DimSize(headstages, ROWS) == 1)
 		return headstages
 	endif
 
 	Make/FREE/D headstagesClean
-	FindDuplicates/Z/SN=(NaN)/SNDS=headstagesClean headstages
+	FindDuplicates/Z/RN=headstagesClean headstages
 
 	return headstagesClean
 End
