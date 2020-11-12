@@ -106,6 +106,7 @@ static Function ProcessCurrentExperiment(prefs)
 		try
 			PerformMiesTasks(outputFilePath); AbortOnRTE
 		catch
+			ClearRTError()
 			print "Caught an RTE"
 			JSON_AddBoolean(jsonID, "/log/" + num2str(index) + "/error", 1)
 			JSON_SetVariable(jsonID, "/errors", JSON_GetVariable(jsonID, "/errors") + 1)
