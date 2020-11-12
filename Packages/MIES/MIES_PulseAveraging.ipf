@@ -1830,7 +1830,7 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 		print/D "PA_AutomaticTimeAlignment", (stopmstimer(-2) - s) / 1E6
 	endif
 
-	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves && cs.failedPulses))
+	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves && cs.failedPulses && cs.singlePulse))
 		s = stopmstimer(-2)
 		PA_CalculateAllAverages(pasi, mode)
 		print/D "PA_CalculateAllAverages", (stopmstimer(-2) - s) / 1E6
