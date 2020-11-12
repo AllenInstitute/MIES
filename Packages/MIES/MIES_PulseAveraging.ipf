@@ -1847,22 +1847,23 @@ static Function PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, var
 	WAVE indexHelper = pasi.indexHelper
 	numActive = DimSize(pasi.channels, ROWS)
 
-	Make/FREE/WAVE/N=(numActive, numActive) setWavesOld, setWavesAll, setWavesNew, setWaves2OldNew, avg
+	Make/FREE/WAVE/N=(numActive, numActive) setWavesOld, setWavesAll, setWavesNew, setWaves2AllNewOld, avg
 	numThreads = min(numActive * numActive, ThreadProcessorCount)
 
-	Multithread/NT=(numThreads) setWavesAll[][] = PA_ExtractPulseSetFromSetWaves2(pasi.setWaves2[p][q])
+	// We need the setWaves without failedPulses that were marked previously. So we can not use the setWave2 from pasi, as these are including ALL pulses.
+	Multithread/NT=(numThreads) setWaves2AllNewOld[][] = PA_GetSetWaves_TS(pasi.properties, pasi.propertiesWaves, pasi.setIndices[p][q], PA_GETSETWAVES_ALL | PA_GETSETWAVES_NEW | PA_GETSETWAVES_OLD, 1)
+	Multithread/NT=(numThreads) setWavesAll[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2AllNewOld[p][q], row = 0))
 	keyAll = CA_AveragingWaveModKey(setWavesAll)
 	WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(keyAll, options = CA_OPTS_NO_DUPLICATE)
 	if(!WaveExists(cache))
 		print "Cache Miss All"
 		// we have to calculate
 		if(mode == POST_PLOT_ADDED_SWEEPS)
-			Multithread/NT=(numThreads) setWaves2OldNew[][] = PA_GetSetWaves_TS(pasi.properties, pasi.propertiesWaves, pasi.setIndices[p][q], PA_GETSETWAVES_OLD | PA_GETSETWAVES_NEW, 1)
-			Multithread/NT=(numThreads) setWavesOld[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2OldNew[p][q], row = 2))
+			Multithread/NT=(numThreads) setWavesOld[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2AllNewOld[p][q], row = 2))
 			keyOld = CA_AveragingWaveModKey(setWavesOld)
 			WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(keyOld, options = CA_OPTS_NO_DUPLICATE)
 			if(WaveExists(cache))
-				Multithread/NT=(numThreads) setWavesNew[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2OldNew[p][q], row = 1))
+				Multithread/NT=(numThreads) setWavesNew[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2AllNewOld[p][q], row = 1))
 				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesNew[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1, prevAvgData = PA_ExtractSumsCountsOnly(cache[p][q]))
 			else
 				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
