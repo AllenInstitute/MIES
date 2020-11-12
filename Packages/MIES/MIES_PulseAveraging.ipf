@@ -1276,7 +1276,7 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 
 			WAVE noteWave = propertiesWaves[idx][lblPWPULSENOTE]
 			pulseHasFailed = PA_PulseHasFailed(noteWave, pa)
-			properties[i][lblPulseHasFailed] = pulseHasFailed
+			properties[idx][lblPulseHasFailed] = pulseHasFailed
 
 			sweepNo = properties[idx][lblSweep]
 			pulse   = properties[idx][lblPulse]
