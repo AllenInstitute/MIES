@@ -392,6 +392,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	variable i, winNum
 	string graphList, miesPath
 
+	ModifyBrowser close; i = GetRTError(1)
 	graphList = WinList("*", ";", "WIN:1")
 	winNum = ItemsInList(graphList)
 	for(i = 0; i < winNum; i += 1)
@@ -542,8 +543,12 @@ static Function PAT_VerifyImageAxes(string graph, string traceName, variable ach
 	string tInfo, xaxis, yaxis, ref_xaxis, ref_yaxis, aInfo
 	string xunits, yunits, ref_xunits, ref_yunits
 	variable from, to, ref_from, ref_to, layoutSize, xLayoutCoord, yLayoutCoord
+	variable region, channel
 
 	multiGraphMode = ParamIsDefault(multiGraphMode) ? 0 : !!multiGraphMode
+
+	region = patest.regions[aregion - 1]
+	channel = patest.channels[achan - 1]
 
 	tInfo = ImageInfo(graph, traceName, 0)
 	xaxis = StringByKey("XAXIS", tInfo)
@@ -552,8 +557,8 @@ static Function PAT_VerifyImageAxes(string graph, string traceName, variable ach
 		ref_xaxis = "bottom"
 		ref_yaxis = "left"
 	else
-		ref_xaxis = "bottom_R" + num2str(aregion)
-		ref_yaxis = "left_R" + num2str(aregion) + "_C" + num2str(achan)
+		ref_xaxis = "bottom_R" + num2str(region)
+		ref_yaxis = "left_R" + num2str(region) + "_C" + num2str(channel)
 	endif
 
 	CHECK_EQUAL_STR(xaxis, ref_xaxis)
@@ -589,8 +594,12 @@ static Function PAT_VerifyTraceAxes(string graph, string traceName, variable ach
 	string tInfo, xaxis, yaxis, ref_xaxis, ref_yaxis, aInfo
 	string xunits, yunits, ref_xunits, ref_yunits
 	variable from, to, ref_from, ref_to, layoutSize, xLayoutCoord, yLayoutCoord
+	variable region, channel
 
 	multiGraphMode = ParamIsDefault(multiGraphMode) ? 0 : !!multiGraphMode
+
+	region = patest.regions[aregion - 1]
+	channel = patest.channels[achan - 1]
 
 	tInfo = TraceInfo(graph, traceName, 0)
 	xaxis = StringByKey("XAXIS", tInfo)
@@ -599,8 +608,8 @@ static Function PAT_VerifyTraceAxes(string graph, string traceName, variable ach
 		ref_xaxis = "bottom"
 		ref_yaxis = "left"
 	else
-		ref_xaxis = "bottom_R" + num2str(aregion)
-		ref_yaxis = "left_R" + num2str(aregion) + "_C" + num2str(achan)
+		ref_xaxis = "bottom_R" + num2str(region)
+		ref_yaxis = "left_R" + num2str(region) + "_C" + num2str(channel)
 	endif
 
 	CHECK_EQUAL_STR(xaxis, ref_xaxis)
@@ -798,12 +807,22 @@ static Function PAT_CheckFailedPulse(string win, WAVE pulse, variable isDiagonal
 	MIES_PA#PA_GatherSettings(win, s)
 
 	if(isDiagonal)
-		setting = GetNumberFromWaveNote(pulse, PA_TEST_KEY_PULSEHASFAILED)
+		setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_PULSEHASFAILED)
 		CHECK_EQUAL_VAR(setting, testExpect)
 	endif
 
-	setting = GetNumberFromWaveNote(pulse, NOTE_KEY_FAILED_PULSE_LEVEL)
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_FAILED_PULSE_LEVEL)
 	CHECK_EQUAL_VAR(setting, s.failedPulsesLevel)
+End
+
+static Function PAT_GetNumberFromPulseWaveNote(WAVE pulse, string key)
+
+	string wName
+
+	wName = GetWavesDataFolder(pulse, 2) + PULSEWAVE_NOTE_SUFFIX
+	WAVE noteWave = $wName
+
+	return GetNumberFromWaveNote(noteWave, key)
 End
 
 static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
@@ -817,22 +836,22 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 	// and check in the end that we have inspected all keys
 	// in that way the tests fail if we add new keys
 
-	setting = GetNumberFromWaveNote(pulse, NOTE_KEY_SEARCH_FAILED_PULSE)
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_SEARCH_FAILED_PULSE)
 	CHECK_EQUAL_VAR(setting, s.searchFailedPulses)
 
-	setting = GetNumberFromWaveNote(pulse, NOTE_KEY_TIMEALIGN)
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_TIMEALIGN)
 	CHECK_EQUAL_VAR(setting, s.autoTimeAlignment)
 
-	setting = GetNumberFromWaveNote(pulse, NOTE_KEY_ZEROED)
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_ZEROED)
 	CHECK_EQUAL_VAR(setting, s.zeroPulses)
 
-	setting = GetNumberFromWaveNote(pulse, PA_TEST_KEY_WAVEMIN)
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_WAVEMIN)
 	CHECK_CLOSE_VAR(setting, WaveMin(pulse), tol = PA_TEST_FP_EPSILON)
 
-	setting = GetNumberFromWaveNote(pulse, PA_TEST_KEY_WAVEMAX)
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_WAVEMAX)
 	CHECK_CLOSE_VAR(setting, WaveMax(pulse), tol = PA_TEST_FP_EPSILON)
 
-	setting = GetNumberFromWaveNote(pulse, PA_TEST_KEY_PULSELENGTH)
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_PULSELENGTH)
 	CHECK_EQUAL_VAR(setting, DimSize(pulse, ROWS))
 End
 
@@ -871,21 +890,21 @@ static Function PAT_CheckPulseWaveNoteTA(WAVE pulse, WAVE pulseDiag, variable ac
 	wName = GetWavesDataFolder(pulseDiag, 2) + WAVE_BACKUP_SUFFIX
 	WAVE pulseBak = $wName
 
-	setting = GetNumberFromWaveNote(pulse, NOTE_KEY_TIMEALIGN)
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_TIMEALIGN)
 	CHECK_EQUAL_VAR(setting, 1)
 	if(achan == aregion)
 		WaveStats/Q/M=1 pulse
 		CHECK_EQUAL_VAR(V_maxLoc, 0)
 
-		setting = GetNumberFromWaveNote(pulse, PA_TEST_KEY_TA_FP)
+		setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_TA_FP)
 		WaveStats/Q/M=1 pulseBak
 		CHECK_CLOSE_VAR(setting, V_maxLoc, tol = PA_TEST_FP_EPSILON)
 
-		setting2 = GetNumberFromWaveNote(pulse, PA_TEST_KEY_TA_TO)
+		setting2 = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_TA_TO)
 		CHECK_EQUAL_VAR(setting, -setting2)
 		CHECK_CLOSE_VAR(setting2, DimOffset(pulse, ROWS), tol = PA_TEST_FP_EPSILON)
 	else
-		setting = GetNumberFromWaveNote(pulse, PA_TEST_KEY_TA_TO)
+		setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_TA_TO)
 		WaveStats/Q/M=1 pulseBak
 		CHECK_SMALL_VAR(V_maxLoc + setting, tol = PA_TEST_FP_EPSILON)
 		CHECK_EQUAL_VAR(setting, DimOffset(pulse, ROWS))
@@ -1086,7 +1105,7 @@ static Function PAT_BasicDeconvCheck()
 	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
 
-	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize + patest.layoutSize / 2)
+	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize / 2)
 
 	traceList = GrepList(traceListAll, PAT_DECONV_PREFIX)
 	traceNum = ItemsInList(traceList)
@@ -1718,20 +1737,27 @@ static Function PAT_MultiSweep1()
 	STRUCT PA_Test patest5
 
 	string traceListAll, traceNames, traceName
-	variable traceNum, i, j, k, size, channel, region
+	variable traceNum, i, j, k, size, channel, region, combinedLayoutSize
 
 	PA_InitSweep0(patest0)
 	PA_InitSweep5(patest5)
 	Make/FREE combinedChannels = {0, 1, 3}
 	Make/FREE combinedRegions = {5, 1, 3}
+	combinedLayoutSize = 9
+	WAVE patest0.channels = combinedChannels
+	WAVE patest0.regions = combinedRegions
+	WAVE patest5.channels = combinedChannels
+	WAVE patest5.regions = combinedRegions
 
 	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
 	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 5)
 
-	size = DimSize(combinedChannels, ROWS)
 	traceListAll = PAT_GetTraces(graph, patest5.layoutSize + patest0.layoutSize)
 
+	patest0.layoutSize = combinedLayoutSize
+	patest5.layoutSize = combinedLayoutSize
+	size = DimSize(combinedChannels, ROWS)
 	for(i = 0; i < size; i += 1)
 		channel = combinedChannels[i]
 		for(j = 0; j < size; j += 1)
@@ -1980,13 +2006,13 @@ static Function PAT_ImagePlotMultiSweep0()
 			singlePulseColumnOffset = 2 * limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * (patest0.pulseCnt + patest3.pulseCnt)), 1, inf)
 
 			WAVE iData = ImageNameToWaveRef(imageWin, imageName)
-			Duplicate/FREE/RMD=[][singlePulseColumnOffset] iData, profileLine
-			Redimension/N=(-1) profileLine
-			CHECK_EQUAL_WAVES(patest0.refData, profileLine, mode = WAVE_DATA, tol = patest0.eqWaveTol)
+			Duplicate/FREE/RMD=[][singlePulseColumnOffset] iData, profileLine0
+			Redimension/N=(-1) profileLine0
+			CHECK_EQUAL_WAVES(patest0.refData, profileLine0, mode = WAVE_DATA, tol = patest0.eqWaveTol)
 
-			Duplicate/FREE/RMD=[][singlePulseColumnOffset + patest0.pulseCnt] iData, profileLine
-			Redimension/N=(-1) profileLine
-			CHECK_EQUAL_WAVES(patest3.refData, profileLine, mode = WAVE_DATA, tol = patest3.eqWaveTol)
+			Duplicate/FREE/RMD=[][singlePulseColumnOffset + patest0.pulseCnt] iData, profileLine3
+			Redimension/N=(-1) profileLine3
+			CHECK_EQUAL_WAVES(patest3.refData, profileLine3, mode = WAVE_DATA, tol = patest3.eqWaveTol)
 		endfor
 	endfor
 End
@@ -2032,12 +2058,19 @@ static Function PAT_ImagePlotMultiSweep1()
 	STRUCT PA_Test patest5
 
 	string imageList, imageName
-	variable i, j, size, singlePulseColumnOffset
+	variable i, j, size, singlePulseColumnOffset, combinedLayoutSize
 
 	PA_InitSweep0(patest0)
 	PA_InitSweep5(patest5)
 	Make/FREE combinedChannels = {0, 1, 3}
 	Make/FREE combinedRegions = {5, 1, 3}
+	combinedLayoutSize = 9
+	WAVE patest0.channels = combinedChannels
+	WAVE patest0.regions = combinedRegions
+	WAVE patest5.channels = combinedChannels
+	WAVE patest5.regions = combinedRegions
+	patest0.layoutSize = combinedLayoutSize
+	patest5.layoutSize = combinedLayoutSize
 
 	[bspName, imageWin] = PAT_StartDataBrowserImage_IGNORE()
 	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
