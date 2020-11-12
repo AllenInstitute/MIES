@@ -1351,7 +1351,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	variable channelNumber, region
 	variable pulseHasFailed
 	variable hideTrace, lastSweep, alpha
-	variable hiddenTracesCount, avgPlotCount, deconPlotCount
+	variable hiddenTracesCount, avgPlotCount, deconPlotCount, plottedAvgTraces
 	variable jsonID, hideTraceJsonID, graphDataIndex, numHiddenTracesGraphs, graphHasChanged
 	variable startEntry, numEntries, idx, layoutChanged
 	variable lblSweep, lblChannelNumber, lblRegion, lblHeadstage
@@ -1532,20 +1532,14 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	JSON_Release(jsonID)
 
 	// We need this information for the deconvolution plots, since the diagonality might have changed
-	layoutChanged = GetNumberFromWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE)
+	layoutChanged = GetNumberFromWaveNote(properties, PA_PROPERTIES_KEY_LAYOUTCHANGE) && mode != POST_PLOT_CONSTANT_SWEEPS
 	Make/T/FREE/N=(numActive * numActive) avgPlotTraces, deconPlotTraces
 	for(i = 0; i < numActive; i += 1)
 		region = pasi.regions[i]
 		for(j = 0; j < numActive; j += 1)
 			channelNumber = pasi.channels[j]
 
-			WAVE/Z averageWave
-			[averageWave, baseName] = PA_GetPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
-			if(!WaveExists(averageWave))
-				continue
-			endif
-
-			sprintf traceName, "Ovl_%s%s", PA_AVERAGE_WAVE_PREFIX, baseName
+			plottedAvgTraces = 0
 
 			WAVE/T axesNames = pasi.axesNames[j][i]
 			vertAxis = axesNames[0]
@@ -1559,18 +1553,31 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				graphWasReset = WhichListItem(graph, resetGraphs, ";") != -1
 			endif
 
+			WAVE/Z averageWave
+			[averageWave, baseName] = PA_GetPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
+
+			sprintf traceName, "Ovl_%s%s", PA_AVERAGE_WAVE_PREFIX, baseName
+
+			if(WaveExists(averageTraceNames))
+				WAVE/T/Z foundTraces = GrepTextWave(averageTraceNames, "^.*" + PA_AVERAGE_WAVE_PREFIX + basename + "$")
+			else
+				WAVE/T/Z foundTraces = $""
+			endif
+
 			if(!(cs.showAverage && cs.multipleGraphs) || graphWasReset)
-				if(WaveExists(averageTraceNames))
-					WAVE/T/Z foundTraces = GrepTextWave(averageTraceNames, "^.*" + PA_AVERAGE_WAVE_PREFIX + basename + "$")
-				else
-					WAVE/T/Z foundTraces = $""
+
+				if(WaveExists(foundTraces))
+					RemoveFromGraph/W=$graph $foundTraces[0]
+					paGraphData[graphDataIndex][lblTRACES_AVERAGE] = RemoveFromList(foundTraces[0], paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";")
+					pasi.ovlTracesAvg[j][i] = 0
 				endif
 
-				if(!WaveExists(foundTraces) && pa.showAverage)
+				if(pa.showAverage && WaveExists(averageWave))
 
 					[s] = GetTraceColor(NUM_HEADSTAGES + 1)
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue) averageWave/TN=$traceName
 					pasi.ovlTracesAvg[j][i] = 1
+					plottedAvgTraces = 1
 
 					if(pa.multipleGraphs)
 						ModifyGraph/W=$graph lsize($traceName)=PA_AVGERAGE_PLOT_LSIZE
@@ -1580,24 +1587,15 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					endif
 
 					paGraphData[graphDataIndex][lblTRACES_AVERAGE] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";", Inf)
-				elseif(WaveExists(foundTraces) && !pa.showAverage)
-					ASSERT(DimSize(foundTraces, ROWS) == 1, "Found multiple drawn average traces for this set.")
-					RemoveFromGraph/W=$graph $foundTraces[0]
-					paGraphData[graphDataIndex][lblTRACES_AVERAGE] = RemoveFromList(foundTraces[0], paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";")
-					pasi.ovlTracesAvg[j][i] = 0
-				else
-					pasi.ovlTracesAvg[j][i] = WaveExists(foundTraces)
 				endif
-			endif
-			if(pa.multipleGraphs)
-				ReOrderTraces/W=$graph _front_, {$traceName}
 			endif
 
 			sprintf traceName, "Ovl_%s%s", PA_DECONVOLUTION_WAVE_PREFIX, baseName
-			if(	graphwasReset			\
+			if((	graphwasReset			\
 				|| layoutChanged			\
 				|| !cs.multipleGraphs	\
-				|| !cs.deconvolution)
+				|| !cs.deconvolution   \
+				|| plottedAvgTraces) && (i != j))
 
 				if(WaveExists(deconvolutionTraceNames))
 					WAVE/T/Z foundTraces = GrepTextWave(deconvolutionTraceNames, "^.*" + PA_DECONVOLUTION_WAVE_PREFIX + basename + "$")
@@ -1605,9 +1603,14 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					WAVE/T/Z foundTraces = $""
 				endif
 
-				WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
+				if(WaveExists(foundTraces))
+					RemoveFromGraph/W=$graph $foundTraces[0]
+					paGraphData[graphDataIndex][lblTRACES_DECONV] = RemoveFromList(foundTraces[0], paGraphData[graphDataIndex][lblTRACES_DECONV], ";")
+					pasi.ovlTracesDeconv[j][i] = 0
+				endif
 
-				if(!WaveExists(foundTraces) && pa.deconvolution.enable && !(i == j))
+				if(pa.deconvolution.enable && WaveExists(averageWave))
+					WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv[0,inf;PA_PLOT_STEPPING]/TN=$traceName
 					pasi.ovlTracesDeconv[j][i] = 1
 
@@ -1619,18 +1622,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					endif
 
 					paGraphData[graphDataIndex][lblTRACES_DECONV] = AddListItem(traceName, paGraphData[graphDataIndex][lblTRACES_DECONV], ";", Inf)
-				elseif(	(WaveExists(foundTraces) && !pa.deconvolution.enable) \
-						|| (WaveExists(foundTraces) && (i == j)))
-					ASSERT(DimSize(foundTraces, ROWS) == 1, "Found multiple drawn deconvolution traces for this set.")
-					RemoveFromGraph/W=$graph $foundTraces[0]
-					paGraphData[graphDataIndex][lblTRACES_DECONV] = RemoveFromList(foundTraces[0], paGraphData[graphDataIndex][lblTRACES_DECONV], ";")
-					pasi.ovlTracesDeconv[j][i] = 0
-				else
-					pasi.ovlTracesDeconv[j][i] = WaveExists(foundTraces)
 				endif
-			endif
-			if(pa.multipleGraphs)
-				ReOrderTraces/W=$graph _front_, {$traceName}
 			endif
 
 		endfor
@@ -1638,24 +1630,6 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	if(!pa.multipleGraphs)
 		AccelerateModLineSizeTraces(graph, avgPlotTraces, avgPlotCount, PA_AVGERAGE_PLOT_LSIZE)
 		AccelerateModLineSizeTraces(graph, deconPlotTraces, deconPlotCount, PA_DECONVOLUTION_PLOT_LSIZE)
-	endif
-
-	// ReOrder step
-	if(!pa.multipleGraphs)
-		if(pa.showAverage)
-			WAVE/T traceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_AVERAGE], ";")
-			numTraces = DimSize(traceNames, ROWS)
-			for(i = 0; i < numTraces; i += 1)
-				ReOrderTraces/W=$graph _front_, {$traceNames[i]}
-			endfor
-		endif
-		if(pa.deconvolution.enable)
-			WAVE/T traceNames = ListToTextWave(paGraphData[graphDataIndex][lblTRACES_DECONV], ";")
-			numTraces = DimSize(traceNames, ROWS)
-			for(i = 0; i < numTraces; i += 1)
-				ReOrderTraces/W=$graph _front_, {$traceNames[i]}
-			endfor
-		endif
 	endif
 
 	PA_DrawScaleBars(win, pa, pasi, PA_DISPLAYMODE_TRACES, PA_USE_WAVE_SCALES)
@@ -1905,9 +1879,19 @@ static Function PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, var
 	indexHelper[][] = PA_MakeAverageWavePermanent(pasi.pulseAverageDFR, WaveRef(avg[p][q], row = 0), pasi.channels[p], pasi.regions[q])
 End
 
-static Function PA_MakeAverageWavePermanent(DFREF dfr, WAVE avg, variable channel, variable region)
+static Function PA_MakeAverageWavePermanent(DFREF dfr, WAVE/Z avg, variable channel, variable region)
 
-	ConvertFreeWaveToPermanent(avg, dfr, PA_AVERAGE_WAVE_PREFIX + PA_BaseName(channel, region))
+	string baseName
+
+	if(WaveExists(avg))
+		ConvertFreeWaveToPermanent(avg, dfr, PA_AVERAGE_WAVE_PREFIX + PA_BaseName(channel, region))
+	else
+		// no data, we remove permanent wave
+		[avg, baseName] = PA_GetPermanentAverageWave(dfr, channel, region)
+		if(WaveExists(avg))
+			KillOrMoveToTrash(wv = avg)
+		endif
+	endif
 End
 
 static Function [WAVE avg_, string baseName_] PA_GetPermanentAverageWave(DFREF dfr, variable channel, variable region)
@@ -1916,7 +1900,8 @@ static Function [WAVE avg_, string baseName_] PA_GetPermanentAverageWave(DFREF d
 
 	baseName = PA_BaseName(channel, region)
 	wName = PA_AVERAGE_WAVE_PREFIX + baseName
-	WAVE avg = dfr:$wName
+	WAVE/Z avg = dfr:$wName
+
 	return [avg, baseName]
 End
 
