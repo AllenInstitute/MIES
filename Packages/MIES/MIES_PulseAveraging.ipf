@@ -1241,11 +1241,14 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 	string key
 
 	WAVE properties = pasi.properties
+	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
+	if(numTotalPulses == 0)
+		return NaN
+	endif
 	WAVE/WAVE propertiesWaves = pasi.propertiesWaves
 
 	lblPWPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
 	// update the wave notes
-	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
 	Make/FREE/N=(numTotalPulses) indexHelper
 	Multithread indexHelper[] = SetNumberInWaveNote(propertiesWaves[p][lblPWPULSENOTE], NOTE_KEY_SEARCH_FAILED_PULSE, pa.searchFailedPulses)
 
@@ -1804,13 +1807,13 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 		print/D "PA_ApplyPulseSortingOrder", (stopmstimer(-2) - s) / 1E6
 	endif
 
-	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves))
+	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves) || (!cs.singlePulse && pa.searchFailedPulses))
 		s = stopmstimer(-2)
 		pasi.indexHelper[][] = PA_ResetWavesIfRequired(pasi.setWaves2[p][q], pa)
 		print/D "PA_ResetWavesIfRequired", (stopmstimer(-2) - s) / 1E6
 	endif
 
-	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.failedPulses))
+	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.failedPulses) || (!cs.singlePulse && pa.searchFailedPulses))
 		s = stopmstimer(-2)
 		PA_MarkFailedPulses(pa, pasi)
 		print/D "PA_MarkFailedPulses", (stopmstimer(-2) - s) / 1E6
