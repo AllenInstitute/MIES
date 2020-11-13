@@ -533,7 +533,10 @@ static Function OVS_HighlightSweep(win, index)
 	ASSERT(OVS_IsActive(win), "Highlighting is only supported if OVS is enabled")
 
 	graph = GetMainWindow(win)
-	WAVE/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Sweep"})
+	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Sweep"})
+	if(!WaveExists(traces))
+		return NaN
+	endif
 
 	if(IsFinite(index))
 		[sweepNo, experiment] = OVS_GetSweepAndExperiment(win, index)
