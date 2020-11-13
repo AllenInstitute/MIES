@@ -161,15 +161,8 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	// cut off multi data suffix
 	name = StringFromList(0, name, ":")
-	reentryFuncName = name + "_REENTRY"
-	FUNCREF TEST_CASE_PROTO reentryFuncPlain = $reentryFuncName
-	FUNCREF TEST_CASE_PROTO_MD_STR reentryFuncMDStr = $reentryFuncName
 
-	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)))
-		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
-		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
-		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600, failOnTimeout = 1)
-	endif
+	RegisterReentryFunction(name)
 
 	AdditionalExperimentCleanupAfterTest()
 
@@ -243,6 +236,24 @@ Function TEST_CASE_END_OVERRIDE(name)
 	if(NVAR_Exists(error_count) && error_count > 0)
 		CtrlNamedBackGround _all_, status
 		print s_info
+	endif
+End
+
+/// @brief Register the function `<testcase>_REENTRY`
+///        as reentry part of the given test case.
+///
+/// Does nothing if the reentry function does not exist. Supports both plain test cases and multi data test cases
+/// accepting string arguments.
+Function RegisterReentryFunction(string testcase)
+
+	string reentryFuncName = testcase + "_REENTRY"
+	FUNCREF TEST_CASE_PROTO reentryFuncPlain = $reentryFuncName
+	FUNCREF TEST_CASE_PROTO_MD_STR reentryFuncMDStr = $reentryFuncName
+
+	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)))
+		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
+		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
+		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600, failOnTimeout = 1)
 	endif
 End
 
