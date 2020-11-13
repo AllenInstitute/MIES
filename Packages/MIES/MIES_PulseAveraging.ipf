@@ -1398,7 +1398,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 		hideTraceJsonID = JSON_Parse("{}")
 	endif
 
-	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.failedPulses && cs.multipleGraphs && cs.hideFailedPulses && cs.showIndividualPulses && cs.showTraces)
+	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.failedPulses && cs.multipleGraphs && cs.hideFailedPulses && cs.showIndividualPulses && cs.showTraces && cs.singlePulse)
 		usedGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_TRACES)
 	else
 		for(i = 0; i < numActive; i += 1)
