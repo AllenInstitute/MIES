@@ -2087,6 +2087,9 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endfor
 	endif
 
+	// update the analysis functions gathered from the stimsets
+	AFM_UpdateAnalysisFunctionWave(panelTitle)
+
 	if(mode == DATA_ACQUISITION_MODE && AFM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
 		printf "%s: Pre DAQ analysis function requested an abort\r", panelTitle
 		ControlWindowToFront()
