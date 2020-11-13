@@ -24,6 +24,8 @@
 #include "UTF_Epochs"
 #include "UTF_HelperFunctions"
 
+StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
+
 Function run()
 
 	string list = ""
@@ -192,6 +194,9 @@ Function TEST_CASE_END_OVERRIDE(name)
 	string dev
 	variable numEntries, i
 
+	// cut off multi data suffix
+	name = StringFromList(0, name, ":")
+
 	SVAR devices = $GetDevicePanelTitleList()
 
 	numEntries = ItemsInList(devices)
@@ -202,28 +207,30 @@ Function TEST_CASE_END_OVERRIDE(name)
 		NVAR errorCounter = $GetAnalysisFuncErrorCounter(dev)
 		CHECK_EQUAL_VAR(errorCounter, 0)
 
-		// ascending sweep numbers in both labnotebooks
-		WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+		if(WhichListItem(name, LIST_OF_TESTS_WITH_SWEEP_ROLLBACK) == -1)
+			// ascending sweep numbers in both labnotebooks
+			WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
 
-		if(!WaveExists(sweeps))
-			PASS()
-			continue
+			if(!WaveExists(sweeps))
+				PASS()
+				continue
+			endif
+
+			Duplicate/FREE sweeps, unsortedSweeps
+			Sort sweeps, sweeps
+			CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
+
+			WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "textualValues")
+
+			if(!WaveExists(sweeps))
+				PASS()
+				continue
+			endif
+
+			Duplicate/FREE sweeps, unsortedSweeps
+			Sort sweeps, sweeps
+			CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
 		endif
-
-		Duplicate/FREE sweeps, unsortedSweeps
-		Sort sweeps, sweeps
-		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
-
-		WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "textualValues")
-
-		if(!WaveExists(sweeps))
-			PASS()
-			continue
-		endif
-
-		Duplicate/FREE sweeps, unsortedSweeps
-		Sort sweeps, sweeps
-		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
 	endfor
 
 	StopAllBackgroundTasks()
