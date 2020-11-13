@@ -190,7 +190,7 @@ Function SWS_DeleteDataWaves(panelTitle)
 	refTime = DEBUG_TIMER_START()
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE/Z sweepRollbackUsed = GetSweepsWithSetting(numericalValues, "Sweep Rollback")
+	WAVE/Z sweepRollbackUsed = GetSweepsWithSetting(numericalValues, SWEEP_ROLLBACK_KEY)
 
 	if(!WaveExists(sweepRollbackUsed))
 		return NaN
