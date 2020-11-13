@@ -778,10 +778,12 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			if(lblIndex < 0)
 				lblIndex = FindDimLabel(setIndizes, COLS, "Index")
 			endif
-			idx = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
-			EnsureLargeEnoughWave(setIndizes, minimumSize = idx + numPulseCreate, initialValue = NaN)
-			setIndizes[idx, idx + numPulseCreate - 1][lblIndex] = prevTotalPulseCounter + p - idx
-			SetNumberInWaveNote(setIndizes, NOTE_INDEX, idx + numPulseCreate)
+			if(numPulseCreate > 0)
+				idx = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
+				EnsureLargeEnoughWave(setIndizes, minimumSize = idx + numPulseCreate, initialValue = NaN)
+				setIndizes[idx, idx + numPulseCreate - 1][lblIndex] = prevTotalPulseCounter + p - idx
+				SetNumberInWaveNote(setIndizes, NOTE_INDEX, idx + numPulseCreate)
+			endif
 
 			currentDisplayMapping[region][channelNumber][lblACTIVEREGION] = i + 1
 			currentDisplayMapping[region][channelNumber][lblACTIVECHANNEL] = activeChanCount
