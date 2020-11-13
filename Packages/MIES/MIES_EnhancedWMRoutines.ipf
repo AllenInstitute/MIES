@@ -40,6 +40,19 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 	Make/FREE/WAVE/N=3 result
 
 	if(!WaveExists(yWaves))
+		if(ParamIsDefault(prevAvgData))
+			return result
+		endif
+		if(!(WaveExists(prevAvgData[0]) && WaveExists(prevAvgData[1])))
+			return result
+		endif
+		// return the the previous avg data
+		Duplicate/FREE prevAvgData[0], aveW
+		WAVE sumW = prevAvgData[0]
+		WAVE countW = prevAvgData[1]
+		aveW = sumW / countW
+
+		result = {aveW, sumW, countW}
 		return result
 	endif
 
