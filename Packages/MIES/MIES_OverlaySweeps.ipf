@@ -187,7 +187,7 @@ Function OVS_UpdatePanel(string win, [variable fullUpdate])
 
 	// we select the first sweep when doing a fullUpdate and nothing selected
 	if(OVS_IsActive(win) && fullUpdate)
-		FindValue/I=(LISTBOX_CHECKBOX_SELECTED)/RMD=[][0] listBoxSelWave
+		FindValue/I=(LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED)/RMD=[][0] listBoxSelWave
 		if(V_Value == -1)
 			listBoxSelWave[0][%Sweep] = SetBit(listBoxSelWave[0][%Sweep], LISTBOX_CHECKBOX_SELECTED)
 		endif
