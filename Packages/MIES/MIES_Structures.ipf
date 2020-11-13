@@ -100,8 +100,10 @@ Structure PulseAverageSetIndices
 	WAVE/T propertiesText
 	WAVE/WAVE propertiesWaves
 	WAVE/WAVE axesNames
-	WAVE ovlTracesAvg // flags shown avg traces per set, used to decide with numEntries if there is any trace plotted.
-	WAVE ovlTracesDeconv // flags shown deconv traces per set, used to decide with numEntries if there is any trace plotted.
+	WAVE ovlTracesAvg
+	WAVE ovlTracesDeconv
+	WAVE imageAvgDataPresent
+	WAVE imageDeconvDataPresent
 	DFREF pulseAverageHelperDFR
 	DFREF pulseAverageDFR
 	WAVE channels

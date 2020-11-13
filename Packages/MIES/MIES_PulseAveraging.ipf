@@ -882,9 +882,11 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT P
 		axesNames[][] = PA_GetAxes(pa, pasi.channels[p], pasi.regions[q])
 		WAVE/WAVE pasi.axesNames = axesNames
 
-		Make/FREE/D/N=(numActive, numActive) ovlTracesAvg, ovlTracesDeconv
+		Make/FREE/D/N=(numActive, numActive) ovlTracesAvg, ovlTracesDeconv, imageAvgDataPresent, imageDeconvDataPresent
 		WAVE pasi.ovlTracesAvg = ovlTracesAvg
 		WAVE pasi.ovlTracesDeconv = ovlTracesDeconv
+		WAVE pasi.imageAvgDataPresent = imageAvgDataPresent
+		WAVE pasi.imageDeconvDataPresent = imageDeconvDataPresent
 	endif
 
 	if(part & PA_PASIINIT_INDICEMETA)
@@ -2001,7 +2003,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, ST
 		for(j = 0; j < numActive; j += 1)
 			region = pasi.regions[j]
 
-			if(!PA_AreTracesOnSubPlot(pa, pasi, j, i))
+			if(!PA_IsDataOnSubPlot(pa, pasi, j, i, displayMode))
 				continue
 			endif
 
@@ -3085,12 +3087,18 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			if(pa.showAverage && WaveExists(averageWave))
 				// when all pulses from the set fail, we don't have an average wave
 				Multithread img[][0, specialEntries - 1] = averageWave(x); err = GetRTError(1)
+				pasi.imageAvgDataPresent[i][j] = 1
+			else
+				pasi.imageAvgDataPresent[i][j] = 0
 			endif
 
 			if(pa.deconvolution.enable && !(i == j) && WaveExists(averageWave))
 				baseName = PA_BaseName(channelNumber, region)
 				WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
 				Multithread img[][specialEntries, 2 * specialEntries - 1] = limit(deconv(x), vert_min, vert_max); err = GetRTError(1)
+				pasi.imageDeconvDataPresent[i][j] = 1
+			else
+				pasi.imageDeconvDataPresent[i][j] = 0
 			endif
 
 			SetNumberInWaveNote(img, NOTE_INDEX, requiredEntries)
@@ -3259,11 +3267,16 @@ Function PA_ImageWindowHook(s)
 	return 0
 End
 
-static Function PA_AreTracesOnSubPlot(STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable xLoc, variable yLoc)
+static Function PA_IsDataOnSubPlot(STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable xLoc, variable yLoc, variable displayMode)
 
-	return !!(pa.showIndividualPulses * pasi.numEntries[yLoc][xLoc] + pasi.ovlTracesAvg[yLoc][xLoc] + pasi.ovlTracesDeconv[yLoc][xLoc])
+	if(displayMode == PA_DISPLAYMODE_TRACES)
+		return !!(pa.showIndividualPulses * pasi.numEntries[yLoc][xLoc] + pasi.ovlTracesAvg[yLoc][xLoc] + pasi.ovlTracesDeconv[yLoc][xLoc])
+	endif
+	if(displayMode == PA_DISPLAYMODE_IMAGES)
+		return !!(pa.showIndividualPulses * pasi.numEntries[yLoc][xLoc] + pasi.imageAvgDataPresent[yLoc][xLoc] + pasi.imageDeconvDataPresent[yLoc][xLoc])
+	endif
+	ASSERT(0, "Unknown display mode")
 End
-
 
 static Function PA_DrawXZeroLines(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable displayMode)
 
@@ -3278,13 +3291,13 @@ static Function PA_DrawXZeroLines(string win, STRUCT PulseAverageSettings &pa, S
 		for(j = 0; j < numActive; j += 1)
 			region = pasi.regions[j]
 
-			if(!PA_AreTracesOnSubPlot(pa, pasi, j, i))
-				continue
-			endif
-
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
 				graph = PA_GetGraph(win, pa, displayMode, channelNumber, region, j + 1, i + 1, numActive)
 				SetDrawLayer/W=$graph/K $PA_DRAWLAYER_XZEROLINE
+			endif
+
+			if(!PA_IsDataOnSubPlot(pa, pasi, j, i, displayMode))
+				continue
 			endif
 
 			if(!pa.drawXZeroLine)
