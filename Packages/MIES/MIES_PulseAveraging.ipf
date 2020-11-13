@@ -1998,7 +1998,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, ST
 		for(j = 0; j < numActive; j += 1)
 			region = pasi.regions[j]
 
-			if(!(pa.showIndividualPulses * pasi.numEntries[i][j] + pasi.ovlTracesAvg[i][j] + pasi.ovlTracesDeconv[i][j]))
+			if(!PA_AreTracesOnSubPlot(pa, pasi, j, i))
 				continue
 			endif
 
@@ -3256,6 +3256,12 @@ Function PA_ImageWindowHook(s)
 	return 0
 End
 
+static Function PA_AreTracesOnSubPlot(STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable xLoc, variable yLoc)
+
+	return !!(pa.showIndividualPulses * pasi.numEntries[yLoc][xLoc] + pasi.ovlTracesAvg[yLoc][xLoc] + pasi.ovlTracesDeconv[yLoc][xLoc])
+End
+
+
 static Function PA_DrawXZeroLines(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable displayMode)
 
 	variable i, j, numActive, channelNumber, region
@@ -3268,6 +3274,10 @@ static Function PA_DrawXZeroLines(string win, STRUCT PulseAverageSettings &pa, S
 
 		for(j = 0; j < numActive; j += 1)
 			region = pasi.regions[j]
+
+			if(!PA_AreTracesOnSubPlot(pa, pasi, j, i))
+				continue
+			endif
 
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
 				graph = PA_GetGraph(win, pa, displayMode, channelNumber, region, j + 1, i + 1, numActive)
