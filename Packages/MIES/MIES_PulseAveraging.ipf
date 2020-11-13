@@ -2657,11 +2657,19 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 
 			// gather min/max for diagonal and off-diagonal elements
 			if(i == j)
-				minimumDiag = min(minimum, minimumDiag)
-				maximumDiag = max(maximum, maximumDiag)
+				if(!IsNaN(minimum))
+					minimumDiag = min(minimum, minimumDiag)
+				endif
+				if(!IsNaN(maximum))
+					maximumDiag = max(maximum, maximumDiag)
+				endif
 			else
-				minimumRows[j] = min(minimum, minimumRows[j])
-				maximumRows[j] = max(maximum, maximumRows[j])
+				if(!IsNaN(minimum))
+					minimumRows[j] = min(minimum, minimumRows[j])
+				endif
+				if(!IsNaN(maximum))
+					maximumRows[j] = max(maximum, maximumRows[j])
+				endif
 			endif
 		endfor
 	endfor
@@ -2749,7 +2757,10 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 					colorScaleGraph = PA_GetColorScaleGraph(graph)
 				endif
 
-				WAVE setIndizes = GetPulseAverageSetIndizes(pasi.pulseAverageHelperDFR, channelNumber, region)
+				WAVE setIndizes = pasi.setIndices[i][regionTaken]
+				if(GetNumberFromWaveNote(setIndizes, NOTE_INDEX) == 0)
+					continue
+				endif
 				// assume that all pulses are from the same headstage
 				headstage = properties[setIndizes[0]][%Headstage]
 				ASSERT(IsFinite(headstage), "Invalid headstage")
