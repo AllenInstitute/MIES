@@ -1914,7 +1914,7 @@ Function/WAVE GetITCDataSingleColumnWave(sweepDFR, channelType, channelNumber, [
 End
 
 /// @brief Check if the given sweep number is valid
-Function IsValidSweepNumber(sweepNo)
+threadsafe Function IsValidSweepNumber(sweepNo)
 	variable sweepNo
 
 	return IsInteger(sweepNo) && sweepNo >= 0
