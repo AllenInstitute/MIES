@@ -6539,13 +6539,27 @@ End
 ///
 /// Only returns infos for sweep traces without duplicates.
 /// Duplicates are present with oodDAQ display mode.
-Function/WAVE GetTraceInfos(string graph)
+/// @param[in] graph Name of graph
+/// @param[in] addFilterKeys [optional, default = $""]  additional keys for filtering
+/// @param[in] addFilterValues [optional, default = $""] additional values for filtering, must have same size as keys
+Function/WAVE GetTraceInfos(string graph, [WAVE/T addFilterKeys, WAVE/T addFilterValues])
 
 	if(TUD_GetTraceCount(graph) == 0)
 		return $""
 	endif
 
-	WAVE matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = {"traceType", "occurence", "channelType", "AssociatedHeadstage"}, values = {"Sweep", "0", "AD", "1"})
+	ASSERT((ParamIsDefault(addFilterKeys) + ParamIsDefault(addFilterValues)) != 1, "Either both or no filter wave must be given.")
+
+	Make/FREE/T keys = {"traceType", "occurence"}
+	Make/FREE/T values = {"Sweep", "0"}
+
+	if(!ParamIsDefault(addFilterKeys) && DimSize(addFilterKeys, ROWS) > 0)
+		ASSERT(DimSize(addFilterKeys, ROWS) == DimSize(addFilterValues, ROWS), "key wave has different size as value wave")
+		Concatenate/FREE/NP/T {addFilterKeys}, keys
+		Concatenate/FREE/NP/T {addFilterValues}, values
+	endif
+
+	WAVE matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = keys, values = values)
 
 	WAVE/T graphUserData = GetGraphUserData(graph)
 
