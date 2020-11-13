@@ -1636,7 +1636,11 @@ Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
 
 			panelTitle = sva.win
 			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-			DAP_SweepRollback(paneltitle, sweepNo, sva.dval)
+
+			// avoid setting the LBN entry when we have not yet acquired any sweeps
+			if(IsValidSweepNumber(sweepNo))
+				DAP_SweepRollback(paneltitle, sweepNo, sva.dval)
+			endif
 			break
 	endswitch
 
