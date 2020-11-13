@@ -222,7 +222,7 @@ Function SWS_DeleteDataWaves(panelTitle)
 
 	numItems = DimSize(matches, ROWS)
 	for(i = 0; i < numItems; i += 1)
-		absolutePath = path + ":" + StringFromList(i, list)
+		absolutePath = path + ":" + StringFromList(matches[i], list)
 
 		sprintf msg, "Will delete %s\r", absolutePath
 		DEBUGPRINT(msg)
