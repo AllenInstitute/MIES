@@ -3766,3 +3766,42 @@ Function GSJIWorksWithCorruptID()
 End
 
 /// @}
+
+/// ExtractSweepNumber
+/// @{
+
+Function/WAVE GetValidStringsWithSweepNumber()
+
+	Make/FREE/T wv = {"Sweep_100", "Sweep_100_bak", "Config_Sweep_100", "Config_Sweep_100_bak", "X_100"}
+
+	return wv
+End
+
+// UTF_TD_GENERATOR GetValidStringsWithSweepNumber
+Function ESN_Works([string str])
+
+	CHECK_EQUAL_VAR(ExtractSweepNumber(str), 100)
+End
+
+Function/WAVE GetInvalidStringsWithSweepNumber()
+
+	Make/FREE/T wv = {"", "A", "A__", "Sweep_-100"}
+
+	return wv
+End
+
+// UTF_TD_GENERATOR GetInvalidStringsWithSweepNumber
+Function ESN_Complains([string str])
+
+	variable err
+
+	try
+		ExtractSweepNumber(str); AbortOnRTE
+		FAIL()
+	catch
+		err = GetRTError(1)
+		PASS()
+	endtry
+End
+
+/// @}
