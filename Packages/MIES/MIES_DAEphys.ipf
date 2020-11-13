@@ -1648,7 +1648,7 @@ Function DAP_SweepRollback(string paneltitle, variable sweepNo, variable newSwee
 	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
 	vals[0][0][INDEP_HEADSTAGE] = newSweepNo
 	Make/T/FREE/N=(3, 1) keys
-	keys[0] = "Sweep Rollback"
+	keys[0] = SWEEP_ROLLBACK_KEY
 	keys[1] = "a. u."
 	keys[2] = LABNOTEBOOK_NO_TOLERANCE
 	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, panelTitle, UNKNOWN_MODE)
