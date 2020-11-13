@@ -2977,7 +2977,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 	variable requiredEntries, specialEntries, numPulses
 	variable singlePulseColumnOffset, failedMarkerStartRow, xPos, yPos, newSweep, numGraphs
 	variable vert_min, vert_max, horiz_min, horiz_max, firstPulseIndex, layoutChanged
-	variable graphDataIndex, junk, lblIMAGELIST, resetImage
+	variable graphDataIndex, junk, lblIMAGELIST, resetImage, gotNewPulsesToDraw
 	string vertAxis, horizAxis, graph, basename, imageName, msg, graphWithImage
 	string image
 	string usedGraphs = ""
@@ -3002,6 +3002,8 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 		for(j = 0; j < numActive; j += 1)
 			region = pasi.regions[j]
 
+			resetImage = 0
+
 			WAVE/Z averageWave
 			[averageWave, baseName] = PA_GetPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
 
@@ -3013,6 +3015,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			endif
 
 			numPulses = pasi.numEntries[i][j]
+			gotNewPulsesToDraw = numPulses != 0
 			WAVE setIndizes = pasi.setIndices[i][j]
 			WAVE img = GetPulseAverageSetImageWave(pasi.pulseAverageDFR, channelNumber, region)
 
@@ -3060,12 +3063,11 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 					newSweep = WaveMin(additionalData)
 					Make/FREE/N=(numPulses) sweeps = properties[setIndizes[p]][%Sweep]
 					FindValue/Z/V=(newSweep) sweeps
-					if(V_Value > 0)
+					if(V_Value >= 0)
 						firstPulseIndex = V_Value
 					else
-						// we can have no match with removed headstages on the new sweep
-						// caller needs to retry with POST_PLOT_FULL_UPDATE
-						resetImage = 1
+						// The current sweep has no pulses in this channel/region
+						gotNewPulsesToDraw = 0
 					endif
 					WaveClear sweeps
 				else
@@ -3076,7 +3078,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				endif
 			endif
 
-			if(pa.showIndividualPulses && numPulses > 0)
+			if(pa.showIndividualPulses && gotNewPulsesToDraw)
 				WAVE/WAVE set = WaveRef(pasi.setWaves2[i][j])
 				Multithread img[][singlePulseColumnOffset + firstPulseIndex, requiredEntries - 1] = WaveRef(set[q - singlePulseColumnOffset][0])(x); err = GetRTError(1)
 			endif
