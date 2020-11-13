@@ -18,6 +18,7 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 	variable forcedStop
 
 	variable sweepNo
+	string sweepName, configName
 
 	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 
@@ -30,8 +31,17 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 	ASSERT(IsValidSweepAndConfig(hardwareDataWave, hardwareConfigWave), "Data and config wave are not compatible")
 
 	DFREF dfr = GetDeviceDataPath(panelTitle)
-	Duplicate hardwareConfigWave, dfr:$GetConfigWaveName(sweepNo)
-	MoveWave scaledDataWave, dfr:$GetSweepWaveName(sweepNo)
+
+	configName = GetConfigWaveName(sweepNo)
+	WAVE/SDFR=dfr/Z configWave = $configName
+	ASSERT(!WaveExists(configWave), "The config wave must not exist, name=" + configName)
+
+	sweepName = GetSweepWaveName(sweepNo)
+	WAVE/SDFR=dfr/Z sweepWave = $sweepName
+	ASSERT(!WaveExists(sweepWave), "The sweep wave must not exist, name=" + sweepName)
+
+	Duplicate hardwareConfigWave, dfr:$configName
+	MoveWave scaledDataWave, dfr:$sweepName
 
 	WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
 	WAVE configWave = GetConfigWave(sweepWave)
