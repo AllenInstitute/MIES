@@ -1391,7 +1391,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 	lblPWPULSE = FindDimLabel(propertiesWaves, COLS, "PULSE")
 
-	Make/T/FREE/N=(numPlotPulses) hiddenTraces
+	Make/T/FREE/N=(numTotalPulses) hiddenTraces
 	Duplicate/FREE/RMD=[][lblPWPULSE] propertiesWaves, pulseWaves
 	jsonID = JSON_Parse("{}")
 	if(pa.multipleGraphs)
