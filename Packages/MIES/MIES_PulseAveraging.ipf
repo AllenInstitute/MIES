@@ -2818,6 +2818,9 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 
 				WAVE setIndizes = pasi.setIndices[i][regionTaken]
 				// assume that all pulses are from the same headstage
+				if(GetNumberFromWaveNote(setIndizes, NOTE_INDEX) == 0)
+					continue
+				endif
 				headstage = properties[setIndizes[0]][%Headstage]
 				ASSERT(IsFinite(headstage), "Invalid headstage")
 
