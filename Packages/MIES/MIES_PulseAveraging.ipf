@@ -849,6 +849,13 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	return [pasi]
 End
 
+static Function/WAVE PA_GetWaveCopyFree(WAVE w)
+
+	Duplicate/FREE w, result
+
+	return result
+End
+
 static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT PulseAverageSettings &pa, variable part, variable disableIncremental)
 
 	variable numActive
@@ -870,13 +877,16 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT P
 			return [pasi]
 		endif
 
-		WAVE/WAVE pasi.setIndices = setIndices
 		WAVE pasi.channels = channels
 		WAVE pasi.regions = regions
 		WAVE pasi.indexHelper = indexHelper
 
 		numActive = DimSize(pasi.channels, ROWS)
-		Make/FREE/WAVE/N=(numActive, numActive) setWaves2, axesNames
+		Make/FREE/WAVE/N=(numActive, numActive) setWaves2, axesNames, setIndicesUnsorted
+
+		WAVE/WAVE pasi.setIndices = setIndices
+		setIndicesUnsorted = PA_GetWaveCopyFree(setIndices[p][q])
+		WAVE/WAVE pasi.setIndicesUnsorted = setIndicesUnsorted
 
 		setWaves2[][] = PA_GetSetWaves(pasi.pulseAverageHelperDFR, pasi.channels[p], pasi.regions[q])
 		WAVE/WAVE pasi.setWaves2 = setWaves2
@@ -1275,7 +1285,7 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 	for(i = 0; i < numActive; i += 1)
 		region = pasi.regions[i]
 
-		WAVE indices = pasi.setIndices[i][i]
+		WAVE indices = pasi.setIndicesUnsorted[i][i]
 		numEntries = pasi.numEntries[i][i]
 		startEntry = pasi.startEntry[i][i]
 		for(j = startEntry; j < numEntries; j += 1)
@@ -1299,7 +1309,7 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 				continue
 			endif
 
-			WAVE indices = pasi.setIndices[j][i]
+			WAVE indices = pasi.setIndicesUnsorted[j][i]
 			numEntries = pasi.numEntries[j][i]
 			startEntry = pasi.startEntry[j][i]
 			for(k = startEntry; k < numEntries; k += 1)
@@ -1442,7 +1452,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 
 				step = (i == j) ? 1 : PA_PLOT_STEPPING
 
-				WAVE indices = pasi.setIndices[j][i]
+				WAVE indices = pasi.setIndicesUnsorted[j][i]
 				numEntries = pasi.numEntries[j][i]
 				startEntry = pasi.startEntry[j][i]
 				if(mode == POST_PLOT_CONSTANT_SWEEPS && !cs.hideFailedPulses)
