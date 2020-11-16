@@ -2467,28 +2467,26 @@ static Function PA_ResetWavesIfRequired(WAVE/Z setWave2, STRUCT PulseAverageSett
 	numEntries = DimSize(set2, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(mode != POST_PLOT_FULL_UPDATE)
-			WAVE noteWave = set2[i][1]
+		WAVE noteWave = set2[i][1]
 
-			statusZero = GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED)
-			statusTimeAlign = GetNumberFromWaveNote(noteWave, NOTE_KEY_TIMEALIGN)
-			statusSearchFailedPulse = GetNumberFromWaveNote(noteWave, NOTE_KEY_SEARCH_FAILED_PULSE)
+		statusZero = GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED)
+		statusTimeAlign = GetNumberFromWaveNote(noteWave, NOTE_KEY_TIMEALIGN)
+		statusSearchFailedPulse = GetNumberFromWaveNote(noteWave, NOTE_KEY_SEARCH_FAILED_PULSE)
 
-			if(statusZero == 0 && statusTimeAlign == 0 && statusSearchFailedPulse == 0)
-				continue // wave is unmodified
-			endif
+		if(statusZero == 0 && statusTimeAlign == 0 && statusSearchFailedPulse == 0)
+			continue // wave is unmodified
+		endif
 
-			if(statusZero == pa.zeroPulses                          \
-				&& statusTimeAlign == pa.autoTimeAlignment           \
-				&& statusSearchFailedPulse == pa.searchFailedPulses)
+		if(statusZero == pa.zeroPulses                          \
+			&& statusTimeAlign == pa.autoTimeAlignment           \
+			&& statusSearchFailedPulse == pa.searchFailedPulses)
 
-				failedPulseLevel = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
+			failedPulseLevel = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
 
-				// when zeroing and failed pulse search is enabled, we always
-				// need to reset the waves when the level changes
-				if(!(pa.zeroPulses && pa.searchFailedPulses && pa.failedPulsesLevel != failedPulseLevel))
-					continue // wave is up to date
-				endif
+			// when zeroing and failed pulse search is enabled, we always
+			// need to reset the waves when the level changes
+			if(!(pa.zeroPulses && pa.searchFailedPulses && pa.failedPulsesLevel != failedPulseLevel))
+				continue // wave is up to date
 			endif
 		endif
 
