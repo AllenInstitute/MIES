@@ -2971,12 +2971,13 @@ End
 
 static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, STRUCT PulseAverageSetIndices &pasi, variable mode, WAVE/Z additionalData)
 
-	variable channelNumber, region, numActive, i, j, k, err
-	variable requiredEntries, specialEntries, numPulses
+	variable channelNumber, region, numActive, i, j, k, err, val
+	variable requiredEntries, specialEntries, numPulses, numAllPulsesInSet
 	variable singlePulseColumnOffset, failedMarkerStartRow, xPos, yPos, newSweep, numGraphs
 	variable vert_min, vert_max, horiz_min, horiz_max, firstPulseIndex, layoutChanged
 	variable graphDataIndex, junk, lblIMAGELIST, resetImage, gotNewPulsesToDraw
-	string vertAxis, horizAxis, graph, basename, imageName, msg, graphWithImage
+	variable refScaleLeft, refScaleRight, refScalePoints, refScaleDelta, scaleChanged, pulseScaleLeft, pulseScaleRight
+	string vertAxis, horizAxis, graph, basename, imageName, msg, graphWithImage, xUnits
 	string image
 	string usedGraphs = ""
 	string graphsWithImages = ""
@@ -3014,7 +3015,6 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 			numPulses = pasi.numEntries[i][j]
 			gotNewPulsesToDraw = numPulses != 0
-			WAVE setIndizes = pasi.setIndices[i][j]
 			WAVE img = GetPulseAverageSetImageWave(pasi.pulseAverageDFR, channelNumber, region)
 
 			// top to bottom:
@@ -3040,25 +3040,35 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				Multithread img[][] = NaN
 			else
 
-				if(WaveExists(averageWave))
-					WAVE scaleRefWave = averageWave
-				else
-					WAVE/WAVE set = WaveRef(pasi.setWaves2[i][j])
-					WAVE scaleRefWave = set[0][0]
-				endif
-				CopyScales/P scaleRefWave, img
+				// Determine common wave scales
+				WAVE/WAVE set2 = WaveRef(pasi.setWaves2[i][j])
+				numAllPulsesInSet = DimSize(set2, ROWS)
+				Make/FREE/D/N=(numAllPulsesInSet) scaleLeft, scaleRight, scalePoints
+				Multithread scaleLeft = leftx(set2[p][0])
+				Multithread scaleRight = rightx(set2[p][0])
+				Multithread scalePoints = DimSize(set2[p][0], ROWS)
+				refScaleLeft = WaveMin(scaleLeft)
+				refScaleRight = WaveMax(scaleRight)
+				refScalePoints = WaveMax(scalePoints)
+				refScaleDelta = (refScaleRight - refScaleLeft) / refScalePoints
+				scaleChanged = (DimOffset(img, ROWS) != refScaleLeft) || (DimOffset(img, ROWS) + (DimSize(img, ROWS) - 1) * DimDelta(img, ROWS) != refScaleRight)
+				xUnits = WaveUnits(set2[0][0], ROWS)
 
 				Make/FREE/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(img, p)
 				EnsureLargeEnoughWave(img, minimumSize = requiredEntries, dimension = COLS, initialValue=NaN)
-				Redimension/N=(DimSize(scaleRefWave, ROWS), -1) img
+				Redimension/N=(refScalePoints, -1) img
+				// inclusive scale must be set after redimension
+				SetScale/P x, refScaleLeft, refScaleDelta, xUnits, img
 				Make/FREE/N=(MAX_DIMENSION_COUNT) newSizes = DimSize(img, p)
 
 				if(!(mode != POST_PLOT_ADDED_SWEEPS                                        \
 				   || !EqualWaves(oldSizes, newSizes, 1)                                 \
 				   || pa.pulseSortOrder != PA_PULSE_SORTING_ORDER_SWEEP						\
+				   || scaleChanged                                          \
 				   || layoutChanged))
 
 					newSweep = WaveMin(additionalData)
+					WAVE setIndizes = pasi.setIndices[i][j]
 					Make/FREE/N=(numPulses) sweeps = properties[setIndizes[p]][%Sweep]
 					FindValue/Z/V=(newSweep) sweeps
 					if(V_Value >= 0)
@@ -3077,8 +3087,20 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			endif
 
 			if(pa.showIndividualPulses && gotNewPulsesToDraw)
-				WAVE/WAVE set = WaveRef(pasi.setWaves2[i][j])
-				Multithread img[][singlePulseColumnOffset + firstPulseIndex, requiredEntries - 1] = WaveRef(set[q - singlePulseColumnOffset][0])(x); err = GetRTError(1)
+				WAVE/WAVE set2 = WaveRef(pasi.setWaves2[i][j])
+				Multithread img[][singlePulseColumnOffset + firstPulseIndex, requiredEntries - 1] = WaveRef(set2[q - singlePulseColumnOffset][0])(x); err = GetRTError(1)
+				for(k = singlePulseColumnOffset + firstPulseIndex; k < requiredEntries - 1; k += 1)
+					pulseScaleLeft = scaleLeft[k - singlePulseColumnOffset]
+					if(refScaleLeft != pulseScaleLeft && pulseScaleLeft > refScaleLeft + refScaleDelta)
+						// fill left side with NaN
+						img[0, ScaleToIndexWrapper(img, pulseScaleLeft, ROWS)][k] = NaN
+					endif
+					pulseScaleRight = scaleRight[k - singlePulseColumnOffset]
+					if(refScaleRight != pulseScaleRight && pulseScaleRight < refScaleRight - refScaleDelta)
+						// fill right side with NaN
+						img[ScaleToIndexWrapper(img, pulseScaleRight, ROWS), Inf][k] = NaN
+					endif
+				endfor
 			endif
 
 			if(numPulses > 0)
@@ -3095,6 +3117,14 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			if(pa.showAverage && WaveExists(averageWave))
 				// when all pulses from the set fail, we don't have an average wave
 				Multithread img[][0, specialEntries - 1] = averageWave(x); err = GetRTError(1)
+				val = leftx(averageWave)
+				if(refScaleLeft != val  && val > refScaleLeft + refScaleDelta)
+					img[0, ScaleToIndexWrapper(img, val, ROWS)][0, specialEntries - 1] = NaN
+				endif
+				val = rightx(averageWave)
+				if(refScaleRight != val && val < refScaleRight - refScaleDelta)
+					img[ScaleToIndexWrapper(img, val, ROWS), Inf][0, specialEntries - 1] = NaN
+				endif
 				pasi.imageAvgDataPresent[i][j] = 1
 			else
 				pasi.imageAvgDataPresent[i][j] = 0
@@ -3104,6 +3134,14 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				baseName = PA_BaseName(channelNumber, region)
 				WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
 				Multithread img[][specialEntries, 2 * specialEntries - 1] = limit(deconv(x), vert_min, vert_max); err = GetRTError(1)
+				val = leftx(deconv)
+				if(refScaleLeft != val && val > refScaleLeft + refScaleDelta)
+					img[0, ScaleToIndexWrapper(img, val, ROWS)][specialEntries, 2 * specialEntries - 1] = NaN
+				endif
+				val = rightx(deconv)
+				if(refScaleRight != val && val < refScaleRight - refScaleDelta)
+					img[ScaleToIndexWrapper(img, val, ROWS), Inf][specialEntries, 2 * specialEntries - 1] = NaN
+				endif
 				pasi.imageDeconvDataPresent[i][j] = 1
 			else
 				pasi.imageDeconvDataPresent[i][j] = 0
