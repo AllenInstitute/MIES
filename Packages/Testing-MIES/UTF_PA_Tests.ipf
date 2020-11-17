@@ -364,6 +364,32 @@
 //  - pulse data fits to expected data
 //  - pulse wave note fits to setting of PA panel
 
+
+// Test: PAT_IncrementalSweepAdd
+// With most analysis functions sweeps are added incremental in various orders.
+// The sum number of traces plotted is checked as well as if any pulse was plotted twice,
+// which would be an error. This might happen if the indexing into properties is wrong.
+
+// Test: PAT_IncrementalSweepAddPartial
+// First a sweep is shown that has 2 regions.
+// Then a second sweep is added that has one region (same channel association as first sweep).
+// Thus there are three sub plots that are not affected by the new sweep and where the new sweep does not
+// contribute new data. The test checks if the incremental average is kept in the sub plots where no new data was contributed.
+// (incremental average with partially no new data)
+
+// Test: PAT_ImagePlotPartialFullFail
+// This test creates an image plot that contains failed pulses. In some sub plots all pulses are failed.
+// It is tested if the information in the interval where the failed pulses are marked is correct.
+// There are four different sub images:
+// - all pulses failed, where only failed pulses (Inf) and NaNs for avg, deconv is present
+// - some pulses failed, where failed pulses (Inf) and finite for other pulses, avg, deconv is present
+// 		- some pulses failed but diagonal position, where failed pulses (Inf) and finite for other pulses, avg and NaN for deconv is present
+// - no pulse failed, where finite for other pulses, avg, deconv is present
+
+// Test: PAT_ImagePlotIncrementalPartial
+// Displays a second sweep on top of another one, where the second sweep fits inside the first without layout change.
+// Thus, where the second sweep contributes data the images must show more lines that the other images.
+
 static Constant PA_TEST_FP_EPSILON = 1E-6
 
 // todo remove string constants here
@@ -1872,6 +1898,65 @@ static Function PAT_MultiSweepAvg()
 	endfor
 End
 
+static Function/WAVE PAT_IncrementalSweepAdd_Generator()
+
+	Make/FREE/WAVE/N=4 w
+
+	Make/FREE sweeps = {0, 1, 2, 3, 4, 5}
+	w[0] = sweeps
+	Make/FREE sweeps = {5, 4, 3, 2, 1, 0}
+	w[1] = sweeps
+	Make/FREE sweeps = {2, 1, 5, 3, 4, 0}
+	w[2] = sweeps
+	Make/FREE sweeps = {4, 3, 5, 0, 1, 2}
+	w[3] = sweeps
+
+	return w
+End
+// UTF_TD_GENERATOR PAT_IncrementalSweepAdd_Generator
+static Function PAT_IncrementalSweepAdd([WAVE wv])
+
+	string bspName, graph
+
+	string traceListAll
+	variable i, numSweeps
+
+	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
+	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_showAver", val = 1)
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_zero", val = 1)
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_searchFailedPulses", val = 1)
+	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 75)
+	OVS_ChangeSweepSelectionState(bspName, 0, sweepNo = 0)
+
+	wv = OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = wv[p])
+
+	traceListAll = PAT_GetTraces(graph, 26 + 6 + 4)
+	// The traces are numbered by the index position in properties, if any are displayed twice
+	// then we get identical names and igor adds auto numbering at the end with a hash as delimeter.
+	CHECK_EQUAL_VAR(strsearch(traceListAll, "#", 0), -1)
+End
+
+static Function PAT_IncrementalSweepAddPartialAvgCheck()
+
+	string bspName, graph
+
+	string traceListAll, traceList
+	variable traceNum
+
+	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
+	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_showAver", val = 1)
+
+	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 2)
+
+	traceListAll = PAT_GetTraces(graph, 5 + 4)
+	traceList = GrepList(traceListAll, PAT_AVG_PREFIX)
+	traceNum = ItemsInList(traceList)
+	CHECK_EQUAL_VAR(traceNum, 4)
+End
+
 static Function PAT_BasicImagePlot()
 
 	string bspName, imageWin
@@ -2198,6 +2283,105 @@ static Function PAT_ImagePlotMultipleGraphs()
 			Redimension/N=(-1) profileLine
 			CHECK_EQUAL_WAVES(patest.refData, profileLine, mode = WAVE_DATA, tol = patest.eqWaveTol)
 			PAT_CheckImageWaveNote(bspName, iData, patest)
+		endfor
+	endfor
+End
+
+static Function PAT_ImagePlotPartialFullFail()
+
+	string bspName, imageWin
+	STRUCT PA_Test patest
+
+	string imageList, imageName
+	variable i, j, size, region, channel, numEntries, profilePos
+
+	PA_InitSweep5(patest)
+
+	[bspName, imageWin] = PAT_StartDataBrowserImage_IGNORE()
+	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_showAver", val = 1)
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_zero", val = 1)
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_searchFailedPulses", val = 1)
+	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 104)
+	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 5)
+
+	imageList = PAT_GetImages(imageWin, patest.layoutSize)
+	size = sqrt(patest.layoutSize)
+	for(i = 0; i < size; i += 1)
+		for(j = 0; j < size; j += 1)
+			region = patest.regions[j]
+			channel = patest.channels[i]
+
+			imageName = PAT_FindImageNames(imageList, channel, region)
+			WAVE iData = ImageNameToWaveRef(imageWin, imageName)
+			numEntries = GetNumberFromWaveNote(iData, NOTE_INDEX)
+			profilePos = trunc(DimSize(iData, ROWS) * (PA_IMAGE_FAILEDMARKERSTART + (1 - PA_IMAGE_FAILEDMARKERSTART) / 2))
+
+			Duplicate/FREE/RMD=[profilePos][0, numEntries - 1] iData, profileLine
+			Redimension/E=1/N=(numEntries) profileLine
+			Duplicate/FREE profileLine, result
+
+			if(region == 5)
+				// check only NaN, Inf present
+				result = IsNaN(profileLine[p]) || (profileLine[p] == Inf)
+				CHECK_EQUAL_VAR(sum(result), numEntries)
+				continue
+			endif
+
+			if(channel == 0)
+				// check only finite present
+				result = IsFinite(profileLine[p])
+				CHECK_EQUAL_VAR(sum(result), numEntries)
+				continue
+			endif
+
+			if(channel == region) // == diagonal, i.e. deconv is NaN
+				// check only NaN, Inf or finite
+				result = IsFinite(profileLine[p]) || (profileLine[p] == Inf) || IsNaN(profileLine[p])
+				CHECK_EQUAL_VAR(sum(result), numEntries)
+			else
+				// check only Inf and finite, non-diagonal, deconv is present
+				result = IsFinite(profileLine[p]) || (profileLine[p] == Inf)
+				CHECK_EQUAL_VAR(sum(result), numEntries)
+			endif
+		endfor
+	endfor
+End
+
+static Function PAT_ImagePlotIncrementalPartial()
+
+	string bspName, imageWin
+	STRUCT PA_Test patest
+
+	string imageList, imageName
+	variable i, j, size, region, channel, numEntries, profilePos
+
+	PA_InitSweep5(patest)
+
+	[bspName, imageWin] = PAT_StartDataBrowserImage_IGNORE()
+	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
+	OVS_ChangeSweepSelectionState(bspName, 0, sweepNo = 0)
+
+	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 5)
+	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 0)
+
+	imageList = PAT_GetImages(imageWin, patest.layoutSize)
+	size = sqrt(patest.layoutSize)
+	for(i = 0; i < size; i += 1)
+		for(j = 0; j < size; j += 1)
+			region = patest.regions[j]
+			channel = patest.channels[i]
+
+			imageName = PAT_FindImageNames(imageList, channel, region)
+			WAVE iData = ImageNameToWaveRef(imageWin, imageName)
+			numEntries = GetNumberFromWaveNote(iData, NOTE_INDEX)
+
+			if(region == 5 || channel == 0)
+				CHECK_EQUAL_VAR(1 + 2, numEntries)
+			else
+				CHECK_EQUAL_VAR(2 + 2, numEntries)
+			endif
 		endfor
 	endfor
 End
