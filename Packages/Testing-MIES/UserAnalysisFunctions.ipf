@@ -689,3 +689,24 @@ Function IncrementalLabnotebookUpdate(panelTitle, s)
 
 	return 0
 End
+
+Function SweepRollbackChecker(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	string list, refList
+
+	if(s.eventType == PRE_DAQ_EVENT)
+		DFREF dfr = GetDeviceDataPath(panelTitle)
+		list    = SortList(GetListOfObjects(dfr, ".*"))
+		refList = SortList("Config_Sweep_0;Sweep_0;")
+		CHECK_EQUAL_STR(refList, list)
+	endif
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType][s.headstage] += 1
+
+	return 0
+End

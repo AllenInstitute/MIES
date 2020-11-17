@@ -25,6 +25,8 @@
 #include "UTF_Epochs"
 #include "UTF_HelperFunctions"
 
+StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
+
 Function run()
 
 	string list = ""
@@ -163,15 +165,8 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	// cut off multi data suffix
 	name = StringFromList(0, name, ":")
-	reentryFuncName = name + "_REENTRY"
-	FUNCREF TEST_CASE_PROTO reentryFuncPlain = $reentryFuncName
-	FUNCREF TEST_CASE_PROTO_MD_STR reentryFuncMDStr = $reentryFuncName
 
-	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)))
-		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
-		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
-		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600, failOnTimeout = 1)
-	endif
+	RegisterReentryFunction(name)
 
 	AdditionalExperimentCleanupAfterTest()
 
@@ -201,6 +196,9 @@ Function TEST_CASE_END_OVERRIDE(name)
 	string dev
 	variable numEntries, i
 
+	// cut off multi data suffix
+	name = StringFromList(0, name, ":")
+
 	SVAR devices = $GetDevicePanelTitleList()
 
 	numEntries = ItemsInList(devices)
@@ -211,28 +209,30 @@ Function TEST_CASE_END_OVERRIDE(name)
 		NVAR errorCounter = $GetAnalysisFuncErrorCounter(dev)
 		CHECK_EQUAL_VAR(errorCounter, 0)
 
-		// ascending sweep numbers in both labnotebooks
-		WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+		if(WhichListItem(name, LIST_OF_TESTS_WITH_SWEEP_ROLLBACK) == -1)
+			// ascending sweep numbers in both labnotebooks
+			WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
 
-		if(!WaveExists(sweeps))
-			PASS()
-			continue
+			if(!WaveExists(sweeps))
+				PASS()
+				continue
+			endif
+
+			Duplicate/FREE sweeps, unsortedSweeps
+			Sort sweeps, sweeps
+			CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
+
+			WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "textualValues")
+
+			if(!WaveExists(sweeps))
+				PASS()
+				continue
+			endif
+
+			Duplicate/FREE sweeps, unsortedSweeps
+			Sort sweeps, sweeps
+			CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
 		endif
-
-		Duplicate/FREE sweeps, unsortedSweeps
-		Sort sweeps, sweeps
-		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
-
-		WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "textualValues")
-
-		if(!WaveExists(sweeps))
-			PASS()
-			continue
-		endif
-
-		Duplicate/FREE sweeps, unsortedSweeps
-		Sort sweeps, sweeps
-		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
 
 		CheckLBIndexCache_IGNORE(dev)
 		CheckLBRowCache_IGNORE(dev)
@@ -254,6 +254,24 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 #endif
 
+End
+
+/// @brief Register the function `<testcase>_REENTRY`
+///        as reentry part of the given test case.
+///
+/// Does nothing if the reentry function does not exist. Supports both plain test cases and multi data test cases
+/// accepting string arguments.
+Function RegisterReentryFunction(string testcase)
+
+	string reentryFuncName = testcase + "_REENTRY"
+	FUNCREF TEST_CASE_PROTO reentryFuncPlain = $reentryFuncName
+	FUNCREF TEST_CASE_PROTO_MD_STR reentryFuncMDStr = $reentryFuncName
+
+	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)))
+		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
+		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
+		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600, failOnTimeout = 1)
+	endif
 End
 
 static Function/WAVE GetSweepsFromLBN_IGNORE(device, name)

@@ -1643,7 +1643,11 @@ Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
 
 			panelTitle = sva.win
 			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-			DAP_SweepRollback(paneltitle, sweepNo, sva.dval)
+
+			// avoid setting the LBN entry when we have not yet acquired any sweeps
+			if(IsValidSweepNumber(sweepNo))
+				DAP_SweepRollback(paneltitle, sweepNo, sva.dval)
+			endif
 			break
 	endswitch
 
@@ -1657,7 +1661,7 @@ Function DAP_SweepRollback(string paneltitle, variable sweepNo, variable newSwee
 	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
 	vals[0][0][INDEP_HEADSTAGE] = newSweepNo
 	Make/T/FREE/N=(3, 1) keys
-	keys[0] = "Sweep Rollback"
+	keys[0] = SWEEP_ROLLBACK_KEY
 	keys[1] = "a. u."
 	keys[2] = LABNOTEBOOK_NO_TOLERANCE
 	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, panelTitle, UNKNOWN_MODE)
@@ -2110,6 +2114,9 @@ Function DAP_CheckSettings(panelTitle, mode)
 			endif
 		endfor
 	endif
+
+	// update the analysis functions gathered from the stimsets
+	AFM_UpdateAnalysisFunctionWave(panelTitle)
 
 	if(mode == DATA_ACQUISITION_MODE && AFM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
 		printf "%s: Pre DAQ analysis function requested an abort\r", panelTitle

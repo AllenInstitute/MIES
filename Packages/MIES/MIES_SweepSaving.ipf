@@ -18,6 +18,7 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 	variable forcedStop
 
 	variable sweepNo
+	string sweepName, configName
 
 	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 
@@ -30,8 +31,17 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 	ASSERT(IsValidSweepAndConfig(hardwareDataWave, hardwareConfigWave), "Data and config wave are not compatible")
 
 	DFREF dfr = GetDeviceDataPath(panelTitle)
-	Duplicate hardwareConfigWave, dfr:$GetConfigWaveName(sweepNo)
-	MoveWave scaledDataWave, dfr:$GetSweepWaveName(sweepNo)
+
+	configName = GetConfigWaveName(sweepNo)
+	WAVE/SDFR=dfr/Z configWave = $configName
+	ASSERT(!WaveExists(configWave), "The config wave must not exist, name=" + configName)
+
+	sweepName = GetSweepWaveName(sweepNo)
+	WAVE/SDFR=dfr/Z sweepWave = $sweepName
+	ASSERT(!WaveExists(sweepWave), "The sweep wave must not exist, name=" + sweepName)
+
+	Duplicate hardwareConfigWave, dfr:$configName
+	MoveWave scaledDataWave, dfr:$sweepName
 
 	WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
 	WAVE configWave = GetConfigWave(sweepWave)
@@ -190,7 +200,7 @@ Function SWS_DeleteDataWaves(panelTitle)
 	refTime = DEBUG_TIMER_START()
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE/Z sweepRollbackUsed = GetSweepsWithSetting(numericalValues, "Sweep Rollback")
+	WAVE/Z sweepRollbackUsed = GetSweepsWithSetting(numericalValues, SWEEP_ROLLBACK_KEY)
 
 	if(!WaveExists(sweepRollbackUsed))
 		return NaN
@@ -222,7 +232,7 @@ Function SWS_DeleteDataWaves(panelTitle)
 
 	numItems = DimSize(matches, ROWS)
 	for(i = 0; i < numItems; i += 1)
-		absolutePath = path + ":" + StringFromList(i, list)
+		absolutePath = path + ":" + StringFromList(matches[i], list)
 
 		sprintf msg, "Will delete %s\r", absolutePath
 		DEBUGPRINT(msg)

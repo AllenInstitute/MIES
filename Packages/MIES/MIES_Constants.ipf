@@ -836,6 +836,7 @@ StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"
 
 StrConstant RA_ACQ_CYCLE_ID_KEY      = "Repeated Acq Cycle ID"
 StrConstant STIMSET_ACQ_CYCLE_ID_KEY = "Stimset Acq Cycle ID"
+StrConstant SWEEP_ROLLBACK_KEY       = "Sweep Rollback"
 
 /// @name Update flags for DAP_UpdateDAQControls()
 ///

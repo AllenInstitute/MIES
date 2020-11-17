@@ -1914,7 +1914,7 @@ Function/WAVE GetITCDataSingleColumnWave(sweepDFR, channelType, channelNumber, [
 End
 
 /// @brief Check if the given sweep number is valid
-Function IsValidSweepNumber(sweepNo)
+threadsafe Function IsValidSweepNumber(sweepNo)
 	variable sweepNo
 
 	return IsInteger(sweepNo) && sweepNo >= 0
@@ -4407,7 +4407,15 @@ End
 threadsafe Function ExtractSweepNumber(str)
 	string str
 
-	return str2num(StringFromList(ItemsInList(str, "_") - 1, str, "_"))
+	variable numElements, sweepNo
+
+	str = RemoveEnding(str, WAVE_BACKUP_SUFFIX)
+	numElements = ItemsInList(str, "_")
+	ASSERT_TS(numElements > 1, "Invalid string with sweep number")
+	sweepNo = str2num(StringFromList(numElements - 1, str, "_"))
+	ASSERT_TS(IsValidSweepNumber(sweepNo), "Invalid sweep numer extracted")
+
+	return sweepNo
 End
 
 /// @brief Return the list of unlocked `DA_Ephys` panels
