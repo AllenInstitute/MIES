@@ -844,9 +844,19 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		[pasi] = PA_InitPASIInParts(pa, PA_PASIINIT_INDICEMETA, 0)
 	endif
 
+	pasi.indexHelper[][] = PA_SetDiagonalityNote(pasi.setIndices[p][q], layoutChanged ? 0 : pasi.startEntry[p][q], pasi.numEntries[p][q], pasi.propertiesWaves, p == q)
+
 	JSON_Release(jsonID)
 
 	return [pasi]
+End
+
+static Function PA_SetDiagonalityNote(WAVE indices, variable startIndex, variable numEntries, WAVE/WAVE propertiesWaves, variable isDiagonal)
+
+	if(startIndex < numEntries)
+		Duplicate/FREE indices, indexHelper
+		indexHelper[startIndex, numEntries - 1] = SetNumberInWaveNote(propertiesWaves[indices[p]][1], PA_NOTE_KEY_PULSE_ISDIAGONAL, isDiagonal)
+	endif
 End
 
 static Function/WAVE PA_GetWaveCopyFree(WAVE w)
