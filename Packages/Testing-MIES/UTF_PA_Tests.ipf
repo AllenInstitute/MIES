@@ -390,6 +390,12 @@
 // Displays a second sweep on top of another one, where the second sweep fits inside the first without layout change.
 // Thus, where the second sweep contributes data the images must show more lines that the other images.
 
+// Test: PAT_HSRemoval1
+// Sweeps 0 and 4 are displayed in OVS, then for Sweep 0 HS 1 is removed.
+// It is checked if sweep 4 is displayed in all sub plots.
+// It is checked that sweep 0 is not displayed in the sub plots related to HS1 of sweep 0.
+// Currently the test is marked as expected failure until https://github.com/AllenInstitute/MIES/issues/729 is fixed.
+
 static Constant PA_TEST_FP_EPSILON = 1E-6
 
 // todo remove string constants here
@@ -1956,6 +1962,52 @@ static Function PAT_IncrementalSweepAddPartialAvgCheck()
 	traceNum = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, 4)
 End
+
+// UTF_EXPECTED_FAILURE
+static Function PAT_HSRemoval1()
+
+	string bspName, graph
+	STRUCT PA_Test patest4
+
+	string traceListAll, traceNames
+	variable traceNum, i, j, size, region, channel
+
+	PA_InitSweep4(patest4)
+
+	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
+	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
+	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 4)
+	PGC_SetAndActivateControl(bspName, "check_overlaySweeps_disableHS", val = 1)
+	MIES_OVS#OVS_AddToIgnoreList(bspName, 1, sweepNo = 0)
+
+	traceListAll = PAT_GetTraces(graph, 1 + patest4.layoutSize)
+
+	size = sqrt(patest4.layoutSize)
+	for(i = 0; i < size; i += 1)
+		for(j = 0; j < size; j += 1)
+			region = patest4.regions[j]
+			channel = patest4.channels[i]
+			traceNames = PAT_FindTraceNames(traceListAll, channel, region, 0)
+			traceNum = ItemsInList(traceNames)
+			if(region == 3 && channel == 3)
+				CHECK_EQUAL_VAR(traceNum, 2)
+				if(traceNum == 2)
+					WAVE pData = TraceNameToWaveRef(graph, StringFromList(0, traceNames))
+					CHECK_NEQ_VAR(strsearch(GetWavesDataFolder(pData, 2), ":X_0:", 0), -1)
+					WAVE pData = TraceNameToWaveRef(graph, StringFromList(1, traceNames))
+					CHECK_NEQ_VAR(strsearch(GetWavesDataFolder(pData, 2), ":X_4:", 0), -1)
+				endif
+			else
+				CHECK_EQUAL_VAR(traceNum, 1)
+				if(traceNum == 1)
+					WAVE pData = TraceNameToWaveRef(graph, traceNames)
+					CHECK_NEQ_VAR(strsearch(GetWavesDataFolder(pData, 2), ":X_4:", 0), -1)
+				endif
+			endif
+		endfor
+	endfor
+End
+
 
 static Function PAT_BasicImagePlot()
 
