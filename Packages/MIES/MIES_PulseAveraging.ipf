@@ -826,7 +826,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	else
 		layoutChanged = CmpStr(oldRegionList, regionList) || CmpStr(oldChannelList, channelList)
 	endif
-	ASSERT(ItemsInList(regionList) == ItemsInList(channelList), "An AD or DA channel that was previously used on one headstage was used with a different headstage in a subsequent sweep. This is not supported.")
+	ASSERT(ItemsInList(regionList, PA_PROPERTIES_STRLIST_SEP) == ItemsInList(channelList, PA_PROPERTIES_STRLIST_SEP), "An AD or DA channel that was previously used on one headstage was used with a different headstage in a subsequent sweep. This is not supported.")
 
 	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_REGIONS, regionList)
 	SetStringInWaveNote(properties, PA_PROPERTIES_KEY_CHANNELS, channelList)
