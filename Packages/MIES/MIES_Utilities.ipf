@@ -5420,11 +5420,14 @@ Function/WAVE RemoveUnusedRows(WAVE wv)
 	variable index
 
 	index = GetNumberFromWaveNote(wv, NOTE_INDEX)
-	ASSERT(IsInteger(index), "Unexpected index")
 
-	if(index == 0)
+	if(IsNaN(index))
+		return wv
+	elseif(index == 0)
 		return $""
 	endif
+
+	ASSERT(IsInteger(index) && index > 0, "Expected strictly positive and integer NOTE_INDEX")
 
 	Duplicate/FREE/RMD=[0, index - 1] wv, dup
 

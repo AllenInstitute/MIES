@@ -650,9 +650,32 @@ End
 /// RemoveUnusedRows
 /// @{
 
-Function RUR_ChecksNote()
+Function RUR_WorksWithRandomWave()
 
 	Make/FREE wv
+
+	WAVE ret = RemoveUnusedRows(wv)
+	CHECK(WaveRefsEqual(ret, wv))
+End
+
+Function RUR_ChecksNote1()
+
+	Make/FREE wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, -1)
+
+	try
+		RemoveUnusedRows(wv); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function RUR_ChecksNote2()
+
+	Make/FREE wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, inf)
+
 	try
 		RemoveUnusedRows(wv); AbortOnRTE
 		FAIL()
