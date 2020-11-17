@@ -1303,3 +1303,4 @@ Constant PA_GETSETWAVES_NEW = 0x04
 /// @}
 
 StrConstant PULSEWAVE_NOTE_SUFFIX = "_note"
+StrConstant PA_NOTE_KEY_PULSE_ISDIAGONAL = "IsDiagonal"
