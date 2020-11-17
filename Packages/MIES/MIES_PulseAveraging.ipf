@@ -3222,7 +3222,7 @@ static Function PA_HighligthFailedPulsesInImage(string graph, STRUCT PulseAverag
 		failedMarkerStartRow = 0
 		fillValue = NaN
 	else
-		failedMarkerStartRow = trunc(DimSize(img, ROWS) * 0.9)
+		failedMarkerStartRow = trunc(DimSize(img, ROWS) * PA_IMAGE_FAILEDMARKERSTART)
 		fillValue = Inf
 	endif
 
