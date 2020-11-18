@@ -10,7 +10,7 @@ if [ -e $runner ]
 then
   ./$runner $@
 
-  exit 0
+  exit $?
 else
   # required for old release branches without unit testing available
   echo "Could not find $runner, skipping unit tests." > /dev/stderr
