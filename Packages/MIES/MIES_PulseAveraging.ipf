@@ -859,13 +859,6 @@ static Function PA_SetDiagonalityNote(WAVE indices, variable startIndex, variabl
 	endif
 End
 
-static Function/WAVE PA_GetWaveCopyFree(WAVE w)
-
-	Duplicate/FREE w, result
-
-	return result
-End
-
 static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT PulseAverageSettings &pa, variable part, variable disableIncremental)
 
 	variable numActive
@@ -895,7 +888,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT P
 		Make/FREE/WAVE/N=(numActive, numActive) setWaves2, axesNames, setIndicesUnsorted
 
 		WAVE/WAVE pasi.setIndices = setIndices
-		setIndicesUnsorted = PA_GetWaveCopyFree(setIndices[p][q])
+		Multithread setIndicesUnsorted[][] = DuplicateWaveToFree(setIndices[p][q])
 		WAVE/WAVE pasi.setIndicesUnsorted = setIndicesUnsorted
 
 		setWaves2[][] = PA_GetSetWaves(pasi.pulseAverageHelperDFR, pasi.channels[p], pasi.regions[q])

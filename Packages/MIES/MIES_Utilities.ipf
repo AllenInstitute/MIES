@@ -5536,3 +5536,11 @@ Function/S MergeLists(string l1, string l2, [string sep])
 
 	return l2
 End
+
+/// @brief Duplicates the input wave to a free wave and returns the free wave reference.
+threadsafe Function/WAVE DuplicateWaveToFree(Wave w)
+
+	Duplicate/FREE w, wFree
+
+	return wFree
+End
