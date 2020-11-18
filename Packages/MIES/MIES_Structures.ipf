@@ -96,7 +96,7 @@ EndStructure
 Structure PulseAverageSetIndices
 	WAVE/WAVE setIndices
 	WAVE/WAVE setIndicesUnsorted
-	WAVE/WAVE setWaves2
+	WAVE/WAVE setWaves2Unsorted
 	WAVE properties
 	WAVE/T propertiesText
 	WAVE/WAVE propertiesWaves

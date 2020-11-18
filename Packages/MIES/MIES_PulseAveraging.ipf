@@ -899,7 +899,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT P
 		WAVE/WAVE pasi.setIndicesUnsorted = setIndicesUnsorted
 
 		setWaves2[][] = PA_GetSetWaves(pasi.pulseAverageHelperDFR, pasi.channels[p], pasi.regions[q])
-		WAVE/WAVE pasi.setWaves2 = setWaves2
+		WAVE/WAVE pasi.setWaves2Unsorted = setWaves2
 
 		axesNames[][] = PA_GetAxes(pa, pasi.channels[p], pasi.regions[q])
 		WAVE/WAVE pasi.axesNames = axesNames
@@ -1833,7 +1833,7 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves) || (!cs.singlePulse && pa.searchFailedPulses))
 		s = stopmstimer(-2)
-		pasi.indexHelper[][] = PA_ResetWavesIfRequired(pasi.setWaves2[p][q], pa, mode)
+		pasi.indexHelper[][] = PA_ResetWavesIfRequired(pasi.setWaves2Unsorted[p][q], pa, mode)
 		print/D "PA_ResetWavesIfRequired", (stopmstimer(-2) - s) / 1E6
 	endif
 
@@ -1846,7 +1846,7 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 	// cs.dontResetWaves contains that zeroPulse setting did not change
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves) && pa.zeroPulses)
 		s = stopmstimer(-2)
-		pasi.indexHelper[][] = PA_ZeroPulses(pasi.setWaves2[p][q])
+		pasi.indexHelper[][] = PA_ZeroPulses(pasi.setWaves2Unsorted[p][q])
 		print/D "PA_ZeroPulses", (stopmstimer(-2) - s) / 1E6
 	endif
 
@@ -2055,7 +2055,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, ST
 				yUnit  = "n. a."
 			endif
 
-			PA_DrawScaleBarsHelper(graph, axisMode, displayMode, pasi.setWaves2[i][j], vertAxis, horizAxis, length, xUnit, yUnit, i + 1, j + 1, numActive)
+			PA_DrawScaleBarsHelper(graph, axisMode, displayMode, pasi.setWaves2Unsorted[i][j], vertAxis, horizAxis, length, xUnit, yUnit, i + 1, j + 1, numActive)
 		endfor
 	endfor
 End
@@ -3061,7 +3061,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			else
 
 				// Determine common wave scales
-				WAVE/WAVE set2 = WaveRef(pasi.setWaves2[i][j])
+				WAVE/WAVE set2 = WaveRef(pasi.setWaves2Unsorted[i][j])
 				numAllPulsesInSet = DimSize(set2, ROWS)
 				Make/FREE/D/N=(numAllPulsesInSet) scaleLeft, scaleRight, scalePoints
 				Multithread scaleLeft = leftx(set2[p][0])
@@ -3107,7 +3107,8 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			endif
 
 			if(pa.showIndividualPulses && gotNewPulsesToDraw)
-				WAVE/WAVE set2 = WaveRef(pasi.setWaves2[i][j])
+				// pasi stores only the unsorted sets, but specifically here we need the sorted ones. Thus, we have to retrieve it from the now sorted setIndices.
+				WAVE/WAVE set2 = PA_GetSetWaves(pasi.pulseAverageHelperDFR, channelNumber, region)
 				Multithread img[][singlePulseColumnOffset + firstPulseIndex, requiredEntries - 1] = WaveRef(set2[q - singlePulseColumnOffset][0])(x); err = GetRTError(1)
 				for(k = singlePulseColumnOffset + firstPulseIndex; k < requiredEntries - 1; k += 1)
 					pulseScaleLeft = scaleLeft[k - singlePulseColumnOffset]
@@ -3125,7 +3126,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 			if(numPulses > 0)
 				// write min and max of the single pulses into the wave note
-				[vert_min, vert_max, horiz_min, horiz_max] = PA_GetMinAndMax(pasi.setWaves2[i][j])
+				[vert_min, vert_max, horiz_min, horiz_max] = PA_GetMinAndMax(pasi.setWaves2Unsorted[i][j])
 			else
 				vert_min = NaN
 				vert_max = NaN
