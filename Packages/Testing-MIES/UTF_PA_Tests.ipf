@@ -3,6 +3,8 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PA_Tests
 
+#ifdef AUTOMATED_TESTING
+
 // Test: PAT_BasicStartUpCheck
 // checked:
 //- PA plot window opens
@@ -395,6 +397,16 @@
 // It is checked if sweep 4 is displayed in all sub plots.
 // It is checked that sweep 0 is not displayed in the sub plots related to HS1 of sweep 0.
 // Currently the test is marked as expected failure until https://github.com/AllenInstitute/MIES/issues/729 is fixed.
+
+// Test: PAT_ImagePlotSortOrder
+// Sweep 7 and 8 are shown with OVS enabled in the image.
+// Both sweeps have 5 pulses (where 4 are shown), where the
+// with: pulse amplitude sweep 7 = 100
+//       pulse amplitude sweep 8 = 50
+// It is checked if in sweep sorting order the first four pulses in the image have ampl. 100
+// and the last four pulses in the image have ampl. 50
+// In PulseIndex sorting order it is checked if the amplitude alternates, starting with 100 from
+// sweep 7.
 
 static Constant PA_TEST_FP_EPSILON = 1E-6
 
@@ -1053,6 +1065,42 @@ static Function PA_InitSweep5(STRUCT PA_Test &patest)
 	Make/FREE channels = {0, 1, 3}
 	WAVE patest.channels = channels
 	Make/FREE regions = {5, 1, 3}
+	WAVE patest.regions = regions
+End
+
+static Function PA_InitSweep7(STRUCT PA_Test &patest)
+	// This is only set partially for the values that are constant for all pulses
+	patest.xUnit = "ms"
+	patest.yUnit = "pA"
+	patest.xMin = 0
+	patest.xMax = 200
+	patest.xTol = 0.005
+	patest.pulseCnt = 3
+	patest.layoutSize = 4
+
+	patest.dataLength = 33333
+
+	Make/FREE channels = {1, 3}
+	WAVE patest.channels = channels
+	Make/FREE regions = {1, 3}
+	WAVE patest.regions = regions
+End
+
+static Function PA_InitSweep8(STRUCT PA_Test &patest)
+	// This is only set partially for the values that are constant for all pulses
+	patest.xUnit = "ms"
+	patest.yUnit = "pA"
+	patest.xMin = 0
+	patest.xMax = 200
+	patest.xTol = 0.005
+	patest.pulseCnt = 3
+	patest.layoutSize = 4
+
+	patest.dataLength = 33333
+
+	Make/FREE channels = {1, 3}
+	WAVE patest.channels = channels
+	Make/FREE regions = {1, 3}
 	WAVE patest.regions = regions
 End
 
@@ -2407,7 +2455,7 @@ static Function PAT_ImagePlotIncrementalPartial()
 	STRUCT PA_Test patest
 
 	string imageList, imageName
-	variable i, j, size, region, channel, numEntries, profilePos
+	variable i, j, size, region, channel, numEntries
 
 	PA_InitSweep5(patest)
 
@@ -2437,3 +2485,75 @@ static Function PAT_ImagePlotIncrementalPartial()
 		endfor
 	endfor
 End
+
+static Function PAT_ImagePlotSortOrder()
+
+	string bspName, imageWin
+	STRUCT PA_Test patest7
+	STRUCT PA_Test patest8
+
+	string imageList, imageName
+	variable i, j, size, region, channel, numEntries, profilePos
+
+	PA_InitSweep7(patest7)
+	PA_InitSweep8(patest8)
+
+	[bspName, imageWin] = PAT_StartDataBrowserImage_IGNORE()
+	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
+	OVS_ChangeSweepSelectionState(bspName, 0, sweepNo = 0)
+
+	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 7)
+	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 8)
+
+	// NaN for avg, devonv, then S7P0, S8P0, S7P1, S8P1, S7P2, S8P2, S7P3, S8P3
+	Make/FREE/D refDataPulseIndex = {NaN, NaN, 100, 50, 100, 50, 100, 50, 100, 50}
+	// NaN for avg, devonv, then S7P0, S7P1, S7P2, S7P3, S8P0, S8P1, S8P2, S8P3
+	Make/FREE/D refDataSweep = {NaN, NaN, 100, 100, 100, 100, 50, 50, 50, 50}
+
+	imageList = PAT_GetImages(imageWin, patest7.layoutSize)
+	size = sqrt(patest7.layoutSize)
+	// Explicitly set it to another value before activating the selection that should be tested
+	PGC_SetAndActivateControl(bspName, "popup_pulseAver_pulseSortOrder", str = "PulseIndex")
+	PGC_SetAndActivateControl(bspName, "popup_pulseAver_pulseSortOrder", str = "Sweep")
+
+	for(i = 0; i < size; i += 1)
+		for(j = 0; j < size; j += 1)
+			region = patest7.regions[j]
+			channel = patest7.channels[i]
+
+			imageName = PAT_FindImageNames(imageList, channel, region)
+			WAVE iData = ImageNameToWaveRef(imageWin, imageName)
+			numEntries = GetNumberFromWaveNote(iData, NOTE_INDEX)
+
+			profilePos = trunc(DimSize(iData, ROWS) * 0.1)
+
+			Duplicate/FREE/RMD=[profilePos][0, numEntries - 1] iData, profileLine
+			Redimension/E=1/N=(numEntries) profileLine
+			Duplicate/FREE profileLine, result
+
+			CHECK_EQUAL_WAVES(profileLine, refDataSweep, mode = WAVE_DATA, tol = numEntries)
+		endfor
+	endfor
+
+	PGC_SetAndActivateControl(bspName, "popup_pulseAver_pulseSortOrder", str = "PulseIndex")
+	for(i = 0; i < size; i += 1)
+		for(j = 0; j < size; j += 1)
+			region = patest7.regions[j]
+			channel = patest7.channels[i]
+
+			imageName = PAT_FindImageNames(imageList, channel, region)
+			WAVE iData = ImageNameToWaveRef(imageWin, imageName)
+			numEntries = GetNumberFromWaveNote(iData, NOTE_INDEX)
+
+			profilePos = trunc(DimSize(iData, ROWS) * 0.1)
+
+			Duplicate/FREE/RMD=[profilePos][0, numEntries - 1] iData, profileLine
+			Redimension/E=1/N=(numEntries) profileLine
+			Duplicate/FREE profileLine, result
+
+			CHECK_EQUAL_WAVES(profileLine, refDataPulseIndex, mode = WAVE_DATA, tol = numEntries)
+		endfor
+	endfor
+End
+
+#endif
