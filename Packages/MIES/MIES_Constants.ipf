@@ -1333,3 +1333,13 @@ Constant PA_PROPERTIES_INDEX_LASTSWEEP = 10
 Constant PA_PROPERTIESTEXT_INDEX_EXPERIMENT = 0
 
 /// @}
+
+/// @name Indices into PA propertiesWaves wave
+/// @anchor PAPropertyWavesIndices
+///
+/// @{
+
+Constant PA_PROPERTIESWAVES_INDEX_PULSE = 0
+Constant PA_PROPERTIESWAVES_INDEX_PULSENOTE = 1
+
+/// @}

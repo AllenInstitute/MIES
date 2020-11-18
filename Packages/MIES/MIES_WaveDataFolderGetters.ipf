@@ -5820,8 +5820,8 @@ Function/WAVE GetPulseAveragePropertiesWaves(DFREF dfr)
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
-	SetDimLabel COLS, 0, PULSE, wv
-	SetDimLabel COLS, 1, PULSENOTE, wv
+	SetDimLabel COLS, PA_PROPERTIESWAVES_INDEX_PULSE, PULSE, wv
+	SetDimLabel COLS, PA_PROPERTIESWAVES_INDEX_PULSENOTE, PULSENOTE, wv
 
 	return wv
 End

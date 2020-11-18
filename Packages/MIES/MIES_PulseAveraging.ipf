@@ -542,7 +542,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep, incrementalMode, layoutChanged
 	variable lblIndex
 	variable lblTraceHeadstage, lblTraceExperiment, lblTraceSweepNumber, lblTraceChannelNumber, lblTracenumericalValues, lblTraceFullpath
-	variable lblPWPULSE, lblPWPULSENOTE, lblACTIVEREGION, lblACTIVECHANNEL
+	variable lblACTIVEREGION, lblACTIVECHANNEL
 	string channelTypeStr, channelList, regionChannelList, channelNumberStr, key, regionList, sweepList, sweepNoStr, experiment
 	string oldRegionList, oldChannelList
 
@@ -645,9 +645,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	lblTracenumericalValues = FindDimLabel(traceData, COLS, "numericalValues")
 	lblTraceExperiment = FindDimLabel(traceData, COLS, "Experiment")
 	lblTraceFullpath = FindDimLabel(traceData, COLS, "fullpath")
-
-	lblPWPULSE = FindDimLabel(propertiesWaves, COLS, "PULSE")
-	lblPWPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
 
 	lblACTIVEREGION = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVEREGION")
 	lblACTIVECHANNEL = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVECHANNEL")
@@ -755,8 +752,8 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 				propertiesText[totalPulseCounter][PA_PROPERTIESTEXT_INDEX_EXPERIMENT] = experiment
 
-				propertiesWaves[totalPulseCounter][lblPWPULSE] = pulseWave
-				propertiesWaves[totalPulseCounter][lblPWPULSENOTE] = pulseWaveNote
+				propertiesWaves[totalPulseCounter][PA_PROPERTIESWAVES_INDEX_PULSE] = pulseWave
+				propertiesWaves[totalPulseCounter][PA_PROPERTIESWAVES_INDEX_PULSENOTE] = pulseWaveNote
 
 				// gather all pulses from one set (used for averaging)
 				totalPulseCounter += 1
@@ -1171,7 +1168,6 @@ threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE pro
 
 	variable numWaves, i, startIndexNewPulses, index
 	variable numNewPulses, numOldPulses, numAllPulses
-	variable lblPULSE, lblPULSENOTE
 
 	// Since we have pasi now we can assemble the parts directly from using the information in pasi.setIndices[p][q]
 	// and index into properties, instead of going through properties
@@ -1180,9 +1176,6 @@ threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE pro
 	if(numWaves == 0)
 		return $""
 	endif
-
-	lblPULSE = FindDimLabel(propertiesWaves, COLS, "PULSE")
-	lblPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
 
 	if(getMode & PA_GETSETWAVES_NEW)
 		Make/FREE/N=(numWaves, 2)/WAVE setWavesNew
@@ -1199,18 +1192,18 @@ threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE pro
 	for(i = 0; i < numWaves; i += 1)
 		index = setIndizes[i]
 		if(getMode & PA_GETSETWAVES_NEW && index >= startIndexNewPulses && !(properties[index][PA_PROPERTIES_INDEX_PULSEHASFAILED] == 1 && removeFailedPulses))
-			setWavesNew[numNewPulses][0] = propertiesWaves[index][lblPULSE]
-			setWavesNew[numNewPulses][1] = propertiesWaves[index][lblPULSENOTE]
+			setWavesNew[numNewPulses][0] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSE]
+			setWavesNew[numNewPulses][1] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
 			numNewPulses += 1
 		endif
 		if(getMode & PA_GETSETWAVES_OLD && index < startIndexNewPulses && !(properties[index][PA_PROPERTIES_INDEX_PULSEHASFAILED] == 1 && removeFailedPulses))
-			setWavesOld[numOldPulses][0] = propertiesWaves[index][lblPULSE]
-			setWavesOld[numOldPulses][1] = propertiesWaves[index][lblPULSENOTE]
+			setWavesOld[numOldPulses][0] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSE]
+			setWavesOld[numOldPulses][1] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
 			numOldPulses += 1
 		endif
 		if(getMode & PA_GETSETWAVES_ALL && !(properties[index][PA_PROPERTIES_INDEX_PULSEHASFAILED] == 1 && removeFailedPulses))
-			setWavesAll[numAllPulses][0] = propertiesWaves[index][lblPULSE]
-			setWavesAll[numAllPulses][1] = propertiesWaves[index][lblPULSENOTE]
+			setWavesAll[numAllPulses][0] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSE]
+			setWavesAll[numAllPulses][1] = propertiesWaves[index][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
 			numAllPulses += 1
 		endif
 	endfor
@@ -1238,7 +1231,6 @@ End
 static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi)
 	variable numTotalPulses, sweepNo
 	variable region, pulse, pulseHasFailed, jsonID, referencePulseHasFailed
-	variable lblPWPULSENOTE
 	variable numActive, numEntries, i, j, k, idx, startEntry
 	string key
 
@@ -1249,10 +1241,9 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 	endif
 	WAVE/WAVE propertiesWaves = pasi.propertiesWaves
 
-	lblPWPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
 	// update the wave notes
 	Make/FREE/N=(numTotalPulses) indexHelper
-	Multithread indexHelper[] = SetNumberInWaveNote(propertiesWaves[p][lblPWPULSENOTE], NOTE_KEY_SEARCH_FAILED_PULSE, pa.searchFailedPulses)
+	Multithread indexHelper[] = SetNumberInWaveNote(propertiesWaves[p][PA_PROPERTIESWAVES_INDEX_PULSENOTE], NOTE_KEY_SEARCH_FAILED_PULSE, pa.searchFailedPulses)
 
 	if(!pa.searchFailedPulses)
 		Multithread properties[][PA_PROPERTIES_INDEX_PULSEHASFAILED] = NaN
@@ -1275,7 +1266,7 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 		for(j = startEntry; j < numEntries; j += 1)
 			idx = indices[j]
 
-			WAVE noteWave = propertiesWaves[idx][lblPWPULSENOTE]
+			WAVE noteWave = propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
 			pulseHasFailed = PA_PulseHasFailed(noteWave, pa)
 			properties[idx][PA_PROPERTIES_INDEX_PULSEHASFAILED] = pulseHasFailed
 
@@ -1313,7 +1304,7 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 	JSON_Release(jsonID)
 
 	// Set current level, need to do that at the end, as PA_PulseHasFailed uses that entry for checking if it needs to rerun
-	Multithread indexHelper[] = SetNumberInWaveNote(propertiesWaves[p][lblPWPULSENOTE], NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
+	Multithread indexHelper[] = SetNumberInWaveNote(propertiesWaves[p][PA_PROPERTIESWAVES_INDEX_PULSENOTE], NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
 End
 
 /// @brief This function returns data from the light-weight data storage for PA graph data
@@ -1355,7 +1346,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	variable hiddenTracesCount, avgPlotCount, deconPlotCount, plottedAvgTraces
 	variable jsonID, hideTraceJsonID, graphDataIndex, numHiddenTracesGraphs, graphHasChanged
 	variable startEntry, numEntries, idx, layoutChanged
-	variable lblTRACES_AVERAGE, lblTRACES_DECONV, lblPWPULSE
+	variable lblTRACES_AVERAGE, lblTRACES_DECONV
 	STRUCT RGBColor s
 	string jsonPath
 	string vertAxis, horizAxis
@@ -1382,10 +1373,8 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	lblTRACES_AVERAGE = FindDimLabel(paGraphData, COLS, "TRACES_AVERAGE")
 	lblTRACES_DECONV = FindDimLabel(paGraphData, COLS, "TRACES_DECONV")
 
-	lblPWPULSE = FindDimLabel(propertiesWaves, COLS, "PULSE")
-
 	Make/T/FREE/N=(numTotalPulses) hiddenTraces
-	Duplicate/FREE/RMD=[][lblPWPULSE] propertiesWaves, pulseWaves
+	Duplicate/FREE/RMD=[][PA_PROPERTIESWAVES_INDEX_PULSE] propertiesWaves, pulseWaves
 	jsonID = JSON_Parse("{}")
 	if(pa.multipleGraphs)
 		hideTraceJsonID = JSON_Parse("{}")
@@ -1436,7 +1425,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					for(k = startEntry; k < numEntries; k += 1)
 						idx = indices[k]
 						if(properties[idx][PA_PROPERTIES_INDEX_PULSEHASFAILED])
-							sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, idx, NameOfWave(propertiesWaves[idx][lblPWPULSE])
+							sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, idx, NameOfWave(propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSE])
 							if(pa.multipleGraphs)
 								jsonPath = graph + "/hiddenTraces"
 								JSON_AddTreeArray(hideTraceJsonID, jsonPath)
@@ -1464,7 +1453,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 							alpha = 65535 * 0.2
 						endif
 
-						WAVE plotWave = propertiesWaves[idx][lblPWPULSE]
+						WAVE plotWave = propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSE]
 						sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, idx, NameOfWave(plotWave)
 
 						jsonPath = graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(s.red) + "/" + num2str(s.green) + "/" + num2str(s.blue) + "/" + num2str(alpha) + "/" + num2str(step) + "/"
@@ -2345,15 +2334,11 @@ End
 static Function PA_AutomaticTimeAlignment(STRUCT PulseAverageSetIndices &pasi)
 
 	variable i, j, numActive, jsonID, numEntries
-	variable lblPWPULSE, lblPWPULSENOTE
 
 	WAVE properties = pasi.properties
 	WAVE/WAVE propertiesWaves = pasi.propertiesWaves
 
 	numActive = DimSize(pasi.channels, ROWS)
-
-	lblPWPULSE = FindDimLabel(propertiesWaves, COLS, "PULSE")
-	lblPWPULSENOTE = FindDimLabel(propertiesWaves, COLS, "PULSENOTE")
 
 	jsonID = JSON_New()
 	Make/D/FREE/N=0 featurePos, junk
@@ -2369,7 +2354,7 @@ static Function PA_AutomaticTimeAlignment(STRUCT PulseAverageSetIndices &pasi)
 		endif
 
 		Redimension/N=(numEntries) featurePos, junk, keys
-		Multithread featurePos[] = PA_GetFeaturePosition(propertiesWaves[setIndizes[p]][lblPWPULSE], propertiesWaves[setIndizes[p]][lblPWPULSENOTE])
+		Multithread featurePos[] = PA_GetFeaturePosition(propertiesWaves[setIndizes[p]][PA_PROPERTIESWAVES_INDEX_PULSE], propertiesWaves[setIndizes[p]][PA_PROPERTIESWAVES_INDEX_PULSENOTE])
 		Multithread keys = "/" + num2str(properties[setIndizes[p]][PA_PROPERTIES_INDEX_SWEEP]) + "-" + num2str(properties[setIndizes[p]][PA_PROPERTIES_INDEX_PULSE])
 		// store featurePos using sweep and pulse combination as key
 		junk[] = JSON_SetVariable(jsonID, keys[p], featurePos[p])
@@ -2383,7 +2368,7 @@ static Function PA_AutomaticTimeAlignment(STRUCT PulseAverageSetIndices &pasi)
 
 			Redimension/N=(numEntries) keys, junk
 			Multithread keys[] = "/" + num2str(properties[setIndizes[p]][PA_PROPERTIES_INDEX_SWEEP]) + "-" + num2str(properties[setIndizes[p]][PA_PROPERTIES_INDEX_PULSE])
-			Multithread junk[] = PA_SetFeaturePosition(propertiesWaves[setIndizes[p]][lblPWPULSE], propertiesWaves[setIndizes[p]][lblPWPULSENOTE], JSON_GetVariable(jsonID, keys[p], ignoreErr=1))
+			Multithread junk[] = PA_SetFeaturePosition(propertiesWaves[setIndizes[p]][PA_PROPERTIESWAVES_INDEX_PULSE], propertiesWaves[setIndizes[p]][PA_PROPERTIESWAVES_INDEX_PULSENOTE], JSON_GetVariable(jsonID, keys[p], ignoreErr=1))
 		endfor
 	endfor
 
