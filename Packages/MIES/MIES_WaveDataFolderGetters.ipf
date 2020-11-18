@@ -5757,17 +5757,17 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 
 	Multithread wv[] = NaN
 
-	SetDimLabel COLS,  0, $"Sweep", wv
-	SetDimLabel COLS,  1, $"ChannelType", wv
-	SetDimLabel COLS,  2, $"ChannelNumber", wv
-	SetDimLabel COLS,  3, $"Region", wv
-	SetDimLabel COLS,  4, $"Headstage", wv
-	SetDimLabel COLS,  5, $"Pulse", wv
-	SetDimLabel COLS,  6, $"DiagonalElement", wv
-	SetDimLabel COLS,  7, $"ActiveRegionCount", wv
-	SetDimLabel COLS,  8, $"ActiveChanCount", wv
-	SetDimLabel COLS,  9, $"PulseHasFailed", wv
-	SetDimLabel COLS, 10, $"LastSweep", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_SWEEP, $"Sweep", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_CHANNELTYPE, $"ChannelType", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_CHANNELNUMBER, $"ChannelNumber", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_REGION, $"Region", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_HEADSTAGE, $"Headstage", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_PULSE, $"Pulse", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_DIAGONALELEMENT, $"DiagonalElement", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_ACTIVEREGIONCOUNT, $"ActiveRegionCount", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_ACTIVECHANCOUNT, $"ActiveChanCount", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_PULSEHASFAILED, $"PulseHasFailed", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_LASTSWEEP, $"LastSweep", wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
