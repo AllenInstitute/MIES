@@ -540,7 +540,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	variable headstage, pulseToPulseLength, totalOnsetDelay, numChannelTypeTraces, totalPulseCounter, jsonID, lastSweep
 	variable activeChanCount, channelNumber, first, length, channelType, numChannels, numRegions
 	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep, incrementalMode, layoutChanged
-	variable lblIndex, lblExperiment
+	variable lblIndex
 	variable lblTraceHeadstage, lblTraceExperiment, lblTraceSweepNumber, lblTraceChannelNumber, lblTracenumericalValues, lblTraceFullpath
 	variable lblPWPULSE, lblPWPULSENOTE, lblACTIVEREGION, lblACTIVECHANNEL
 	string channelTypeStr, channelList, regionChannelList, channelNumberStr, key, regionList, sweepList, sweepNoStr, experiment
@@ -638,8 +638,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	FastOp currentDisplayMapping = 0
 
 	lblIndex = -1
-
-	lblExperiment = FindDimLabel(propertiesText, COLS, "Experiment")
 
 	lblTraceHeadstage = FindDimLabel(traceData, COLS, "headstage")
 	lblTraceSweepNumber = FindDimLabel(traceData, COLS, "SweepNumber")
@@ -755,7 +753,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_PULSE] = k
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_LASTSWEEP] = lastSweep
 
-				propertiesText[totalPulseCounter][lblExperiment] = experiment
+				propertiesText[totalPulseCounter][PA_PROPERTIESTEXT_INDEX_EXPERIMENT] = experiment
 
 				propertiesWaves[totalPulseCounter][lblPWPULSE] = pulseWave
 				propertiesWaves[totalPulseCounter][lblPWPULSENOTE] = pulseWaveNote

@@ -5793,7 +5793,7 @@ Function/WAVE GetPulseAveragePropertiesText(DFREF dfr)
 		Make/T/N=(MINIMUM_WAVE_SIZE_LARGE, 12) dfr:propertiesText/Wave=wv
 	endif
 
-	SetDimLabel COLS,  0, $"Experiment", wv
+	SetDimLabel COLS,  PA_PROPERTIESTEXT_INDEX_EXPERIMENT, $"Experiment", wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
