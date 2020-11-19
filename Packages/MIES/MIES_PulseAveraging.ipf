@@ -575,7 +575,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
 	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
 
 	// Get regions of all traces
@@ -721,7 +720,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			if(numPulseCreate)
 				numPulseCreate += totalPulseCounter
 				EnsureLargeEnoughWave(properties, minimumSize = numPulseCreate, initialValue = NaN)
-				EnsureLargeEnoughWave(propertiesText, minimumSize = numPulseCreate)
 				EnsureLargeEnoughWave(propertiesWaves, minimumSize = numPulseCreate)
 			endif
 
@@ -750,8 +748,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_PULSE] = k
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_LASTSWEEP] = lastSweep
 
-				propertiesText[totalPulseCounter][PA_PROPERTIESTEXT_INDEX_EXPERIMENT] = experiment
-
 				propertiesWaves[totalPulseCounter][PA_PROPERTIESWAVES_INDEX_PULSE] = pulseWave
 				propertiesWaves[totalPulseCounter][PA_PROPERTIESWAVES_INDEX_PULSENOTE] = pulseWaveNote
 
@@ -778,7 +774,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		endfor
 	endfor
 	SetNumberInWaveNote(properties, NOTE_INDEX, totalPulseCounter)
-	SetNumberInWaveNote(propertiesText, NOTE_INDEX, totalPulseCounter)
 
 	if(incrementalMode)
 		sweepList = GetStringFromWaveNote(properties, PA_PROPERTIES_KEY_SWEEPS) + sweepList
@@ -857,7 +852,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT P
 		DFREF pasi.pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
 
 		WAVE pasi.properties = GetPulseAverageProperties(pasi.pulseAverageHelperDFR)
-		WAVE/T pasi.propertiesText = GetPulseAveragePropertiesText(pasi.pulseAverageHelperDFR)
 		WAVE/WAVE pasi.propertiesWaves = GetPulseAveragePropertiesWaves(pasi.pulseAverageHelperDFR)
 
 		WAVE/WAVE/Z setIndices
