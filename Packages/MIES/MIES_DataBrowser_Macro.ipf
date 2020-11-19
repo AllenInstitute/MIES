@@ -46,10 +46,14 @@ Window DataBrowser() : Graph
 	SetVariable setvar_SweepControl_SweepNo,help={"Sweep number of last sweep plotted"}
 	SetVariable setvar_SweepControl_SweepNo,userdata(lastSweep)=  "NaN",fSize=24
 	SetVariable setvar_SweepControl_SweepNo,limits={0,0,1},value= _NUM:0,live= 1
+	SetVariable setvar_SweepControl_SweepNo,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_SweepControl_SweepNo,userdata(Config_DontSave)= "1"
 	SetVariable setvar_SweepControl_SweepStep,pos={479.00,0.00},size={91.00,35.00},bodyWidth=40,title="Step"
 	SetVariable setvar_SweepControl_SweepStep,help={"Set the increment between sweeps"}
 	SetVariable setvar_SweepControl_SweepStep,userdata(lastSweep)=  "0",fSize=24
 	SetVariable setvar_SweepControl_SweepStep,limits={1,inf,1},value= _NUM:1
+	SetVariable setvar_SweepControl_SweepStep,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_SweepControl_SweepStep,userdata(Config_DontSave)= "1"
 	Button button_SweepControl_PrevSweep,pos={0.00,0.00},size={150.00,36.00},proc=BSP_ButtonProc_ChangeSweep,title="\\W646 Previous"
 	Button button_SweepControl_PrevSweep,help={"Displays the previous sweep (sweep no. = last sweep number - step)"}
 	Button button_SweepControl_PrevSweep,fSize=20
@@ -58,6 +62,8 @@ Window DataBrowser() : Graph
 	PopupMenu Popup_SweepControl_Selector,userdata(tabnum)=  "0"
 	PopupMenu Popup_SweepControl_Selector,userdata(tabcontrol)=  "Settings"
 	PopupMenu Popup_SweepControl_Selector,mode=1,popvalue=" ",value= #"\" \""
+	PopupMenu Popup_SweepControl_Selector,userdata(Config_DontRestore)=  "1"
+	PopupMenu Popup_SweepControl_Selector,userdata(Config_DontSave)= "1"
 	CheckBox check_SweepControl_AutoUpdate,pos={345.00,42.00},size={160.00,15.00},title="Display last sweep acquired"
 	CheckBox check_SweepControl_AutoUpdate,help={"Displays the last sweep acquired when data acquistion is ongoing"}
 	CheckBox check_SweepControl_AutoUpdate,value= 1
