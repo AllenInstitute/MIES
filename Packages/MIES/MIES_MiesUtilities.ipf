@@ -1919,7 +1919,7 @@ End
 Function/Wave GetConfigWave(sweepWave)
 	WAVE sweepWave
 
-	WAVE/SDFR=GetWavesDataFolderDFR(sweepWave) config = $GetConfigWaveName(ExtractSweepNumber(NameOfWave(sweepWave)))
+	WAVE/SDFR=GetWavesDataFolderDFR(sweepWave)/Z config = $GetConfigWaveName(ExtractSweepNumber(NameOfWave(sweepWave)))
 
 	return config
 End
