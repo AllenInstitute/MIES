@@ -1754,8 +1754,10 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 
 	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
-		DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
-		KillOrMoveToTrash(dfr = pulseAverageHelperDFR)
+		if(DataFolderExistsDFR(pa.dfr))
+			DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+			KillOrMoveToTrash(dfr = pulseAverageHelperDFR)
+		endif
 		return [pasi, 0]
 	endif
 
