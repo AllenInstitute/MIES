@@ -147,7 +147,7 @@ End
 static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, variable displayMode, variable channelNumber, variable region, variable activeRegionCount, variable activeChanCount, variable numRegions)
 
 	variable top, left, bottom, right, i
-	variable width, height, width_spacing, height_spacing, width_offset, height_offset, junk
+	variable width, height, width_spacing, height_spacing, width_offset, height_offset
 	string win, winAbove
 
 	win = PA_GetGraphName(mainWin, pa, displayMode, channelNumber, activeRegionCount)
@@ -608,9 +608,8 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			if(!WaveExists(indizesNewSweep))
 				continue
 			endif
-			WAVE indizesToAddNewSweep = GetSetIntersection(indizesChannelType, indizesNewSweep)
-			numNewIndicesSweep = DimSize(indizesToAddNewSweep, ROWS)
-			indizesToAdd[j, j + numNewIndicesSweep - 1] = indizesToAddNewSweep[p - j]
+			numNewIndicesSweep = DimSize(indizesNewSweep, ROWS)
+			indizesToAdd[j, j + numNewIndicesSweep - 1] = indizesNewSweep[p - j]
 			j += numNewIndicesSweep
 		endfor
 		Redimension/N=(j) indizesToAdd
@@ -826,14 +825,15 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		[pasi] = PA_InitPASIInParts(pa, PA_PASIINIT_INDICEMETA, 0)
 	endif
 
-	pasi.indexHelper[][] = PA_SetDiagonalityNote(pasi.setIndices[p][q], layoutChanged ? 0 : pasi.startEntry[p][q], pasi.numEntries[p][q], pasi.propertiesWaves, p == q)
+	WAVE indexHelper = pasi.indexHelper
+	Multithread indexHelper[][] = PA_SetDiagonalityNote(pasi.setIndices[p][q], layoutChanged ? 0 : pasi.startEntry[p][q], pasi.numEntries[p][q], pasi.propertiesWaves, p == q)
 
 	JSON_Release(jsonID)
 
 	return [pasi]
 End
 
-static Function PA_SetDiagonalityNote(WAVE indices, variable startIndex, variable numEntries, WAVE/WAVE propertiesWaves, variable isDiagonal)
+threadsafe static Function PA_SetDiagonalityNote(WAVE indices, variable startIndex, variable numEntries, WAVE/WAVE propertiesWaves, variable isDiagonal)
 
 	if(startIndex < numEntries)
 		Duplicate/FREE indices, indexHelper
@@ -1622,7 +1622,6 @@ static Function PA_ClearGraphs(string graphs)
 
 	string graph
 	variable numEntries, i
-	variable junk
 
 	numEntries = ItemsInList(graphs)
 	for(i = 0; i < numEntries; i += 1)

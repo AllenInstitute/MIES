@@ -5775,32 +5775,6 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	return wv
 End
 
-/// @brief Return the pulse average properties textwave
-///
-/// It is filled by PA_GenerateAllPulseWaves() and consumed by others.
-Function/WAVE GetPulseAveragePropertiesText(DFREF dfr)
-
-	variable versionOfNewWave = 1
-
-	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
-	WAVE/T/Z/SDFR=dfr wv = propertiesText
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
-		// handle upgrade
-	else
-		Make/T/N=(MINIMUM_WAVE_SIZE_LARGE, 12) dfr:propertiesText/Wave=wv
-	endif
-
-	SetDimLabel COLS,  PA_PROPERTIESTEXT_INDEX_EXPERIMENT, $"Experiment", wv
-
-	SetWaveVersion(wv, versionOfNewWave)
-	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
-
-	return wv
-End
-
 /// @brief Return the pulse average properties wave with wave references
 ///
 /// Belongs to GetPulseAverageProperties() and also has the same
@@ -6792,29 +6766,6 @@ Function/WAVE GetPAGraphData()
 	SetDimLabel COLS, 0, TRACES_AVERAGE, wv
 	SetDimLabel COLS, 1, TRACES_DECONV, wv
 	SetDimLabel COLS, 2, IMAGELIST, wv
-
-	return wv
-End
-
-/// @brief Return the wave of PA avergae buffer
-/// rows channels
-/// cols regions
-Function/WAVE GetPAAverageBuffer()
-
-	variable versionOfNewWave = 1
-	DFREF dfr = GetGraphUserDataFolderDFR()
-	string name = "PAAverageBuffer"
-	WAVE/WAVE/Z/SDFR=dfr wv = $name
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
-		// handle upgrade
-	else
-		Make/WAVE/N=(0, 0) dfr:$name/WAVE=wv
-	endif
-
-	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
