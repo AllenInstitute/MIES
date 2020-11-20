@@ -171,7 +171,10 @@ Function/S CA_AveragingWaveModKey(WAVE wv)
 	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
 End
 
-Function CA_RecursiveWavemodCRC(WAVE/Z wv, [variable prevCRC])
+/// @brief Calculated a CRC from non wave reference waves using modification data, wave modification count and wave location.
+///        If the given wave is a wave reference wave, then the CRC is calculated recursively from
+///        all non wave reference waves and null wave references found.
+static Function CA_RecursiveWavemodCRC(WAVE/Z wv, [variable prevCRC])
 
 	variable rows_, cols_, layers_, chunks_
 	variable i, j, k, l

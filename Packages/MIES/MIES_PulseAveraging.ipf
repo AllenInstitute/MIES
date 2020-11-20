@@ -1,4 +1,3 @@
-
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
@@ -220,8 +219,6 @@ static Function/WAVE PA_GetAxes(STRUCT PulseAverageSettings &pa, variable channe
 		return w
 	endif
 
-	// the vertical axes names must end numbered like auto generated waves, because they are sorted with sortOrder 16 + 1
-	// in PA_LayoutGraphs (descending, like waves)
 	sprintf vertAxis,  "left_R%d_C%d", region, channel
 	sprintf horizAxis, "bottom_R%d", region
 	Make/FREE/T w = {vertAxis, horizAxis}
@@ -448,9 +445,10 @@ End
 
 /// @brief Single pulse wave creator
 ///
+/// The wave note for the pulse waves is stored in a separate empty wave. This speeds up caching logic for the pulse waves a lot.
 /// The wave note is used for documenting the applied operations:
 /// - `$NOTE_KEY_FAILED_PULSE_LEVEL`: Level used for failed pulse search
-/// - `PulseHasFailed`: Search for failed pulses says that this pulse failed (Only present for pulses from diagonal sets)
+/// - `$PA_NOTE_KEY_PULSE_FAILED`: Search for failed pulses says that this pulse failed (Only valid for pulses from diagonal sets)
 /// - `PulseLength`: Length in points of the pulse wave (before any operations)
 /// - `$NOTE_KEY_SEARCH_FAILED_PULSE`: Checkbox state of "Search failed pulses"
 /// - `$NOTE_KEY_TIMEALIGN`: Time alignment was active and applied
@@ -458,6 +456,9 @@ End
 /// - `$NOTE_KEY_ZEROED`: Zeroing was active and applied
 /// - `WaveMinimum`: Minimum value of the data
 /// - `WaveMaximum`: Maximum value of the data
+/// - `TimeAlignmentFeaturePosition`: Position where the feature for time alignment was found
+/// - `$PA_NOTE_KEY_PULSE_ISDIAGONAL`: Stores if pulse is shown in the diagonal of the output layout
+/// - `$PA_SOURCE_WAVE_TIMESTAMP`: Last modification time of the pulse wave before creation.
 static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(WAVE/Z wv, DFREF singleSweepFolder, variable channelType, variable channelNumber, variable region, variable pulseIndex, variable first, variable length)
 
 	variable existingLength
@@ -532,7 +533,14 @@ End
 /// - Now gather the pulse starting time from the region and create single pulse waves for all of them
 ///
 /// The result is feed into GetPulseAverageProperties() and GetPulseAveragepropertiesWaves() for further consumption.
-/// Returns the mode, because the mode may change from incremental to full update because incremental update fails due to layout changes
+///
+/// Fast path for incremental update:
+/// - The previous list of regions/channels is saved
+/// - We get the indizes of the new sweep (from additionalData)
+/// - Only these indizes are added to the properties wave, as well as the setIndice waves at the end
+/// - information is stored where the new data begins
+/// - The region/channels of the new Sweep(s) are merged with the old ones.
+/// - In case the layout changed compared to the old regions/channels it is calculated again.
 static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, variable mode, WAVE/Z additionalData)
 
 	variable startingPulseSett, endingPulseSett, pulseHasFailed, numActive
@@ -841,6 +849,13 @@ threadsafe static Function PA_SetDiagonalityNote(WAVE indices, variable startInd
 	endif
 End
 
+/// @brief This function fills a structure with information we need in most further processing functions,
+/// e.g. PA DFs, references to properties, setIndice waves, regions, channels, axes, a.s.o.
+/// Since not every information might be available at the time this structure is filled there are two steps defined,
+/// that are enabled by setting 'part' with PA_PASIINIT_BASE and/or PA_PASIINIT_INDICEMETA.
+/// @param pa PulseAverageSettings structure
+/// @param part filling step for the returned structure, set depending on available data
+/// @param disableIncremental When set then the meta information for incremental updates is just initialized with zero.
 static Function [STRUCT PulseAverageSetIndices pasi] PA_InitPASIInParts(STRUCT PulseAverageSettings &pa, variable part, variable disableIncremental)
 
 	variable numActive
@@ -913,6 +928,10 @@ static Function PA_CopySetIndiceSizeDispRestart(WAVE/WAVE setIndices)
 	SetNumberInWaveNote(setIndices, PA_SETINDICES_KEY_DISPSTART, displayStart)
 End
 
+/// @brief Retrieve setIndices, channels and regions of the current or the previous layout, as is saved in the properties wave wave note.
+/// @param[in] pulseAverageHelperDFR Reference to pulse average helper DF
+/// @param[in] prevIndices When set then the indices, channels and regions of the previous layout are returned, otherwise the current layout is returned.
+///                        Note that only the layout is considered, the returned indices always contain the current indices for each channel/region at the time of calling this function.
 static Function [WAVE/WAVE setIndices, WAVE channels, WAVE regions, WAVE indexHelper] PA_GetSetIndicesHelper(DFREF pulseAverageHelperDFR, variable prevIndices)
 
 	variable numChannels, numRegions
@@ -943,6 +962,19 @@ static Function [WAVE/WAVE setIndices, WAVE channels, WAVE regions, WAVE indexHe
 	return [setIndices, channels, regions, indexHelper]
 End
 
+/// @brief Updates the setIndices notes with information about the layout and layout changes.
+///        Therefore the function compares the previous display mapping and the current display mapping for each region/channel in the layout and
+///        determines if the setIndices at this region/channel are added as new/moved/stayed at the same position or were removed.
+///        In the setIndices wave note the following keys are set:
+///        '$PA_SETINDICES_KEY_DISPCHANGE': change in the layout for this set
+///        '$PA_SETINDICES_KEY_ACTIVEREGIONCOUNT': grid location on the vertical where this set is displayed
+///        '$PA_SETINDICES_KEY_ACTIVECHANCOUNT': grid location on the horizontal where this set is displayed
+///        (this data is currently not used, but created for further PA plot extension)
+/// @param[in] currentDisplayMapping 3D wave, rows and columns map the region/channels, in the two layers the associated activeRegion and activeChannel are stored.
+///                                  The layer information is the position in the grid of the layout.
+/// @param[in] prevDisplayMapping Technically the same wave as currentDisplayMapping, but it stores the information about the previous layout.
+/// @param[in] pasi Pulse Average structure storing PA information
+/// @param[in] layoutChanged when set then the layout has changed compared to the previous one displayed. This is directly related to a region/channel change.
 static Function PA_UpdateIndiceNotes(WAVE currentDisplayMapping, WAVE prevDisplayMapping, STRUCT PulseAverageSetIndices &pasi, variable layoutChanged)
 
 	if(layoutChanged)
@@ -1156,15 +1188,15 @@ static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable 
 	return WaveRef(PA_GetSetWaves_TS(properties, propertiesWaves, setIndizes, PA_GETSETWAVES_ALL, removeFailedPulses), row = 0)
 End
 
-/// @brief returns a 1D wave ref wave containing the refs to the setwave refs of all / new / old sets, depending on combined getModes.
-/// a setWave wave is 2D containing the ref to the pulse and the note in col 0 and 1.
+/// @brief Returns a 1D wave ref wave containing the refs to the setwave2 refs of {all, new, old} sets, depending on the mode constant given in getModes.
+///        For mode constants @sa PAGetSetWavesModes, they can be combined by ORing the bits.
+///        Each setWave2 component wave entry in the returned wave is a 2D wave ref wave that refrences the pulse data in col 0, and the pulse note in col 1.
+///        The rows count the pulses.
 threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE propertiesWaves, WAVE setIndizes, variable getMode, variable removeFailedPulses)
 
 	variable numWaves, i, startIndexNewPulses, index
 	variable numNewPulses, numOldPulses, numAllPulses
 
-	// Since we have pasi now we can assemble the parts directly from using the information in pasi.setIndices[p][q]
-	// and index into properties, instead of going through properties
 	numWaves = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
 
 	if(numWaves == 0)
@@ -1896,6 +1928,9 @@ threadsafe static Function/WAVE PA_ExtractPulseSetFromSetWaves2(WAVE/WAVE setWav
 	return setWave
 End
 
+/// @brief Stores the WaveMaximum in the wave note of the given wave and sets the wave unit to the same as from unitSource
+/// @param[in] w Wave where the maximum is determined and written to the wave note, the wave unit determiend from unitSource is also set for w
+/// @param[in] unitSource a source wave for wave unit information for w
 threadsafe static Function PA_StoreMaxAndUnitsInWaveNote(WAVE/Z w, WAVE/Z unitSource)
 
 	if(!WaveExists(w))
@@ -3278,6 +3313,14 @@ Function PA_ImageWindowHook(s)
 	return 0
 End
 
+/// @brief Returns 1 if data is displayed on the given layout grid location.
+///        When data is displayed in PA_ShowPulses and PA_ShowImage then in PulseAverageSetIndices this is tagged.
+/// @param[in] pa Pulse Average Setting information
+/// @param[in] pasi Pulse Average Set Indices information
+/// @param[in] xLoc x location on display grid, typically the channel index
+/// @param[in] yLoc y location on display grid, typically the region index
+/// @param[in] displayMode Return data for either trace plot (PA_DISPLAYMODE_TRACES) or image plot (PA_DISPLAYMODE_IMAGES)
+/// @returns 1 if data is displayed on this grid location, 0 if no data is displayed
 static Function PA_IsDataOnSubPlot(STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable xLoc, variable yLoc, variable displayMode)
 
 	if(displayMode == PA_DISPLAYMODE_TRACES)

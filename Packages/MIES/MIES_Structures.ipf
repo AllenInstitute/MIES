@@ -93,6 +93,41 @@ Structure PulseAverageDeconvSettings
 	variable enable, smth, tau, range
 EndStructure
 
+/// @{
+// This structure stores data that is used in many PA functions.
+// setIndices: 2D wave reference wave, each entry refers to a permanent setIndice wave @sa GetPulseAverageSetIndizes
+//             The size is (numActive, numActive) where numActive is the number of regions/channels
+//             rows index the channels and columns index the regions
+// setIndicesUnsorted: same size and layout as setIndices, but it stores references to free waves of setIndices.
+//                     These setIndice waves are copies of the setIndices at creation time, where they are unsorted.
+// setWaves2Unsorted: same size and layout as setIndices, but it stores references to the set waves.
+//                    Each set wave is a two column wave reference wave where the first column refers to the pulse data and
+//                    the second column to the pulse note wave. @sa PA_GetSetWaves
+//                    The 2 in the name relates to the fact that the referenced wave is a two column wave reference wave, where
+//                    the pulse data and the note data is split into several waves.
+// properties: reference to the PA properties wave. @sa GetPulseAverageProperties
+// propertiesWaves: reference to the PA propertiesWaves wave (from GetPulseAveragePropertiesWaves)
+// axesNames: same size and layout as setIndices, but it stores references to two element text waves.
+//            The two element text waves store the name of the horizontal and vertical axis for the display.
+//            @sa PA_GetAxes
+// ovlTracesAvg: numeric wave with size (numActive, numActive). It is used in @sa PA_ShowPulses to log if in a channel/region
+//               a average trace was plotted. @sa PA_IsDataOnSubPlot
+// ovlTracesDeconv: numeric wave with size (numActive, numActive). It is used in @sa PA_ShowPulses to log if in a channel/region
+//               a deconvolution trace was plotted. @sa PA_IsDataOnSubPlot
+// imageAvgDataPresent: numeric wave with size (numActive, numActive). It is used in @sa PA_ShowImage to log if in a channel/region
+//               a average data was plotted. @sa PA_IsDataOnSubPlot
+// imageDeconvDataPresent: numeric wave with size (numActive, numActive). It is used in @sa PA_ShowImage to log if in a channel/region
+//               a deconvolution data was plotted. @sa PA_IsDataOnSubPlot
+// pulseAverageHelperDFR: data folder reference to the PA helper DF
+// pulseAverageDFR: data folder reference to the PA DF
+// channels: 1D numeric wave of size numActive. It stores the channel numbers. The index is position in y on the displayed layout grid.
+// regions: 1D numeric wave of size numActive. It stores the region numbers. The index is position in x on the displayed layout grid.
+// numEntries: 2D numeric wave of size (numActive, numActive). Stores the number of used elements in the corresponding indice wave from
+//             setIndicesUnsorted. @sa NOTE_INDEX
+// startEntry: 2D numeric wave of size (numActive, numActive). Stores the number of start index in the corresponding indice wave from
+//             setIndicesUnsorted for incremental averaging and display.
+// indexHelper: 2D numeric wave of size (numActive, numActive). For use as helper wave for multithreaded auto indexing using one of
+//              the other waves from the structure.
 Structure PulseAverageSetIndices
 	WAVE/WAVE setIndices
 	WAVE/WAVE setIndicesUnsorted
@@ -112,6 +147,8 @@ Structure PulseAverageSetIndices
 	WAVE startEntry
 	WAVE indexHelper
 EndStructure
+
+/// @}
 
 /// @brief Parameter to #CreateTiledChannelGraph
 Structure TiledGraphSettings
