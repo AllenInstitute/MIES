@@ -43,6 +43,7 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 
 	KillOrMoveToTrash(wv = GetTrackSweepCounts())
 	KillOrMoveToTrash(wv = GetTrackActiveSetCount())
+	KillOrMoveToTrash(wv = TrackAnalysisFunctionCalls())
 
 	if(!ParamIsDefault(postInitializeFunc))
 		postInitializeFunc(devices)
@@ -3593,4 +3594,111 @@ Function LabnotebookEntriesCanBeQueried_REENTRY([str])
 	WAVE textualValues = GetLBTextualValues(str)
 
 	CheckLabnotebookKeys_IGNORE(textualKeys, textualValues)
+End
+
+Function TestSweepRollbackPostInit_IGNORE(device)
+	string device
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "SweepRollbackChecker"
+End
+
+Function TestSweepRollbackPreAcquire_IGNORE(device)
+	string device
+
+	// disable HS1
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+End
+
+/// Testing sweep rollback approach:
+/// - Test case "TestSweepRollback" acquires 3 sweeps
+/// - First reentry function, "TestSweepRollback_REENTRY", checks that these are acquired correctly.
+///   Rolls back to sweep 1, does more checks, adds analysis function, "SweepRollbackChecker",
+///   setups next reentry function and starts DAQ again
+/// - "SweepRollbackChecker" checks in PRE_DAQ_EVENT that all sweeps except 0 are really removed.
+/// - Second reentry function, "TestSweepRollback_REENTRY_REENTRY" checks sweep 0 from the first acquistion is still there
+///   and three new sweeps, and also checks that "SweepRollbackChecker" was called
+///
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function TestSweepRollback([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc = TestSweepRollbackPreAcquire_IGNORE)
+End
+
+Function TestSweepRollback_REENTRY([str])
+	string str
+
+	variable sweepNo, sweepRollback
+	string list, refList
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE/Z sweepCounts = GetLastSettingEachRAC(numericalValues, sweepNo, "Set Sweep Count", 0, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(sweepCounts, {0, 1, 2}, mode = WAVE_DATA)
+
+	// rollback to sweep 1
+	PGC_SetAndActivateControl(str, "SetVar_Sweep", val = 1)
+
+	// check LBN entry
+	sweepRollback = GetLastSettingIndep(numericalValues, sweepNo, SWEEP_ROLLBACK_KEY, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(sweepRollback, 1)
+
+	// setvariable is already updated
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	// but nothing deleted yet
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	DFREF dfr = GetDevicedataPath(str)
+	list    = SortList(GetListOfObjects(dfr, ".*"))
+	refList = SortList("Config_Sweep_0;Sweep_0;Config_Sweep_1;Sweep_1;Config_Sweep_2;Sweep_2;")
+	CHECK_EQUAL_STR(refList, list)
+
+	TestSweepRollbackPostInit_IGNORE(str)
+
+	PGC_SetAndActivateControl(str, "DataAcquireButton")
+
+	RegisterReentryFunction(GetRTStackInfo(1))
+End
+
+Function TestSweepRollback_REENTRY_REENTRY([str])
+	string str
+
+	variable sweepNo
+	string list, refList
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 4)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 3)
+
+	// we want to be sure that "SweepRollbackChecker" was called
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+
+	// the non overwritten sweep
+	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE/Z sweepCounts = GetLastSetting(numericalValues, 0, "Set Sweep Count", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(sweepCounts, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	// new sweeps
+	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE/Z sweepCounts = GetLastSettingEachRAC(numericalValues, sweepNo, "Set Sweep Count", 0, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(sweepCounts, {0, 1, 2}, mode = WAVE_DATA)
+
+	DFREF dfr = GetDevicedataPath(str)
+	list    = SortList(GetListOfObjects(dfr, ".*"))
+	refList = SortList("Config_Sweep_0;Sweep_0;Config_Sweep_1;Sweep_1;Config_Sweep_2;Sweep_2;Config_Sweep_3;Sweep_3;")
+	CHECK_EQUAL_STR(refList, list)
 End
