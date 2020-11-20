@@ -951,7 +951,7 @@ End
 /// - All active headstages must be in "Current Clamp"
 /// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on the next sweep if the measured resistance is smaller than 20MOhm
 Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
-	variable sweepNo, index, i
+	variable sweepNo, index, i, targetV
 	variable amps
 	variable autoBiasCheck, holdingPotential
 	string msg
@@ -1079,7 +1079,9 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 			amps = targetVoltages[index] / resistanceFitted[i]
 		endif
 
-		sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", panelTitle, i, resistanceFitted[i], targetVoltages[targetVoltagesIndex[i]], amps
+		index = targetVoltagesIndex[i]
+		targetV = targetVoltages[index]
+		sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", panelTitle, i, resistanceFitted[i], targetV, amps
 		DEBUGPRINT(msg)
 
 		SetDAScale(panelTitle, i, absolute=amps)
