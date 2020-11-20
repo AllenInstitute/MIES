@@ -3,6 +3,7 @@
 set -e
 
 # Deployment script for our sphinx/doxygen/breathe documentation
+#
 # Expectations:
 # - Called from the MIES repository (full clone)
 # - $public_mies_repo exists and its origin remote is the github repository
@@ -10,7 +11,7 @@ set -e
 # - The boundary commit on the gh-pages branch exists. This commit separates
 #   the commits we can throw away (old documentation) from the ones we want to keep
 #   (setup and stuff).
-# - The documentation was already successfully built
+# - The documentation is present as zip file in the working tree root
 
 push_opts=
 # push_opts=--dry-run
@@ -39,6 +40,8 @@ then
   exit 1
 fi
 
+unzip -o mies-docu*.zip
+
 cd $public_mies_repo
 
 git stash || true
@@ -48,9 +51,9 @@ boundary=$(git log --grep="EMPTY_BOUNDARY_COMMIT_FOR_REWRITE" --pretty=format:%H
 git reset --hard $boundary
 git clean -ffdx
 
-cp -r ${top_level}/Packages/doc/html/* .
+cp -r ${top_level}/html/* .
 
-git add -A 
+git add -A
 git commit --author="MIES Deployment <mies-deploy@linux-mint-box.seattle>" -m "Updating documentation to ${project_version}"
 git push ${push_opts} --force-with-lease
 
