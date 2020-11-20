@@ -1080,7 +1080,7 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 		endif
 
 		index = targetVoltagesIndex[i]
-		targetV = targetVoltages[index]
+		targetV = (index >= 0 && index < DimSize(targetVoltages, ROWS)) ? targetVoltages[index] : NaN
 		sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", panelTitle, i, resistanceFitted[i], targetV, amps
 		DEBUGPRINT(msg)
 
