@@ -197,6 +197,10 @@ Function TEST_CASE_END_OVERRIDE(name)
 	// cut off multi data suffix
 	name = StringFromList(0, name, ":")
 
+	// remove possible test suite prefix,
+	// see https://github.com/byte-physics/igor-unit-testing-framework/issues/162
+	name = StringFromList(ItemsInList(name, "#") - 1, name , "#")
+
 	SVAR devices = $GetDevicePanelTitleList()
 
 	numEntries = ItemsInList(devices)
