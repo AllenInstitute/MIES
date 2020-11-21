@@ -175,7 +175,17 @@ static Function NWB_GetFileForExport(nwbVersion, [overrideFilePath, createdNewNW
 			endif
 		endif
 
-		IPNWB#CreateCommonGroups(fileID, ti)
+		STRUCT IPNWB#SubjectInfo si
+		IPNWB#InitSubjectInfo(si)
+
+		if(nwbVersion == 2)
+			expName = GetExperimentName()
+			if(cmpstr(expName, UNTITLED_EXPERIMENT))
+				si.subject_id = expName
+			endif
+		endif
+
+		IPNWB#CreateCommonGroups(fileID, ti, subjectInfo = si)
 
 		NWB_AddGeneratorString(fileID, nwbVersion)
 		NWB_AddSpecifications(fileID, nwbVersion)
