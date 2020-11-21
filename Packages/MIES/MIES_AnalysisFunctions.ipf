@@ -947,17 +947,11 @@ End
 /// Prerequisites:
 /// - Stimset with multiple but identical sweeps and testpulse-like shape. The
 ///   number of sweeps must be larger than the number of rows in the targetVoltages wave below.
-/// - This stimset must have this analysis function set for the "Pre DAQ" and the "Post Sweep" Event
 /// - Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)
 /// - All active headstages must be in "Current Clamp"
 /// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on the next sweep if the measured resistance is smaller than 20MOhm
-Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
-	string panelTitle
-	variable eventType
-	Wave ITCDataWave
-	variable headstage, realDataLength
-
-	variable sweepNo, index, i
+Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
+	variable sweepNo, index, i, targetV
 	variable amps
 	variable autoBiasCheck, holdingPotential
 	string msg
@@ -972,11 +966,11 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 
 	WAVE ampParam = GetAmplifierParamStorageWave(panelTitle)
 
-	switch(eventType)
+	switch(s.eventType)
 		case PRE_DAQ_EVENT:
-			targetVoltagesIndex[headstage] = -1
+			targetVoltagesIndex[s.headstage] = -1
 
-			if(DAG_GetHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
+			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) The analysis function %s does only work in clamp mode.\r", panelTitle, GetRTStackInfo(1)
 				ControlWindowToFront()
 				return 1
@@ -1012,7 +1006,7 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
 			KillWindow/Z $RESISTANCE_GRAPH
 
-			SetDAScale(panelTitle, headstage, absolute=-20e-12)
+			SetDAScale(panelTitle, s.headstage, absolute=-20e-12)
 
 			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
 
@@ -1023,7 +1017,7 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 			return Nan
 			break
 		case POST_SWEEP_EVENT:
-			targetVoltagesIndex[headstage] += 1
+			targetVoltagesIndex[s.headstage] += 1
 			break
 		default:
 			ASSERT(0, "Unknown eventType")
@@ -1031,7 +1025,7 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 	endswitch
 
 	// only do something if we are called for the very last headstage
-	if(DAP_GetHighestActiveHeadstage(panelTitle) != headstage)
+	if(DAP_GetHighestActiveHeadstage(panelTitle) != s.headstage)
 		return NaN
 	endif
 
@@ -1056,7 +1050,6 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 
 	WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
 	ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
-
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1086,7 +1079,9 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 			amps = targetVoltages[index] / resistanceFitted[i]
 		endif
 
-		sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", panelTitle, i, resistanceFitted[i], targetVoltages[targetVoltagesIndex[i]], amps
+		index = targetVoltagesIndex[i]
+		targetV = (index >= 0 && index < DimSize(targetVoltages, ROWS)) ? targetVoltages[index] : NaN
+		sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", panelTitle, i, resistanceFitted[i], targetV, amps
 		DEBUGPRINT(msg)
 
 		SetDAScale(panelTitle, i, absolute=amps)
