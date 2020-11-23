@@ -286,14 +286,7 @@ static Function/WAVE PA_GetUniqueHeadstages(WAVE/T traceData)
 
 	Make/D/FREE/N=(size) headstages = str2num(traceData[p][%headstage])
 
-	if(DimSize(headstages, ROWS) == 1)
-		return headstages
-	endif
-
-	Make/FREE/D headstagesClean
-	FindDuplicates/Z/RN=headstagesClean headstages
-
-	return headstagesClean
+	return GetUniqueEntries(headstages)
 End
 
 /// @brief Return the pulse starting times
