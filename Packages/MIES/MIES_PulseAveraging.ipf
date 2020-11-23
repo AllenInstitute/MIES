@@ -2553,35 +2553,6 @@ static Function PA_ResetWavesIfRequired(WAVE/Z setWave2, STRUCT PulseAverageSett
 	endfor
 End
 
-/// @brief This is a light weight adapted version of @sa EquallySpaceAxis
-///        It allows to give a list of distAxes that do not require to exist.
-///        Non-existing axes are taken into account on the distribution, but are skipped when the graph is accessed.
-///        Also removing images from a graph does not update AxisList until the graph is updated,
-///        so we can not rely on Axislist here as we do the Layout after pending changes
-static Function PA_EquallySpaceAxis(string graph, string allAxes, string distAxes, [variable axisOffset])
-
-	variable numAxes, i
-	string axis
-
-	if(ParamIsDefault(axisOffset))
-		axisOffset = 0
-	else
-		ASSERT(axisOffset >=0 && axisOffset <= 1.0, "Invalid axis offset")
-	endif
-
-	numAxes = ItemsInList(distAxes, ";")
-	if(numAxes > 0)
-		WAVE/Z axisStart, axisEnd
-		[axisStart, axisEnd] = DistributeElements(numAxes, offset = axisOffset)
-		for(i = 0; i < numAxes; i += 1)
-			axis = StringFromList(i, distAxes)
-			if(WhichListItem(axis, allAxes, ";") != -1)
-				ModifyGraph/Z/W=$graph axisEnab($axis) = {axisStart[i], axisEnd[i]}
-			endif
-		endfor
-	endif
-End
-
 static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable displayMode)
 
 	variable i, j, numActive, numEntries
@@ -2613,7 +2584,7 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 			axisWave[j] = wt[1]
 		endfor
 		horizAxes = TextWaveToList(axisWave, ";")
-		PA_EquallySpaceAxis(graph, allAxes, horizAxes, axisOffset=PA_X_AXIS_OFFSET)
+		EquallySpaceAxisPA(graph, allAxes, horizAxes, axisOffset=PA_X_AXIS_OFFSET)
 
 		for(i = 0; i < numActive; i += 1)
 			axisWaveRef[] = pasi.axesNames[p][i]
@@ -2622,7 +2593,7 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 				axisWave[numActive - j - 1] = wt[0]
 			endfor
 			vertAxes = TextWaveToList(axisWave, ";")
-			PA_EquallySpaceAxis(graph, allAxes, vertAxes)
+			EquallySpaceAxisPA(graph, allAxes, vertAxes)
 			for(j = 0; j < numActive; j += 1)
 
 				WAVE/T axesNames = pasi.axesNames[j][i]

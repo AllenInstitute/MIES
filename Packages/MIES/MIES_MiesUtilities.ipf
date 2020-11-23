@@ -3047,6 +3047,41 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 	endif
 End
 
+/// @brief This is a light weight adapted version of @sa EquallySpaceAxis
+///        It allows to give a list of distAxes that do not require to exist.
+///        Non-existing axes are taken into account on the distribution, but are skipped when the graph is accessed.
+///        Also removing images from a graph does not update AxisList until the graph is updated,
+///        so we can not rely on Axislist here as we do the Layout after pending changes
+///        So with allAxes = "1;2;3;4;" and distAxes = "2;3;" axis 2 and 3 are set at 25% to 50% and 50% to 75% respectively.
+/// @param[in] graph Name of graph where axes from distAxes list exist
+/// @param[in] allAxes List of all axes, that should be distributed. May include non-existing axes.
+/// @param[in] distAxes List of axes that are distributed. Only axes that appear in allAxes as well are modified.
+/// @param[in] axisOffset [optional, default = 0] offset between 0 and 1 where distribution starts.
+Function EquallySpaceAxisPA(string graph, string allAxes, string distAxes, [variable axisOffset])
+
+	variable numAxes, i
+	string axis
+
+	if(ParamIsDefault(axisOffset))
+		axisOffset = 0
+	else
+		ASSERT(axisOffset >=0 && axisOffset <= 1.0, "Invalid axis offset")
+	endif
+
+	numAxes = ItemsInList(distAxes)
+	if(numAxes > 0)
+		WAVE/Z axisStart, axisEnd
+		[axisStart, axisEnd] = DistributeElements(numAxes, offset = axisOffset)
+		for(i = 0; i < numAxes; i += 1)
+			axis = StringFromList(i, distAxes)
+			if(WhichListItem(axis, allAxes) != -1)
+				ModifyGraph/Z/W=$graph axisEnab($axis) = {axisStart[i], axisEnd[i]}
+			endif
+		endfor
+	endif
+End
+
+
 /// @brief Update the legend in the labnotebook graph
 ///
 /// Passing traceList is required if you just added traces
