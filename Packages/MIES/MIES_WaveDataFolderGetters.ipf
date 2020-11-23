@@ -5762,8 +5762,6 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_REGION, $"Region", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_HEADSTAGE, $"Headstage", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_PULSE, $"Pulse", wv
-	SetDimLabel COLS, PA_PROPERTIES_INDEX_ACTIVEREGIONCOUNT, $"ActiveRegionCount", wv
-	SetDimLabel COLS, PA_PROPERTIES_INDEX_ACTIVECHANCOUNT, $"ActiveChanCount", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_PULSEHASFAILED, $"PulseHasFailed", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_LASTSWEEP, $"LastSweep", wv
 
