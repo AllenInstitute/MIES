@@ -3,6 +3,11 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PA_Tests
 
+// The functions are enclosed in this define to be able to acquire data for tests in
+// a non-test environment. So commenting AUTOMATED_TESTING in the experiment procedure
+// switches off the testing environment and thus these tests must be removed from compilation as well.
+// The module names for specific procedure files are only available in the testing environment and
+// compilation would fail.
 #ifdef AUTOMATED_TESTING
 
 // Test: PAT_BasicStartUpCheck
