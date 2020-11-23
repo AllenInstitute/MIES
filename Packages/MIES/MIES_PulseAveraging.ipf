@@ -88,6 +88,8 @@ static Constant PA_PASIINIT_INDICEMETA = 0x02
 
 // comment out to show all the axes, useful for debugging
 #define PA_HIDE_AXIS
+// comment out to show execution times in debugging mode
+#define PA_HIDE_EXECUTION_TIME
 
 /// @brief Return a list of all graphs
 static Function/S PA_GetGraphs(string win, variable displayMode)
@@ -1134,8 +1136,11 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	variable jsonIDOld, needsPlotting
 	STRUCT PulseAverageSetIndices pasi
 
-	variable s1, e1, s2, e2
-	variable s = stopmstimer(-2)
+#ifndef PA_HIDE_EXECUTION_TIME
+	variable execTime_StartLocal, execTime_PreProcess, execTime_ShowPulses, execTime_ShowImage, execTime_Update
+	variable execTime_Start = stopmstimer(-2)
+	string execTime_outStr
+#endif
 
 	if(ParamIsDefault(additionalData))
 		WAVE/Z additionalData = $""
@@ -1154,25 +1159,48 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	STRUCT PA_ConstantSettings cs
 	[cs] = PA_DetermineConstantSettings(current, old, mode)
 
-	s1 = stopmstimer(-2)
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_StartLocal = stopmstimer(-2)
+#endif
 	[pasi, needsPlotting] = PA_PreProcessPulses(win, current, cs, mode, additionalData)
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_PreProcess = stopmstimer(-2) - execTime_StartLocal
+#endif
 	if(!needsPlotting)
 		return NaN
 	endif
-	e1 = stopmstimer(-2)
 
 	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
 
-	s2 = stopmstimer(-2)
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_StartLocal = stopmstimer(-2)
+#endif
 	usedTraceGraphs = PA_ShowPulses(graph, current, cs, pasi, mode)
-	e2 = stopmstimer(-2)
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_ShowPulses = stopmstimer(-2) - execTime_StartLocal
+#endif
 
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_StartLocal = stopmstimer(-2)
+#endif
 	usedImageGraphs = PA_ShowImage(graph, current, cs, pasi, mode, additionalData)
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_ShowImage = stopmstimer(-2) - execTime_StartLocal
+#endif
 
 	KillWindows(RemoveFromList(usedTraceGraphs + usedImageGraphs, preExistingGraphs))
-	print/D "Preprocess", (e1 - s1) / 1E6
-	print/D "Showpulses", (e2 - s2) / 1E6
-	print/D "All", (stopmstimer(-2) - s) / 1E6, "\r---"
+
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_Update = stopmstimer(-2) - execTime_Start
+	sprintf execTime_outStr, "PA exec time: PA_PreProcessPulses %.3f s.\r", execTime_PreProcess / 1E6
+	DEBUGPRINT(execTime_outStr)
+	sprintf execTime_outStr, "PA exec time: PA_ShowPulses %.3f s.\r", execTime_ShowPulses / 1E6
+	DEBUGPRINT(execTime_outStr)
+	sprintf execTime_outStr, "PA exec time: PA_ShowImage %.3f s.\r", execTime_ShowImage / 1E6
+	DEBUGPRINT(execTime_outStr)
+	sprintf execTime_outStr, "PA exec time: PA_Update %.3f s.\r", execTime_Update / 1E6
+	DEBUGPRINT(execTime_outStr)
+#endif
 End
 
 /// @brief Returns the two column setWave with pulse/pulsenote
@@ -1778,7 +1806,11 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 
 	string preExistingGraphs, graph
 
-	variable s
+#ifndef PA_HIDE_EXECUTION_TIME
+	variable execTime_startLocal, execTime_GenerateAllPulseWaves, execTime_ApplyPulseSortingOrder, execTime_ResetWavesIfRequired
+	variable execTime_MarkFailedPulses, execTime_ZeroPulses, execTime_AutomaticTimeAlignment, execTime_CalculateAllAverages
+	string execTime_outStr
+#endif
 
 	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
 	graph = GetMainWindow(win)
@@ -1795,9 +1827,14 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.singlePulse)
 		[pasi] = PA_InitPASIInParts(pa, PA_PASIINIT_BASE | PA_PASIINIT_INDICEMETA, 1)
 	else
-		s = stopmstimer(-2)
+
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_StartLocal = stopmstimer(-2)
+#endif
 		[pasi] = PA_GenerateAllPulseWaves(win, pa, mode, additionalData)
-		print/D "PA_GenerateAllPulseWaves", (stopmstimer(-2) - s) / 1E6
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_GenerateAllPulseWaves = stopmstimer(-2) - execTime_StartLocal
+#endif
 	endif
 
 	if(!WaveExists(pasi.setIndices))
@@ -1806,44 +1843,85 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 	endif
 
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.images))
-		s = stopmstimer(-2)
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_StartLocal = stopmstimer(-2)
+#endif
 		// if CONSTANT_SWEEPS and not changed or no image shown, no need to call
 		WAVE indexHelper = pasi.indexHelper
 		Multithread indexHelper[][] = PA_ApplyPulseSortingOrder(pasi.setIndices[p][q], pasi.channels[p], pasi.regions[q], pasi.properties, pa)
-		print/D "PA_ApplyPulseSortingOrder", (stopmstimer(-2) - s) / 1E6
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_ApplyPulseSortingOrder = stopmstimer(-2) - execTime_StartLocal
+#endif
 	endif
 
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves) || (!cs.singlePulse && pa.searchFailedPulses))
-		s = stopmstimer(-2)
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_StartLocal = stopmstimer(-2)
+#endif
 		pasi.indexHelper[][] = PA_ResetWavesIfRequired(pasi.setWaves2Unsorted[p][q], pa, mode)
-		print/D "PA_ResetWavesIfRequired", (stopmstimer(-2) - s) / 1E6
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_ResetWavesIfRequired = stopmstimer(-2) - execTime_StartLocal
+#endif
 	endif
 
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.failedPulses) || (!cs.singlePulse && pa.searchFailedPulses))
-		s = stopmstimer(-2)
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_StartLocal = stopmstimer(-2)
+#endif
 		PA_MarkFailedPulses(pa, pasi)
-		print/D "PA_MarkFailedPulses", (stopmstimer(-2) - s) / 1E6
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_MarkFailedPulses = stopmstimer(-2) - execTime_StartLocal
+#endif
 	endif
 
 	// cs.dontResetWaves contains that zeroPulse setting did not change
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves) && pa.zeroPulses)
-		s = stopmstimer(-2)
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_StartLocal = stopmstimer(-2)
+#endif
 		pasi.indexHelper[][] = PA_ZeroPulses(pasi.setWaves2Unsorted[p][q])
-		print/D "PA_ZeroPulses", (stopmstimer(-2) - s) / 1E6
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_ZeroPulses = stopmstimer(-2) - execTime_StartLocal
+#endif
 	endif
 
 	// cs.dontResetWaves contains that autoTimeAlignment setting did not change
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves) && pa.autoTimeAlignment)
-		s = stopmstimer(-2)
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_StartLocal = stopmstimer(-2)
+#endif
 		PA_AutomaticTimeAlignment(pasi)
-		print/D "PA_AutomaticTimeAlignment", (stopmstimer(-2) - s) / 1E6
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_AutomaticTimeAlignment = stopmstimer(-2) - execTime_StartLocal
+#endif
 	endif
 
 	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves && cs.failedPulses && cs.singlePulse))
-		s = stopmstimer(-2)
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_StartLocal = stopmstimer(-2)
+#endif
 		PA_CalculateAllAverages(pasi, mode)
-		print/D "PA_CalculateAllAverages", (stopmstimer(-2) - s) / 1E6
+#ifndef PA_HIDE_EXECUTION_TIME
+	execTime_CalculateAllAverages = stopmstimer(-2) - execTime_StartLocal
+#endif
 	endif
+
+#ifndef PA_HIDE_EXECUTION_TIME
+	sprintf execTime_outStr, "PA exec time: PA_GenerateAllPulseWaves %.3f s.\r", execTime_GenerateAllPulseWaves / 1E6
+	DEBUGPRINT(execTime_outStr)
+	sprintf execTime_outStr, "PA exec time: PA_ApplyPulseSortingOrder %.3f s.\r", execTime_ApplyPulseSortingOrder / 1E6
+	DEBUGPRINT(execTime_outStr)
+	sprintf execTime_outStr, "PA exec time: PA_ResetWavesIfRequired %.3f s.\r", execTime_ResetWavesIfRequired / 1E6
+	DEBUGPRINT(execTime_outStr)
+	sprintf execTime_outStr, "PA exec time: PA_MarkFailedPulses %.3f s.\r", execTime_MarkFailedPulses / 1E6
+	DEBUGPRINT(execTime_outStr)
+	sprintf execTime_outStr, "PA exec time: PA_ZeroPulses %.3f s.\r", execTime_ZeroPulses / 1E6
+	DEBUGPRINT(execTime_outStr)
+	sprintf execTime_outStr, "PA exec time: PA_AutomaticTimeAlignment %.3f s.\r", execTime_AutomaticTimeAlignment / 1E6
+	DEBUGPRINT(execTime_outStr)
+	sprintf execTime_outStr, "PA exec time: PA_CalculateAllAverages %.3f s.\r", execTime_CalculateAllAverages / 1E6
+	DEBUGPRINT(execTime_outStr)
+#endif
 
 	return [pasi, 1]
 End
@@ -1865,16 +1943,18 @@ static Function PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, var
 	keyAll = CA_AveragingWaveModKey(setWavesAll)
 	WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(keyAll, options = CA_OPTS_NO_DUPLICATE)
 	if(!WaveExists(cache))
-		print "Cache Miss All"
+		DEBUGPRINT("Cache miss all data:", str=keyAll)
 		// we have to calculate
 		if(mode == POST_PLOT_ADDED_SWEEPS)
 			Multithread/NT=(numThreads) setWavesOld[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2AllNewOld[p][q], row = 2))
 			keyOld = CA_AveragingWaveModKey(setWavesOld)
 			WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(keyOld, options = CA_OPTS_NO_DUPLICATE)
 			if(WaveExists(cache))
+				DEBUGPRINT("Cache hit old data (for incremental):", str=keyOld)
 				Multithread/NT=(numThreads) setWavesNew[][] = PA_ExtractPulseSetFromSetWaves2(WaveRef(setWaves2AllNewOld[p][q], row = 1))
 				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesNew[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1, prevAvgData = PA_ExtractSumsCountsOnly(cache[p][q]))
 			else
+				DEBUGPRINT("Cache miss old data (for incremental):", str=keyOld)
 				Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
 			endif
 		else
@@ -1884,7 +1964,7 @@ static Function PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, var
 		Multithread indexHelper[][] = PA_StoreMaxAndUnitsInWaveNote(WaveRef(avg[p][q], row = 0), WaveRef(setWavesAll[p][q], row = 0))
 		CA_StoreEntryIntoCache(keyAll, avg, options = CA_OPTS_NO_DUPLICATE)
 	else
-		print "Cache Hit All"
+		DEBUGPRINT("Cache hit all data:", str=keyAll)
 		WAVE/WAVE avg = cache
 	endif
 
