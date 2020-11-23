@@ -742,7 +742,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				endif
 
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_SWEEP] = sweepNo
-				properties[totalPulseCounter][PA_PROPERTIES_INDEX_CHANNELTYPE] = channelType
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_CHANNELNUMBER] = channelNumber
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_REGION] = region
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_HEADSTAGE] = headstage

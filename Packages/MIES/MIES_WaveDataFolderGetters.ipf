@@ -5750,20 +5750,18 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 11) wv
+		Redimension/N=(-1, 9) wv
 	else
-		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 11) dfr:properties/Wave=wv
+		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 9) dfr:properties/Wave=wv
 	endif
 
 	Multithread wv[] = NaN
 
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_SWEEP, $"Sweep", wv
-	SetDimLabel COLS, PA_PROPERTIES_INDEX_CHANNELTYPE, $"ChannelType", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_CHANNELNUMBER, $"ChannelNumber", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_REGION, $"Region", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_HEADSTAGE, $"Headstage", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_PULSE, $"Pulse", wv
-	SetDimLabel COLS, PA_PROPERTIES_INDEX_DIAGONALELEMENT, $"DiagonalElement", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_ACTIVEREGIONCOUNT, $"ActiveRegionCount", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_ACTIVECHANCOUNT, $"ActiveChanCount", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_PULSEHASFAILED, $"PulseHasFailed", wv
