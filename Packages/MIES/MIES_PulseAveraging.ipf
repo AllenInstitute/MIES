@@ -613,6 +613,11 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			numNewIndicesSweep = DimSize(indizesNewSweep, ROWS)
 			indizesToAdd[j, j + numNewIndicesSweep - 1] = indizesNewSweep[p - j]
 			j += numNewIndicesSweep
+
+			// This assertion check is a workaround for the case that we have multiple sweeps with the same SweepNo from different experiments.
+			FindValue/Z/V=(additionalData[i])/T=(GetMachineEpsilon(WaveType(properties)))/RMD=[][PA_PROPERTIES_INDEX_SWEEP] properties
+			ASSERT(V_Value == -1, "A sweep with the same number is already plotted. Multiple sweeps with the same number from different experiments is currently not supported.")
+
 		endfor
 		Redimension/N=(j) indizesToAdd
 
