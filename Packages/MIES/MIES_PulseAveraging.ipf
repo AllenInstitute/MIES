@@ -351,15 +351,20 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 		variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 2
 
 		WAVE DBG_pulseStartTimesCalc = pulseStartTimes
-		if(DimSize(DBG_pulseStartTimesEpochs, ROWS) != DimSize(DBG_pulseStartTimesCalc, ROWS))
-			print/D "Warn: Pulse start time from epochs:\r", DBG_pulseStartTimesEpochs, "\r from Calculation:\r", DBG_pulseStartTimesCalc
-		else
-			for(i = 0; i < DimSize(DBG_pulseStartTimesEpochs, ROWS); i += 1)
-				if(abs(DBG_pulseStartTimesEpochs[i] - DBG_pulseStartTimesCalc[i]) > warnDiffms)
-					print/D "Warn: Pulse start time from epochs:\r", DBG_pulseStartTimesEpochs, "from Calculation:\r", DBG_pulseStartTimesCalc
-					break
-				endif
-			endfor
+		if(WaveExists(DBG_pulseStartTimesEpochs) && WaveExists(DBG_pulseStartTimesCalc))
+			if(DimSize(DBG_pulseStartTimesEpochs, ROWS) != DimSize(DBG_pulseStartTimesCalc, ROWS))
+				print/D "Warn: Pulse start time from epochs:\r", DBG_pulseStartTimesEpochs, "\r from Calculation:\r", DBG_pulseStartTimesCalc
+			else
+				for(i = 0; i < DimSize(DBG_pulseStartTimesEpochs, ROWS); i += 1)
+					if(abs(DBG_pulseStartTimesEpochs[i] - DBG_pulseStartTimesCalc[i]) > warnDiffms)
+						print/D "Warn: Pulse start time from epochs:\r", DBG_pulseStartTimesEpochs, "from Calculation:\r", DBG_pulseStartTimesCalc
+						break
+					endif
+				endfor
+			endif
+		endif
+		if(WaveExists(DBG_pulseStartTimesEpochs) && !WaveExists(DBG_pulseStartTimesCalc))
+			print/D "Warn: Returned pulse start times from Epochs but got none from Calculation. From Epochs:\r", DBG_pulseStartTimesEpochs
 		endif
 #endif
 
