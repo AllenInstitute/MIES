@@ -6769,3 +6769,16 @@ Function/WAVE GetPAGraphData()
 
 	return wv
 End
+
+/// @brief Return permanent average wave for PA plot for a given channel/region as well as its base name
+///        Returns a null wave if the permanent wave does not exist.
+Function [WAVE avg_, string baseName_] GetPAPermanentAverageWave(DFREF dfr, variable channel, variable region)
+
+	string baseName, wName
+
+	baseName = PA_BaseName(channel, region)
+	wName = PA_AVERAGE_WAVE_PREFIX + baseName
+	WAVE/Z avg = dfr:$wName
+
+	return [avg, baseName]
+End

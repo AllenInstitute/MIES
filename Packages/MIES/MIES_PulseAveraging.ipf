@@ -29,7 +29,6 @@ static StrConstant PA_DRAWLAYER_FAILED_PULSES = "ProgBack"
 static StrConstant PA_GRAPH_PREFIX          = "PulseAverage"
 static StrConstant PA_SOURCE_WAVE_TIMESTAMP = "SOURCE_WAVE_TS"
 
-static StrConstant PA_AVERAGE_WAVE_PREFIX       = "average_"
 static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 
 static StrConstant PA_SETTINGS = "PulseAverageSettings"
@@ -1583,7 +1582,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 			endif
 
 			WAVE/Z averageWave
-			[averageWave, baseName] = PA_GetPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
+			[averageWave, baseName] = GetPAPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
 
 			sprintf traceName, "Ovl_%s%s", PA_AVERAGE_WAVE_PREFIX, baseName
 
@@ -1972,22 +1971,9 @@ static Function PA_MakeAverageWavePermanent(DFREF dfr, WAVE/Z avg, variable chan
 		ConvertFreeWaveToPermanent(avg, dfr, PA_AVERAGE_WAVE_PREFIX + PA_BaseName(channel, region))
 	else
 		// no data, we remove permanent wave
-		[avg, baseName] = PA_GetPermanentAverageWave(dfr, channel, region)
-		if(WaveExists(avg))
-			KillOrMoveToTrash(wv = avg)
-		endif
+		[avg, baseName] = GetPAPermanentAverageWave(dfr, channel, region)
+		KillOrMoveToTrash(wv = avg)
 	endif
-End
-
-static Function [WAVE avg_, string baseName_] PA_GetPermanentAverageWave(DFREF dfr, variable channel, variable region)
-
-	string baseName, wName
-
-	baseName = PA_BaseName(channel, region)
-	wName = PA_AVERAGE_WAVE_PREFIX + baseName
-	WAVE/Z avg = dfr:$wName
-
-	return [avg, baseName]
 End
 
 threadsafe static Function/WAVE PA_ExtractPulseSetFromSetWaves2(WAVE/WAVE setWave2)
@@ -2101,7 +2087,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, ST
 			endif
 
 			WAVE/Z averageWave
-			[averageWave, baseName] = PA_GetPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
+			[averageWave, baseName] = GetPAPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
 			if(WaveExists(averageWave))
 				maximum = GetNumberFromWaveNote(averageWave, "WaveMaximum")
 				length  = pa.yScaleBarLength * (IsFinite(maximum) ? sign(maximum) : +1)
@@ -2276,7 +2262,7 @@ Function/S PA_GeneratePulseWaveName(variable channelType, variable channelNumber
 End
 
 /// @brief Generate a static base name for objects in the current averaging folder
-static Function/S PA_BaseName(channelNumber, headStage)
+Function/S PA_BaseName(channelNumber, headStage)
 	variable channelNumber, headStage
 
 	string baseName
@@ -3076,7 +3062,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			resetImage = 0
 
 			WAVE/Z averageWave
-			[averageWave, baseName] = PA_GetPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
+			[averageWave, baseName] = GetPAPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
 
 			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
 				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, region, j + 1, i + 1, numActive)

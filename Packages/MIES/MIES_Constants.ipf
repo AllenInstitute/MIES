@@ -1305,6 +1305,7 @@ Constant PA_GETSETWAVES_NEW = 0x04
 
 StrConstant PULSEWAVE_NOTE_SUFFIX = "_note"
 StrConstant PA_NOTE_KEY_PULSE_ISDIAGONAL = "IsDiagonal"
+StrConstant PA_AVERAGE_WAVE_PREFIX       = "average_"
 
 /// @name Indices into PA properties wave
 /// @anchor PAPropertyWaveIndices
