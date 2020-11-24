@@ -833,7 +833,7 @@ Function OVS_MainListBoxProc(lba) : ListBoxControl
 	STRUCT WMListboxAction &lba
 
 	string win
-	variable index, sweepNo
+	variable index
 
 	switch(lba.eventCode)
 		case 6: //begin edit
@@ -853,13 +853,12 @@ Function OVS_MainListBoxProc(lba) : ListBoxControl
 		case 13: // checkbox clicked
 			win = lba.win
 			index = lba.row
-			sweepNo = str2num(lba.listWave[index][0])
 			if(lba.selWave[lba.row] & LISTBOX_CHECKBOX_SELECTED)
 				AddSweepToGraph(win, index)
-				PostPlotTransformations(win, POST_PLOT_ADDED_SWEEPS, additionalData={sweepNo})
+				PostPlotTransformations(win, POST_PLOT_ADDED_SWEEPS, additionalData={index})
 			else
 				RemoveSweepFromGraph(win, index)
-				PostPlotTransformations(win, POST_PLOT_REMOVED_SWEEPS, additionalData={sweepNo})
+				PostPlotTransformations(win, POST_PLOT_REMOVED_SWEEPS, additionalData={index})
 			endif
 			break
 	endswitch
