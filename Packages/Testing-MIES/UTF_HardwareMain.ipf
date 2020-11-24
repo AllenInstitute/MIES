@@ -30,26 +30,24 @@ StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
 Function run()
 
 	string list = ""
-	list = AddListItem("UTF_BasicHardwareTests.ipf", list)
-	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list)
-	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list)
-	list = AddListItem("UTF_DAEphys.ipf", list)
-	list = AddListItem("UTF_PatchSeqDAScale.ipf", list)
-	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list)
-	list = AddListItem("UTF_PatchSeqRheobase.ipf", list)
-	list = AddListItem("UTF_PatchSeqRamp.ipf", list)
-	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list)
-	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list)
-	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list)
-	list = AddListItem("UTF_Epochs.ipf", list)
-	list = AddListItem("UTF_SetControls.ipf", list)
 
-	// the last will be first
-	// use this hack until https://github.com/byte-physics/igor-unit-testing-framework/issues/109
-	// is resolved
-	list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list)
+	list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list, ";", inf)
+	list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", inf)
+	list = AddListItem("UTF_DAEphys.ipf", list, ";", inf)
+	list = AddListItem("UTF_Epochs.ipf", list, ";", inf)
+	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", inf)
+	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list, ";", inf)
+	// analysis functions
+	list = AddListItem("UTF_SetControls.ipf", list, ";", inf)
+	list = AddListItem("UTF_PatchSeqDAScale.ipf", list, ";", inf)
+	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list, ";", inf)
+	list = AddListItem("UTF_PatchSeqRheobase.ipf", list, ";", inf)
+	list = AddListItem("UTF_PatchSeqRamp.ipf", list, ";", inf)
+	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", inf)
+	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
+	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
 
-	RunTest(list, name = "MIES with Hardware", enableJU = 1, allowDebug = 0)
+	RunTest(list, name = "MIES with Hardware", enableJU = 1)
 End
 
 Function/WAVE DeviceNameGeneratorMD1()
