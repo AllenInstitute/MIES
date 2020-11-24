@@ -5619,7 +5619,7 @@ Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, regio
 	DFREF dfr
 	variable length, channelType, pulseIndex, channelNumber, region
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	string wvName
 
 	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
@@ -5629,11 +5629,44 @@ Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, regio
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
+		// clear the wave note so that it is invalidated for cache checks through mod
+		Note/K wv
+	else
+		Make/N=(length) dfr:$wvName/WAVE=wv
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return a wave reference to the single pulse defined by the given parameters
+///
+/// @param dfr           datafolder reference where to create the empty wave if it does not exist
+/// @param length        Length in points of the new wave
+/// @param channelType   ITC XOP numeric channel type
+/// @param channelNumber channel number
+/// @param region        region index (a region is the range with data in a dDAQ/oodDAQ measurement)
+/// @param pulseIndex    pulse number, 0-based
+Function/WAVE GetPulseAverageWaveNoteWave(dfr, length, channelType, channelNumber, region, pulseIndex)
+	DFREF dfr
+	variable length, channelType, pulseIndex, channelNumber, region
+
+	variable versionOfNewWave = 1
+	string wvName
+
+	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
+	wvName = PA_GeneratePulseWaveName(channelType, channelNumber, region, pulseIndex) + PULSEWAVE_NOTE_SUFFIX
+
+	WAVE/SDFR=dfr/Z wv = $wvName
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
 		// clear the wave note so that it is regenerated
 		// by PA_CreateAndFillPulseWaveIfReq()
 		Note/K wv
 	else
-		Make/R/N=(length) dfr:$wvName/WAVE=wv
+		Make/N=0 dfr:$wvName/WAVE=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
@@ -5717,50 +5750,20 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 11) wv
+		Redimension/N=(-1, 9) wv
 	else
-		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 11) dfr:properties/Wave=wv
+		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 9) dfr:properties/Wave=wv
 	endif
 
 	Multithread wv[] = NaN
 
-	SetDimLabel COLS,  0, $"Sweep", wv
-	SetDimLabel COLS,  1, $"ChannelType", wv
-	SetDimLabel COLS,  2, $"ChannelNumber", wv
-	SetDimLabel COLS,  3, $"Region", wv
-	SetDimLabel COLS,  4, $"Headstage", wv
-	SetDimLabel COLS,  5, $"Pulse", wv
-	SetDimLabel COLS,  6, $"DiagonalElement", wv
-	SetDimLabel COLS,  7, $"ActiveRegionCount", wv
-	SetDimLabel COLS,  8, $"ActiveChanCount", wv
-	SetDimLabel COLS,  9, $"PulseHasFailed", wv
-	SetDimLabel COLS, 10, $"LastSweep", wv
-
-	SetWaveVersion(wv, versionOfNewWave)
-	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
-
-	return wv
-End
-
-/// @brief Return the pulse average properties textwave
-///
-/// It is filled by PA_GenerateAllPulseWaves() and consumed by others.
-Function/WAVE GetPulseAveragePropertiesText(DFREF dfr)
-
-	variable versionOfNewWave = 1
-
-	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
-	WAVE/T/Z/SDFR=dfr wv = propertiesText
-
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-		return wv
-	elseif(WaveExists(wv))
-		// handle upgrade
-	else
-		Make/T/N=(MINIMUM_WAVE_SIZE_LARGE, 12) dfr:propertiesText/Wave=wv
-	endif
-
-	SetDimLabel COLS,  0, $"Experiment", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_SWEEP, $"Sweep", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_CHANNELNUMBER, $"ChannelNumber", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_REGION, $"Region", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_HEADSTAGE, $"Headstage", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_PULSE, $"Pulse", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_PULSEHASFAILED, $"PulseHasFailed", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_LASTSWEEP, $"LastSweep", wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
@@ -5773,7 +5776,7 @@ End
 /// Belongs to GetPulseAverageProperties() and also has the same
 /// `NOTE_INDEX` count stored there.
 Function/WAVE GetPulseAveragePropertiesWaves(DFREF dfr)
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/WAVE/Z/SDFR=dfr wv = propertiesWaves
@@ -5783,10 +5786,38 @@ Function/WAVE GetPulseAveragePropertiesWaves(DFREF dfr)
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/WAVE/N=(MINIMUM_WAVE_SIZE_LARGE) dfr:propertiesWaves/Wave=wv
+		Make/WAVE/N=(MINIMUM_WAVE_SIZE_LARGE, 2) dfr:propertiesWaves/Wave=wv
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
+	SetDimLabel COLS, PA_PROPERTIESWAVES_INDEX_PULSE, PULSE, wv
+	SetDimLabel COLS, PA_PROPERTIESWAVES_INDEX_PULSENOTE, PULSENOTE, wv
+
+	return wv
+End
+
+/// @brief Return the mapping wave for pulse averaging between region/channel to activeRegion/activeChannel
+///
+/// Belongs to GetPulseAverageProperties() and also has the same
+/// `NOTE_INDEX` count stored there.
+Function/WAVE GetPulseAverageDisplayMapping(DFREF dfr)
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/D/Z/SDFR=dfr wv = displayMapping
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(NUM_HEADSTAGES, NUM_MAX_CHANNELS, 2) dfr:displayMapping/Wave=wv
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetDimLabel LAYERS, 0, ACTIVEREGION, wv
+	SetDimLabel LAYERS, 1, ACTIVECHANNEL, wv
+
 	return wv
 End
 
@@ -6705,4 +6736,45 @@ Function/WAVE GetGraphUserData(string graph)
 	SetNumberInWaveNote(wv, TUD_INDEX_JSON, JSON_New())
 
 	return wv
+End
+
+/// @brief Return the wave for trace counts per graph for pulse averaging plot
+/// rows one per graph, dimlabel is graph name
+/// col 0 trace names of all average traces
+/// col 1 trace names of all deconvolution traces
+/// col 2 list of used image names
+Function/WAVE GetPAGraphData()
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetGraphUserDataFolderDFR()
+	string name = "PAGraphData"
+	WAVE/T/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(0, 3) dfr:$name/WAVE=wv
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetDimLabel COLS, 0, TRACES_AVERAGE, wv
+	SetDimLabel COLS, 1, TRACES_DECONV, wv
+	SetDimLabel COLS, 2, IMAGELIST, wv
+
+	return wv
+End
+
+/// @brief Return permanent average wave for PA plot for a given channel/region as well as its base name
+///        Returns a null wave if the permanent wave does not exist.
+Function [WAVE avg_, string baseName_] GetPAPermanentAverageWave(DFREF dfr, variable channel, variable region)
+
+	string baseName, wName
+
+	baseName = PA_BaseName(channel, region)
+	wName = PA_AVERAGE_WAVE_PREFIX + baseName
+	WAVE/Z avg = dfr:$wName
+
+	return [avg, baseName]
 End

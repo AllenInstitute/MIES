@@ -100,10 +100,10 @@ Function/S CA_PulseStartTimes(wv, fullPath, channelNumber, totalOnsetDelay)
 
 	variable crc
 
-	crc = StringCRC(crc, num2str(ModDate(wv)))
-	crc = StringCRC(crc, num2str(WaveModCountWrapper(wv)))
+	crc = StringCRC(crc, num2istr(ModDate(wv)))
+	crc = StringCRC(crc, num2istr(WaveModCountWrapper(wv)))
 	crc = StringCRC(crc, fullPath)
-	crc = StringCRC(crc, num2str(channelNumber))
+	crc = StringCRC(crc, num2istr(channelNumber))
 	crc = StringCRC(crc, num2str(totalOnsetDelay))
 
 	return num2istr(crc) + "Version 1"
@@ -139,7 +139,7 @@ Function/S CA_Deconv(wv, tau)
 	variable crc
 
 	crc = WaveCRC(0, wv)
-	crc = CA_WaveScalingCRC(crc, wv, dimension=ROWS)
+	crc = StringCRC(crc, num2str(DimDelta(wv, ROWS)))
 	crc = StringCRC(crc, num2str(tau))
 
 
@@ -164,6 +164,68 @@ Function/S CA_AveragingKey(waveRefs)
 	WAVE/WAVE waveRefs
 
 	return CA_WaveCRCs(waveRefs, includeWaveScalingAndUnits=1, dims=ROWS) + "Version 6"
+End
+
+/// @brief Cache key generator for averaging info from non-free waves
+Function/S CA_AveragingWaveModKey(WAVE wv)
+	return num2istr(CA_RecursiveWavemodCRC(wv)) + "Version 1"
+End
+
+/// @brief Calculated a CRC from non wave reference waves using modification data, wave modification count and wave location.
+///        If the given wave is a wave reference wave, then the CRC is calculated recursively from
+///        all non wave reference waves and null wave references found.
+static Function CA_RecursiveWavemodCRC(WAVE/Z wv, [variable prevCRC])
+
+	variable rows_, cols_, layers_, chunks_
+	variable i, j, k, l
+
+	prevCRC = ParamIsDefault(prevCRC) ? 0 : prevCRC
+
+	if(!WaveExists(wv))
+		// prevents getting the same key when the internal layout of the multi dimensional
+		// wave reference wave changes due to additional null waves, while the sub set and order of
+		// existing waves stays the same
+		// e.g. original input:
+		// w1, w2
+		// w3, w4
+		// new input:
+		// null, null, null
+		// null,   w1,   w2
+		// null,   w3,   w4
+		return StringCRC(prevCRC, "null wave")
+	endif
+
+	if(IsWaveRefWave(wv))
+		WAVE/WAVE wvRef = wv
+
+		rows_ = DimSize(wv, ROWS)
+		cols_ = DimSize(wv, COLS)
+		layers_ = DimSize(wv, LAYERS)
+		chunks_ = DimSize(wv, CHUNKS)
+
+		chunks_ = chunks_ ? chunks_ : 1
+		layers_ = layers_ ? layers_ : 1
+		cols_ = cols_ ? cols_ : 1
+
+		for(l = 0; l < chunks_; l += 1)
+			for(k = 0; k < layers_; k += 1)
+				for(j = 0; j < cols_; j += 1)
+					for(i = 0; i < rows_; i += 1)
+						prevCRC = CA_RecursiveWavemodCRC(wvRef[i][j][k][l], prevCRC = prevCRC)
+					endfor
+				endfor
+			endfor
+		endfor
+	else
+		prevCRC = CA_GetWaveModCRC(wv, prevCRC)
+	endif
+
+	return prevCRC
+End
+
+static Function CA_GetWaveModCRC(WAVE wv, variable crc)
+
+	return StringCRC(crc, num2istr(ModDate(wv)) + num2istr(WaveModCountWrapper(wv)) + GetWavesDataFolder(wv, 2))
 End
 
 /// @brief Calculate the CRC of all metadata of all or the given dimension

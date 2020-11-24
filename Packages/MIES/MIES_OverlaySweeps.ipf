@@ -2,6 +2,10 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_OVS
+#endif
+
 Menu "TracePopup"
 	"Ignore Headstage in Overlay Sweeps", /Q, OVS_IgnoreHeadstageInOverlay()
 End
@@ -533,7 +537,10 @@ static Function OVS_HighlightSweep(win, index)
 	ASSERT(OVS_IsActive(win), "Highlighting is only supported if OVS is enabled")
 
 	graph = GetMainWindow(win)
-	WAVE/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Sweep"})
+	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Sweep"})
+	if(!WaveExists(traces))
+		return NaN
+	endif
 
 	if(IsFinite(index))
 		[sweepNo, experiment] = OVS_GetSweepAndExperiment(win, index)

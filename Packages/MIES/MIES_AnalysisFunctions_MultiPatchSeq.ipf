@@ -1751,14 +1751,32 @@ static Function MSQ_WriteSpikeControlLBNEntries(string panelTitle, variable swee
 		WAVE/Z indizesFailedPulsesAll = FindIndizes(properties, colLabel = "PulseHasFailed", var = 1, endRow = endRow)
 	endif
 
-	// get the indizes of the failed pulses from sweepNo
+	// Get the indizes of the failed pulses from sweepNo
+	//
+	// We need to distinguish two cases:
+	// - All pulses pass -> indizesFailedPulsesAll does not exist
+	// - Some pulses fail but not from sweepNo -> indizesFailedPulsesSweep does not exist
 	if(WaveExists(indizesFailedPulsesAll))
 		WAVE/Z indizesSweep = FindIndizes(properties, colLabel = "Sweep", var = sweepNo, endRow = endRow)
-		ASSERT(WaveExists(indizesSweep), "Missing sweeps")
-		WAVE/Z indizesDiagonal = FindIndizes(properties, colLabel = "DiagonalElement", var = 1, endRow = endRow)
-		ASSERT(WaveExists(indizesDiagonal), "Missing sweeps")
+		ASSERT(WaveExists(indizesSweep), "Could not find sweeps with sweepNo")
 
-		WAVE/Z indizesFailedPulses = GetSetIntersection(GetSetIntersection(indizesSweep, indizesDiagonal), indizesFailedPulsesAll)
+		WAVE/Z indizesFailedPulsesSweep = GetSetIntersection(indizesSweep, indizesFailedPulsesAll)
+
+		if(WaveExists(indizesFailedPulsesSweep))
+			WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
+			Duplicate/FREE indizesFailedPulsesSweep, indizesFailedPulses
+			size = DimSize(indizesFailedPulsesSweep, ROWS)
+			j = 0
+			for(i = 0; i < size; i += 1)
+				if(GetNumberFromWaveNote(propertiesWaves[indizesFailedPulsesSweep[i]][%PULSENOTE], PA_NOTE_KEY_PULSE_ISDIAGONAL) == 1)
+					indizesFailedPulses[j] = indizesFailedPulsesSweep[i]
+					j += 1
+				endif
+			endfor
+
+			ASSERT(j > 0, "Could not find a diagonal failing pulse")
+			Redimension/N=(j) indizesFailedPulses
+		endif
 	endif
 
 	if(WaveExists(indizesFailedPulses))

@@ -4438,3 +4438,38 @@ Function ESN_Complains([string str])
 End
 
 /// @}
+
+/// ZeroWaveImpl
+/// @{
+
+Function ZWI_Works1()
+
+	variable numRows = 0
+
+	Make/N=(numRows) wv
+	ZeroWaveImpl(wv)
+	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), numRows)
+End
+
+Function ZWI_Works2()
+
+	variable numRows = 5
+
+	Make/N=(numRows) wv = {1, 2, 3, 4, -5}
+	ZeroWaveImpl(wv)
+	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+	CHECK_EQUAL_WAVES(wv, {0, 1, 2, 3, -6})
+End
+
+Function ZWI_Works3()
+
+	variable numRows = 5
+
+	Make/N=(numRows) wv = {-1, 2, 3, 4, -5}
+	ZeroWaveImpl(wv)
+	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+	CHECK_EQUAL_WAVES(wv, {0, 3, 4, 5, -4})
+End
+
+/// @}

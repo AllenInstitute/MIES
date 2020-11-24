@@ -2407,7 +2407,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",               \
 			  					"textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType", \
-								"occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR"}
+								"occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR", "AssociatedHeadstage"}
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -2807,7 +2807,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					                         {GetWavesDataFolder(wv, 2), channelID, num2str(chan), num2str(sweepNo), num2str(headstage),   \
 					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                \
 								              num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep",             \
-												  num2str(k), horizAxis, vertAxis, traceRange, traceColor})
+												  num2str(k), horizAxis, vertAxis, traceRange, traceColor, num2istr(IsFinite(headstage))})
 				endfor
 			endfor
 
@@ -3046,6 +3046,41 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 		endfor
 	endif
 End
+
+/// @brief This is a light weight adapted version of @sa EquallySpaceAxis
+///        It allows to give a list of distAxes that do not require to exist.
+///        Non-existing axes are taken into account on the distribution, but are skipped when the graph is accessed.
+///        Also removing images from a graph does not update AxisList until the graph is updated,
+///        so we can not rely on Axislist here as we do the Layout after pending changes
+///        So with allAxes = "1;2;3;4;" and distAxes = "2;3;" axis 2 and 3 are set at 25% to 50% and 50% to 75% respectively.
+/// @param[in] graph Name of graph where axes from distAxes list exist
+/// @param[in] allAxes List of all axes, that should be distributed. May include non-existing axes.
+/// @param[in] distAxes List of axes that are distributed. Only axes that appear in allAxes as well are modified.
+/// @param[in] axisOffset [optional, default = 0] offset between 0 and 1 where distribution starts.
+Function EquallySpaceAxisPA(string graph, string allAxes, string distAxes, [variable axisOffset])
+
+	variable numAxes, i
+	string axis
+
+	if(ParamIsDefault(axisOffset))
+		axisOffset = 0
+	else
+		ASSERT(axisOffset >=0 && axisOffset <= 1.0, "Invalid axis offset")
+	endif
+
+	numAxes = ItemsInList(distAxes)
+	if(numAxes > 0)
+		WAVE/Z axisStart, axisEnd
+		[axisStart, axisEnd] = DistributeElements(numAxes, offset = axisOffset)
+		for(i = 0; i < numAxes; i += 1)
+			axis = StringFromList(i, distAxes)
+			if(WhichListItem(axis, allAxes) != -1)
+				ModifyGraph/Z/W=$graph axisEnab($axis) = {axisStart[i], axisEnd[i]}
+			endif
+		endfor
+	endif
+End
+
 
 /// @brief Update the legend in the labnotebook graph
 ///
@@ -4055,7 +4090,8 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 			return permAverageWave
 		endif
 
-		WAVE/Z freeAverageWave = MIES_fWaveAverage(waveRefs, 1, IGOR_TYPE_64BIT_FLOAT)
+		WAVE/WAVE aveResult = MIES_fWaveAverage(waveRefs, 1, IGOR_TYPE_64BIT_FLOAT)
+		WAVE freeAverageWave = aveResult[0]
 		ASSERT(ClearRTError() == 0, "Unexpected RTE")
 		ASSERT(WaveExists(freeAverageWave), "Wave averaging failed")
 	else
@@ -4076,10 +4112,20 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 	endif
 	SetNumberInWaveNote(freeAverageWave, "WaveMaximum", WaveMax(freeAverageWave), format = "%.15f")
 
-	Duplicate/O freeAverageWave, averageDataFolder:$wvName/WAVE=permAverageWave
 	CA_StoreEntryIntoCache(key, freeAverageWave, options=CA_OPTS_NO_DUPLICATE)
 
-	return permAverageWave
+	return ConvertFreeWaveToPermanent(freeAverageWave, averageDataFolder, wvName)
+End
+
+/// @brief Converts a free wave to a permanent wave with Overwrite
+/// @param[in] freeWave wave that should be converted to a permanent wave
+/// @param[in] dfr data folder where permanent wave is stored
+/// @param[in] wName name of permanent wave that is created
+/// @returns wave reference to the permanent wave
+Function/WAVE ConvertFreeWaveToPermanent(WAVE freeWave, DFREF dfr, string wName)
+
+	Duplicate/O freeWave, dfr:$wName/WAVE=permWave
+	return permWave
 End
 
 /// @brief Zero all given traces
@@ -5961,12 +6007,28 @@ threadsafe Function ZeroWave(wv)
 		return 0
 	endif
 
-	Differentiate/DIM=0/EP=1 wv
-	Integrate/DIM=0 wv
+	ZeroWaveImpl(wv)
 
 	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
 
 	return 1
+End
+
+/// @brief Zeroes a wave in place
+threadsafe Function ZeroWaveImpl(WAVE wv)
+
+	variable numRows, offset
+
+	numRows = DimSize(wv, ROWS)
+
+	if(numRows == 0)
+		return NaN
+	endif
+
+	ASSERT_TS(IsFloatingPointWave(wv), "Can only work with floating point waves")
+
+	offset = wv[0]
+	Multithread wv = wv - offset
 End
 
 /// @name Decimation methods
@@ -6512,13 +6574,27 @@ End
 ///
 /// Only returns infos for sweep traces without duplicates.
 /// Duplicates are present with oodDAQ display mode.
-Function/WAVE GetTraceInfos(string graph)
+/// @param[in] graph Name of graph
+/// @param[in] addFilterKeys [optional, default = $""]  additional keys for filtering
+/// @param[in] addFilterValues [optional, default = $""] additional values for filtering, must have same size as keys
+Function/WAVE GetTraceInfos(string graph, [WAVE/T addFilterKeys, WAVE/T addFilterValues])
 
 	if(TUD_GetTraceCount(graph) == 0)
 		return $""
 	endif
 
-	WAVE matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = {"traceType", "occurence"}, values = {"Sweep", "0"})
+	ASSERT((ParamIsDefault(addFilterKeys) + ParamIsDefault(addFilterValues)) != 1, "Either both or no filter wave must be given.")
+
+	Make/FREE/T keys = {"traceType", "occurence"}
+	Make/FREE/T values = {"Sweep", "0"}
+
+	if(!ParamIsDefault(addFilterKeys) && DimSize(addFilterKeys, ROWS) > 0)
+		ASSERT(DimSize(addFilterKeys, ROWS) == DimSize(addFilterValues, ROWS), "key wave has different size as value wave")
+		Concatenate/FREE/NP/T {addFilterKeys}, keys
+		Concatenate/FREE/NP/T {addFilterValues}, values
+	endif
+
+	WAVE matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = keys, values = values)
 
 	WAVE/T graphUserData = GetGraphUserData(graph)
 

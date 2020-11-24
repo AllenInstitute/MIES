@@ -35,17 +35,25 @@ Function CheckWaveScaling_IGNORE(WAVE result)
 	CHECK_CLOSE_VAR(DimDelta(result, ROWS), 1)
 End
 
+Function AVE_ReturnsWaveRefWave()
+
+	Make/FREE/N=0/WAVE input
+	WAVE/WAVE result = MIES_fWaveAverage(input, NaN, NaN)
+	CHECK_WAVE(result, WAVE_WAVE)
+	CHECK(DimSize(result, ROWS) == 3)
+End
+
 Function DoesNothingWithEmptyWave()
 
 	Make/FREE/N=0/WAVE input
-	WAVE/Z result = MIES_fWaveAverage(input, NaN, NaN)
-	CHECK_WAVE(result, NULL_WAVE)
+	WAVE/WAVE result = MIES_fWaveAverage(input, NaN, NaN)
+	CHECK_WAVE(result[0], NULL_WAVE)
 End
 
 Function DoesNothingWithInvalidWave()
 
-	WAVE/Z result = MIES_fWaveAverage($"", NaN, NaN)
-	CHECK_WAVE(result, NULL_WAVE)
+	WAVE/WAVE result = MIES_fWaveAverage($"", NaN, NaN)
+	CHECK_WAVE(result[0], NULL_WAVE)
 End
 
 /// UTF_TD_GENERATOR SupportedTypeGetter
@@ -56,15 +64,15 @@ Function ReturnsCorrectResultWithOneWave([var])
 	SetScale/P x, 0, 1, "m", data
 	Make/FREE/WAVE input = {data}
 
-	WAVE/Z result = MIES_fWaveAverage(input, 1, var)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
-	CHECK_EQUAL_WAVES(result, {1, 2, 3, 4}, mode = WAVE_DATA)
-	CheckWaveScaling_IGNORE(result)
+	WAVE/WAVE result = MIES_fWaveAverage(input, 1, var)
+	CHECK_WAVE(result[0], NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
+	CHECK_EQUAL_WAVES(result[0], {1, 2, 3, 4}, mode = WAVE_DATA)
+	CheckWaveScaling_IGNORE(result[0])
 
-	WAVE/Z result = MIES_fWaveAverage(input, 0, var)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
-	CHECK_EQUAL_WAVES(result, {1, 2, 3, 4}, mode = WAVE_DATA)
-	CheckWaveScaling_IGNORE(result)
+	WAVE/WAVE result = MIES_fWaveAverage(input, 0, var)
+	CHECK_WAVE(result[0], NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
+	CHECK_EQUAL_WAVES(result[0], {1, 2, 3, 4}, mode = WAVE_DATA)
+	CheckWaveScaling_IGNORE(result[0])
 End
 
 /// UTF_TD_GENERATOR SupportedTypeGetter
@@ -77,15 +85,15 @@ Function PointForPointNoNans([var])
 
 	Make/FREE/WAVE input = {data1, data2}
 
-	WAVE/Z result = MIES_fWaveAverage(input, 0, var)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
-	CHECK_EQUAL_WAVES(result, {2, 3, 4, 5}, mode = WAVE_DATA)
-	CheckWaveScaling_IGNORE(result)
+	WAVE/WAVE result = MIES_fWaveAverage(input, 0, var)
+	CHECK_WAVE(result[0], NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
+	CHECK_EQUAL_WAVES(result[0], {2, 3, 4, 5}, mode = WAVE_DATA)
+	CheckWaveScaling_IGNORE(result[0])
 
-	WAVE/Z result = MIES_fWaveAverage(input, 1, var)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
-	CHECK_EQUAL_WAVES(result, {2, 3, 4, 5}, mode = WAVE_DATA)
-	CheckWaveScaling_IGNORE(result)
+	WAVE/WAVE result = MIES_fWaveAverage(input, 1, var)
+	CHECK_WAVE(result[0], NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
+	CHECK_EQUAL_WAVES(result[0], {2, 3, 4, 5}, mode = WAVE_DATA)
+	CheckWaveScaling_IGNORE(result[0])
 End
 
 /// UTF_TD_GENERATOR SupportedTypeGetter
@@ -98,15 +106,15 @@ Function PointForPointWithNaNs([var])
 
 	Make/FREE/WAVE input = {data1, data2}
 
-	WAVE/Z result = MIES_fWaveAverage(input, 0, var)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
-	CHECK_EQUAL_WAVES(result, {2, 3, NaN, 5}, mode = WAVE_DATA)
-	CheckWaveScaling_IGNORE(result)
+	WAVE/WAVE result = MIES_fWaveAverage(input, 0, var)
+	CHECK_WAVE(result[0], NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
+	CHECK_EQUAL_WAVES(result[0], {2, 3, NaN, 5}, mode = WAVE_DATA)
+	CheckWaveScaling_IGNORE(result[0])
 
-	WAVE/Z result = MIES_fWaveAverage(input, 1, var)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
-	CHECK_EQUAL_WAVES(result, {2, 3, 5, 5}, mode = WAVE_DATA)
-	CheckWaveScaling_IGNORE(result)
+	WAVE/WAVE result = MIES_fWaveAverage(input, 1, var)
+	CHECK_WAVE(result[0], NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
+	CHECK_EQUAL_WAVES(result[0], {2, 3, 5, 5}, mode = WAVE_DATA)
+	CheckWaveScaling_IGNORE(result[0])
 End
 
 /// UTF_TD_GENERATOR SupportedTypeGetter
@@ -119,15 +127,15 @@ Function NonPointForPointNoNans([var])
 
 	Make/FREE/WAVE input = {data1, data2}
 
-	WAVE/Z result = MIES_fWaveAverage(input, 0, var)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
-	CHECK_EQUAL_WAVES(result, {2, 3, 4, 5, 7}, mode = WAVE_DATA, tol = 1e-14)
-	CheckWaveScaling_IGNORE(result)
+	WAVE/WAVE result = MIES_fWaveAverage(input, 0, var)
+	CHECK_WAVE(result[0], NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
+	CHECK_EQUAL_WAVES(result[0], {2, 3, 4, 5, 7}, mode = WAVE_DATA, tol = 1e-14)
+	CheckWaveScaling_IGNORE(result[0])
 
-	WAVE/Z result = MIES_fWaveAverage(input, 1, var)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
-	CHECK_EQUAL_WAVES(result, {2, 3, 4, 5, 7}, mode = WAVE_DATA, tol = 1e-14)
-	CheckWaveScaling_IGNORE(result)
+	WAVE/WAVE result = MIES_fWaveAverage(input, 1, var)
+	CHECK_WAVE(result[0], NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
+	CHECK_EQUAL_WAVES(result[0], {2, 3, 4, 5, 7}, mode = WAVE_DATA, tol = 1e-14)
+	CheckWaveScaling_IGNORE(result[0])
 End
 
 /// UTF_TD_GENERATOR SupportedTypeGetter
@@ -140,13 +148,13 @@ Function NonPointForPointWithNans([var])
 
 	Make/FREE/WAVE input = {data1, data2}
 
-	WAVE/Z result = MIES_fWaveAverage(input, 0, var)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
-	CHECK_EQUAL_WAVES(result, {2, 3, NaN, 5, NaN}, mode = WAVE_DATA, tol = 1e-14)
-	CheckWaveScaling_IGNORE(result)
+	WAVE/WAVE result = MIES_fWaveAverage(input, 0, var)
+	CHECK_WAVE(result[0], NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
+	CHECK_EQUAL_WAVES(result[0], {2, 3, NaN, 5, NaN}, mode = WAVE_DATA, tol = 1e-14)
+	CheckWaveScaling_IGNORE(result[0])
 
-	WAVE/Z result = MIES_fWaveAverage(input, 1, var)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
-	CHECK_EQUAL_WAVES(result, {2, 3, 5, 5, NaN}, mode = WAVE_DATA, tol = 1e-14)
-	CheckWaveScaling_IGNORE(result)
+	WAVE/WAVE result = MIES_fWaveAverage(input, 1, var)
+	CHECK_WAVE(result[0], NUMERIC_WAVE, minorType = IgorTypeToUTFType_IGNORE(var))
+	CHECK_EQUAL_WAVES(result[0], {2, 3, 5, 5, NaN}, mode = WAVE_DATA, tol = 1e-14)
+	CheckWaveScaling_IGNORE(result[0])
 End

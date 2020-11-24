@@ -2003,3 +2003,99 @@ Function DrawScaleBar(string graph, variable x0, variable y0, variable x1, varia
 
 	DrawLine/W=$graph x0, y0, x1, y1
 End
+
+///@brief Accelerated setting of multiple traces in a graph to un/hidden
+///@param[in] graph name of graph window
+///@param[in] w 1D text wave with trace names
+///@param[in] h number of traces in text wave
+///@param[in] s new hidden state
+Function AccelerateHideTraces(string graph, WAVE/T w, variable h, variable s)
+
+	variable step
+
+	if(h)
+		s = !!s
+		do
+			step = min(2 ^ trunc(log(h) / log(2)), 112)
+			h -= step
+			switch(step)
+				case 112:
+					ModifyGraph/W=$graph hideTrace($w[h])=s,hideTrace($w[h+1])=s,hideTrace($w[h+2])=s,hideTrace($w[h+3])=s,hideTrace($w[h+4])=s,hideTrace($w[h+5])=s,hideTrace($w[h+6])=s,hideTrace($w[h+7])=s,hideTrace($w[h+8])=s,hideTrace($w[h+9])=s,hideTrace($w[h+10])=s,hideTrace($w[h+11])=s,hideTrace($w[h+12])=s,hideTrace($w[h+13])=s,hideTrace($w[h+14])=s,hideTrace($w[h+15])=s,hideTrace($w[h+16])=s,hideTrace($w[h+17])=s,hideTrace($w[h+18])=s,hideTrace($w[h+19])=s,hideTrace($w[h+20])=s,hideTrace($w[h+21])=s,hideTrace($w[h+22])=s,hideTrace($w[h+23])=s,hideTrace($w[h+24])=s,hideTrace($w[h+25])=s,hideTrace($w[h+26])=s,hideTrace($w[h+27])=s,hideTrace($w[h+28])=s,hideTrace($w[h+29])=s,hideTrace($w[h+30])=s,hideTrace($w[h+31])=s,hideTrace($w[h+32])=s,hideTrace($w[h+33])=s,hideTrace($w[h+34])=s,hideTrace($w[h+35])=s,hideTrace($w[h+36])=s,hideTrace($w[h+37])=s,hideTrace($w[h+38])=s,hideTrace($w[h+39])=s,hideTrace($w[h+40])=s,hideTrace($w[h+41])=s,hideTrace($w[h+42])=s,hideTrace($w[h+43])=s,hideTrace($w[h+44])=s,hideTrace($w[h+45])=s,hideTrace($w[h+46])=s,hideTrace($w[h+47])=s,hideTrace($w[h+48])=s,hideTrace($w[h+49])=s,hideTrace($w[h+50])=s,hideTrace($w[h+51])=s,hideTrace($w[h+52])=s,hideTrace($w[h+53])=s,hideTrace($w[h+54])=s,hideTrace($w[h+55])=s,hideTrace($w[h+56])=s,hideTrace($w[h+57])=s,hideTrace($w[h+58])=s,hideTrace($w[h+59])=s,hideTrace($w[h+60])=s,hideTrace($w[h+61])=s,hideTrace($w[h+62])=s,hideTrace($w[h+63])=s,hideTrace($w[h+64])=s,hideTrace($w[h+65])=s,hideTrace($w[h+66])=s,hideTrace($w[h+67])=s,hideTrace($w[h+68])=s,hideTrace($w[h+69])=s,hideTrace($w[h+70])=s,hideTrace($w[h+71])=s,hideTrace($w[h+72])=s,hideTrace($w[h+73])=s,hideTrace($w[h+74])=s,hideTrace($w[h+75])=s,hideTrace($w[h+76])=s,hideTrace($w[h+77])=s,hideTrace($w[h+78])=s,hideTrace($w[h+79])=s,hideTrace($w[h+80])=s,hideTrace($w[h+81])=s,hideTrace($w[h+82])=s,hideTrace($w[h+83])=s,hideTrace($w[h+84])=s,hideTrace($w[h+85])=s,hideTrace($w[h+86])=s,hideTrace($w[h+87])=s,hideTrace($w[h+88])=s,hideTrace($w[h+89])=s,hideTrace($w[h+90])=s,hideTrace($w[h+91])=s,hideTrace($w[h+92])=s,hideTrace($w[h+93])=s,hideTrace($w[h+94])=s,hideTrace($w[h+95])=s,hideTrace($w[h+96])=s,hideTrace($w[h+97])=s,hideTrace($w[h+98])=s,hideTrace($w[h+99])=s,hideTrace($w[h+100])=s,hideTrace($w[h+101])=s,hideTrace($w[h+102])=s,hideTrace($w[h+103])=s,hideTrace($w[h+104])=s,hideTrace($w[h+105])=s,hideTrace($w[h+106])=s,hideTrace($w[h+107])=s,hideTrace($w[h+108])=s,hideTrace($w[h+109])=s,hideTrace($w[h+110])=s,hideTrace($w[h+111])=s
+					break
+				case 64:
+					ModifyGraph/W=$graph hideTrace($w[h])=s,hideTrace($w[h+1])=s,hideTrace($w[h+2])=s,hideTrace($w[h+3])=s,hideTrace($w[h+4])=s,hideTrace($w[h+5])=s,hideTrace($w[h+6])=s,hideTrace($w[h+7])=s,hideTrace($w[h+8])=s,hideTrace($w[h+9])=s,hideTrace($w[h+10])=s,hideTrace($w[h+11])=s,hideTrace($w[h+12])=s,hideTrace($w[h+13])=s,hideTrace($w[h+14])=s,hideTrace($w[h+15])=s,hideTrace($w[h+16])=s,hideTrace($w[h+17])=s,hideTrace($w[h+18])=s,hideTrace($w[h+19])=s,hideTrace($w[h+20])=s,hideTrace($w[h+21])=s,hideTrace($w[h+22])=s,hideTrace($w[h+23])=s,hideTrace($w[h+24])=s,hideTrace($w[h+25])=s,hideTrace($w[h+26])=s,hideTrace($w[h+27])=s,hideTrace($w[h+28])=s,hideTrace($w[h+29])=s,hideTrace($w[h+30])=s,hideTrace($w[h+31])=s,hideTrace($w[h+32])=s,hideTrace($w[h+33])=s,hideTrace($w[h+34])=s,hideTrace($w[h+35])=s,hideTrace($w[h+36])=s,hideTrace($w[h+37])=s,hideTrace($w[h+38])=s,hideTrace($w[h+39])=s,hideTrace($w[h+40])=s,hideTrace($w[h+41])=s,hideTrace($w[h+42])=s,hideTrace($w[h+43])=s,hideTrace($w[h+44])=s,hideTrace($w[h+45])=s,hideTrace($w[h+46])=s,hideTrace($w[h+47])=s,hideTrace($w[h+48])=s,hideTrace($w[h+49])=s,hideTrace($w[h+50])=s,hideTrace($w[h+51])=s,hideTrace($w[h+52])=s,hideTrace($w[h+53])=s,hideTrace($w[h+54])=s,hideTrace($w[h+55])=s,hideTrace($w[h+56])=s,hideTrace($w[h+57])=s,hideTrace($w[h+58])=s,hideTrace($w[h+59])=s,hideTrace($w[h+60])=s,hideTrace($w[h+61])=s,hideTrace($w[h+62])=s,hideTrace($w[h+63])=s
+					break
+				case 32:
+					ModifyGraph/W=$graph hideTrace($w[h])=s,hideTrace($w[h+1])=s,hideTrace($w[h+2])=s,hideTrace($w[h+3])=s,hideTrace($w[h+4])=s,hideTrace($w[h+5])=s,hideTrace($w[h+6])=s,hideTrace($w[h+7])=s,hideTrace($w[h+8])=s,hideTrace($w[h+9])=s,hideTrace($w[h+10])=s,hideTrace($w[h+11])=s,hideTrace($w[h+12])=s,hideTrace($w[h+13])=s,hideTrace($w[h+14])=s,hideTrace($w[h+15])=s,hideTrace($w[h+16])=s,hideTrace($w[h+17])=s,hideTrace($w[h+18])=s,hideTrace($w[h+19])=s,hideTrace($w[h+20])=s,hideTrace($w[h+21])=s,hideTrace($w[h+22])=s,hideTrace($w[h+23])=s,hideTrace($w[h+24])=s,hideTrace($w[h+25])=s,hideTrace($w[h+26])=s,hideTrace($w[h+27])=s,hideTrace($w[h+28])=s,hideTrace($w[h+29])=s,hideTrace($w[h+30])=s,hideTrace($w[h+31])=s
+					break
+				case 16:
+					ModifyGraph/W=$graph hideTrace($w[h])=s,hideTrace($w[h+1])=s,hideTrace($w[h+2])=s,hideTrace($w[h+3])=s,hideTrace($w[h+4])=s,hideTrace($w[h+5])=s,hideTrace($w[h+6])=s,hideTrace($w[h+7])=s,hideTrace($w[h+8])=s,hideTrace($w[h+9])=s,hideTrace($w[h+10])=s,hideTrace($w[h+11])=s,hideTrace($w[h+12])=s,hideTrace($w[h+13])=s,hideTrace($w[h+14])=s,hideTrace($w[h+15])=s
+					break
+				case 8:
+					ModifyGraph/W=$graph hideTrace($w[h])=s,hideTrace($w[h+1])=s,hideTrace($w[h+2])=s,hideTrace($w[h+3])=s,hideTrace($w[h+4])=s,hideTrace($w[h+5])=s,hideTrace($w[h+6])=s,hideTrace($w[h+7])=s
+					break
+				case 4:
+					ModifyGraph/W=$graph hideTrace($w[h])=s,hideTrace($w[h+1])=s,hideTrace($w[h+2])=s,hideTrace($w[h+3])=s
+					break
+				case 2:
+					ModifyGraph/W=$graph hideTrace($w[h])=s,hideTrace($w[h+1])=s
+					break
+				case 1:
+					ModifyGraph/W=$graph hideTrace($w[h])=s
+					break
+				default:
+					ASSERT(0, "Fail")
+					break
+			endswitch
+		while(h)
+	endif
+End
+
+///@brief Accelerated setting of line size of multiple traces in a graph
+///@param[in] graph name of graph window
+///@param[in] w 1D text wave with trace names
+///@param[in] h number of traces in text wave
+///@param[in] l new line size
+Function AccelerateModLineSizeTraces(string graph, WAVE/T w, variable h, variable l)
+
+	variable step
+
+	if(h)
+		do
+			step = min(2 ^ trunc(log(h) / log(2)), 136)
+			h -= step
+			switch(step)
+				case 136:
+					ModifyGraph/W=$graph lsize($w[h])=l,lsize($w[h+1])=l,lsize($w[h+2])=l,lsize($w[h+3])=l,lsize($w[h+4])=l,lsize($w[h+5])=l,lsize($w[h+6])=l,lsize($w[h+7])=l,lsize($w[h+8])=l,lsize($w[h+9])=l,lsize($w[h+10])=l,lsize($w[h+11])=l,lsize($w[h+12])=l,lsize($w[h+13])=l,lsize($w[h+14])=l,lsize($w[h+15])=l,lsize($w[h+16])=l,lsize($w[h+17])=l,lsize($w[h+18])=l,lsize($w[h+19])=l,lsize($w[h+20])=l,lsize($w[h+21])=l,lsize($w[h+22])=l,lsize($w[h+23])=l,lsize($w[h+24])=l,lsize($w[h+25])=l,lsize($w[h+26])=l,lsize($w[h+27])=l,lsize($w[h+28])=l,lsize($w[h+29])=l,lsize($w[h+30])=l,lsize($w[h+31])=l,lsize($w[h+32])=l,lsize($w[h+33])=l,lsize($w[h+34])=l,lsize($w[h+35])=l,lsize($w[h+36])=l,lsize($w[h+37])=l,lsize($w[h+38])=l,lsize($w[h+39])=l,lsize($w[h+40])=l,lsize($w[h+41])=l,lsize($w[h+42])=l,lsize($w[h+43])=l,lsize($w[h+44])=l,lsize($w[h+45])=l,lsize($w[h+46])=l,lsize($w[h+47])=l,lsize($w[h+48])=l,lsize($w[h+49])=l,lsize($w[h+50])=l,lsize($w[h+51])=l,lsize($w[h+52])=l,lsize($w[h+53])=l,lsize($w[h+54])=l,lsize($w[h+55])=l,lsize($w[h+56])=l,lsize($w[h+57])=l,lsize($w[h+58])=l,lsize($w[h+59])=l,lsize($w[h+60])=l,lsize($w[h+61])=l,lsize($w[h+62])=l,lsize($w[h+63])=l,lsize($w[h+64])=l,lsize($w[h+65])=l,lsize($w[h+66])=l,lsize($w[h+67])=l,lsize($w[h+68])=l,lsize($w[h+69])=l,lsize($w[h+70])=l,lsize($w[h+71])=l,lsize($w[h+72])=l,lsize($w[h+73])=l,lsize($w[h+74])=l,lsize($w[h+75])=l,lsize($w[h+76])=l,lsize($w[h+77])=l,lsize($w[h+78])=l,lsize($w[h+79])=l,lsize($w[h+80])=l,lsize($w[h+81])=l,lsize($w[h+82])=l,lsize($w[h+83])=l,lsize($w[h+84])=l,lsize($w[h+85])=l,lsize($w[h+86])=l,lsize($w[h+87])=l,lsize($w[h+88])=l,lsize($w[h+89])=l,lsize($w[h+90])=l,lsize($w[h+91])=l,lsize($w[h+92])=l,lsize($w[h+93])=l,lsize($w[h+94])=l,lsize($w[h+95])=l,lsize($w[h+96])=l,lsize($w[h+97])=l,lsize($w[h+98])=l,lsize($w[h+99])=l,lsize($w[h+100])=l,lsize($w[h+101])=l,lsize($w[h+102])=l,lsize($w[h+103])=l,lsize($w[h+104])=l,lsize($w[h+105])=l,lsize($w[h+106])=l,lsize($w[h+107])=l,lsize($w[h+108])=l,lsize($w[h+109])=l,lsize($w[h+110])=l,lsize($w[h+111])=l,lsize($w[h+112])=l,lsize($w[h+113])=l,lsize($w[h+114])=l,lsize($w[h+115])=l,lsize($w[h+116])=l,lsize($w[h+117])=l,lsize($w[h+118])=l,lsize($w[h+119])=l,lsize($w[h+120])=l,lsize($w[h+121])=l,lsize($w[h+122])=l,lsize($w[h+123])=l,lsize($w[h+124])=l,lsize($w[h+125])=l,lsize($w[h+126])=l,lsize($w[h+127])=l,lsize($w[h+128])=l,lsize($w[h+129])=l,lsize($w[h+130])=l,lsize($w[h+131])=l,lsize($w[h+132])=l,lsize($w[h+133])=l,lsize($w[h+134])=l,lsize($w[h+135])=l
+					break
+				case 128:
+					ModifyGraph/W=$graph lsize($w[h])=l,lsize($w[h+1])=l,lsize($w[h+2])=l,lsize($w[h+3])=l,lsize($w[h+4])=l,lsize($w[h+5])=l,lsize($w[h+6])=l,lsize($w[h+7])=l,lsize($w[h+8])=l,lsize($w[h+9])=l,lsize($w[h+10])=l,lsize($w[h+11])=l,lsize($w[h+12])=l,lsize($w[h+13])=l,lsize($w[h+14])=l,lsize($w[h+15])=l,lsize($w[h+16])=l,lsize($w[h+17])=l,lsize($w[h+18])=l,lsize($w[h+19])=l,lsize($w[h+20])=l,lsize($w[h+21])=l,lsize($w[h+22])=l,lsize($w[h+23])=l,lsize($w[h+24])=l,lsize($w[h+25])=l,lsize($w[h+26])=l,lsize($w[h+27])=l,lsize($w[h+28])=l,lsize($w[h+29])=l,lsize($w[h+30])=l,lsize($w[h+31])=l,lsize($w[h+32])=l,lsize($w[h+33])=l,lsize($w[h+34])=l,lsize($w[h+35])=l,lsize($w[h+36])=l,lsize($w[h+37])=l,lsize($w[h+38])=l,lsize($w[h+39])=l,lsize($w[h+40])=l,lsize($w[h+41])=l,lsize($w[h+42])=l,lsize($w[h+43])=l,lsize($w[h+44])=l,lsize($w[h+45])=l,lsize($w[h+46])=l,lsize($w[h+47])=l,lsize($w[h+48])=l,lsize($w[h+49])=l,lsize($w[h+50])=l,lsize($w[h+51])=l,lsize($w[h+52])=l,lsize($w[h+53])=l,lsize($w[h+54])=l,lsize($w[h+55])=l,lsize($w[h+56])=l,lsize($w[h+57])=l,lsize($w[h+58])=l,lsize($w[h+59])=l,lsize($w[h+60])=l,lsize($w[h+61])=l,lsize($w[h+62])=l,lsize($w[h+63])=l,lsize($w[h+64])=l,lsize($w[h+65])=l,lsize($w[h+66])=l,lsize($w[h+67])=l,lsize($w[h+68])=l,lsize($w[h+69])=l,lsize($w[h+70])=l,lsize($w[h+71])=l,lsize($w[h+72])=l,lsize($w[h+73])=l,lsize($w[h+74])=l,lsize($w[h+75])=l,lsize($w[h+76])=l,lsize($w[h+77])=l,lsize($w[h+78])=l,lsize($w[h+79])=l,lsize($w[h+80])=l,lsize($w[h+81])=l,lsize($w[h+82])=l,lsize($w[h+83])=l,lsize($w[h+84])=l,lsize($w[h+85])=l,lsize($w[h+86])=l,lsize($w[h+87])=l,lsize($w[h+88])=l,lsize($w[h+89])=l,lsize($w[h+90])=l,lsize($w[h+91])=l,lsize($w[h+92])=l,lsize($w[h+93])=l,lsize($w[h+94])=l,lsize($w[h+95])=l,lsize($w[h+96])=l,lsize($w[h+97])=l,lsize($w[h+98])=l,lsize($w[h+99])=l,lsize($w[h+100])=l,lsize($w[h+101])=l,lsize($w[h+102])=l,lsize($w[h+103])=l,lsize($w[h+104])=l,lsize($w[h+105])=l,lsize($w[h+106])=l,lsize($w[h+107])=l,lsize($w[h+108])=l,lsize($w[h+109])=l,lsize($w[h+110])=l,lsize($w[h+111])=l,lsize($w[h+112])=l,lsize($w[h+113])=l,lsize($w[h+114])=l,lsize($w[h+115])=l,lsize($w[h+116])=l,lsize($w[h+117])=l,lsize($w[h+118])=l,lsize($w[h+119])=l,lsize($w[h+120])=l,lsize($w[h+121])=l,lsize($w[h+122])=l,lsize($w[h+123])=l,lsize($w[h+124])=l,lsize($w[h+125])=l,lsize($w[h+126])=l,lsize($w[h+127])=l
+					break
+				case 64:
+					ModifyGraph/W=$graph lsize($w[h])=l,lsize($w[h+1])=l,lsize($w[h+2])=l,lsize($w[h+3])=l,lsize($w[h+4])=l,lsize($w[h+5])=l,lsize($w[h+6])=l,lsize($w[h+7])=l,lsize($w[h+8])=l,lsize($w[h+9])=l,lsize($w[h+10])=l,lsize($w[h+11])=l,lsize($w[h+12])=l,lsize($w[h+13])=l,lsize($w[h+14])=l,lsize($w[h+15])=l,lsize($w[h+16])=l,lsize($w[h+17])=l,lsize($w[h+18])=l,lsize($w[h+19])=l,lsize($w[h+20])=l,lsize($w[h+21])=l,lsize($w[h+22])=l,lsize($w[h+23])=l,lsize($w[h+24])=l,lsize($w[h+25])=l,lsize($w[h+26])=l,lsize($w[h+27])=l,lsize($w[h+28])=l,lsize($w[h+29])=l,lsize($w[h+30])=l,lsize($w[h+31])=l,lsize($w[h+32])=l,lsize($w[h+33])=l,lsize($w[h+34])=l,lsize($w[h+35])=l,lsize($w[h+36])=l,lsize($w[h+37])=l,lsize($w[h+38])=l,lsize($w[h+39])=l,lsize($w[h+40])=l,lsize($w[h+41])=l,lsize($w[h+42])=l,lsize($w[h+43])=l,lsize($w[h+44])=l,lsize($w[h+45])=l,lsize($w[h+46])=l,lsize($w[h+47])=l,lsize($w[h+48])=l,lsize($w[h+49])=l,lsize($w[h+50])=l,lsize($w[h+51])=l,lsize($w[h+52])=l,lsize($w[h+53])=l,lsize($w[h+54])=l,lsize($w[h+55])=l,lsize($w[h+56])=l,lsize($w[h+57])=l,lsize($w[h+58])=l,lsize($w[h+59])=l,lsize($w[h+60])=l,lsize($w[h+61])=l,lsize($w[h+62])=l,lsize($w[h+63])=l
+					break
+				case 32:
+					ModifyGraph/W=$graph lsize($w[h])=l,lsize($w[h+1])=l,lsize($w[h+2])=l,lsize($w[h+3])=l,lsize($w[h+4])=l,lsize($w[h+5])=l,lsize($w[h+6])=l,lsize($w[h+7])=l,lsize($w[h+8])=l,lsize($w[h+9])=l,lsize($w[h+10])=l,lsize($w[h+11])=l,lsize($w[h+12])=l,lsize($w[h+13])=l,lsize($w[h+14])=l,lsize($w[h+15])=l,lsize($w[h+16])=l,lsize($w[h+17])=l,lsize($w[h+18])=l,lsize($w[h+19])=l,lsize($w[h+20])=l,lsize($w[h+21])=l,lsize($w[h+22])=l,lsize($w[h+23])=l,lsize($w[h+24])=l,lsize($w[h+25])=l,lsize($w[h+26])=l,lsize($w[h+27])=l,lsize($w[h+28])=l,lsize($w[h+29])=l,lsize($w[h+30])=l,lsize($w[h+31])=l
+					break
+				case 16:
+					ModifyGraph/W=$graph lsize($w[h])=l,lsize($w[h+1])=l,lsize($w[h+2])=l,lsize($w[h+3])=l,lsize($w[h+4])=l,lsize($w[h+5])=l,lsize($w[h+6])=l,lsize($w[h+7])=l,lsize($w[h+8])=l,lsize($w[h+9])=l,lsize($w[h+10])=l,lsize($w[h+11])=l,lsize($w[h+12])=l,lsize($w[h+13])=l,lsize($w[h+14])=l,lsize($w[h+15])=l
+					break
+				case 8:
+					ModifyGraph/W=$graph lsize($w[h])=l,lsize($w[h+1])=l,lsize($w[h+2])=l,lsize($w[h+3])=l,lsize($w[h+4])=l,lsize($w[h+5])=l,lsize($w[h+6])=l,lsize($w[h+7])=l
+					break
+				case 4:
+					ModifyGraph/W=$graph lsize($w[h])=l,lsize($w[h+1])=l,lsize($w[h+2])=l,lsize($w[h+3])=l
+					break
+				case 2:
+					ModifyGraph/W=$graph lsize($w[h])=l,lsize($w[h+1])=l
+					break
+				case 1:
+					ModifyGraph/W=$graph lsize($w[h])=l
+					break
+				default:
+					ASSERT(0, "Fail")
+					break
+			endswitch
+		while(h)
+	endif
+End

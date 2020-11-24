@@ -5317,6 +5317,11 @@ End
 /// @brief Helper function to be able to index waves stored in wave reference
 /// waves in wave assignment statements.
 ///
+/// The case where wv contains wave references is also covered by the optional parameters.
+/// While returned regular waves can be indexed within the assignment as shown in the first example,
+/// this does not work for wave reference waves. Thus, the parameters allow to index through the function call.
+///
+/// Example for source containing regular waves:
 /// \rst
 /// .. code-block:: igorpro
 ///
@@ -5325,12 +5330,50 @@ End
 /// Make/FREE/WAVE source = {data1, data2}
 ///
 /// Make/FREE dest
-/// dest[] = WaveRef(source[0])[p] + WaveRef(source[1])[p]
+/// dest[] = WaveRef(source[0])[p] + WaveRef(source[1])[p] // note the direct indexing [p] following WaveRef(...) here
 ///
 /// \endrst
 ///
-threadsafe Function/WAVE WaveRef(WAVE/WAVE wv)
-	return wv
+/// Example for source containing wave ref waves:
+/// \rst
+/// .. code-block:: igorpro
+///
+/// Make/FREE data1 = p
+/// Make/FREE/WAVE interm = {data1, data1}
+/// Make/FREE/WAVE source = {interm, interm}
+///
+/// Make/FREE/WAVE/N=2 dest
+/// dest[] = WaveRef(source[p], row = 0) // direct indexing does not work here, so we index through the optional function parameter
+///
+/// \endrst
+///
+/// row, col, layer, chunk are evaluated in this order until one argument is not given.
+///
+/// @param w input wave ref wave
+/// @param row [optional, default = n/a] when param set returns wv[row] typed
+/// @param col [optional, default = n/a] when param row and this set returns wv[row][col] typed
+/// @param layer [optional, default = n/a] when param row, col and this set returns wv[row][col][layer] typed
+/// @param chunk [optional, default = n/a] when param row, col, layer and this set returns wv[row][layer][chunk] typed
+/// @returns untyped waveref of wv or typed wave ref of wv when indexed
+threadsafe Function/WAVE WaveRef(WAVE/Z w, [variable row, variable col, variable layer, variable chunk])
+
+	if(!WaveExists(w))
+		return $""
+	endif
+
+	WAVE/WAVE wv = w
+
+	if(ParamIsDefault(row))
+		return wv
+	elseif(ParamIsDefault(col))
+		return wv[row]
+	elseif(ParamIsDefault(layer))
+		return wv[row][col]
+	elseif(ParamIsDefault(chunk))
+		return wv[row][col][layer]
+	else
+		return wv[row][col][layer][chunk]
+	endif
 End
 
 /// @brief Grep the given regular expression in the text wave
@@ -5468,4 +5511,36 @@ Function/S SanitizeFilename(string name)
 	ASSERT(GrepString(result, regexp), "Invalid file name")
 
 	return result
+End
+
+/// @brief Merges list l1 into l2. Double entries in l2 are kept.
+/// "a;b;c;" with "a;d;d;f;" -> "a;d;d;f;b;c;"
+Function/S MergeLists(string l1, string l2, [string sep])
+
+	variable numL1, i
+	string item
+
+	if(ParamIsDefault(sep))
+		sep = ";"
+	else
+		ASSERT(!IsEmpty(sep), "separator string is empty")
+	endif
+
+	numL1 = ItemsInList(l1, sep)
+	for(i = 0; i < numL1; i += 1)
+		item = StringFromList(i, l1, sep)
+		if(WhichListItem(item, l2, sep) == -1)
+			l2 = AddListItem(item, l2, sep, inf)
+		endif
+	endfor
+
+	return l2
+End
+
+/// @brief Duplicates the input wave to a free wave and returns the free wave reference.
+threadsafe Function/WAVE DuplicateWaveToFree(Wave w)
+
+	Duplicate/FREE w, wFree
+
+	return wFree
 End
