@@ -521,6 +521,30 @@ static Function/S PA_GenerateFailedPulseKey(variable sweep, variable region, var
 	return key
 End
 
+static Function [WAVE/D sweeps, WAVE/T experiments] PA_GetSweepsAndExperimentsFromIndices(string win, WAVE/Z additionalData)
+
+	variable i, numIndices, sweepNo
+	string experiment
+
+	if(!WaveExists(additionalData))
+		Make/FREE/D/N=0 sweeps
+		Make/FREE/T/N=0 experiments
+		return [sweeps, experiments]
+	endif
+
+	numIndices = DimSize(additionalData, ROWS)
+	Make/FREE/D/N=(numIndices) sweeps
+	Make/FREE/T/N=(numIndices) experiments
+
+	for(i = 0; i < numIndices; i += 1)
+		[sweepNo, experiment] = OVS_GetSweepAndExperiment(win, additionalData[i])
+		sweeps[i] = sweepNo
+		experiments[i] = experiment
+	endfor
+
+	return [sweeps, experiments]
+End
+
 /// @brief Create all single pulse waves
 ///
 /// This function needs to be called when ever traces in the
@@ -610,8 +634,12 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		j = 0
 		numNewSweeps = DimSize(additionalData, ROWS)
 		ASSERT(numNewSweeps > 0, "Set POST_PLOT_ADDED_SWEEPS, but found no new sweep(s) in additionlData")
+		WAVE/D/Z newSweeps
+		WAVE/T/Z newExperiments
+		[newSweeps, newExperiments] = PA_GetSweepsAndExperimentsFromIndices(win, additionalData)
+
 		for(i = 0; i < numNewSweeps; i += 1)
-			WAVE/Z indizesNewSweep = FindIndizes(traceData, colLabel="SweepNumber", str=num2str(additionalData[i]))
+			WAVE/Z indizesNewSweep = FindIndizes(traceData, colLabel="SweepNumber", str=num2str(newSweeps[i]))
 			if(!WaveExists(indizesNewSweep))
 				continue
 			endif
@@ -620,7 +648,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			j += numNewIndicesSweep
 
 			// This assertion check is a workaround for the case that we have multiple sweeps with the same SweepNo from different experiments.
-			FindValue/Z/V=(additionalData[i])/T=(GetMachineEpsilon(WaveType(properties)))/RMD=[][PA_PROPERTIES_INDEX_SWEEP] properties
+			FindValue/Z/V=(newSweeps[i])/T=(GetMachineEpsilon(WaveType(properties)))/RMD=[][PA_PROPERTIES_INDEX_SWEEP] properties
 			ASSERT(V_Value == -1, "A sweep with the same number is already plotted. Multiple sweeps with the same number from different experiments is currently not supported.")
 
 		endfor
@@ -3105,7 +3133,11 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				   || scaleChanged                                          \
 				   || layoutChanged))
 
-					newSweep = WaveMin(additionalData)
+					WAVE/D/Z newSweeps
+					WAVE/T/Z newExperiments
+					[newSweeps, newExperiments] = PA_GetSweepsAndExperimentsFromIndices(win, additionalData)
+
+					newSweep = WaveMin(newSweeps)
 					WAVE setIndizes = pasi.setIndices[i][j]
 					Make/FREE/N=(numPulses) sweeps = properties[setIndizes[p]][PA_PROPERTIES_INDEX_SWEEP]
 					FindValue/Z/V=(newSweep) sweeps
