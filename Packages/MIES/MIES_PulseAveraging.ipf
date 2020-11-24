@@ -1876,7 +1876,7 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 	endif
 
 	// cs.dontResetWaves contains that zeroPulse setting did not change
-	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves) && pa.zeroPulses)
+	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves && cs.singlePulse) && pa.zeroPulses)
 #ifndef PA_HIDE_EXECUTION_TIME
 	execTime_StartLocal = stopmstimer(-2)
 #endif
@@ -1887,7 +1887,7 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 	endif
 
 	// cs.dontResetWaves contains that autoTimeAlignment setting did not change
-	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves) && pa.autoTimeAlignment)
+	if(!(mode == POST_PLOT_CONSTANT_SWEEPS && cs.dontResetWaves && cs.singlePulse) && pa.autoTimeAlignment)
 #ifndef PA_HIDE_EXECUTION_TIME
 	execTime_StartLocal = stopmstimer(-2)
 #endif
