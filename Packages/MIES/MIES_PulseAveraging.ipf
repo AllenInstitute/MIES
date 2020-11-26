@@ -2604,7 +2604,7 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 		allAxes = AxisList(graph)
 
 #ifdef PA_HIDE_AXIS
-		ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0
+		ModifyGraph/W=$graph nticks=0, noLabel=2, axthick=0
 #endif
 
 		if(displayMode == PA_DISPLAYMODE_TRACES)
@@ -2680,7 +2680,7 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 			AppendText/W=$graph str
 
 #ifdef PA_HIDE_AXIS
-			ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0, margin=5
+			ModifyGraph/W=$graph nticks=0, noLabel=2, axthick=0, margin=5
 #endif
 			ModifyGraph/W=$graph/Z freePos(bottom)=0
 		endfor
