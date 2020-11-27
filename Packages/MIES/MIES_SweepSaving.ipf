@@ -60,8 +60,9 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 
 	SWS_AfterSweepDataChangeHook(panelTitle)
 
+	AS_HandlePossibleTransition(panelTitle, AS_POST_SWEEP, call = !forcedStop)
+
 	if(!forcedStop)
-		AFM_CallAnalysisFunctions(panelTitle, POST_SWEEP_EVENT)
 		AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	endif
 End

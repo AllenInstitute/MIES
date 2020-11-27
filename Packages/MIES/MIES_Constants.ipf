@@ -505,6 +505,23 @@ Constant SET_VARIABLE_GLOBAL      = 0x04
 Constant DISABLE_CONTROL_BIT = 2
 Constant HIDDEN_CONTROL_BIT  = 1
 
+/// @name Acquisition states
+/// @anchor AcquisitionStates
+///
+/// @todo extend these with PRE_SET_EVENT and POST_SET_EVENT once this is
+/// reworked, see https://github.com/AllenInstitute/MIES/issues/658 and
+/// https://github.com/AllenInstitute/MIES/issues/39.
+///
+/// @{
+Constant AS_INACTIVE   = 0
+Constant AS_PRE_DAQ    = 1
+Constant AS_PRE_SWEEP  = 2
+Constant AS_MID_SWEEP  = 3
+Constant AS_POST_SWEEP = 4
+Constant AS_ITI        = 5
+Constant AS_POST_DAQ   = 6
+/// @}
+
 /// @name Event types for analysis functions
 /// @anchor EVENT_TYPE_ANALYSIS_FUNCTIONS
 /// @{

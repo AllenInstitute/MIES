@@ -61,7 +61,7 @@ Function DQS_DataAcq(panelTitle)
 	endif
 
 	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-	ED_MarkSweepStart(panelTitle)
+	AS_HandlePossibleTransition(panelTitle, AS_MID_SWEEP)
 
 	gotTPChannels = GotTPChannelsOnADCs(paneltitle)
 
@@ -99,7 +99,7 @@ Function DQS_BkrdDataAcq(panelTitle)
 	endif
 
 	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-	ED_MarkSweepStart(panelTitle)
+	AS_HandlePossibleTransition(panelTitle, AS_MID_SWEEP)
 
 	DQS_StartBackgroundFifoMonitor()
 End
@@ -145,7 +145,7 @@ Function DQS_FIFOMonitor(s)
 
 	SCOPE_UpdateOscilloscopeData(panelTitleG, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
-	result = AFM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
+	result = AS_HandlePossibleTransition(panelTitleG, AS_MID_SWEEP)
 
 	if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
 		UpdateLeftOverSweepTime(panelTitleG, fifoPos)

@@ -90,7 +90,7 @@ Function DQM_FIFOMonitor(s)
 
 		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, deviceID=deviceID, fifoPos=fifoLatest)
 
-		result = AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
+		result = AS_HandlePossibleTransition(panelTitle, AS_MID_SWEEP)
 
 		if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
 			UpdateLeftOverSweepTime(panelTitle, fifoLatest)
@@ -377,7 +377,8 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 
 	variable hardwareType = GetHardwareType(panelTitle)
 	HW_StartAcq(hardwareType, deviceID, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
-	ED_MarkSweepStart(panelTitle)
+	AS_HandlePossibleTransition(panelTitle, AS_MID_SWEEP)
+
 	if(hardwareType == HARDWARE_ITC_DAC)
 		TFH_StartFIFOStopDaemon(hardwareType, deviceID)
 	endif

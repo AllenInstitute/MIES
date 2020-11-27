@@ -1351,9 +1351,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
 
-	if(!forcedStop)
-		AFM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
-	endif
+	AS_HandlePossibleTransition(panelTitle, AS_POST_DAQ, call = !forcedStop)
 
 	hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
@@ -1396,6 +1394,8 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	endif
 
 	DAP_ApplyDelayedClampModeChange(panelTitle)
+
+	AS_HandlePossibleTransition(panelTitle, AS_INACTIVE)
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ") || !startTPAfterDAQ)
 		return NaN
@@ -2135,7 +2135,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	// update the analysis functions gathered from the stimsets
 	AFM_UpdateAnalysisFunctionWave(panelTitle)
 
-	if(mode == DATA_ACQUISITION_MODE && AFM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
+	if(mode == DATA_ACQUISITION_MODE && AS_HandlePossibleTransition(panelTitle, AS_PRE_DAQ))
 		printf "%s: Pre DAQ analysis function requested an abort\r", panelTitle
 		ControlWindowToFront()
 		return 1
