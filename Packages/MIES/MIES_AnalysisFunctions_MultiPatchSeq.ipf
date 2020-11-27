@@ -1898,9 +1898,8 @@ End
 ///
 /// Decision logic flowchart:
 ///
-/// @todo
 /// \rst
-///	.. comment image:: /dot/multi-patch-seq-SpikeControl.svg
+///	.. image:: /dot/multi-patch-seq-spike-control.svg
 /// \endrst
 ///
 Function MSQ_SpikeControl(panelTitle, s)
