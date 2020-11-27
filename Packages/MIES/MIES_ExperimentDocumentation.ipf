@@ -50,7 +50,7 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 	string panelTitle
 	variable sweepNo, entrySourceType
 
-	variable rowIndex, numCols, i, lastValidIncomingLayer
+	variable rowIndex, numCols, i, lastValidIncomingLayer, state
 	string timestamp
 
 	WAVE/T textualValues = GetLBTextualValues(panelTitle)
@@ -60,6 +60,9 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 
 	textualValues[rowIndex][0][] = num2istr(sweepNo)
 	textualValues[rowIndex][3][] = num2istr(entrySourceType)
+
+	state = ROVar(GetAcquisitionState(panelTitle))
+	textualValues[rowIndex][4][] = num2istr(state)
 
 	// store the current time in a variable first
 	// so that all layers have the same timestamp
@@ -107,7 +110,7 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 	variable sweepNo
 	variable entrySourceType
 
-	variable rowIndex, numCols, lastValidIncomingLayer, i, timestamp
+	variable rowIndex, numCols, lastValidIncomingLayer, i, timestamp, state
 
 	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
@@ -116,6 +119,9 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 
 	numericalValues[rowIndex][0][] = sweepNo
 	numericalValues[rowIndex][3][] = entrySourceType
+
+	state = ROVar(GetAcquisitionState(panelTitle))
+	numericalValues[rowIndex][4][] = state
 
 	// store the current time in a variable first
 	// so that all layers have the same timestamp

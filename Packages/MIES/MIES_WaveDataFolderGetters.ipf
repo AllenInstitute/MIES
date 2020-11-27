@@ -1327,6 +1327,42 @@ static Function UpgradeLabNotebook(panelTitle)
 		SetNumberInWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 		SetNumberInWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 	endif
+
+	// BEGIN acquisition state
+	if(cmpstr(numericalKeys[0][4], "AcquisitionState"))
+
+		numCols = DimSize(numericalKeys, COLS)
+
+		Redimension/N=(-1, numCols + 1, -1) numericalKeys, numericalValues
+
+		numericalKeys[][numCols]     = numericalKeys[p][4]
+		numericalValues[][numCols][] = numericalValues[p][4][r]
+
+		numericalValues[][4][] = NaN
+		numericalKeys[][4]     = ""
+		numericalKeys[0][4]    = "AcquisitionState"
+		LBN_SetDimensionLabels(numericalKeys, numericalValues)
+
+		DEBUGPRINT("Upgraded numerical labnotebook to hold acquisition state column")
+	endif
+
+	if(cmpstr(textualKeys[0][4], "AcquisitionState"))
+
+		numCols = DimSize(textualKeys, COLS)
+
+		Redimension/N=(-1, numCols + 1, -1) textualKeys, textualValues
+
+		textualKeys[][numCols]     = textualKeys[p][4]
+		textualValues[][numCols][] = textualValues[p][4][r]
+
+		textualValues[][4][] = ""
+		textualKeys[][4]     = ""
+		textualKeys[0][4]    = "AcquisitionState"
+		LBN_SetDimensionLabels(textualKeys, textualValues)
+
+		DEBUGPRINT("Upgraded textual labnotebook to hold acquisition state column")
+	endif
+	// END acquisition state
 End
 
 /// @brief Return a wave reference to the text labnotebook keys
@@ -1341,6 +1377,7 @@ End
 /// - 1: Time Stamp in local time zone
 /// - 2: Time Stamp in UTC
 /// - 3: Source entry type, one of @ref DataAcqModes
+/// - 4: Acquisition state, one of @ref AcquisitionStates
 /// - other columns are filled at runtime
 Function/Wave GetLBTextualKeys(panelTitle)
 	string panelTitle
@@ -1373,6 +1410,7 @@ Function/Wave GetLBTextualKeys(panelTitle)
 	wv[0][1] = "TimeStamp"
 	wv[0][2] = "TimeStampSinceIgorEpochUTC"
 	wv[0][3] = "EntrySourceType"
+	wv[0][4] = "AcquisitionState"
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units,     wv
@@ -1395,6 +1433,7 @@ End
 /// - 1: Time Stamp in local time zone
 /// - 2: Time Stamp in UTC
 /// - 3: Source entry type, one of @ref DataAcqModes
+/// - 4: Acquisition state, one of @ref AcquisitionStates
 /// - other columns are filled at runtime
 Function/Wave GetLBNumericalKeys(panelTitle)
 	string panelTitle
@@ -1428,6 +1467,7 @@ Function/Wave GetLBNumericalKeys(panelTitle)
 	wv[0][1] = "TimeStamp"
 	wv[0][2] = "TimeStampSinceIgorEpochUTC"
 	wv[0][3] = "EntrySourceType"
+	wv[0][4] = "AcquisitionState"
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units,     wv

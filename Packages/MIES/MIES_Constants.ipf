@@ -236,7 +236,7 @@ Constant LISTBOX_TREEVIEW_EXPANDED     = 0x10 ///< Convenience definition, equal
 Constant LISTBOX_TREEVIEW              = 0x40
 /// @}
 
-Constant INITIAL_KEY_WAVE_COL_COUNT = 4
+Constant INITIAL_KEY_WAVE_COL_COUNT = 5
 
 /// @name Constants for the note of the wave returned by GetTPStorage
 /// @{
@@ -620,7 +620,7 @@ Constant WAVEBUILDER_PANEL_VERSION         = 9
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 40
+Constant LABNOTEBOOK_VERSION = 41
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
