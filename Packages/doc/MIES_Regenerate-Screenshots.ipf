@@ -22,11 +22,11 @@ Function run()
 	// and the colors are not likely to change in this millenia
 	// CreateRelevantColorsGraph()
 
-//	ScreenShotsForDataBrowser()
+	ScreenShotsForDataBrowser()
 //
 //	ScreenShotsForAnalysisBrowser()
 
-	ScreenShotsForWaveBuilder()
+//	ScreenShotsForWaveBuilder()
 
 //	ScreenShotsForDAEphys()
 End
@@ -111,7 +111,7 @@ End
 static Function ScreenShotsForDataBrowser()
 
 	string folder, browser, bspanel, pulseTracePlot, pulseImagePlot, pulseImagePlotCS
-	string sweepControl, path, entry, filename
+	string sweepControl, path, entry, filename, settingsHistoryPanel
 	variable i, numEntries
 
 	path = GetSavePath()
@@ -159,9 +159,79 @@ static Function ScreenShotsForDataBrowser()
 
 	SavePICT/TRAN=0/B=(2*72)/E=-5/P=$path/Win=RelevantColors/O as "RelevantColors.png"
 
+	browser = "DB_ITC1600_Dev_0"
+
+	DoUpdate
+	SavePICT/E=-5/P=$path/Win=$browser/SNAP=1/O as "Browser-Graph.png"
+
 	sweepControl = BSP_GetSweepControlsPanel(browser)
 	DoUpdate
 	SavePICT/E=-5/P=$path/Win=$sweepControl/SNAP=1/O as "Browser-SweepControl.png"
+
+	settingsHistoryPanel = DB_GetSettingsHistoryPanel(browser)
+
+	PGC_SetAndActivateControl(settingsHistoryPanel, "button_clearlabnotebookgraph")
+
+	STRUCT WMPopupAction pa
+	pa.win = settingsHistoryPanel
+	pa.eventCode = 2
+
+	pa.popStr = "Stim Scale Factor"
+	DB_PopMenuProc_LabNotebook(pa)
+
+	DoUpdate
+	SavePICT/E=-5/P=$path/Win=$settingsHistoryPanel/SNAP=1/O as "Browser-SettingsHistory.png"
+
+	AssembleOneDataBrowserImage(path)
+End
+
+Function AssembleOneDataBrowserImage(string path)
+
+	variable firstRow, lastRow, firstCol, lastCol
+	variable numRows, numCols
+
+	// assemble one image with all external subwindows combined
+	ImageLoad/O/N=settingsPic/P=$path "BrowserSettingsPanel-Settings.png"
+	ImageLoad/O/N=graphPic/P=$path "Browser-Graph.png"
+	ImageLoad/O/N=sweepControlPic/P=$path "Browser-SweepControl.png"
+	ImageLoad/O/N=settingsHistoryPic/P=$path "Browser-SettingsHistory.png"
+
+	WAVE settingsPic, graphPic, sweepControlPic, settingsHistoryPic
+	Duplicate/O settingsPic, total
+
+	numRows = DimSize(settingsPic, ROWS) + max(DimSize(graphPic, ROWS), DimSize(settingsHistoryPic, ROWS), DimSize(settingsHistoryPic, ROWS))
+	numCols = DimSize(graphPic, COLS) + DimSize(sweepControlPic, COLS) + DimSize(settingsHistoryPic, COLS)
+	Redimension/N=(numRows, numCols, -1) total
+	total[][][] = NaN
+
+	firstRow = 0
+	lastRow  = firstRow + DimSize(settingsPic, ROWS) - 1
+	firstCol = 0
+	lastCol  = firstCol + DimSize(settingsPic, COLS) - 1
+	total[firstRow, lastRow][firstCol, lastCol][] = settingsPic[p - firstRow][q - firstCol][r]
+
+	firstRow = DimSize(settingsPic, ROWS)
+	lastRow  = firstRow +  + DimSize(graphPic, ROWS) - 1
+	firstCol = 0
+	lastCol  = firstCol + DimSize(graphPic, COLS) - 1
+
+	total[firstRow, lastRow][firstCol, lastCol][] = graphPic[p - firstRow][q - firstCol][r]
+
+	firstRow = DimSize(settingsPic, ROWS)
+	lastRow  = firstRow +  + DimSize(sweepControlPic, ROWS) - 1
+	firstCol = DimSize(graphPic, COLS)
+	lastCol  = firstCol + DimSize(sweepControlPic, COLS) - 1
+
+	total[firstRow, lastRow][firstCol, lastCol][] = sweepControlPic[p - firstRow][q - firstCol][r]
+
+	firstRow = DimSize(settingsPic, ROWS)
+	lastRow  = firstRow + DimSize(settingsHistoryPic, ROWS) - 1
+	firstCol = DimSize(graphPic, COLS) + DimSize(sweepControlPic, COLS)
+	lastCol  = firstCol + DimSize(settingsHistoryPic, COLS) - 1
+
+	total[firstRow, lastRow][firstCol, lastCol][] = settingsHistoryPic[p - firstRow][q - firstCol][r]
+
+	ImageSave/O/T="png"/P=$path total as "Browser-all.png"
 End
 
 Function CreateRelevantColorsGraph()
