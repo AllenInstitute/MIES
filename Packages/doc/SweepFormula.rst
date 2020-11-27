@@ -1,5 +1,7 @@
 ..  vim: set ts=3 sw=3 tw=79 et :
 
+.. _SweepFormula:
+
 The Sweep Formula Module
 ------------------------
 

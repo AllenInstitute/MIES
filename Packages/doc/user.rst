@@ -6,6 +6,7 @@ User documentation
 .. toctree::
   :maxdepth: 2
 
+  analysisbrowser
   databrowser
   wavebuilder
   daephys
