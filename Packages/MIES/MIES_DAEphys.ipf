@@ -1363,9 +1363,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
 
-	if(!forcedStop)
-		AFM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
-	endif
+	AS_HandlePossibleTransition(panelTitle, AS_POST_DAQ, call = !forcedStop)
 
 	hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
@@ -1408,6 +1406,8 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	endif
 
 	DAP_ApplyDelayedClampModeChange(panelTitle)
+
+	AS_HandlePossibleTransition(panelTitle, AS_INACTIVE)
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ") || !startTPAfterDAQ)
 		return NaN
@@ -2088,8 +2088,13 @@ End
 /// @brief Check if all settings are valid to send a test pulse or acquire data
 ///
 /// For invalid settings an informative message is printed into the history area.
+///
+/// Callers must ensure to set the acquisition state back to #AS_INACTIVE when
+/// calling with #DATA_ACQUISITION_MODE.
+///
 /// @param panelTitle device
 /// @param mode       One of @ref DataAcqModes
+///
 /// @return 0 for valid settings, 1 for invalid settings
 Function DAP_CheckSettings(panelTitle, mode)
 	string panelTitle
@@ -2103,6 +2108,10 @@ Function DAP_CheckSettings(panelTitle, mode)
 	string list, lastStart
 
 	ASSERT(mode == DATA_ACQUISITION_MODE || mode == TEST_PULSE_MODE, "Invalid mode")
+
+	if(mode == DATA_ACQUISITION_MODE)
+		AS_HandlePossibleTransition(panelTitle, AS_EARLY_CHECK)
+	endif
 
 	if(DAP_DeviceIsUnlocked(panelTitle))
 		printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
@@ -2147,7 +2156,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	// update the analysis functions gathered from the stimsets
 	AFM_UpdateAnalysisFunctionWave(panelTitle)
 
-	if(mode == DATA_ACQUISITION_MODE && AFM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
+	if(mode == DATA_ACQUISITION_MODE && AS_HandlePossibleTransition(panelTitle, AS_PRE_DAQ))
 		printf "%s: Pre DAQ analysis function requested an abort\r", panelTitle
 		ControlWindowToFront()
 		return 1
@@ -4140,15 +4149,14 @@ Function DAP_ButtonProc_TPDAQ(ba) : ButtonControl
 			ba.blockreentry = 1
 			panelTitle = ba.win
 
-			if(!cmpstr(ba.ctrlName, "StartTestPulseButton"))
+			DAP_AbortIfUnlocked(panelTitle)
 
-				DAP_AbortIfUnlocked(panelTitle)
+			if(!cmpstr(ba.ctrlName, "StartTestPulseButton"))
 
 				NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
 				// if data acquisition is currently running we just
-				// want just call TP_StartTestPulse* which automatically
-				// ends DAQ
+				// call TP_StartTestPulse* which automatically ends DAQ
 				if(dataAcqRunMode == DAQ_NOT_RUNNING && TP_CheckIfTestpulseIsRunning(panelTitle))
 					TP_StopTestPulse(panelTitle)
 				elseif(DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
@@ -4163,6 +4171,7 @@ Function DAP_ButtonProc_TPDAQ(ba) : ButtonControl
 				if(dataAcqRunMode == DAQ_NOT_RUNNING)
 					testpulseRunMode = TP_StopTestPulse(panelTitle)
 					if(DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE))
+						AS_HandlePossibleTransition(panelTitle, AS_INACTIVE)
 						TP_RestartTestPulse(panelTitle, testpulseRunMode)
 						Abort
 					endif
@@ -4812,6 +4821,9 @@ Function DAP_LockDevice(string win)
 
 	NVAR sessionStartTime = $GetSessionStartTime()
 	sessionStartTime = DateTimeInUTC()
+
+	NVAR acqState = $GetAcquisitionState(panelTitleLocked)
+	acqState = AS_INACTIVE
 
 	NVAR rngSeed = $GetRNGSeed(panelTitleLocked)
 	NewRandomSeed()

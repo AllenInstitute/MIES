@@ -106,7 +106,7 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 	SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
+		AS_HandlePossibleTransition(panelTitle, AS_PRE_SWEEP)
 	endif
 
 	WAVE DAQDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)

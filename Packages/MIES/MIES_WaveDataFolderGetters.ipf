@@ -6513,3 +6513,86 @@ Function/WAVE GetOverrideResults()
 
 	return overrideResults
 End
+
+/// @brief Return the wave used for storing acquisition state transitions during testing
+///
+Function/WAVE GetAcqStateTracking()
+
+	variable versionOfNewWave = 1
+	DFREF dfr = root:
+
+	string name = "acquisitionStateTracking"
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, 2) dfr:$name/WAVE=wv
+	endif
+
+	wv = NaN
+
+	SetDimLabel COLS, 0, OLD, wv
+	SetDimLabel COLS, 1, NEW, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return a wave with all valid acquisition state transitions
+///
+/// It is AS_NUM_STATES x AS_NUM_STATES matrix were the old states are in the rows
+/// and the new states in the columns. Every valid transition has a 1 in it.
+Function/WAVE GetValidAcqStateTransitions()
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetMiesPath()
+
+	string name = "validAcqStateTransitions"
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/R/N=(AS_NUM_STATES, AS_NUM_STATES) dfr:$name/WAVE=wv
+	endif
+
+	wv = 0
+
+	Make/FREE/N=(AS_NUM_STATES) indexHelper
+
+	SetDimLabel ROWS, -1, OLD, wv
+	SetDimLabel COLS, -1, NEW, wv
+	indexHelper[] = SetDimensionLabels(wv, AS_StateToString(p), ROWS, startPos = p)
+	indexHelper[] = SetDimensionLabels(wv, AS_StateToString(p), COLS, startPos = p)
+
+	wv[%AS_INACTIVE][%AS_EARLY_CHECK] = 1
+
+	wv[%AS_EARLY_CHECK][%AS_PRE_DAQ] = 1
+	wv[%AS_EARLY_CHECK][%AS_INACTIVE] = 1
+
+	wv[%AS_PRE_DAQ][%AS_PRE_SWEEP] = 1
+	wv[%AS_PRE_DAQ][%AS_INACTIVE] = 1
+	wv[%AS_PRE_DAQ][%AS_POST_DAQ] = 1
+
+	wv[%AS_PRE_SWEEP][%AS_MID_SWEEP] = 1
+
+	wv[%AS_MID_SWEEP][%AS_MID_SWEEP] = 1
+	wv[%AS_MID_SWEEP][%AS_POST_SWEEP] = 1
+
+	wv[%AS_POST_SWEEP][%AS_ITI] = 1
+	wv[%AS_POST_SWEEP][%AS_POST_DAQ] = 1
+
+	wv[%AS_ITI][%AS_PRE_SWEEP] = 1
+	wv[%AS_ITI][%AS_POST_DAQ] = 1
+
+	wv[%AS_POST_DAQ][%AS_INACTIVE] = 1
+
+	return wv
+End

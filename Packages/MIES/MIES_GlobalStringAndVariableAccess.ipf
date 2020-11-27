@@ -682,3 +682,10 @@ Function/S GetSettingsJSONid()
 
 	return path
 End
+
+/// @brief Return the path to the acquisition state
+///
+/// Holds one of @ref AcquisitionStates
+Function/S GetAcquisitionState(string panelTitle)
+	return GetNVARAsString(GetDevicePath(panelTitle), "acquisitionState", initialValue = AS_INACTIVE)
+End
