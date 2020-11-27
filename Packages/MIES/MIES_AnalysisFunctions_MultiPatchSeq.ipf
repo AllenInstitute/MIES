@@ -901,7 +901,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. image:: dot/multi-patch-seq-fast-rheo-estimate.svg
+///	.. image:: /dot/multi-patch-seq-fast-rheo-estimate.svg
 /// \endrst
 ///
 /// @verbatim
@@ -1407,7 +1407,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. image:: dot/multi-patch-seq-dascale.svg
+///	.. image:: /dot/multi-patch-seq-dascale.svg
 /// \endrst
 ///
 Function MSQ_DAScale(panelTitle, s)
@@ -1900,7 +1900,7 @@ End
 ///
 /// @todo
 /// \rst
-///	.. comment image:: dot/multi-patch-seq-SpikeControl.svg
+///	.. comment image:: /dot/multi-patch-seq-SpikeControl.svg
 /// \endrst
 ///
 Function MSQ_SpikeControl(panelTitle, s)

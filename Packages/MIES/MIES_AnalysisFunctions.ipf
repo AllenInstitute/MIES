@@ -18,7 +18,7 @@
 ///
 /// \rst
 ///
-/// .. image:: ../analysis-functions-calls-during-RA-stages.svg
+/// .. image:: /svg/analysis-functions-calls-during-RA-stages.svg
 ///    :width: 300 px
 ///    :align: center
 ///

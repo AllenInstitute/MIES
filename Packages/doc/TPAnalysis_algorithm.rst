@@ -335,7 +335,7 @@ The calculated ranges are used to create free waves ``BaselineSS``, ``TPSS`` and
    Duplicate/FREE/R=[TPSSStartPoint, TPSSEndPoint][] OscilloscopeData, TPSS
    Duplicate/FREE/R=[TPInstantaneousOnsetPoint, TPInstantaneousEndPoint][] OscilloscopeData, Instantaneous
 
-.. figure:: testPulse-visualization_new.svg
+.. figure:: svg/testPulse-visualization_new.svg
    :align: center
 
 
@@ -517,7 +517,7 @@ It is later used to set the number of ADCs for calling :cpp:func:`TP_RecordTP`.
      columns = 1
    endif
 
-.. figure:: testPulse-averaging.svg
+.. figure:: svg/testPulse-averaging.svg
    :align: center
 
 

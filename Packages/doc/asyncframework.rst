@@ -243,7 +243,7 @@ threading loop.
 
 .. _Figure Async Framework:
 
-.. figure:: async_framework.svg
+.. figure:: svg/async_framework.svg
    :align: center
 
 Depiction of frameworks working principle.

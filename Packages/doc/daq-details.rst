@@ -3,35 +3,35 @@ DAQ details
 
 .. _Figure Repeated Acquisition Explained:
 
-.. figure:: acquisition-repeated-indexing-explained.svg
+.. figure:: svg/acquisition-repeated-indexing-explained.svg
    :align: center
 
    Data acquisition modes
 
 .. _Figure Normal Delays:
 
-.. figure:: normal-delays.svg
+.. figure:: svg/normal-delays.svg
    :align: center
 
    Normal delays
 
 .. _Figure dDAQ Delays:
 
-.. figure:: ddaq-delay.svg
+.. figure:: svg/ddaq-delay.svg
    :align: center
 
    Ddaq delay
 
 .. _Figure oodDAQ Delays:
 
-.. figure:: oodDAQ-delays.svg
+.. figure:: svg/oodDAQ-delays.svg
    :align: center
 
    oodDAQ delays
 
 .. _Figure Testpulse Visualization:
 
-.. figure:: testPulse-visualization.svg
+.. figure:: svg/testPulse-visualization.svg
    :align: center
 
    Testpulse visualization

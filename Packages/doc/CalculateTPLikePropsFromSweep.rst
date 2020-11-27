@@ -277,5 +277,5 @@ Then the loop continues to the next head stage of this sweep with
 
 .. _Figure Calculate Testpulse Like Properties from Sweep:
 
-.. figure:: CalculateTPLikePropsFromSweep.svg
+.. figure:: svg/CalculateTPLikePropsFromSweep.svg
    :align: center
