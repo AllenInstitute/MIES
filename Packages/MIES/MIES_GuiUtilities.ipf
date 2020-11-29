@@ -1735,33 +1735,38 @@ End
 /// @brief Retrieves named userdata keys from a recreation macro string
 ///
 /// @param recMacro recreation macro string
-/// @returns List of userdata keys
-Function/S GetUserdataKeys(recMacro)
-	string recMacro
+///
+/// @returns Textwave with all unqiue entries or `$""` if nothing could be found.
+Function/WAVE GetUserdataKeys(string recMacro)
 
-	string userKeys = ""
-	string key
-	variable pos1, pos2
+	variable pos1, pos2, count
 	variable prefixLength = strlen(USERDATA_PREFIX)
+
+	Make/T/FREE userKeys
 
 	do
 		pos1 = strsearch(recMacro, USERDATA_PREFIX, pos1)
+
 		if(pos1 == -1)
 			break
 		endif
+
 		pos2 = strsearch(recMacro, USERDATA_SUFFIX, pos1)
-		key = recMacro[pos1 + prefixLength, pos2 - 1]
-		userKeys = AddListItem(key, userKeys, ";", Inf)
+		ASSERT(pos2 != -1, "Invalid recreation macro")
+
+		EnsureLargeEnoughWave(userKeys, minimumSize = count)
+		userKeys[count++] = recMacro[pos1 + prefixLength, pos2 - 1]
+
 		pos1 = pos2
 	while(1)
 
-	if(ItemsInList(userKeys) > 1)
-		WAVE/T w = ListToTextWave(userKeys, ";")
-		FindDuplicates/FREE /RT=wClean w
-		wfprintf userKeys, "%s;", wClean
+	if(count == 0)
+		return $""
 	endif
 
-	return userKeys
+	Redimension/N=(count) userKeys
+
+	return GetUniqueEntries(userKeys)
 End
 
 /// @brief Converts an Igor control type number to control name

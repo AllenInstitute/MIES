@@ -1586,7 +1586,7 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 	string excCtrlTypes, excUserKeys
 
 	variable ctrlType, pos, i, numUdataKeys, setVarType, arrayIndex, oldSize, preferCode, arrayElemType
-	string wList, ctrlPath, controlPath, niceName, jsonPath, udataPath, udataKeys, uDataKey, uData, s, arrayName, arrayElemPath
+	string wList, ctrlPath, controlPath, niceName, jsonPath, udataPath, uDataKey, uData, s, arrayName, arrayElemPath
 
 
 	ASSERT((saveMask & (EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY | EXPCONFIG_SAVE_POPUPMENU_AS_INDEX_ONLY)) != (EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY | EXPCONFIG_SAVE_POPUPMENU_AS_INDEX_ONLY), "Invalid popup menu save selection. String only and Index only can not be set at the same time.")
@@ -1710,26 +1710,24 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 			if(!IsEmpty(S_Userdata) && str2num(StringFromList(pos, EXPCONFIG_GUI_SUSERDATA)))
 				JSON_AddString(jsonID, udataPath, S_Userdata)
 			endif
-			udataKeys = GetUserdataKeys(S_recreation)
-			if(!IsEmpty(udataKeys))
-				numUdataKeys = ItemsInList(udataKeys)
-				for(i = 0; i < numUdataKeys; i +=1)
-					uDataKey = StringFromList(i, udataKeys)
-					if(WhichListItem(uDataKey, excUserKeys) >= 0)
-						continue
-					endif
-					uData = GetUserData(wName, ctrlName, uDataKey)
-					try
-						ClearRTError()
-						s = ConvertTextEncoding(uData, TextEncodingCode("UTF-8"), TextEncodingCode("UTF-8"), 1, 0); AbortOnRTE
-					catch
-						ClearRTError()
-						uData = Base64Encode(udata)
-						JSON_AddString(jsonID, udataPath + EXPCONFIG_FIELD_BASE64PREFIX + uDataKey, "1")
-					endtry
-					JSON_AddString(jsonID, udataPath + uDataKey, uData)
-				endfor
-			endif
+			WAVE/T/Z udataKeys = GetUserDataKeys(S_recreation)
+			numUdataKeys = WaveExists(udataKeys) ? DimSize(udataKeys, ROWS) : 0
+			for(i = 0; i < numUdataKeys; i +=1)
+				uDataKey = udataKeys[i]
+				if(WhichListItem(uDataKey, excUserKeys) >= 0)
+					continue
+				endif
+				uData = GetUserData(wName, ctrlName, uDataKey)
+				try
+					ClearRTError()
+					s = ConvertTextEncoding(uData, TextEncodingCode("UTF-8"), TextEncodingCode("UTF-8"), 1, 0); AbortOnRTE
+				catch
+					ClearRTError()
+					uData = Base64Encode(udata)
+					JSON_AddString(jsonID, udataPath + EXPCONFIG_FIELD_BASE64PREFIX + uDataKey, "1")
+				endtry
+				JSON_AddString(jsonID, udataPath + uDataKey, uData)
+			endfor
 		endif
 	elseif(saveMask & EXPCONFIG_SAVE_VALUE)
 		arrayIndex = str2num(GetUserData(wName, ctrlName, EXPCONFIG_UDATA_CTRLARRAYINDEX))

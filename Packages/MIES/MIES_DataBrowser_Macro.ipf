@@ -1014,7 +1014,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_vert_scale_bar,userdata(ResizeControlsInfo)= A"!!,DC!!#@e!!#@r!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_vert_scale_bar,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_vert_scale_bar,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_pulseAver_vert_scale_bar,value= _NUM:1
+	SetVariable setvar_pulseAver_vert_scale_bar,value= _NUM:0.5
 	CheckBox check_pulseAver_ShowImage,pos={52.00,205.00},size={111.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Enable image plot"
 	CheckBox check_pulseAver_ShowImage,help={"Enable the image plot which is *much* faster than the trace plot"}
 	CheckBox check_pulseAver_ShowImage,userdata(tabnum)=  "4"
