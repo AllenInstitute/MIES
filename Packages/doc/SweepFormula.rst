@@ -523,5 +523,5 @@ Two formulas can be plotted against each other by using the vs operator.
 
 gives
 
-.. figure:: sweepFormulaPlot.svg
+.. figure:: svg/sweepFormulaPlot.svg
    :align: center

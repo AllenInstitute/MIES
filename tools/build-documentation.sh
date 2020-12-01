@@ -50,10 +50,15 @@ fi
 if hash dot 2>/dev/null; then
   echo "Start converting dot files to svg"
 
+  cd dot
+
   for i in $(ls *.dot)
   do
-    dot -Tsvg -O "$i"
+    output=$(basename "$i" .dot)
+    dot -Tsvg -o "${output}.svg" "$i"
   done
+
+  cd ..
 
 else
   echo "Errors building the documentation" 1>&2
