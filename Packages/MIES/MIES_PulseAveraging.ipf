@@ -2070,9 +2070,12 @@ Function PA_UpdateScaleBars(string win, variable resetToUserLength)
 	string bsPanel
 	STRUCT PulseAverageSetIndices pasi
 
-	bsPanel = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
+	if(!WindowExists(win))
+		DEBUGPRINT("Warning: Window from parameter does not exist.")
+		return NaN
+	endif
 
-	ASSERT(WindowExists(win), "Missing window")
+	bsPanel = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
 
 	displayMode = ItemsInList(ImageNameList(win, ";")) > 0 ? PA_DISPLAYMODE_IMAGES : PA_DISPLAYMODE_TRACES
 
