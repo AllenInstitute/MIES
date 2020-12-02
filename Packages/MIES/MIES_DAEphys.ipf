@@ -4642,8 +4642,7 @@ static Function DAP_UpdateDataFolderDisplay(panelTitle, locked)
 	GroupBox group_Hardware_FolderPath win = $panelTitle, title = title
 End
 
-Function DAP_LockDevice(panelTitle)
-	string panelTitle
+Function DAP_LockDevice(string win)
 
 	variable locked, hardwareType, headstage
 	string panelTitleLocked, msg
@@ -4654,7 +4653,7 @@ Function DAP_LockDevice(panelTitle)
 		DEBUGPRINT_OR_ABORT("The MIES version is unknown, locking devices is therefore only allowed in debug mode.")
 	endif
 
-	panelTitleLocked = GetPopupMenuString(panelTitle, "popup_MoreSettings_Devices")
+	panelTitleLocked = GetPopupMenuString(win, "popup_MoreSettings_Devices")
 	if(windowExists(panelTitleLocked))
 		DoAbortNow("Attempt to duplicate device connection! Please choose another device number as that one is already in use.")
 	endif
@@ -4663,7 +4662,7 @@ Function DAP_LockDevice(panelTitle)
 		DoAbortNow("Please select a valid device.")
 	endif
 
-	if(!HasPanelLatestVersion(panelTitle, DA_EPHYS_PANEL_VERSION))
+	if(!HasPanelLatestVersion(win, DA_EPHYS_PANEL_VERSION))
 		DoAbortNow("Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one.")
 	endif
 
@@ -4680,10 +4679,10 @@ Function DAP_LockDevice(panelTitle)
 #endif
 	endif
 
-	DisableControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
-	EnableControl(panelTitle,"button_SettingsPlus_unLockDevic")
+	DisableControls(win,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
+	EnableControl(win,"button_SettingsPlus_unLockDevic")
 
-	DoWindow/W=$panelTitle/C $panelTitleLocked
+	DoWindow/W=$win/C $panelTitleLocked
 
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitleLocked))
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(panelTitleLocked))
