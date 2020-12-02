@@ -4073,15 +4073,14 @@ Function DAP_ButtonProc_TPDAQ(ba) : ButtonControl
 			ba.blockreentry = 1
 			panelTitle = ba.win
 
-			if(!cmpstr(ba.ctrlName, "StartTestPulseButton"))
+			DAP_AbortIfUnlocked(panelTitle)
 
-				DAP_AbortIfUnlocked(panelTitle)
+			if(!cmpstr(ba.ctrlName, "StartTestPulseButton"))
 
 				NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
 				// if data acquisition is currently running we just
-				// want just call TP_StartTestPulse* which automatically
-				// ends DAQ
+				// call TP_StartTestPulse* which automatically ends DAQ
 				if(dataAcqRunMode == DAQ_NOT_RUNNING && TP_CheckIfTestpulseIsRunning(panelTitle))
 					TP_StopTestPulse(panelTitle)
 				elseif(DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
@@ -4746,6 +4745,9 @@ Function DAP_LockDevice(string win)
 
 	NVAR sessionStartTime = $GetSessionStartTime()
 	sessionStartTime = DateTimeInUTC()
+	
+	NVAR acqState = $GetAcquisitionState(panelTitleLocked)
+	acqState = AS_INACTIVE
 
 	NVAR rngSeed = $GetRNGSeed(panelTitleLocked)
 	NewRandomSeed()

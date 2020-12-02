@@ -52,7 +52,7 @@ Function run()
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
 
-	RunTest(list, name = "MIES with Hardware", enableJU = 1)
+	RunTest(list, name = "MIES with Hardware", enableJU = 1, allowdebug = 1, debugmode = IUTF_DEBUG_ENABLE, testcase = "Abort_ITI_TP_A_PressAcq_SD")
 End
 
 Function/WAVE DeviceNameGeneratorMD1()
@@ -211,6 +211,10 @@ Function TEST_CASE_END_OVERRIDE(name)
 		// no analysis function errors
 		NVAR errorCounter = $GetAnalysisFuncErrorCounter(dev)
 		CHECK_EQUAL_VAR(errorCounter, 0)
+
+		// correct acquisition state
+		NVAR acqState = $GetAcquisitionState(dev)
+		CHECK_EQUAL_VAR(acqState, AS_INACTIVE)
 
 		if(WhichListItem(name, LIST_OF_TESTS_WITH_SWEEP_ROLLBACK) == -1)
 			// ascending sweep numbers in both labnotebooks

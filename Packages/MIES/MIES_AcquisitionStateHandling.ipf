@@ -65,13 +65,13 @@ Function AS_HandlePossibleTransition(string panelTitle, variable newAcqState, [v
 		ED_MarkSweepStart(panelTitle)
 	endif
 
-	if(!call)
-		return 0
-	endif
-
 #ifdef AUTOMATED_TESTING
 	AS_CheckStateTransition(oldAcqState, newAcqState)
 #endif
+
+	if(!call)
+		return 0
+	endif
 
 	switch(newAcqState)
 		case AS_INACTIVE:

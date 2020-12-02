@@ -33,6 +33,8 @@ static Function RA_HandleITI_MD(panelTitle)
 
 	DAP_ApplyDelayedClampModeChange(panelTitle)
 
+	AS_HandlePossibleTransition(panelTitle, AS_ITI)
+
 	ITI = RA_RecalculateITI(panelTitle)
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP") || ITI <= 0)
@@ -86,6 +88,7 @@ static Function RA_HandleITI(panelTitle)
 	string funcList
 
 	DAP_ApplyDelayedClampModeChange(panelTitle)
+	AS_HandlePossibleTransition(panelTitle, AS_ITI)
 
 	ITI = RA_RecalculateITI(panelTitle)
 	background = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
