@@ -392,7 +392,6 @@ End
 /// @brief Removes a device from the ActiveDeviceList
 ///
 /// @param panelTitle panel title
-///
 /// @param ITCDeviceIDGlobal device id of the device to be removed
 static Function DQM_RemoveDevice(panelTitle, ITCDeviceIDGlobal)
 	string panelTitle
