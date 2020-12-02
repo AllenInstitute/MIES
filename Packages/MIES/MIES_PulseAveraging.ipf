@@ -2704,7 +2704,7 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 				vertAxis = axesNames[0]
 				horizAxis = axesNames[1]
 
-				PA_SetXAxisUserData(graph, horizAxis)
+				xAxisPlotRelative = PA_GetSetXAxisUserData(graph, horizAxis)
 				ModifyGraph/W=$graph/Z freePos($vertAxis)={xAxisPlotRelative, kwFraction}
 			endfor
 
@@ -2748,7 +2748,7 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 
 			WAVE/T axisWave = pasi.axesNames[i][j]
 			horizAxis = axisWave[1]
-			PA_SetXAxisUserData(graph, horizAxis)
+			PA_GetSetXAxisUserData(graph, horizAxis)
 
 #ifdef PA_HIDE_AXIS
 			ModifyGraph/W=$graph nticks=0, noLabel=2, axthick=0, margin=5
@@ -2758,13 +2758,15 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 	endfor
 End
 
-static Function PA_SetXAxisUserData(string graph, string horizAxis)
+static Function PA_GetSetXAxisUserData(string graph, string horizAxis)
 
 	variable xStart, xAxisPlotRelative
 
 	xStart = GetNumFromModifyStr(AxisInfo(graph, horizAxis), "axisEnab", "{", 0)
 	xAxisPlotRelative = xStart - PA_X_AXIS_OFFSET
 	SetWindow $graph, userData($(PA_USER_DATA_X_START_RELATIVE_PREFIX + horizAxis)) = num2str(xAxisPlotRelative)
+
+	return xAxisPlotRelative
 End
 
 static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi)
