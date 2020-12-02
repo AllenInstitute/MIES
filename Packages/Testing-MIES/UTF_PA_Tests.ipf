@@ -413,6 +413,11 @@
 // In PulseIndex sorting order it is checked if the amplitude alternates, starting with 100 from
 // sweep 7.
 
+// Test: PAT_ExtendedAverageCheck
+// Sweep 0 and 1 are shown with OVS, average and time alignment is enabled
+// It is checked if the expected numer of traces is shown
+// For the average trace of the upper left sub plot it is checked if the
+// data is properly NaNed on the left and right edge.
 static Constant PA_TEST_FP_EPSILON = 1E-6
 
 // todo remove string constants here
@@ -1171,6 +1176,39 @@ static Function PAT_BasicAverageCheck()
 			PAT_CheckAverageWaveNote(pData)
 		endfor
 	endfor
+End
+
+static Function PAT_ExtendedAverageCheck()
+
+	string bspName, graph
+	STRUCT PA_Test patest
+
+	string traceListAll, traceList, traceName
+	variable traceNum
+
+	PA_InitSweep0(patest)
+
+	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_timeAlign", val = 1)
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_showAver", val = 1)
+	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
+	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 1)
+
+	Make/FREE/N=323286 refData = 1
+	refData[73287, 249999] = 0
+
+	traceListAll = PAT_GetTraces(graph, 3 * patest.layoutSize)
+
+	traceList = GrepList(traceListAll, PAT_AVG_PREFIX)
+	traceNum = ItemsInList(traceList)
+	CHECK_EQUAL_VAR(traceNum, patest.layoutSize)
+
+	traceName = PAT_FindTraceNameAvgDeconv(traceList, patest.channels[0], patest.regions[0])
+	WAVE pData = TraceNameToWaveRef(graph, traceName)
+	Duplicate/FREE pData, compData
+	compData[] = IsNaN(compData[p])
+
+	CHECK_EQUAL_WAVES(refData, compData, mode = WAVE_DATA)
 End
 
 static Function PAT_BasicDeconvCheck()
