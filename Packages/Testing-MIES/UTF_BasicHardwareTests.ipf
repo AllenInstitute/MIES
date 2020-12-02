@@ -3968,3 +3968,45 @@ Function TestSweepRollback_REENTRY_REENTRY([str])
 	refList = SortList("Config_Sweep_0;Sweep_0;Config_Sweep_1;Sweep_1;Config_Sweep_2;Sweep_2;Config_Sweep_3;Sweep_3;")
 	CHECK_EQUAL_STR(refList, list)
 End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function TestAcquiringNewDataOnOldData([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, str)
+End
+
+Function TestAcquiringNewDataOnOldData_REENTRY([str])
+	string str
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	KillWindow $str
+
+	// restart data acquisition
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, str)
+
+	RegisterReentryFunction(GetRTStackInfo(1))
+End
+
+Function TestAcquiringNewDataOnOldData_REENTRY_REENTRY([str])
+	string str
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 6)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 5)
+End

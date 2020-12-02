@@ -1683,18 +1683,36 @@ Function DAP_SweepRollback(string paneltitle, variable sweepNo, variable newSwee
 	ASSERT(rollbackCountNum == rollbackCountText, "Invalid rollback count")
 End
 
-static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
-	string panelTitle
+static Function DAP_UpdateSweepLimitsAndDisplay(string panelTitle, [variable initial])
 
 	string panelList
 	variable sweep, nextSweep, maxNextSweep, numPanels, i
 
 	panelList = GetListofLeaderAndPossFollower(panelTitle)
 
-	if(DAP_DeviceIsLeader(panelTitle))
-		sweep = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
+	if(ParamIsDefault(initial))
+		initial = 0
 	else
-		sweep = NaN
+		initial = !!initial
+	endif
+
+	if(initial)
+		// we are not implementing sweep adjustment for yoked devices
+		if(!DeviceHasFollower(panelTitle) && !DeviceIsFollower(panelTitle))
+			sweep = AFH_GetLastSweepAcquired(panelTitle) + 1
+			if(IsFinite(sweep))
+				SetSetVariable(panelTitle, "SetVar_Sweep", sweep)
+				DAG_Update(panelTitle, "SetVar_Sweep", val = sweep)
+			endif
+		else
+			sweep = NaN
+		endif
+	else
+		if(DAP_DeviceIsLeader(panelTitle))
+			sweep = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
+		else
+			sweep = NaN
+		endif
 	endif
 
 	// query maximum next sweep
@@ -4743,6 +4761,8 @@ Function DAP_LockDevice(string win)
 
 	WAVE deviceInfo = GetDeviceInfoWave(panelTitleLocked)
 	HW_WriteDeviceInfo(hardwareType, ITCDeviceIDGlobal, deviceInfo)
+
+	DAP_UpdateSweepLimitsAndDisplay(panelTitleLocked, initial = 1)
 End
 
 static Function DAP_LoadBuiltinStimsets()
