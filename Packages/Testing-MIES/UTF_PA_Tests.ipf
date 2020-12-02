@@ -430,7 +430,6 @@ static StrConstant PA_TEST_KEY_PULSEHASFAILED = "PulseHasFailed"
 static StrConstant PA_TEST_KEY_TA_FP = "TimeAlignmentFeaturePosition"
 static StrConstant PA_TEST_KEY_TA_TO = "TimeAlignmentTotalOffset"
 
-static StrConstant PA_TEST_KEY_SPCO = "SinglePulseColumnOffset"
 static StrConstant PA_TEST_KEY_IMG_PMIN = "PulsesMinimum"
 static StrConstant PA_TEST_KEY_IMG_PMAX = "PulsesMaximum"
 
@@ -906,15 +905,15 @@ End
 
 static Function PAT_CheckImageWaveNote(string win, WAVE iData, STRUCT PA_Test &patest)
 
-	variable singlePulseColumnOffset, ySize, setting
+	variable ySize, setting
+	// This assumption is true for a small number of pulses shown
+	variable specialEntryHeight = 1
 
-	singlePulseColumnOffset = 2 * limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * patest.pulseCnt), 1, inf)
-	CHECK_EQUAL_VAR(GetNumberFromWaveNote(iData, PA_TEST_KEY_SPCO), singlePulseColumnOffset)
 
-	ySize = singlePulseColumnOffset + patest.pulseCnt
+	ySize = 2 * specialEntryHeight + patest.pulseCnt
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(iData, NOTE_INDEX), ySize)
 
-	Duplicate/FREE/RMD=[][singlePulseColumnOffset, Inf] iData, pulseData
+	Duplicate/FREE/RMD=[][0, patest.pulseCnt - 1] iData, pulseData
 
 	setting = GetNumberFromWaveNote(iData, PA_TEST_KEY_IMG_PMIN)
 	CHECK_CLOSE_VAR(setting, WaveMin(pulseData), tol = PA_TEST_FP_EPSILON)
@@ -2068,7 +2067,7 @@ static Function PAT_BasicImagePlot()
 	STRUCT PA_Test patest
 
 	string imageList, imageName, winL, annoL, subWin
-	variable i, j, size, singlePulseColumnOffset
+	variable i, j, size
 
 	PA_InitSweep0(patest)
 
@@ -2083,10 +2082,8 @@ static Function PAT_BasicImagePlot()
 			PAT_VerifyImageAxes(imageWin, imageName, i + 1, j + 1, patest)
 			PAT_VerifyImageAxesRange(imageWin, imageName, patest)
 
-			singlePulseColumnOffset = 2 * limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * patest.pulseCnt), 1, inf)
-
 			WAVE iData = ImageNameToWaveRef(imageWin, imageName)
-			Duplicate/FREE/RMD=[][singlePulseColumnOffset] iData, profileLine
+			Duplicate/FREE/RMD=[][0] iData, profileLine
 			Redimension/N=(-1) profileLine
 			CHECK_EQUAL_WAVES(patest.refData, profileLine, mode = WAVE_DATA, tol = patest.eqWaveTol)
 			PAT_CheckImageWaveNote(bspName, iData, patest)
@@ -2146,8 +2143,6 @@ static Function PAT_BasicImagePlotDeconvolution()
 	[bspName, imageWin] = PAT_StartDataBrowserImage_IGNORE()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
 
-	singlePulseColumnOffset = 2 * limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * patest.pulseCnt), 1, inf)
-
 	imageList = PAT_GetImages(imageWin, patest.layoutSize)
 	size = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
@@ -2161,7 +2156,8 @@ static Function PAT_BasicImagePlotDeconvolution()
 				Duplicate/FREE refData[i][j], adaptedRefData
 				adaptedRefData = limit(adaptedRefData[p], vMin, vMax)
 
-				Duplicate/FREE/RMD=[][singlePulseColumnOffset - 1] iData, deconvData
+				// order is pulse, avg, deconv
+				Duplicate/FREE/RMD=[][2] iData, deconvData
 				Redimension/N=(DimSize(adaptedRefData, ROWS)) deconvData
 				CHECK_EQUAL_WAVES(adaptedRefData, deconvData, mode = WAVE_DATA)
 			endif
@@ -2176,7 +2172,7 @@ static Function PAT_ImagePlotMultiSweep0()
 	STRUCT PA_Test patest3
 
 	string imageList, imageName
-	variable i, j, size, singlePulseColumnOffset
+	variable i, j, size
 
 	PA_InitSweep0(patest0)
 	PA_InitSweep3(patest3)
@@ -2193,14 +2189,12 @@ static Function PAT_ImagePlotMultiSweep0()
 			PAT_VerifyImageAxes(imageWin, imageName, i + 1, j + 1, patest0)
 			PAT_VerifyImageAxesRange(imageWin, imageName, patest0)
 
-			singlePulseColumnOffset = 2 * limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * (patest0.pulseCnt + patest3.pulseCnt)), 1, inf)
-
 			WAVE iData = ImageNameToWaveRef(imageWin, imageName)
-			Duplicate/FREE/RMD=[][singlePulseColumnOffset] iData, profileLine0
+			Duplicate/FREE/RMD=[][0] iData, profileLine0
 			Redimension/N=(-1) profileLine0
 			CHECK_EQUAL_WAVES(patest0.refData, profileLine0, mode = WAVE_DATA, tol = patest0.eqWaveTol)
 
-			Duplicate/FREE/RMD=[][singlePulseColumnOffset + patest0.pulseCnt] iData, profileLine3
+			Duplicate/FREE/RMD=[][patest0.pulseCnt] iData, profileLine3
 			Redimension/N=(-1) profileLine3
 			CHECK_EQUAL_WAVES(patest3.refData, profileLine3, mode = WAVE_DATA, tol = patest3.eqWaveTol)
 		endfor
@@ -2234,7 +2228,8 @@ static Function PAT_ImagePlotAverageExtended()
 			imageName = PAT_FindImageNames(imageList, patest.channels[i], patest.regions[j])
 
 			WAVE iData = ImageNameToWaveRef(imageWin, imageName)
-			Duplicate/FREE/RMD=[][0] iData, avgData
+			// order is pulse, pulse, avg, deconv
+			Duplicate/FREE/RMD=[][2] iData, avgData
 			Redimension/N=(-1) avgData
 			CHECK_EQUAL_WAVES(avgRefData, avgData, mode = WAVE_DATA, tol = patest.eqWaveTol)
 		endfor
@@ -2248,7 +2243,7 @@ static Function PAT_ImagePlotMultiSweep1()
 	STRUCT PA_Test patest5
 
 	string imageList, imageName
-	variable i, j, size, singlePulseColumnOffset, combinedLayoutSize
+	variable i, j, size, combinedLayoutSize
 
 	PA_InitSweep0(patest0)
 	PA_InitSweep5(patest5)
@@ -2274,36 +2269,39 @@ static Function PAT_ImagePlotMultiSweep1()
 			if(i == 0) // AD0
 				PAT_VerifyImageAxes(imageWin, imageName, i + 1, j + 1, patest5)
 
-				singlePulseColumnOffset = 2 * limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * patest5.pulseCnt), 1, inf)
 				Make/FREE/D/N=(patest5.dataLength) refData = 0
 
 				WAVE iData = ImageNameToWaveRef(imageWin, imageName)
-				Duplicate/FREE/RMD=[][singlePulseColumnOffset] iData, profileLine
+				Duplicate/FREE/RMD=[][0] iData, profileLine
 				Redimension/N=(-1) profileLine
 				CHECK_EQUAL_WAVES(refData, profileLine, mode = WAVE_DATA, tol = patest5.dataLength)
 			endif
 			if(j == 0 && i > 0) // R5 with AD1, AD3
 				PAT_VerifyImageAxes(imageWin, imageName, i + 1, j + 1, patest5)
 
-				singlePulseColumnOffset = 2 * limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * patest5.pulseCnt), 1, inf)
 				Make/FREE/D/N=(patest5.dataLength) refData
 				refData[1, patest5.dataLength / 2 + 1] = 100
 
 				WAVE iData = ImageNameToWaveRef(imageWin, imageName)
-				Duplicate/FREE/RMD=[][singlePulseColumnOffset] iData, profileLine
+				Duplicate/FREE/RMD=[][0] iData, profileLine
 				Redimension/N=(-1) profileLine
 				CHECK_EQUAL_WAVES(refData, profileLine, mode = WAVE_DATA, tol = patest5.dataLength)
 			endif
 			if(j > 0 && i > 0) // R1, R3 with AD1, AD3
 				PAT_VerifyImageAxes(imageWin, imageName, i + 1, j + 1, patest0)
 
-				/// TODO this should be implemented in a function in PA_ and just called
-				singlePulseColumnOffset = 2 * limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * (patest5.pulseCnt + patest0.pulseCnt)), 1, inf)
-
 				WAVE iData = ImageNameToWaveRef(imageWin, imageName)
-				Duplicate/FREE/RMD=[][singlePulseColumnOffset] iData, profileLine
+				Duplicate/FREE/RMD=[][0] iData, profileLine
 				Redimension/N=(-1) profileLine
 				CHECK_EQUAL_WAVES(patest0.refData, profileLine, mode = WAVE_DATA, tol = patest0.eqWaveTol)
+
+
+				Make/FREE/D/N=(patest5.dataLength) refData
+				refData[1, patest5.dataLength / 2 + 1] = 100
+				Interpolate2/N=(patest0.dataLength)/T=1/Y=refDataInterp refData
+				Duplicate/FREE/RMD=[][1] iData, profileLine
+				Redimension/N=(-1) profileLine
+				CHECK_EQUAL_WAVES(refDataInterp, profileLine, mode = WAVE_DATA, tol = patest0.dataLength)
 			endif
 		endfor
 	endfor
@@ -2327,7 +2325,6 @@ static Function PAT_ImagePlotFailedPulses()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_searchFailedPulses", val = 1)
 	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 75)
 
-	singlePulseColumnOffset = 2 * limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * (patest0.pulseCnt + patest4.pulseCnt)), 1, inf)
 	imageList = PAT_GetImages(imageWin, patest0.layoutSize)
 	size = sqrt(patest0.layoutSize)
 	for(i = 0; i < size; i += 1)
@@ -2337,7 +2334,7 @@ static Function PAT_ImagePlotFailedPulses()
 			PAT_VerifyImageAxesRange(imageWin, imageName, patest0)
 
 			WAVE iData = ImageNameToWaveRef(imageWin, imageName)
-			Duplicate/FREE/RMD=[][singlePulseColumnOffset + patest0.pulseCnt] iData, profileLine
+			Duplicate/FREE/RMD=[][patest0.pulseCnt] iData, profileLine
 			Redimension/N=(-1) profileLine
 			CHECK_EQUAL_VAR(profileLine[Inf], Inf)
 		endfor
@@ -2349,7 +2346,7 @@ static Function PAT_ImagePlotFailedPulses()
 			imageName = PAT_FindImageNames(imageList, patest0.channels[i], patest0.regions[j])
 
 			WAVE iData = ImageNameToWaveRef(imageWin, imageName)
-			Duplicate/FREE/RMD=[][singlePulseColumnOffset + patest0.pulseCnt] iData, profileLine
+			Duplicate/FREE/RMD=[][patest0.pulseCnt] iData, profileLine
 			Redimension/N=(-1) profileLine
 			Duplicate/FREE patest0.refData, refData
 			refData = NaN
@@ -2381,10 +2378,8 @@ static Function PAT_ImagePlotMultipleGraphs()
 			PAT_VerifyImageAxes(imageWinSingle, imageName, i + 1, j + 1, patest, multiGraphMode = 1)
 			PAT_VerifyImageAxesRange(imageWinSingle, imageName, patest)
 
-			singlePulseColumnOffset = 2 * limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * patest.pulseCnt), 1, inf)
-
 			WAVE iData = ImageNameToWaveRef(imageWinSingle, imageName)
-			Duplicate/FREE/RMD=[][singlePulseColumnOffset] iData, profileLine
+			Duplicate/FREE/RMD=[][0] iData, profileLine
 			Redimension/N=(-1) profileLine
 			CHECK_EQUAL_WAVES(patest.refData, profileLine, mode = WAVE_DATA, tol = patest.eqWaveTol)
 			PAT_CheckImageWaveNote(bspName, iData, patest)
@@ -2510,10 +2505,10 @@ static Function PAT_ImagePlotSortOrder()
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 7)
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 8)
 
-	// NaN for avg, devonv, then S7P0, S8P0, S7P1, S8P1, S7P2, S8P2, S7P3, S8P3
-	Make/FREE/D refDataPulseIndex = {NaN, NaN, 100, 50, 100, 50, 100, 50, 100, 50}
-	// NaN for avg, devonv, then S7P0, S7P1, S7P2, S7P3, S8P0, S8P1, S8P2, S8P3
-	Make/FREE/D refDataSweep = {NaN, NaN, 100, 100, 100, 100, 50, 50, 50, 50}
+	// S7P0, S8P0, S7P1, S8P1, S7P2, S8P2, S7P3, S8P3, then NaN for avg, deconv
+	Make/FREE/D refDataPulseIndex = {100, 50, 100, 50, 100, 50, 100, 50, NaN, NaN}
+	// S7P0, S7P1, S7P2, S7P3, S8P0, S8P1, S8P2, S8P3, then NaN for avg, deconv
+	Make/FREE/D refDataSweep = {100, 100, 100, 100, 50, 50, 50, 50, NaN, NaN}
 
 	imageList = PAT_GetImages(imageWin, patest7.layoutSize)
 	size = sqrt(patest7.layoutSize)

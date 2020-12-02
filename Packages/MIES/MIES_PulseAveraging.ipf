@@ -41,8 +41,6 @@ static StrConstant PA_USER_DATA_USER_YLENGTH = "UserYBarLength"
 /// Only present for diagonal pulses
 static StrConstant PA_NOTE_KEY_PULSE_FAILED = "PulseHasFailed"
 
-static StrConstant PA_NOTE_KEY_IMAGE_COL_OFFSET = "SinglePulseColumnOffset"
-
 static Constant PA_USE_WAVE_SCALES = 0x01
 static Constant PA_USE_AXIS_SCALES = 0x02
 
@@ -2072,9 +2070,12 @@ Function PA_UpdateScaleBars(string win, variable resetToUserLength)
 	string bsPanel
 	STRUCT PulseAverageSetIndices pasi
 
-	bsPanel = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
+	if(!WindowExists(win))
+		DEBUGPRINT("Warning: Window from parameter does not exist.")
+		return NaN
+	endif
 
-	ASSERT(WindowExists(win), "Missing window")
+	bsPanel = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
 
 	displayMode = ItemsInList(ImageNameList(win, ";")) > 0 ? PA_DISPLAYMODE_IMAGES : PA_DISPLAYMODE_TRACES
 
@@ -2703,9 +2704,7 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 				vertAxis = axesNames[0]
 				horizAxis = axesNames[1]
 
-				xStart = GetNumFromModifyStr(AxisInfo(graph, horizAxis), "axisEnab", "{", 0)
-				xAxisPlotRelative = xStart - PA_X_AXIS_OFFSET
-				SetWindow $graph, userData($(PA_USER_DATA_X_START_RELATIVE_PREFIX + horizAxis)) = num2str(xAxisPlotRelative)
+				PA_SetXAxisUserData(graph, horizAxis)
 				ModifyGraph/W=$graph/Z freePos($vertAxis)={xAxisPlotRelative, kwFraction}
 			endfor
 
@@ -2747,12 +2746,25 @@ static Function PA_LayoutGraphs(string win, STRUCT PulseAverageSettings &pa, STR
 			sprintf str, "AD%d / Reg. %d HS%s", channelNumber, region, str
 			AppendText/W=$graph str
 
+			WAVE/T axisWave = pasi.axesNames[i][j]
+			horizAxis = axisWave[1]
+			PA_SetXAxisUserData(graph, horizAxis)
+
 #ifdef PA_HIDE_AXIS
 			ModifyGraph/W=$graph nticks=0, noLabel=2, axthick=0, margin=5
 #endif
 			ModifyGraph/W=$graph/Z freePos(bottom)=0
 		endfor
 	endfor
+End
+
+static Function PA_SetXAxisUserData(string graph, string horizAxis)
+
+	variable xStart, xAxisPlotRelative
+
+	xStart = GetNumFromModifyStr(AxisInfo(graph, horizAxis), "axisEnab", "{", 0)
+	xAxisPlotRelative = xStart - PA_X_AXIS_OFFSET
+	SetWindow $graph, userData($(PA_USER_DATA_X_START_RELATIVE_PREFIX + horizAxis)) = num2str(xAxisPlotRelative)
 End
 
 static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi)
@@ -2792,7 +2804,7 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 			lastEntry = GetNumberFromWaveNote(img, NOTE_INDEX)
 			GetAxis/Q/W=$graph $vertAxis
 			ASSERT(V_flag == 0, "Missing axis")
-			SetAxis/W=$graph $vertAxis, -0.5, lastEntry - 0.5
+			SetAxis/W=$graph $vertAxis, lastEntry - 0.5, -0.5
 
 			minimum = GetNumberFromWaveNote(img, "PulsesMinimum")
 			maximum = GetNumberFromWaveNote(img, "PulsesMaximum")
@@ -3106,10 +3118,11 @@ End
 static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, STRUCT PulseAverageSetIndices &pasi, variable mode, WAVE/Z additionalData)
 
 	variable channelNumber, region, numActive, i, j, k, err, val
-	variable requiredEntries, specialEntries, numPulses, numAllPulsesInSet
-	variable singlePulseColumnOffset, failedMarkerStartRow, xPos, yPos, newSweep, numGraphs
+	variable requiredEntries, specialEntryHeight, numPulses, numAllPulsesInSet
+	variable failedMarkerStartRow, xPos, yPos, newSweep, numGraphs
 	variable vert_min, vert_max, horiz_min, horiz_max, firstPulseIndex, layoutChanged
 	variable graphDataIndex, junk, lblIMAGELIST, resetImage, gotNewPulsesToDraw
+	variable colStart, colEnd
 	variable refScaleLeft, refScaleRight, refScalePoints, refScaleDelta, scaleChanged, pulseScaleLeft, pulseScaleRight
 	string vertAxis, horizAxis, graph, basename, imageName, msg, graphWithImage, xUnits
 	string image
@@ -3151,24 +3164,17 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			gotNewPulsesToDraw = numPulses != 0
 			WAVE img = GetPulseAverageSetImageWave(pasi.pulseAverageDFR, channelNumber, region)
 
-			// top to bottom:
+			// bottom to top:
 			// pulses
-			// deconvolution
 			// average
+			// deconvolution
 			//
 			// we reserve 5% of the total columns for average and 5% for deconvolution
-			singlePulseColumnOffset = GetNumberFromWaveNote(img, PA_NOTE_KEY_IMAGE_COL_OFFSET)
-			if(IsNaN(singlePulseColumnOffset) || mode == POST_PLOT_FULL_UPDATE)
-				specialEntries  = limit(round(PA_IMAGE_SPECIAL_ENTRIES_RANGE * numPulses), 1, inf)
-				singlePulseColumnOffset = 2 * specialEntries
-			else
-				// keep the existing singlePulseColumnOffset when doing an incremental update
-				specialEntries = singlePulseColumnOffset / 2
-				ASSERT(IsInteger(specialEntries), "singlePulseColumnOffset is not even.")
-			endif
+			specialEntryHeight = trunc((1 / (1 - 2 * PA_IMAGE_SPECIAL_ENTRIES_RANGE) - 1) * numPulses / 2)
+			specialEntryHeight = limit(specialEntryHeight, 1, specialEntryHeight)
+			requiredEntries = numPulses + 2 * specialEntryHeight
 
 			firstPulseIndex = 0
-			requiredEntries = singlePulseColumnOffset + numPulses
 
 			if(numPulses == 0)
 				Multithread img[][] = NaN
@@ -3227,14 +3233,16 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			if(pa.showIndividualPulses && gotNewPulsesToDraw)
 				// pasi stores only the unsorted sets, but specifically here we need the sorted ones. Thus, we have to retrieve it from the now sorted setIndices.
 				WAVE/WAVE set2 = PA_GetSetWaves(pasi.pulseAverageHelperDFR, channelNumber, region)
-				Multithread img[][singlePulseColumnOffset + firstPulseIndex, requiredEntries - 1] = WaveRef(set2[q - singlePulseColumnOffset][0])(x); err = GetRTError(1)
-				for(k = singlePulseColumnOffset + firstPulseIndex; k < requiredEntries - 1; k += 1)
-					pulseScaleLeft = scaleLeft[k - singlePulseColumnOffset]
+				colStart = firstPulseIndex
+				colEnd = numPulses
+				Multithread img[][colStart, colEnd - 1] = WaveRef(set2[q][0])(x); err = GetRTError(1)
+				for(k = colStart; k < colEnd; k += 1)
+					pulseScaleLeft = scaleLeft[k]
 					if(refScaleLeft != pulseScaleLeft && pulseScaleLeft > refScaleLeft + refScaleDelta)
 						// fill left side with NaN
 						img[0, ScaleToIndexWrapper(img, pulseScaleLeft, ROWS)][k] = NaN
 					endif
-					pulseScaleRight = scaleRight[k - singlePulseColumnOffset]
+					pulseScaleRight = scaleRight[k]
 					if(refScaleRight != pulseScaleRight && pulseScaleRight < refScaleRight - refScaleDelta)
 						// fill right side with NaN
 						img[ScaleToIndexWrapper(img, pulseScaleRight, ROWS), Inf][k] = NaN
@@ -3255,14 +3263,16 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 
 			if(pa.showAverage && WaveExists(averageWave))
 				// when all pulses from the set fail, we don't have an average wave
-				Multithread img[][0, specialEntries - 1] = averageWave(x); err = GetRTError(1)
+				colStart = numPulses
+				colEnd = numPulses + specialEntryHeight
+				Multithread img[][colStart, colEnd - 1] = averageWave(x); err = GetRTError(1)
 				val = leftx(averageWave)
 				if(refScaleLeft != val  && val > refScaleLeft + refScaleDelta)
-					img[0, ScaleToIndexWrapper(img, val, ROWS)][0, specialEntries - 1] = NaN
+					img[0, ScaleToIndexWrapper(img, val, ROWS)][colStart, colEnd - 1] = NaN
 				endif
 				val = rightx(averageWave)
 				if(refScaleRight != val && val < refScaleRight - refScaleDelta)
-					img[ScaleToIndexWrapper(img, val, ROWS), Inf][0, specialEntries - 1] = NaN
+					img[ScaleToIndexWrapper(img, val, ROWS), Inf][colStart, colEnd - 1] = NaN
 				endif
 				pasi.imageAvgDataPresent[i][j] = 1
 			else
@@ -3272,14 +3282,16 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			if(pa.deconvolution.enable && !(i == j) && WaveExists(averageWave))
 				baseName = PA_BaseName(channelNumber, region)
 				WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
-				Multithread img[][specialEntries, 2 * specialEntries - 1] = limit(deconv(x), vert_min, vert_max); err = GetRTError(1)
+				colStart = numPulses + specialEntryHeight
+				colEnd = numPulses + 2 * specialEntryHeight
+				Multithread img[][colStart, colEnd - 1] = limit(deconv(x), vert_min, vert_max); err = GetRTError(1)
 				val = leftx(deconv)
 				if(refScaleLeft != val && val > refScaleLeft + refScaleDelta)
-					img[0, ScaleToIndexWrapper(img, val, ROWS)][specialEntries, 2 * specialEntries - 1] = NaN
+					img[0, ScaleToIndexWrapper(img, val, ROWS)][colStart, colEnd - 1] = NaN
 				endif
 				val = rightx(deconv)
 				if(refScaleRight != val && val < refScaleRight - refScaleDelta)
-					img[ScaleToIndexWrapper(img, val, ROWS), Inf][specialEntries, 2 * specialEntries - 1] = NaN
+					img[ScaleToIndexWrapper(img, val, ROWS), Inf][colStart, colEnd - 1] = NaN
 				endif
 				pasi.imageDeconvDataPresent[i][j] = 1
 			else
@@ -3287,11 +3299,10 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 			endif
 
 			SetNumberInWaveNote(img, NOTE_INDEX, requiredEntries)
-			SetNumberInWaveNote(img, PA_NOTE_KEY_IMAGE_COL_OFFSET, singlePulseColumnOffset)
 
 			imageName = NameOfWave(img)
 
-			sprintf msg, "imageName %s, specialEntries %d, singlePulseColumnOffset %d, requiredEntries %d, firstPulseIndex %d, numPulses %d\r", imageName, specialEntries, singlePulseColumnOffset, requiredEntries, firstPulseIndex, numPulses
+			sprintf msg, "imageName %s, specialEntryHeight %d, requiredEntries %d, firstPulseIndex %d, numPulses %d\r", imageName, specialEntryHeight, requiredEntries, firstPulseIndex, numPulses
 			DEBUGPRINT(msg)
 
 			graphsWithImages = RemoveFromList(graph + "#" + imageName, graphsWithImages)
@@ -3306,7 +3317,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				paGraphData[graphDataIndex][lblIMAGELIST] = AddListItem(imageName, paGraphData[graphDataIndex][lblIMAGELIST])
 			endif
 
-			PA_HighligthFailedPulsesInImage(graph, pa, vertAxis, horizAxis, img, pasi.properties, pasi.setIndices[i][j], numPulses, singlePulseColumnOffset)
+			PA_HighligthFailedPulsesInImage(graph, pa, vertAxis, horizAxis, img, pasi.properties, pasi.setIndices[i][j], numPulses)
 		endfor
 	endfor
 
@@ -3329,9 +3340,9 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 	return usedGraphs
 End
 
-static Function PA_HighligthFailedPulsesInImage(string graph, STRUCT PulseAverageSettings &pa, string vertAxis, string horizAxis, WAVE img, WAVE properties, WAVE setIndizes, variable numPulses, variable singlePulseColumnOffset)
+static Function PA_HighligthFailedPulsesInImage(string graph, STRUCT PulseAverageSettings &pa, string vertAxis, string horizAxis, WAVE img, WAVE properties, WAVE setIndizes, variable numPulses)
 
-	variable failedMarkerStartRow, i, xPos, yPos, fillValue, numFailedPulses
+	variable failedMarkerStartRow, i, xPos, fillValue, numFailedPulses
 
 	if(!pa.searchFailedPulses || !pa.showIndividualPulses)
 		return NaN
@@ -3350,7 +3361,7 @@ static Function PA_HighligthFailedPulsesInImage(string graph, STRUCT PulseAverag
 			continue
 		endif
 
-		Multithread img[failedMarkerStartRow, inf][singlePulseColumnOffset + i] = fillValue
+		Multithread img[failedMarkerStartRow, inf][i] = fillValue
 
 		if(!pa.hideFailedPulses)
 			if(numFailedPulses == 0)
@@ -3361,8 +3372,7 @@ static Function PA_HighligthFailedPulsesInImage(string graph, STRUCT PulseAverag
 			endif
 
 			xPos = rightx(img)
-			yPos = singlePulseColumnOffset + i
-			DrawText/W=$graph xPos, yPos, "◅"
+			DrawText/W=$graph xPos, i, "◅"
 		endif
 
 		numFailedPulses += 1
