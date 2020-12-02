@@ -4742,7 +4742,7 @@ Function DAP_LockDevice(panelTitle)
 		KillOrMoveToTrash(wv = GetDQMActiveDeviceList())
 	endif
 
-	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
+	WAVE deviceInfo = GetDeviceInfoWave(panelTitleLocked)
 	HW_WriteDeviceInfo(hardwareType, ITCDeviceIDGlobal, deviceInfo)
 End
 
