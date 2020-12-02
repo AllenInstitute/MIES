@@ -4736,6 +4736,10 @@ Function DAP_LockDevice(panelTitle)
 		SetupBackgroundTasks()
 		CtrlNamedBackground _all_, noevents=1
 		UploadCrashDumpsDaily()
+		// avoid problems with IP not keeping the dimension labels
+		// of columns when we have no rows
+		// we kill the wave here so that it is recreated properly
+		KillOrMoveToTrash(wv = GetDQMActiveDeviceList())
 	endif
 
 	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
