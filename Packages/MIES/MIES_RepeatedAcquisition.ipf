@@ -522,7 +522,7 @@ static Function RA_DocumentSweepSkipping(string panelTitle, variable skipCount)
 
 	variable sweepNo, skipCountExisting
 
-	sweepNo = AS_GetCurrentSweepNumber(panelTitle)
+	sweepNo = AS_GetSweepNumber(panelTitle)
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	skipCountExisting = GetLastSettingIndep(numericalValues, sweepNo, SKIP_SWEEPS_KEY, UNKNOWN_MODE, defValue = 0)

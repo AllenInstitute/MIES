@@ -2076,8 +2076,13 @@ End
 /// @brief Check if all settings are valid to send a test pulse or acquire data
 ///
 /// For invalid settings an informative message is printed into the history area.
+///
+/// Callers must ensure to set the acquisition state back to #AS_INACTIVE when
+/// calling with #DATA_ACQUISITION_MODE.
+///
 /// @param panelTitle device
 /// @param mode       One of @ref DataAcqModes
+///
 /// @return 0 for valid settings, 1 for invalid settings
 Function DAP_CheckSettings(panelTitle, mode)
 	string panelTitle
@@ -4091,6 +4096,7 @@ Function DAP_ButtonProc_TPDAQ(ba) : ButtonControl
 				if(dataAcqRunMode == DAQ_NOT_RUNNING)
 					testpulseRunMode = TP_StopTestPulse(panelTitle)
 					if(DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE))
+						AS_HandlePossibleTransition(panelTitle, AS_INACTIVE)
 						TP_RestartTestPulse(panelTitle, testpulseRunMode)
 						Abort
 					endif

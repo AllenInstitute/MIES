@@ -10,7 +10,7 @@
 /// @brief __AS__ Acquisition state handling
 
 /// @brief Get the acquisition state as string
-Function/S AS_StateToString(variable acqState)
+static Function/S AS_StateToString(variable acqState)
 	switch(acqState)
 		case AS_INACTIVE:
 			return "AS_INACTIVE"
@@ -40,11 +40,12 @@ End
 
 /// @brief Takes care of (possible) acquisition state transitions
 ///
-/// We track the acquisition state so that we can do certain actions only in certain states.
+/// We track the acquisition state so that we can perform actions for state transitions when required.
 ///
 /// @param panelTitle  device
 /// @param newAcqState One of @ref AcquisitionStates
-/// @param call        [optional, defaults to false]
+/// @param call        [optional, defaults to false] Call analysis function
+///                    which is connected to the state transition.
 Function AS_HandlePossibleTransition(string panelTitle, variable newAcqState, [variable call])
 
 	variable oldAcqState
@@ -120,7 +121,7 @@ static Function AS_CheckStateTransition(variable oldAcqState, variable newAcqSta
 			AS_EnsureCorrectState(oldAcqState, newAcqState, {AS_PRE_DAQ})
 			break
 		case AS_PRE_DAQ:
-			AS_EnsureCorrectState(oldAcqState, newAcqState, {AS_PRE_SWEEP})
+			AS_EnsureCorrectState(oldAcqState, newAcqState, {AS_PRE_SWEEP, AS_INACTIVE})
 			break
 		case AS_PRE_SWEEP:
 			AS_EnsureCorrectState(oldAcqState, newAcqState, {AS_MID_SWEEP})
@@ -154,16 +155,22 @@ static Function AS_EnsureCorrectState(variable oldAcqState, variable newAcqState
 	ASSERT(IsFinite(GetRowIndex(candidates, val = newAcqState)), msg)
 End
 
-// @todo why is that now duplicated wrt AFH_GetLastSweepAcquired??
-Function AS_GetCurrentSweepNumber(string panelTitle)
+/// @brief Return the sweep number of the currently active sweep
+///
+/// The ITI between sweeps belongs to the earlier sweep. The main use is to add
+/// a labnotebook entry during data acquisition. The similiar named function
+/// AFH_GetLastSweepAcquired() returns the last acquired sweep in comparison.
+Function AS_GetSweepNumber(string panelTitle)
 
 	variable acqState, sweepNo
 
 	acqState = ROVAR(GetAcquisitionState(panelTitle))
 
-	// same sweep number derivation logic as in AFM_CallAnalysisFunction
+	// same sweep number derivation logic as in AFM_CallAnalysisFunctions
 	switch(acqState)
 		case AS_INACTIVE:
+			ASSERT(0, "Can not query the sweep number without data acqisition running")
+			break
 		case AS_PRE_DAQ:
 		case AS_PRE_SWEEP:
 		case AS_MID_SWEEP:  // fallthrough-by-design

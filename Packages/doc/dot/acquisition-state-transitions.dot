@@ -27,7 +27,10 @@ digraph G {
     "POST DAQ";
 
     "INACTIVE" -> "PRE DAQ";
+
     "PRE DAQ" -> "PRE SWEEP";
+    "PRE DAQ" -> "INACTIVE";
+
     "PRE SWEEP" -> "MID SWEEP";
 
     "MID SWEEP" -> "MID SWEEP";
