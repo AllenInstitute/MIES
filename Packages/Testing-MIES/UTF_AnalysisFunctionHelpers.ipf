@@ -152,7 +152,7 @@ Function AE_Works1()
 	col = floor(V_Value / DimSize(numericalKeys, ROWS))
 	row = V_Value - col * DimSize(numericalKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	unit = numericalKeys[1][col]
 	CHECK_EQUAL_STR(unit, unitRef)
@@ -193,7 +193,7 @@ Function AE_Works2()
 	col = floor(V_Value / DimSize(numericalKeys, ROWS))
 	row = V_Value - col * DimSize(numericalKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	unit = numericalKeys[1][col]
 	CHECK_EQUAL_STR(unit, unitRef)
@@ -235,7 +235,7 @@ Function AE_Works3()
 	col = floor(V_Value / DimSize(numericalKeys, ROWS))
 	row = V_Value - col * DimSize(numericalKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	unit = numericalKeys[1][col]
 	CHECK_EQUAL_STR(unit, unitRef)
@@ -276,7 +276,7 @@ Function AE_Works4()
 	col = floor(V_Value / DimSize(numericalKeys, ROWS))
 	row = V_Value - col * DimSize(numericalKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	unit = numericalKeys[1][col]
 	CHECK_EQUAL_STR(unit, unitRef)
@@ -317,7 +317,7 @@ Function AE_WorksMultiValues()
 	col = floor(V_Value / DimSize(numericalKeys, ROWS))
 	row = V_Value - col * DimSize(numericalKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	unit = numericalKeys[1][col]
 	CHECK_EQUAL_STR(unit, unitRef)
@@ -399,7 +399,7 @@ Function AE_WorksIndepHeadstage()
 	col = floor(V_Value / DimSize(numericalKeys, ROWS))
 	row = V_Value - col * DimSize(numericalKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	unit = numericalKeys[1][col]
 	CHECK_EQUAL_STR(unit, unitRef)
@@ -467,7 +467,7 @@ Function AE_OverrideSweepNoWorks()
 	col = floor(V_Value / DimSize(numericalKeys, ROWS))
 	row = V_Value - col * DimSize(numericalKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	unit = numericalKeys[1][col]
 	CHECK_EQUAL_STR(unit, unitRef)
@@ -509,7 +509,7 @@ Function ATE_TextWorks1()
 	col = floor(V_Value / DimSize(textualKeys, ROWS))
 	row = V_Value - col * DimSize(textualKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	unit = textualKeys[1][col]
 	CHECK_EQUAL_STR(unit, unitRef)
@@ -555,7 +555,7 @@ Function AE_TextWorksIndepHeadstage()
 	col = floor(V_Value / DimSize(textualKeys, ROWS))
 	row = V_Value - col * DimSize(textualKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	unit = textualKeys[1][col]
 	CHECK_EQUAL_STR(unit, unitRef)
@@ -634,7 +634,7 @@ Function AE_NormalizesEOLs()
 	col = floor(V_Value / DimSize(textualKeys, ROWS))
 	row = V_Value - col * DimSize(textualKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	unit = textualKeys[1][col]
 	CHECK_EQUAL_STR(unit, unitRef)
