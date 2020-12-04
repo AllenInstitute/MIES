@@ -728,6 +728,7 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 	variable editableAfter, editableBefore, changedHeadstages
 	variable updatedSweeps, addedSweeps, removedSweeps, mode
 	string headstageBefore, headstageAfter, msg
+	STRUCT BufferedDrawInfo bdi
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	WAVE/T listBoxWaveAfterOriginal = GetOverlaySweepsListWave(dfr)
@@ -764,6 +765,7 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 
 	Make/FREE/N=(newSize) addedIndizes = NaN
 	Make/FREE/N=(newSize) removedIndizes = NaN
+	InitBufferedDrawInfo(bdi)
 
 	// now we have the list of changed sweeps
 	// so let's figure out what to do
@@ -805,11 +807,13 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 		elseif(!displayedBefore && displayedAfter)
 			needsPostProcessing += 1
 			addedIndizes[addedSweeps++] = i
-			AddSweepToGraph(win, i)
+			AddSweepToGraph(win, i, bdi = bdi)
 		else
 			ASSERT(0, "Impossible case")
 		endif
 	endfor
+
+	TiledGraphAccelerateDraw(bdi)
 
 	if(needsPostProcessing)
 		if(updatedSweeps)

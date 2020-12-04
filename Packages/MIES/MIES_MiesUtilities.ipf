@@ -2377,18 +2377,8 @@ End
 /// @param traceIndex      [internal use only] set to zero on the first call in a row of successive calls
 /// @param experiment      name of the experiment the sweep stems from
 /// @param channelSelWave  channel selection wave
-Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, experiment, channelSelWave)
-	string graph
-	WAVE config
-	variable sweepNo
-	WAVE numericalValues
-	WAVE/T textualValues
-	STRUCT TiledGraphSettings &tgs
-	DFREF sweepDFR
-	WAVE/T axisLabelCache
-	variable &traceIndex
-	string experiment
-	WAVE channelSelWave
+/// @param bdi [optional, default = n/a] initialized BufferedDrawInfo structure, when given draw calls are buffered instead for later execution @sa OVS_EndIncrementalUpdate
+Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues,  WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave[, STRUCT BufferedDrawInfo &bdi])
 
 	variable axisIndex, numChannels, offset
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
@@ -2396,10 +2386,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable numTTLBits, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
-	variable numRegions, numEntries, numRangesPerEntry
+	variable numRegions, numEntries, numRangesPerEntry, traceCounter
 	variable totalXRange = NaN
 	string trace, traceType, channelID, axisLabel, entry, range, traceRange, traceColor
-	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis, freeAxis
+	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis, freeAxis, jsonPath
 	STRUCT RGBColor s
 
 	ASSERT(!isEmpty(graph), "Empty graph")
@@ -2558,6 +2548,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 	MAKE/FREE/B/N=(NUM_CHANNEL_TYPES) activeChanCount = 0
 
+	if(!ParamIsDefault(bdi))
+		traceCounter = GetNumberFromWaveNote(bdi.traceWaves, NOTE_INDEX)
+	endif
+
 	do
 		moreData = 0
 		// iterate over all channel types in order DA, AD, TTL
@@ -2638,6 +2632,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 				       && adChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
 						continue
 				endif
+			endif
+
+			if(!ParamIsDefault(bdi))
+				EnsureLargeEnoughWave(bdi.traceWaves, minimumSize = traceCounter + numVertWaves * numHorizWaves)
 			endif
 
 			// number of vertically distributed
@@ -2752,7 +2750,18 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
 						horizAxis = "bottom"
 						traceRange = "[][0]"
-						AppendToGraph/W=$graph/B=$horizAxis/L=$vertAxis/C=(s.red, s.green, s.blue, 65535) wv[][0]/TN=$trace
+
+						if(ParamIsDefault(bdi))
+							AppendToGraph/W=$graph/B=$horizAxis/L=$vertAxis/C=(s.red, s.green, s.blue, 65535) wv[][0]/TN=$trace
+						else
+							bdi.traceWaves[traceCounter] = wv
+							jsonPath = BUFFEREDDRAWAPPEND + "/" + graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(s.red) + "/" + num2str(s.green) + "/" + num2str(s.blue) + "/"
+							JSON_AddTreeArray(bdi.jsonID, jsonPath + "index")
+							JSON_AddTreeArray(bdi.jsonID, jsonPath + "traceName")
+							JSON_AddVariable(bdi.jsonID, jsonPath + "index", traceCounter)
+							JSON_AddString(bdi.jsonID, jsonPath + "traceName", trace)
+							traceCounter += 1
+						endif
 					else
 						horizAxis = vertAxis + "_b"
 						sprintf traceRange, "[%g,%g][0]", xRangeStart, xRangeEnd
@@ -2782,8 +2791,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 							axisLabelCache[axisIndex][1] = axisLabel
 						endif
 
-						Label/W=$graph $vertAxis, axisLabel
-
 						if(axisIndex == -1) // create new entry
 							count = GetNumberFromWaveNote(axisLabelCache, NOTE_INDEX)
 							EnsureLargeEnoughWave(axisLabelCache, minimumSize=count)
@@ -2792,15 +2799,33 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 							SetNumberInWaveNote(axisLabelCache, NOTE_INDEX, count + 1)
 						endif
 					else
-						Label/W=$graph $vertAxis, "\\u#2"
+						axisLabel = "\\u#2"
+					endif
+
+					if(ParamIsDefault(bdi))
+						Label/W=$graph $vertAxis, axisLabel
+					else
+						jsonPath = BUFFEREDDRAWLABEL + "/" + graph + "/" + vertAxis + "/" + axisLabel
+						JSON_AddTreeObject(bdi.jsonID, jsonPath)
 					endif
 
 					if(tgs.dDAQDisplayMode)
-						ModifyGraph/W=$graph freePos($vertAxis)={1 / numHorizWaves * k,kwFraction}, freePos($horizAxis)={0,$vertAxis}
+						if(ParamIsDefault(bdi))
+							ModifyGraph/W=$graph freePos($vertAxis)={1 / numHorizWaves * k,kwFraction}, freePos($horizAxis)={0,$vertAxis}
+						else
+							jsonPath = BUFFEREDDRAWDDAQAXES + "/" + graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(1 / numHorizWaves * k)
+							JSON_AddTreeObject(bdi.jsonID, jsonPath)
+						endif
 					endif
 
 					if(tgs.hideSweep)
-						ModifyGraph/W=$graph hideTrace($trace)=1
+						if(ParamIsDefault(bdi))
+							ModifyGraph/W=$graph hideTrace($trace)=1
+						else
+							jsonPath = BUFFEREDDRAWHIDDENTRACES + "/" + graph
+							JSON_AddTreeArray(bdi.jsonID, jsonPath)
+							JSON_AddString(bdi.jsonID, jsonPath, trace)
+						endif
 					endif
 
 					TUD_SetUserDataFromWaves(graph, trace, userDataKeys,                                                                   \
@@ -2814,7 +2839,169 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			activeChanCount[i] += 1
 		endfor
 	while(moreData)
+
+	if(!ParamIsDefault(bdi))
+		SetNumberInWaveNote(bdi.traceWaves, NOTE_INDEX, traceCounter)
+	endif
 End
+
+///@brief Runs through all graph groups in the json and appends them to the graph
+Function TiledGraphAccelerateDraw(STRUCT BufferedDrawInfo &bdi)
+
+	string graph, vertAxis, horizAxis, redStr, greenStr, blueStr, axisLabel
+	variable numGraphs, numVertAxis, numHorizAxis, numRed, numGreen, numBlue, numAxisLabel, numFractions
+	variable red, green, blue
+	variable i0, i1, i2, i3, i4, i5
+	string i0Path, i1Path, i2Path, i3Path, i4Path, i5Path
+
+	WAVE/T wGraphs = JSON_GetKeys(bdi.jsonID, BUFFEREDDRAWAPPEND)
+	numGraphs = DimSize(wGraphs, ROWS)
+	for(i0 = 0; i0 < numGraphs; i0 += 1)
+		graph = wGraphs[i0]
+		i0Path = BUFFEREDDRAWAPPEND + "/" + graph
+		WAVE/T wVertAxis = JSON_GetKeys(bdi.jsonID, i0Path)
+		numVertAxis = DimSize(wVertAxis, ROWS)
+		for(i1 = 0; i1 < numVertAxis; i1 += 1)
+			vertAxis = wVertAxis[i1]
+			i1Path = i0Path + "/" + vertAxis
+			WAVE/T wHorizAxis = JSON_GetKeys(bdi.jsonID, i1Path)
+			numHorizAxis = DimSize(wHorizAxis, ROWS)
+			for(i2 = 0; i2 < numHorizAxis; i2 += 1)
+				horizAxis = wHorizAxis[i2]
+				i2Path = i1Path + "/" + horizAxis
+				WAVE/T wRed = JSON_GetKeys(bdi.jsonID, i2Path)
+				numRed = DimSize(wRed, ROWS)
+				for(i3 = 0; i3 < numRed; i3 += 1)
+					redStr = wRed[i3]
+					red = str2num(redStr)
+					i3Path = i2Path + "/" + redStr
+					WAVE/T wGreen = JSON_GetKeys(bdi.jsonID, i3Path)
+					numGreen = DimSize(wGreen, ROWS)
+					for(i4 = 0; i4 < numGreen; i4 += 1)
+						greenStr = wGreen[i4]
+						green = str2num(greenStr)
+						i4Path = i3Path + "/" + greenStr
+						WAVE/T wBlue = JSON_GetKeys(bdi.jsonID, i4Path)
+						numBlue = DimSize(wBlue, ROWS)
+						for(i5 = 0; i5 < numBlue; i5 += 1)
+							blueStr = wBlue[i5]
+							blue = str2num(blueStr)
+							i5Path = i4Path + "/" + blueStr
+							WAVE indices = JSON_GetWave(bdi.jsonID, i5Path + "/index")
+							WAVE/T traceNames = JSON_GetTextWave(bdi.jsonID, i5Path + "/traceName")
+							TiledGraphAccelerateAppendTracesImpl(graph, vertAxis, horizAxis, red, green, blue, indices, traceNames, bdi.traceWaves)
+						endfor
+					endfor
+				endfor
+			endfor
+		endfor
+	endfor
+
+	WAVE/T wGraphs = JSON_GetKeys(bdi.jsonID, BUFFEREDDRAWDDAQAXES)
+	numGraphs = DimSize(wGraphs, ROWS)
+	for(i0 = 0; i0 < numGraphs; i0 += 1)
+		graph = wGraphs[i0]
+		i0Path = BUFFEREDDRAWDDAQAXES + "/" + graph
+		WAVE/T wVertAxis = JSON_GetKeys(bdi.jsonID, i0Path)
+		numVertAxis = DimSize(wVertAxis, ROWS)
+		for(i1 = 0; i1 < numVertAxis; i1 += 1)
+			vertAxis = wVertAxis[i1]
+			i1Path = i0Path + "/" + vertAxis
+			WAVE/T wHorizAxis = JSON_GetKeys(bdi.jsonID, i1Path)
+			numHorizAxis = DimSize(wHorizAxis, ROWS)
+			for(i2 = 0; i2 < numHorizAxis; i2 += 1)
+				horizAxis = wHorizAxis[i2]
+				i2Path = i1Path + "/" + horizAxis
+				WAVE/T wFractions = JSON_GetKeys(bdi.jsonID, i2Path)
+				numFractions = DimSize(wHorizAxis, ROWS)
+				for(i3 = 0; i3 < numFractions; i3 += 1)
+					ModifyGraph/W=$graph freePos($vertAxis)={str2num(wFractions[i3]), kwFraction}, freePos($horizAxis)={0, $vertAxis}
+				endfor
+			endfor
+		endfor
+	endfor
+
+	WAVE/T wGraphs = JSON_GetKeys(bdi.jsonID, BUFFEREDDRAWHIDDENTRACES)
+	numGraphs = DimSize(wGraphs, ROWS)
+	for(i0 = 0; i0 < numGraphs; i0 += 1)
+		graph = wGraphs[i0]
+		i0Path = BUFFEREDDRAWHIDDENTRACES + "/" + graph
+		WAVE/T hiddenTracesNames = JSON_GetTextWave(bdi.jsonID, i0Path)
+		AccelerateHideTraces(graph, hiddenTracesNames, DimSize(hiddenTracesNames, ROWS), 1)
+	endfor
+
+	WAVE/T wGraphs = JSON_GetKeys(bdi.jsonID, BUFFEREDDRAWLABEL)
+	numGraphs = DimSize(wGraphs, ROWS)
+	for(i0 = 0; i0 < numGraphs; i0 += 1)
+		graph = wGraphs[i0]
+		i0Path = BUFFEREDDRAWLABEL + "/" + graph
+		WAVE/T wVertAxis = JSON_GetKeys(bdi.jsonID, i0Path)
+		numVertAxis = DimSize(wVertAxis, ROWS)
+		for(i1 = 0; i1 < numVertAxis; i1 += 1)
+			vertAxis = wVertAxis[i1]
+			i1Path = i0Path + "/" + vertAxis
+			WAVE/T wAxisLabel = JSON_GetKeys(bdi.jsonID, i1Path)
+			numAxisLabel = DimSize(wAxisLabel, ROWS)
+			for(i2 = 0; i2 < numAxisLabel; i2 += 1)
+				axisLabel = wAxisLabel[i2]
+				Label/W=$graph $vertAxis, axisLabel
+			endfor
+		endfor
+	endfor
+
+	JSON_Release(bdi.jsonID)
+End
+
+///@brief Appends a group of traces to a graph, properties w to b must be constant for the group
+///@param[in] w name of graph window
+///@param[in] v name of vertical axis
+///@param[in] h name of horizontal axis
+///@param[in] r red color component
+///@param[in] g green color component
+///@param[in] b blue color component
+///@param[in] y 1D wave with indices into wave d for the actual plot data
+///@param[in] t 1D wave with trace names, same size as y
+///@param[in] d wave reference wave with plot data
+static Function TiledGraphAccelerateAppendTracesImpl(string w, string v, string h, variable r, variable g, variable b, WAVE y, WAVE/T t, WAVE/WAVE d)
+
+	variable step, i
+	i = DimSize(y, ROWS)
+	do
+		step = min(2 ^ trunc(log(i) / log(2)), 100)
+		i -= step
+		switch(step)
+			case 100:
+				AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, 65535) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3],d[y[i+4]]/TN=$t[i+4],d[y[i+5]]/TN=$t[i+5],d[y[i+6]]/TN=$t[i+6],d[y[i+7]]/TN=$t[i+7],d[y[i+8]]/TN=$t[i+8],d[y[i+9]]/TN=$t[i+9],d[y[i+10]]/TN=$t[i+10],d[y[i+11]]/TN=$t[i+11],d[y[i+12]]/TN=$t[i+12],d[y[i+13]]/TN=$t[i+13],d[y[i+14]]/TN=$t[i+14],d[y[i+15]]/TN=$t[i+15],d[y[i+16]]/TN=$t[i+16],d[y[i+17]]/TN=$t[i+17],d[y[i+18]]/TN=$t[i+18],d[y[i+19]]/TN=$t[i+19],d[y[i+20]]/TN=$t[i+20],d[y[i+21]]/TN=$t[i+21],d[y[i+22]]/TN=$t[i+22],d[y[i+23]]/TN=$t[i+23],d[y[i+24]]/TN=$t[i+24],d[y[i+25]]/TN=$t[i+25],d[y[i+26]]/TN=$t[i+26],d[y[i+27]]/TN=$t[i+27],d[y[i+28]]/TN=$t[i+28],d[y[i+29]]/TN=$t[i+29],d[y[i+30]]/TN=$t[i+30],d[y[i+31]]/TN=$t[i+31],d[y[i+32]]/TN=$t[i+32],d[y[i+33]]/TN=$t[i+33],d[y[i+34]]/TN=$t[i+34],d[y[i+35]]/TN=$t[i+35],d[y[i+36]]/TN=$t[i+36],d[y[i+37]]/TN=$t[i+37],d[y[i+38]]/TN=$t[i+38],d[y[i+39]]/TN=$t[i+39],d[y[i+40]]/TN=$t[i+40],d[y[i+41]]/TN=$t[i+41],d[y[i+42]]/TN=$t[i+42],d[y[i+43]]/TN=$t[i+43],d[y[i+44]]/TN=$t[i+44],d[y[i+45]]/TN=$t[i+45],d[y[i+46]]/TN=$t[i+46],d[y[i+47]]/TN=$t[i+47],d[y[i+48]]/TN=$t[i+48],d[y[i+49]]/TN=$t[i+49],d[y[i+50]]/TN=$t[i+50],d[y[i+51]]/TN=$t[i+51],d[y[i+52]]/TN=$t[i+52],d[y[i+53]]/TN=$t[i+53],d[y[i+54]]/TN=$t[i+54],d[y[i+55]]/TN=$t[i+55],d[y[i+56]]/TN=$t[i+56],d[y[i+57]]/TN=$t[i+57],d[y[i+58]]/TN=$t[i+58],d[y[i+59]]/TN=$t[i+59],d[y[i+60]]/TN=$t[i+60],d[y[i+61]]/TN=$t[i+61],d[y[i+62]]/TN=$t[i+62],d[y[i+63]]/TN=$t[i+63],d[y[i+64]]/TN=$t[i+64],d[y[i+65]]/TN=$t[i+65],d[y[i+66]]/TN=$t[i+66],d[y[i+67]]/TN=$t[i+67],d[y[i+68]]/TN=$t[i+68],d[y[i+69]]/TN=$t[i+69],d[y[i+70]]/TN=$t[i+70],d[y[i+71]]/TN=$t[i+71],d[y[i+72]]/TN=$t[i+72],d[y[i+73]]/TN=$t[i+73],d[y[i+74]]/TN=$t[i+74],d[y[i+75]]/TN=$t[i+75],d[y[i+76]]/TN=$t[i+76],d[y[i+77]]/TN=$t[i+77],d[y[i+78]]/TN=$t[i+78],d[y[i+79]]/TN=$t[i+79],d[y[i+80]]/TN=$t[i+80],d[y[i+81]]/TN=$t[i+81],d[y[i+82]]/TN=$t[i+82],d[y[i+83]]/TN=$t[i+83],d[y[i+84]]/TN=$t[i+84],d[y[i+85]]/TN=$t[i+85],d[y[i+86]]/TN=$t[i+86],d[y[i+87]]/TN=$t[i+87],d[y[i+88]]/TN=$t[i+88],d[y[i+89]]/TN=$t[i+89],d[y[i+90]]/TN=$t[i+90],d[y[i+91]]/TN=$t[i+91],d[y[i+92]]/TN=$t[i+92],d[y[i+93]]/TN=$t[i+93],d[y[i+94]]/TN=$t[i+94],d[y[i+95]]/TN=$t[i+95],d[y[i+96]]/TN=$t[i+96],d[y[i+97]]/TN=$t[i+97],d[y[i+98]]/TN=$t[i+98],d[y[i+99]]/TN=$t[i+99]
+				break
+			case 64:
+				AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, 65535) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3],d[y[i+4]]/TN=$t[i+4],d[y[i+5]]/TN=$t[i+5],d[y[i+6]]/TN=$t[i+6],d[y[i+7]]/TN=$t[i+7],d[y[i+8]]/TN=$t[i+8],d[y[i+9]]/TN=$t[i+9],d[y[i+10]]/TN=$t[i+10],d[y[i+11]]/TN=$t[i+11],d[y[i+12]]/TN=$t[i+12],d[y[i+13]]/TN=$t[i+13],d[y[i+14]]/TN=$t[i+14],d[y[i+15]]/TN=$t[i+15],d[y[i+16]]/TN=$t[i+16],d[y[i+17]]/TN=$t[i+17],d[y[i+18]]/TN=$t[i+18],d[y[i+19]]/TN=$t[i+19],d[y[i+20]]/TN=$t[i+20],d[y[i+21]]/TN=$t[i+21],d[y[i+22]]/TN=$t[i+22],d[y[i+23]]/TN=$t[i+23],d[y[i+24]]/TN=$t[i+24],d[y[i+25]]/TN=$t[i+25],d[y[i+26]]/TN=$t[i+26],d[y[i+27]]/TN=$t[i+27],d[y[i+28]]/TN=$t[i+28],d[y[i+29]]/TN=$t[i+29],d[y[i+30]]/TN=$t[i+30],d[y[i+31]]/TN=$t[i+31],d[y[i+32]]/TN=$t[i+32],d[y[i+33]]/TN=$t[i+33],d[y[i+34]]/TN=$t[i+34],d[y[i+35]]/TN=$t[i+35],d[y[i+36]]/TN=$t[i+36],d[y[i+37]]/TN=$t[i+37],d[y[i+38]]/TN=$t[i+38],d[y[i+39]]/TN=$t[i+39],d[y[i+40]]/TN=$t[i+40],d[y[i+41]]/TN=$t[i+41],d[y[i+42]]/TN=$t[i+42],d[y[i+43]]/TN=$t[i+43],d[y[i+44]]/TN=$t[i+44],d[y[i+45]]/TN=$t[i+45],d[y[i+46]]/TN=$t[i+46],d[y[i+47]]/TN=$t[i+47],d[y[i+48]]/TN=$t[i+48],d[y[i+49]]/TN=$t[i+49],d[y[i+50]]/TN=$t[i+50],d[y[i+51]]/TN=$t[i+51],d[y[i+52]]/TN=$t[i+52],d[y[i+53]]/TN=$t[i+53],d[y[i+54]]/TN=$t[i+54],d[y[i+55]]/TN=$t[i+55],d[y[i+56]]/TN=$t[i+56],d[y[i+57]]/TN=$t[i+57],d[y[i+58]]/TN=$t[i+58],d[y[i+59]]/TN=$t[i+59],d[y[i+60]]/TN=$t[i+60],d[y[i+61]]/TN=$t[i+61],d[y[i+62]]/TN=$t[i+62],d[y[i+63]]/TN=$t[i+63]
+				break
+			case 32:
+				AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, 65535) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3],d[y[i+4]]/TN=$t[i+4],d[y[i+5]]/TN=$t[i+5],d[y[i+6]]/TN=$t[i+6],d[y[i+7]]/TN=$t[i+7],d[y[i+8]]/TN=$t[i+8],d[y[i+9]]/TN=$t[i+9],d[y[i+10]]/TN=$t[i+10],d[y[i+11]]/TN=$t[i+11],d[y[i+12]]/TN=$t[i+12],d[y[i+13]]/TN=$t[i+13],d[y[i+14]]/TN=$t[i+14],d[y[i+15]]/TN=$t[i+15],d[y[i+16]]/TN=$t[i+16],d[y[i+17]]/TN=$t[i+17],d[y[i+18]]/TN=$t[i+18],d[y[i+19]]/TN=$t[i+19],d[y[i+20]]/TN=$t[i+20],d[y[i+21]]/TN=$t[i+21],d[y[i+22]]/TN=$t[i+22],d[y[i+23]]/TN=$t[i+23],d[y[i+24]]/TN=$t[i+24],d[y[i+25]]/TN=$t[i+25],d[y[i+26]]/TN=$t[i+26],d[y[i+27]]/TN=$t[i+27],d[y[i+28]]/TN=$t[i+28],d[y[i+29]]/TN=$t[i+29],d[y[i+30]]/TN=$t[i+30],d[y[i+31]]/TN=$t[i+31]
+				break
+			case 16:
+				AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, 65535) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3],d[y[i+4]]/TN=$t[i+4],d[y[i+5]]/TN=$t[i+5],d[y[i+6]]/TN=$t[i+6],d[y[i+7]]/TN=$t[i+7],d[y[i+8]]/TN=$t[i+8],d[y[i+9]]/TN=$t[i+9],d[y[i+10]]/TN=$t[i+10],d[y[i+11]]/TN=$t[i+11],d[y[i+12]]/TN=$t[i+12],d[y[i+13]]/TN=$t[i+13],d[y[i+14]]/TN=$t[i+14],d[y[i+15]]/TN=$t[i+15]
+				break
+			case 8:
+				AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, 65535) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3],d[y[i+4]]/TN=$t[i+4],d[y[i+5]]/TN=$t[i+5],d[y[i+6]]/TN=$t[i+6],d[y[i+7]]/TN=$t[i+7]
+				break
+			case 4:
+				AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, 65535) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3]
+				break
+			case 2:
+				AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, 65535) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1]
+				break
+			case 1:
+				AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, 65535) d[y[i]]/TN=$t[i]
+				break
+			default:
+				ASSERT(0, "Fail")
+				break
+		endswitch
+	while(i)
+
+End
+
 
 /// @brief Return the color of the given headstage
 ///
@@ -6654,7 +6841,8 @@ End
 ///
 /// @param win   graph
 /// @param index overlay sweeps listbox index
-Function AddSweepToGraph(string win, variable index)
+/// @param bdi [optional, default = n/a] BufferedDrawInfo structure, when given buffered draw is used.
+Function AddSweepToGraph(string win, variable index, [STRUCT BufferedDrawInfo &bdi])
 
 	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("Can not display data. The panel is too old to be usable. Please close it and open a new one.")
@@ -6667,7 +6855,11 @@ Function AddSweepToGraph(string win, variable index)
 	DEBUGPRINT("Adding sweep with index ", var = index)
 
 	if(BSP_IsDataBrowser(win))
-		DB_AddSweepToGraph(win, index)
+		if(ParamIsDefault(bdi))
+			DB_AddSweepToGraph(win, index)
+		else
+			DB_AddSweepToGraph(win, index, bdi = bdi)
+		endif
 	else
 		SB_AddSweepToGraph(win, index)
 	endif

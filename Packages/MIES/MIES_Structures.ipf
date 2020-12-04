@@ -328,3 +328,26 @@ Structure HardwareDataTPInput
 	WAVE DAGain, DACAmpTP
 	variable testPulseLength, baselineFrac
 EndStructure
+
+/// @brief initializes a BufferedDrawInfo structure
+///        The json path for AppendTracesToGraph and Labels is set empty by default
+///        @sa TiledGraphAccelerateDraw
+Function InitBufferedDrawInfo(STRUCT BufferedDrawInfo &s)
+
+	s.jsonID = JSON_Parse("{}")
+	JSON_AddTreeObject (s.jsonID, BUFFEREDDRAWAPPEND)
+	JSON_AddTreeObject (s.jsonID, BUFFEREDDRAWLABEL)
+	JSON_AddTreeObject (s.jsonID, BUFFEREDDRAWHIDDENTRACES)
+	JSON_AddTreeObject (s.jsonID, BUFFEREDDRAWDDAQAXES)
+	Make/FREE/WAVE/N=(MINIMUM_WAVE_SIZE_LARGE) tw
+	WAVE/WAVE s.traceWaves = tw
+	SetNumberInWaveNote(s.traceWaves, NOTE_INDEX, 0)
+End
+
+/// @brief Stores information for buffered draw
+///        jsonID - stores information about traces and labels to draw/setup
+///        traceWaves - wave ref wave with references to the trace waves (which are always non-free)
+Structure BufferedDrawInfo
+	variable jsonID
+	WAVE/WAVE traceWaves
+EndStructure

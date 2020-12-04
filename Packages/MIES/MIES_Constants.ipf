@@ -1331,3 +1331,16 @@ Constant PA_PROPERTIESWAVES_INDEX_PULSE = 0
 Constant PA_PROPERTIESWAVES_INDEX_PULSENOTE = 1
 
 /// @}
+
+/// @name Header labels for draw groups within the json of a BufferedDrawInfo structure
+///       Currently this method is only used in @sa CreateTiledChannelGraph
+/// @anchor BDIHeaderLabels
+///
+/// @{
+
+StrConstant BUFFEREDDRAWAPPEND = "AppendToGraph"
+StrConstant BUFFEREDDRAWLABEL = "Label"
+StrConstant BUFFEREDDRAWHIDDENTRACES = "HiddenTraces"
+StrConstant BUFFEREDDRAWDDAQAXES = "dDAQAxes"
+
+/// @}
