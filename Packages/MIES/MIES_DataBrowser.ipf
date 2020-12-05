@@ -829,7 +829,11 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 	return 0
 End
 
-Function DB_AddSweepToGraph(string win, variable index)
+/// @brief Adds traces of a sweep to the databrowser graph
+/// @param win Name of the DataBrowser
+/// @param index Index of the sweep
+/// @param bdi [optional, default = n/a] BufferedDrawInfo structure, when given buffered draw is used.
+Function DB_AddSweepToGraph(string win, variable index[, STRUCT BufferedDrawInfo &bdi])
 	STRUCT TiledGraphSettings tgs
 
 	variable sweepNo, traceIndex
@@ -860,8 +864,14 @@ Function DB_AddSweepToGraph(string win, variable index)
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
 
 	traceIndex = GetNextTraceIndex(graph)
-	CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, \
+
+	if(ParamIsDefault(bdi))
+		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, \
 							traceIndex, experiment, sweepChannelSel)
+	else
+		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, \
+							traceIndex, experiment, sweepChannelSel, bdi = bdi)
+	endif
 
 	AR_UpdateTracesIfReq(graph, dfr, sweepNo)
 End
