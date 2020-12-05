@@ -1938,7 +1938,7 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 #ifndef PA_HIDE_EXECUTION_TIME
 	execTime_StartLocal = stopmstimer(-2)
 #endif
-		PA_CalculateAllAverages(pasi, mode)
+		PA_CalculateAllAverages(pa, pasi, mode)
 #ifndef PA_HIDE_EXECUTION_TIME
 	execTime_CalculateAllAverages = stopmstimer(-2) - execTime_StartLocal
 #endif
@@ -1964,7 +1964,7 @@ static Function [STRUCT PulseAverageSetIndices pasi, variable needsPlotting] PA_
 	return [pasi, 1]
 End
 
-static Function PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, variable mode)
+static Function PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable mode)
 
 	variable numThreads, numActive
 	string keyAll, keyOld
@@ -1999,6 +1999,10 @@ static Function PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, var
 			Multithread/NT=(numThreads) avg[][] = MIES_fWaveAverage(setWavesAll[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
 		endif
 
+		if(pa.autoTimeAlignment)
+			Multithread indexHelper[][] = PA_TAAdaptAverageWave(WaveRef(avg[p][q], row = 0), setWavesAll[p][q])
+		endif
+
 		Multithread indexHelper[][] = PA_StoreMaxAndUnitsInWaveNote(WaveRef(avg[p][q], row = 0), WaveRef(setWavesAll[p][q], row = 0))
 		CA_StoreEntryIntoCache(keyAll, avg, options = CA_OPTS_NO_DUPLICATE)
 	else
@@ -2007,6 +2011,42 @@ static Function PA_CalculateAllAverages(STRUCT PulseAverageSetIndices &pasi, var
 	endif
 
 	indexHelper[][] = PA_MakeAverageWavePermanent(pasi.pulseAverageDFR, WaveRef(avg[p][q], row = 0), pasi.channels[p], pasi.regions[q])
+End
+
+threadsafe static Function PA_TAAdaptAverageWave(WAVE/Z avg, WAVE/WAVE set)
+
+	variable numPulses, l, r
+	variable dOffset, dDelta
+
+	if(!WaveExists(avg))
+		return NaN
+	endif
+
+	numPulses = DimSize(set, ROWS)
+	if(numPulses == 0)
+		return NaN
+	endif
+
+	Make/FREE/N=(numPulses) left, right
+	left[] = leftx(set[p])
+	right[] = rightx(set[p])
+	// since ScaleToIndexWrapper uses round(...) we can not use it here
+	dOffset = DimOffset(avg, ROWS)
+	dDelta = DimDelta(avg, ROWS)
+	l = (WaveMax(left) - dOffset) / dDelta
+	l = IsInteger(l) ? l : trunc(l) + 1
+	r = (WaveMin(right) - dOffset) / dDelta
+	r = IsInteger(r) ? r : trunc(r)
+	if(l >= r)
+		avg[] = NaN
+	else
+		if(l > 0)
+			avg[0, l] = NaN
+		endif
+		if(r < DimSize(avg, ROWS))
+			avg[r, Inf] = NaN
+		endif
+	endif
 End
 
 static Function PA_MakeAverageWavePermanent(DFREF dfr, WAVE/Z avg, variable channel, variable region)
