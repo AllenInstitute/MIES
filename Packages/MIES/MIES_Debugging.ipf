@@ -535,7 +535,7 @@ Function GetSizeOfAllWavesInExperiment()
 
 	list[][1] = num2str(waveSizes[p])
 
-	SortColumns/KNDX=1 sortWaves={list}
+	SortColumns keyWaves={waveSizes}, sortWaves={list}
 
 	WaveStats/M=2/Q waveSizes
 	printf "Sum of all waves: %g\r", V_sum
