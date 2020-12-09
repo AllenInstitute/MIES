@@ -3266,7 +3266,8 @@ End
 /// @param dim          dimension to extract
 ///
 /// @returns 2-dim wave with the start, stop, step as columns and rows as
-///          number of elements. Returns -1 instead of `*` or ``.
+///          number of elements. Returns -1 instead of `*` or ``. An invalid
+///          wave reference is returned on parsing errors.
 Function/WAVE ExtractFromSubrange(listOfRanges, dim)
 	string listOfRanges
 	variable dim
@@ -3324,7 +3325,7 @@ Function/WAVE ExtractFromSubrange(listOfRanges, dim)
 				ranges[i][1] = IsFinite(stop) ? stop : -1
 				ranges[i][2] = step
 			else
-				ASSERT(0, "Unexpected state")
+				return $""
 			endif
 		endif
 	endfor
