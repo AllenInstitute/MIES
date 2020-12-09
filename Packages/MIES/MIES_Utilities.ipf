@@ -3259,7 +3259,7 @@ End
 /// \rst
 /// .. code-block:: igorpro
 ///
-/// 	wAVE ranges = ExtractFromSubrange("[3,4]_[*]_[1, *;4]_[]_[5][]", 0)
+/// 	WAVE ranges = ExtractFromSubrange("[3,4]_[*]_[1, *;4]_[]_[5][]", 0)
 /// \endrst
 ///
 /// @param listOfRanges list of subrange specifications separated by **_**
