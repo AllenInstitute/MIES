@@ -5923,6 +5923,34 @@ Function/WAVE GetOverlaySweepsListSelWave(dfr)
 	return wv
 End
 
+/// @brief Return the overlay sweeps wave with the parsed headstage removal
+/// info
+///
+/// Rows:
+/// - Same index as in GetOverlaySweepsListWave() and GetOverlaySweepsListSelWave()
+///
+/// Cols:
+/// - #NUM_HEADSTAGES, 1 if active and 0 if removed
+Function/WAVE GetOverlaySweepHeadstageRemoval(DFREF dfr)
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/Z/SDFR=dfr wv = overlaySweepsHeadstageRemoval
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/R/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:overlaySweepsHeadstageRemoval/Wave=wv
+	endif
+
+	wv = 1
+
+	SetWaveVersion(wv, versionOfNewWave)
+	return wv
+End
+
 /// @brief Return the overlay sweeps wave with all sweep selection choices
 /// for the databrowser or the sweepbrowser
 Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
