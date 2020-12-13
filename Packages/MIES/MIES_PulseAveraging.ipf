@@ -628,6 +628,8 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 		regionList = AddListItem(num2istr(regions[i]), regionList, PA_PROPERTIES_STRLIST_SEP, inf)
 	endfor
 
+	Make/FREE/N=(MINIMUM_WAVE_SIZE)/WAVE headstageRemovalPerSweep
+
 	// There is one case where we generate errorneous output:
 	// If we have multiple sweeps that are acquired with more than 1 HS and
 	// on a subsequent sweep the channels previously associated to the headstages are now swapped.
@@ -741,6 +743,14 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			sweepNo = str2num(sweepNoStr)
 			if(WhichListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP) == -1)
 				sweepList = AddListItem(sweepNoStr, sweepList, PA_PROPERTIES_STRLIST_SEP, inf)
+
+				EnsureLargeEnoughWave(headstageRemovalPerSweep, minimumSize = sweepNo)
+				headstageRemovalPerSweep[sweepNo] = OVS_GetHeadstageRemoval(win, sweepNo = sweepNo)
+			endif
+
+			WAVE/Z activeHS = headstageRemovalPerSweep[sweepNo]
+			if(WaveExists(activeHS) && activeHS[region] == 0)
+				continue
 			endif
 
 			experiment = traceData[idx][lblTraceExperiment]

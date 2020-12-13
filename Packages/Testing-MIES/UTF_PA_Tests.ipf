@@ -2053,7 +2053,6 @@ static Function PAT_IncrementalSweepAddPartialAvgCheck()
 	CHECK_EQUAL_VAR(traceNum, 4)
 End
 
-// UTF_EXPECTED_FAILURE
 static Function PAT_HSRemoval1()
 
 	string bspName, graph

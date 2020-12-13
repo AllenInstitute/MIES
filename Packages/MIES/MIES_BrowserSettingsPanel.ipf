@@ -1207,9 +1207,9 @@ End
 Function/WAVE BSP_FetchSelectedChannels(string graph, [variable index, variable sweepNo])
 
 	if(ParamIsDefault(index) && !ParamIsDefault(sweepNo))
-		WAVE/Z activeHS = OVS_ParseIgnoreList(graph, sweepNo=sweepNo)
+		WAVE/Z activeHS = OVS_GetHeadstageRemoval(graph, sweepNo=sweepNo)
 	elseif(!ParamIsDefault(index) && ParamIsDefault(sweepNo))
-		WAVE/Z activeHS = OVS_ParseIgnoreList(graph, index=index)
+		WAVE/Z activeHS = OVS_GetHeadstageRemoval(graph, index=index)
 	else
 		ASSERT(0, "Invalid optional flags")
 	endif

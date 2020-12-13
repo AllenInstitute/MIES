@@ -142,13 +142,14 @@ Function OVS_UpdatePanel(string win, [variable fullUpdate])
 	SetNumberInWaveNote(sweepSelectionChoices, NOTE_NEEDS_UPDATE, 1)
 	WaveClear sweepSelectionChoices
 
-	WAVE/T listBoxWave           = GetOverlaySweepsListWave(dfr)
-	WAVE listBoxSelWave          = GetOverlaySweepsListSelWave(dfr)
+	WAVE/T listBoxWave    = GetOverlaySweepsListWave(dfr)
+	WAVE listBoxSelWave   = GetOverlaySweepsListSelWave(dfr)
+	WAVE headstageRemoval = GetOverlaySweepHeadstageRemoval(dfr)
 
 	WAVE updateHandle = OVS_BeginIncrementalUpdate(win, fullUpdate = fullUpdate)
 
 	if(!WaveExists(sweeps))
-		Redimension/N=(0, -1, -1) listBoxWave, listBoxSelWave
+		Redimension/N=(0, -1, -1) listBoxWave, listBoxSelWave, headstageRemoval
 		OVS_EndIncrementalUpdate(win, updateHandle)
 		return NaN
 	endif
@@ -156,7 +157,7 @@ Function OVS_UpdatePanel(string win, [variable fullUpdate])
 	WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
 
 	numEntries = DimSize(sweeps, ROWS)
-	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave
+	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave, headstageRemoval
 
 	MultiThread listBoxWave[][%Sweep] = num2str(sweeps[p])
 
@@ -405,44 +406,41 @@ static Function OVS_AddToIgnoreList(win, headstage, [sweepNo, index])
 	endif
 
 	listboxWave[index][%headstages] = AddListItem(num2str(headstage), listboxWave[index][%headstages], ";", inf)
+	OVS_UpdateHeadstageRemoval(win, index)
+End
+
+/// @brief Update the OVS headstage removal wave from the listbox entry
+static Function OVS_UpdateHeadstageRemoval(string win, variable index)
+
+	DFREF dfr = OVS_GetFolder(win)
+	WAVE/T listboxWave = GetOverlaySweepsListWave(dfr)
+
+	WAVE activeHS = OVS_ParseIgnoreList(listboxWave[index][%headstages], str2num(listboxWave[index][%Sweep]))
+
+	WAVE headstageRemoval = GetOverlaySweepHeadstageRemoval(dfr)
+	headstageRemoval[index][] = activeHS[q]
+
 	UpdateSweepInGraph(win, index)
 	PostPlotTransformations(win, POST_PLOT_FULL_UPDATE)
 End
 
-/// @brief Parse the ignore list of the given sweep.
-///
-///
-/// The expected format of the ignore list entries is a semicolon (";") separated
-/// list of subranges (without the possibility of denoting the step size).
-///
-/// Examples:
-/// - 0 (ignore HS 0)
-/// - 1,3;0 (ignore HS 0 to 3)
-/// - * (ignore all headstages)
-///
-/// @param[in] win     name of mainPanel
-/// @param[in] sweepNo [optional] search sweepNo in list to get index
-/// @param[in] index   [optional] specify sweep directly by index
-/// @return free wave of size `NUM_HEADSTAGES` denoting with 0/1 the active state
-///         of the headstage
-Function/WAVE OVS_ParseIgnoreList(win, [sweepNo, index])
-	string win
-	variable sweepNo, index
+// @brief Return the headstage removal entry for the given sweepNo/index
+Function/WAVE OVS_GetHeadstageRemoval(string win, [variable sweepNo, variable index])
 
-	variable numEntries, i, start, stop, step
-	string ignoreList, subRangeStr, extPanel
+	string extPanel
 
 	if(!OVS_IsActive(win))
 		return $""
 	endif
 
-	extPanel =  BSP_GetPanel(win)
+	extPanel = BSP_GetPanel(win)
 	if(!GetCheckBoxState(extPanel, "check_overlaySweeps_disableHS"))
 		return $""
 	endif
 
 	DFREF dfr = OVS_GetFolder(win)
 	WAVE/T listboxWave = GetOverlaySweepsListWave(dfr)
+	WAVE headstageRemoval = GetOverlaySweepHeadstageRemoval(dfr)
 
 	if(!ParamIsDefault(sweepNo))
 		FindValue/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
@@ -457,7 +455,31 @@ Function/WAVE OVS_ParseIgnoreList(win, [sweepNo, index])
 		ASSERT(index != -1, "Invalid sweepNo/index")
 	endif
 
-	ignoreList = listboxWave[index][%headstages]
+	Duplicate/FREE/RMD=[index][] headstageRemoval, activeHS
+	Redimension/E=1/N=(NUM_HEADSTAGES) activeHS
+
+	return activeHS
+End
+
+/// @brief Parse the headstage removal list
+///
+/// The expected format of the list entries is a semicolon (";") separated
+/// list of subranges (without the possibility of denoting the step size).
+///
+/// Examples:
+/// - 0 (ignore HS 0)
+/// - 1,3;0 (ignore HS 0 to 3)
+/// - * (ignore all headstages)
+///
+/// @param ignoreList list of entries to parse
+/// @param sweepNo    sweep number
+/// @return free wave of size `NUM_HEADSTAGES` denoting with 0/1 the active state
+///         of the headstage
+static Function/WAVE OVS_ParseIgnoreList(string ignoreList, variable sweepNo)
+
+	variable numEntries, i, start, stop
+	string subRangeStr
+
 	numEntries = ItemsInList(ignoreList)
 
 	Make/FREE/N=(NUM_HEADSTAGES) activeHS = 1
@@ -850,8 +872,7 @@ Function OVS_MainListBoxProc(lba) : ListBoxControl
 			index = lba.row
 			OVS_HighlightSweep(win, NaN)
 			if(lba.selWave[lba.row] & LISTBOX_CHECKBOX_SELECTED)
-				UpdateSweepInGraph(win, index)
-				PostPlotTransformations(win, POST_PLOT_FULL_UPDATE)
+				OVS_UpdateHeadstageRemoval(win, index)
 			endif
 			break
 		case 13: // checkbox clicked
