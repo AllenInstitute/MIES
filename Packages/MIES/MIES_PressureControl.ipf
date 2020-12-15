@@ -434,24 +434,24 @@ End
 static Function P_CloseDevice(panelTitle)
 	string panelTitle
 
-	string ListOfITCDevToClose = P_GetListOfPressureCtrlDevices(panelTitle)
+	string ListOfDevicesToClose = P_GetListOfPressureCtrlDevices(panelTitle)
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 	string DeviceToClose
-	string ListOfHeadstagesUsingITCDev
+	string ListOfHeadstagesUsingDevice
 	variable headStage
 	variable i, j
 
-	for(i = 0; i < ItemsInList(ListOfITCDevToClose); i += 1) // for all the ITC devices used for pressure regulation
+	for(i = 0; i < ItemsInList(ListOfDevicesToClose); i += 1) // for all the devices used for pressure regulation
 		// find device ID
 		do
 			panelTitle = StringFromList(j, ListOfLockedDA_Ephys)
-			DeviceToClose = StringFromList(i,ListOfITCDevToClose)
+			DeviceToClose = StringFromList(i,ListOfDevicesToClose)
 
-			ListOfHeadstagesUsingITCDev = P_HeadstageUsingDevice(panelTitle, DeviceToClose)
+			ListOfHeadstagesUsingDevice = P_HeadstageUsingDevice(panelTitle, DeviceToClose)
 			j += 1
-		while(cmpstr("", ListOfHeadstagesUsingITCDev) == 0)
+		while(cmpstr("", ListOfHeadstagesUsingDevice) == 0)
 		j = 0
-		headStage = str2num(StringFromList(0, ListOfHeadstagesUsingITCDev))
+		headStage = str2num(StringFromList(0, ListOfHeadstagesUsingDevice))
 		P_CloseDeviceLowLevel(panelTitle, DeviceToClose, headstage)
 	endfor
 End
