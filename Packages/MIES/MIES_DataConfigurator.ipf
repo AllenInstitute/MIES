@@ -6,9 +6,9 @@
 #pragma ModuleName=MIES_DC
 #endif
 
-/// @file MIES_DataConfiguratorITC.ipf
+/// @file MIES_DataConfigurator.ipf
 /// @brief __DC__ Handle preparations before data acquisition or
-/// test pulse related to the ITC waves
+/// test pulse related to the DAQ data and config waves
 
 /// @brief Update global variables used by the Testpulse or DAQ
 ///
