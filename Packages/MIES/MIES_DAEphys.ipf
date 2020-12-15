@@ -1558,7 +1558,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 				// is not yet reflected in the user data
 				list = GetUserData(panelTitle, ctrl, USER_DATA_MENU_EXP)
 				if(FindListItem(stimSet, list) == -1)
-					WBP_UpdateITCPanelPopUps()
+					WBP_UpdateDaEphysStimulusSetPopups()
 				endif
 			endif
 
@@ -4714,7 +4714,7 @@ Function DAP_LockDevice(string win)
 	DAP_UpdateAllYokeControls()
 	// create the amplifier settings waves
 	GetAmplifierParamStorageWave(panelTitleLocked)
-	WBP_UpdateITCPanelPopUps(panelTitle=panelTitleLocked)
+	WBP_UpdateDaEphysStimulusSetPopups(panelTitle=panelTitleLocked)
 	DAP_UnlockCommentNotebook(panelTitleLocked)
 	DAP_ToggleAcquisitionButton(panelTitleLocked, DATA_ACQ_BUTTON_TO_DAQ)
 	SI_CalculateMinSampInterval(panelTitleLocked, DATA_ACQUISITION_MODE)

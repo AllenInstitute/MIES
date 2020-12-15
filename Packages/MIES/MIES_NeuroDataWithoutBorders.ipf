@@ -1416,7 +1416,7 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 	HDF5CloseGroup/Z groupID
 	IPNWB#H5_CloseFile(fileID)
 
-	WBP_UpdateITCPanelPopUps()
+	WBP_UpdateDaEphysStimulusSetPopups()
 
 	return error
 End
