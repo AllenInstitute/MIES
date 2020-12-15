@@ -32,7 +32,7 @@ Function DQS_StartDAQSingleDevice(panelTitle, [useBackground])
 	DAP_OneTimeCallBeforeDAQ(panelTitle, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
 
 	try
-		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+		DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
 	catch
 		// we need to undo the earlier one time call only
 		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)

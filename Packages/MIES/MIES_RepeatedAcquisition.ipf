@@ -232,7 +232,7 @@ Function RA_Counter(panelTitle)
 
 	if(Count < numTotalSweeps)
 		try
-			DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+			DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
 
 			if(DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"))
 				DQS_BkrdDataAcq(panelTitle)

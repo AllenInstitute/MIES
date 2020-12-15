@@ -702,7 +702,7 @@ Function TP_Setup(panelTitle, runMode, [fast])
 	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
 	runModeGlobal = runMode
 
-	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
+	DC_Configure(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
 
 	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 	HW_PrepareAcq(GetHardwareType(panelTitle), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)

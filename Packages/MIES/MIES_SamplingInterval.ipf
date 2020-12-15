@@ -290,7 +290,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
 	raCycleID = 1
 
-	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+	DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
 
 	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)

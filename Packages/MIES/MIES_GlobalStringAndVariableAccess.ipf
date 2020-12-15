@@ -606,7 +606,7 @@ End
 
 /// @brief Return the maximum ITI of all active sets
 ///
-/// Only meaningful after preparing DAQ in DC_ConfigureDataForITC()
+/// Only meaningful after preparing DAQ in DC_Configure()
 Function/S GetMaxIntertrialInterval(panelTitle)
 	string panelTitle
 

@@ -174,7 +174,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 			DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
 		endif
 
-		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+		DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
 		NVAR maxITI = $GetMaxIntertrialInterval(panelTitle)
 	catch
 		if(initialSetupReq)
@@ -209,7 +209,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 				DAP_OneTimeCallBeforeDAQ(followerPanelTitle, DAQ_BG_MULTI_DEVICE)
 			endif
 
-			DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
+			DC_Configure(followerPanelTitle, DATA_ACQUISITION_MODE)
 
 			NVAR maxITI = $GetMaxIntertrialInterval(panelTitle)
 			acrossYokingMaxITI = max(maxITI, acrossYokingMaxITI)

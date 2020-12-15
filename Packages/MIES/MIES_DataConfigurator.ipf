@@ -40,7 +40,7 @@ End
 /// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
 ///
 /// @exception Abort configuration failure
-Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
+Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 	string panelTitle
 	variable dataAcqOrTP, multiDevice
 
