@@ -4286,7 +4286,7 @@ Function/S P_GetDevicePressureFolderAS(panelTitle)
 	return FolderPathString
 End
 
-/// @brief Creates ITC device specific pressure folder - used to store data for pressure regulators
+/// @brief Creates device specific pressure folder - used to store data for pressure regulators
 Function/DF P_DeviceSpecificPressureDFRef(panelTitle)
 	string 	panelTitle
 	return CreateDFWithAllParents(P_GetDevicePressureFolderAS(panelTitle))
