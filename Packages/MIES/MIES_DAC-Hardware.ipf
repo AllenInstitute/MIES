@@ -1361,7 +1361,7 @@ End
 ///
 /// @param deviceID    device identifier
 /// @param data        ITC data wave
-/// @param dataFunc    [optional, defaults to GetITCDataWave()] override wave getter for the ITC data wave
+/// @param dataFunc    [optional, defaults to GetDAQDataWave()] override wave getter for the ITC data wave
 /// @param config      ITC config wave
 /// @param configFunc  [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
@@ -1380,7 +1380,7 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags,
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
-			WAVE data = GetHardwareDataWave(panelTitle)
+			WAVE data = GetDAQDataWave(panelTitle)
 		else
 			WAVE data = dataFunc(panelTitle)
 		endif
@@ -1982,7 +1982,7 @@ End
 ///
 /// @param deviceID    device identifier
 /// @param data        ITC data wave
-/// @param dataFunc    [optional, defaults to GetITCDataWave()] override wave getter for the ITC data wave
+/// @param dataFunc    [optional, defaults to GetDAQDataWave()] override wave getter for the ITC data wave
 /// @param config      ITC config wave
 /// @param configFunc  [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
@@ -2003,7 +2003,7 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
-			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle)
 		else
 			WAVE/WAVE NIDataWave = dataFunc(panelTitle)
 		endif

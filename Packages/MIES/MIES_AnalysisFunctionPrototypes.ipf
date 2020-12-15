@@ -16,14 +16,14 @@
 /// @param panelTitle  device
 /// @param eventType   eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
 ///                    always compare `eventType` with the constants, never use the current numerical value directly
-/// @param ITCDataWave data wave (locked to prevent changes using `SetWaveLock`)
+/// @param DAQDataWave data wave (locked to prevent changes using `SetWaveLock`)
 /// @param headStage   active headstage index
 ///
 /// @return ignored
-Function AF_PROTO_ANALYSIS_FUNC_V1(panelTitle, eventType, ITCDataWave, headStage)
+Function AF_PROTO_ANALYSIS_FUNC_V1(panelTitle, eventType, DAQDataWave, headStage)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage
 End
 
@@ -32,16 +32,16 @@ End
 /// @param panelTitle     device
 /// @param eventType      eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
 ///                       always compare `eventType` with the constants, never use the current numerical value directly
-/// @param ITCDataWave    data wave (locked to prevent changes using `SetWaveLock`)
+/// @param DAQDataWave    data wave (locked to prevent changes using `SetWaveLock`)
 /// @param headStage      active headstage index
-/// @param realDataLength number of rows in `ITCDataWave` with data, the total number of rows in `ITCDataWave` might be
+/// @param realDataLength number of rows in `DAQDataWave` with data, the total number of rows in `DAQDataWave` might be
 ///                       higher due to alignment requirements of the data acquisition hardware. `NaN` for #PRE_DAQ_EVENT events.
 ///
 /// @return see @ref AnalysisFunction_V3DescriptionTable
-Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	return 0

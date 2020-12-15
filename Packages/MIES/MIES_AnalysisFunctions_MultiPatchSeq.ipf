@@ -124,7 +124,7 @@ static Function/WAVE MSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetD
 	WAVE/Z sweepWave = GetSweepWave(panelTitle, sweepNo)
 
 	if(!WaveExists(sweepWave))
-		WAVE sweepWave = GetHardwareDataWave(panelTitle)
+		WAVE sweepWave = GetDAQDataWave(panelTitle)
 		WAVE config    = GetITCChanConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
@@ -627,7 +627,7 @@ static Function/WAVE MSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	variable minVal, maxVal
 	string msg
 
-	if(WaveRefsEqual(sweepWave, GetHardwareDataWave(panelTitle)))
+	if(WaveRefsEqual(sweepWave, GetDAQDataWave(panelTitle)))
 		WAVE config = GetITCChanConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)

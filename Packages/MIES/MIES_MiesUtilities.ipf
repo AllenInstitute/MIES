@@ -2409,7 +2409,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
 
-	// introduced in db531d20 (DC_PlaceDataInITCDataWave: Document the digitizer hardware type, 2018-07-30)
+	// introduced in db531d20 (DC_PlaceDataIn ITCDataWave: Document the digitizer hardware type, 2018-07-30)
 	// before that we only had ITC hardware
 	hardwareType           = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
 	WAVE/Z statusHS        = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
@@ -5660,11 +5660,11 @@ Function StartZeroMQMessageHandler()
 #endif
 End
 
-/// @brief Split an ITCDataWave into one 1D-wave per channel/ttlBit
+/// @brief Split an DAQDataWave into one 1D-wave per channel/ttlBit
 ///
 /// @param numericalValues numerical labnotebook
 /// @param sweep           sweep number
-/// @param sweepWave       ITCDataWave
+/// @param sweepWave       DAQDataWave
 /// @param configWave      ITCChanConfigWave
 /// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
 /// @param rescale         One of @ref TTLRescalingOptions
@@ -5841,11 +5841,11 @@ Function UpdateLeftOverSweepTime(panelTitle, fifoPos)
 
 	ASSERT(IsFinite(fifoPos), "Unexpected non-finite fifoPos")
 
-	WAVE ITCDataWave         = GetHardwareDataWave(panelTitle)
+	WAVE DAQDataWave         = GetDAQDataWave(panelTitle)
 	NVAR repurposedTime      = $GetRepurposedSweepTime(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 
-	repurposedTime += max(0, IndexToScale(ITCDataWave, stopCollectionPoint - fifoPos, ROWS)) / 1e3
+	repurposedTime += max(0, IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)) / 1e3
 
 	sprintf msg, "Repurposed time in seconds due to premature sweep stopping: %g\r", repurposedTime
 	DEBUGPRINT(msg)
@@ -6032,7 +6032,7 @@ threadsafe Function IsValidConfigWave(config, [version])
 	return 0
 End
 
-/// @brief Check if the given wave is a valid HardwareDataWave
+/// @brief Check if the given wave is a valid DAQDataWave
 threadsafe Function IsValidSweepWave(sweep)
 	WAVE/Z sweep
 

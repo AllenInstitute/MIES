@@ -44,7 +44,7 @@ Function DQM_FIFOMonitor(s)
 						continue // no new data -> next device
 					endif
 
-					WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+					WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle)
 					for(j = 0; j < V_FIFOnchans; j += 1)
 
 						fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)

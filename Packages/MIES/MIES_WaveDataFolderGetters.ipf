@@ -683,7 +683,7 @@ Function/S GetSingleSweepFolderAsString(dfr, sweepNo)
 	return GetDataFolder(1, dfr) + "X_" + num2str(sweepNo)
 End
 
-/// @brief Return the hardware data wave
+/// @brief Return the DAQ data wave
 ///
 /// ITC hardware:
 /// - 2D signed 16bit integer wave, the colums are for the channel
@@ -698,7 +698,7 @@ End
 /// - one for each active DA, AD, TTL channel (in that order)
 ///
 /// For scaling and gain information see SWS_GetChannelGains().
-Function/Wave GetHardwareDataWave(panelTitle)
+Function/Wave GetDAQDataWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
@@ -706,21 +706,21 @@ Function/Wave GetHardwareDataWave(panelTitle)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			WAVE/W/Z/SDFR=dfr wv = HardwareDataWave
+			WAVE/W/Z/SDFR=dfr wv = DAQDataWave
 
 			if(WaveExists(wv))
 				return wv
 			endif
 
-			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:HardwareDataWave/Wave=wv
+			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:DAQDataWave/Wave=wv
 			return wv
 			break
 		case HARDWARE_NI_DAC:
-			WAVE/WAVE/Z/SDFR=dfr wv_ni = HardwareDataWave
+			WAVE/WAVE/Z/SDFR=dfr wv_ni = DAQDataWave
 			if(WaveExists(wv_ni))
 				return wv_ni
 			endif
-			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:HardwareDataWave/Wave=wv_ni
+			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:DAQDataWave/Wave=wv_ni
 			return wv_ni
 			break
 	endswitch
@@ -728,7 +728,7 @@ End
 
 /// @brief Get the single NI channel waves
 ///
-/// Special use function, normal callers should use GetHardwareDataWave()
+/// Special use function, normal callers should use GetDAQDataWave()
 /// instead.
 Function/WAVE GetNIDAQChannelWave(panelTitle, channel)
 	string panelTitle
@@ -796,7 +796,7 @@ End
 /// @brief Return the ITC channel config wave
 ///
 /// Rows:
-/// - One for each channel, the order is DA, AD, TTL (same as in the ITCDataWave)
+/// - One for each channel, the order is DA, AD, TTL (same as in the DAQDataWave)
 ///
 /// Columns:
 /// - channel type, one of @ref ItcXopChannelConstants
@@ -877,7 +877,7 @@ static Constant DQM_ACTIVE_DEV_WAVE_VERSION = 3
 ///
 /// Columns:
 /// - DeviceID id of an active device
-/// - ADChannelToMonitor index of first active AD channel in HardwareDataWave
+/// - ADChannelToMonitor index of first active AD channel in DAQDataWave
 /// - HardwareType type of hardware of the device
 /// - ActiveChunk if a channel of the device is used for TP while DAQ this column saves the number of the last evaluated test pulse
 ///
@@ -2379,7 +2379,7 @@ End
 /// - Holds exactly one TP
 ///
 /// Cols:
-/// - DA/AD/TTLs data, same order as GetHardwareDataWave()
+/// - DA/AD/TTLs data, same order as GetDAQDataWave()
 Function/Wave GetTPOscilloscopeWave(panelTitle)
 	string panelTitle
 
@@ -4287,7 +4287,7 @@ Function/DF P_PressureFolderReference(panelTitle)
 	return CreateDFWithAllParents(P_GetPressureFolderAS(panelTitle))
 End
 
-/// @brief Returns a wave reference to the ITCDataWave used for pressure pulses
+/// @brief Returns a wave reference to the DAQ data wave used for pressure pulses
 ///
 /// Rows:
 /// - data points, see P_GetITCChanConfig() for the sampling interval
@@ -6385,7 +6385,7 @@ Function/WAVE GetAnalysisFunctionStorage(panelTitle)
 End
 
 /// @brief Used for storing a true/false state that the pre and/or post set event
-/// should be fired *after* the sweep which is currently prepared in DC_PlaceDataInITCDataWave().
+/// should be fired *after* the sweep which is currently prepared in DC_PlaceDataInDAQDataWave().
 ///
 /// Rows:
 /// - NUM_DA_TTL_CHANNELS

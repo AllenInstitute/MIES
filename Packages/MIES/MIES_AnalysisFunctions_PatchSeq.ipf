@@ -147,7 +147,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, total
 	WAVE/Z sweepWave = GetSweepWave(panelTitle, sweepNo)
 
 	if(!WaveExists(sweepWave))
-		WAVE sweepWave = GetHardwareDataWave(panelTitle)
+		WAVE sweepWave = GetDAQDataWave(panelTitle)
 		WAVE config    = GetITCChanConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
@@ -470,12 +470,12 @@ static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 
 	variable length, nonBL, totalOnsetDelay
 
-	WAVE HardwareDataWave    = GetHardwareDataWave(panelTitle)
+	WAVE DAQDataWave    = GetDAQDataWave(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
-	length = stopCollectionPoint * DimDelta(HardwareDataWave, ROWS)
+	length = stopCollectionPoint * DimDelta(DAQDataWave, ROWS)
 
 	switch(type)
 		case PSQ_DA_SCALE:
@@ -732,7 +732,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = (p == headstage ? 0 : NaN)
 
-	if(WaveRefsEqual(sweepWave, GetHardwareDataWave(panelTitle)))
+	if(WaveRefsEqual(sweepWave, GetDAQDataWave(panelTitle)))
 		WAVE config = GetITCChanConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
@@ -2651,7 +2651,7 @@ Function PSQ_Ramp(panelTitle, s)
 				ASSERT(fifoPos > 0, "Invalid fifo position, has the thread died?")
 
 				// wait until the hardware is finished with writing this chunk
-				// this is to avoid that two threads write simultaneously into the ITCDataWave
+				// this is to avoid that two threads write simultaneously into the DAQDataWave
 				for(;;)
 					val = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
 

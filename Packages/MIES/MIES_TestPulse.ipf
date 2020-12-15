@@ -497,8 +497,8 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	if((now - lastRescaling) > TP_DIMENSION_SCALING_INTERVAL)
 
 		if(!count) // initial estimate
-			WAVE HardwareDataWave = GetHardwareDataWave(panelTitle)
-			delta = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) * DimDelta(HardwareDataWave, ROWS) / 1000
+			WAVE DAQDataWave = GetDAQDataWave(panelTitle)
+			delta = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) * DimDelta(DAQDataWave, ROWS) / 1000
 		else
 			delta = TPStorage[count][0][%DeltaTimeInSeconds] / count
 		endif

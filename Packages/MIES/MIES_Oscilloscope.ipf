@@ -464,7 +464,7 @@ static Function SCOPE_UpdatePowerSpectrum(panelTitle)
 	endif
 End
 
-/// @brief Prepares a subset/copy of `ITCDataWave` for displaying it in the
+/// @brief Prepares a subset/copy of `DAQDataWave` for displaying it in the
 /// oscilloscope panel
 ///
 /// @param panelTitle  panel title
@@ -533,7 +533,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 		numDACs = DimSize(GetDACListFromConfig(config), ROWS)
 		numADCs = DimSize(ADCs, ROWS)
 
-		// note: currently this works for multiplier = 1 only, see DC_PlaceDataInHardwareDataWave
+		// note: currently this works for multiplier = 1 only, see DC_PlaceDataInDAQDataWave
 		Make/FREE/N=(tpLengthPoints) channelData
 		WAVE tpInput.data = channelData
 		SetScale/P x, 0, sampleInt, osciUnits, channelData
@@ -629,7 +629,7 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 
 	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+	WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle)
 
 	fifoName = GetNIFIFOName(deviceID)
 	FIFOStatus/Q $fifoName
@@ -677,7 +677,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 	variable length, first, last
 	variable startOfADColumns, numEntries, decMethod, decFactor
 	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
-	WAVE ITCDataWave       = GetHardwareDataWave(panelTitle)
+	WAVE DAQDataWave       = GetDAQDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
@@ -689,22 +689,22 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 		length = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
 		first  = chunk * length
 		last   = first + length - 1
-		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")
+		ASSERT(first >= 0 && last < DimSize(DAQDataWave, ROWS) && first < last, "Invalid wave subrange")
 
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForCaller())
 
-			ITCDataWave[0][0] += 0
-			if(!WindowExists("ITCDataWaveTPMD"))
-				Display/N=ITCDataWaveTPMD ITCDataWave[][1]
+			DAQDataWave[0][0] += 0
+			if(!WindowExists("DAQDataWaveTPMD"))
+				Display/N=DAQDataWaveTPMD DAQDataWave[][1]
 			endif
 
-			Cursor/W=ITCDataWaveTPMD/H=2/P A HardwareDataWave first
-			Cursor/W=ITCDataWaveTPMD/H=2/P B HardwareDataWave last
+			Cursor/W=DAQDataWaveTPMD/H=2/P A DAQDataWave first
+			Cursor/W=DAQDataWaveTPMD/H=2/P B DAQDataWave last
 		endif
 #endif
 
-		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / allGain[q]
+		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = DAQDataWave[first + p][q] / allGain[q]
 		Multithread scaledDataWave[][] = OscilloscopeData
 
 		SCOPE_UpdatePowerSpectrum(panelTitle)
@@ -721,19 +721,19 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 			return NaN
 		endif
 
-		Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][] = ITCDataWave[p][q] / allGain[q]
+		Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][] = DAQDataWave[p][q] / allGain[q]
 
 		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
 		decFactor = GetNumberFromWaveNote(OscilloscopeData, "DecimationFactor")
 
 		switch(decMethod)
 			case DECIMATION_NONE:
-				Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / allGain[q]
+				Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = DAQDataWave[p][q] / allGain[q]
 				break
 			default:
 				Duplicate/FREE/RMD=[startOfADColumns, startOfADColumns + numEntries - 1] allGain, gain
 				gain[] = 1 / gain[p]
-				DecimateWithMethod(ITCDataWave, OscilloscopeData, decFactor, decMethod, firstRowInp = fifoPosGlobal, lastRowInp = fifoPos - 1, firstColInp = startOfADColumns, lastColInp = startOfADColumns + numEntries - 1, factor = gain)
+				DecimateWithMethod(DAQDataWave, OscilloscopeData, decFactor, decMethod, firstRowInp = fifoPosGlobal, lastRowInp = fifoPos - 1, firstColInp = startOfADColumns, lastColInp = startOfADColumns + numEntries - 1, factor = gain)
 		endswitch
 	else
 		ASSERT(0, "Invalid dataAcqOrTP value")
@@ -761,7 +761,7 @@ static Function SCOPE_ITC_AdjustFIFOPos(panelTitle, fifopos)
 		return 0
 	elseif(IsNaN(fifoPos))
 		// we are done
-		// return the length of the HardwareDataWave
+		// return the length of the DAQDataWave
 		stopCollectionPoint = ROVAR(GetStopCollectionPoint(panelTitle))
 		fifoPos = stopCollectionPoint - GetDataOffset(ITCChanConfigWave)
 	elseif(fifoPos < 0)

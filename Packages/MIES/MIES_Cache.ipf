@@ -347,13 +347,13 @@ Function/S CA_HWDeviceInfoKey(panelTitle, hardwareType, deviceID)
 	return num2istr(crc) + "HW Device Info Version 1"
 End
 
-/// @brief Generate a key for the HardwareDataWave in TEST_PULSE_MODE
+/// @brief Generate a key for the DAQDataWave in TEST_PULSE_MODE
 ///
 /// Properties which influence the Testpulse:
 /// - hardwareType
 /// - numDA (filled columns)
 /// - numActiveChannels (number of columns)
-/// - number of rows, return from DC_CalculateITCDataWaveLength(panelTitle, TEST_PULSE_MODE)
+/// - number of rows, return from DC_CalculateDAQDataWaveLength(panelTitle, TEST_PULSE_MODE)
 /// - samplingInterval
 /// - DAGain
 /// - DACAmp[][%TPAmp] column
