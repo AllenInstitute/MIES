@@ -453,7 +453,7 @@ static Function DQM_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, star
 	DFREF dfr = GetActiveDAQDevicesTimerFolder()
 
 	WAVE/Z/SDFR=dfr ActiveDevTimeParam
-	if(addOrRemoveDevice == 1) // add a ITC device
+	if(addOrRemoveDevice == 1) // add a DAQ device
 		if(!WaveExists(ActiveDevTimeParam))
 			Make/N=(1, 5) dfr:ActiveDevTimeParam/Wave=ActiveDevTimeParam
 			ActiveDevTimeParam[0][0] = deviceID
@@ -470,7 +470,7 @@ static Function DQM_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, star
 			ActiveDevTimeParam[numberOfRows][3] = EndTime
 			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
 		endif
-	elseif(addOrRemoveDevice == -1) // remove a ITC device
+	elseif(addOrRemoveDevice == -1) // remove a DAQ device
 		Duplicate/FREE/R=[][0] ActiveDevTimeParam ListOfdeviceID
 		FindValue/V=(deviceID) ListOfdeviceID
 		rowToRemove = V_Value
