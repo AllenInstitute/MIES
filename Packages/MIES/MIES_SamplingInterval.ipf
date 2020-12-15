@@ -19,7 +19,7 @@
 /// Set to 0 to deactivate
 static Constant MIN_CONSECUTIVE_SAMPINT = 6
 
-/// @brief Fill the passed wave to be used as ITCChanConfigWave
+/// @brief Fill the passed wave to be used as DAQConfigWave
 static Function SI_FillITCConfig(wv, results, idx, totalNumDA, totalNumAD, totalNumTTL)
 	WAVE wv, results
 	variable idx
@@ -83,7 +83,7 @@ static Function SI_FillITCConfig(wv, results, idx, totalNumDA, totalNumAD, total
 	endif
 End
 
-/// @brief Fill the passed wave to be used as ITCChanConfigWave for the exhaustive search
+/// @brief Fill the passed wave to be used as DAQConfigWave for the exhaustive search
 static Function SI_FillITCConfigWithPerms(wv, start, value, channelType)
 	WAVE wv
 	variable start, value, channelType
@@ -293,7 +293,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 
 	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
@@ -363,13 +363,13 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 				numChannels += results[idx][%numTTLRack1] + results[idx][%numTTLRack2]
 
 				Redimension/N=(-1, numChannels) DAQDataWave
-				Redimension/N=(numChannels, -1) ITCChanConfigWave
+				Redimension/N=(numChannels, -1) DAQConfigWave
 
 				if(!mod(idx,1000))
 					printf "idx= %d\r", idx
 				endif
 
-				SI_FillITCConfig(ITCChanConfigWave, results, idx, totalNumDA, totalNumAD, totalNumTTL)
+				SI_FillITCConfig(DAQConfigWave, results, idx, totalNumDA, totalNumAD, totalNumTTL)
 
 				results[idx][%minSampInt] = SI_TestSampInt(panelTitle)
 				idx += 1
@@ -404,7 +404,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 			endif
 
 			Redimension/N=(-1, numChannels) DAQDataWave
-			Redimension/N=(numChannels, -1) ITCChanConfigWave
+			Redimension/N=(numChannels, -1) DAQConfigWave
 
 			numDA  = PopCount(DA)
 			numAD  = PopCount(AD)
@@ -414,9 +414,9 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 				printf "i= %d\r", i
 			endif
 
-			SI_FillITCConfigWithPerms(ITCChanConfigWave, 0, DA, ITC_XOP_CHANNEL_TYPE_DAC)
-			SI_FillITCConfigWithPerms(ITCChanConfigWave, numDA, AD, ITC_XOP_CHANNEL_TYPE_ADC)
-			SI_FillITCConfigWithPerms(ITCChanConfigWave, numDA + numAD, TTL, ITC_XOP_CHANNEL_TYPE_TTL)
+			SI_FillITCConfigWithPerms(DAQConfigWave, 0, DA, ITC_XOP_CHANNEL_TYPE_DAC)
+			SI_FillITCConfigWithPerms(DAQConfigWave, numDA, AD, ITC_XOP_CHANNEL_TYPE_ADC)
+			SI_FillITCConfigWithPerms(DAQConfigWave, numDA + numAD, TTL, ITC_XOP_CHANNEL_TYPE_TTL)
 
 			results[i][0]   = numDA
 			results[i][1]   = numAD
@@ -441,8 +441,8 @@ static Function SI_TestSampInt(panelTitle)
 	variable numTries = 1001
 
 	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	numChannels = DimSize(ITCChanConfigWave, ROWS)
+	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
+	numChannels = DimSize(DAQConfigWave, ROWS)
 
 	Make/D/FREE/N=(20, numChannels) ResultWave
 
@@ -453,9 +453,9 @@ static Function SI_TestSampInt(panelTitle)
 			sampInt *= 2
 		endif
 
-		ITCChanConfigWave[][2] = sampInt
+		DAQConfigWave[][2] = sampInt
 
-		WAVE config_t = HW_ITC_TransposeAndToDouble(ITCChanConfigWave)
+		WAVE config_t = HW_ITC_TransposeAndToDouble(DAQConfigWave)
 		ITCConfigAllChannels2/Z config_t, DAQDataWave
 
 		if(!V_ITCError)

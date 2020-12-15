@@ -125,7 +125,7 @@ static Function/WAVE MSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetD
 
 	if(!WaveExists(sweepWave))
 		WAVE sweepWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
-		WAVE config    = GetITCChanConfigWave(panelTitle)
+		WAVE config    = GetDAQConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
 	endif
@@ -236,7 +236,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTimeMax, chunkStartTimeMax + chunkLengthTime, fifoInStimsetTime
 	DEBUGPRINT(msg)
 
-	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE config = GetDAQConfigWave(panelTitle)
 
 	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShort       = NaN
 	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShortPassed = NaN
@@ -628,7 +628,7 @@ static Function/WAVE MSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	string msg
 
 	if(WaveRefsEqual(sweepWave, GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)))
-		WAVE config = GetITCChanConfigWave(panelTitle)
+		WAVE config = GetDAQConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
 	endif

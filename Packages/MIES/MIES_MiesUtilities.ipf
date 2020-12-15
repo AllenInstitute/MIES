@@ -188,7 +188,7 @@ End
 ///
 /// @todo change to return a 0/1 wave with constant size a la DAG_GetChannelState
 ///
-/// @param config       ITCChanConfigWave as passed to the ITC XOP
+/// @param config       DAQConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
 static Function/WAVE GetChanneListFromITCConfig(config, channelType)
 	WAVE config
@@ -262,7 +262,7 @@ End
 ///
 /// @todo change to return a 0/1 wave with constant size a la DAG_GetChannelState
 ///
-/// @param config       ITCChanConfigWave as passed to the ITC XOP
+/// @param config       DAQConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
 static Function/WAVE GetTypeListFromITCConfig(config, channelType)
 	WAVE config
@@ -295,7 +295,7 @@ End
 Function GotTPChannelsOnADCs(panelTitle)
 	string panelTitle
 
-	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE config = GetDAQConfigWave(panelTitle)
 	WAVE ADCmode = GetADCTypesFromConfig(config)
 	FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
 	return (V_Value != -1)
@@ -2367,7 +2367,7 @@ End
 ///	\endrst
 ///
 /// @param graph           window
-/// @param config          ITC config wave
+/// @param config          DAQ config wave
 /// @param sweepNo         number of the sweep
 /// @param numericalValues numerical labnotebook wave
 /// @param textualValues   textual labnotebook wave
@@ -5665,7 +5665,7 @@ End
 /// @param numericalValues numerical labnotebook
 /// @param sweep           sweep number
 /// @param sweepWave       DAQDataWave
-/// @param configWave      ITCChanConfigWave
+/// @param configWave      DAQConfigWave
 /// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
 /// @param rescale         One of @ref TTLRescalingOptions
 Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, rescale, [targetDFR])
@@ -6020,7 +6020,7 @@ threadsafe Function IsValidConfigWave(config, [version])
 
 	waveVersion = GetWaveVersion(config)
 
-	// we know version NaN, 1 and 2, see GetITCChanConfigWave()
+	// we know version NaN, 1 and 2, see GetDAQConfigWave()
 	if(version == 2 && waveVersion >= 2)
 		return DimSize(config, ROWS) > 0 && DimSize(config, COLS) >= 6
 	elseif(version == 1 && waveVersion >= 1)

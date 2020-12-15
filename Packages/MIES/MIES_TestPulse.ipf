@@ -24,8 +24,8 @@ Function TP_CreateTPAvgBuffer(panelTitle)
 
 	variable numADCs
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
 	numADCs = DimSize(ADCs, ROWS)
 
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)

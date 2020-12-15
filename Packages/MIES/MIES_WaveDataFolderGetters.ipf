@@ -810,7 +810,7 @@ Function/Wave GetEpochsWave(panelTitle)
 	return wv
 End
 
-/// @brief Return the ITC channel config wave
+/// @brief Return the DAQ config wave
 ///
 /// Rows:
 /// - One for each channel, the order is DA, AD, TTL (same as in the DAQDataWave)
@@ -844,12 +844,12 @@ End
 ///   anymore but a comma.
 /// Version 2 changes:
 /// - DAQChannelType column added
-Function/Wave GetITCChanConfigWave(panelTitle)
+Function/Wave GetDAQConfigWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
 
-	WAVE/I/Z/SDFR=dfr wv = ITCChanConfigWave
+	WAVE/I/Z/SDFR=dfr wv = DAQConfigWave
 
 	// On version upgrade also adapt function IsValidConfigWave
 	if(ExistsWithCorrectLayoutVersion(wv, ITC_CONFIG_WAVE_VERSION))
@@ -870,7 +870,7 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 			Note/K wv
 		endif
 	else
-		Make/I/N=(2, 6) dfr:ITCChanConfigWave/Wave=wv
+		Make/I/N=(2, 6) dfr:DAQConfigWave/Wave=wv
 	endif
 
 	SetDimLabel COLS, 0, ChannelType, wv
@@ -4336,7 +4336,7 @@ Function/WAVE P_GetITCData(panelTitle)
 	return wv
 End
 
-/// @brief Returns a wave reference to the ITCChanConfig wave used for pressure pulses
+/// @brief Returns a wave reference to the DAQ config wave used for pressure pulses
 ///
 /// Rows:
 /// - 0: DA channel specifications

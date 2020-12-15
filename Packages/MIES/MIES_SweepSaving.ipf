@@ -25,7 +25,7 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 
 	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
-	WAVE hardwareConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE hardwareConfigWave = GetDAQConfigWave(panelTitle)
 	WAVE scaledDataWave = GetScaledDataWave(panelTitle)
 
 	ASSERT(IsValidSweepAndConfig(DAQDataWave, hardwareConfigWave), "Data and config wave are not compatible")
@@ -97,7 +97,7 @@ End
 /// @brief Return a free wave with all channel gains
 ///
 /// Rows:
-///  - Active channels only (same as ITCChanConfigWave)
+///  - Active channels only (same as DAQConfigWave)
 ///
 /// Different hardware has different requirements how the DA, AD and TLL
 /// channels are scaled. As general rule use `data * SWS_GetChannelGains` for
@@ -132,13 +132,13 @@ Function/WAVE SWS_GetChannelGains(panelTitle, [timing])
 
 	ASSERT(!ParamIsDefault(timing) && (timing == GAIN_BEFORE_DAQ || timing == GAIN_AFTER_DAQ), "time argument is missing or wrong")
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	numCols = DimSize(ITCChanConfigWave, ROWS)
+	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
+	numCols = DimSize(DAQConfigWave, ROWS)
 
 	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	WAVE DACs = GetDACListFromConfig(ITCChanConfigWave)
-	WAVE TTLs = GetTTLListFromConfig(ITCChanConfigWave)
+	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
+	WAVE DACs = GetDACListFromConfig(DAQConfigWave)
+	WAVE TTLs = GetTTLListFromConfig(DAQConfigWave)
 
 	numADCs = DimSize(ADCs, ROWS)
 	numDACs = DimSize(DACs, ROWS)

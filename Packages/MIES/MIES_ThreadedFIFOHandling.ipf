@@ -47,13 +47,13 @@ static Function TFH_StartFIFODeamonInternal(hwType, deviceID, mode, [triggerMode
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
-	WAVE ITCChanConfigWave   = GetITCChanConfigWave(panelTitle)
+	WAVE DAQConfigWave   = GetDAQConfigWave(panelTitle)
 
 	TFH_StopFifoDaemon(hwType, deviceID)
 	NVAR tgID  = $GetThreadGroupIDFifo(panelTitle)
 	tgID = ThreadGroupCreate(1)
 
-	Duplicate/FREE ITCChanConfigWave, config
+	Duplicate/FREE DAQConfigWave, config
 	ThreadStart tgID, 0, TFH_FifoLoop(config, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
 End
 

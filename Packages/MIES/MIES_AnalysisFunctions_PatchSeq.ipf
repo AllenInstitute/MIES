@@ -148,7 +148,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, total
 
 	if(!WaveExists(sweepWave))
 		WAVE sweepWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
-		WAVE config    = GetITCChanConfigWave(panelTitle)
+		WAVE config    = GetDAQConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
 	endif
@@ -267,7 +267,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTimeMax, chunkStartTimeMax + chunkLengthTime, fifoInStimsetTime + totalOnsetDelay
 	DEBUGPRINT(msg)
 
-	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE config = GetDAQConfigWave(panelTitle)
 
 	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShort       = NaN
 	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShortPassed = NaN
@@ -733,7 +733,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = (p == headstage ? 0 : NaN)
 
 	if(WaveRefsEqual(sweepWave, GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)))
-		WAVE config = GetITCChanConfigWave(panelTitle)
+		WAVE config = GetDAQConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
 	endif
@@ -2671,7 +2671,7 @@ Function PSQ_Ramp(panelTitle, s)
 				// DA output runs on the AD tasks clock source ai
 				// we stop DA and set the analog out to 0, the AD task keeps on running
 
-				WAVE config = GetITCChanConfigWave(panelTitle)
+				WAVE config = GetDAQConfigWave(panelTitle)
 				fifoName = GetNIFIFOName(deviceID)
 
 				HW_NI_StopDAC(deviceID)

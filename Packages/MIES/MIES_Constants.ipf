@@ -85,7 +85,7 @@ Constant ITC_XOP_CHANNEL_TYPE_DAC = 1
 Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
 /// @}
 
-/// @name DAQ Channel Type constants used in ITCChanConfigWave
+/// @name DAQ Channel Type constants used in DAQConfigWave
 /// @anchor DaqChannelTypeConstants
 /// @{
 Constant DAQ_CHANNEL_TYPE_UNKOWN = -1

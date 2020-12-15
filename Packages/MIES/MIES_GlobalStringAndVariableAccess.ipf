@@ -343,7 +343,7 @@ End
 
 /// @brief Return the ADC to monitor
 ///
-/// This is the first actice AD channel in DAQDataWave and ITCChanConfigWave.
+/// This is the first actice AD channel in DAQDataWave and DAQConfigWave.
 Function/S GetADChannelToMonitor(panelTitle)
 	string panelTitle
 
