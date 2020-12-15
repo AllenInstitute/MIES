@@ -115,7 +115,7 @@ static Function DQS_StopDataAcq(string device, variable stopReason, [variable fo
 	endif
 
 	NVAR deviceID = $GetDAQDeviceID(device)
-	HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1, zeroDAC=1, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StopAcq(HARDWARE_ITC_DAC, deviceID, zeroDAC=1, flags=HARDWARE_ABORT_ON_ERROR)
 	SWS_SaveAcquiredData(device, forcedStop = forcedStop)
 
 	if(forcedStop)

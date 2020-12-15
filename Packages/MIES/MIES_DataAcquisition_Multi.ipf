@@ -362,7 +362,7 @@ static Function DQM_StopDataAcq(device, deviceID)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		TFH_StopFIFODaemon(hardwareType, deviceID)
 	endif
-	HW_StopAcq(hardwareType, deviceID, prepareForDAQ = 1, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StopAcq(hardwareType, deviceID, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
 
 	SWS_SaveAcquiredData(device)
 	RA_ContinueOrStop(device, multiDevice=1)
