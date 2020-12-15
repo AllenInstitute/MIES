@@ -5152,15 +5152,15 @@ Function/S GetStaticDataFolderAS()
 	return GetMiesPathAsString() + ":StaticData"
 End
 
-/// @brief Return the datafolder reference to the active ITC devices folder,
-/// e.g. root:MIES:HardwareDevices:ActiveITCDevices:TestPulse
-Function/DF GetActITCDevicesTestPulseFolder()
-	return createDFWithAllParents(GetActITCDevicesTestPulFolderA())
+/// @brief Return the datafolder reference to the active DAQ devices folder,
+/// e.g. root:MIES:HardwareDevices:ActiveDAQDevices:TestPulse
+Function/DF GetActDAQDevicesTestPulseFolder()
+	return createDFWithAllParents(GetActiveDAQDevicesTestPulseFolderAsString())
 End
 
-/// @brief Return the full path to the active ITC devices location
-Function/S GetActITCDevicesTestPulFolderA()
-	return GetDAQDevicesFolderAsString() + ":ActiveITCDevices:TestPulse"
+/// @brief Return the full path to the active DAQ devices location for the test pulse
+Function/S GetActiveDAQDevicesTestPulseFolderAsString()
+	return GetDAQDevicesFolderAsString() + ":ActiveDAQDevices:TestPulse"
 End
 
 /// @brief Return the active devices wave for TP MD
@@ -5175,7 +5175,7 @@ End
 /// In addition it is also the next free row index.
 Function/WAVE GetActiveDevicesTPMD()
 
-	DFREF dfr = GetActITCDevicesTestPulseFolder()
+	DFREF dfr = GetActDAQDevicesTestPulseFolder()
 	variable versionOfNewWave = 1
 
 	WAVE/Z/SDFR=dfr wv = ActiveDevicesTPMD
