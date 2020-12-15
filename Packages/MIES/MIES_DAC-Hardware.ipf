@@ -372,18 +372,17 @@ End
 ///
 /// @param hardwareType  One of @ref HardwareDACTypeConstants
 /// @param deviceID      device identifier
-/// @param prepareForDAQ immediately prepare for the next data acquisition after stopping it
 /// @param zeroDAC       set all used DA channels to zero
 /// @param flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_StopAcq(hardwareType, deviceID, [prepareForDAQ, zeroDAC, flags])
-	variable hardwareType, deviceID, prepareForDAQ, zeroDAC, flags
+Function HW_StopAcq(hardwareType, deviceID, [zeroDAC, flags])
+	variable hardwareType, deviceID, zeroDAC, flags
 
 	string device
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_StopAcq(deviceID, prepareForDAQ=prepareForDAQ, zeroDAC = zeroDAC, flags=flags)
+			HW_ITC_StopAcq(deviceID, zeroDAC = zeroDAC, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
 			HW_NI_StopAcq(deviceID, zeroDAC = zeroDAC, flags=flags)
@@ -1033,35 +1032,26 @@ Function HW_ITC_DisableYoking(deviceID, [flags])
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
-/// @see HW_StopAcq (threadsafe variant)
-threadsafe Function HW_ITC_StopAcq_TS(deviceID, [prepareForDAQ, flags])
-	variable deviceID, prepareForDAQ, flags
+/// @see HW_StopAcq
+threadsafe Function HW_ITC_StopAcq_TS(deviceID, [flags])
+	variable deviceID, flags
 
 	do
 		ITCStopAcq2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
-
-	if(prepareForDAQ)
-		do
-			ITCConfigChannelUpload2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
-		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-		HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
-	endif
 End
 
 /// @param deviceID      device identifier
 /// @param config        [optional] ITC config wave
 /// @param configFunc    [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
-/// @param prepareForDAQ [optional, defaults to false] prepare for next DAQ immediately
 /// @param zeroDAC       [optional, defaults to false] set all DA channels to zero
 /// @param flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @see HW_StopAcq
-Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
-	variable deviceID, prepareForDAQ, zeroDAC, flags
+Function HW_ITC_StopAcq(deviceID, [config, configFunc, zeroDAC, flags])
+	variable deviceID, zeroDAC, flags
 	WAVE/Z config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 
@@ -1094,14 +1084,6 @@ Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, f
 			HW_ITC_WriteDAC(deviceID, DACs[i], 0, flags = flags)
 		endfor
 	endif
-
-	if(prepareForDAQ)
-		do
-			ITCConfigChannelUpload2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
-		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-		HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
-	endif
 End
 
 /// @brief Return the deviceID of the currently selected
@@ -1132,38 +1114,16 @@ threadsafe static Function/WAVE HW_ITC_GetFifoPosFromConfig(config_t)
 	return fifoPos_t
 End
 
-/// @brief Reset the AD/DA channel FIFOs (threadsafe variant)
+/// @brief Redo the last acquisition with the exact same settings.
 ///
-/// @param deviceID device identifier
-/// @param config   ITC config wave
-/// @param flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
-	variable deviceID
-	WAVE config
-	variable flags
-
-	WAVE config_t  = HW_ITC_TransposeAndToDouble(config)
-	WAVE fifoPos_t = HW_ITC_GetFifoPosFromConfig(config_t)
-
-	do
-		ITCUpdateFIFOPositionAll2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags)) fifoPos_t
-	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
-End
-
-/// @brief Reset the AD/DA channel FIFOs
+/// This requires that the HardwareDataWave is *not* touched in any way.
 ///
-/// @param deviceID device identifier
-/// @param[in] config                  [optional] ITC config wave
-/// @param[in] configFunc              [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
-/// @param     flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
-	variable deviceID
-	WAVE/Z config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
-	variable  flags
-
+/// @param deviceID      device identifier
+/// @param config        [optional] ITC config wave
+/// @param configFunc    [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+///
+/// @param flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_ITC_RedoLastAcq(variable deviceID, [WAVE config, FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc, variable flags])
 	string panelTitle
 
 	DEBUGPRINTSTACKINFO()
@@ -1178,6 +1138,12 @@ Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
 		endif
 	endif
 
+	do
+		ITCConfigChannelUpload2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
 	WAVE fifoPos_t = HW_ITC_GetFifoPosFromConfig(config_t)
 
@@ -1186,6 +1152,25 @@ Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+End
+
+/// @sa HW_ITC_RedoLastAcq
+threadsafe Function HW_ITC_RedoLastAcq_TS(variable deviceID, WAVE config, [variable flags])
+
+	do
+		ITCConfigChannelUpload2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
+
+	WAVE config_t  = HW_ITC_TransposeAndToDouble(config)
+	WAVE fifoPos_t = HW_ITC_GetFifoPosFromConfig(config_t)
+
+	do
+		ITCUpdateFIFOPositionAll2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags)) fifoPos_t
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @see HW_StartAcq (threadsafe variant)
@@ -1603,14 +1588,14 @@ Function HW_ITC_DisableYoking(deviceID, [flags])
 	DEBUGPRINT("Unimplemented")
 End
 
-threadsafe Function HW_ITC_StopAcq_TS(deviceID, [prepareForDAQ, flags])
-	variable deviceID, prepareForDAQ, flags
+threadsafe Function HW_ITC_StopAcq_TS(deviceID, [flags])
+	variable deviceID, flags
 
 	DEBUGPRINT_TS("Unimplemented")
 End
 
-Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
-	variable deviceID, prepareForDAQ, zeroDAC, flags
+Function HW_ITC_StopAcq(deviceID, [config, configFunc, zeroDAC, flags])
+	variable deviceID, zeroDAC, flags
 	WAVE/Z config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 
@@ -1629,7 +1614,7 @@ threadsafe static Function/WAVE HW_ITC_GetFifoPosFromConfig(config_t)
 	DEBUGPRINT_TS("Unimplemented")
 End
 
-threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
+threadsafe Function HW_ITC_RedoLastAcq_TS(deviceID, config, [flags])
 	variable deviceID
 	WAVE config
 	variable flags
@@ -1637,7 +1622,7 @@ threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
 	DEBUGPRINT_TS("Unimplemented")
 End
 
-Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
+Function HW_ITC_RedoLastAcq(deviceID, [config, configFunc, flags])
 	variable deviceID
 	WAVE/Z config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc

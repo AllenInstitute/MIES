@@ -49,13 +49,15 @@ Function TPS_TestPulseFunc(s)
 		s.count += 1
 	endif
 
-	HW_ITC_ResetFifo(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_ITC_RedoLastAcq(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+
 	do
 		// nothing
 	while (HW_ITC_MoreData(ITCDeviceIDGlobal))
 
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+
 	SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 
 	SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)
@@ -151,14 +153,15 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 
 	do
 		DoXOPIdle
-		HW_ITC_ResetFifo(ITCDeviceIDGlobal)
+
+		HW_ITC_RedoLastAcq(ITCDeviceIDGlobal)
 		HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 		do
 			// nothing
 		while (HW_ITC_MoreData(ITCDeviceIDGlobal))
 
-		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 
 		SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)

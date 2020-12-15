@@ -115,8 +115,8 @@ threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopColle
 			switch(mode)
 				case TFH_RESTART_ACQ:
 
-					HW_ITC_StopAcq_TS(deviceID, prepareForDAQ = 1, flags = flags)
-					HW_ITC_ResetFifo_TS(deviceID, config, flags = flags)
+					HW_ITC_StopAcq_TS(deviceID, flags = flags)
+					HW_ITC_RedoLastAcq_TS(deviceID, config, flags = flags)
 					HW_ITC_StartAcq_TS(deviceID, triggerMode, flags = flags)
 
 					if(triggerMode != HARDWARE_DAC_DEFAULT_TRIGGER)
