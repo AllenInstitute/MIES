@@ -160,7 +160,6 @@ static Function TPM_BkrdTPMD(device, [triggerMode])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_ResetFifo(deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 			HW_StartAcq(HARDWARE_ITC_DAC, deviceID, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
 			TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, deviceID, triggerMode)
 			break
