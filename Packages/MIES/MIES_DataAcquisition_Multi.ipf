@@ -180,7 +180,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 		if(initialSetupReq)
 			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 		else // required for RA for the lead device only
-			DQ_StopITCDeviceTimer(panelTitle)
+			DQ_StopDAQDeviceTimer(panelTitle)
 		endif
 
 		return NaN
@@ -223,7 +223,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 
 			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 		else // required for RA for the lead device only
-			DQ_StopITCDeviceTimer(panelTitle)
+			DQ_StopDAQDeviceTimer(panelTitle)
 		endif
 
 		return NaN

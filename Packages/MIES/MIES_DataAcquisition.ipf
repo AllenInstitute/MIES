@@ -142,7 +142,7 @@ static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
 	endif
 
 	if(stopDeviceTimer)
-		DQ_StopITCDeviceTimer(panelTitle)
+		DQ_StopDAQDeviceTimer(panelTitle)
 	endif
 
 	if(needsOTCAfterDAQ)
@@ -152,7 +152,7 @@ End
 
 /// @brief Start the per-device timer used for the ITI (inter trial interval)
 ///
-/// This function and DQ_StopITCDeviceTimer are used to correct the ITI for the
+/// This function and DQ_StopDAQDeviceTimer are used to correct the ITI for the
 /// time it took to collect data, and pre and post processing of data. It
 /// allows for a real time, start to start, ITI
 Function DQ_StartITCDeviceTimer(panelTitle)
@@ -180,7 +180,7 @@ Function DQ_StartITCDeviceTimer(panelTitle)
 End
 
 /// @brief Stop the per-device timer associated with a particular device
-Function DQ_StopITCDeviceTimer(panelTitle)
+Function DQ_StopDAQDeviceTimer(panelTitle)
 	string panelTitle
 
 	variable timerID

@@ -19,7 +19,7 @@ static Function RA_RecalculateITI(panelTitle)
 	variable ITI
 
 	NVAR repurposedTime = $GetRepurposedSweepTime(panelTitle)
-	ITI = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_ITI") - DQ_StopITCDeviceTimer(panelTitle) + repurposedTime
+	ITI = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_ITI") - DQ_StopDAQDeviceTimer(panelTitle) + repurposedTime
 	repurposedTime = 0
 
 	return ITI
@@ -253,7 +253,7 @@ static Function RA_FinishAcquisition(panelTitle)
 	string list
 	variable numEntries, i
 
-	DQ_StopITCDeviceTimer(panelTitle)
+	DQ_StopDAQDeviceTimer(panelTitle)
 
 #ifdef PERFING_RA
 	RA_PerfFinish(panelTitle)
