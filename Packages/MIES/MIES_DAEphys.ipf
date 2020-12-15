@@ -4875,11 +4875,11 @@ static Function DAP_UnlockDevice(panelTitle)
 		ActiveDevicesTPMD = NaN
 		SetNumberInWaveNote(ActiveDevicesTPMD, NOTE_INDEX, 0)
 
-		DFREF dfr = GetActiveITCDevicesFolder()
+		DFREF dfr = GetActiveDAQDevicesFolder()
 		WAVE/Z/SDFR=dfr ActiveDeviceList
 		DAP_ClearWaveIfExists(ActiveDeviceList)
 
-		DFREF dfr = GetActiveITCDevicesTimerFolder()
+		DFREF dfr = GetActiveDAQDevicesTimerFolder()
 		WAVE/Z/SDFR=dfr ActiveDevTimeParam, TimerFunctionListWave
 		DAP_ClearWaveIfExists(ActiveDevTimeParam)
 		DAP_ClearWaveIfExists(TimerFunctionListWave)

@@ -161,7 +161,7 @@ Function DQ_StartITCDeviceTimer(panelTitle)
 	string msg
 
 	NVAR deviceID = $GetDAQDeviceID(panelTitle)
-	DFREF timer = GetActiveITCDevicesTimerFolder()
+	DFREF timer = GetActiveDAQDevicesTimerFolder()
 
 	WAVE/Z/SDFR=timer CycleTimeStorageWave
 	if(!WaveExists(CycleTimeStorageWave))
@@ -186,7 +186,7 @@ Function DQ_StopITCDeviceTimer(panelTitle)
 	variable timerID
 	string msg
 
-	WAVE/Z/SDFR=GetActiveITCDevicesTimerFolder() CycleTimeStorageWave
+	WAVE/Z/SDFR=GetActiveDAQDevicesTimerFolder() CycleTimeStorageWave
 
 	if(!WaveExists(CycleTimeStorageWave))
 		return NaN

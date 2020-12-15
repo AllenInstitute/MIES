@@ -296,7 +296,7 @@ End
 Function DQM_StopBackgroundTimer(panelTitle)
 	string panelTitle
 
-	WAVE/SDFR=GetActiveITCDevicesTimerFolder() ActiveDevTimeParam
+	WAVE/SDFR=GetActiveDAQDevicesTimerFolder() ActiveDevTimeParam
 
 	DQM_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
 	variable DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
@@ -311,9 +311,9 @@ End
 Function DQM_Timer(s)
 	STRUCT WMBackgroundStruct &s
 
-	WAVE/SDFR=GetActiveITCDevicesTimerFolder() ActiveDevTimeParam
+	WAVE/SDFR=GetActiveDAQDevicesTimerFolder() ActiveDevTimeParam
 	// column 0 = deviceID; column 1 = Start time; column 2 = run time; column 3 = end time
-	WAVE/T/SDFR=GetActiveITCDevicesTimerFolder() TimerFunctionListWave
+	WAVE/T/SDFR=GetActiveDAQDevicesTimerFolder() TimerFunctionListWave
 	// column 0 = panel title; column 1 = list of functions
 	variable i
 	string panelTitle
@@ -450,7 +450,7 @@ static Function DQM_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, star
 	variable numberOfRows
 
 	NVAR deviceID = $GetDAQDeviceID(panelTitle)
-	DFREF dfr = GetActiveITCDevicesTimerFolder()
+	DFREF dfr = GetActiveDAQDevicesTimerFolder()
 
 	WAVE/Z/SDFR=dfr ActiveDevTimeParam
 	if(addOrRemoveDevice == 1) // add a ITC device
@@ -494,7 +494,7 @@ static Function DQM_MakeOrUpdtDevTimerTxtWv(panelTitle, listOfFunctions, rowToRe
 
 	variable numberOfRows
 
-	DFREF dfr = GetActiveITCDevicesTimerFolder()
+	DFREF dfr = GetActiveDAQDevicesTimerFolder()
 	WAVE/Z/T/SDFR=dfr TimerFunctionListWave
 
 	if(addOrRemoveDevice == 1) // Add a device

@@ -547,40 +547,40 @@ Function/WAVE GetHSProperties(panelTitle)
 	return wv
 End
 
-/// @brief Return the ITC devices folder "root:mies:HardwareDevices"
+/// @brief Return the DAQ devices folder "root:mies:HardwareDevices"
 Function/DF GetDAQDevicesFolder()
 
 	return UpgradeDataFolderLocation(GetMiesPathAsString() + ":ITCDevices", GetDAQDevicesFolderAsString())
 End
 
-/// @brief Return a data folder reference to the ITC devices folder
+/// @brief Return a data folder reference to the DAQ devices folder
 threadsafe Function/S GetDAQDevicesFolderAsString()
 
 	return GetMiesPathAsString() + ":HardwareDevices"
 End
 
-/// @brief Return the active ITC devices timer folder "root:mies:HardwareDevices:ActiveITCDevices:Timer"
-Function/DF GetActiveITCDevicesTimerFolder()
+/// @brief Return the active DAQ devices timer folder "root:mies:HardwareDevices:ActiveDAQDevices:Timer"
+Function/DF GetActiveDAQDevicesTimerFolder()
 
-	return createDFWithAllParents(GetActiveITCDevicesTimerAS())
+	return createDFWithAllParents(GetActiveDAQDevicesTimerAS())
 End
 
-/// @brief Return a data folder reference to the active ITC devices timer folder
-Function/S GetActiveITCDevicesTimerAS()
+/// @brief Return a data folder reference to the active DAQ devices timer folder
+Function/S GetActiveDAQDevicesTimerAS()
 
-	return GetActiveITCDevicesFolderAS() + ":Timer"
+	return GetActiveDAQDevicesFolderAS() + ":Timer"
 End
 
-/// @brief Return the active ITC devices folder "root:mies:HardwareDevices:ActiveITCDevices"
-Function/DF GetActiveITCDevicesFolder()
+/// @brief Return the active DAQ devices folder "root:mies:HardwareDevices:ActiveDAQDevices"
+Function/DF GetActiveDAQDevicesFolder()
 
-	return createDFWithAllParents(GetActiveITCDevicesFolderAS())
+	return createDFWithAllParents(GetActiveDAQDevicesFolderAS())
 End
 
-/// @brief Return a data folder reference to the active ITC devices folder
-Function/S GetActiveITCDevicesFolderAS()
+/// @brief Return a data folder reference to the active DAQ devices folder
+Function/S GetActiveDAQDevicesFolderAS()
 
-	return GetDAQDevicesFolderAsString() + ":ActiveITCDevices"
+	return GetDAQDevicesFolderAsString() + ":ActiveDAQDevices"
 End
 
 /// @brief Return a datafolder reference to the device type folder
@@ -904,7 +904,7 @@ static Constant DQM_ACTIVE_DEV_WAVE_VERSION = 3
 /// - 3: Removed column 2 with StopCollectionPoint as it is no longer used
 Function/Wave GetDQMActiveDeviceList()
 
-	DFREF dfr = GetActiveITCDevicesFolder()
+	DFREF dfr = GetActiveDAQDevicesFolder()
 
 	WAVE/Z/D/SDFR=dfr wv = ActiveDeviceList
 

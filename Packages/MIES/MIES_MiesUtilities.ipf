@@ -5070,7 +5070,7 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 			WAVE deviceIDList = GetActiveDevicesTPMD()
 			break
 		case TASKNAME_TIMERMD:
-			WAVE/Z/SDFR=GetActiveITCDevicesTimerFolder() deviceIDList = ActiveDevTimeParam
+			WAVE/Z/SDFR=GetActiveDAQDevicesTimerFolder() deviceIDList = ActiveDevTimeParam
 			break
 		case TASKNAME_FIFOMONMD:
 			WAVE deviceIDList = GetDQMActiveDeviceList()
