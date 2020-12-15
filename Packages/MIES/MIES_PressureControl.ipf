@@ -428,8 +428,8 @@ static Function P_UpdateVcom(panelTitle, vCom, headStage)
 	AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage, value=1)
 End
 
-/// @brief Determines which ITC devices to close. Ensures all DA_Ephys panels
-/// using a particular ITC device for pressure regulation are updated
+/// @brief Determines which devices to close. Ensures all DA_Ephys panels
+/// using a particular device for pressure regulation are updated
 /// correctly.
 static Function P_CloseDevice(panelTitle)
 	string panelTitle
@@ -1153,7 +1153,7 @@ Function P_NI_StopDAQ(panelTitle, headStage)
 	HW_WriteDigital(hwType, deviceID, 0, 0, line=TTL)
 End
 
-/// @brief Returns the panelTitle of the ITC device associated with ITC device conducting a pressure pulse
+/// @brief Returns the panelTitle of the device associated with device conducting a pressure pulse
 static Function P_FindPanelTitleExecutingPP(panelTitle, deviceID, headStage)
 	string &panelTitle
 	variable &deviceID, &headStage
@@ -1857,7 +1857,7 @@ Function P_ValidatePressureSetHeadstage(panelTitle, headStageNo)
 	return 1
 End
 
-/// @brief Determines if ITC device is active (i.e. collecting data)
+/// @brief Determines if device is active (i.e. collecting data)
 ///
 /// used to determine if pressure pulse has completed.
 static Function P_DACIsCollectingData(panelTitle, headStage)
@@ -1948,7 +1948,7 @@ Function P_PressureDisplayHighlite(panelTitle, hilite)
 	//ValDisplay $controlNamevalueColor=(65535,65535,65535)
 End
 
-/// @brief Enables ITC devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
+/// @brief Enables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 static Function P_Enable()
 	variable i, j, headstage, numPressureDevices
 	string lockedDevice, listOfPressureCtrlDevices, device
@@ -1984,7 +1984,7 @@ static Function P_Enable()
 	endfor
 End
 
-/// @brief Disables ITC devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
+/// @brief Disables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 Function P_Disable()
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 	variable i, numPressureDevices
@@ -2252,7 +2252,7 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(ba) : ButtonControl
 	return 0
 End
 
-/// @brief Pressure control ITC device Enable button in Hardware tab of DA_Ephys panel
+/// @brief Pressure control device Enable button in Hardware tab of DA_Ephys panel
 Function P_ButtonProc_Enable(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -2270,7 +2270,7 @@ Function P_ButtonProc_Enable(ba) : ButtonControl
 	return 0
 End
 
-/// @brief Pressure control ITC device Disable button in Hardware tab of DA_Ephys panel
+/// @brief Pressure control device Disable button in Hardware tab of DA_Ephys panel
 Function P_ButtonProc_Disable(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
