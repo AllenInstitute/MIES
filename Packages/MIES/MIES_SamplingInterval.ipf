@@ -292,7 +292,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 
-	WAVE DAQDataWave = GetDAQDataWave(panelTitle)
+	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -440,7 +440,7 @@ static Function SI_TestSampInt(panelTitle)
 	variable numConsecutive = -1
 	variable numTries = 1001
 
-	WAVE DAQDataWave = GetDAQDataWave(panelTitle)
+	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	numChannels = DimSize(ITCChanConfigWave, ROWS)
 

@@ -111,7 +111,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
 	endif
 
-	WAVE DAQDataWave = GetDAQDataWave(panelTitle)
+	WAVE DAQDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
 	ASSERT(IsValidSweepAndConfig(DAQDataWave, ITCChanConfigWave), "Invalid sweep and config combination")
@@ -337,7 +337,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 	numRows = DC_CalculateDAQDataWaveLength(panelTitle, dataAcqOrTP)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			WAVE ITCDataWave = GetDAQDataWave(panelTitle)
+			WAVE ITCDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 
 			Redimension/N=(numRows, numActiveChannels) ITCDataWave
 
@@ -347,7 +347,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 			return [ITCDataWave, $""]
 			break
 		case HARDWARE_NI_DAC:
-			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle)
+			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 			Redimension/N=(numActiveChannels) NIDataWave
 
 			SetScale/P x 0, samplingInterval / 1000, "ms", NIDataWave
@@ -402,8 +402,8 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
 	WAVE scaledDataWave = GetScaledDataWave(panelTitle)
-	WAVE ITCDataWave = GetDAQDataWave(panelTitle)
-	WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle)
+	WAVE ITCDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
+	WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 
 	tpLength = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
 	hardwareType = GetHardwareType(panelTitle)
@@ -1120,7 +1120,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		WAVE/Z result = CA_TryFetchingEntryFromCache(key)
 
 		if(WaveExists(result))
-			WAVE DAQDataWave = GetDAQDataWave(panelTitle)
+			WAVE DAQDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 			if(IsWaveRefWave(DAQDataWave))
 				WAVE/WAVE DAQDataWaveRef = DAQDataWave
 				Redimension/N=(numActiveChannels) DAQDataWaveRef
@@ -1423,7 +1423,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		endswitch
 	endif
 
-	if(DC_CheckIfDataWaveHasBorderVals(panelTitle))
+	if(DC_CheckIfDataWaveHasBorderVals(panelTitle, dataAcqOrTP))
 		printf "Error writing stimsets into DataWave: The values are out of range. Maybe the DA/AD Gain needs adjustment?\r"
 		ControlWindowToFront()
 		Abort
@@ -1528,12 +1528,12 @@ static Function DC_GenerateStimsetFingerprint(raCycleID, setName, setCycleCount,
 	return crc
 End
 
-static Function DC_CheckIfDataWaveHasBorderVals(string panelTitle)
+static Function DC_CheckIfDataWaveHasBorderVals(string panelTitle, variable dataAcqOrTP)
 
 	variable hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			WAVE/Z ITCDataWave = GetDAQDataWave(panelTitle)
+			WAVE/Z ITCDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 			ASSERT(WaveExists(ITCDataWave), "Missing DAQDataWave")
 			ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type: " + num2str(WaveType(ITCDataWave)))
 
@@ -1552,7 +1552,7 @@ static Function DC_CheckIfDataWaveHasBorderVals(string panelTitle)
 			return 0
 			break
 		case HARDWARE_NI_DAC:
-			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle)
+			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 			ASSERT(IsWaveRefWave(NIDataWave), "Unexpected wave type")
 			variable channels = numpnts(NIDataWave)
 			variable i

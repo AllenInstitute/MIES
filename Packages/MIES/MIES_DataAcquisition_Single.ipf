@@ -54,7 +54,7 @@ Function DQS_DataAcq(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	HW_PrepareAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
@@ -92,7 +92,7 @@ Function DQS_BkrdDataAcq(panelTitle)
 	string panelTitle
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_PrepareAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.

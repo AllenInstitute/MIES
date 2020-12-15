@@ -698,29 +698,44 @@ End
 /// - one for each active DA, AD, TTL channel (in that order)
 ///
 /// For scaling and gain information see SWS_GetChannelGains().
-Function/Wave GetDAQDataWave(panelTitle)
-	string panelTitle
+///
+/// @param panelTitle device
+/// @param mode       One of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+Function/Wave GetDAQDataWave(string panelTitle, variable mode)
+
+	string name
 
 	DFREF dfr = GetDevicePath(panelTitle)
 	variable hardwareType = GetHardwareType(panelTitle)
 
+	switch(mode)
+		case DATA_ACQUISITION_MODE:
+			name = "DAQDataWave_DAQ"
+			break
+		case TEST_PULSE_MODE:
+			name = "DAQDataWave_TP"
+			break
+		default:
+			ASSERT(0, "Invalid dataAcqOrTP")
+	endswitch
+
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			WAVE/W/Z/SDFR=dfr wv = DAQDataWave
+			WAVE/W/Z/SDFR=dfr wv = $name
 
 			if(WaveExists(wv))
 				return wv
 			endif
 
-			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:DAQDataWave/Wave=wv
+			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:$name/Wave=wv
 			return wv
 			break
 		case HARDWARE_NI_DAC:
-			WAVE/WAVE/Z/SDFR=dfr wv_ni = DAQDataWave
+			WAVE/WAVE/Z/SDFR=dfr wv_ni = $name
 			if(WaveExists(wv_ni))
 				return wv_ni
 			endif
-			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:DAQDataWave/Wave=wv_ni
+			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:$name/Wave=wv_ni
 			return wv_ni
 			break
 	endswitch

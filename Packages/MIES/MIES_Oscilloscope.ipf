@@ -629,7 +629,7 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 
 	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle)
+	WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 
 	fifoName = GetNIFIFOName(deviceID)
 	FIFOStatus/Q $fifoName
@@ -677,7 +677,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 	variable length, first, last
 	variable startOfADColumns, numEntries, decMethod, decFactor
 	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
-	WAVE DAQDataWave       = GetDAQDataWave(panelTitle)
+	WAVE DAQDataWave       = GetDAQDataWave(panelTitle, dataAcqOrTP)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)

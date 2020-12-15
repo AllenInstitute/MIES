@@ -218,7 +218,7 @@ Function TPM_BkrdTPFuncMD(s)
 					ASSERT(V_Flag != 0,"FIFO does not exist!")
 					endOfPulse = datapoints * tpCounter + datapoints
 					if(V_FIFOChunks >= endOfPulse)
-						WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle)
+						WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, TEST_PULSE_MODE)
 
 						try
 							ClearRTError()
@@ -251,14 +251,14 @@ Function TPM_BkrdTPFuncMD(s)
 					endif
 					if(V_FIFOChunks > TPM_NI_FIFO_THRESHOLD_SIZE)
 						HW_NI_StopAcq(deviceID)
-						HW_NI_PrepareAcq(deviceID)
+						HW_NI_PrepareAcq(deviceID, TEST_PULSE_MODE)
 						HW_NI_StartAcq(deviceID, HARDWARE_DAC_DEFAULT_TRIGGER)
 						tpCounter = 0
 					endif
 				while(checkAgain)
 			break
 		case HARDWARE_ITC_DAC:
-			WAVE ITCDataWave = GetDAQDataWave(panelTitle)
+			WAVE ITCDataWave = GetDAQDataWave(panelTitle, TEST_PULSE_MODE)
 
 			NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
 			if(DeviceHasFollower(panelTitle))

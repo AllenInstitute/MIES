@@ -147,7 +147,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, total
 	WAVE/Z sweepWave = GetSweepWave(panelTitle, sweepNo)
 
 	if(!WaveExists(sweepWave))
-		WAVE sweepWave = GetDAQDataWave(panelTitle)
+		WAVE sweepWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 		WAVE config    = GetITCChanConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
@@ -470,7 +470,7 @@ static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 
 	variable length, nonBL, totalOnsetDelay
 
-	WAVE DAQDataWave    = GetDAQDataWave(panelTitle)
+	WAVE DAQDataWave    = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
@@ -732,7 +732,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = (p == headstage ? 0 : NaN)
 
-	if(WaveRefsEqual(sweepWave, GetDAQDataWave(panelTitle)))
+	if(WaveRefsEqual(sweepWave, GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)))
 		WAVE config = GetITCChanConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
@@ -2630,7 +2630,7 @@ Function PSQ_Ramp(panelTitle, s)
 				fifoOffset = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
 				TFH_StopFIFODaemon(HARDWARE_ITC_DAC, deviceID)
 				HW_StopAcq(HARDWARE_ITC_DAC, deviceID)
-				HW_ITC_PrepareAcq(deviceID, offset=fifoOffset)
+				HW_ITC_PrepareAcq(deviceID, DATA_ACQUISITION_MODE, offset=fifoOffset)
 
 				WAVE wv = s.rawDACWave
 

@@ -5841,7 +5841,7 @@ Function UpdateLeftOverSweepTime(panelTitle, fifoPos)
 
 	ASSERT(IsFinite(fifoPos), "Unexpected non-finite fifoPos")
 
-	WAVE DAQDataWave         = GetDAQDataWave(panelTitle)
+	WAVE DAQDataWave         = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 	NVAR repurposedTime      = $GetRepurposedSweepTime(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 

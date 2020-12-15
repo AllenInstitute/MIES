@@ -2510,7 +2510,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		// unlock DAQDataWave, this happens if user functions error out and we don't catch it
 		// note: seems to work even if WAVE/WAVE would be required for NI
-		WAVE DAQDataWave = GetDAQDataWave(panelTitle)
+		WAVE DAQDataWave = GetDAQDataWave(panelTitle, mode)
 		if(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)))
 			printf "(%s) Removing leftover lock on DAQDataWave\r", panelTitle
 			ControlWindowToFront()

@@ -24,7 +24,7 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 
 	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 
-	WAVE DAQDataWave = GetDAQDataWave(panelTitle)
+	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 	WAVE hardwareConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE scaledDataWave = GetScaledDataWave(panelTitle)
 

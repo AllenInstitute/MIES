@@ -104,7 +104,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		valid_f3 = FuncRefIsAssigned(FuncRefInfo(f3))
 
 		// all functions are valid
-		WAVE DAQDataWave = GetDAQDataWave(panelTitle)
+		WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 		ChangeWaveLock(DAQDataWave, 1)
 
 		ChangeWaveLock(scaledDataWave, 1)
