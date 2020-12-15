@@ -80,7 +80,7 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 
 	DC_UpdateGlobals(panelTitle)
 
-	numActiveChannels = DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
+	numActiveChannels = DC_ChannelCalcForDAQConfigWave(panelTitle, dataAcqOrTP)
 	DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
@@ -156,7 +156,7 @@ End
 ///
 /// @param panelTitle  panel title
 /// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
+static Function DC_ChannelCalcForDAQConfigWave(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
@@ -309,7 +309,7 @@ end
 /// @brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
 ///
 /// @param panelTitle  panel title
-/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+/// @param numActiveChannels number of active channels as returned by DC_ChannelCalcForDAQConfigWave()
 static Function DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
 	string panelTitle
 	variable numActiveChannels
@@ -328,7 +328,7 @@ End
 ///
 /// @param panelTitle          panel title
 /// @param hardwareType        hardware type
-/// @param numActiveChannels   number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+/// @param numActiveChannels   number of active channels as returned by DC_ChannelCalcForDAQConfigWave()
 /// @param samplingInterval    sampling interval as returned by DAP_GetSampInt()
 /// @param dataAcqOrTP         one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataWave(string panelTitle, variable hardwareType, variable numActiveChannels, variable samplingInterval, variable dataAcqOrTP)
@@ -772,7 +772,7 @@ End
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into DAQDataWave.
 /// Also records certain DA_Ephys GUI settings into sweepDataLNB and sweepDataTxTLNB
 /// @param panelTitle        panel title
-/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
+/// @param numActiveChannels number of active channels as returned by DC_ChannelCalcForDAQConfigWave()
 /// @param dataAcqOrTP       one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 /// @param multiDevice       Fine tune data handling for single device (false) or multi device (true)
 ///
