@@ -1867,12 +1867,12 @@ End
 /// @param sweepDFR    datafolder reference with 1D sweep data
 /// @param channelType One of @ref XopChannelConstants
 ///
-/// @see GetITCDataSingleColumnWave() or SplitSweepIntoComponents()
-Function/WAVE GetITCDataSingleColumnWaves(sweepDFR, channelType)
+/// @see GetDAQDataSingleColumnWave() or SplitSweepIntoComponents()
+Function/WAVE GetDAQDataSingleColumnWaves(sweepDFR, channelType)
 	DFREF sweepDFR
 	variable channelType
 
-	Make/FREE/WAVE/N=(GetNumberFromType(itcVar=channelType)) matches = GetITCDataSingleColumnWave(sweepDFR, channelType, p)
+	Make/FREE/WAVE/N=(GetNumberFromType(itcVar=channelType)) matches = GetDAQDataSingleColumnWave(sweepDFR, channelType, p)
 
 	return matches
 End
@@ -1886,7 +1886,7 @@ End
 /// @param channelNumber channel number
 /// @param splitTTLBits  [optional, defaults to false] return a single bit of the TTL wave
 /// @param ttlBit        [optional] number specifying the TTL bit
-Function/WAVE GetITCDataSingleColumnWave(sweepDFR, channelType, channelNumber, [splitTTLBits, ttlBit])
+Function/WAVE GetDAQDataSingleColumnWave(sweepDFR, channelType, channelNumber, [splitTTLBits, ttlBit])
 	DFREF sweepDFR
 	variable channelType, channelNumber
 	variable splitTTLBits, ttlBit
@@ -2654,7 +2654,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 				ASSERT(DataFolderExistsDFR(singleSweepDFR), "Missing singleSweepDFR")
 
-				WAVE/Z wv = GetITCDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
+				WAVE/Z wv = GetDAQDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
 				if(!WaveExists(wv))
 					continue
 				endif

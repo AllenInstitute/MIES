@@ -349,7 +349,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 			return $""
 		endif
 
-		WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, XOP_CHANNEL_TYPE_DAC, channel)
+		WAVE DA = GetDAQDataSingleColumnWave(singleSweepFolder, XOP_CHANNEL_TYPE_DAC, channel)
 		WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, fullPath, channel, totalOnsetDelay)
 
 #ifdef AUTOMATED_TESTING
@@ -771,7 +771,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			WAVE numericalValues = $traceData[idx][lblTracenumericalValues]
 			DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][lblTraceFullpath])
 			ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
-			WAVE wv = GetITCDataSingleColumnWave(singleSweepFolder, channelType, channelNumber)
+			WAVE wv = GetDAQDataSingleColumnWave(singleSweepFolder, channelType, channelNumber)
 
 			DFREF singlePulseFolder = GetSingleSweepFolder(pulseAverageDFR, sweepNo)
 			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)

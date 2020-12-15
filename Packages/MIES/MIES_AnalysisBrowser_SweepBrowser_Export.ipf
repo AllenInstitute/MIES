@@ -127,7 +127,7 @@ static Function SBE_AddMissingADTraceInfo(traceData)
 
 	for(i = 0; i < numPaths; i += 1)
 		DFREF sweepDFR = $GetWavesDataFolder(shownWaves[i], 1)
-		WAVE/WAVE allWaves = GetITCDataSingleColumnWaves(sweepDFR, XOP_CHANNEL_TYPE_ADC)
+		WAVE/WAVE allWaves = GetDAQDataSingleColumnWaves(sweepDFR, XOP_CHANNEL_TYPE_ADC)
 
 		WAVE numericalValues = $traceData[i][%numericalValues]
 		sweepNumber = str2num(traceData[i][%sweepNumber])
