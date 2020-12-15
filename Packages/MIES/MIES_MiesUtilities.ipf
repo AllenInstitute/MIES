@@ -5066,18 +5066,18 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 	endif
 
 	strswitch(task)
-		case "TestPulseMD":
+		case TASKNAME_TPMD:
 			WAVE deviceIDList = GetActiveDevicesTPMD()
 			break
-		case "ITC_TimerMD":
+		case TASKNAME_TIMERMD:
 			WAVE/Z/SDFR=GetActiveITCDevicesTimerFolder() deviceIDList = ActiveDevTimeParam
 			break
-		case "ITC_FIFOMonitorMD":
+		case TASKNAME_FIFOMONMD:
 			WAVE deviceIDList = GetDQMActiveDeviceList()
 			break
-		case "TestPulse":
-		case "ITC_Timer":
-		case "ITC_FIFOMonitor":
+		case TASKNAME_TP:
+		case TASKNAME_TIMER:
+		case TASKNAME_FIFOMON:
 			// single device tasks, nothing more to do
 			return 1
 			break

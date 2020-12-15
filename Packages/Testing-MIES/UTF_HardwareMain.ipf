@@ -510,7 +510,7 @@ Function ClampModeDuringITI_IGNORE(s)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 
-	if(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING && IsDeviceActiveWithBGTask(device, "ITC_TimerMD"))
+	if(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING && IsDeviceActiveWithBGTask(device, TASKNAME_TIMERMD))
 		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
 		return 1
 	endif
