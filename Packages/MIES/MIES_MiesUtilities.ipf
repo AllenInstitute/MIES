@@ -163,25 +163,25 @@ static Function/WAVE ExtractLBColumn(values, col, suffix)
 	return singleColumn
 End
 
-/// @brief Return a list of the AD channels from the ITC config
+/// @brief Return a list of the AD channels from the DAQ config
 Function/WAVE GetADCListFromConfig(config)
 	WAVE config
 
-	return GetChanneListFromITCConfig(config, XOP_CHANNEL_TYPE_ADC)
+	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_ADC)
 End
 
-/// @brief Return a list of the DA channels from the ITC config
+/// @brief Return a list of the DA channels from the DAQ config
 Function/WAVE GetDACListFromConfig(config)
 	WAVE config
 
-	return GetChanneListFromITCConfig(config, XOP_CHANNEL_TYPE_DAC)
+	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_DAC)
 End
 
-/// @brief Return a list of the TTL channels from the ITC config
+/// @brief Return a list of the TTL channels from the DAQ config
 Function/WAVE GetTTLListFromConfig(config)
 	WAVE config
 
-	return GetChanneListFromITCConfig(config, XOP_CHANNEL_TYPE_TTL)
+	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_TTL)
 End
 
 /// @brief Return a wave with all active channels
@@ -190,7 +190,7 @@ End
 ///
 /// @param config       DAQConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
-static Function/WAVE GetChanneListFromITCConfig(config, channelType)
+static Function/WAVE GetChanneListFromDAQConfigWave(config, channelType)
 	WAVE config
 	variable channelType
 
