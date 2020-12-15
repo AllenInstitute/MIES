@@ -4705,7 +4705,7 @@ Function DAP_LockDevice(string win)
 	DAP_UpdateDataFolderDisplay(panelTitleLocked, locked)
 
 	AI_FindConnectedAmps()
-	DAP_UpdateListOfITCPanels()
+	DAP_UpdateListOfLockedDevices()
 	DAP_UpdateListOfPressureDevices()
 	headstage = str2num(GetPopupMenuString(panelTitleLocked, "Popup_Settings_HeadStage"))
 	DAP_SyncDeviceAssocSettToGUI(paneltitleLocked, headstage)
@@ -4856,7 +4856,7 @@ static Function DAP_UnlockDevice(panelTitle)
 	HW_DeRegisterDevice(hardwareType, deviceID, flags=flags)
 
 	DAP_UpdateYokeControls(panelTitleUnlocked)
-	DAP_UpdateListOfITCPanels()
+	DAP_UpdateListOfLockedDevices()
 	DAP_UpdateAllYokeControls()
 
 	// reset our state variables to safe defaults
@@ -4895,7 +4895,7 @@ static Function DAP_UnlockDevice(panelTitle)
 End
 
 /// @brief Update the list of locked devices
-static Function DAP_UpdateListOfITCPanels()
+static Function DAP_UpdateListOfLockedDevices()
 	variable i, numDevs, numItm
 	string NIPanelList = ""
 	string ITCPanelList = WinList("ITC*", ";", "WIN:64")
