@@ -324,7 +324,7 @@ End
 Function/S GetDevicePanelTitleList()
 	string panelTitle
 
-	return GetSVARAsString(GetDAQDevicesFolder(), "ITCPanelTitleList", initialValue="")
+	return GetSVARAsString(GetDAQDevicesFolder(), "lockedDevices", initialValue="")
 End
 
 /// @brief Return the absolute path to the user comment string
