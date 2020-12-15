@@ -83,7 +83,7 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 	numActiveChannels = DC_ChannelCalcForDAQConfigWave(panelTitle, dataAcqOrTP)
 	DC_MakeDAQConfigWave(panelTitle, numActiveChannels)
 
-	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
+	DC_PlaceDataInDAQConfigWave(panelTitle, dataAcqOrTP)
 
 	gotTPChannels = GotTPChannelsOnADCs(paneltitle)
 
@@ -597,7 +597,7 @@ End
 ///
 /// @param panelTitle  panel title
 /// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
+static Function DC_PlaceDataInDAQConfigWave(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
