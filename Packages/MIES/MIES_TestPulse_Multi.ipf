@@ -19,7 +19,7 @@ static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 
 /// @brief Start the test pulse when MD support is activated.
 ///
-/// Handles the TP initiation for all ITC devices. Yoked ITC1600s are handled specially using the external trigger.
+/// Handles the TP initiation for all DAQ devices. Yoked ITC1600s are handled specially using the external trigger.
 /// The external trigger is assumed to be a arduino device using the arduino squencer.
 Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 	string panelTitle
