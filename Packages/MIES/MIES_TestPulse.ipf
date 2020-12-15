@@ -685,8 +685,8 @@ Function TP_Setup(panelTitle, runMode, [fast])
 		NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
 		runModeGlobal = runMode
 
-		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-		HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+		NVAR deviceID = $GetDAQDeviceID(panelTitle)
+		HW_PrepareAcq(GetHardwareType(panelTitle), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 		return NaN
 	endif
 
@@ -704,8 +704,8 @@ Function TP_Setup(panelTitle, runMode, [fast])
 
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	HW_PrepareAcq(GetHardwareType(panelTitle), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 End
 
 /// @brief Common setup calls for TP and TP during DAQ

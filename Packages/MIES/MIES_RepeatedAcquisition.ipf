@@ -386,9 +386,9 @@ static Function RA_AreLeaderAndFollowerFinished()
 
 	for(i = 0; i < numCandidates; i += 1)
 		candidate = StringFromList(i, listOfCandidates)
-		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(candidate)
+		NVAR deviceID = $GetDAQDeviceID(candidate)
 
-		row = DQM_GetActiveDeviceRow(ITCDeviceIDGlobal)
+		row = DQM_GetActiveDeviceRow(deviceID)
 		if(IsFinite(row)) // device still active
 			return 0
 		endif

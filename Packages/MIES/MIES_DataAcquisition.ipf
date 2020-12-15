@@ -105,8 +105,8 @@ static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
 	if(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_FIFOMON))
 		DQS_StopBackgroundFifoMonitor()
 
-		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
+		NVAR deviceID = $GetDAQDeviceID(panelTitle)
+		HW_StopAcq(HARDWARE_ITC_DAC, deviceID, zeroDAC = 1)
 
 		if(!discardData)
 			SWS_SaveAcquiredData(panelTitle, forcedStop = 1)
@@ -160,7 +160,7 @@ Function DQ_StartITCDeviceTimer(panelTitle)
 
 	string msg
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 	DFREF timer = GetActiveITCDevicesTimerFolder()
 
 	WAVE/Z/SDFR=timer CycleTimeStorageWave
@@ -173,7 +173,7 @@ Function DQ_StartITCDeviceTimer(panelTitle)
 	variable timerID = startmstimer
 
 	ASSERT(timerID != -1, "No more ms timers available, Run: StopAllMSTimers() to reset")
-	CycleTimeStorageWave[ITCDeviceIDGlobal] = timerID
+	CycleTimeStorageWave[deviceID] = timerID
 
 	sprintf msg, "started timer %d", timerID
 	DEBUGPRINT(msg)
@@ -192,9 +192,9 @@ Function DQ_StopITCDeviceTimer(panelTitle)
 		return NaN
 	endif
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
-	timerID = CycleTimeStorageWave[ITCDeviceIDGlobal]
+	timerID = CycleTimeStorageWave[deviceID]
 
 	sprintf msg, "stopped timer %d", timerID
 	DEBUGPRINT(msg)

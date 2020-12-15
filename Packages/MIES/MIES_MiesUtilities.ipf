@@ -1727,9 +1727,9 @@ Function/S GetAllDevices()
 
 				if(DataFolderExists(path))
 					DFREF dfr = $path
-					NVAR/SDFR=dfr/Z ITCDeviceIDGlobal
+					NVAR/SDFR=dfr/Z deviceID
 
-					if(NVAR_Exists(ITCDeviceIDGlobal))
+					if(NVAR_Exists(deviceID))
 						list = AddListItem(device, list, ";", inf)
 					endif
 				endif
@@ -1741,9 +1741,9 @@ Function/S GetAllDevices()
 
 			if(DataFolderExists(path))
 				DFREF dfr = $path
-				NVAR/SDFR=dfr/Z ITCDeviceIDGlobal
+				NVAR/SDFR=dfr/Z deviceID
 
-				if(NVAR_Exists(ITCDeviceIDGlobal))
+				if(NVAR_Exists(deviceID))
 					list = AddListItem(device, list, ";", inf)
 				endif
 			endif
@@ -5091,10 +5091,10 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 		return 1
 	endif
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
 	// running in multi device mode
-	FindValue/V=(ITCDeviceIDGlobal)/RMD=[][0] deviceIDList
+	FindValue/V=(deviceID)/RMD=[][0] deviceIDList
 	return V_Value != -1
 End
 

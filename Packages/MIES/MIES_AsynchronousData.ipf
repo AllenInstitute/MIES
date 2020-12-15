@@ -1,4 +1,4 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -41,10 +41,10 @@ Function ASD_ReadChannel(panelTitle, channel)
 	string ctrl
 	variable gain, deviceChannelOffset, rawChannelValue
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(panelTitle)
 
-	rawChannelValue = HW_ReadADC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, channel + deviceChannelOffset)
+	rawChannelValue = HW_ReadADC(HARDWARE_ITC_DAC, deviceID, channel + deviceChannelOffset)
 
 	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 	gain = DAG_GetNumericalValue(panelTitle, ctrl, index = channel)

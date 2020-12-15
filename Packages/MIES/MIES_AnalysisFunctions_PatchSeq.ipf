@@ -2617,7 +2617,7 @@ Function PSQ_Ramp(panelTitle, s)
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITIONS)
 			ED_AddEntryToLabnotebook(panelTitle, key, resultTxT, overrideSweepNo = s.sweepNo, unit = "ms")
 
-			NVAR deviceID = $GetITCDeviceIDGlobal(panelTitle)
+			NVAR deviceID = $GetDAQDeviceID(panelTitle)
 			NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 
 			hardwareType = GetHardwareType(panelTitle)

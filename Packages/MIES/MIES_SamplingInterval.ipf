@@ -295,7 +295,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	ASSERT(ret, "Could not parse panelTitle")

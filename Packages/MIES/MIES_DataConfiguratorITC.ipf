@@ -69,9 +69,9 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	endif
 
 	// prevent crash in ITC XOP as it must not run if we resize the DAQDataWave
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 	variable hardwareType = GetHardwareType(panelTitle)
-	ASSERT(!HW_IsRunning(hardwareType, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP), "Hardware is still running and it shouldn't. Please report that as a bug.")
+	ASSERT(!HW_IsRunning(hardwareType, deviceID, flags=HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP), "Hardware is still running and it shouldn't. Please report that as a bug.")
 
 	KillOrMoveToTrash(wv=GetSweepSettingsWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsTextWave(panelTitle))
@@ -1458,13 +1458,13 @@ static Function DC_DocumentHardwareProperties(panelTitle, hardwareType)
 
 	DC_DocumentChannelProperty(panelTitle, "Digitizer Hardware Type", INDEP_HEADSTAGE, NaN, NaN, var=hardwareType)
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
-	key = CA_HWDeviceInfoKey(panelTitle, hardwareType, ITCDeviceIDGlobal)
+	key = CA_HWDeviceInfoKey(panelTitle, hardwareType, deviceID)
 	WAVE/Z devInfo = CA_TryFetchingEntryFromCache(key)
 
 	if(!WaveExists(devInfo))
-		WAVE devInfo = HW_GetDeviceInfo(hardwareType, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP)
+		WAVE devInfo = HW_GetDeviceInfo(hardwareType, deviceID, flags=HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP)
 		CA_StoreEntryIntoCache(key, devInfo)
 	endif
 

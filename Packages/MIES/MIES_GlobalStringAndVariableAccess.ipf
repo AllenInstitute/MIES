@@ -274,11 +274,11 @@ Function/S GetFollowerList(leadPanel)
 	return GetSVARAsString(GetDevicePath(leadPanel), "ListOfFollowerITC1600s", initialValue="")
 End
 
-/// @brief Returns the absolute path to the ITC device ID
-Function/S GetITCDeviceIDGlobal(panelTitle)
+/// @brief Returns the absolute path to the device ID
+Function/S GetDAQDeviceID(panelTitle)
 	string panelTitle
 
-	return GetNVARAsString(GetDevicePath(panelTitle), "ITCDeviceIDGlobal", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(panelTitle), "deviceID", initialValue=NaN)
 End
 
 /// @brief Returns the absolute path to the testpulse averaging buffer size
