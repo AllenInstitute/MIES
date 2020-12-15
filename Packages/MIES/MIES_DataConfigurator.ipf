@@ -1410,7 +1410,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
 				WAVE/WAVE TTLWaveNI = GetTTLWave(panelTitle)
-				DC_MakeNITTLWave(panelTitle)
+				DC_NI_MakeTTLWave(panelTitle)
 				for(i = 0; i < DimSize(config, ROWS); i += 1)
 					if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
 						WAVE NIChannel = NIDataWave[ttlIndex]
@@ -1426,7 +1426,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 				WAVE TTLWaveITC = GetTTLWave(panelTitle)
 				// Place TTL waves into ITCDataWave
 				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ZERO))
-					DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
+					DC_ITC_MakeTTLWave(panelTitle, RACK_ZERO)
 					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
 					MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
 					limit(TTLWaveITC[trunc(decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
@@ -1434,7 +1434,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 				endif
 
 				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ONE))
-					DC_MakeITCTTLWave(panelTitle, RACK_ONE)
+					DC_ITC_MakeTTLWave(panelTitle, RACK_ONE)
 					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
 					MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
 					limit(TTLWaveITC[trunc(decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
@@ -1687,7 +1687,7 @@ End
 /// @param rackNo      Front TTL rack aka number of ITC devices. Only the ITC1600
 ///                    has two racks, see @ref RackConstants. Rack number for all other devices is
 ///                    #RACK_ZERO.
-static Function DC_MakeITCTTLWave(panelTitle, rackNo)
+static Function DC_ITC_MakeTTLWave(panelTitle, rackNo)
 	string panelTitle
 	variable rackNo
 
@@ -1751,7 +1751,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	endif
 End
 
-static Function DC_MakeNITTLWave(panelTitle)
+static Function DC_NI_MakeTTLWave(panelTitle)
 	string panelTitle
 
 	variable col, i, setCycleCount
