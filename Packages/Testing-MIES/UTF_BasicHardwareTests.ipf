@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=BasicHardwareTests
 
-/// @file UTF_BasicHardWareTests.ipf Implement some basic tests using the ITC hardware.
+/// @file UTF_BasicHardWareTests.ipf Implement some basic tests using the DAQ hardware.
 
 static StrConstant REF_DAEPHYS_CONFIG_FILE = "DA_Ephys.json"
 static StrConstant REF_TMP1_CONFIG_FILE = "UserConfigTemplate_Temp1.txt"
