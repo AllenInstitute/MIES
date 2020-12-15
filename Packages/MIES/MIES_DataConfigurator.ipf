@@ -81,7 +81,7 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_UpdateGlobals(panelTitle)
 
 	numActiveChannels = DC_ChannelCalcForDAQConfigWave(panelTitle, dataAcqOrTP)
-	DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
+	DC_MakeDAQConfigWave(panelTitle, numActiveChannels)
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
@@ -306,11 +306,11 @@ static Function DC_CalculateDAQDataWaveLength(panelTitle, dataAcqOrTP)
 	return NaN
 end
 
-/// @brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
+/// @brief Create the DAQConfigWave used to configure the DAQ device
 ///
 /// @param panelTitle  panel title
 /// @param numActiveChannels number of active channels as returned by DC_ChannelCalcForDAQConfigWave()
-static Function DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
+static Function DC_MakeDAQConfigWave(panelTitle, numActiveChannels)
 	string panelTitle
 	variable numActiveChannels
 
