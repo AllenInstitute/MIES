@@ -264,7 +264,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 
 		ADC = AFH_GetADCFromHeadstage(panelTitle, i)
 		ASSERT(IsFinite(ADC), "This analysis function does not work with unassociated AD channels")
-		ADcol = AFH_GetITCDataColumn(config, ADC, XOP_CHANNEL_TYPE_ADC)
+		ADcol = AFH_GetDAQDataColumn(config, ADC, XOP_CHANNEL_TYPE_ADC)
 
 		ADunit = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), index = ADC)
 

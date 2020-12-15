@@ -105,7 +105,7 @@ End
 ///                      `GetDAQConfigWave(panelTitle)` to get that wave.
 /// @param channelNumber channel number (0-based)
 /// @param channelType   channel type, one of @ref XopChannelConstants
-Function AFH_GetITCDataColumn(DAQConfigWave, channelNumber, channelType)
+Function AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
 	WAVE DAQConfigWave
 	variable channelNumber, channelType
 
@@ -164,7 +164,7 @@ Function/S AFH_GetChannelUnit(DAQConfigWave, channelNumber, channelType)
 
 	variable idx
 
-	idx = AFH_GetITCDataColumn(DAQConfigWave, channelNumber, channelType)
+	idx = AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
 	WAVE/T units = AFH_GetChannelUnits(DAQConfigWave)
 
 	if(idx >= DimSize(units, ROWS))
@@ -415,7 +415,7 @@ Function/WAVE AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstageOrChann
 			ASSERT(0, "Invalid channeltype")
 	endswitch
 
-	col = AFH_GetITCDataColumn(config, channelNum, channelType)
+	col = AFH_GetDAQDataColumn(config, channelNum, channelType)
 	ASSERT(IsFinite(col), "invalid headstage and/or channelType")
 
 	return ExtractOneDimDataFromSweep(config, sweep, col)

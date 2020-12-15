@@ -2006,7 +2006,7 @@ Function DC_GetChannelTypefromHS(panelTitle, headstage)
 		return DAQ_CHANNEL_TYPE_UNKOWN
 	endif
 
-	row = AFH_GetITCDataColumn(config, dac, XOP_CHANNEL_TYPE_DAC)
+	row = AFH_GetDAQDataColumn(config, dac, XOP_CHANNEL_TYPE_DAC)
 	ASSERT(IsFinite(row), "Invalid column")
 	return config[row][%DAQChannelType]
 End

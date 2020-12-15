@@ -134,7 +134,7 @@ The following is **done for each head stage** up to ``NUM_HEADSTAGES`` (default 
      endif
 
   With the number of the DAC channel of this head stage the column in the sweep
-  with the actual data read with :cpp:func:`AFH_GetITCDataColumn` to ``DAcol``. The
+  with the actual data read with :cpp:func:`AFH_GetDAQDataColumn` to ``DAcol``. The
   same is done for the column with the AD data to ``ADcol``. With the columns the
   actual data is read to wave ``DA`` and ``AD`` respectively with
   :cpp:func:`ExtractOneDimDataFromSweep`. The coordinate in points of
@@ -142,8 +142,8 @@ The following is **done for each head stage** up to ``NUM_HEADSTAGES`` (default 
 
   .. code-block:: igorpro
 
-     DAcol = AFH_GetITCDataColumn(config, DACs[i], XOP_CHANNEL_TYPE_DAC)
-     ADcol = AFH_GetITCDataColumn(config, ADCs[i], XOP_CHANNEL_TYPE_ADC)
+     DAcol = AFH_GetDAQDataColumn(config, DACs[i], XOP_CHANNEL_TYPE_DAC)
+     ADcol = AFH_GetDAQDataColumn(config, ADCs[i], XOP_CHANNEL_TYPE_ADC)
 
      WAVE DA = ExtractOneDimDataFromSweep(config, sweep, DACol)
      WAVE AD = ExtractOneDimDataFromSweep(config, sweep, ADcol)

@@ -3722,7 +3722,7 @@ End
 ///
 /// @param config config wave
 /// @param sweep  sweep wave or hardware data wave from all hardware types
-/// @param index  index into `sweep`, can be queried with #AFH_GetITCDataColumn
+/// @param index  index into `sweep`, can be queried with #AFH_GetDAQDataColumn
 ///
 /// @returns a reference to a free wave with the single channel data
 Function/Wave ExtractOneDimDataFromSweep(config, sweep, index)
@@ -5884,8 +5884,8 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 			continue
 		endif
 
-		DAcol = AFH_GetITCDataColumn(config, DACs[i], XOP_CHANNEL_TYPE_DAC)
-		ADcol = AFH_GetITCDataColumn(config, ADCs[i], XOP_CHANNEL_TYPE_ADC)
+		DAcol = AFH_GetDAQDataColumn(config, DACs[i], XOP_CHANNEL_TYPE_DAC)
+		ADcol = AFH_GetDAQDataColumn(config, ADCs[i], XOP_CHANNEL_TYPE_ADC)
 
 		WAVE DA = ExtractOneDimDataFromSweep(config, sweep, DACol)
 		WAVE AD = ExtractOneDimDataFromSweep(config, sweep, ADcol)

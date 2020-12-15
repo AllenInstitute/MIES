@@ -919,7 +919,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 			path                    = IPNWB#GetNWBgroupPatchClampSeries(nwbVersion)
 			params.channelNumber    = ADCs[i]
 			params.channelType      = XOP_CHANNEL_TYPE_ADC
-			col                     = AFH_GetITCDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
+			col                     = AFH_GetDAQDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
 			WAVE params.data        = ExtractOneDimDataFromSweep(DAQConfigWave, DAQDataWave, col)
 			NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
@@ -933,7 +933,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 			path                    = "/stimulus/presentation"
 			params.channelNumber    = DACs[i]
 			params.channelType      = XOP_CHANNEL_TYPE_DAC
-			col                     = AFH_GetITCDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
+			col                     = AFH_GetDAQDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
 			WAVE params.data        = ExtractOneDimDataFromSweep(DAQConfigWave, DAQDataWave, col)
 			NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
@@ -986,7 +986,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 		params.channelType      = XOP_CHANNEL_TYPE_TTL
 		params.electrodeNumber  = NaN
 		params.electrodeName    = ""
-		col                     = AFH_GetITCDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
+		col                     = AFH_GetDAQDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
 		writtenDataColumns[col] = 1
 
 		WAVE data = ExtractOneDimDataFromSweep(DAQConfigWave, DAQDataWave, col)
