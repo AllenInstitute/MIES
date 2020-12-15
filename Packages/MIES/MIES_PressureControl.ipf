@@ -906,7 +906,7 @@ Function P_UpdatePressureControls(panelTitle, headStageNo)
 	variable ttl
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
-	P_UpdatePopupITCdev(panelTitle, headStageNo)
+	P_UpdatePopupDevices(panelTitle, headStageNo)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA"     , PressureDataWv[headStageNo][%DAC])
 	SetSetVariable(panelTitle   , "setvar_Settings_Pressure_DAgain", PressureDataWv[headStageNo][%DAC_Gain])
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD"     , PressureDataWv[headStageNo][%ADC])
@@ -931,9 +931,11 @@ Function P_UpdatePressureControls(panelTitle, headStageNo)
 End
 
 /// @brief Updates the popupmenu popup_Settings_Pressure_dev
-static Function P_UpdatePopupITCdev(panelTitle, headStageNo)
+static Function P_UpdatePopupDevices(panelTitle, headStageNo)
 	string panelTitle
 	variable headStageNo
+
+	string savedDev, popUpMenuString
 
 	WAVE PressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
 	WAVE/T PressureDataTxtWv 	= P_PressureDataTxtWaveRef(panelTitle)
@@ -943,17 +945,17 @@ static Function P_UpdatePopupITCdev(panelTitle, headStageNo)
 
 	// only compare saved and selected device if a device was saved
 	if(isFinite(PressureDataWv[headStageNo][%DAC_List_Index]))
-		string SavedITCdev = PressureDataTxtWv[headStageNo][0]
+		savedDev = PressureDataTxtWv[headStageNo][0]
 		// deliberately not using the GUI state wave
-		string PopUpMenuString = GetPopupMenuString(panelTitle, control)
+		PopUpMenuString = GetPopupMenuString(panelTitle, control)
 
 		// compare saved and selected device to verify that they match. Non
 		// match could occur if data was saved prior to a popup menu update
 		// and ITC hardware change.
 		if(PressureDataWv[headStageNo][%DAC_List_Index] != 1)
-			if(cmpstr(SavedITCdev, PopUpMenuString) != 0)
-				print "Saved ITC device for headStage", headStageNo, "is no longer at same list position."
-				print "Verify the selected ITC device for headStage.", headStageNo
+			if(cmpstr(savedDev, PopUpMenuString) != 0)
+				print "Saved device for headStage", headStageNo, "is no longer at same list position."
+				print "Verify the selected device for headStage.", headStageNo
 			endif
 		endif
 	endif
