@@ -49,14 +49,14 @@ Function TPS_TestPulseFunc(s)
 		s.count += 1
 	endif
 
-	HW_ITC_ResetFifo(deviceID, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_ITC_RedoLastAcq(deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 
 	do
 		// nothing
 	while (HW_ITC_MoreData(deviceID))
 
-	HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1)
+	HW_StopAcq(HARDWARE_ITC_DAC, deviceID)
 
 	SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE)
 
@@ -155,14 +155,15 @@ Function TPS_StartTestPulseForeground(device, [elapsedTime])
 
 	do
 		DoXOPIdle
-		HW_ITC_ResetFifo(deviceID)
+
+		HW_ITC_RedoLastAcq(deviceID)
 		HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 
 		do
 			// nothing
 		while (HW_ITC_MoreData(deviceID))
 
-		HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1)
+		HW_StopAcq(HARDWARE_ITC_DAC, deviceID)
 		SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE)
 
 		SCOPE_UpdateGraph(device, TEST_PULSE_MODE)
