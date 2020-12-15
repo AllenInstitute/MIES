@@ -437,7 +437,7 @@ Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 		if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power") && dataAcqOrTP == TEST_PULSE_MODE)
 			unit = "a. u."
 		else
-			unit = AFH_GetChannelUnit(DAQConfigWave, adc, ITC_XOP_CHANNEL_TYPE_ADC)
+			unit = AFH_GetChannelUnit(DAQConfigWave, adc, XOP_CHANNEL_TYPE_ADC)
 		endif
 		Label/W=$Graph $leftAxis, style + color + labelStr + " (" + unit + ")"
 	endfor

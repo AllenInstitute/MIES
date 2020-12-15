@@ -174,7 +174,7 @@ End
 /// \endrst
 ///
 /// @param graph                                  name of main window or external subwindow in SweepBrowser
-/// @param channel                                type of the channel, one of #ITC_CHANNEL_NAMES
+/// @param channel                                type of the channel, one of #XOP_CHANNEL_NAMES
 /// @param experiment [optional, defaults to all] name of the experiment the channel wave should originate from
 Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 	string graph, channel, experiment
@@ -182,7 +182,7 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 	variable i, j, numEntries, idx, numWaves, channelNumber
 	string list, headstage, path
 
-	ASSERT(FindListitem(channel, ITC_CHANNEL_NAMES) != -1, "Given channel could not be found in ITC_CHANNEL_NAMES")
+	ASSERT(FindListitem(channel, XOP_CHANNEL_NAMES) != -1, "Given channel could not be found in XOP_CHANNEL_NAMES")
 
 	WAVE/T sweepMap = SB_GetSweepBrowserMapFromGraph(graph)
 

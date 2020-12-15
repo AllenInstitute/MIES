@@ -200,10 +200,10 @@ static Function AllTests(t, devices)
 			CHECK_EQUAL_VAR(DimSize(config, ROWS), 4)
 
 			// check channel types
-			CHECK_EQUAL_VAR(config[0][0], ITC_XOP_CHANNEL_TYPE_DAC)
-			CHECK_EQUAL_VAR(config[1][0], ITC_XOP_CHANNEL_TYPE_DAC)
-			CHECK_EQUAL_VAR(config[2][0], ITC_XOP_CHANNEL_TYPE_ADC)
-			CHECK_EQUAL_VAR(config[3][0], ITC_XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[0][0], XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[1][0], XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[2][0], XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[3][0], XOP_CHANNEL_TYPE_ADC)
 
 			// check channel numbers
 			WAVE DACs = GetDACListFromConfig(config)
@@ -216,16 +216,16 @@ static Function AllTests(t, devices)
 			CHECK_EQUAL_VAR(DimSize(TTLs, ROWS), 0)
 
 			// check channel units
-			unit = AFH_GetChannelUnit(config, 0, ITC_XOP_CHANNEL_TYPE_DAC)
+			unit = AFH_GetChannelUnit(config, 0, XOP_CHANNEL_TYPE_DAC)
 			CHECK_PROPER_STR(unit)
 
-			unit = AFH_GetChannelUnit(config, 1, ITC_XOP_CHANNEL_TYPE_DAC)
+			unit = AFH_GetChannelUnit(config, 1, XOP_CHANNEL_TYPE_DAC)
 			CHECK_PROPER_STR(unit)
 
-			unit = AFH_GetChannelUnit(config, 0, ITC_XOP_CHANNEL_TYPE_ADC)
+			unit = AFH_GetChannelUnit(config, 0, XOP_CHANNEL_TYPE_ADC)
 			CHECK_PROPER_STR(unit)
 
-			unit = AFH_GetChannelUnit(config, 1, ITC_XOP_CHANNEL_TYPE_ADC)
+			unit = AFH_GetChannelUnit(config, 1, XOP_CHANNEL_TYPE_ADC)
 			CHECK_PROPER_STR(unit)
 
 			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
@@ -2428,13 +2428,13 @@ Function UnassociatedChannels_REENTRY([str])
 			endswitch
 
 			// check channel types
-			CHECK_EQUAL_VAR(config[0][0], ITC_XOP_CHANNEL_TYPE_DAC)
-			CHECK_EQUAL_VAR(config[1][0], ITC_XOP_CHANNEL_TYPE_DAC)
-			CHECK_EQUAL_VAR(config[2][0], ITC_XOP_CHANNEL_TYPE_DAC)
-			CHECK_EQUAL_VAR(config[3][0], ITC_XOP_CHANNEL_TYPE_ADC)
-			CHECK_EQUAL_VAR(config[4][0], ITC_XOP_CHANNEL_TYPE_ADC)
-			CHECK_EQUAL_VAR(config[5][0], ITC_XOP_CHANNEL_TYPE_ADC)
-			CHECK_EQUAL_VAR(config[6][0], ITC_XOP_CHANNEL_TYPE_TTL)
+			CHECK_EQUAL_VAR(config[0][0], XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[1][0], XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[2][0], XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[3][0], XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[4][0], XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[5][0], XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[6][0], XOP_CHANNEL_TYPE_TTL)
 
 			// check channel numbers
 			WAVE DACs = GetDACListFromConfig(config)
@@ -2528,10 +2528,10 @@ Function UnassociatedChannels_REENTRY([str])
 
 			// fetch some labnotebook entries, the last channel is unassociated
 			for(k = 0; k < DimSize(ADCs, ROWS); k += 1)
-				[settings, index] = GetLastSettingChannel(numericalValues, $"", j, "AD ChannelType", ADCs[k], ITC_XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
+				[settings, index] = GetLastSettingChannel(numericalValues, $"", j, "AD ChannelType", ADCs[k], XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
 				CHECK_EQUAL_VAR(settings[index], DAQ_CHANNEL_TYPE_DAQ)
 
-				[settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "AD Unit", ADCs[k], ITC_XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
+				[settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "AD Unit", ADCs[k], XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
 				WAVE/T settingsText = settings
 				str = settingsText[index]
 				expectedStr= "pA"
@@ -2539,10 +2539,10 @@ Function UnassociatedChannels_REENTRY([str])
 			endfor
 
 			for(k = 0; k < DimSize(DACs, ROWS); k += 1)
-				[settings, index] = GetLastSettingChannel(numericalValues, $"", j, "DA ChannelType", DACs[k], ITC_XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+				[settings, index] = GetLastSettingChannel(numericalValues, $"", j, "DA ChannelType", DACs[k], XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 				CHECK_EQUAL_VAR(settings[index], DAQ_CHANNEL_TYPE_DAQ)
 
-				[settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "DA Unit", DACs[k], ITC_XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+				[settings, index] = GetLastSettingChannel(numericalValues, textualValues, j, "DA Unit", DACs[k], XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
 				WAVE/T settingsText = settings
 				str = settingsText[index]
 				expectedStr= "mV"
@@ -3123,11 +3123,11 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	key = CreateLBNUnassocKey("DA ChannelType", 1, ITC_XOP_CHANNEL_TYPE_DAC)
+	key = CreateLBNUnassocKey("DA ChannelType", 1, XOP_CHANNEL_TYPE_DAC)
 	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_TP)
 
-	key = CreateLBNUnassocKey("AD ChannelType", 1, ITC_XOP_CHANNEL_TYPE_ADC)
+	key = CreateLBNUnassocKey("AD ChannelType", 1, XOP_CHANNEL_TYPE_ADC)
 	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_DAQ)
 
@@ -3135,14 +3135,14 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	key = CreateLBNUnassocKey(STIMSET_SCALE_FACTOR_KEY, 1, ITC_XOP_CHANNEL_TYPE_DAC)
+	key = CreateLBNUnassocKey(STIMSET_SCALE_FACTOR_KEY, 1, XOP_CHANNEL_TYPE_DAC)
 	stimScaleUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(stimScaleUnassoc, 0.0)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 
-	key = CreateLBNUnassocKey(STIM_WAVE_NAME_KEY, 1, ITC_XOP_CHANNEL_TYPE_DAC)
+	key = CreateLBNUnassocKey(STIM_WAVE_NAME_KEY, 1, XOP_CHANNEL_TYPE_DAC)
 	stimsetUnassoc = GetLastSettingTextIndep(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	stimsetUnassocRef = "TestPulse"
 	CHECK_EQUAL_STR(stimsetUnassoc, stimsetUnassocRef)

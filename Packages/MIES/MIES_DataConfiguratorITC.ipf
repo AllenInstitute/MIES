@@ -354,7 +354,7 @@ static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataW
 
 			Make/FREE/N=(numActiveChannels) type = SWS_GetRawDataFPType(panelTitle)
 			WAVE config = GetDAQConfigWave(panelTitle)
-			type = config[p][%ChannelType] == ITC_XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
+			type = config[p][%ChannelType] == XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
 			NIDataWave = DC_MakeNIChannelWave(panelTitle, numRows, samplingInterval, p, type[p])
 
 			return [$"", NIDataWave]
@@ -620,7 +620,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 			continue
 		endif
 
-		DAQConfigWave[j][%ChannelType]   = ITC_XOP_CHANNEL_TYPE_DAC
+		DAQConfigWave[j][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
 		DAQConfigWave[j][%ChannelNumber] = i
 		unitList = AddListItem(DAG_GetTextualValue(panelTitle, ctrl, index = i), unitList, ",", Inf)
 		DAQConfigWave[j][%DAQChannelType] = !CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ, 1) || dataAcqOrTP == TEST_PULSE_MODE ? DAQ_CHANNEL_TYPE_TP : DAQ_CHANNEL_TYPE_DAQ
@@ -639,7 +639,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 			continue
 		endif
 
-		DAQConfigWave[j][%ChannelType]   = ITC_XOP_CHANNEL_TYPE_ADC
+		DAQConfigWave[j][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
 		DAQConfigWave[j][%ChannelNumber] = i
 		unitList = AddListItem(DAG_GetTextualValue(panelTitle, ctrl, index = i), unitList, ",", Inf)
 
@@ -669,7 +669,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 				WAVE sweepDataLNB = GetSweepSettingsWave(panelTitle)
 
 				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ZERO))
-					DAQConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
+					DAQConfigWave[j][%ChannelType] = XOP_CHANNEL_TYPE_TTL
 
 					channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ZERO)
 					DAQConfigWave[j][%ChannelNumber] = channel
@@ -680,7 +680,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 				endif
 
 				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ONE))
-					DAQConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
+					DAQConfigWave[j][%ChannelType] = XOP_CHANNEL_TYPE_TTL
 
 					channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ONE)
 					DAQConfigWave[j][%ChannelNumber] = channel
@@ -692,7 +692,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 				WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
 				for(i = 0; i < numpnts(statusTTL); i += 1)
 					if(statusTTL[i])
-						DAQConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
+						DAQConfigWave[j][%ChannelType] = XOP_CHANNEL_TYPE_TTL
 						DAQConfigWave[j][%ChannelNumber] = i
 						DAQConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ
 						j += 1
@@ -940,13 +940,13 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 			ASSERT(0, "unknown mode")
 		endif
 
-		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var=channel)
+		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=channel)
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var=DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
-		DC_DocumentChannelProperty(panelTitle, "DA ChannelType", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var = config[i][%DAQChannelType])
+		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
+		DC_DocumentChannelProperty(panelTitle, "DA ChannelType", headstage, channel, XOP_CHANNEL_TYPE_DAC, var = config[i][%DAQChannelType])
 
-		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, str=setName[i])
-		DC_DocumentChannelProperty(panelTitle, STIMSET_WAVE_NOTE_KEY, headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, str=NormalizeToEOL(RemoveEnding(note(stimSet[i]), "\r"), "\n"))
+		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=setName[i])
+		DC_DocumentChannelProperty(panelTitle, STIMSET_WAVE_NOTE_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=NormalizeToEOL(RemoveEnding(note(stimSet[i]), "\r"), "\n"))
 
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
 			if(IsFinite(headstage)) // associated channel
@@ -955,7 +955,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 				func = ""
 			endif
 
-			DC_DocumentChannelProperty(panelTitle, StringFromList(j, EVENT_NAME_LIST_LBN), headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, str=func)
+			DC_DocumentChannelProperty(panelTitle, StringFromList(j, EVENT_NAME_LIST_LBN), headstage, channel, XOP_CHANNEL_TYPE_DAC, str=func)
 		endfor
 
 		if(IsFinite(headstage)) // associated channel
@@ -964,30 +964,30 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 			str = ""
 		endif
 
-		DC_DocumentChannelProperty(panelTitle, ANALYSIS_FUNCTION_PARAMS_LBN, headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, str=str)
+		DC_DocumentChannelProperty(panelTitle, ANALYSIS_FUNCTION_PARAMS_LBN, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=str)
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
+		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
 
-		DC_DocumentChannelProperty(panelTitle, STIMSET_SCALE_FACTOR_KEY, headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var = dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ ? DACAmp[i][%DASCALE] : DACAmp[i][%TPAMP])
-		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var=setColumn[i])
-		DC_DocumentChannelProperty(panelTitle, "Electrode", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, str=cellElectrodeNames[headstage])
-		DC_DocumentChannelProperty(panelTitle, "Set Cycle Count", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var=setCycleCount)
+		DC_DocumentChannelProperty(panelTitle, STIMSET_SCALE_FACTOR_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var = dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ ? DACAmp[i][%DASCALE] : DACAmp[i][%TPAMP])
+		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setColumn[i])
+		DC_DocumentChannelProperty(panelTitle, "Electrode", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=cellElectrodeNames[headstage])
+		DC_DocumentChannelProperty(panelTitle, "Set Cycle Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setCycleCount)
 
 		setChecksum = WB_GetStimsetChecksum(stimSet[i], setName[i], dataAcqOrTP)
-		DC_DocumentChannelProperty(panelTitle, "Stim Wave Checksum", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var=setChecksum)
+		DC_DocumentChannelProperty(panelTitle, "Stim Wave Checksum", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setChecksum)
 
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, setName[i], setCycleCount, setChecksum, dataAcqOrTP)
 			stimsetCycleID = DC_GetStimsetAcqCycleID(panelTitle, fingerprint, channel)
 
 			setEventFlag[i][] = (setColumn[i] + 1 == IDX_NumberOfSweepsInSet(setName[i]))
-			DC_DocumentChannelProperty(panelTitle, STIMSET_ACQ_CYCLE_ID_KEY, headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var=stimsetCycleID)
+			DC_DocumentChannelProperty(panelTitle, STIMSET_ACQ_CYCLE_ID_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var=stimsetCycleID)
 		endif
 
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 			isoodDAQMember = (distributedDAQOptOv && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ && IsFinite(headstage))
-			DC_DocumentChannelProperty(panelTitle, "oodDAQ member", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var=isoodDAQMember)
+			DC_DocumentChannelProperty(panelTitle, "oodDAQ member", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=isoodDAQMember)
 		endif
 	endfor
 
@@ -1314,14 +1314,14 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	for(i = 0; i < numDACEntries; i += 1)
 		channel = DACList[i]
 		headstage = headstageDAC[i]
-		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var=setLength[i])
-		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var=offsets[i])
-		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, str=regions[i])
+		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setLength[i])
+		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=offsets[i])
+		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=regions[i])
 
 		WAVE/T epochWave = GetEpochsWave(panelTitle)
 		Duplicate/FREE/RMD=[][][channel] epochWave, epochChannel
 		Redimension/N=(-1, -1, 0) epochChannel
-		DC_DocumentChannelProperty(panelTitle, EPOCHS_ENTRY_KEY, headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, str=TextWaveToList(epochChannel, ":", colSep = ",", stopOnEmpty = 1))
+		DC_DocumentChannelProperty(panelTitle, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=TextWaveToList(epochChannel, ":", colSep = ",", stopOnEmpty = 1))
 	endfor
 
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, NaN, var=str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")))
@@ -1391,15 +1391,15 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		channel = ADCList[i]
 		headstage = channelClampMode[channel][%ADC][%Headstage]
 
-		DC_DocumentChannelProperty(panelTitle, "ADC", headstage, channel, ITC_XOP_CHANNEL_TYPE_ADC, var=channel)
+		DC_DocumentChannelProperty(panelTitle, "ADC", headstage, channel, XOP_CHANNEL_TYPE_ADC, var=channel)
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-		DC_DocumentChannelProperty(panelTitle, "AD Gain", headstage, channel, ITC_XOP_CHANNEL_TYPE_ADC, var=DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
+		DC_DocumentChannelProperty(panelTitle, "AD Gain", headstage, channel, XOP_CHANNEL_TYPE_ADC, var=DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, channel, ITC_XOP_CHANNEL_TYPE_ADC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
+		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, channel, XOP_CHANNEL_TYPE_ADC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
 
-		DC_DocumentChannelProperty(panelTitle, "AD ChannelType", headstage, channel, ITC_XOP_CHANNEL_TYPE_ADC, var = config[numDACEntries + i][%DAQChannelType])
+		DC_DocumentChannelProperty(panelTitle, "AD ChannelType", headstage, channel, XOP_CHANNEL_TYPE_ADC, var = config[numDACEntries + i][%DAQChannelType])
 	endfor
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -1411,7 +1411,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 				WAVE/WAVE TTLWaveNI = GetTTLWave(panelTitle)
 				DC_MakeNITTLWave(panelTitle)
 				for(i = 0; i < DimSize(config, ROWS); i += 1)
-					if(config[i][%ChannelType] == ITC_XOP_CHANNEL_TYPE_TTL)
+					if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
 						WAVE NIChannel = NIDataWave[ttlIndex]
 						WAVE TTLWaveSingle = TTLWaveNI[config[i][%ChannelNumber]]
 						singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, panelTitle, DATA_ACQUISITION_MODE)
@@ -2006,7 +2006,7 @@ Function DC_GetChannelTypefromHS(panelTitle, headstage)
 		return DAQ_CHANNEL_TYPE_UNKOWN
 	endif
 
-	row = AFH_GetITCDataColumn(config, dac, ITC_XOP_CHANNEL_TYPE_DAC)
+	row = AFH_GetITCDataColumn(config, dac, XOP_CHANNEL_TYPE_DAC)
 	ASSERT(IsFinite(row), "Invalid column")
 	return config[row][%DAQChannelType]
 End

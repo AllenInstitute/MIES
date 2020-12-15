@@ -918,13 +918,13 @@ Function ITCC_WorksLegacy()
 	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
 
 	for(i = 0; i < 3; i += 1)
-		type = ITC_XOP_CHANNEL_TYPE_DAC
-		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		type = XOP_CHANNEL_TYPE_DAC
+		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
 
-		type = ITC_XOP_CHANNEL_TYPE_ADC
-		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		type = XOP_CHANNEL_TYPE_ADC
+		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
 	endfor
@@ -957,13 +957,13 @@ Function ITCC_WorksVersion1()
 	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
 
 	for(i = 0; i < 3; i += 1)
-		type = ITC_XOP_CHANNEL_TYPE_DAC
-		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		type = XOP_CHANNEL_TYPE_DAC
+		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
 
-		type = ITC_XOP_CHANNEL_TYPE_ADC
-		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		type = XOP_CHANNEL_TYPE_ADC
+		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
 	endfor
@@ -996,13 +996,13 @@ Function ITCC_WorksVersion2()
 	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
 
 	for(i = 0; i < 3; i += 1)
-		type = ITC_XOP_CHANNEL_TYPE_DAC
-		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		type = XOP_CHANNEL_TYPE_DAC
+		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
 
-		type = ITC_XOP_CHANNEL_TYPE_ADC
-		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		type = XOP_CHANNEL_TYPE_ADC
+		expected = StringFromList(type, XOP_CHANNEL_NAMES) + num2str(i)
 		actual   = AFH_GetChannelUnit(config, i, type)
 		CHECK_EQUAL_STR(expected, actual)
 	endfor

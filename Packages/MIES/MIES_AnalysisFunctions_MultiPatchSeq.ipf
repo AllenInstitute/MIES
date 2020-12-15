@@ -139,7 +139,7 @@ static Function/WAVE MSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetD
 			continue
 		endif
 
-		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, i, ITC_XOP_CHANNEL_TYPE_DAC, config = config)
+		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, i, XOP_CHANNEL_TYPE_DAC, config = config)
 		level = WaveMin(singleDA, totalOnsetDelay, inf) + GetMachineEpsilon(WaveType(singleDA))
 
 		FindLevel/Q/R=(totalOnsetDelay, inf)/EDGE=1 singleDA, level
@@ -264,7 +264,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 
 		ADC = AFH_GetADCFromHeadstage(panelTitle, i)
 		ASSERT(IsFinite(ADC), "This analysis function does not work with unassociated AD channels")
-		ADcol = AFH_GetITCDataColumn(config, ADC, ITC_XOP_CHANNEL_TYPE_ADC)
+		ADcol = AFH_GetITCDataColumn(config, ADC, XOP_CHANNEL_TYPE_ADC)
 
 		ADunit = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), index = ADC)
 
@@ -648,7 +648,7 @@ static Function/WAVE MSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	sprintf msg, "Type %d, headstage %d, totalOnsetDelay %g, numberOfSpikes %d", type, headstage, totalOnsetDelay, numberOfSpikes
 	DEBUGPRINT(msg)
 
-	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC, config = config)
+	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
 	minVal = WaveMin(singleDA, totalOnsetDelay, inf)
 	maxVal = WaveMax(singleDA, totalOnsetDelay, inf)
 
@@ -664,7 +664,7 @@ static Function/WAVE MSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	first = levels[0]
 	last  = inf
 
-	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_ADC, config = config)
+	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
 	ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
 	if(MSQ_TestOverrideActive())

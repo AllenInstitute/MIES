@@ -1096,9 +1096,9 @@ Function GetHeadstageFromSettings(panelTitle, channelType, channelNumber, clampM
 
 	WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
 
-	if(channelType == ITC_XOP_CHANNEL_TYPE_ADC)
+	if(channelType == XOP_CHANNEL_TYPE_ADC)
 		row = clampMode == V_CLAMP_MODE ? 2 : 2 + 4
-	elseif(channelType == ITC_XOP_CHANNEL_TYPE_DAC)
+	elseif(channelType == XOP_CHANNEL_TYPE_DAC)
 		row = clampMode == V_CLAMP_MODE ? 0 : 0 + 4
 	else
 		ASSERT(0, "Unexpected clamp mode")
@@ -1131,12 +1131,12 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 
 	if(channelType == CHANNEL_TYPE_DAC)
 		headStage = AFH_GetHeadstageFromDAC(panelTitle, idx)
-		headStageFromSettingsVC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, idx, V_CLAMP_MODE)
-		headStageFromSettingsIC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, idx, I_CLAMP_MODE)
+		headStageFromSettingsVC = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_DAC, idx, V_CLAMP_MODE)
+		headStageFromSettingsIC = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_DAC, idx, I_CLAMP_MODE)
 	elseif(channelType == CHANNEL_TYPE_ADC)
 		headStage = AFH_GetHeadstageFromADC(panelTitle, idx)
-		headStageFromSettingsVC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, idx, V_CLAMP_MODE)
-		headStageFromSettingsIC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, idx, I_CLAMP_MODE)
+		headStageFromSettingsVC = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_ADC, idx, V_CLAMP_MODE)
+		headStageFromSettingsIC = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_ADC, idx, I_CLAMP_MODE)
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		// nothing to do
 		headStageFromSettingsVC = NaN

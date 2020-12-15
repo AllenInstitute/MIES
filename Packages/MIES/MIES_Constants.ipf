@@ -75,14 +75,17 @@ Constant MIN_REGULATOR_PRESSURE = -9.9
 Constant ITC_CONFIG_WAVE_VERSION = 2
 /// @}
 
-StrConstant ITC_CHANNEL_NAMES    = "AD;DA;;TTL"
+/// The indizies correspond to the values from @ref XopChannelConstants
+StrConstant XOP_CHANNEL_NAMES = "AD;DA;;TTL"
 
-/// @name Channel constants shared with the ITC XOP
-/// @anchor ItcXopChannelConstants
+/// @name Channel constants shared with the ITC XOP.
+///
+/// Due to historic reasons these are now also used for other hardware types
+/// @anchor XopChannelConstants
 /// @{
-Constant ITC_XOP_CHANNEL_TYPE_ADC = 0
-Constant ITC_XOP_CHANNEL_TYPE_DAC = 1
-Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
+Constant XOP_CHANNEL_TYPE_ADC = 0
+Constant XOP_CHANNEL_TYPE_DAC = 1
+Constant XOP_CHANNEL_TYPE_TTL = 3
 /// @}
 
 /// @name DAQ Channel Type constants used in DAQConfigWave

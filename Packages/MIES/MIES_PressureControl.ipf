@@ -508,7 +508,7 @@ static Function P_PrepareITCWaves(mainDevice, pressureDevice, deviceID)
 		SetDimLabel COLS, 3, TTL_R1, ITCData
 		SetDimLabel ROWS, 3, TTL_R1, ITCConfig
 
-		ITCConfig[3][0]  = ITC_XOP_CHANNEL_TYPE_TTL
+		ITCConfig[3][0]  = XOP_CHANNEL_TYPE_TTL
 
 		Duplicate GetDeviceInfoWave(mainDevice), deviceInfo
 		deviceInfo[] = NaN

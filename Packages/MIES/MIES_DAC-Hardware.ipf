@@ -2042,7 +2042,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 		for(i = 0;i < channels; i += 1)
 			ASSERT(!IsFreeWave(NIDataWave[i]), "Can not work with free waves")
 			switch(config[i][%ChannelType])
-				case ITC_XOP_CHANNEL_TYPE_ADC:
+				case XOP_CHANNEL_TYPE_ADC:
 					scanStr += num2str(config[i][%ChannelNumber]) + "/RSE,"
 					scanStr += num2str(NI_ADC_MIN) + "," + num2str(NI_ADC_MAX) + ","
 					scanStr += num2str(gain[i]) + ",0"
@@ -2051,7 +2051,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 					NewFIFOChan $fifoName, $num2str(i),0,1,NI_ADC_MIN,NI_ADC_MAX,"V"
 					aiCnt += 1
 					break
-				case ITC_XOP_CHANNEL_TYPE_DAC:
+				case XOP_CHANNEL_TYPE_DAC:
 					WAVE NIChannel = NIDataWave[i]
 					wavegenStr += GetWavesDataFolder(NIChannel, 2) + ","
 					wavegenStr += num2str(config[i][%ChannelNumber]) + ","
@@ -2060,7 +2060,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 					sprintf tempStr, "%10f", min(10, WaveMax(NIChannel) + 0.001)
 					wavegenStr += tempStr + ";"
 					break
-				case ITC_XOP_CHANNEL_TYPE_TTL:
+				case XOP_CHANNEL_TYPE_TTL:
 					TTLStr += "/" + device + "/port" + num2str(HARDWARE_NI_TTL_PORT) +"/line" + num2str(config[i][%ChannelNumber]) + ","
 					TTLWaves[ttlCnt]= NIDataWave[i]
 					ttlCnt += 1
@@ -2567,7 +2567,7 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 	paraStr = ""
 	channels = DimSize(config, ROWS)
 	for(i = 0;i < channels; i += 1)
-		if(config[i][%ChannelType] == ITC_XOP_CHANNEL_TYPE_DAC)
+		if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_DAC)
 			paraStr += "0," + num2str(config[i][%ChannelNumber]) + ";"
 		endif
 	endfor

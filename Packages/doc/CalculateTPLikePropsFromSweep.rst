@@ -142,8 +142,8 @@ The following is **done for each head stage** up to ``NUM_HEADSTAGES`` (default 
 
   .. code-block:: igorpro
 
-     DAcol = AFH_GetITCDataColumn(config, DACs[i], ITC_XOP_CHANNEL_TYPE_DAC)
-     ADcol = AFH_GetITCDataColumn(config, ADCs[i], ITC_XOP_CHANNEL_TYPE_ADC)
+     DAcol = AFH_GetITCDataColumn(config, DACs[i], XOP_CHANNEL_TYPE_DAC)
+     ADcol = AFH_GetITCDataColumn(config, ADCs[i], XOP_CHANNEL_TYPE_ADC)
 
      WAVE DA = ExtractOneDimDataFromSweep(config, sweep, DACol)
      WAVE AD = ExtractOneDimDataFromSweep(config, sweep, ADcol)

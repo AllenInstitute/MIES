@@ -127,7 +127,7 @@ static Function SBE_AddMissingADTraceInfo(traceData)
 
 	for(i = 0; i < numPaths; i += 1)
 		DFREF sweepDFR = $GetWavesDataFolder(shownWaves[i], 1)
-		WAVE/WAVE allWaves = GetITCDataSingleColumnWaves(sweepDFR, ITC_XOP_CHANNEL_TYPE_ADC)
+		WAVE/WAVE allWaves = GetITCDataSingleColumnWaves(sweepDFR, XOP_CHANNEL_TYPE_ADC)
 
 		WAVE numericalValues = $traceData[i][%numericalValues]
 		sweepNumber = str2num(traceData[i][%sweepNumber])
@@ -162,7 +162,7 @@ static Function SBE_AddMissingADTraceInfo(traceData)
 
 			newData[cnt][%traceName]     = ""
 			newData[cnt][%fullPath]      = GetWavesDataFolder(wv, 2)
-			newData[cnt][%channelType]   = StringFromList(ITC_XOP_CHANNEL_TYPE_ADC, ITC_CHANNEL_NAMES)
+			newData[cnt][%channelType]   = StringFromList(XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_NAMES)
 			newData[cnt][%channelNumber] = num2str(j)
 			newData[cnt][%headstage]     = num2str(headstage)
 			cnt += 1
@@ -257,7 +257,7 @@ Function/S SBE_GetSourceGraphADTraces()
 		return ""
 	endif
 
-	WAVE/Z/T result = GetAllSweepTraces(sourceGraph, prefixTraces = 0, channelType = ITC_XOP_CHANNEL_TYPE_ADC)
+	WAVE/Z/T result = GetAllSweepTraces(sourceGraph, prefixTraces = 0, channelType = XOP_CHANNEL_TYPE_ADC)
 
 	if(!WaveExists(result))
 		return ""

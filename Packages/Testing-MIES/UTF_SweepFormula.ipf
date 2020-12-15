@@ -1032,7 +1032,7 @@ Function TestLabNotebook()
 	Variable numSweeps = 10
 	Variable numChannels = 5
 	Variable mode = DATA_ACQUISITION_MODE
-	String channelType = StringFromList(ITC_XOP_CHANNEL_TYPE_ADC, ITC_CHANNEL_NAMES)
+	String channelType = StringFromList(XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_NAMES)
 	String win = DATABROWSER_WINDOW_TITLE
 	String device = BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 

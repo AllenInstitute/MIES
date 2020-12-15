@@ -498,8 +498,8 @@ Function/Wave GetChannelClampMode(panelTitle)
 		Redimension/N=(-1, -1, 2) wv
 
 		// prefill with existing algorithm for easier upgrades
-		wv[][%DAC][1] = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
-		wv[][%ADC][1] = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
+		wv[][%DAC][1] = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
+		wv[][%ADC][1] = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
 	else
 		Make/R/N=(NUM_AD_CHANNELS, 2, 2) dfr:ChannelClampMode/Wave=wv
 		wv = NaN
@@ -816,7 +816,7 @@ End
 /// - One for each channel, the order is DA, AD, TTL (same as in the DAQDataWave)
 ///
 /// Columns:
-/// - channel type, one of @ref ItcXopChannelConstants
+/// - channel type, one of @ref XopChannelConstants
 /// - channel number (0-based)
 /// - sampling interval in microseconds (1e-6)
 /// - decimation mode (always zero)
@@ -4363,10 +4363,10 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 	Make/I/N=(4, 4) dfr:P_ChanConfig/WAVE=wv
 
 	wv = 0
-	wv[0][0] = ITC_XOP_CHANNEL_TYPE_DAC
-	wv[1][0] = ITC_XOP_CHANNEL_TYPE_ADC
-	wv[2][0] = ITC_XOP_CHANNEL_TYPE_TTL
-	wv[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
+	wv[0][0] = XOP_CHANNEL_TYPE_DAC
+	wv[1][0] = XOP_CHANNEL_TYPE_ADC
+	wv[2][0] = XOP_CHANNEL_TYPE_TTL
+	wv[3][0] = XOP_CHANNEL_TYPE_TTL
 
 	// invalid TTL channels
 	wv[2][1] = -1
@@ -5625,7 +5625,7 @@ End
 ///
 /// @param dfr           datafolder reference where to create the empty wave if it does not exist
 /// @param length        Length in points of the new wave
-/// @param channelType   ITC XOP numeric channel type
+/// @param channelType   channel type, one of @ref XopChannelConstants
 /// @param channelNumber channel number
 /// @param region        region index (a region is the range with data in a dDAQ/oodDAQ measurement)
 /// @param pulseIndex    pulse number, 0-based
@@ -5658,7 +5658,7 @@ End
 ///
 /// @param dfr           datafolder reference where to create the empty wave if it does not exist
 /// @param length        Length in points of the new wave
-/// @param channelType   ITC XOP numeric channel type
+/// @param channelType   channel type, one of @ref XopChannelConstants
 /// @param channelNumber channel number
 /// @param region        region index (a region is the range with data in a dDAQ/oodDAQ measurement)
 /// @param pulseIndex    pulse number, 0-based

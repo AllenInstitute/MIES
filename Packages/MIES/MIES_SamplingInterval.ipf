@@ -32,7 +32,7 @@ static Function SI_FillITCConfig(wv, results, idx, totalNumDA, totalNumAD, total
 	if(numDA > 0)
 		first = 0
 		last  = numDA - 1
-		wv[first, last][0] = ITC_XOP_CHANNEL_TYPE_DAC
+		wv[first, last][0] = XOP_CHANNEL_TYPE_DAC
 
 		if(results[idx][%numDARack1]  > 0)
 			last = results[idx][%numDARack1] - 1
@@ -50,7 +50,7 @@ static Function SI_FillITCConfig(wv, results, idx, totalNumDA, totalNumAD, total
 	if(numAD > 0)
 		first = numDA
 		last  = numDA + numAD - 1
-		wv[first, last][0] = ITC_XOP_CHANNEL_TYPE_ADC
+		wv[first, last][0] = XOP_CHANNEL_TYPE_ADC
 
 		if(results[idx][%numADRack1]  > 0)
 			last = numDA + results[idx][%numADRack1] - 1
@@ -68,7 +68,7 @@ static Function SI_FillITCConfig(wv, results, idx, totalNumDA, totalNumAD, total
 	if(numTTL > 0)
 		first = numDA + numAD
 		last  = numDA + numAD + numTTL - 1
-		wv[first, last][0] = ITC_XOP_CHANNEL_TYPE_TTL
+		wv[first, last][0] = XOP_CHANNEL_TYPE_TTL
 
 		if(results[idx][%numTTLRack1]  > 0)
 			last = numDA + numAD + results[idx][%numTTLRack1] - 1
@@ -414,9 +414,9 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 				printf "i= %d\r", i
 			endif
 
-			SI_FillITCConfigWithPerms(DAQConfigWave, 0, DA, ITC_XOP_CHANNEL_TYPE_DAC)
-			SI_FillITCConfigWithPerms(DAQConfigWave, numDA, AD, ITC_XOP_CHANNEL_TYPE_ADC)
-			SI_FillITCConfigWithPerms(DAQConfigWave, numDA + numAD, TTL, ITC_XOP_CHANNEL_TYPE_TTL)
+			SI_FillITCConfigWithPerms(DAQConfigWave, 0, DA, XOP_CHANNEL_TYPE_DAC)
+			SI_FillITCConfigWithPerms(DAQConfigWave, numDA, AD, XOP_CHANNEL_TYPE_ADC)
+			SI_FillITCConfigWithPerms(DAQConfigWave, numDA + numAD, TTL, XOP_CHANNEL_TYPE_TTL)
 
 			results[i][0]   = numDA
 			results[i][1]   = numAD
