@@ -4355,7 +4355,7 @@ Function/S DAP_CreateDAEphysPanel()
 	endif
 
 	// upgrade folder locations
-	GetITCDevicesFolder()
+	GetDAQDevicesFolder()
 
 	// fetch device lists
 	DAP_GetNIDeviceList()

@@ -1705,8 +1705,8 @@ Function/S GetAllDevices()
 	string folder, number, device, folders, subFolders, subFolder
 	string path, list = ""
 
-	string devicesFolderPath = GetITCDevicesFolderAsString()
-	DFREF devicesFolder = GetITCDevicesFolder()
+	string devicesFolderPath = GetDAQDevicesFolderAsString()
+	DFREF devicesFolder = GetDAQDevicesFolder()
 
 	folders = GetListOfObjects(devicesFolder, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
 	numEntries = ItemsInList(folders)

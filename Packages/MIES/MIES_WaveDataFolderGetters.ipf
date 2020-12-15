@@ -548,13 +548,13 @@ Function/WAVE GetHSProperties(panelTitle)
 End
 
 /// @brief Return the ITC devices folder "root:mies:HardwareDevices"
-Function/DF GetITCDevicesFolder()
+Function/DF GetDAQDevicesFolder()
 
-	return UpgradeDataFolderLocation(GetMiesPathAsString() + ":ITCDevices", GetITCDevicesFolderAsString())
+	return UpgradeDataFolderLocation(GetMiesPathAsString() + ":ITCDevices", GetDAQDevicesFolderAsString())
 End
 
 /// @brief Return a data folder reference to the ITC devices folder
-threadsafe Function/S GetITCDevicesFolderAsString()
+threadsafe Function/S GetDAQDevicesFolderAsString()
 
 	return GetMiesPathAsString() + ":HardwareDevices"
 End
@@ -580,7 +580,7 @@ End
 /// @brief Return a data folder reference to the active ITC devices folder
 Function/S GetActiveITCDevicesFolderAS()
 
-	return GetITCDevicesFolderAsString() + ":ActiveITCDevices"
+	return GetDAQDevicesFolderAsString() + ":ActiveITCDevices"
 End
 
 /// @brief Return a datafolder reference to the device type folder
@@ -593,7 +593,7 @@ End
 threadsafe Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
 
-	return GetITCDevicesFolderAsString() + ":" + deviceType
+	return GetDAQDevicesFolderAsString() + ":" + deviceType
 End
 
 /// @brief Return a datafolder reference to the device folder
@@ -5160,7 +5160,7 @@ End
 
 /// @brief Return the full path to the active ITC devices location
 Function/S GetActITCDevicesTestPulFolderA()
-	return GetITCDevicesFolderAsString() + ":ActiveITCDevices:TestPulse"
+	return GetDAQDevicesFolderAsString() + ":ActiveITCDevices:TestPulse"
 End
 
 /// @brief Return the active devices wave for TP MD
@@ -5365,7 +5365,7 @@ End
 /// - 1: Name of the device used for pressure control (maybe empty)
 Function/WAVE GetDeviceMapping()
 
-	DFREF dfr = GetITCDevicesFolder()
+	DFREF dfr = GetDAQDevicesFolder()
 	variable versionOfNewWave = 2
 
 	WAVE/Z/T/SDFR=dfr wv = deviceMapping
@@ -5517,7 +5517,7 @@ End
 /// @brief Return the full path to the optimized overlap distributed
 ///        acquisition (oodDAQ) folder, e.g. root:MIES:HardwareDevices:oodDAQ
 Function/S GetDistDAQFolderAS()
-	return GetITCDevicesFolderAsString() + ":oodDAQ"
+	return GetDAQDevicesFolderAsString() + ":oodDAQ"
 End
 
 /// @brief Return the wave used for storing preloadable data

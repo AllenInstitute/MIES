@@ -178,13 +178,13 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	SVAR miesVersion = root:miesVersion
 	string/G $(GetMiesPathAsString() + ":version") = miesVersion
 
-	GetITCDevicesFolder()
+	GetDAQDevicesFolder()
 
 	SVAR ITCDeviceList = root:ITCDeviceList
-	string/G $(GetITCDevicesFolderAsString() + ":ITCDeviceList") = ITCDeviceList
+	string/G $(GetDAQDevicesFolderAsString() + ":ITCDeviceList") = ITCDeviceList
 
 	SVAR NIDeviceList = root:NIDeviceList
-	string/G $(GetITCDevicesFolderAsString() + ":NIDeviceList") = NIDeviceList
+	string/G $(GetDAQDevicesFolderAsString() + ":NIDeviceList") = NIDeviceList
 
 #ifndef TESTS_WITH_NI_HARDWARE
 	HW_ITC_CloseAllDevices()

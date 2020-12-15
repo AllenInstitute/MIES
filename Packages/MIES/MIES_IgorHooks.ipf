@@ -22,7 +22,7 @@ static Function IH_KillTemporaries()
 
 	KillStrings/Z dfr:version
 
-	DFREF dfrHW = GetITCDevicesFolder()
+	DFREF dfrHW = GetDAQDevicesFolder()
 
 	KillStrings/Z dfrHW:NIDeviceList
 	KillStrings/Z dfrHW:ITCDeviceList
