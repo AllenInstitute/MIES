@@ -250,7 +250,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 	endfor
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		DQ_StartITCDeviceTimer(panelTitle)
+		DQ_StartDAQDeviceTimer(panelTitle)
 	endif
 
 	// trigger
@@ -372,7 +372,7 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 	NVAR deviceID   = $GetDAQDeviceID(panelTitle)
 
 	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER && DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		DQ_StartITCDeviceTimer(panelTitle)
+		DQ_StartDAQDeviceTimer(panelTitle)
 	endif
 
 	variable hardwareType = GetHardwareType(panelTitle)

@@ -155,7 +155,7 @@ End
 /// This function and DQ_StopDAQDeviceTimer are used to correct the ITI for the
 /// time it took to collect data, and pre and post processing of data. It
 /// allows for a real time, start to start, ITI
-Function DQ_StartITCDeviceTimer(panelTitle)
+Function DQ_StartDAQDeviceTimer(panelTitle)
 	string panelTitle
 
 	string msg
