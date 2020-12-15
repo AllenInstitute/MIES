@@ -852,7 +852,7 @@ Function/Wave GetDAQConfigWave(panelTitle)
 	WAVE/I/Z/SDFR=dfr wv = DAQConfigWave
 
 	// On version upgrade also adapt function IsValidConfigWave
-	if(ExistsWithCorrectLayoutVersion(wv, ITC_CONFIG_WAVE_VERSION))
+	if(ExistsWithCorrectLayoutVersion(wv, DAQ_CONFIG_WAVE_VERSION))
 		return wv
 	elseif(WaveExists(wv))
 		// do sequential version upgrade
@@ -880,7 +880,7 @@ Function/Wave GetDAQConfigWave(panelTitle)
 	SetDimLabel COLS, 4, Offset, wv
 	SetDimLabel COLS, 5, DAQChannelType, wv
 
-	SetWaveVersion(wv, ITC_CONFIG_WAVE_VERSION)
+	SetWaveVersion(wv, DAQ_CONFIG_WAVE_VERSION)
 	AddEntryIntoWaveNoteAsList(wv, CHANNEL_UNIT_KEY, str = "")
 
 	return wv

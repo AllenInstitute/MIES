@@ -6002,7 +6002,7 @@ End
 ///
 /// @param config wave reference to a ITCConfigWave
 ///
-/// @param version [optional, default=ITC_CONFIG_WAVE_VERSION], check against a specific version
+/// @param version [optional, default=DAQ_CONFIG_WAVE_VERSION], check against a specific version
 ///                current versions known are 0 (equals NaN), 1, 2
 threadsafe Function IsValidConfigWave(config, [version])
 	WAVE/Z config
@@ -6015,7 +6015,7 @@ threadsafe Function IsValidConfigWave(config, [version])
 	endif
 
 	if(ParamIsDefault(version))
-		version = ITC_CONFIG_WAVE_VERSION
+		version = DAQ_CONFIG_WAVE_VERSION
 	endif
 
 	waveVersion = GetWaveVersion(config)
@@ -6054,13 +6054,13 @@ End
 ///
 /// @param sweep         sweep wave
 /// @param config        config wave
-/// @param configVersion [optional, defaults to #ITC_CONFIG_WAVE_VERSION] minimum required version of the config wave
+/// @param configVersion [optional, defaults to #DAQ_CONFIG_WAVE_VERSION] minimum required version of the config wave
 threadsafe Function IsValidSweepAndConfig(sweep, config, [configVersion])
 	WAVE/Z sweep, config
 	variable configVersion
 
 	if(ParamIsDefault(configVersion))
-		configVersion = ITC_CONFIG_WAVE_VERSION
+		configVersion = DAQ_CONFIG_WAVE_VERSION
 	endif
 
 	if(IsWaveRefWave(sweep))

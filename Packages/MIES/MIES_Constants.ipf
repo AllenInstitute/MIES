@@ -70,9 +70,9 @@ Constant MIN_REGULATOR_PRESSURE = -9.9
 /// @}
 
 /// @name Latest version of config wave
-/// @anchor ItcConfigWaveVersion
+/// @anchor DaqConfigWaveVersion
 /// @{
-Constant ITC_CONFIG_WAVE_VERSION = 2
+Constant DAQ_CONFIG_WAVE_VERSION = 2
 /// @}
 
 /// The indizies correspond to the values from @ref XopChannelConstants
