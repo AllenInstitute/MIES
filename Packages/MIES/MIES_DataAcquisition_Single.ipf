@@ -116,7 +116,7 @@ static Function DQS_StopDataAcq(panelTitle, [forcedStop])
 	endif
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC=1, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC=1, flags=HARDWARE_ABORT_ON_ERROR)
 	SWS_SaveAcquiredData(panelTitle, forcedStop = forcedStop)
 
 	if(forcedStop)
