@@ -35,7 +35,6 @@ End
 Function TPS_TestPulseFunc(s)
 	STRUCT BackgroundStruct &s
 
-	variable readTimeStamp
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	// create a copy as panelTitleG is killed in TPS_StopTestPulseSingleDevice
 	// but we still need it afterwards
@@ -55,8 +54,6 @@ Function TPS_TestPulseFunc(s)
 	do
 		// nothing
 	while (HW_ITC_MoreData(ITCDeviceIDGlobal))
-
-	readTimeStamp = ticks * TICKS_TO_SECONDS
 
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 	SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
@@ -140,7 +137,7 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 	string panelTitle
 	variable elapsedTime
 
-	variable i, refTime, timeLeft, readTimeStamp
+	variable i, refTime, timeLeft
 	string oscilloscopeSubwindow
 
 	if(ParamIsDefault(elapsedTime))
@@ -160,8 +157,6 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 		do
 			// nothing
 		while (HW_ITC_MoreData(ITCDeviceIDGlobal))
-
-		readTimeStamp = ticks * TICKS_TO_SECONDS
 
 		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
