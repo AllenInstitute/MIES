@@ -2434,7 +2434,7 @@ End
 /// @brief Generate the wave name for a single pulse
 Function/S PA_GeneratePulseWaveName(variable channelType, variable channelNumber, variable region, variable pulseIndex)
 	ASSERT(channelType < ItemsInList(XOP_CHANNEL_NAMES), "Invalid channel type")
-	ASSERT(channelNumber < GetNumberFromType(itcVar=channelType) , "Invalid channel number")
+	ASSERT(channelNumber < GetNumberFromType(xopVar=channelType) , "Invalid channel number")
 	ASSERT(IsInteger(pulseIndex) && pulseIndex >= 0, "Invalid pulseIndex")
 
 	return StringFromList(channelType, XOP_CHANNEL_NAMES) + num2str(channelNumber) + \

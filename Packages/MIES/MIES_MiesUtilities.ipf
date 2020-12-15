@@ -1872,7 +1872,7 @@ Function/WAVE GetDAQDataSingleColumnWaves(sweepDFR, channelType)
 	DFREF sweepDFR
 	variable channelType
 
-	Make/FREE/WAVE/N=(GetNumberFromType(itcVar=channelType)) matches = GetDAQDataSingleColumnWave(sweepDFR, channelType, p)
+	Make/FREE/WAVE/N=(GetNumberFromType(xopVar=channelType)) matches = GetDAQDataSingleColumnWave(sweepDFR, channelType, p)
 
 	return matches
 End
@@ -1900,7 +1900,7 @@ Function/WAVE GetDAQDataSingleColumnWave(sweepDFR, channelType, channelNumber, [
 	endif
 
 	ASSERT(ParamIsDefault(splitTTLBits) + ParamIsDefault(ttlBit) != 1, "Expected both or none of splitTTLBits and ttlBit")
-	ASSERT(channelNumber < GetNumberFromType(itcVar=channelType), "Invalid channel index")
+	ASSERT(channelNumber < GetNumberFromType(xopVar=channelType), "Invalid channel index")
 
 	wvName = StringFromList(channelType, XOP_CHANNEL_NAMES) + "_" + num2str(channelNumber)
 
@@ -3651,13 +3651,13 @@ End
 ///
 /// @param var    numeric channel types
 /// @param str    string channel types
-/// @param itcVar numeric ITC XOP channel types
-Function GetNumberFromType([var, str, itcVar])
+/// @param xopVar numeric XOP channel types
+Function GetNumberFromType([var, str, xopVar])
 	variable var
 	string str
-	variable itcVar
+	variable xopVar
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(itcVar) == 2, "Expected exactly one parameter")
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(xopVar) == 2, "Expected exactly one parameter")
 
 	if(!ParamIsDefault(str))
 		strswitch(str)
@@ -3702,8 +3702,8 @@ Function GetNumberFromType([var, str, itcVar])
 				ASSERT(0, "invalid type")
 				break
 		endswitch
-	elseif(!ParamIsDefault(itcVar))
-		switch(itcVar)
+	elseif(!ParamIsDefault(xopVar))
+		switch(xopVar)
 			case XOP_CHANNEL_TYPE_ADC:
 				return NUM_AD_CHANNELS
 				break
@@ -5599,7 +5599,7 @@ Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
 		sprintf key, "%s UNASSOC_%d", setting, channelNumber
 	else
 		ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC, "Invalid channel type")
-		ASSERT(IsInteger(channelNumber) && channelNumber >= 0 && channelNumber < GetNumberFromType(itcVar = channelType), "channelNumber is out of range")
+		ASSERT(IsInteger(channelNumber) && channelNumber >= 0 && channelNumber < GetNumberFromType(xopVar = channelType), "channelNumber is out of range")
 		sprintf key, "%s u_%s%d", setting, StringFromList(channelType, XOP_CHANNEL_NAMES), channelNumber
 	endif
 

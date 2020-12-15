@@ -1453,9 +1453,9 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 		"Undefined labnotebook mode. Use one in group DataAcqModes")
 
 	Make/FREE/WAVE/N=2 channelNumbers
-	Make/FREE/N=(GetNumberFromType(itcVar=XOP_CHANNEL_TYPE_ADC)) channelNumbersAD = NaN
+	Make/FREE/N=(GetNumberFromType(xopVar=XOP_CHANNEL_TYPE_ADC)) channelNumbersAD = NaN
 	channelNumbers[XOP_CHANNEL_TYPE_ADC] = channelNumbersAD
-	Make/FREE/N=(GetNumberFromType(itcVar=XOP_CHANNEL_TYPE_DAC)) channelNumbersDA = NaN
+	Make/FREE/N=(GetNumberFromType(xopVar=XOP_CHANNEL_TYPE_DAC)) channelNumbersDA = NaN
 	channelNumbers[XOP_CHANNEL_TYPE_DAC] = channelNumbersDA
 
 	// search sweeps for active channels
