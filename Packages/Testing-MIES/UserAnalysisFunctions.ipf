@@ -1,10 +1,16 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
+#pragma version=10000
 
 #ifndef AUTOMATED_TESTING
 
 	#define **error** Can only be used with automated testing
 #endif
+
+Function CorrectFileMarker()
+
+	FAIL()
+End
 
 Function InvalidSignature()
 
