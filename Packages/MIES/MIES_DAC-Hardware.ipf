@@ -1041,6 +1041,12 @@ threadsafe Function HW_ITC_StopAcq_TS(deviceID, [flags])
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
+
+	do
+		ITCConfigChannelReset2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @param deviceID      device identifier
@@ -1062,6 +1068,12 @@ Function HW_ITC_StopAcq(deviceID, [config, configFunc, zeroDAC, flags])
 
 	do
 		ITCStopAcq2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+
+	do
+		ITCConfigChannelReset2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
