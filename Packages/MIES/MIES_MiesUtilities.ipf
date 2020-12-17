@@ -2355,7 +2355,7 @@ End
 
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
 ///
-/// For preservering the axis scaling callers should do the following:
+/// For preservering the axis scaling, callers should do the following:
 /// \rst
 /// .. code-block:: igorpro
 ///
@@ -4219,6 +4219,15 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			TUD_SetUserData(graph, traceName, "traceType", "Average")
 			TUD_SetUserData(graph, traceName, "XAXIS", firstXAxis)
 			TUD_SetUserData(graph, traceName, "YAXIS", axis)
+			TUD_SetUserData(graph, traceName, "occurence", "0")
+		endif
+
+		if(ListHasOnlyOneUniqueEntry(listOfChannelTypes))
+			TUD_SetUserData(graph, traceName, "channelType", StringFromList(0, listOfChannelTypes))
+		endif
+
+		if(ListHasOnlyOneUniqueEntry(listOfChannelNumbers))
+			TUD_SetUserData(graph, traceName, "channelNumber", StringFromList(0, listOfChannelNumbers))
 		endif
 	endfor
 
@@ -6772,8 +6781,8 @@ Function/WAVE GetTraceInfos(string graph, [WAVE/T addFilterKeys, WAVE/T addFilte
 
 	ASSERT((ParamIsDefault(addFilterKeys) + ParamIsDefault(addFilterValues)) != 1, "Either both or no filter wave must be given.")
 
-	Make/FREE/T keys = {"traceType", "occurence"}
-	Make/FREE/T values = {"Sweep", "0"}
+	Make/FREE/T keys = {"occurence"}
+	Make/FREE/T values = {"0"}
 
 	if(!ParamIsDefault(addFilterKeys) && DimSize(addFilterKeys, ROWS) > 0)
 		ASSERT(DimSize(addFilterKeys, ROWS) == DimSize(addFilterValues, ROWS), "key wave has different size as value wave")
@@ -6781,7 +6790,11 @@ Function/WAVE GetTraceInfos(string graph, [WAVE/T addFilterKeys, WAVE/T addFilte
 		Concatenate/FREE/NP/T {addFilterValues}, values
 	endif
 
-	WAVE matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = keys, values = values)
+	WAVE/Z matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = keys, values = values)
+	
+	if(!WaveExists(matches))
+		return $""
+	endif
 
 	WAVE/T graphUserData = GetGraphUserData(graph)
 

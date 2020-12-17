@@ -465,7 +465,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	String graph
 
 	Variable i, j, numIndices, JSONtype, mode, zero, numArgs
-	string info, msg, str
+	string info, msg, str, type
 
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
@@ -865,7 +865,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			endif
 			break
 		case "data":
-			/// `data(array range,array channels,array sweeps)`
+			/// `data(array range,array channels,array sweeps, [optional: type (avg, ...)])`
 			///
 			/// returns [[sweeps][channel]] for all [sweeps] in list sweepNumbers, grouped by channels
 			SF_ASSERT(!ParamIsDefault(graph) && !IsEmpty(graph), "Graph for extracting sweeps not specified.")
@@ -883,7 +883,15 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, DATA_ACQUISITION_MODE)
 			WaveClear channels
 
-			WAVE/Z out = SF_GetSweepForFormula(graph, range, activeChannels, sweeps)
+			numIndices = JSON_GetArraySize(jsonID, jsonPath)
+			if(numIndices == 4)
+				WAVE/T typeWave = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/3", graph = graph)
+				type = typeWave[0]
+			else
+				type = "Sweep"
+			endif
+
+			WAVE/Z out = SF_GetSweepForFormula(graph, range, activeChannels, sweeps, type)
 			if(!WaveExists(out))
 				DebugPrint("Call to SF_GetSweepForFormula returned no results")
 				Make/FREE/N=1 out = {NaN}
@@ -1240,9 +1248,7 @@ static Function SF_SplitPlotting(wv, dim, i, split)
 	return min(i, floor(DimSize(wv, dim) / split) - 1) * split
 End
 
-static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
-	String graph
-	WAVE range, channels, sweeps
+static Function/WAVE SF_GetSweepForFormula(string graph, WAVE range, WAVE channels, WAVE sweeps, string type)
 
 	variable i, j, rangeStart, rangeEnd, pOffset, delta, numRows
 	string dimLabel
@@ -1255,7 +1261,7 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 	SF_ASSERT(DimSize(range, COLS) <= 1, "Multidimensional ranges not fully implemented.")
 
-	WAVE/T/Z traces = GetTraceInfos(graph)
+	WAVE/T/Z traces = GetTraceInfos(graph, addFilterKeys = {"traceType"}, addFilterValues = {type})
 	if(!WaveExists(traces))
 		DebugPrint("No traces found for extracting sweep wave locations.")
 		return $""

@@ -586,7 +586,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	string channelTypeStr, channelList, regionChannelList, channelNumberStr, key, regionList, sweepList, sweepNoStr, experiment
 	string oldRegionList, oldChannelList
 
-	WAVE/T/Z traceData = GetTraceInfos(GetMainWindow(win), addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"AD", "1"})
+	WAVE/T/Z traceData = GetTraceInfos(GetMainWindow(win), addFilterKeys = {"channelType", "AssociatedHeadstage", "traceType"}, addFilterValues = {"AD", "1", "Sweep"})
 	if(!WaveExists(traceData))
 		KillorMoveToTrash(dfr = GetDevicePulseAverageHelperFolder(pa.dfr))
 		return [pasi]
