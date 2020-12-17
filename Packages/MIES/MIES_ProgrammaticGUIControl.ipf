@@ -235,7 +235,10 @@ Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 
 	// call only once
 	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "Non-existing control or window")
+	if(!V_flag)
+		ASSERT(WindowExists(win), "The panel " + win + " does not exist.")
+		ASSERT(0, "The control " + control + " in the panel " + win + " does not exist.")
+	endif
 	controlType = abs(V_flag)
 
 	if(V_disable & DISABLE_CONTROL_BIT)
