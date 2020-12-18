@@ -6,8 +6,11 @@
 #include "MIES_include"
 #include "unit-testing"
 
+// If the next line fails, you are including the MIES created
+// "UserAnalysisFunctions.ipf" and not the one from "Packages/Testing-MIES"
+#include "UserAnalysisFunctions", version >= 10000
+
 #include "UTF_AnalysisFunctionManagement"
-#include "UserAnalysisFunctions"
 #include "UTF_AnalysisFunctionParameters"
 #include "UTF_VeryBasicHardwareTests"
 #include "UTF_DAEphys"

@@ -8,6 +8,15 @@ static Function CheckInstallation()
    CHECK_EQUAL_VAR(CHI_CheckInstallation(), 0)
 End
 
+static Function CheckTestingInstallation()
+
+	string str
+
+	// this function is present in our special UserAnalysisFunctions.ipf
+	str = FunctionList("CorrectFileMarker", ";", "")
+	REQUIRE_PROPER_STR(str)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function TestLocking([str])
 	string str
