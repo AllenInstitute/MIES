@@ -876,18 +876,15 @@ static Constant DQM_ACTIVE_DEV_WAVE_VERSION = 3
 /// The wave is used in data acquisition in multiple device mode to keep track of active devices.
 ///
 /// Columns:
-/// DeviceID id of an active device
-/// ADChannelToMonitor index of first active AD channel in HardwareDataWave
-/// StopCollectionPoint number of samples to acquire
-/// hardwareType type of hardware of the device
-/// activeChunk if a channel of the device is used for TP while DAQ this column saves the number of the last evaluated test pulse
+/// - DeviceID id of an active device
+/// - ADChannelToMonitor index of first active AD channel in HardwareDataWave
+/// - HardwareType type of hardware of the device
+/// - ActiveChunk if a channel of the device is used for TP while DAQ this column saves the number of the last evaluated test pulse
 ///
-/// Changes in version 1:
-/// added column activeChunk
-/// Changes in version 2:
-/// changed precision to double
-/// Changes in version 3:
-/// removed column 2 with StopCollectionPoint as it is no longer used
+/// Version changes:
+/// - 1: Added column activeChunk
+/// - 2: Changed precision to double
+/// - 3: Removed column 2 with StopCollectionPoint as it is no longer used
 Function/Wave GetDQMActiveDeviceList()
 
 	DFREF dfr = GetActiveITCDevicesFolder()

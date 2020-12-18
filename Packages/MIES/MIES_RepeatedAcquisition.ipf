@@ -372,12 +372,12 @@ End
 
 static Function RA_AreLeaderAndFollowerFinished()
 
-	variable numCandidates, i
+	variable numCandidates, i, row
 	string listOfCandidates, candidate
 
-	WAVE activeIDs = DQM_GetActiveDeviceIDs()
+	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 
-	if(DimSize(activeIDs, ROWS) == 0)
+	if(DimSize(ActiveDeviceList, ROWS) == 0)
 		return 1
 	endif
 
@@ -388,8 +388,8 @@ static Function RA_AreLeaderAndFollowerFinished()
 		candidate = StringFromList(i, listOfCandidates)
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(candidate)
 
-		FindValue/V=(ITCDeviceIDGlobal) activeIDs
-		if(V_Value != -1) // device still active
+		row = DQM_GetActiveDeviceRow(ITCDeviceIDGlobal)
+		if(IsFinite(row)) // device still active
 			return 0
 		endif
 	endfor

@@ -1683,18 +1683,36 @@ Function DAP_SweepRollback(string paneltitle, variable sweepNo, variable newSwee
 	ASSERT(rollbackCountNum == rollbackCountText, "Invalid rollback count")
 End
 
-static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
-	string panelTitle
+static Function DAP_UpdateSweepLimitsAndDisplay(string panelTitle, [variable initial])
 
 	string panelList
 	variable sweep, nextSweep, maxNextSweep, numPanels, i
 
 	panelList = GetListofLeaderAndPossFollower(panelTitle)
 
-	if(DAP_DeviceIsLeader(panelTitle))
-		sweep = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
+	if(ParamIsDefault(initial))
+		initial = 0
 	else
-		sweep = NaN
+		initial = !!initial
+	endif
+
+	if(initial)
+		// we are not implementing sweep adjustment for yoked devices
+		if(!DeviceHasFollower(panelTitle) && !DeviceIsFollower(panelTitle))
+			sweep = AFH_GetLastSweepAcquired(panelTitle) + 1
+			if(IsFinite(sweep))
+				SetSetVariable(panelTitle, "SetVar_Sweep", sweep)
+				DAG_Update(panelTitle, "SetVar_Sweep", val = sweep)
+			endif
+		else
+			sweep = NaN
+		endif
+	else
+		if(DAP_DeviceIsLeader(panelTitle))
+			sweep = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
+		else
+			sweep = NaN
+		endif
 	endif
 
 	// query maximum next sweep
@@ -4642,8 +4660,7 @@ static Function DAP_UpdateDataFolderDisplay(panelTitle, locked)
 	GroupBox group_Hardware_FolderPath win = $panelTitle, title = title
 End
 
-Function DAP_LockDevice(panelTitle)
-	string panelTitle
+Function DAP_LockDevice(string win)
 
 	variable locked, hardwareType, headstage
 	string panelTitleLocked, msg
@@ -4654,7 +4671,7 @@ Function DAP_LockDevice(panelTitle)
 		DEBUGPRINT_OR_ABORT("The MIES version is unknown, locking devices is therefore only allowed in debug mode.")
 	endif
 
-	panelTitleLocked = GetPopupMenuString(panelTitle, "popup_MoreSettings_Devices")
+	panelTitleLocked = GetPopupMenuString(win, "popup_MoreSettings_Devices")
 	if(windowExists(panelTitleLocked))
 		DoAbortNow("Attempt to duplicate device connection! Please choose another device number as that one is already in use.")
 	endif
@@ -4663,7 +4680,7 @@ Function DAP_LockDevice(panelTitle)
 		DoAbortNow("Please select a valid device.")
 	endif
 
-	if(!HasPanelLatestVersion(panelTitle, DA_EPHYS_PANEL_VERSION))
+	if(!HasPanelLatestVersion(win, DA_EPHYS_PANEL_VERSION))
 		DoAbortNow("Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one.")
 	endif
 
@@ -4680,10 +4697,10 @@ Function DAP_LockDevice(panelTitle)
 #endif
 	endif
 
-	DisableControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
-	EnableControl(panelTitle,"button_SettingsPlus_unLockDevic")
+	DisableControls(win,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
+	EnableControl(win,"button_SettingsPlus_unLockDevic")
 
-	DoWindow/W=$panelTitle/C $panelTitleLocked
+	DoWindow/W=$win/C $panelTitleLocked
 
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitleLocked))
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(panelTitleLocked))
@@ -4736,10 +4753,16 @@ Function DAP_LockDevice(panelTitle)
 		SetupBackgroundTasks()
 		CtrlNamedBackground _all_, noevents=1
 		UploadCrashDumpsDaily()
+		// avoid problems with IP not keeping the dimension labels
+		// of columns when we have no rows
+		// we kill the wave here so that it is recreated properly
+		KillOrMoveToTrash(wv = GetDQMActiveDeviceList())
 	endif
 
-	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
+	WAVE deviceInfo = GetDeviceInfoWave(panelTitleLocked)
 	HW_WriteDeviceInfo(hardwareType, ITCDeviceIDGlobal, deviceInfo)
+
+	DAP_UpdateSweepLimitsAndDisplay(panelTitleLocked, initial = 1)
 End
 
 static Function DAP_LoadBuiltinStimsets()

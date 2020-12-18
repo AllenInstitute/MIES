@@ -5094,8 +5094,7 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	// running in multi device mode
-	Duplicate/FREE/R=[][0] deviceIDList, deviceIDs
-	FindValue/V=(ITCDeviceIDGlobal) deviceIDs
+	FindValue/V=(ITCDeviceIDGlobal)/RMD=[][0] deviceIDList
 	return V_Value != -1
 End
 
