@@ -1121,12 +1121,31 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 
 		if(WaveExists(result))
 			WAVE DAQDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
-			if(IsWaveRefWave(DAQDataWave))
-				WAVE/WAVE DAQDataWaveRef = DAQDataWave
-				Redimension/N=(numActiveChannels) DAQDataWaveRef
-				DAQDataWaveRef[] = GetNIDAQChannelWave(panelTitle, p)
+
+			if(!cmpstr(GetStringFromWaveNote(DAQDataWave, TP_PROPERTIES_HASH), key))
+				// clear the AD data only
+				switch(hardwareType)
+					case HARDWARE_ITC_DAC:
+						WAVE/W ITCDataWave = DAQDataWave
+						Multithread ITCDataWave[][numDACEntries, numDACEntries + numADCEntries - 1] = 0
+						break
+					case HARDWARE_NI_DAC:
+						WAVE/WAVE NIDataWave = DAQDataWave
+						for(i = 0; i < numADCEntries; i += 1)
+							WAVE NIChannel = NIDataWave[numDACEntries + i]
+							FastOp NIChannel = 0
+						endfor
+						break
+				endswitch
+			else
+				if(IsWaveRefWave(DAQDataWave))
+					WAVE/WAVE DAQDataWaveRef = DAQDataWave
+					Redimension/N=(numActiveChannels) DAQDataWaveRef
+					DAQDataWaveRef[] = GetNIDAQChannelWave(panelTitle, p)
+				endif
+				SetStringInWaveNote(result, TP_PROPERTIES_HASH, key)
+				MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
 			endif
-			MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
 		else
 			WAVE/Z ITCDataWave
 			WAVE/WAVE/Z NIDataWave
@@ -1154,6 +1173,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 						SIGNED_INT_16BIT_MAX); AbortOnRTE
 					endif
 
+					SetStringInWaveNote(ITCDataWave, TP_PROPERTIES_HASH, key)
 					CA_StoreEntryIntoCache(key, ITCDataWave)
 					break
 				case HARDWARE_NI_DAC:
@@ -1167,6 +1187,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 						NI_DAC_MAX); AbortOnRTE
 					endfor
 
+					SetStringInWaveNote(NIDataWave, TP_PROPERTIES_HASH, key)
 					CA_StoreEntryIntoCache(key, NIDataWave)
 					break
 			endswitch

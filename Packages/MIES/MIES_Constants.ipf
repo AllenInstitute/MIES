@@ -1344,3 +1344,5 @@ StrConstant BUFFEREDDRAWHIDDENTRACES = "HiddenTraces"
 StrConstant BUFFEREDDRAWDDAQAXES = "dDAQAxes"
 
 /// @}
+
+StrConstant TP_PROPERTIES_HASH = "TestPulsePropertiesHash"

@@ -699,6 +699,9 @@ End
 ///
 /// For scaling and gain information see SWS_GetChannelGains().
 ///
+/// Note:
+/// #TP_PROPERTIES_HASH: Unique hash for a combination of all properties which influence the test pulse.
+///
 /// @param panelTitle device
 /// @param mode       One of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 Function/Wave GetDAQDataWave(string panelTitle, variable mode)
@@ -734,6 +737,8 @@ Function/Wave GetDAQDataWave(string panelTitle, variable mode)
 			WAVE wv = wv_ni
 			break
 	endswitch
+
+	SetStringInWaveNote(wv, TP_PROPERTIES_HASH, "n. a.")
 
 	return wv
 End
