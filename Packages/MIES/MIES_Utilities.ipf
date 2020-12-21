@@ -4798,6 +4798,10 @@ Function ScaleToIndexWrapper(wv, scale, dim)
 		index = sign(scale) * sign(DimDelta(wv, dim)) * inf
 	endif
 
+	if(dim >= WaveDims(wv))
+		return 0
+	endif
+
 	return min(DimSize(wv, dim) - 1, max(0, trunc(index)))
 End
 

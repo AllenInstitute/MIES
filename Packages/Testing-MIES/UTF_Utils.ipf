@@ -3677,14 +3677,8 @@ Function STIW_TestDimensions()
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, ROWS), ScaleToIndex(testWave, 0, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 1, ROWS), ScaleToIndex(testWave, 1, ROWS))
 	SetScale/P y, 0, 0.01, testwave
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, COLS), ScaleToIndex(testWave, 0, COLS))
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 1, COLS), ScaleToIndex(testWave, 1, COLS))
 	SetScale/P z, 0, 0.001, testwave
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, LAYERS), ScaleToIndex(testWave, 0, LAYERS))
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 1, LAYERS), ScaleToIndex(testWave, 1, LAYERS))
 	SetScale/P t, 0, 0.0001, testwave
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, CHUNKS), ScaleToIndex(testWave, 0, CHUNKS))
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0.1, CHUNKS), ScaleToIndex(testWave, 0.1, CHUNKS))
 
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -1, ROWS), DimOffset(testwave, ROWS) - 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, -1, ROWS), 0)
