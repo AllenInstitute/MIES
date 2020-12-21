@@ -719,26 +719,23 @@ Function/Wave GetDAQDataWave(string panelTitle, variable mode)
 			ASSERT(0, "Invalid dataAcqOrTP")
 	endswitch
 
+	WAVE/W/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			WAVE/W/Z/SDFR=dfr wv = $name
-
-			if(WaveExists(wv))
-				return wv
-			endif
-
 			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:$name/Wave=wv
-			return wv
 			break
 		case HARDWARE_NI_DAC:
-			WAVE/WAVE/Z/SDFR=dfr wv_ni = $name
-			if(WaveExists(wv_ni))
-				return wv_ni
-			endif
 			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:$name/Wave=wv_ni
-			return wv_ni
+			WAVE wv = wv_ni
 			break
 	endswitch
+
+	return wv
 End
 
 /// @brief Get the single NI channel waves
