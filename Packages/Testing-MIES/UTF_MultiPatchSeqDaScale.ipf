@@ -118,6 +118,9 @@ static Function MSQ_DS1_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 4)
 
+	WAVE/Z headstageActive = GetResults_IGNORE(sweepNo, str, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	CHECK_EQUAL_WAVES(headstageActive, {1, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
+
 	WAVE/Z setPass = GetResults_IGNORE(sweepNo, str, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {1}, mode = WAVE_DATA)
 

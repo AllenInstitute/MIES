@@ -1442,7 +1442,7 @@ Function MSQ_DAScale(panelTitle, s)
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			WAVE statusHSIC = MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
-			key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_ACTIVE_HS)
+			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_ACTIVE_HS)
 			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 			values[0, NUM_HEADSTAGES - 1] = statusHS[p]
 			ED_AddEntryToLabnotebook(panelTitle, key, values, overrideSweepNo = s.sweepNo)
@@ -1454,7 +1454,7 @@ Function MSQ_DAScale(panelTitle, s)
 				if(MSQ_TestOverrideActive())
 					headstagePassed = 1
 				else
-					headstagePassed = MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_HEADSTAGE_PASS, i)
+					headstagePassed = MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, MSQ_DA_SCALE, MSQ_FMT_LBN_HEADSTAGE_PASS, i)
 				endif
 
 				if(statusHS[i] && (!statusHSIC[i] || !headstagePassed)) // active non-IC headstage or not passing in FastRheoEstimate
@@ -1524,7 +1524,7 @@ Function MSQ_DAScale(panelTitle, s)
 
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-			key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_ACTIVE_HS, query = 1)
+			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_ACTIVE_HS, query = 1)
 			WAVE/Z previousActiveHS = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 			if(WaveExists(previousActiveHS))
