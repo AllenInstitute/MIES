@@ -91,7 +91,7 @@ then
   base_folder=$top_level
 fi
 
-versions="8"
+versions="8 9"
 
 for i in $versions
 do
