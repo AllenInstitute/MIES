@@ -21,7 +21,8 @@
 #pragma IgorVersion=8.04
 
 #if IgorVersion() >= 9.0
-#if (NumberByKey("BUILD", IgorInfo(0)) < 36607)
+// @todo this is currently out of sync with the above nightly link, the build version is beta2 exactly
+#if (NumberByKey("BUILD", IgorInfo(0)) < 36586)
 #define TOO_OLD_IGOR
 #endif
 #else

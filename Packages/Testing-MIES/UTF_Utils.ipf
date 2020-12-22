@@ -3677,18 +3677,12 @@ Function STIW_TestDimensions()
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, ROWS), ScaleToIndex(testWave, 0, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 1, ROWS), ScaleToIndex(testWave, 1, ROWS))
 	SetScale/P y, 0, 0.01, testwave
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, COLS), ScaleToIndex(testWave, 0, COLS))
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 1, COLS), ScaleToIndex(testWave, 1, COLS))
 	SetScale/P z, 0, 0.001, testwave
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, LAYERS), ScaleToIndex(testWave, 0, LAYERS))
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 1, LAYERS), ScaleToIndex(testWave, 1, LAYERS))
 	SetScale/P t, 0, 0.0001, testwave
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, CHUNKS), ScaleToIndex(testWave, 0, CHUNKS))
-	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0.1, CHUNKS), ScaleToIndex(testWave, 0.1, CHUNKS))
 
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -1, ROWS), DimOffset(testwave, ROWS) - 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, -1, ROWS), 0)
-#if (NumberByKey("BUILD", IgorInfo(0)) < 36039)
+#if IgorVersion() < 9.0
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), DimSize(testwave, ROWS) - 1)
 #else
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), NaN)
@@ -3697,17 +3691,21 @@ Function STIW_TestDimensions()
 
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, 1e3, ROWS), DimOffset(testwave, ROWS) + 1e3 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1e3, ROWS), DimSize(testwave, ROWS) - 1)
+#if IgorVersion() < 9.0
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, inf, ROWS), ScaleToIndexWrapper(testWave, inf, ROWS))
+#endif
 
 	SetScale/P x, 0, -0.1, testwave
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -1, ROWS), DimOffset(testwave, ROWS) - 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1, ROWS), 0)
-#if (NumberByKey("BUILD", IgorInfo(0)) < 36039)
+#if IgorVersion() < 9.0
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), ScaleToIndexWrapper(testWave, -inf, ROWS))
 #endif
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, 1, ROWS), DimOffset(testwave, ROWS) + 1 / DimDelta(testwave, ROWS))
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1, ROWS), 0)
+#if IgorVersion() < 9.0
 	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, inf, ROWS), DimSize(testwave, ROWS) - 1)
+#endif
 	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, inf, ROWS), 0)
 End
 
