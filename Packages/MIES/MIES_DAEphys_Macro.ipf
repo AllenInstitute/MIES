@@ -4424,18 +4424,12 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_OsciUpdExt,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_OsciUpdExt,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_OsciUpdExt,limits={0,1000,1},value= _NUM:10
-	PopupMenu Popup_Settings_DecMethod,pos={45.00,569.00},size={189.00,19.00},bodyWidth=80,disable=1,proc=DAP_PopMenuProc_FixedSampInt
+	PopupMenu Popup_Settings_DecMethod,pos={40.00,582.00},size={189.00,19.00},bodyWidth=80,disable=1,proc=DAP_PopMenuProc_FixedSampInt
 	PopupMenu Popup_Settings_DecMethod,title="Decimation Method"
 	PopupMenu Popup_Settings_DecMethod,help={"Decimation methods for speeding up the display"}
 	PopupMenu Popup_Settings_DecMethod,userdata(tabnum)=  "5"
 	PopupMenu Popup_Settings_DecMethod,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_DecMethod,mode=2,popvalue="MinMax",value= #"\"None;MinMax\""
-	SetVariable setvar_Settings_DecMethodFac,pos={71.00,592.00},size={161.00,18.00},bodyWidth=60,disable=1,proc=DAP_SetVar_UpdateGuiState
-	SetVariable setvar_Settings_DecMethodFac,title="Decimation Factor"
-	SetVariable setvar_Settings_DecMethodFac,help={"The factor by which the to be displayed data is reduced."}
-	SetVariable setvar_Settings_DecMethodFac,userdata(tabnum)=  "5"
-	SetVariable setvar_Settings_DecMethodFac,userdata(tabcontrol)=  "ADC"
-	SetVariable setvar_Settings_DecMethodFac,limits={-1,10000,1},value= _NUM:-1
 	GroupBox group_acq_tp,pos={243.00,554.00},size={212.00,87.00},disable=1
 	GroupBox group_acq_tp,title="Testpulse",userdata(tabnum)=  "5"
 	GroupBox group_acq_tp,userdata(tabcontrol)=  "ADC"

@@ -445,7 +445,7 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 
 		decMethod = DAG_GetNumericalValue(panelTitle, "Popup_Settings_DecMethod")
-		decFactor = DAG_GetNumericalValue(panelTitle, "setvar_Settings_DecMethodFac")
+		decFactor = DEFAULT_DECIMATION_FACTOR
 
 		switch(decMethod)
 			case DECIMATION_NONE:
@@ -454,25 +454,23 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 				decimatedSampleInterval = sampleInterval
 				break
 			default:
-				if(decFactor == -1)
-					STRUCT RectD s
-					GetPlotArea(SCOPE_GetGraph(panelTitle), s)
+				STRUCT RectD s
+				GetPlotArea(SCOPE_GetGraph(panelTitle), s)
 
-					// use twice as many pixels as we need
-					// but round to a power of two
-					numPixels = s.right - s.left
-					dataPointsPerPixel = trunc((stopCollectionPoint / (numPixels * 2)))
-					if(dataPointsPerPixel > 2)
-						decFactor = 2^FindPreviousPower(dataPointsPerPixel, 2)
-						decimatedNumRows = GetDecimatedWaveSize(numRows, decFactor, decMethod)
-						decimatedSampleInterval = sampleInterval * decFactor
-					else
-						// turn off decimation for very short stimsets
-						decMethod = DECIMATION_NONE
-						decFactor = 1
-						decimatedNumRows = numRows
-						decimatedSampleInterval = sampleInterval
-					endif
+				// use twice as many pixels as we need
+				// but round to a power of two
+				numPixels = s.right - s.left
+				dataPointsPerPixel = trunc((stopCollectionPoint / (numPixels * 2)))
+				if(dataPointsPerPixel > 2)
+					decFactor = 2^FindPreviousPower(dataPointsPerPixel, 2)
+					decimatedNumRows = GetDecimatedWaveSize(numRows, decFactor, decMethod)
+					decimatedSampleInterval = sampleInterval * decFactor
+				else
+					// turn off decimation for very short stimsets
+					decMethod = DECIMATION_NONE
+					decFactor = 1
+					decimatedNumRows = numRows
+					decimatedSampleInterval = sampleInterval
 				endif
 				break
 		endswitch
