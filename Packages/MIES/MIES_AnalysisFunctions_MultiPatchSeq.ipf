@@ -1912,18 +1912,24 @@ Function MSQ_SpikeControl(panelTitle, s)
 	string msg, key, ctrl, databrowser, bsPanel, scPanel, daScaleOperator, stimset
 	string stimsets = ""
 
-	if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
-		return NaN
-	endif
-
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
+
+			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+				return NaN
+			endif
+
 			// set more controls usually done from SetControlInEvent analysis function
 			// remove once https://github.com/AllenInstitute/MIES/issues/671 is resolved
 
 			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 1)
 			break
 		case PRE_SET_EVENT:
+
+			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+				return NaN
+			endif
+
 			databrowser = DB_FindDataBrowser(panelTitle)
 			if(IsEmpty(databrowser)) // not yet open
 				databrowser = DB_OpenDataBrowser()
@@ -1994,6 +2000,11 @@ Function MSQ_SpikeControl(panelTitle, s)
 
 			break
 		case POST_SWEEP_EVENT:
+
+			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+				return NaN
+			endif
+
 			sweepPassed = MSQ_WriteSpikeControlLBNEntries(panelTitle, s.sweepNo, s.headstage)
 
 			[minTrials, maxTrials] = MSQ_GetSpikeControlTrials(panelTitle, s.sweepNo)
@@ -2073,6 +2084,11 @@ Function MSQ_SpikeControl(panelTitle, s)
 			// work around XXX_SET_EVENT issues
 			break
 		case POST_DAQ_EVENT:
+
+			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+				return NaN
+			endif
+
 			AD_UpdateAllDatabrowser()
 			break
 		default:
