@@ -1407,7 +1407,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. image:: /dot/multi-patch-seq-dascale.svg
+/// .. image:: /dot/multi-patch-seq-dascale.svg
 /// \endrst
 ///
 Function MSQ_DAScale(panelTitle, s)
@@ -1899,7 +1899,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. image:: /dot/multi-patch-seq-spike-control.svg
+/// .. image:: /dot/multi-patch-seq-spike-control.svg
 /// \endrst
 ///
 Function MSQ_SpikeControl(panelTitle, s)
