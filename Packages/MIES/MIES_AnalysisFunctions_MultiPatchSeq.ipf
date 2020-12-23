@@ -1405,12 +1405,14 @@ Function MSQ_DAScale(panelTitle, s)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
+			return MSQ_CommonPreDAQ(panelTitle, s.headstage)
+
+			break
+		case PRE_SET_EVENT:
+
 			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
 				return NaN
 			endif
-
-			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
 
 			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = "1")
 
@@ -1451,14 +1453,6 @@ Function MSQ_DAScale(panelTitle, s)
 				return 1
 			endif
 
-			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
-			break
-		case PRE_SET_EVENT:
-
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
-				return NaN
-			endif
-
 			WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
 
 			DAScalesIndex[] = 0
@@ -1482,6 +1476,8 @@ Function MSQ_DAScale(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
+
+			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
 			break
 		case POST_SWEEP_EVENT:
