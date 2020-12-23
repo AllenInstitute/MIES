@@ -1403,16 +1403,12 @@ Function MSQ_DAScale(panelTitle, s)
 	variable i, index, ret, headstagePassed, val, sweepNo
 	string msg, key, ctrl
 
-	WAVE DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
-
-	WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
-
-	if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
-		return NaN
-	endif
-
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
+			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+				return NaN
+			endif
+
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
 
@@ -1459,6 +1455,12 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 		case PRE_SET_EVENT:
 
+			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+				return NaN
+			endif
+
+			WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+
 			DAScalesIndex[] = 0
 
 			WAVE daScaleOffset = MSQ_DS_GetDAScaleOffset(panelTitle, s.headstage)
@@ -1484,6 +1486,10 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 		case POST_SWEEP_EVENT:
 
+			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+				return NaN
+			endif
+
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 			WAVE statusHSIC = MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 			values[0, NUM_HEADSTAGES - 1] = statusHSIC[p] ? 1 : NaN
@@ -1498,6 +1504,10 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 		case POST_SET_EVENT:
 
+			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+				return NaN
+			endif
+
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 			values[INDEP_HEADSTAGE] = 1
 			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SET_PASS)
@@ -1506,6 +1516,10 @@ Function MSQ_DAScale(panelTitle, s)
 			AD_UpdateAllDatabrowser()
 			break
 		case POST_DAQ_EVENT:
+			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+				return NaN
+			endif
+
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
@@ -1529,7 +1543,11 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 	endswitch
 
-	if(s.eventType == PRE_SET_EVENT || s.eventType == POST_SWEEP_EVENT)
+	if((s.eventType == PRE_SET_EVENT || s.eventType == POST_SWEEP_EVENT) && s.headstage == DAP_GetHighestActiveHeadstage(panelTitle))
+
+		WAVE DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
+		WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+
 		WAVE daScaleOffset = MSQ_DS_GetDAScaleOffset(panelTitle, s.headstage)
 
 		WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
