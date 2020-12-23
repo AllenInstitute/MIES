@@ -1914,15 +1914,8 @@ Function MSQ_SpikeControl(panelTitle, s)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
+			return MSQ_CommonPreDAQ(panelTitle, s.headstage)
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
-				return NaN
-			endif
-
-			// set more controls usually done from SetControlInEvent analysis function
-			// remove once https://github.com/AllenInstitute/MIES/issues/671 is resolved
-
-			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 1)
 			break
 		case PRE_SET_EVENT:
 
@@ -1988,6 +1981,7 @@ Function MSQ_SpikeControl(panelTitle, s)
 			// remove once https://github.com/AllenInstitute/MIES/issues/671 is resolved
 			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_OnsetDelayUser", val = 500)
 			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_TerminationDelay", val = 1000)
+			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_dDAQDelay", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_dDAQOptOvPre", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_dDAQOptOvPost", val = 250)
