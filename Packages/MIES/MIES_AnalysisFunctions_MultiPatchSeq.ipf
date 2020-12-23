@@ -1473,7 +1473,8 @@ Function MSQ_DAScale(panelTitle, s)
 			endif
 
 			PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 1)
+
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
 
