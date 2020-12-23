@@ -6169,13 +6169,13 @@ End
 
 // @brief Common setup routine for all MIES background tasks for DAQ, TP and pressure control
 Function SetupBackgroundTasks()
-	CtrlNamedBackground $TASKNAME_TIMERMD, period = 6, proc=DQM_Timer
-	CtrlNamedBackground $TASKNAME_FIFOMONMD, period=1, proc=DQM_FIFOMonitor
-	CtrlNamedBackground $TASKNAME_FIFOMON, period = 5, proc=DQS_FIFOMonitor
-	CtrlNamedBackground $TASKNAME_TIMER, period = 5, proc=DQS_Timer
-	CtrlNamedBackground $TASKNAME_TPMD, period=5, proc=TPM_BkrdTPFuncMD
-	CtrlNamedBackground $TASKNAME_TP, period = 5, proc=TPS_TestPulseFunc
-	CtrlNamedBackground P_ITC_FIFOMonitor, period = 10, proc=P_ITC_FIFOMonitorProc
+	CtrlNamedBackground $TASKNAME_TIMERMD, dialogsOK = 0, period = 6, proc=DQM_Timer
+	CtrlNamedBackground $TASKNAME_FIFOMONMD, dialogsOK = 0, period=1, proc=DQM_FIFOMonitor
+	CtrlNamedBackground $TASKNAME_FIFOMON, dialogsOK = 0, period = 5, proc=DQS_FIFOMonitor
+	CtrlNamedBackground $TASKNAME_TIMER, dialogsOK = 0, period = 5, proc=DQS_Timer
+	CtrlNamedBackground $TASKNAME_TPMD, dialogsOK = 0, period=5, proc=TPM_BkrdTPFuncMD
+	CtrlNamedBackground $TASKNAME_TP, dialogsOK = 0, period = 5, proc=TPS_TestPulseFunc
+	CtrlNamedBackground P_ITC_FIFOMonitor, dialogsOK = 0, period = 10, proc=P_ITC_FIFOMonitorProc
 End
 
 /// @brief Zero the wave using differentiation and integration
