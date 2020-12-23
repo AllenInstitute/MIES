@@ -437,6 +437,39 @@ digraph "G" {
 		shape = "ellipse"
 		style = "filled"
 	]
+	"n45" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Enable \"Multidevice DAQ\""
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n46" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Enable \"Repeated Acquisition\""
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n47" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Is \"Unlocked indexing\" active"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
 	"Start DAQ/RA (only call for last active headstage)" -> "Post Sweep Event" [
 		fontsize = "10"
 		fontname = "Helvetica"
@@ -465,15 +498,6 @@ digraph "G" {
 		color = "2"
 	]
 	"Start DAQ/RA (only call for last active headstage)" -> "Prepare DAQ" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Prepare DAQ" -> "Enable \"Multidevice DAQ\"" [
 		fontsize = "10"
 		fontname = "Helvetica"
 		fontcolor = "3"
@@ -820,6 +844,52 @@ digraph "G" {
 		fontsize = "10"
 		fontname = "Helvetica"
 		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n41" -> "Enable \"Multidevice DAQ\"" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Prepare DAQ" -> "n45" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n45" -> "n46" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n46" -> "n47" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n47" -> "Abort" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
 		style = "solid"
 		comment = "Wildcard edge"
 		colorscheme = "blues3"
