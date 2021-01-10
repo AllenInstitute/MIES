@@ -4497,7 +4497,7 @@ End
 /// @param data input data, can be either 1D or 2D
 /// @param level level to search
 /// @param edge type of the edge, one of @ref FindLevelEdgeTypes
-/// @param mode mode, one of @ref FindLevelEdgeTypes
+/// @param mode mode, one of @ref FindLevelModes
 ///
 /// FINDLEVEL_MODE_SINGLE:
 /// - Return a 1D wave with as many rows as columns in the input data
