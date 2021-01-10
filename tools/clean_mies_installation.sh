@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install MIES with potentially skipping the hardware XOPs. The installation is
-# either down from the git repo or from the release package.
+# either down from the git repo, from the release package or the installer itself.
 
 usage()
 {
