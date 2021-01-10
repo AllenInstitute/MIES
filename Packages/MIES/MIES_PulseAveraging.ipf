@@ -1784,22 +1784,26 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	                  && pa.overridePulseLength == paOld.overridePulseLength \
 	                  && pa.fixedPulseLength == paOld.fixedPulseLength)
 
-	generalSettings = (pa.showIndividualPulses == paOld.showIndividualPulses                        \
-	                   && pa.drawXZeroLine == paOld.drawXZeroLine                                   \
-	                   && pa.showAverage == paOld.showAverage                                       \
-	                   && pa.regionSlider == paOld.regionSlider                                     \
-	                   && pa.multipleGraphs == paOld.multipleGraphs                                 \
-	                   && pa.zeroPulses == paOld.zeroPulses                                         \
-	                   && pa.autoTimeAlignment == paOld.autoTimeAlignment                           \
-	                   && pa.enabled == paOld.enabled                                               \
-	                   && pa.hideFailedPulses == paOld.hideFailedPulses                             \
-	                   && pa.failedPulsesLevel ==  paOld.failedPulsesLevel                          \
-	                   && pa.searchFailedPulses == paOld.searchFailedPulses                         \
-	                   && EqualValuesOrBothNaN(pa.failedNumberOfSpikes, paOld.failedNumberOfSpikes) \
-	                   && pa.deconvolution.enable == paOld.deconvolution.enable                     \
-	                   && pa.deconvolution.smth == paOld.deconvolution.smth                         \
-	                   && pa.deconvolution.tau == paOld.deconvolution.tau                           \
-	                   && pa.deconvolution.range == paOld.deconvolution.range)
+	cs.failedPulses = (pa.searchFailedPulses == paOld.searchFailedPulses                               \
+	                   && pa.failedPulsesLevel ==  paOld.failedPulsesLevel                             \
+	                   && EqualValuesOrBothNaN(pa.failedNumberOfSpikes, paOld.failedNumberOfSpikes))
+
+	cs.deconvolution = (pa.deconvolution.enable == paOld.deconvolution.enable   \
+	                    && pa.deconvolution.smth == paOld.deconvolution.smth    \
+	                    && pa.deconvolution.tau == paOld.deconvolution.tau      \
+	                    && pa.deconvolution.range == paOld.deconvolution.range)
+
+	generalSettings = (pa.showIndividualPulses == paOld.showIndividualPulses    \
+	                   && pa.drawXZeroLine == paOld.drawXZeroLine               \
+	                   && pa.showAverage == paOld.showAverage                   \
+	                   && pa.regionSlider == paOld.regionSlider                 \
+	                   && pa.multipleGraphs == paOld.multipleGraphs             \
+	                   && pa.zeroPulses == paOld.zeroPulses                     \
+	                   && pa.autoTimeAlignment == paOld.autoTimeAlignment       \
+	                   && pa.enabled == paOld.enabled                           \
+	                   && pa.hideFailedPulses == paOld.hideFailedPulses         \
+	                   && cs.failedPulses == 1                                  \
+	                   && cs.deconvolution == 1)
 
 	cs.traces = (generalSettings == 1                            \
 	             && cs.singlePulse == 1                          \
@@ -1811,10 +1815,6 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	             && pa.showImages == paOld.showImages          \
 	             && pa.pulseSortOrder == paOld.pulseSortOrder)
 
-	cs.failedPulses = (pa.searchFailedPulses == paOld.searchFailedPulses                             \
-	                   && pa.failedPulsesLevel == paOld.failedPulsesLevel                            \
-	                   && EqualValuesOrBothNaN(pa.failedNumberOfSpikes, paOld.failedNumberOfSpikes))
-
 	cs.dontResetWaves = (pa.zeroPulses == paOld.zeroPulses                  \
 	                     && pa.autoTimeAlignment == paOld.autoTimeAlignment \
 	                     && cs.failedPulses)
@@ -1822,11 +1822,6 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	cs.multipleGraphs = pa.multipleGraphs == paOld.multipleGraphs
 
 	cs.showAverage = pa.showAverage == paOld.showAverage
-
-	cs.deconvolution = (pa.deconvolution.enable == paOld.deconvolution.enable   \
-	                    && pa.deconvolution.smth == paOld.deconvolution.smth    \
-	                    && pa.deconvolution.tau == paOld.deconvolution.tau      \
-	                    && pa.deconvolution.range == paOld.deconvolution.range)
 
 	cs.hideFailedPulses = pa.hideFailedPulses == paOld.hideFailedPulses
 
