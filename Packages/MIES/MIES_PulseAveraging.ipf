@@ -1817,7 +1817,7 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 
 	cs.dontResetWaves = (pa.zeroPulses == paOld.zeroPulses                  \
 	                     && pa.autoTimeAlignment == paOld.autoTimeAlignment \
-	                     && cs.failedPulses)
+	                     && cs.failedPulses == 1)
 
 	cs.multipleGraphs = pa.multipleGraphs == paOld.multipleGraphs
 
