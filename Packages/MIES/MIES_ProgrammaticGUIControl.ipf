@@ -203,11 +203,12 @@ End
 /// @brief Set the control's value and execute the control procedure
 /// of the given control (if it exists)
 ///
-/// @param win       Window
-/// @param control   GUI control
-/// @param val       [optionality depends on control type] Numeric value to set
-/// @param str       [optionality depends on control type] String value to set
-/// @param switchTab [optional, defaults to false] Switches tabs so that the control is shown
+/// @param win                 Window
+/// @param control             GUI control
+/// @param val                 [optionality depends on control type] Numeric value to set
+/// @param str                 [optionality depends on control type] String value to set
+/// @param switchTab           [optional, defaults to false] Switches tabs so that the control is shown
+/// @param ignoreDisabledState [optional, defaults to false] Allows to set disabled controls (DANGEROUS!)
 ///
 /// PopupMenus:
 /// - Only one of `val` or `str` can be supplied
@@ -224,8 +225,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function PGC_SetAndActivateControl(string win, string control, [variable val, string str, variable switchTab])
-
+Function PGC_SetAndActivateControl(string win, string control, [variable val, string str, variable switchTab, variable ignoreDisabledState])
 	string procedure, popupMenuList, popupMenuValue
 	variable paramType, controlType, variableType, inputWasModified, limitedVal
 	variable isCheckbox, mode, popupMenuType, index
@@ -236,6 +236,12 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 		switchTab = !!switchTab
 	endif
 
+	if(ParamIsDefault(ignoreDisabledState))
+		ignoreDisabledState = 0
+	else
+		ignoreDisabledState = !!ignoreDisabledState
+	endif
+
 	// call only once
 	ControlInfo/W=$win $control
 	if(!V_flag)
@@ -244,8 +250,8 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 	endif
 	controlType = abs(V_flag)
 
-	if(V_disable & DISABLE_CONTROL_BIT)
-		DEBUGPRINT("Can't click a disabled control (or better should not)")
+	if((V_disable & DISABLE_CONTROL_BIT) && !ignoreDisabledState)
+		DEBUGPRINT("The control " + control + " in the panel " + win + " is disabled and will not be touched.")
 		return NaN
 	endif
 
