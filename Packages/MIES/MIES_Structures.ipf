@@ -73,7 +73,7 @@ Structure PulseAverageSettings
 	variable regionSlider, multipleGraphs
 	variable zeroPulses, autoTimeAlignment, enabled
 	variable hideFailedPulses, searchFailedPulses
-	variable failedPulsesLevel, yScaleBarLength
+	variable failedPulsesLevel, failedNumberOfSpikes, yScaleBarLength
 	variable showImages, showTraces, drawXZeroLine
 	variable pulseSortOrder
 	string imageColorScale
