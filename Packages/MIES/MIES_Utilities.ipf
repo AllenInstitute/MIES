@@ -5482,6 +5482,12 @@ Function/WAVE RemoveUnusedRows(WAVE wv)
 	return dup
 End
 
+/// @brief Check wether `val1` and `val2` are equal or both NaN
+Function EqualValuesOrBothNaN(variable left, variable right)
+
+	return (IsNaN(left) && IsNaN(right)) || (left == right)
+End
+
 /// @brief Checks wether `wv` is constant and has the value `val`
 Function IsConstant(WAVE wv, variable val)
 

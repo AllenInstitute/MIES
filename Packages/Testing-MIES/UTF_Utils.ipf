@@ -4521,3 +4521,18 @@ Function GUD_ReturnsFoundEntriesWithoutDuplicates()
 End
 
 /// @}
+
+/// EqualValuesOrBothNaN
+/// @{
+
+Function EVOB_Works()
+	CHECK(!EqualValuesOrBothNaN(0, 1))
+	CHECK(EqualValuesOrBothNaN(0, 0))
+	CHECK(!EqualValuesOrBothNaN(0, NaN))
+	CHECK(!EqualValuesOrBothNaN(NaN, 0))
+	CHECK(!EqualValuesOrBothNaN(Inf, NaN))
+	CHECK(!EqualValuesOrBothNaN(NaN, Inf))
+	CHECK(EqualValuesOrBothNaN(NaN, NaN))
+End
+
+/// @}
