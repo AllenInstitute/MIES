@@ -2694,8 +2694,10 @@ static Function PA_ResetWavesIfRequired(WAVE/Z setWave2, STRUCT PulseAverageSett
 			failedPulseLevel = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
 
 			// when zeroing and failed pulse search is enabled, we always
-			// need to reset the waves when the level changes
-			if(!(pa.zeroPulses && pa.searchFailedPulses && pa.failedPulsesLevel != failedPulseLevel))
+			// need to reset the waves when the level or the number of spike changes
+			if(!pa.zeroPulses                              \
+			   || !pa.searchFailedPulses                   \
+			   || pa.failedPulsesLevel == failedPulseLevel)
 				continue // wave is up to date
 			endif
 		endif
