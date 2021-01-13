@@ -459,19 +459,6 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	CA_FlushCache()
 End
 
-Function TEST_CASE_END_OVERRIDE(name)
-	string name
-
-	variable i, winNum
-	string graphList, rec, win
-
-	graphList = WinList("*", ";", "WIN:1")
-	winNum = ItemsInList(graphList)
-	for(i = 0; i < winNum; i += 1)
-		KillWindow $StringFromList(i, graphList)
-	endfor
-End
-
 static Function [string bspName, string graph] PAT_StartDataBrowser_IGNORE()
 
 	string win, panel
