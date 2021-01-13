@@ -455,7 +455,6 @@ Function DAP_EphysPanelStartUpSettings()
 	PopupMenu Popup_Settings_NwbVersion WIN = $panelTitle, mode=2, popvalue="2"
 
 	PopupMenu Popup_Settings_DecMethod, mode=2, popvalue="MinMax"
-	SetVariable setvar_Settings_DecMethodFac, WIN = $panelTitle, value = _NUM:-1
 
 	SetVariable min_AsyncAD_00 WIN = $panelTitle,value= _NUM:0
 	SetVariable max_AsyncAD_00 WIN = $panelTitle,value= _NUM:0
@@ -2084,7 +2083,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	string panelTitle
 	variable mode
 
-	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage, decFactor
+	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage
 	variable ampSerial, ampChannelID, minValue, maxValue, hardwareType, hwChannel
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
 	variable DACchannel
@@ -2498,13 +2497,6 @@ Function DAP_CheckSettings(panelTitle, mode)
 					ControlWindowToFront()
 					return 1
 				endif
-			endif
-
-			decFactor = DAG_GetNumericalValue(panelTitle, "setvar_Settings_DecMethodFac")
-			if(!(decFactor == -1 || decFactor > 1))
-				printf "(%s) The decimation factor %d is not valid.\r", panelTitle, decFactor
-				ControlWindowToFront()
-				return 1
 			endif
 		endif
 

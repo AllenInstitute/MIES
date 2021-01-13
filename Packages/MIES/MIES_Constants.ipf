@@ -132,6 +132,8 @@ Constant DECIMATION_BY_AVERAGING = 4
 StrConstant ALL_WINDOW_FUNCTIONS = "Bartlett;Blackman367;Blackman361;Blackman492;Blackman474;Cos1;Cos2;Cos3;Cos4;Hamming;Hanning;KaiserBessel20;KaiserBessel25;KaiserBessel30;None;Parzen;Poisson2;Poisson3;Poisson4;Riemann"
 /// @}
 
+Constant DEFAULT_DECIMATION_FACTOR = -1
+
 /// Common string to denote an invalid entry in a popupmenu
 StrConstant NONE = "- none -"
 
@@ -585,7 +587,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION           = 49
+Constant DA_EPHYS_PANEL_VERSION           = 50
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 24
 Constant WAVEBUILDER_PANEL_VERSION         = 8
 
