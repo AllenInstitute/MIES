@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install MIES with potentially skipping the hardware XOPs. The installation is
-# either down from the git repo or from the release package.
+# either down from the git repo, from the release package or the installer itself.
 
 usage()
 {
@@ -134,8 +134,12 @@ do
     continue
   fi
 
+  if [ $version -le 8 ]
+  then
+    cp -r  "$base_folder"/Packages/HDF-IP${i}  "$user_proc"
+  fi
+
   cp -r  "$base_folder"/Packages/Arduino  "$user_proc"
-  cp -r  "$base_folder"/Packages/HDF-IP${i}  "$user_proc"
   cp -r  "$base_folder"/Packages/IPNWB  "$user_proc"
   cp -r  "$base_folder"/Packages/MIES_include.ipf  "$user_proc"
   cp -r  "$base_folder"/Packages/MIES  "$user_proc"
@@ -155,8 +159,12 @@ do
     cp -r  "$base_folder"/XOPs-IP${i}/*  "$xops32"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/*  "$xops64"
   else
-    cp -r  "$base_folder"/XOPs-IP${i}/HDF5*  "$xops32"
-    cp -r  "$base_folder"/XOPs-IP${i}-64bit/HDF5*  "$xops64"
+    if [ $version -le 8 ]
+    then
+      cp -r  "$base_folder"/XOPs-IP${i}/HDF5*  "$xops32"
+      cp -r  "$base_folder"/XOPs-IP${i}-64bit/HDF5*  "$xops64"
+    fi
+
     cp -r  "$base_folder"/XOPs-IP${i}/MIESUtils*  "$xops32"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/MIESUtils*  "$xops64"
   fi
