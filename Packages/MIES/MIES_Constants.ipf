@@ -760,6 +760,11 @@ StrConstant NOTE_KEY_SEARCH_FAILED_PULSE  = "SearchFailedPulses"
 StrConstant NOTE_KEY_FAILED_PULSE_LEVEL   = "FailedPulseLevel"
 StrConstant NOTE_KEY_PULSE_SORT_ORDER     = "PulseSortOrder"
 
+/// Only present for diagonal pulses
+/// @{
+StrConstant NOTE_KEY_PULSE_HAS_FAILED = "PulseHasFailed"
+/// @}
+
 /// DA_Ephys Panel Tabs
 Constant DA_EPHYS_PANEL_DATA_ACQUISITION = 0
 Constant DA_EPHYS_PANEL_DA = 1

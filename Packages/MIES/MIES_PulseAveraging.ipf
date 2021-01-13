@@ -38,11 +38,6 @@ static StrConstant PA_USER_DATA_CALC_XLENGTH = "CalculatedXBarLength"
 static StrConstant PA_USER_DATA_CALC_YLENGTH = "CalculatedYBarLength"
 static StrConstant PA_USER_DATA_USER_YLENGTH = "UserYBarLength"
 
-/// Only present for diagonal pulses
-/// @{
-static StrConstant PA_NOTE_KEY_PULSE_HAS_FAILED = "PulseHasFailed"
-/// @}
-
 static Constant PA_USE_WAVE_SCALES = 0x01
 static Constant PA_USE_AXIS_SCALES = 0x02
 
@@ -458,7 +453,7 @@ End
 /// The wave note for the pulse waves is stored in a separate empty wave. This speeds up caching logic for the pulse waves a lot.
 /// The wave note is used for documenting the applied operations:
 /// - `$NOTE_KEY_FAILED_PULSE_LEVEL`: Level used for failed pulse search
-/// - `$PA_NOTE_KEY_PULSE_HAS_FAILED`: Search for failed pulses says that this pulse failed (Only valid for pulses from diagonal sets)
+/// - `$NOTE_KEY_PULSE_HAS_FAILED`: Search for failed pulses says that this pulse failed (Only valid for pulses from diagonal sets)
 /// - `PulseLength`: Length in points of the pulse wave (before any operations)
 /// - `$NOTE_KEY_SEARCH_FAILED_PULSE`: Checkbox state of "Search failed pulses"
 /// - `$NOTE_KEY_TIMEALIGN`: Time alignment was active and applied
@@ -2385,7 +2380,7 @@ static Function PA_PulseHasFailed(WAVE noteWave, STRUCT PulseAverageSettings &s)
 	endif
 
 	level     = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
-	hasFailed = GetNumberFromWaveNote(noteWave, PA_NOTE_KEY_PULSE_HAS_FAILED)
+	hasFailed = GetNumberFromWaveNote(noteWave, NOTE_KEY_PULSE_HAS_FAILED)
 
 	if(level == s.failedPulsesLevel && IsFinite(hasFailed))
 		// already investigated
@@ -2399,7 +2394,7 @@ static Function PA_PulseHasFailed(WAVE noteWave, STRUCT PulseAverageSettings &s)
 	hasFailed = !(level >= GetNumberFromWaveNote(noteWave, "WaveMinimum")     \
 				  && level <= GetNumberFromWaveNote(noteWave, "WaveMaximum"))
 
-	SetNumberInWaveNote(noteWave, PA_NOTE_KEY_PULSE_HAS_FAILED, hasFailed)
+	SetNumberInWaveNote(noteWave, NOTE_KEY_PULSE_HAS_FAILED, hasFailed)
 	// NOTE_KEY_FAILED_PULSE_LEVEL is written in PA_MarkFailedPulses for all pulses
 
 	return hasFailed

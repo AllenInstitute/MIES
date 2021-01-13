@@ -430,8 +430,6 @@ static StrConstant PA_TEST_KEY_WAVEMIN = "WaveMinimum"
 static StrConstant PA_TEST_KEY_WAVEMAX = "WaveMaximum"
 static StrConstant PA_TEST_KEY_PULSELENGTH = "PulseLength"
 
-static StrConstant PA_TEST_KEY_PULSEHASFAILED = "PulseHasFailed"
-
 static StrConstant PA_TEST_KEY_TA_FP = "TimeAlignmentFeaturePosition"
 static StrConstant PA_TEST_KEY_TA_TO = "TimeAlignmentTotalOffset"
 
@@ -860,7 +858,7 @@ static Function PAT_CheckFailedPulse(string win, WAVE pulse, variable isDiagonal
 	MIES_PA#PA_GatherSettings(win, s)
 
 	if(isDiagonal)
-		setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_PULSEHASFAILED)
+		setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_HAS_FAILED)
 		CHECK_EQUAL_VAR(setting, testExpect)
 	endif
 
