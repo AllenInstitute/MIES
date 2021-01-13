@@ -1,2 +1,11 @@
 --languages=igorpro,c++,c,nsis
 --recurse=yes
+# See https://github.com/universal-ctags/ctags/issues/759#issuecomment-171155113
+--exclude=Packages/ZeroMQ/src/*
+--exclude=Packages/ZeroMQ/tests/*
+--exclude=Packages/ZeroMQ/xop-stub-generator/*
+--exclude=Packages/doc/doxygen-filter-ipf/*
+--exclude=Packages/ITCXOP2/*
+--exclude=tools/installer/*
+--exclude=Packages/unit-testing/internal_dev/*
+--exclude=Packages/unit-testing/docu/*
