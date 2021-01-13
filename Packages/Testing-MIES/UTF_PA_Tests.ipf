@@ -847,10 +847,11 @@ static Function/S PAT_GetImages(string imageWin, variable layoutSize)
 	return imageList
 End
 
-static Function PAT_CheckFailedPulse(string win, WAVE pulse, variable isDiagonal, variable testExpect)
+static Function PAT_CheckFailedPulse(string win, WAVE pulse, variable isDiagonal, variable testExpect, variable numSpikes, [string spikePositions])
 
 	STRUCT PulseAverageSettings s
 	variable setting
+	string str
 
 	isDiagonal = !!isDiagonal
 	testExpect = !!testExpect
@@ -860,10 +861,33 @@ static Function PAT_CheckFailedPulse(string win, WAVE pulse, variable isDiagonal
 	if(isDiagonal)
 		setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_HAS_FAILED)
 		CHECK_EQUAL_VAR(setting, testExpect)
+
+		setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_FOUND_SPIKES)
+		CHECK_EQUAL_VAR(setting, numSpikes)
+
+		str = PAT_GetStringFromPulseWaveNote(pulse, NOTE_KEY_PULSE_SPIKE_POSITIONS)
+
+		if(!ParamIsDefault(spikePositions))
+			CHECK_EQUAL_STR(str, spikePositions)
+		endif
+
+		if(numSpikes == 0)
+			CHECK_EMPTY_STR(str)
+		endif
 	endif
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_FAILED_PULSE_LEVEL)
 	CHECK_EQUAL_VAR(setting, s.failedPulsesLevel)
+End
+
+static Function/S PAT_GetStringFromPulseWaveNote(WAVE pulse, string key)
+
+	string wName
+
+	wName = GetWavesDataFolder(pulse, 2) + PULSEWAVE_NOTE_SUFFIX
+	WAVE noteWave = $wName
+
+	return GetStringFromWaveNote(noteWave, key)
 End
 
 static Function PAT_GetNumberFromPulseWaveNote(WAVE pulse, string key)
@@ -889,6 +913,9 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_SEARCH_FAILED_PULSE)
 	CHECK_EQUAL_VAR(setting, s.searchFailedPulses)
+
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_NUMBER_OF_SPIKES)
+	CHECK_EQUAL_VAR(setting, s.failedNumberOfSpikes)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_TIMEALIGN)
 	CHECK_EQUAL_VAR(setting, s.autoTimeAlignment)
@@ -1644,8 +1671,8 @@ static Function PAT_FailedPulseCheck1()
 	STRUCT PA_Test patest4
 	STRUCT PA_Test patest
 
-	string traceListAll, traceList, traceNames, traceName
-	variable traceNum, i, j, k, size
+	string traceListAll, traceList, traceNames, traceName, spikePositions
+	variable traceNum, i, j, k, size, numSpikes, pulseHasFailed
 
 	PA_InitSweep0(patest0)
 	PA_InitSweep4(patest4)
@@ -1669,6 +1696,10 @@ static Function PAT_FailedPulseCheck1()
 				else
 					patest = patest0
 				endif
+
+				pulseHasFailed = 0
+				numSpikes = 1000
+
 				traceName = StringFromList(k, traceNames)
 				if(k == 1)
 					CHECK(PAT_CheckIfTracesAreFront(traceListAll, traceName, patest.channels[i], patest.regions[j], 0))
@@ -1679,12 +1710,14 @@ static Function PAT_FailedPulseCheck1()
 				WAVE pData = TraceNameToWaveRef(graph, traceName)
 				CHECK_EQUAL_WAVES(patest.refData, pData, mode = WAVE_DATA, tol = patest.eqWaveTol)
 				PAT_CheckPulseWaveNote(bspName, pData)
-				PAT_CheckFailedPulse(bspName, pData, i == j, 0)
+				PAT_CheckFailedPulse(bspName, pData, i == j, pulseHasFailed, numSpikes)
 			endfor
 		endfor
 	endfor
 
 	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 75)
+	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_numberOfSpikes", val = NaN)
+
 	traceListAll = PAT_GetTraces(graph, 2 * patest0.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
@@ -1696,11 +1729,101 @@ static Function PAT_FailedPulseCheck1()
 				else
 					patest = patest0
 				endif
+
+				pulseHasFailed = k > 0
+				numSpikes = k == 0 && i == j
+
+				if(numSpikes == 1)
+					if(i == 0 && j == 0)
+						spikePositions = "0.00700875,"
+					else
+						spikePositions = "0.00306933,"
+					endif
+				else
+					spikePositions = ""
+				endif
+
 				traceName = StringFromList(k, traceNames)
 				WAVE pData = TraceNameToWaveRef(graph, traceName)
 				PAT_CheckPulseWaveNote(bspName, pData)
-				PAT_CheckFailedPulse(bspName, pData, i == j, k)
+				PAT_CheckFailedPulse(bspName, pData, i == j, pulseHasFailed, numSpikes, spikePositions = spikePositions)
 				PAT_CheckIfTraceIsRed(graph, traceName, k == 1)
+			endfor
+		endfor
+	endfor
+
+	// now with Number of Spikes set to the correct value
+	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 75)
+	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_numberOfSpikes", val = 1)
+
+	traceListAll = PAT_GetTraces(graph, 2 * patest0.layoutSize)
+	for(i = 0; i < size; i += 1)
+		for(j = 0; j < size; j += 1)
+			traceNames = PAT_FindTraceNames(traceListAll, patest0.channels[i], patest0.regions[j], 0)
+			traceNum = ItemsInList(traceNames)
+			for(k = 0; k < traceNum; k += 1)
+				if(k == 1)
+					patest = patest4
+				else
+					patest = patest0
+				endif
+
+				pulseHasFailed = k > 0
+				numSpikes = k == 0 && i == j
+
+				if(numSpikes == 1)
+					if(i == 0 && j == 0)
+						spikePositions = "0.00700875,"
+					else
+						spikePositions = "0.00306933,"
+					endif
+				else
+					spikePositions = ""
+				endif
+
+				traceName = StringFromList(k, traceNames)
+				WAVE pData = TraceNameToWaveRef(graph, traceName)
+				PAT_CheckPulseWaveNote(bspName, pData)
+				PAT_CheckFailedPulse(bspName, pData, i == j, pulseHasFailed, numSpikes, spikePositions = spikePositions)
+				PAT_CheckIfTraceIsRed(graph, traceName, k == 1)
+			endfor
+		endfor
+	endfor
+
+	// now with Number of Spikes set too large
+	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 75)
+	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_numberOfSpikes", val = 2)
+
+	traceListAll = PAT_GetTraces(graph, 2 * patest0.layoutSize)
+	for(i = 0; i < size; i += 1)
+		for(j = 0; j < size; j += 1)
+			traceNames = PAT_FindTraceNames(traceListAll, patest0.channels[i], patest0.regions[j], 0)
+			traceNum = ItemsInList(traceNames)
+			for(k = 0; k < traceNum; k += 1)
+				if(k == 1)
+					patest = patest4
+				else
+					patest = patest0
+				endif
+
+				pulseHasFailed = 1
+				numSpikes = k == 0 && i == j
+
+				if(numSpikes == 1)
+					if(i == 0 && j == 0)
+						spikePositions = "0.00700875,"
+					else
+						spikePositions = "0.00306933,"
+					endif
+				else
+					spikePositions = ""
+				endif
+
+				traceName = StringFromList(k, traceNames)
+				WAVE pData = TraceNameToWaveRef(graph, traceName)
+				PAT_CheckPulseWaveNote(bspName, pData)
+				PAT_CheckFailedPulse(bspName, pData, i == j, pulseHasFailed, numSpikes, spikePositions = spikePositions)
+				PAT_CheckIfTraceIsRed(graph, traceName, pulseHasFailed)
 			endfor
 		endfor
 	endfor
@@ -1712,7 +1835,7 @@ static Function PAT_FailedPulseCheck2()
 	STRUCT PA_Test patest5
 
 	string traceListAll, traceList, traceNames, traceName
-	variable traceNum, i, j, size, region
+	variable traceNum, i, j, size, region, pulseHasFailed, numSpikes
 
 	PA_InitSweep5(patest5)
 
@@ -1729,9 +1852,13 @@ static Function PAT_FailedPulseCheck2()
 		for(j = 0; j < size; j += 1)
 			region = patest5.regions[j]
 			traceName = PAT_FindTraceNames(traceListAll, patest5.channels[i], region, 0)
+
+			pulseHasFailed = (region == 5)
+			numSpikes = (i == 0 && j == 0) ? 0 : 1000
+
 			WAVE pData = TraceNameToWaveRef(graph, traceName)
 			PAT_CheckPulseWaveNote(bspName, pData)
-			PAT_CheckFailedPulse(bspName, pData, i == j, region == 5)
+			PAT_CheckFailedPulse(bspName, pData, i == j, pulseHasFailed, numSpikes)
 			PAT_CheckIfTraceIsRed(graph, traceName, region == 5)
 		endfor
 	endfor
@@ -1742,8 +1869,11 @@ static Function PAT_FailedPulseCheck2()
 		for(j = 0; j < size; j += 1)
 			region = patest5.regions[j]
 			traceName = PAT_FindTraceNames(traceListAll, patest5.channels[i], region, 0)
+
+			pulseHasFailed = (region == 5)
+
 			WAVE pData = TraceNameToWaveRef(graph, traceName)
-			PAT_CheckIfTraceIsHidden(graph, traceName, region == 5)
+			PAT_CheckIfTraceIsHidden(graph, traceName, pulseHasFailed)
 		endfor
 	endfor
 End
