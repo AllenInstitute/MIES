@@ -3616,6 +3616,21 @@ Function FLW_MultiWorks([wv])
 	CHECK_EQUAL_WAVES(result, resultRef, tol=1e-8)
 End
 
+Function FLW_MaxNumberOfLevelsWorks()
+
+	Make/FREE data = {10, 20, 10, 20, 10, 20}
+
+	WAVE/Z result = FindLevelWrapper(data, 15, FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI)
+	CHECK_WAVE(result, NUMERIC_WAVE)
+	Redimension/N=(numpnts(result))/E=1 result
+	CHECK_EQUAL_WAVES(result, {0.5, 2.5, 4.5}, mode = WAVE_DATA)
+
+	WAVE/Z result = FindLevelWrapper(data, 15, FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI, maxNumLevels = 2)
+	CHECK_WAVE(result, NUMERIC_WAVE)
+	Redimension/N=(numpnts(result))/E=1 result
+	CHECK_EQUAL_WAVES(result, {0.5, 2.5}, mode = WAVE_DATA)
+End
+
 /// @}
 
 // FileRoutines
