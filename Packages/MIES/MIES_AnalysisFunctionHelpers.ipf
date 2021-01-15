@@ -98,7 +98,7 @@ Function AFH_GetDACFromHeadstage(panelTitle, headstage)
 	return NaN
 End
 
-/// @brief Return the column index into `ITCDataWave` for the given channel/type
+/// @brief Return the column index into `DAQDataWave` for the given channel/type
 ///        combination
 ///
 /// @param ITCChanConfigWave ITC configuration wave, most users need to call

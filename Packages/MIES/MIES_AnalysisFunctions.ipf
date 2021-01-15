@@ -173,20 +173,20 @@ static Constant ITI_LOCAL         = 15                      ///< Inter-trial-int
 static Constant POST_DELAY = 150									 ///< Delay after stimulation event in which no other event can occur in ms
 ///@}
 
-Function TestAnalysisFunction_V1(panelTitle, eventType, ITCDataWave, headStage)
+Function TestAnalysisFunction_V1(panelTitle, eventType, DAQDataWave, headStage)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage
 
 	printf "Analysis function version 1 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(eventType, EVENT_NAME_LIST), headStage
 	printf "Next sweep: %d\r", DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 End
 
-Function TestAnalysisFunction_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function TestAnalysisFunction_V2(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	printf "Analysis function version 2 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(eventType, EVENT_NAME_LIST), headStage
@@ -293,10 +293,10 @@ Function MeasureMidSweepTiming_V3(panelTitle, s)
 	return 0
 End
 
-Function Enforce_VC(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function Enforce_VC(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	if(eventType != PRE_DAQ_EVENT)
@@ -314,10 +314,10 @@ Function Enforce_VC(panelTitle, eventType, ITCDataWave, headStage, realDataLengt
 	return 0
 End
 
-Function Enforce_IC(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function Enforce_IC(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	if(eventType != PRE_DAQ_EVENT)
@@ -339,10 +339,10 @@ End
 // Starts with a pop-up menu to set initial parameters and then switches holding potential midway through total number of sweeps
 
 /// @brief Force active headstages into voltage clamp
-Function SetStimConfig_Vclamp(panelTitle, eventType, ITCDataWave, headStage)
+Function SetStimConfig_Vclamp(panelTitle, eventType, DAQDataWave, headStage)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage
 
 	setVClampMode()
@@ -352,10 +352,10 @@ Function SetStimConfig_Vclamp(panelTitle, eventType, ITCDataWave, headStage)
 End
 
 /// @brief Force active headstages into current clamp
-Function SetStimConfig_Iclamp(panelTitle, eventType, ITCDataWave, headStage)
+Function SetStimConfig_Iclamp(panelTitle, eventType, DAQDataWave, headStage)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage
 
 	setIClampMode()
@@ -365,10 +365,10 @@ Function SetStimConfig_Iclamp(panelTitle, eventType, ITCDataWave, headStage)
 End
 
 /// @brief Change holding potential midway through stim set
-Function ChangeHoldingPotential(panelTitle, eventType, ITCDataWave, headStage)
+Function ChangeHoldingPotential(panelTitle, eventType, DAQDataWave, headStage)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage
 
 	variable SweepsRemaining = switchHolding(VM2_LOCAL)
@@ -377,10 +377,10 @@ Function ChangeHoldingPotential(panelTitle, eventType, ITCDataWave, headStage)
 End
 
 /// @brief Print last Stim Set run and headstage mode and holding potential
-Function LastStimSet(panelTitle, eventType, ITCDataWave, headStage)
+Function LastStimSet(panelTitle, eventType, DAQDataWave, headStage)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage
 
 	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
@@ -591,10 +591,10 @@ End
 ///        the left over time at the 20th call.
 ///
 /// This function needs to be set for Pre DAQ, Mid Sweep and Post Sweep Event.
-Function TestPrematureSweepStop(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function TestPrematureSweepStop(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	variable num
@@ -617,10 +617,10 @@ Function TestPrematureSweepStop(panelTitle, eventType, ITCDataWave, headStage, r
 	return 0
 End
 
-Function preDAQ_MP_mainConfig(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function preDAQ_MP_mainConfig(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
@@ -632,10 +632,10 @@ Function preDAQ_MP_mainConfig(panelTitle, eventType, ITCDataWave, headStage, rea
 	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
 End
 
-Function preDAQ_MP_IfMixed(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function preDAQ_MP_IfMixed(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
@@ -647,10 +647,10 @@ Function preDAQ_MP_IfMixed(panelTitle, eventType, ITCDataWave, headStage, realDa
 	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
 End
 
-Function preDAQ_MP_ChirpBlowout(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function preDAQ_MP_ChirpBlowout(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
@@ -671,10 +671,10 @@ End
 /// - Does currently nothing for "Mid Sweep" Event
 /// - Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)
 /// - All active headstages must be in "Current Clamp"
-Function AdjustDAScale(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function AdjustDAScale(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	variable val, index, DAC, ADC

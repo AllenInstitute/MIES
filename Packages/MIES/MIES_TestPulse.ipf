@@ -497,8 +497,8 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	if((now - lastRescaling) > TP_DIMENSION_SCALING_INTERVAL)
 
 		if(!count) // initial estimate
-			WAVE HardwareDataWave = GetHardwareDataWave(panelTitle)
-			delta = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) * DimDelta(HardwareDataWave, ROWS) / 1000
+			WAVE DAQDataWave = GetDAQDataWave(panelTitle, TEST_PULSE_MODE)
+			delta = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) * DimDelta(DAQDataWave, ROWS) / 1000
 		else
 			delta = TPStorage[count][0][%DeltaTimeInSeconds] / count
 		endif
@@ -686,7 +686,7 @@ Function TP_Setup(panelTitle, runMode, [fast])
 		runModeGlobal = runMode
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-		HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+		HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 		return NaN
 	endif
 
@@ -705,7 +705,7 @@ Function TP_Setup(panelTitle, runMode, [fast])
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 End
 
 /// @brief Common setup calls for TP and TP during DAQ

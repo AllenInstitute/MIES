@@ -86,25 +86,26 @@ static Constant HW_ITC_RUNNING_STATE = 0x10
 /// @brief Prepare for data acquisition
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
-/// @param deviceID    device identifier
-/// @param data        hardware data wave
-/// @param dataFunc    [optional, defaults to GetITCDataWave()] override wave getter for the ITC data wave
-/// @param config      ITC config wave
-/// @param configFunc  [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
-/// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-/// @param offset      [optional, defaults to zero] offset into the data wave in points
-Function HW_PrepareAcq(hardwareType, deviceID, [data, dataFunc, config, configFunc, flags, offset])
-	variable hardwareType, deviceID
+/// @param deviceID     device identifier
+/// @param mode         one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param data         hardware data wave
+/// @param dataFunc     [optional, defaults to GetDAQDataWave()] override wave getter for the ITC data wave
+/// @param config       ITC config wave
+/// @param configFunc   [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+/// @param offset       [optional, defaults to zero] offset into the data wave in points
+Function HW_PrepareAcq(hardwareType, deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
+	variable hardwareType, deviceID, mode
 	WAVE/Z data, config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
 	variable flags, offset
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			return HW_ITC_PrepareAcq(deviceID, flags=flags)
+			return HW_ITC_PrepareAcq(deviceID, mode, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			return HW_NI_PrepareAcq(deviceID, flags=flags)
+			return HW_NI_PrepareAcq(deviceID, mode, flags=flags)
 			break
 	endswitch
 	return 0
@@ -1361,13 +1362,14 @@ End
 ///
 /// @param deviceID    device identifier
 /// @param data        ITC data wave
-/// @param dataFunc    [optional, defaults to GetITCDataWave()] override wave getter for the ITC data wave
+/// @param dataFunc    [optional, defaults to GetDAQDataWave()] override wave getter for the ITC data wave
+/// @param mode        one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 /// @param config      ITC config wave
 /// @param configFunc  [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, offset])
-	variable deviceID
+Function HW_ITC_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
+	variable deviceID, mode
 	WAVE/Z data, config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
 	variable flags, offset
@@ -1380,7 +1382,7 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags,
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
-			WAVE data = GetHardwareDataWave(panelTitle)
+			WAVE data = GetDAQDataWave(panelTitle, mode)
 		else
 			WAVE data = dataFunc(panelTitle)
 		endif
@@ -1706,8 +1708,8 @@ Function HW_ITC_DebugMode(state, [flags])
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, offset])
-	variable deviceID
+Function HW_ITC_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
+	variable deviceID, mode
 	WAVE/Z data, config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
 	variable flags, offset
@@ -1981,14 +1983,15 @@ End
 /// @brief Prepare for data acquisition
 ///
 /// @param deviceID    device identifier
+/// @param mode        one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 /// @param data        ITC data wave
-/// @param dataFunc    [optional, defaults to GetITCDataWave()] override wave getter for the ITC data wave
+/// @param dataFunc    [optional, defaults to GetDAQDataWave()] override wave getter for the ITC data wave
 /// @param config      ITC config wave
 /// @param configFunc  [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, offset])
-	variable deviceID
+Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
+	variable deviceID, mode
 	WAVE/Z data, config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
 	variable flags, offset
@@ -2003,7 +2006,7 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
-			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, mode)
 		else
 			WAVE/WAVE NIDataWave = dataFunc(panelTitle)
 		endif
@@ -2758,8 +2761,9 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, offset])
+Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
 	variable deviceID
+	variable mode
 	WAVE/Z data, config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
 	variable flags, offset

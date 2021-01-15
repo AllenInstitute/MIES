@@ -24,11 +24,11 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 
 	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 
-	WAVE hardwareDataWave = GetHardwareDataWave(panelTitle)
+	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 	WAVE hardwareConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE scaledDataWave = GetScaledDataWave(panelTitle)
 
-	ASSERT(IsValidSweepAndConfig(hardwareDataWave, hardwareConfigWave), "Data and config wave are not compatible")
+	ASSERT(IsValidSweepAndConfig(DAQDataWave, hardwareConfigWave), "Data and config wave are not compatible")
 
 	DFREF dfr = GetDeviceDataPath(panelTitle)
 
@@ -122,7 +122,7 @@ End
 /// @param panelTitle device
 /// @param timing     One of @ref GainTimeParameter
 ///
-/// @see GetHardwareDataWave()
+/// @see GetDAQDataWave()
 Function/WAVE SWS_GetChannelGains(panelTitle, [timing])
 	string panelTitle
 	variable timing

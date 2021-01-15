@@ -227,7 +227,7 @@ Structure OOdDAQParams
 	///@{
 	WAVE offsets               ///< Result of the optimization in points
 	WAVE/T regions             ///< List of the form `%begin-%end;...` which denotes the x-coordinates of
-	                           ///< the smeared regions in units of time of the ITCDataWave. @sa OOD_GetFeatureRegions()
+	                           ///< the smeared regions in units of time of the DAQDataWave. @sa OOD_GetFeatureRegions()
 	///@}
 EndStructure
 
@@ -238,7 +238,7 @@ Structure AnalysisFunction_V3
 
 	/// raw data wave for interacting with the DAC hardware (locked to prevent
 	/// changes using `SetWaveLock`). The exact wave format depends on the hardware.
-	/// @sa GetHardwareDataWave()
+	/// @sa GetDAQDataWave()
 	WAVE rawDACWave
 
 	/// scaled and undecimated data from the DAC hardware, 2D floating-point wave

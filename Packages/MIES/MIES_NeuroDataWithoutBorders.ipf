@@ -12,7 +12,7 @@
 /// @brief Return the starting time, in fractional seconds since Igor Pro epoch in UTC, of the given sweep
 ///
 /// For existing sweeps with #HIGH_PREC_SWEEP_START_KEY labnotebook entries we use the sweep wave's modification time.
-/// The sweep wave can be either an `ITCDataWave` or a `Sweep_$num` wave. Passing the `ITCDataWave` is more accurate.
+/// The sweep wave can be either an `DAQDataWave` or a `Sweep_$num` wave. Passing the `DAQDataWave` is more accurate.
 static Function NWB_GetStartTimeOfSweep(panelTitle, sweepNo, sweepWave)
 	string panelTitle
 	variable sweepNo
@@ -652,9 +652,9 @@ Function NWB_PrepareExport(nwbVersion, [createdNewNWBFile])
 	return locationID
 End
 
-Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep, nwbVersion)
+Function NWB_AppendSweep(panelTitle, DAQDataWave, ITCChanConfigWave, sweep, nwbVersion)
 	string panelTitle
-	WAVE ITCDataWave, ITCChanConfigWave
+	WAVE DAQDataWave, ITCChanConfigWave
 	variable sweep, nwbVersion
 
 	variable locationID, deviceID, createdNewNWBFile
@@ -670,7 +670,7 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep, nwbV
 	IPNWB#AddModificationTimeEntry(locationID, nwbVersion)
 	IPNWB#CreateIntraCellularEphys(locationID)
 	NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion)
-	NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
+	NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQDataWave, ITCChanConfigWave, sweep)
 	stimsets = NWB_GetStimsetFromPanel(panelTitle, sweep)
 	NWB_AppendStimset(nwbVersion, locationID, stimsets, IPNWB#GetChunkedCompression())
 
@@ -760,10 +760,10 @@ static Function/S NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textual
 	return stimsetList
 End
 
-static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, ITCDataWave, ITCChanConfigWave, sweep, [compressionMode])
+static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQDataWave, ITCChanConfigWave, sweep, [compressionMode])
 	variable locationID, nwbVersion
 	string panelTitle
-	WAVE ITCDataWave, ITCChanConfigWave
+	WAVE DAQDataWave, ITCChanConfigWave
 	variable sweep, compressionMode
 
 	variable groupID, numEntries, i, j, ttlBits, dac, adc, col, refTime
@@ -784,7 +784,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, ITCD
 	WAVE/T textualValues = GetLBTextualValues(panelTitle)
 	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
 
-	Make/FREE/N=(DimSize(ITCDataWave, COLS)) writtenDataColumns = 0
+	Make/FREE/N=(DimSize(DAQDataWave, COLS)) writtenDataColumns = 0
 
 	// comment denotes the introducing comment of the labnotebook entry
 	// a2220e9f (Add the clamp mode to the labnotebook for acquired data, 2015-04-26)
@@ -890,7 +890,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, ITCD
 	params.channelSuffix = ""
 
 	// starting time of the dataset, relative to the start of the session
-	params.startingTime = NWB_GetStartTimeOfSweep(panelTitle, sweep, ITCDataWave) - session_start_time
+	params.startingTime = NWB_GetStartTimeOfSweep(panelTitle, sweep, DAQDataWave) - session_start_time
 	ASSERT(params.startingTime > 0, "TimeSeries starting time can not be negative")
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(ITCChanConfigWave)) * 1000
@@ -921,7 +921,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, ITCD
 			params.channelType      = ITC_XOP_CHANNEL_TYPE_ADC
 			col                     = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
-			WAVE params.data        = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
+			WAVE params.data        = ExtractOneDimDataFromSweep(ITCChanConfigWave, DAQDataWave, col)
 			NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 			IPNWB#WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
@@ -935,7 +935,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, ITCD
 			params.channelType      = ITC_XOP_CHANNEL_TYPE_DAC
 			col                     = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
-			WAVE params.data        = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
+			WAVE params.data        = ExtractOneDimDataFromSweep(ITCChanConfigWave, DAQDataWave, col)
 			NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 			IPNWB#WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
@@ -989,7 +989,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, ITCD
 		col                     = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
 		writtenDataColumns[col] = 1
 
-		WAVE data = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
+		WAVE data = ExtractOneDimDataFromSweep(ITCChanConfigWave, DAQDataWave, col)
 
 		if(hardwareType == HARDWARE_ITC_DAC)
 			DFREF dfr = NewFreeDataFolder()
@@ -1054,7 +1054,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, ITCD
 		endswitch
 
 		NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
-		WAVE params.data       = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, i)
+		WAVE params.data       = ExtractOneDimDataFromSweep(ITCChanConfigWave, DAQDataWave, i)
 		params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 		IPNWB#WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
 		NWB_ClearWriteChannelParams(params)

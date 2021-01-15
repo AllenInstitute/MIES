@@ -68,7 +68,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		endif
 	endif
 
-	// prevent crash in ITC XOP as it must not run if we resize the ITCDataWave
+	// prevent crash in ITC XOP as it must not run if we resize the DAQDataWave
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	variable hardwareType = GetHardwareType(panelTitle)
 	ASSERT(!HW_IsRunning(hardwareType, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP), "Hardware is still running and it shouldn't. Please report that as a bug.")
@@ -91,7 +91,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		TP_CreateTestPulseWave(panelTitle)
 	endif
 
-	DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
+	DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
@@ -111,10 +111,10 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
 	endif
 
-	WAVE HardwareDataWave = GetHardwareDataWave(panelTitle)
+	WAVE DAQDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
-	ASSERT(IsValidSweepAndConfig(HardwareDataWave, ITCChanConfigWave), "Invalid sweep and config combination")
+	ASSERT(IsValidSweepAndConfig(DAQDataWave, ITCChanConfigWave), "Invalid sweep and config combination")
 End
 
 static Function DC_UpdateHSProperties(panelTitle, ADCs)
@@ -256,8 +256,8 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 		   && DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
 			// ITC hardware requires us to use a pulse train for TP MD,
 			// so we need to determine the number of TP pulses here (numPulses)
-			// In DC_PlaceDataInHardwareDataWave we write as many pulses into the
-			// HardwareDataWave which fit in
+			// In DC_PlaceDataInDAQDataWave we write as many pulses into the
+			// DAQDataWave which fit in
 			singlePulseLength = DimSize(wv, ROWS)
 			numPulses = max(10, ceil((2^(MINIMUM_ITCDATAWAVE_EXPONENT + 1) * 0.90) / singlePulseLength))
 			maxNumRows = max(maxNumRows, numPulses * singlePulseLength)
@@ -269,14 +269,18 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 	return maxNumRows
 End
 
-//// @brief Calculate the required length of the ITCDataWave
+//// @brief Calculate the required length of the DAQDataWave
 ///
-/// The ITCdatawave length = 2^x where is the first integer large enough to contain the longest output wave plus one.
-/// X also has a minimum value of 17 to ensure sufficient time for communication with the ITC device to prevent FIFO overflow or underrun.
+/// ITC Hardware:
+/// - The DAQDataWave length = 2^x where is the first integer large enough to contain the longest output wave plus one.
+///   X also has a minimum value of 17 to ensure sufficient time for communication with the ITC device to prevent FIFO overflow or underrun.
+///
+/// NI Hardware:
+/// - Returns stopCollectionPoint
 ///
 /// @param panelTitle  panel title
 /// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
+static Function DC_CalculateDAQDataWaveLength(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
@@ -318,7 +322,7 @@ static Function DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
 	ASSERT(IsValidConfigWave(config), "Invalid config wave")
 End
 
-/// @brief Creates HardwareDataWave; The wave that the device takes DA and TTL data from and passes AD data to for all channels.
+/// @brief Creates DAQDataWave; The wave that the device takes DA and TTL data from and passes AD data to for all channels.
 ///
 /// Config all refers to configuring all the channels at once
 ///
@@ -327,13 +331,13 @@ End
 /// @param numActiveChannels   number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
 /// @param samplingInterval    sampling interval as returned by DAP_GetSampInt()
 /// @param dataAcqOrTP         one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function [WAVE/Z ITCDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetHardwareDataWave(string panelTitle, variable hardwareType, variable numActiveChannels, variable samplingInterval, variable dataAcqOrTP)
+static Function [WAVE/Z DAQDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetDAQDataWave(string panelTitle, variable hardwareType, variable numActiveChannels, variable samplingInterval, variable dataAcqOrTP)
 	variable numRows, i
 
-	numRows = DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
+	numRows = DC_CalculateDAQDataWaveLength(panelTitle, dataAcqOrTP)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
+			WAVE ITCDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 
 			Redimension/N=(numRows, numActiveChannels) ITCDataWave
 
@@ -343,7 +347,7 @@ static Function [WAVE/Z ITCDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetHardware
 			return [ITCDataWave, $""]
 			break
 		case HARDWARE_NI_DAC:
-			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 			Redimension/N=(numActiveChannels) NIDataWave
 
 			SetScale/P x 0, samplingInterval / 1000, "ms", NIDataWave
@@ -398,8 +402,8 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
 	WAVE scaledDataWave = GetScaledDataWave(panelTitle)
-	WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
-	WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+	WAVE ITCDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
+	WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 
 	tpLength = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
 	hardwareType = GetHardwareType(panelTitle)
@@ -765,7 +769,7 @@ static Function DC_CalculateGeneratedDataSize(panelTitle, dataAcqOrTP, genLength
 	endif
 End
 
-/// @brief Places data from appropriate DA and TTL stimulus set(s) into HardwareDataWave.
+/// @brief Places data from appropriate DA and TTL stimulus set(s) into DAQDataWave.
 /// Also records certain DA_Ephys GUI settings into sweepDataLNB and sweepDataTxTLNB
 /// @param panelTitle        panel title
 /// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
@@ -773,7 +777,7 @@ End
 /// @param multiDevice       Fine tune data handling for single device (false) or multi device (true)
 ///
 /// @exception Abort configuration failure
-static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
+static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 	string panelTitle
 	variable numActiveChannels, dataAcqOrTP, multiDevice
 
@@ -1101,7 +1105,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		s.hardwareType = hardwareType
 		s.numDACs = numDACEntries
 		s.numActiveChannels = numActiveChannels
-		s.numberOfRows = DC_CalculateITCDataWaveLength(panelTitle, TEST_PULSE_MODE)
+		s.numberOfRows = DC_CalculateDAQDataWaveLength(panelTitle, TEST_PULSE_MODE)
 		s.samplingInterval = samplingInterval
 		WAVE s.DAGain = DAGain
 		Duplicate/FREE/RMD=[][FindDimLabel(DACAmp, COLS, "TPAMP")] DACAmp, DACAmpTP
@@ -1114,18 +1118,37 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		WAVE/Z result = CA_TryFetchingEntryFromCache(key)
 
 		if(WaveExists(result))
-			WAVE DAQDataWave = GetHardwareDataWave(panelTitle)
-			if(IsWaveRefWave(DAQDataWave))
-				WAVE/WAVE DAQDataWaveRef = DAQDataWave
-				Redimension/N=(numActiveChannels) DAQDataWaveRef
-				DAQDataWaveRef[] = GetNIDAQChannelWave(panelTitle, p)
+			WAVE DAQDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
+
+			if(!cmpstr(GetStringFromWaveNote(DAQDataWave, TP_PROPERTIES_HASH), key))
+				// clear the AD data only
+				switch(hardwareType)
+					case HARDWARE_ITC_DAC:
+						WAVE/W ITCDataWave = DAQDataWave
+						Multithread ITCDataWave[][numDACEntries, numDACEntries + numADCEntries - 1] = 0
+						break
+					case HARDWARE_NI_DAC:
+						WAVE/WAVE NIDataWave = DAQDataWave
+						for(i = 0; i < numADCEntries; i += 1)
+							WAVE NIChannel = NIDataWave[numDACEntries + i]
+							FastOp NIChannel = 0
+						endfor
+						break
+				endswitch
+			else
+				if(IsWaveRefWave(DAQDataWave))
+					WAVE/WAVE DAQDataWaveRef = DAQDataWave
+					Redimension/N=(numActiveChannels) DAQDataWaveRef
+					DAQDataWaveRef[] = GetNIDAQChannelWave(panelTitle, p)
+				endif
+				SetStringInWaveNote(result, TP_PROPERTIES_HASH, key)
+				MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
 			endif
-			MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
 		else
 			WAVE/Z ITCDataWave
 			WAVE/WAVE/Z NIDataWave
 
-			[ITCDataWave, NIDataWave] = DC_MakeAndGetHardwareDataWave(panelTitle, hardwareType, numActiveChannels, \
+			[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, hardwareType, numActiveChannels, \
 																				   samplingInterval, dataAcqOrTP)
 
 			switch(hardwareType)
@@ -1148,6 +1171,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 						SIGNED_INT_16BIT_MAX); AbortOnRTE
 					endif
 
+					SetStringInWaveNote(ITCDataWave, TP_PROPERTIES_HASH, key)
 					CA_StoreEntryIntoCache(key, ITCDataWave)
 					break
 				case HARDWARE_NI_DAC:
@@ -1161,6 +1185,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 						NI_DAC_MAX); AbortOnRTE
 					endfor
 
+					SetStringInWaveNote(NIDataWave, TP_PROPERTIES_HASH, key)
 					CA_StoreEntryIntoCache(key, NIDataWave)
 					break
 			endswitch
@@ -1170,7 +1195,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		WAVE/Z ITCDataWave
 		WAVE/WAVE/Z NIDataWave
 
-		[ITCDataWave, NIDataWave] = DC_MakeAndGetHardwareDataWave(panelTitle, hardwareType, numActiveChannels, \
+		[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, hardwareType, numActiveChannels, \
 																			   samplingInterval, dataAcqOrTP)
 
 		for(i = 0; i < numDACEntries; i += 1)
@@ -1417,7 +1442,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		endswitch
 	endif
 
-	if(DC_CheckIfDataWaveHasBorderVals(panelTitle))
+	if(DC_CheckIfDataWaveHasBorderVals(panelTitle, dataAcqOrTP))
 		printf "Error writing stimsets into DataWave: The values are out of range. Maybe the DA/AD Gain needs adjustment?\r"
 		ControlWindowToFront()
 		Abort
@@ -1522,14 +1547,13 @@ static Function DC_GenerateStimsetFingerprint(raCycleID, setName, setCycleCount,
 	return crc
 End
 
-static Function DC_CheckIfDataWaveHasBorderVals(panelTitle)
-	string panelTitle
+static Function DC_CheckIfDataWaveHasBorderVals(string panelTitle, variable dataAcqOrTP)
 
 	variable hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			WAVE/Z ITCDataWave = GetHardwareDataWave(panelTitle)
-			ASSERT(WaveExists(ITCDataWave), "Missing HardwareDataWave")
+			WAVE/Z ITCDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
+			ASSERT(WaveExists(ITCDataWave), "Missing DAQDataWave")
 			ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type: " + num2str(WaveType(ITCDataWave)))
 
 			FindValue/UOFV/I=(SIGNED_INT_16BIT_MIN) ITCDataWave
@@ -1547,7 +1571,7 @@ static Function DC_CheckIfDataWaveHasBorderVals(panelTitle)
 			return 0
 			break
 		case HARDWARE_NI_DAC:
-			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 			ASSERT(IsWaveRefWave(NIDataWave), "Unexpected wave type")
 			variable channels = numpnts(NIDataWave)
 			variable i
@@ -1851,7 +1875,7 @@ static Function [variable column, variable setCycleCount] DC_CalculateChannelCol
 	return [column, setCycleCount]
 End
 
-/// @brief Returns the length increase of the ITCDataWave following onset/termination delay insertion and
+/// @brief Returns the length increase of the DAQDataWave following onset/termination delay insertion and
 /// distributed data aquisition. Does not incorporate adaptations for oodDAQ.
 ///
 /// All returned values are in number of points, *not* in time.

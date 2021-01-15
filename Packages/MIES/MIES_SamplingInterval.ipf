@@ -292,7 +292,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 
-	WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
+	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -362,7 +362,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 				numChannels += results[idx][%numADRack1]  + results[idx][%numADRack2]
 				numChannels += results[idx][%numTTLRack1] + results[idx][%numTTLRack2]
 
-				Redimension/N=(-1, numChannels) ITCDataWave
+				Redimension/N=(-1, numChannels) DAQDataWave
 				Redimension/N=(numChannels, -1) ITCChanConfigWave
 
 				if(!mod(idx,1000))
@@ -403,7 +403,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 				continue
 			endif
 
-			Redimension/N=(-1, numChannels) ITCDataWave
+			Redimension/N=(-1, numChannels) DAQDataWave
 			Redimension/N=(numChannels, -1) ITCChanConfigWave
 
 			numDA  = PopCount(DA)
@@ -440,7 +440,7 @@ static Function SI_TestSampInt(panelTitle)
 	variable numConsecutive = -1
 	variable numTries = 1001
 
-	WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
+	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	numChannels = DimSize(ITCChanConfigWave, ROWS)
 
@@ -456,7 +456,7 @@ static Function SI_TestSampInt(panelTitle)
 		ITCChanConfigWave[][2] = sampInt
 
 		WAVE config_t = HW_ITC_TransposeAndToDouble(ITCChanConfigWave)
-		ITCConfigAllChannels2/Z config_t, ITCDataWave
+		ITCConfigAllChannels2/Z config_t, DAQDataWave
 
 		if(!V_ITCError)
 			// we could set the sampling interval

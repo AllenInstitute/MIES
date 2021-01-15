@@ -1053,7 +1053,7 @@ static Function P_DataAcq(panelTitle, headStage)
 	pressureDataWv[headStage][%OngoingPessurePulse] = 1 // record headstage with ongoing pressure pulse
 
 	if(hwType == HARDWARE_ITC_DAC)
-		HW_ITC_PrepareAcq(deviceID, dataFunc=P_GetITCData, configFunc=P_GetITCChanConfig)
+		HW_ITC_PrepareAcq(deviceID, UNKNOWN_MODE, dataFunc=P_GetITCData, configFunc=P_GetITCChanConfig)
 		HW_StartAcq(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 
 		CtrlNamedBackground P_ITC_FIFOMonitor, start

@@ -44,7 +44,7 @@ Function DQM_FIFOMonitor(s)
 						continue // no new data -> next device
 					endif
 
-					WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+					WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
 					for(j = 0; j < V_FIFOnchans; j += 1)
 
 						fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
@@ -188,7 +188,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 
 	// configure passed device
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(!DeviceHasFollower(panelTitle))
 		DAP_UpdateITIAcrossSets(panelTitle, maxITI)
@@ -237,7 +237,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerPanelTitle)
-		HW_ITC_PrepareAcq(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+		HW_ITC_PrepareAcq(ITCDeviceIDGlobal, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 	endfor
 
 	// start lead device
