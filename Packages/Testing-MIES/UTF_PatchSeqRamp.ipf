@@ -99,6 +99,18 @@ static Function/WAVE GetSweepQCResults_IGNORE(sweepNo, device)
 	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 End
 
+static Function/WAVE GetSetQCResults_IGNORE(sweepNo, device)
+	variable sweepNo
+	string device
+
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
+	Make/FREE/D/N=1 val = {GetLastSettingIndepSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)}
+	return val
+End
+
 static Function/WAVE GetBaselineQCResults_IGNORE(sweepNo, device)
 	variable sweepNo
 	string device
@@ -127,7 +139,7 @@ End
 static Function PS_RA1_REENTRY([str])
 	string str
 
-	variable sweepNo, setPassed, i, numEntries, DAScale, onsetDelay
+	variable sweepNo, i, numEntries, DAScale, onsetDelay
 	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
@@ -137,9 +149,8 @@ static Function PS_RA1_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 0)
+	WAVE/Z setPassed = GetSetQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(setPassed, {0}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0}, mode = WAVE_DATA)
@@ -197,7 +208,7 @@ End
 static Function PS_RA2_REENTRY([str])
 	string str
 
-	variable sweepNo, setPassed, i, numEntries
+	variable sweepNo, i, numEntries
 	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
@@ -207,9 +218,8 @@ static Function PS_RA2_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
+	WAVE/Z setPassed = GetSetQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(setPassed, {1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
@@ -251,7 +261,7 @@ End
 static Function PS_RA3_REENTRY([str])
 	string str
 
-	variable sweepNo, setPassed, i, numEntries
+	variable sweepNo, i, numEntries
 	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
@@ -261,9 +271,8 @@ static Function PS_RA3_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
+	WAVE/Z setPassed = GetSetQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(setPassed, {1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
@@ -311,7 +320,7 @@ End
 static Function PS_RA4_REENTRY([str])
 	string str
 
-	variable sweepNo, setPassed, i, numEntries
+	variable sweepNo, i, numEntries
 	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
@@ -321,9 +330,8 @@ static Function PS_RA4_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
+	WAVE/Z setPassed = GetSetQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(setPassed, {1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
@@ -365,7 +373,7 @@ End
 static Function PS_RA5_REENTRY([str])
 	string str
 
-	variable sweepNo, setPassed, i, numEntries
+	variable sweepNo, i, numEntries
 	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
@@ -375,9 +383,8 @@ static Function PS_RA5_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
+	WAVE/Z setPassed = GetSetQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(setPassed, {1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
@@ -425,7 +432,7 @@ End
 static Function PS_RA6_REENTRY([str])
 	string str
 
-	variable sweepNo, setPassed, i, numEntries
+	variable sweepNo, i, numEntries
 	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
@@ -435,9 +442,8 @@ static Function PS_RA6_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
+	WAVE/Z setPassed = GetSetQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(setPassed, {1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
