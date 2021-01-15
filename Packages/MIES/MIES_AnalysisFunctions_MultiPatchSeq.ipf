@@ -280,7 +280,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			rmsShort[i]       = MSQ_CalculateRMS(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			rmsShortPassed[i] = rmsShort[i] < MSQ_RMS_SHORT_THRESHOLD
 
-			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], SelectString(rmsShortPassed[i], "failed", "passed")
+			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], ToPassFail(rmsShortPassed[i])
 			DEBUGPRINT(msg)
 		else
 			sprintf msg, "RMS noise short: (%s)\r", "skipped"
@@ -301,7 +301,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			rmsLong[i]       = MSQ_CalculateRMS(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			rmsLongPassed[i] = rmsLong[i] < MSQ_RMS_LONG_THRESHOLD
 
-			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], SelectString(rmsLongPassed[i], "failed", "passed")
+			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], ToPassFail(rmsLongPassed[i])
 			DEBUGPRINT(msg)
 		else
 			sprintf msg, "RMS noise long: (%s)\r", "skipped"
@@ -322,7 +322,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			avgVoltage[i]    = MSQ_CalculateAvg(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			targetVPassed[i] = abs(avgVoltage[i] - targetV) <= MSQ_TARGETV_THRESHOLD
 
-			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], SelectString(targetVPassed[i], "failed", "passed")
+			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
 			DEBUGPRINT(msg)
 		else
 			sprintf msg, "Average voltage of %gms: (%s)\r", evalRangeTime, "skipped"
@@ -379,7 +379,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	endif
 	// END TEST
 
-	sprintf msg, "Chunk %d %s", chunk, SelectString(chunkPassed, "failed", "passed")
+	sprintf msg, "Chunk %d %s", chunk, ToPassFail(chunkPassed)
 	DEBUGPRINT(msg)
 
 	// document chunk results
