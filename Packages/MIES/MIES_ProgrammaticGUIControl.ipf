@@ -203,26 +203,29 @@ End
 /// @brief Set the control's value and execute the control procedure
 /// of the given control (if it exists)
 ///
-/// `val` and `string` are ignored for unappropriate controls.
+/// @param win                 Window
+/// @param control             GUI control
+/// @param val                 [optionality depends on control type] Numeric value to set
+/// @param str                 [optionality depends on control type] String value to set
+/// @param switchTab           [optional, defaults to false] Switches tabs so that the control is shown
+/// @param ignoreDisabledState [optional, defaults to false] Allows to set disabled controls (DANGEROUS!)
 ///
 /// PopupMenus:
-/// - Only one of `val` or `str` must be supplied.
-/// - `val` is mandatory and 0-based.
+/// - Only one of `val` or `str` can be supplied
+/// - `val` is 0-based
 /// - `str` must be the name of an entry, can include `*` using wildcard syntax.
 ///
-/// ValDisp: Setting a ValDisp control always changed its mode from 'internal number' to 'global expression'
+/// ValDisp:
+/// - Setting this control always changes its mode from 'internal number' to 'global expression'
 ///
-/// `switchTab` [optional, defaults to false] Switches tabs so that the control is shown.
+/// SetVariable:
+/// - Both `str` and `val` are accepted and converted to the target type
 ///
-/// @return 1 if val was modified by control limits, 0 if val was unmodified (only relevant for SetVariable controls)
+/// @return 1 if the numeric value was modified by control limits, 0 if not (only relevant for SetVariable controls)
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
-	string win, control
-	variable val, switchTab
-	string str
-
+Function PGC_SetAndActivateControl(string win, string control, [variable val, string str, variable switchTab, variable ignoreDisabledState])
 	string procedure, popupMenuList, popupMenuValue
 	variable paramType, controlType, variableType, inputWasModified, limitedVal
 	variable isCheckbox, mode, popupMenuType, index
@@ -233,6 +236,12 @@ Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 		switchTab = !!switchTab
 	endif
 
+	if(ParamIsDefault(ignoreDisabledState))
+		ignoreDisabledState = 0
+	else
+		ignoreDisabledState = !!ignoreDisabledState
+	endif
+
 	// call only once
 	ControlInfo/W=$win $control
 	if(!V_flag)
@@ -241,8 +250,8 @@ Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 	endif
 	controlType = abs(V_flag)
 
-	if(V_disable & DISABLE_CONTROL_BIT)
-		DEBUGPRINT("Can't click a disabled control (or better should not)")
+	if((V_disable & DISABLE_CONTROL_BIT) && !ignoreDisabledState)
+		DEBUGPRINT("The control " + control + " in the panel " + win + " is disabled and will not be touched.")
 		return NaN
 	endif
 

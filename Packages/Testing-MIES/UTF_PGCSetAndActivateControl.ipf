@@ -16,6 +16,7 @@ static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	PopupMenu popup_ctrl_colortable,mode=2,value= #"\"*COLORTABLEPOP*\""
 	CheckBox checkbox_ctrl_mode_checkbox,pos={66.00,1.00},size={39.00,15.00},proc=PGCT_CheckProc
 	CheckBox checkbox_ctrl_mode_checkbox,value= 0
+	CheckBox checkbox_ctrl_disabled,value= 0,disable=DISABLE_CONTROL_BIT,proc=PGCT_CheckProc
 
 	KillVariables/Z popNum, checked
 	KillStrings/Z popStr
@@ -390,4 +391,38 @@ Function PGCT_CheckProc(cba) : CheckBoxControl
 	endswitch
 
 	return 0
+End
+
+static Function PGCT_CheckboxDisabled()
+
+	variable refState, state
+
+	SVAR/SDFR=root: panel
+
+	PGC_SetAndActivateControl(panel, "checkbox_ctrl_disabled", val = 1)
+
+	// no changes
+	DoUpdate
+	ControlInfo/W=$panel checkbox_ctrl_disabled
+	state = V_Value
+
+	NVAR/Z checkedSVAR = checked
+	CHECK(!NVAR_Exists(checkedSVAR))
+
+	refState = 0
+	CHECK_EQUAL_VAR(refState, state)
+
+	// now it is set
+	PGC_SetAndActivateControl(panel, "checkbox_ctrl_disabled", val = 1, ignoreDisabledState = 1)
+
+	DoUpdate
+	ControlInfo/W=$panel checkbox_ctrl_disabled
+	state = V_Value
+
+	NVAR/Z checkedSVAR = checked
+	CHECK(NVAR_Exists(checkedSVAR))
+
+	refState = 1
+	CHECK_EQUAL_VAR(refState, state)
+
 End

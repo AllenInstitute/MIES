@@ -77,7 +77,12 @@ static Function/WAVE GetResults_IGNORE(sweepNo, device, str, headstage, mode)
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, str, query = 1)
+
+	if(!cmpstr(str, STIMSET_SCALE_FACTOR_KEY))
+		key = STIMSET_SCALE_FACTOR_KEY
+	else
+		key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, str, query = 1)
+	endif
 
 	switch(mode)
 		case INDEP_EACH_SCI:
@@ -107,14 +112,14 @@ static Function MSQ_DS1_REENTRY([str])
 	string str
 
 	variable sweepNo
-	string lbl
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 4)
 
-	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE/Z headstageActive = GetResults_IGNORE(sweepNo, str, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	CHECK_EQUAL_WAVES(headstageActive, {1, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z setPass = GetResults_IGNORE(sweepNo, str, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {1}, mode = WAVE_DATA)
@@ -125,6 +130,6 @@ static Function MSQ_DS1_REENTRY([str])
 	WAVE/Z headstagePass = GetResults_IGNORE(sweepNo, str, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, UNKNOWN_MODE)
+	WAVE/Z stimScale = GetResults_IGNORE(sweepNo, str, STIMSET_SCALE_FACTOR_KEY, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(stimScale, {33, 43, 53, 63, 73}, mode = WAVE_DATA)
 End
