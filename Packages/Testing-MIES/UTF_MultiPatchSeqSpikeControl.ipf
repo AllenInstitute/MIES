@@ -63,6 +63,8 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 		preAcquireFunc(device)
 	endif
 
+	DB_OpenDatabrowser()
+
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
