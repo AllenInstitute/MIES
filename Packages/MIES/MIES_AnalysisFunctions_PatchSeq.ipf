@@ -269,12 +269,12 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 
 	WAVE config = GetDAQConfigWave(panelTitle)
 
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShort       = NaN
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShortPassed = NaN
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLong        = NaN
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLongPassed  = NaN
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgVoltage     = NaN
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) targetVPassed  = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShort       = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShortPassed = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLong        = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLongPassed  = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgVoltage     = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) targetVPassed  = NaN
 
 	targetV = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
 
