@@ -48,7 +48,7 @@ Function AD_Update(win)
 	Redimension/N=(numEntries, -1, -1) selWave, listWave, infoWave
 
 	if(numEntries > 0)
-		selWave[][][%foreColors] = cmpstr(listWave[p][%Result], "Pass") == 0 ? 2 : 1
+		selWave[][][%foreColors] = cmpstr(listWave[p][%Result], DASHBOARD_PASSING_MESSAGE) == 0 ? 2 : 1
 
 		mainPanel = BSP_GetPanel(win)
 		EnableControls(mainPanel, "list_dashboard;check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
