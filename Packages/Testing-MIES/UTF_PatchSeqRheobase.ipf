@@ -56,7 +56,7 @@ static Function AcquireData(s, finalDAScaleFake, device)
 	DoUpdate/W=$device
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	OpenDatabrowser()
+	DB_OpenDatabrowser()
 End
 
 static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)

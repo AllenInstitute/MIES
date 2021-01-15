@@ -66,7 +66,7 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	OpenDatabrowser()
+	DB_OpenDatabrowser()
 End
 
 static Constant INDEP_EACH_SCI = 0x01

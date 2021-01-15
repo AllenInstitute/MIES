@@ -568,12 +568,6 @@ Function InitSettings(s)
 	InitDAQSettingsFromString(s, caller)
 End
 
-Function OpenDatabrowser()
-	string win = DB_OpenDataBrowser()
-	string panel = BSP_GetSweepControlsPanel(win)
-	PGC_SetAndActivateControl(panel, "check_SweepControl_AutoUpdate", val = 1)
-End
-
 Function CALLABLE_PROTO(device)
 	string device
 	FAIL()
