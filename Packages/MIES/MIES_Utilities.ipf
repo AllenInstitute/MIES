@@ -4456,9 +4456,7 @@ Function HasEnoughDiscspaceFree(discPath, requiredFreeSpace)
 	return IsFinite(leftOverBytes) && leftOverBytes >= requiredFreeSpace
 End
 
-threadsafe static Function FindLevelSingle(data, level, edge, first, last)
-	WAVE data
-	variable level, edge, first, last
+threadsafe static Function FindLevelSingle(WAVE data, variable level, variable edge, variable first, variable last)
 
 	variable found, numLevels
 
@@ -4472,14 +4470,11 @@ threadsafe static Function FindLevelSingle(data, level, edge, first, last)
 	return V_LevelX - DimDelta(data, ROWS) * first
 End
 
-threadsafe static Function/WAVE FindLevelsMult(data, level, edge, first, last)
-	WAVE data
-	variable level, edge, first, last
-
+threadsafe static Function/WAVE FindLevelsMult(WAVE data, variable level, variable edge, variable first, variable last, variable maxNumLevels)
 	variable found, numLevels
 
 	Make/FREE/D/N=0 levels
-	FindLevels/Q/DEST=levels/EDGE=(edge)/R=[first, last] data, level
+	FindLevels/Q/DEST=levels/EDGE=(edge)/R=[first, last]/N=(maxNumLevels) data, level
 	found = V_flag != 2
 	numLevels = found ? DimSize(levels, ROWS) : 0
 
@@ -4494,10 +4489,11 @@ End
 
 /// @brief FindLevel wrapper which handles 2D data without copying data
 ///
-/// @param data input data, can be either 1D or 2D
-/// @param level level to search
-/// @param edge type of the edge, one of @ref FindLevelEdgeTypes
-/// @param mode mode, one of @ref FindLevelEdgeTypes
+/// @param data         input data, can be either 1D or 2D
+/// @param level        level to search
+/// @param edge         type of the edge, one of @ref FindLevelEdgeTypes
+/// @param mode         mode, one of @ref FindLevelModes
+/// @param maxNumLevels [optional, defaults to number of points/rows] maximum number of levels to find
 ///
 /// FINDLEVEL_MODE_SINGLE:
 /// - Return a 1D wave with as many rows as columns in the input data
@@ -4509,10 +4505,7 @@ End
 ///
 /// In both cases the dimension label of the each column holds the number of found levels
 /// in each data colum. This will be always 1 for FINDLEVEL_MODE_SINGLE.
-Function/WAVE FindLevelWrapper(data, level, edge, mode)
-	WAVE data
-	variable level, edge, mode
-
+Function/WAVE FindLevelWrapper(WAVE data, variable level, variable edge, variable mode, [variable maxNumLevels])
 	variable numCols, numColsFixed, numRows, xDelta, maxLevels, numLevels
 	variable first, last, i, xLevel, found, columnOffset
 
@@ -4520,6 +4513,13 @@ Function/WAVE FindLevelWrapper(data, level, edge, mode)
 	numRows = DimSize(data, ROWS)
 	numColsFixed = max(1, numCols)
 	xDelta = DimDelta(data, ROWS)
+
+	if(ParamIsDefault(maxNumLevels))
+		maxNumLevels = numRows
+	else
+		ASSERT(IsInteger(maxNumLevels) && maxNumLevels > 0, "maxNumLevels has to be a positive integer")
+		ASSERT(mode == FINDLEVEL_MODE_MULTI, "maxNumLevels can only be combined with FINDLEVEL_MODE_MULTI mode")
+	endif
 
 	ASSERT(IsNumericWave(data), "Expected numeric wave")
 	ASSERT(numRows >= 2, "Expected wave with more than two rows")
@@ -4548,7 +4548,7 @@ Function/WAVE FindLevelWrapper(data, level, edge, mode)
 		Multithread resultSingle[] = FindLevelSingle(data, level, edge, p * numRows, (p + 1) * numRows - 1)
 	elseif(mode == FINDLEVEL_MODE_MULTI)
 		Make/WAVE/FREE/N=(numColsFixed) allLevels
-		Multithread allLevels[] = FindLevelsMult(data, level, edge, p * numRows, (p + 1) * numRows - 1)
+		Multithread allLevels[] = FindLevelsMult(data, level, edge, p * numRows, (p + 1) * numRows - 1, maxNumLevels)
 
 		Make/D/FREE/N=(numColsFixed) numMaxLevels = DimSize(allLevels[p], ROWS)
 
@@ -5480,6 +5480,12 @@ Function/WAVE RemoveUnusedRows(WAVE wv)
 	Duplicate/FREE/RMD=[0, index - 1] wv, dup
 
 	return dup
+End
+
+/// @brief Check wether `val1` and `val2` are equal or both NaN
+Function EqualValuesOrBothNaN(variable left, variable right)
+
+	return (IsNaN(left) && IsNaN(right)) || (left == right)
 End
 
 /// @brief Checks wether `wv` is constant and has the value `val`

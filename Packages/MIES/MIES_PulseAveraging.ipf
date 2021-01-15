@@ -38,9 +38,6 @@ static StrConstant PA_USER_DATA_CALC_XLENGTH = "CalculatedXBarLength"
 static StrConstant PA_USER_DATA_CALC_YLENGTH = "CalculatedYBarLength"
 static StrConstant PA_USER_DATA_USER_YLENGTH = "UserYBarLength"
 
-/// Only present for diagonal pulses
-static StrConstant PA_NOTE_KEY_PULSE_FAILED = "PulseHasFailed"
-
 static Constant PA_USE_WAVE_SCALES = 0x01
 static Constant PA_USE_AXIS_SCALES = 0x02
 
@@ -456,7 +453,7 @@ End
 /// The wave note for the pulse waves is stored in a separate empty wave. This speeds up caching logic for the pulse waves a lot.
 /// The wave note is used for documenting the applied operations:
 /// - `$NOTE_KEY_FAILED_PULSE_LEVEL`: Level used for failed pulse search
-/// - `$PA_NOTE_KEY_PULSE_FAILED`: Search for failed pulses says that this pulse failed (Only valid for pulses from diagonal sets)
+/// - `$NOTE_KEY_NUMBER_OF_SPIKES`: Number of spikes used for failed pulse search
 /// - `PulseLength`: Length in points of the pulse wave (before any operations)
 /// - `$NOTE_KEY_SEARCH_FAILED_PULSE`: Checkbox state of "Search failed pulses"
 /// - `$NOTE_KEY_TIMEALIGN`: Time alignment was active and applied
@@ -467,6 +464,10 @@ End
 /// - `TimeAlignmentFeaturePosition`: Position where the feature for time alignment was found
 /// - `$PA_NOTE_KEY_PULSE_ISDIAGONAL`: Stores if pulse is shown in the diagonal of the output layout
 /// - `$PA_SOURCE_WAVE_TIMESTAMP`: Last modification time of the pulse wave before creation.
+///
+/// Diagonal pulses only with failed pulse search enabled:
+/// - `$NOTE_KEY_PULSE_HAS_FAILED`: Pulse has failed
+/// - `$NOTE_KEY_PULSE_SPIKE_POSITIONS`: Comma separated list of spike positions
 static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(WAVE/Z wv, DFREF singleSweepFolder, variable channelType, variable channelNumber, variable region, variable pulseIndex, variable first, variable length)
 
 	variable existingLength
@@ -1154,6 +1155,7 @@ static Function PA_GatherSettings(win, s)
 	s.searchFailedPulses   = GetCheckboxState(extPanel, "check_pulseAver_searchFailedPulses")
 	s.hideFailedPulses     = GetCheckboxState(extPanel, "check_pulseAver_hideFailedPulses")
 	s.failedPulsesLevel    = GetSetVariable(extPanel, "setvar_pulseAver_failedPulses_level")
+	s.failedNumberOfSpikes = GetSetVariable(extPanel, "setvar_pulseAver_numberOfSpikes")
 	s.yScaleBarLength      = GetSetVariable(extPanel, "setvar_pulseAver_vert_scale_bar")
 	s.showImages           = GetCheckboxState(extPanel, "check_pulseAver_ShowImage")
 	s.showTraces           = GetCheckboxState(extPanel, "check_pulseAver_ShowTraces")
@@ -1368,8 +1370,9 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 		for(j = startEntry; j < numEntries; j += 1)
 			idx = indices[j]
 
-			WAVE noteWave = propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
-			pulseHasFailed = PA_PulseHasFailed(noteWave, pa)
+			WAVE noteWave  = propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
+			WAVE pulseWave = propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSE]
+			pulseHasFailed = PA_PulseHasFailed(pulseWave, noteWave, pa)
 			properties[idx][PA_PROPERTIES_INDEX_PULSEHASFAILED] = pulseHasFailed
 
 			sweepNo = properties[idx][PA_PROPERTIES_INDEX_SWEEP]
@@ -1405,8 +1408,15 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 
 	JSON_Release(jsonID)
 
-	// Set current level, need to do that at the end, as PA_PulseHasFailed uses that entry for checking if it needs to rerun
-	Multithread indexHelper[] = SetNumberInWaveNote(propertiesWaves[p][PA_PROPERTIESWAVES_INDEX_PULSENOTE], NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
+	// Set current level and number of spikes, need to do that at the end, as
+	// PA_PulseHasFailed uses that entry for checking if it needs to rerun
+	Multithread indexHelper[] = PA_TagSearchedPulses(pa, propertiesWaves[p][PA_PROPERTIESWAVES_INDEX_PULSENOTE])
+End
+
+threadsafe static Function PA_TagSearchedPulses(STRUCT PulseAverageSettings &pa, WAVE wv)
+
+	SetNumberInWaveNote(wv, NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
+	SetNumberInWaveNote(wv, NOTE_KEY_NUMBER_OF_SPIKES, pa.failedNumberOfSpikes)
 End
 
 /// @brief This function returns data from the light-weight data storage for PA graph data
@@ -1783,6 +1793,15 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	                  && pa.overridePulseLength == paOld.overridePulseLength \
 	                  && pa.fixedPulseLength == paOld.fixedPulseLength)
 
+	cs.failedPulses = (pa.searchFailedPulses == paOld.searchFailedPulses                               \
+	                   && pa.failedPulsesLevel ==  paOld.failedPulsesLevel                             \
+	                   && EqualValuesOrBothNaN(pa.failedNumberOfSpikes, paOld.failedNumberOfSpikes))
+
+	cs.deconvolution = (pa.deconvolution.enable == paOld.deconvolution.enable   \
+	                    && pa.deconvolution.smth == paOld.deconvolution.smth    \
+	                    && pa.deconvolution.tau == paOld.deconvolution.tau      \
+	                    && pa.deconvolution.range == paOld.deconvolution.range)
+
 	generalSettings = (pa.showIndividualPulses == paOld.showIndividualPulses    \
 	                   && pa.drawXZeroLine == paOld.drawXZeroLine               \
 	                   && pa.showAverage == paOld.showAverage                   \
@@ -1792,12 +1811,8 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	                   && pa.autoTimeAlignment == paOld.autoTimeAlignment       \
 	                   && pa.enabled == paOld.enabled                           \
 	                   && pa.hideFailedPulses == paOld.hideFailedPulses         \
-	                   && pa.failedPulsesLevel ==  paOld.failedPulsesLevel      \
-	                   && pa.searchFailedPulses == paOld.searchFailedPulses     \
-	                   && pa.deconvolution.enable == paOld.deconvolution.enable \
-	                   && pa.deconvolution.smth == paOld.deconvolution.smth     \
-	                   && pa.deconvolution.tau == paOld.deconvolution.tau       \
-	                   && pa.deconvolution.range == paOld.deconvolution.range)
+	                   && cs.failedPulses == 1                                  \
+	                   && cs.deconvolution == 1)
 
 	cs.traces = (generalSettings == 1                            \
 	             && cs.singlePulse == 1                          \
@@ -1809,21 +1824,13 @@ static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STR
 	             && pa.showImages == paOld.showImages          \
 	             && pa.pulseSortOrder == paOld.pulseSortOrder)
 
-	cs.failedPulses = (		pa.searchFailedPulses == paOld.searchFailedPulses \
-							&& pa.failedPulsesLevel ==  paOld.failedPulsesLevel)
-
-	cs.dontResetWaves = (pa.zeroPulses == paOld.zeroPulses                 \
-							&& pa.autoTimeAlignment == paOld.autoTimeAlignment \
-							&& cs.failedPulses)
+	cs.dontResetWaves = (pa.zeroPulses == paOld.zeroPulses                  \
+	                     && pa.autoTimeAlignment == paOld.autoTimeAlignment \
+	                     && cs.failedPulses == 1)
 
 	cs.multipleGraphs = pa.multipleGraphs == paOld.multipleGraphs
 
 	cs.showAverage = pa.showAverage == paOld.showAverage
-
-	cs.deconvolution = (pa.deconvolution.enable == paOld.deconvolution.enable \
-							&& pa.deconvolution.smth == paOld.deconvolution.smth   \
-							&& pa.deconvolution.tau == paOld.deconvolution.tau     \
-							&& pa.deconvolution.range == paOld.deconvolution.range)
 
 	cs.hideFailedPulses = pa.hideFailedPulses == paOld.hideFailedPulses
 
@@ -2376,31 +2383,50 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 	SetDrawEnv/W=$graph pop
 End
 
-static Function PA_PulseHasFailed(WAVE noteWave, STRUCT PulseAverageSettings &s)
+static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRUCT PulseAverageSettings &s)
 
-	variable level, hasFailed
+	variable level, hasFailed, failedNumberOfSpikes, numLevels, maxNumLevels
 
 	if(!s.searchFailedPulses)
 		return 0
 	endif
 
-	level     = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
-	hasFailed = GetNumberFromWaveNote(noteWave, PA_NOTE_KEY_PULSE_FAILED)
+	level                = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
+	failedNumberOfSpikes = GetNumberFromWaveNote(noteWave, NOTE_KEY_NUMBER_OF_SPIKES)
 
-	if(level == s.failedPulsesLevel && IsFinite(hasFailed))
+	hasFailed = GetNumberFromWaveNote(noteWave, NOTE_KEY_PULSE_HAS_FAILED)
+
+	if(level == s.failedPulsesLevel && EqualValuesOrBothNaN(failedNumberOfSpikes, s.failedNumberOfSpikes) && IsFinite(hasFailed))
 		// already investigated
 		return hasFailed
 	endif
 
 	ASSERT(GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED) != 1, "Single pulse wave must not be zeroed here")
 
-	level = s.failedPulsesLevel
+	// allow at most 1 pulse per ms
+	maxNumLevels = round(DimSize(pulseWave, ROWS) * DimDelta(pulseWave, ROWS))
+	WAVE/Z levels = FindLevelWrapper(pulseWave, s.failedPulsesLevel, FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI, \
+	                                 maxNumLevels = maxNumLevels)
 
-	hasFailed = !(level >= GetNumberFromWaveNote(noteWave, "WaveMinimum")     \
-				  && level <= GetNumberFromWaveNote(noteWave, "WaveMaximum"))
+	ASSERT(WaveExists(levels), "FindLevelWrapper returned a non-existing wave")
 
-	SetNumberInWaveNote(noteWave, PA_NOTE_KEY_PULSE_FAILED, hasFailed)
-	// NOTE_KEY_FAILED_PULSE_LEVEL is written in PA_MarkFailedPulses for all pulses
+	numLevels = str2num(GetDimLabel(levels, ROWS, 0))
+	ASSERT(IsFinite(numLevels), "Number of levels is not finite")
+	SetNumberInWaveNote(noteWave, NOTE_KEY_PULSE_FOUND_SPIKES, numLevels)
+
+	if(numLevels == 0)
+		Redimension/N=(0) levels
+	else
+		ASSERT(DimSize(levels, ROWS) == 1, "Unexpected number of rows")
+		Redimension/E=1/N=(max(1, DimSize(levels, COLS))) levels
+	endif
+
+	SetStringInWaveNote(noteWave, NOTE_KEY_PULSE_SPIKE_POSITIONS, NumericWaveToList(levels, ","))
+
+	hasFailed = !((numLevels == s.failedNumberOfSpikes) || (numLevels > 0 && IsNaN(s.failedNumberOfSpikes)))
+	SetNumberInWaveNote(noteWave, NOTE_KEY_PULSE_HAS_FAILED, hasFailed)
+
+	// NOTE_KEY_FAILED_PULSE_LEVEL and NOTE_KEY_NUMBER_OF_SPIKES is written in PA_MarkFailedPulses for all pulses
 
 	return hasFailed
 End
@@ -2668,7 +2694,7 @@ End
 // @param pa       Filled PulseAverageSettings structure. @see PA_GatherSettings
 static Function PA_ResetWavesIfRequired(WAVE/Z setWave2, STRUCT PulseAverageSettings &pa, variable mode)
 	variable i, statusZero, statusTimeAlign, numEntries, statusSearchFailedPulse
-	variable failedPulseLevel
+	variable failedPulseLevel, failedNumberOfSpikes
 
 	if(!WaveExists(setWave2))
 		return NaN
@@ -2694,10 +2720,14 @@ static Function PA_ResetWavesIfRequired(WAVE/Z setWave2, STRUCT PulseAverageSett
 			&& statusSearchFailedPulse == pa.searchFailedPulses)
 
 			failedPulseLevel = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
+			failedNumberOfSpikes = GetNumberFromWaveNote(noteWave, NOTE_KEY_NUMBER_OF_SPIKES)
 
 			// when zeroing and failed pulse search is enabled, we always
-			// need to reset the waves when the level changes
-			if(!(pa.zeroPulses && pa.searchFailedPulses && pa.failedPulsesLevel != failedPulseLevel))
+			// need to reset the waves when the level or the number of spike changes
+			if(!pa.zeroPulses                                                              \
+			   || !pa.searchFailedPulses                                                   \
+			   || (pa.failedPulsesLevel == failedPulseLevel                                \
+				   && EqualValuesOrBothNaN(failedNumberOfSpikes, pa.failedNumberOfSpikes)))
 				continue // wave is up to date
 			endif
 		endif
@@ -3097,6 +3127,7 @@ static Function PA_SerializeSettings(string win, STRUCT PulseAverageSettings &pa
 	JSON_AddVariable(jsonID, "/hideFailedPulses", pa.hideFailedPulses)
 	JSON_AddVariable(jsonID, "/searchFailedPulses", pa.searchFailedPulses)
 	JSON_AddVariable(jsonID, "/failedPulsesLevel", pa.failedPulsesLevel)
+	JSON_AddVariable(jsonID, "/failedNumberOfSpikes", pa.failedNumberOfSpikes)
 	JSON_AddVariable(jsonID, "/yScaleBarLength", pa.yScaleBarLength)
 	JSON_AddVariable(jsonID, "/showImage", pa.showImages)
 	JSON_AddVariable(jsonID, "/drawXZeroLine", pa.drawXZeroLine)
@@ -3153,6 +3184,7 @@ static Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &
 	pa.hideFailedPulses     = JSON_GetVariable(jsonID, "/hideFailedPulses")
 	pa.searchFailedPulses   = JSON_GetVariable(jsonID, "/searchFailedPulses")
 	pa.failedPulsesLevel    = JSON_GetVariable(jsonID, "/failedPulsesLevel")
+	pa.failedNumberOfSpikes = JSON_GetVariable(jsonID, "/failedNumberOfSpikes")
 	pa.yScaleBarLength      = JSON_GetVariable(jsonID, "/yScaleBarLength")
 	pa.showImages           = JSON_GetVariable(jsonID, "/showImage")
 	pa.drawXZeroLine        = JSON_GetVariable(jsonID, "/drawXZeroLine")

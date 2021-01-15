@@ -588,7 +588,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 50
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 24
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 25
 Constant WAVEBUILDER_PANEL_VERSION         = 8
 
 /// Version of the labnotebooks (numerical and textual)
@@ -758,7 +758,15 @@ StrConstant NOTE_KEY_TIMEALIGN            = "TimeAlign"
 StrConstant NOTE_KEY_ARTEFACT_REMOVAL     = "ArtefactRemoval"
 StrConstant NOTE_KEY_SEARCH_FAILED_PULSE  = "SearchFailedPulses"
 StrConstant NOTE_KEY_FAILED_PULSE_LEVEL   = "FailedPulseLevel"
+StrConstant NOTE_KEY_NUMBER_OF_SPIKES     = "NumberOfSpikes"
 StrConstant NOTE_KEY_PULSE_SORT_ORDER     = "PulseSortOrder"
+
+/// Only present for diagonal pulses
+/// @{
+StrConstant NOTE_KEY_PULSE_HAS_FAILED      = "PulseHasFailed"
+StrConstant NOTE_KEY_PULSE_FOUND_SPIKES    = "NumberOfFoundSpikes"
+StrConstant NOTE_KEY_PULSE_SPIKE_POSITIONS = "SpikePositions"
+/// @}
 
 /// DA_Ephys Panel Tabs
 Constant DA_EPHYS_PANEL_DATA_ACQUISITION = 0
@@ -1284,7 +1292,7 @@ Constant EPOCH_COL_NAME = 2
 Constant EPOCH_COL_TREELEVEL = 3
 
 /// @}
-Constant PA_SETTINGS_STRUCT_VERSION = 5
+Constant PA_SETTINGS_STRUCT_VERSION = 6
 Constant PA_IMAGE_SPECIAL_ENTRIES_RANGE = 0.065
 Constant PA_IMAGE_FAILEDMARKERSTART = 0.9
 
