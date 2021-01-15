@@ -41,6 +41,7 @@
 /// PSQ_FMT_LBN_INITIAL_SCALE       Initial DAScale                                           Numerical                RB                       No                     No
 /// PSQ_FMT_LBN_RMS_SHORT_PASS      Short RMS baseline QC result                              Numerical                DA, RB, RA               Yes                    Yes
 /// PSQ_FMT_LBN_RMS_LONG_PASS       Long RMS baseline QC result                               Numerical                DA, RB, RA               Yes                    Yes
+/// PSQ_FMT_LBN_TARGETV             Target voltage baseline                                   Numerical                DA, RB, RA           Yes                    Yes
 /// PSQ_FMT_LBN_TARGETV_PASS        Target voltage baseline QC result                         Numerical                DA, RB, RA               Yes                    Yes
 /// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                     Numerical                DA, RB, RA               Yes                    Yes
 /// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                  Numerical                DA, RB, RA               No                     Yes
@@ -368,6 +369,13 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 
 		// more tests can be added here
 	endfor
+
+	if(HasOneValidEntry(avgVoltage))
+		// mV -> V
+		avgVoltage[] *= 1000
+		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_TARGETV, chunk = chunk)
+		ED_AddEntryToLabnotebook(panelTitle, key, avgVoltage, unit = "Volt", overrideSweepNo = sweepNo)
+	endif
 
 	// document results per headstage and chunk
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = chunk)
