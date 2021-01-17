@@ -473,7 +473,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 				WBP_DeleteSet()
 			endif
 
-			WBP_UpdateITCPanelPopUps()
+			WBP_UpdateDaEphysStimulusSetPopups()
 
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
 			PopupMenu popup_WaveBuilder_SetList win=$panel, mode = 1
@@ -595,7 +595,7 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 			WBP_SaveSetParam(setName)
 
 			// propagate the existence of the new set
-			WBP_UpdateITCPanelPopUps()
+			WBP_UpdateDaEphysStimulusSetPopups()
 			WB_UpdateEpochCombineList(WBP_GetOutputType())
 
 			WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
@@ -1279,7 +1279,7 @@ End
 /// @brief Update the popup menus and its `MenuExp` user data after stim set changes
 ///
 /// @param panelTitle [optional, defaults to all locked devices] device
-Function WBP_UpdateITCPanelPopUps([panelTitle])
+Function WBP_UpdateDaEphysStimulusSetPopups([panelTitle])
 	string panelTitle
 
 	variable i, j, numPanels

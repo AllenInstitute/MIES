@@ -1096,9 +1096,9 @@ Function GetHeadstageFromSettings(panelTitle, channelType, channelNumber, clampM
 
 	WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
 
-	if(channelType == ITC_XOP_CHANNEL_TYPE_ADC)
+	if(channelType == XOP_CHANNEL_TYPE_ADC)
 		row = clampMode == V_CLAMP_MODE ? 2 : 2 + 4
-	elseif(channelType == ITC_XOP_CHANNEL_TYPE_DAC)
+	elseif(channelType == XOP_CHANNEL_TYPE_DAC)
 		row = clampMode == V_CLAMP_MODE ? 0 : 0 + 4
 	else
 		ASSERT(0, "Unexpected clamp mode")
@@ -1131,12 +1131,12 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 
 	if(channelType == CHANNEL_TYPE_DAC)
 		headStage = AFH_GetHeadstageFromDAC(panelTitle, idx)
-		headStageFromSettingsVC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, idx, V_CLAMP_MODE)
-		headStageFromSettingsIC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, idx, I_CLAMP_MODE)
+		headStageFromSettingsVC = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_DAC, idx, V_CLAMP_MODE)
+		headStageFromSettingsIC = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_DAC, idx, I_CLAMP_MODE)
 	elseif(channelType == CHANNEL_TYPE_ADC)
 		headStage = AFH_GetHeadstageFromADC(panelTitle, idx)
-		headStageFromSettingsVC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, idx, V_CLAMP_MODE)
-		headStageFromSettingsIC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, idx, I_CLAMP_MODE)
+		headStageFromSettingsVC = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_ADC, idx, V_CLAMP_MODE)
+		headStageFromSettingsIC = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_ADC, idx, I_CLAMP_MODE)
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		// nothing to do
 		headStageFromSettingsVC = NaN
@@ -1558,7 +1558,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 				// is not yet reflected in the user data
 				list = GetUserData(panelTitle, ctrl, USER_DATA_MENU_EXP)
 				if(FindListItem(stimSet, list) == -1)
-					WBP_UpdateITCPanelPopUps()
+					WBP_UpdateDaEphysStimulusSetPopups()
 				endif
 			endif
 
@@ -2194,11 +2194,11 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 
-		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+		NVAR deviceID = $GetDAQDeviceID(panelTitle)
 		hardwareType = GetHardwareType(panelTitle)
 
 #ifndef EVIL_KITTEN_EATING_MODE
-		if(HW_SelectDevice(hardwareType, ITCDeviceIDGlobal, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
+		if(HW_SelectDevice(hardwareType, deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
 			ControlWindowToFront()
 			return 1
@@ -3686,8 +3686,8 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 
 	PGC_SetAndActivateControl(panelToDeYoke, "setvar_Hardware_YokeList", str = "None")
 
-	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelToDeYoke)
-	HW_DisableYoking(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
+	NVAR followerdeviceID = $GetDAQDeviceID(panelToDeYoke)
+	HW_DisableYoking(HARDWARE_ITC_DAC, followerdeviceID)
 End
 
 Function DAP_RemoveAllYokedDACs(panelTitle)
@@ -4355,7 +4355,7 @@ Function/S DAP_CreateDAEphysPanel()
 	endif
 
 	// upgrade folder locations
-	GetITCDevicesFolder()
+	GetDAQDevicesFolder()
 
 	// fetch device lists
 	DAP_GetNIDeviceList()
@@ -4676,16 +4676,16 @@ Function DAP_LockDevice(string win)
 		DoAbortNow("Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one.")
 	endif
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
-	ITCDeviceIDGlobal = HW_OpenDevice(paneltitleLocked, hardwareType)
+	NVAR deviceID = $GetDAQDeviceID(paneltitleLocked)
+	deviceID = HW_OpenDevice(paneltitleLocked, hardwareType)
 
-	if(ITCDeviceIDGlobal < 0 || ITCDeviceIDGlobal >= HARDWARE_MAX_DEVICES)
+	if(deviceID < 0 || deviceID >= HARDWARE_MAX_DEVICES)
 #ifndef EVIL_KITTEN_EATING_MODE
 		DoAbortNow("Can not lock the device.")
 #else
-		print "EVIL_KITTEN_EATING_MODE is ON: Forcing ITCDeviceIDGlobal to zero"
+		print "EVIL_KITTEN_EATING_MODE is ON: Forcing deviceID to zero"
 		ControlWindowToFront()
-		ITCDeviceIDGlobal = 0
+		deviceID = 0
 #endif
 	endif
 
@@ -4705,7 +4705,7 @@ Function DAP_LockDevice(string win)
 	DAP_UpdateDataFolderDisplay(panelTitleLocked, locked)
 
 	AI_FindConnectedAmps()
-	DAP_UpdateListOfITCPanels()
+	DAP_UpdateListOfLockedDevices()
 	DAP_UpdateListOfPressureDevices()
 	headstage = str2num(GetPopupMenuString(panelTitleLocked, "Popup_Settings_HeadStage"))
 	DAP_SyncDeviceAssocSettToGUI(paneltitleLocked, headstage)
@@ -4714,7 +4714,7 @@ Function DAP_LockDevice(string win)
 	DAP_UpdateAllYokeControls()
 	// create the amplifier settings waves
 	GetAmplifierParamStorageWave(panelTitleLocked)
-	WBP_UpdateITCPanelPopUps(panelTitle=panelTitleLocked)
+	WBP_UpdateDaEphysStimulusSetPopups(panelTitle=panelTitleLocked)
 	DAP_UnlockCommentNotebook(panelTitleLocked)
 	DAP_ToggleAcquisitionButton(panelTitleLocked, DATA_ACQ_BUTTON_TO_DAQ)
 	SI_CalculateMinSampInterval(panelTitleLocked, DATA_ACQUISITION_MODE)
@@ -4738,7 +4738,7 @@ Function DAP_LockDevice(string win)
 
 	DAP_UpdateOnsetDelay(panelTitleLocked)
 
-	HW_RegisterDevice(panelTitleLocked, hardwareType, ITCDeviceIDGlobal)
+	HW_RegisterDevice(panelTitleLocked, hardwareType, deviceID)
 	if(ItemsInList(GetListOfLockedDevices()) == 1)
 		DAP_LoadBuiltinStimsets()
 		GetPxPVersion()
@@ -4752,7 +4752,7 @@ Function DAP_LockDevice(string win)
 	endif
 
 	WAVE deviceInfo = GetDeviceInfoWave(panelTitleLocked)
-	HW_WriteDeviceInfo(hardwareType, ITCDeviceIDGlobal, deviceInfo)
+	HW_WriteDeviceInfo(hardwareType, deviceID, deviceInfo)
 
 	DAP_UpdateSweepLimitsAndDisplay(panelTitleLocked, initial = 1)
 End
@@ -4844,19 +4844,19 @@ static Function DAP_UnlockDevice(panelTitle)
 	variable locked = 0
 	DAP_UpdateDataFolderDisplay(panelTitleUnlocked,locked)
 
-	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
+	NVAR/SDFR=GetDevicePath(panelTitle) deviceID
 
 	hardwareType = GetHardwareType(panelTitle)
 	// shutdown the FIFO thread now in case it is still running (which should never be the case)
-	TFH_StopFIFODaemon(hardwareType, ITCDeviceIDGlobal)
+	TFH_StopFIFODaemon(hardwareType, deviceID)
 
 	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE
-	HW_CloseDevice(hardwareType, ITCDeviceIDGlobal, flags=flags)
-	HW_ResetDevice(hardwareType, ITCDeviceIDGlobal, flags=flags)
-	HW_DeRegisterDevice(hardwareType, ITCDeviceIDGlobal, flags=flags)
+	HW_CloseDevice(hardwareType, deviceID, flags=flags)
+	HW_ResetDevice(hardwareType, deviceID, flags=flags)
+	HW_DeRegisterDevice(hardwareType, deviceID, flags=flags)
 
 	DAP_UpdateYokeControls(panelTitleUnlocked)
-	DAP_UpdateListOfITCPanels()
+	DAP_UpdateListOfLockedDevices()
 	DAP_UpdateAllYokeControls()
 
 	// reset our state variables to safe defaults
@@ -4875,11 +4875,11 @@ static Function DAP_UnlockDevice(panelTitle)
 		ActiveDevicesTPMD = NaN
 		SetNumberInWaveNote(ActiveDevicesTPMD, NOTE_INDEX, 0)
 
-		DFREF dfr = GetActiveITCDevicesFolder()
+		DFREF dfr = GetActiveDAQDevicesFolder()
 		WAVE/Z/SDFR=dfr ActiveDeviceList
 		DAP_ClearWaveIfExists(ActiveDeviceList)
 
-		DFREF dfr = GetActiveITCDevicesTimerFolder()
+		DFREF dfr = GetActiveDAQDevicesTimerFolder()
 		WAVE/Z/SDFR=dfr ActiveDevTimeParam, TimerFunctionListWave
 		DAP_ClearWaveIfExists(ActiveDevTimeParam)
 		DAP_ClearWaveIfExists(TimerFunctionListWave)
@@ -4895,7 +4895,7 @@ static Function DAP_UnlockDevice(panelTitle)
 End
 
 /// @brief Update the list of locked devices
-static Function DAP_UpdateListOfITCPanels()
+static Function DAP_UpdateListOfLockedDevices()
 	variable i, numDevs, numItm
 	string NIPanelList = ""
 	string ITCPanelList = WinList("ITC*", ";", "WIN:64")
@@ -5007,11 +5007,11 @@ static Function DAP_SetITCDACasFollower(leadDAC, followerDAC)
 	string leadDAC, followerDAC
 
 	SVAR listOfFollowerDevices = $GetFollowerList(leadDAC)
-	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerDAC)
+	NVAR followerdeviceID = $GetDAQDeviceID(followerDAC)
 
 	if(WhichListItem(followerDAC, listOfFollowerDevices) == -1)
 		listOfFollowerDevices = AddListItem(followerDAC, listOfFollowerDevices,";",inf)
-		HW_EnableYoking(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
+		HW_EnableYoking(HARDWARE_ITC_DAC, followerdeviceID)
 		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:listOfFollowerDevices, disable = 0
 	endif
 	// TB: what does this comment mean?

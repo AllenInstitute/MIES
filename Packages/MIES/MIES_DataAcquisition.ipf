@@ -105,8 +105,8 @@ static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
 	if(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_FIFOMON))
 		DQS_StopBackgroundFifoMonitor()
 
-		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
+		NVAR deviceID = $GetDAQDeviceID(panelTitle)
+		HW_StopAcq(HARDWARE_ITC_DAC, deviceID, zeroDAC = 1)
 
 		if(!discardData)
 			SWS_SaveAcquiredData(panelTitle, forcedStop = 1)
@@ -142,7 +142,7 @@ static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
 	endif
 
 	if(stopDeviceTimer)
-		DQ_StopITCDeviceTimer(panelTitle)
+		DQ_StopDAQDeviceTimer(panelTitle)
 	endif
 
 	if(needsOTCAfterDAQ)
@@ -152,16 +152,16 @@ End
 
 /// @brief Start the per-device timer used for the ITI (inter trial interval)
 ///
-/// This function and DQ_StopITCDeviceTimer are used to correct the ITI for the
+/// This function and DQ_StopDAQDeviceTimer are used to correct the ITI for the
 /// time it took to collect data, and pre and post processing of data. It
 /// allows for a real time, start to start, ITI
-Function DQ_StartITCDeviceTimer(panelTitle)
+Function DQ_StartDAQDeviceTimer(panelTitle)
 	string panelTitle
 
 	string msg
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	DFREF timer = GetActiveITCDevicesTimerFolder()
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	DFREF timer = GetActiveDAQDevicesTimerFolder()
 
 	WAVE/Z/SDFR=timer CycleTimeStorageWave
 	if(!WaveExists(CycleTimeStorageWave))
@@ -173,28 +173,28 @@ Function DQ_StartITCDeviceTimer(panelTitle)
 	variable timerID = startmstimer
 
 	ASSERT(timerID != -1, "No more ms timers available, Run: StopAllMSTimers() to reset")
-	CycleTimeStorageWave[ITCDeviceIDGlobal] = timerID
+	CycleTimeStorageWave[deviceID] = timerID
 
 	sprintf msg, "started timer %d", timerID
 	DEBUGPRINT(msg)
 End
 
 /// @brief Stop the per-device timer associated with a particular device
-Function DQ_StopITCDeviceTimer(panelTitle)
+Function DQ_StopDAQDeviceTimer(panelTitle)
 	string panelTitle
 
 	variable timerID
 	string msg
 
-	WAVE/Z/SDFR=GetActiveITCDevicesTimerFolder() CycleTimeStorageWave
+	WAVE/Z/SDFR=GetActiveDAQDevicesTimerFolder() CycleTimeStorageWave
 
 	if(!WaveExists(CycleTimeStorageWave))
 		return NaN
 	endif
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
-	timerID = CycleTimeStorageWave[ITCDeviceIDGlobal]
+	timerID = CycleTimeStorageWave[deviceID]
 
 	sprintf msg, "stopped timer %d", timerID
 	DEBUGPRINT(msg)

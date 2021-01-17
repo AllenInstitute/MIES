@@ -428,30 +428,30 @@ static Function P_UpdateVcom(panelTitle, vCom, headStage)
 	AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnableVC", headStage, value=1)
 End
 
-/// @brief Determines which ITC devices to close. Ensures all DA_Ephys panels
-/// using a particular ITC device for pressure regulation are updated
+/// @brief Determines which devices to close. Ensures all DA_Ephys panels
+/// using a particular device for pressure regulation are updated
 /// correctly.
 static Function P_CloseDevice(panelTitle)
 	string panelTitle
 
-	string ListOfITCDevToClose = P_GetListOfPressureCtrlDevices(panelTitle)
+	string ListOfDevicesToClose = P_GetListOfPressureCtrlDevices(panelTitle)
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 	string DeviceToClose
-	string ListOfHeadstagesUsingITCDev
+	string ListOfHeadstagesUsingDevice
 	variable headStage
 	variable i, j
 
-	for(i = 0; i < ItemsInList(ListOfITCDevToClose); i += 1) // for all the ITC devices used for pressure regulation
+	for(i = 0; i < ItemsInList(ListOfDevicesToClose); i += 1) // for all the devices used for pressure regulation
 		// find device ID
 		do
 			panelTitle = StringFromList(j, ListOfLockedDA_Ephys)
-			DeviceToClose = StringFromList(i,ListOfITCDevToClose)
+			DeviceToClose = StringFromList(i,ListOfDevicesToClose)
 
-			ListOfHeadstagesUsingITCDev = P_HeadstageUsingDevice(panelTitle, DeviceToClose)
+			ListOfHeadstagesUsingDevice = P_HeadstageUsingDevice(panelTitle, DeviceToClose)
 			j += 1
-		while(cmpstr("", ListOfHeadstagesUsingITCDev) == 0)
+		while(cmpstr("", ListOfHeadstagesUsingDevice) == 0)
 		j = 0
-		headStage = str2num(StringFromList(0, ListOfHeadstagesUsingITCDev))
+		headStage = str2num(StringFromList(0, ListOfHeadstagesUsingDevice))
 		P_CloseDeviceLowLevel(panelTitle, DeviceToClose, headstage)
 	endfor
 End
@@ -508,7 +508,7 @@ static Function P_PrepareITCWaves(mainDevice, pressureDevice, deviceID)
 		SetDimLabel COLS, 3, TTL_R1, ITCData
 		SetDimLabel ROWS, 3, TTL_R1, ITCConfig
 
-		ITCConfig[3][0]  = ITC_XOP_CHANNEL_TYPE_TTL
+		ITCConfig[3][0]  = XOP_CHANNEL_TYPE_TTL
 
 		Duplicate GetDeviceInfoWave(mainDevice), deviceInfo
 		deviceInfo[] = NaN
@@ -531,7 +531,7 @@ static Function P_CloseDeviceLowLevel(panelTitle, deviceToClose, refHeadstage)
 
 	variable headStage, deviceID, hwType
 	variable i, j, doDeRegister
-	string ListOfHeadstageUsingITCDevice = ""
+	string ListOfHeadstageUsingDevice = ""
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
@@ -545,10 +545,10 @@ static Function P_CloseDeviceLowLevel(panelTitle, deviceToClose, refHeadstage)
 
 	for(j = 0; j < ItemsInList(ListOfLockedDA_Ephys); j += 1)
 		panelTitle = StringFromList(j, ListOfLockedDA_Ephys)
-		ListOfHeadstageUsingITCDevice = P_HeadstageUsingDevice(panelTitle, deviceToClose)
-		for(i = 0; i < ItemsInList(ListOfHeadstageUsingITCDevice); i += 1)
-			if(cmpstr("",ListOfHeadstageUsingITCDevice) != 0)
-				headStage = str2num(StringFromList(i, ListOfHeadstageUsingITCDevice))
+		ListOfHeadstageUsingDevice = P_HeadstageUsingDevice(panelTitle, deviceToClose)
+		for(i = 0; i < ItemsInList(ListOfHeadstageUsingDevice); i += 1)
+			if(cmpstr("",ListOfHeadstageUsingDevice) != 0)
+				headStage = str2num(StringFromList(i, ListOfHeadstageUsingDevice))
 				deviceID = PressureDataWv[headstage][%DAC_DevID]
 				hwType   = pressureDataWv[headstage][%HW_DAC_Type]
 
@@ -906,7 +906,7 @@ Function P_UpdatePressureControls(panelTitle, headStageNo)
 	variable ttl
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
-	P_UpdatePopupITCdev(panelTitle, headStageNo)
+	P_UpdatePopupDevices(panelTitle, headStageNo)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA"     , PressureDataWv[headStageNo][%DAC])
 	SetSetVariable(panelTitle   , "setvar_Settings_Pressure_DAgain", PressureDataWv[headStageNo][%DAC_Gain])
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD"     , PressureDataWv[headStageNo][%ADC])
@@ -931,9 +931,11 @@ Function P_UpdatePressureControls(panelTitle, headStageNo)
 End
 
 /// @brief Updates the popupmenu popup_Settings_Pressure_dev
-static Function P_UpdatePopupITCdev(panelTitle, headStageNo)
+static Function P_UpdatePopupDevices(panelTitle, headStageNo)
 	string panelTitle
 	variable headStageNo
+
+	string savedDev, popUpMenuString
 
 	WAVE PressureDataWv 		= P_GetPressureDataWaveRef(panelTitle)
 	WAVE/T PressureDataTxtWv 	= P_PressureDataTxtWaveRef(panelTitle)
@@ -943,17 +945,17 @@ static Function P_UpdatePopupITCdev(panelTitle, headStageNo)
 
 	// only compare saved and selected device if a device was saved
 	if(isFinite(PressureDataWv[headStageNo][%DAC_List_Index]))
-		string SavedITCdev = PressureDataTxtWv[headStageNo][0]
+		savedDev = PressureDataTxtWv[headStageNo][0]
 		// deliberately not using the GUI state wave
-		string PopUpMenuString = GetPopupMenuString(panelTitle, control)
+		PopUpMenuString = GetPopupMenuString(panelTitle, control)
 
 		// compare saved and selected device to verify that they match. Non
 		// match could occur if data was saved prior to a popup menu update
 		// and ITC hardware change.
 		if(PressureDataWv[headStageNo][%DAC_List_Index] != 1)
-			if(cmpstr(SavedITCdev, PopUpMenuString) != 0)
-				print "Saved ITC device for headStage", headStageNo, "is no longer at same list position."
-				print "Verify the selected ITC device for headStage.", headStageNo
+			if(cmpstr(savedDev, PopUpMenuString) != 0)
+				print "Saved device for headStage", headStageNo, "is no longer at same list position."
+				print "Verify the selected device for headStage.", headStageNo
 			endif
 		endif
 	endif
@@ -1153,7 +1155,7 @@ Function P_NI_StopDAQ(panelTitle, headStage)
 	HW_WriteDigital(hwType, deviceID, 0, 0, line=TTL)
 End
 
-/// @brief Returns the panelTitle of the ITC device associated with ITC device conducting a pressure pulse
+/// @brief Returns the panelTitle of the device associated with device conducting a pressure pulse
 static Function P_FindPanelTitleExecutingPP(panelTitle, deviceID, headStage)
 	string &panelTitle
 	variable &deviceID, &headStage
@@ -1857,7 +1859,7 @@ Function P_ValidatePressureSetHeadstage(panelTitle, headStageNo)
 	return 1
 End
 
-/// @brief Determines if ITC device is active (i.e. collecting data)
+/// @brief Determines if device is active (i.e. collecting data)
 ///
 /// used to determine if pressure pulse has completed.
 static Function P_DACIsCollectingData(panelTitle, headStage)
@@ -1948,7 +1950,7 @@ Function P_PressureDisplayHighlite(panelTitle, hilite)
 	//ValDisplay $controlNamevalueColor=(65535,65535,65535)
 End
 
-/// @brief Enables ITC devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
+/// @brief Enables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 static Function P_Enable()
 	variable i, j, headstage, numPressureDevices
 	string lockedDevice, listOfPressureCtrlDevices, device
@@ -1984,7 +1986,7 @@ static Function P_Enable()
 	endfor
 End
 
-/// @brief Disables ITC devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
+/// @brief Disables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 Function P_Disable()
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
 	variable i, numPressureDevices
@@ -2252,7 +2254,7 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(ba) : ButtonControl
 	return 0
 End
 
-/// @brief Pressure control ITC device Enable button in Hardware tab of DA_Ephys panel
+/// @brief Pressure control device Enable button in Hardware tab of DA_Ephys panel
 Function P_ButtonProc_Enable(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -2270,7 +2272,7 @@ Function P_ButtonProc_Enable(ba) : ButtonControl
 	return 0
 End
 
-/// @brief Pressure control ITC device Disable button in Hardware tab of DA_Ephys panel
+/// @brief Pressure control device Disable button in Hardware tab of DA_Ephys panel
 Function P_ButtonProc_Disable(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 

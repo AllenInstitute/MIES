@@ -91,7 +91,7 @@ static Constant HW_ITC_RUNNING_STATE = 0x10
 /// @param data         hardware data wave
 /// @param dataFunc     [optional, defaults to GetDAQDataWave()] override wave getter for the ITC data wave
 /// @param config       ITC config wave
-/// @param configFunc   [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param configFunc   [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 /// @param offset       [optional, defaults to zero] offset into the data wave in points
 Function HW_PrepareAcq(hardwareType, deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
@@ -1055,7 +1055,7 @@ End
 
 /// @param deviceID      device identifier
 /// @param config        [optional] ITC config wave
-/// @param configFunc    [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param configFunc    [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param prepareForDAQ [optional, defaults to false] prepare for next DAQ immediately
 /// @param zeroDAC       [optional, defaults to false] set all DA channels to zero
 /// @param flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
@@ -1082,7 +1082,7 @@ Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, f
 
 		if(ParamIsDefault(config))
 			if(ParamIsDefault(configFunc))
-				WAVE config = GetITCChanConfigWave(panelTitle)
+				WAVE config = GetDAQConfigWave(panelTitle)
 			else
 				WAVE config = configFunc(panelTitle)
 			endif
@@ -1121,7 +1121,7 @@ Function HW_ITC_GetCurrentDevice([flags])
 	return V_Value
 End
 
-/// @brief Create a fifo position wave from a ITCChanConfigWave
+/// @brief Create a fifo position wave from a DAQConfigWave
 threadsafe static Function/WAVE HW_ITC_GetFifoPosFromConfig(config_t)
 	WAVE config_t
 
@@ -1157,7 +1157,7 @@ End
 ///
 /// @param deviceID device identifier
 /// @param[in] config                  [optional] ITC config wave
-/// @param[in] configFunc              [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param configFunc    [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
 /// @param     flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
 	variable deviceID
@@ -1173,7 +1173,7 @@ Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
 
 	if(ParamIsDefault(config))
 		if(ParamIsDefault(configFunc))
-			WAVE config = GetITCChanConfigWave(panelTitle)
+			WAVE config = GetDAQConfigWave(panelTitle)
 		else
 			WAVE config = configFunc(panelTitle)
 		endif
@@ -1365,7 +1365,7 @@ End
 /// @param dataFunc    [optional, defaults to GetDAQDataWave()] override wave getter for the ITC data wave
 /// @param mode        one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 /// @param config      ITC config wave
-/// @param configFunc  [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param configFunc  [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 Function HW_ITC_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
@@ -1390,7 +1390,7 @@ Function HW_ITC_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, 
 
 	if(ParamIsDefault(config))
 		if(ParamIsDefault(configFunc))
-			WAVE config = GetITCChanConfigWave(panelTitle)
+			WAVE config = GetDAQConfigWave(panelTitle)
 		else
 			WAVE config = configFunc(panelTitle)
 		endif
@@ -1476,7 +1476,7 @@ End
 /// @param[in] ADChannelToMonitor  [optional, defaults to GetADChannelToMonitor()] first AD channel
 /// @param[in] stopCollectionPoint [optional, defaults to GetStopCollectionPoint()] number of points to acquire
 /// @param[in] config              [optional] ITC config wave
-/// @param[in] configFunc          [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param[in] configFunc          [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param[out] fifoPos            [optional] allows to query the current fifo position (ADC)
 /// @param flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
@@ -1508,7 +1508,7 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 
 	if(ParamIsDefault(config))
 		if(ParamIsDefault(configFunc))
-			WAVE config = GetITCChanConfigWave(panelTitle)
+			WAVE config = GetDAQConfigWave(panelTitle)
 		else
 			WAVE config = configFunc(panelTitle)
 		endif
@@ -1987,7 +1987,7 @@ End
 /// @param data        ITC data wave
 /// @param dataFunc    [optional, defaults to GetDAQDataWave()] override wave getter for the ITC data wave
 /// @param config      ITC config wave
-/// @param configFunc  [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param configFunc  [optional, defaults to GetDAQConfigWave()] override wave getter for the ITC config wave
 /// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, flags, offset])
@@ -2014,7 +2014,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 
 	if(ParamIsDefault(config))
 		if(ParamIsDefault(configFunc))
-			WAVE config = GetITCChanConfigWave(panelTitle)
+			WAVE config = GetDAQConfigWave(panelTitle)
 		else
 			WAVE config = configFunc(panelTitle)
 		endif
@@ -2042,7 +2042,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 		for(i = 0;i < channels; i += 1)
 			ASSERT(!IsFreeWave(NIDataWave[i]), "Can not work with free waves")
 			switch(config[i][%ChannelType])
-				case ITC_XOP_CHANNEL_TYPE_ADC:
+				case XOP_CHANNEL_TYPE_ADC:
 					scanStr += num2str(config[i][%ChannelNumber]) + "/RSE,"
 					scanStr += num2str(NI_ADC_MIN) + "," + num2str(NI_ADC_MAX) + ","
 					scanStr += num2str(gain[i]) + ",0"
@@ -2051,7 +2051,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 					NewFIFOChan $fifoName, $num2str(i),0,1,NI_ADC_MIN,NI_ADC_MAX,"V"
 					aiCnt += 1
 					break
-				case ITC_XOP_CHANNEL_TYPE_DAC:
+				case XOP_CHANNEL_TYPE_DAC:
 					WAVE NIChannel = NIDataWave[i]
 					wavegenStr += GetWavesDataFolder(NIChannel, 2) + ","
 					wavegenStr += num2str(config[i][%ChannelNumber]) + ","
@@ -2060,7 +2060,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 					sprintf tempStr, "%10f", min(10, WaveMax(NIChannel) + 0.001)
 					wavegenStr += tempStr + ";"
 					break
-				case ITC_XOP_CHANNEL_TYPE_TTL:
+				case XOP_CHANNEL_TYPE_TTL:
 					TTLStr += "/" + device + "/port" + num2str(HARDWARE_NI_TTL_PORT) +"/line" + num2str(config[i][%ChannelNumber]) + ","
 					TTLWaves[ttlCnt]= NIDataWave[i]
 					ttlCnt += 1
@@ -2562,12 +2562,12 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 
 	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE config = GetDAQConfigWave(panelTitle)
 
 	paraStr = ""
 	channels = DimSize(config, ROWS)
 	for(i = 0;i < channels; i += 1)
-		if(config[i][%ChannelType] == ITC_XOP_CHANNEL_TYPE_DAC)
+		if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_DAC)
 			paraStr += "0," + num2str(config[i][%ChannelNumber]) + ";"
 		endif
 	endfor

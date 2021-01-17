@@ -38,11 +38,11 @@ StrConstant EXT_PANEL_SETTINGSHISTORY = "SettingsHistoryPanel"
 /// @{
 StrConstant TASKNAME_TP        = "Testpulse"
 StrConstant TASKNAME_TPMD      = "TestpulseMD"
-StrConstant TASKNAME_TIMER     = "ITC_Timer"
-StrConstant TASKNAME_TIMERMD   = "ITC_TimerMD"
-StrConstant TASKNAME_FIFOMON   = "ITC_FIFOMonitor"
-StrConstant TASKNAME_FIFOMONMD = "ITC_FIFOMonitorMD"
-StrConstant TASKNAMES          = "Testpulse;TestpulseMD;ITC_Timer;ITC_TimerMD;ITC_FIFOMonitor;ITC_FIFOMonitorMD;"
+StrConstant TASKNAME_TIMER     = "Timer"
+StrConstant TASKNAME_TIMERMD   = "TimerMD"
+StrConstant TASKNAME_FIFOMON   = "FIFOMonitor"
+StrConstant TASKNAME_FIFOMONMD = "FIFOMonitorMD"
+StrConstant TASKNAMES          = "Testpulse;TestpulseMD;Timer;TimerMD;FIFOMonitor;FIFOMonitorMD;"
 /// @}
 
 /// @name Various mies specific regular expressions
@@ -70,22 +70,25 @@ Constant MIN_REGULATOR_PRESSURE = -9.9
 /// @}
 
 /// @name Latest version of config wave
-/// @anchor ItcConfigWaveVersion
+/// @anchor DaqConfigWaveVersion
 /// @{
-Constant ITC_CONFIG_WAVE_VERSION = 2
+Constant DAQ_CONFIG_WAVE_VERSION = 2
 /// @}
 
-StrConstant ITC_CHANNEL_NAMES    = "AD;DA;;TTL"
+/// The indizies correspond to the values from @ref XopChannelConstants
+StrConstant XOP_CHANNEL_NAMES = "AD;DA;;TTL"
 
-/// @name Channel constants shared with the ITC XOP
-/// @anchor ItcXopChannelConstants
+/// @name Channel constants shared with the ITC XOP.
+///
+/// Due to historic reasons these are now also used for other hardware types
+/// @anchor XopChannelConstants
 /// @{
-Constant ITC_XOP_CHANNEL_TYPE_ADC = 0
-Constant ITC_XOP_CHANNEL_TYPE_DAC = 1
-Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
+Constant XOP_CHANNEL_TYPE_ADC = 0
+Constant XOP_CHANNEL_TYPE_DAC = 1
+Constant XOP_CHANNEL_TYPE_TTL = 3
 /// @}
 
-/// @name DAQ Channel Type constants used in ITCChanConfigWave
+/// @name DAQ Channel Type constants used in DAQConfigWave
 /// @anchor DaqChannelTypeConstants
 /// @{
 Constant DAQ_CHANNEL_TYPE_UNKOWN = -1

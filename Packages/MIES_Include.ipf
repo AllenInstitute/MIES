@@ -172,7 +172,7 @@ End
 #include "MIES_DataAcquisition"
 #include "MIES_DataAcquisition_Single"
 #include "MIES_DataAcquisition_Multi"
-#include "MIES_DataConfiguratorITC"
+#include "MIES_DataConfigurator"
 #include "MIES_Debugging"
 #include "MIES_DebugPanel"
 #include "MIES_Downsample"

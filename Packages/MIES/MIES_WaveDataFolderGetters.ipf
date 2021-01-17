@@ -498,8 +498,8 @@ Function/Wave GetChannelClampMode(panelTitle)
 		Redimension/N=(-1, -1, 2) wv
 
 		// prefill with existing algorithm for easier upgrades
-		wv[][%DAC][1] = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
-		wv[][%ADC][1] = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
+		wv[][%DAC][1] = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
+		wv[][%ADC][1] = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
 	else
 		Make/R/N=(NUM_AD_CHANNELS, 2, 2) dfr:ChannelClampMode/Wave=wv
 		wv = NaN
@@ -547,40 +547,40 @@ Function/WAVE GetHSProperties(panelTitle)
 	return wv
 End
 
-/// @brief Return the ITC devices folder "root:mies:HardwareDevices"
-Function/DF GetITCDevicesFolder()
+/// @brief Return the DAQ devices folder "root:mies:HardwareDevices"
+Function/DF GetDAQDevicesFolder()
 
-	return UpgradeDataFolderLocation(GetMiesPathAsString() + ":ITCDevices", GetITCDevicesFolderAsString())
+	return UpgradeDataFolderLocation(GetMiesPathAsString() + ":ITCDevices", GetDAQDevicesFolderAsString())
 End
 
-/// @brief Return a data folder reference to the ITC devices folder
-threadsafe Function/S GetITCDevicesFolderAsString()
+/// @brief Return a data folder reference to the DAQ devices folder
+threadsafe Function/S GetDAQDevicesFolderAsString()
 
 	return GetMiesPathAsString() + ":HardwareDevices"
 End
 
-/// @brief Return the active ITC devices timer folder "root:mies:HardwareDevices:ActiveITCDevices:Timer"
-Function/DF GetActiveITCDevicesTimerFolder()
+/// @brief Return the active DAQ devices timer folder "root:mies:HardwareDevices:ActiveDAQDevices:Timer"
+Function/DF GetActiveDAQDevicesTimerFolder()
 
-	return createDFWithAllParents(GetActiveITCDevicesTimerAS())
+	return createDFWithAllParents(GetActiveDAQDevicesTimerAS())
 End
 
-/// @brief Return a data folder reference to the active ITC devices timer folder
-Function/S GetActiveITCDevicesTimerAS()
+/// @brief Return a data folder reference to the active DAQ devices timer folder
+Function/S GetActiveDAQDevicesTimerAS()
 
-	return GetActiveITCDevicesFolderAS() + ":Timer"
+	return GetActiveDAQDevicesFolderAS() + ":Timer"
 End
 
-/// @brief Return the active ITC devices folder "root:mies:HardwareDevices:ActiveITCDevices"
-Function/DF GetActiveITCDevicesFolder()
+/// @brief Return the active DAQ devices folder "root:mies:HardwareDevices:ActiveDAQDevices"
+Function/DF GetActiveDAQDevicesFolder()
 
-	return createDFWithAllParents(GetActiveITCDevicesFolderAS())
+	return createDFWithAllParents(GetActiveDAQDevicesFolderAS())
 End
 
-/// @brief Return a data folder reference to the active ITC devices folder
-Function/S GetActiveITCDevicesFolderAS()
+/// @brief Return a data folder reference to the active DAQ devices folder
+Function/S GetActiveDAQDevicesFolderAS()
 
-	return GetITCDevicesFolderAsString() + ":ActiveITCDevices"
+	return GetDAQDevicesFolderAsString() + ":ActiveDAQDevices"
 End
 
 /// @brief Return a datafolder reference to the device type folder
@@ -593,7 +593,7 @@ End
 threadsafe Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
 
-	return GetITCDevicesFolderAsString() + ":" + deviceType
+	return GetDAQDevicesFolderAsString() + ":" + deviceType
 End
 
 /// @brief Return a datafolder reference to the device folder
@@ -810,13 +810,13 @@ Function/Wave GetEpochsWave(panelTitle)
 	return wv
 End
 
-/// @brief Return the ITC channel config wave
+/// @brief Return the DAQ config wave
 ///
 /// Rows:
 /// - One for each channel, the order is DA, AD, TTL (same as in the DAQDataWave)
 ///
 /// Columns:
-/// - channel type, one of @ref ItcXopChannelConstants
+/// - channel type, one of @ref XopChannelConstants
 /// - channel number (0-based)
 /// - sampling interval in microseconds (1e-6)
 /// - decimation mode (always zero)
@@ -844,15 +844,15 @@ End
 ///   anymore but a comma.
 /// Version 2 changes:
 /// - DAQChannelType column added
-Function/Wave GetITCChanConfigWave(panelTitle)
+Function/Wave GetDAQConfigWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
 
-	WAVE/I/Z/SDFR=dfr wv = ITCChanConfigWave
+	WAVE/I/Z/SDFR=dfr wv = DAQConfigWave
 
 	// On version upgrade also adapt function IsValidConfigWave
-	if(ExistsWithCorrectLayoutVersion(wv, ITC_CONFIG_WAVE_VERSION))
+	if(ExistsWithCorrectLayoutVersion(wv, DAQ_CONFIG_WAVE_VERSION))
 		return wv
 	elseif(WaveExists(wv))
 		// do sequential version upgrade
@@ -870,7 +870,7 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 			Note/K wv
 		endif
 	else
-		Make/I/N=(2, 6) dfr:ITCChanConfigWave/Wave=wv
+		Make/I/N=(2, 6) dfr:DAQConfigWave/Wave=wv
 	endif
 
 	SetDimLabel COLS, 0, ChannelType, wv
@@ -880,7 +880,7 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 	SetDimLabel COLS, 4, Offset, wv
 	SetDimLabel COLS, 5, DAQChannelType, wv
 
-	SetWaveVersion(wv, ITC_CONFIG_WAVE_VERSION)
+	SetWaveVersion(wv, DAQ_CONFIG_WAVE_VERSION)
 	AddEntryIntoWaveNoteAsList(wv, CHANNEL_UNIT_KEY, str = "")
 
 	return wv
@@ -904,7 +904,7 @@ static Constant DQM_ACTIVE_DEV_WAVE_VERSION = 3
 /// - 3: Removed column 2 with StopCollectionPoint as it is no longer used
 Function/Wave GetDQMActiveDeviceList()
 
-	DFREF dfr = GetActiveITCDevicesFolder()
+	DFREF dfr = GetActiveDAQDevicesFolder()
 
 	WAVE/Z/D/SDFR=dfr wv = ActiveDeviceList
 
@@ -4286,7 +4286,7 @@ Function/S P_GetDevicePressureFolderAS(panelTitle)
 	return FolderPathString
 End
 
-/// @brief Creates ITC device specific pressure folder - used to store data for pressure regulators
+/// @brief Creates device specific pressure folder - used to store data for pressure regulators
 Function/DF P_DeviceSpecificPressureDFRef(panelTitle)
 	string 	panelTitle
 	return CreateDFWithAllParents(P_GetDevicePressureFolderAS(panelTitle))
@@ -4336,7 +4336,7 @@ Function/WAVE P_GetITCData(panelTitle)
 	return wv
 End
 
-/// @brief Returns a wave reference to the ITCChanConfig wave used for pressure pulses
+/// @brief Returns a wave reference to the DAQ config wave used for pressure pulses
 ///
 /// Rows:
 /// - 0: DA channel specifications
@@ -4363,10 +4363,10 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 	Make/I/N=(4, 4) dfr:P_ChanConfig/WAVE=wv
 
 	wv = 0
-	wv[0][0] = ITC_XOP_CHANNEL_TYPE_DAC
-	wv[1][0] = ITC_XOP_CHANNEL_TYPE_ADC
-	wv[2][0] = ITC_XOP_CHANNEL_TYPE_TTL
-	wv[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
+	wv[0][0] = XOP_CHANNEL_TYPE_DAC
+	wv[1][0] = XOP_CHANNEL_TYPE_ADC
+	wv[2][0] = XOP_CHANNEL_TYPE_TTL
+	wv[3][0] = XOP_CHANNEL_TYPE_TTL
 
 	// invalid TTL channels
 	wv[2][1] = -1
@@ -5152,15 +5152,15 @@ Function/S GetStaticDataFolderAS()
 	return GetMiesPathAsString() + ":StaticData"
 End
 
-/// @brief Return the datafolder reference to the active ITC devices folder,
-/// e.g. root:MIES:HardwareDevices:ActiveITCDevices:TestPulse
-Function/DF GetActITCDevicesTestPulseFolder()
-	return createDFWithAllParents(GetActITCDevicesTestPulFolderA())
+/// @brief Return the datafolder reference to the active DAQ devices folder,
+/// e.g. root:MIES:HardwareDevices:ActiveDAQDevices:TestPulse
+Function/DF GetActDAQDevicesTestPulseFolder()
+	return createDFWithAllParents(GetActiveDAQDevicesTestPulseFolderAsString())
 End
 
-/// @brief Return the full path to the active ITC devices location
-Function/S GetActITCDevicesTestPulFolderA()
-	return GetITCDevicesFolderAsString() + ":ActiveITCDevices:TestPulse"
+/// @brief Return the full path to the active DAQ devices location for the test pulse
+Function/S GetActiveDAQDevicesTestPulseFolderAsString()
+	return GetDAQDevicesFolderAsString() + ":ActiveDAQDevices:TestPulse"
 End
 
 /// @brief Return the active devices wave for TP MD
@@ -5175,7 +5175,7 @@ End
 /// In addition it is also the next free row index.
 Function/WAVE GetActiveDevicesTPMD()
 
-	DFREF dfr = GetActITCDevicesTestPulseFolder()
+	DFREF dfr = GetActDAQDevicesTestPulseFolder()
 	variable versionOfNewWave = 1
 
 	WAVE/Z/SDFR=dfr wv = ActiveDevicesTPMD
@@ -5365,7 +5365,7 @@ End
 /// - 1: Name of the device used for pressure control (maybe empty)
 Function/WAVE GetDeviceMapping()
 
-	DFREF dfr = GetITCDevicesFolder()
+	DFREF dfr = GetDAQDevicesFolder()
 	variable versionOfNewWave = 2
 
 	WAVE/Z/T/SDFR=dfr wv = deviceMapping
@@ -5517,7 +5517,7 @@ End
 /// @brief Return the full path to the optimized overlap distributed
 ///        acquisition (oodDAQ) folder, e.g. root:MIES:HardwareDevices:oodDAQ
 Function/S GetDistDAQFolderAS()
-	return GetITCDevicesFolderAsString() + ":oodDAQ"
+	return GetDAQDevicesFolderAsString() + ":oodDAQ"
 End
 
 /// @brief Return the wave used for storing preloadable data
@@ -5625,7 +5625,7 @@ End
 ///
 /// @param dfr           datafolder reference where to create the empty wave if it does not exist
 /// @param length        Length in points of the new wave
-/// @param channelType   ITC XOP numeric channel type
+/// @param channelType   channel type, one of @ref XopChannelConstants
 /// @param channelNumber channel number
 /// @param region        region index (a region is the range with data in a dDAQ/oodDAQ measurement)
 /// @param pulseIndex    pulse number, 0-based
@@ -5658,7 +5658,7 @@ End
 ///
 /// @param dfr           datafolder reference where to create the empty wave if it does not exist
 /// @param length        Length in points of the new wave
-/// @param channelType   ITC XOP numeric channel type
+/// @param channelType   channel type, one of @ref XopChannelConstants
 /// @param channelNumber channel number
 /// @param region        region index (a region is the range with data in a dDAQ/oodDAQ measurement)
 /// @param pulseIndex    pulse number, 0-based

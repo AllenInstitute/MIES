@@ -19,7 +19,7 @@ static Function RA_RecalculateITI(panelTitle)
 	variable ITI
 
 	NVAR repurposedTime = $GetRepurposedSweepTime(panelTitle)
-	ITI = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_ITI") - DQ_StopITCDeviceTimer(panelTitle) + repurposedTime
+	ITI = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_ITI") - DQ_StopDAQDeviceTimer(panelTitle) + repurposedTime
 	repurposedTime = 0
 
 	return ITI
@@ -232,7 +232,7 @@ Function RA_Counter(panelTitle)
 
 	if(Count < numTotalSweeps)
 		try
-			DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+			DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
 
 			if(DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"))
 				DQS_BkrdDataAcq(panelTitle)
@@ -253,7 +253,7 @@ static Function RA_FinishAcquisition(panelTitle)
 	string list
 	variable numEntries, i
 
-	DQ_StopITCDeviceTimer(panelTitle)
+	DQ_StopDAQDeviceTimer(panelTitle)
 
 #ifdef PERFING_RA
 	RA_PerfFinish(panelTitle)
@@ -386,9 +386,9 @@ static Function RA_AreLeaderAndFollowerFinished()
 
 	for(i = 0; i < numCandidates; i += 1)
 		candidate = StringFromList(i, listOfCandidates)
-		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(candidate)
+		NVAR deviceID = $GetDAQDeviceID(candidate)
 
-		row = DQM_GetActiveDeviceRow(ITCDeviceIDGlobal)
+		row = DQM_GetActiveDeviceRow(deviceID)
 		if(IsFinite(row)) // device still active
 			return 0
 		endif

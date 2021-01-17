@@ -130,7 +130,7 @@ Function SCOPE_UpdateGraph(panelTitle, dataAcqOrTP)
 		return NaN
 	endif
 
-	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE config = GetDAQConfigWave(panelTitle)
 	WAVE ADCmode = GetADCTypesFromConfig(config)
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -212,7 +212,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	graph = SCOPE_GetGraph(panelTitle)
 	scopeScaleMode = DAG_GetNumericalValue(panelTitle, "Popup_Settings_OsciUpdMode")
 
-	WAVE ITCChanConfigWave  = GetITCChanConfigWave(panelTitle)
+	WAVE DAQConfigWave  = GetDAQConfigWave(panelTitle)
 	WAVE SSResistance       = GetSSResistanceWave(panelTitle)
 	WAVE InstResistance     = GetInstResistanceWave(panelTitle)
 	WAVE TPStorage          = GetTPStorage(panelTitle)
@@ -220,10 +220,10 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
 	WAVE PressureData	= P_GetPressureDataWaveRef(panelTitle)
 
-	WAVE ADCmode = GetADCTypesFromConfig(ITCChanConfigWave)
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	WAVE ADCmode = GetADCTypesFromConfig(DAQConfigWave)
+	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
 	numADChannels = DimSize(ADCs, ROWS)
-	numActiveDACs = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
+	numActiveDACs = DimSize(GetDACListFromConfig(DAQConfigWave), ROWS)
 	graph = SCOPE_GetGraph(panelTitle)
 	Yoffset = 40 / numADChannels
 	YaxisSpacing = 0.95 / numADChannels
@@ -403,8 +403,8 @@ Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 		return NaN
 	endif
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
 
 	numADChannels = DimSize(ADCs, ROWS)
 
@@ -437,7 +437,7 @@ Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 		if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power") && dataAcqOrTP == TEST_PULSE_MODE)
 			unit = "a. u."
 		else
-			unit = AFH_GetChannelUnit(ITCChanConfigWave, adc, ITC_XOP_CHANNEL_TYPE_ADC)
+			unit = AFH_GetChannelUnit(DAQConfigWave, adc, XOP_CHANNEL_TYPE_ADC)
 		endif
 		Label/W=$Graph $leftAxis, style + color + labelStr + " (" + unit + ")"
 	endfor
@@ -508,7 +508,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			break;
 	endswitch
 
-	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE config = GetDAQConfigWave(panelTitle)
 	WAVE ADCmode = GetADCTypesFromConfig(config)
 	tpChannels = GetNrOfTypedChannels(ADCmode, DAQ_CHANNEL_TYPE_TP)
 
@@ -678,9 +678,9 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 	variable startOfADColumns, numEntries, decMethod, decFactor
 	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
 	WAVE DAQDataWave       = GetDAQDataWave(panelTitle, dataAcqOrTP)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
+	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
+	startOfADColumns = DimSize(GetDACListFromConfig(DAQConfigWave), ROWS)
 	numEntries = DimSize(ADCs, ROWS)
 
 	WAVE allGain = SWS_GETChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)
@@ -754,8 +754,8 @@ static Function SCOPE_ITC_AdjustFIFOPos(panelTitle, fifopos)
 
 	WAVE scaledDataWave = GetScaledDataWave(panelTitle)
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	fifopos += GetDataOffset(ITCChanConfigWave)
+	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
+	fifopos += GetDataOffset(DAQConfigWave)
 
 	if(fifoPos == 0)
 		return 0
@@ -763,7 +763,7 @@ static Function SCOPE_ITC_AdjustFIFOPos(panelTitle, fifopos)
 		// we are done
 		// return the length of the DAQDataWave
 		stopCollectionPoint = ROVAR(GetStopCollectionPoint(panelTitle))
-		fifoPos = stopCollectionPoint - GetDataOffset(ITCChanConfigWave)
+		fifoPos = stopCollectionPoint - GetDataOffset(DAQConfigWave)
 	elseif(fifoPos < 0)
 		printf "fifoPos was clipped to zero, old value %g\r", fifoPos
 		return 0

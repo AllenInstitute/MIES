@@ -32,7 +32,7 @@ Function DQS_StartDAQSingleDevice(panelTitle, [useBackground])
 	DAP_OneTimeCallBeforeDAQ(panelTitle, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
 
 	try
-		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+		DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
 	catch
 		// we need to undo the earlier one time call only
 		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
@@ -52,15 +52,15 @@ Function DQS_DataAcq(panelTitle)
 	variable fifoPos, gotTPChannels, moreData
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
-	HW_PrepareAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
+		DQ_StartDAQDeviceTimer(panelTitle)
 	endif
 
-	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 	ED_MarkSweepStart(panelTitle)
 
 	gotTPChannels = GotTPChannelsOnADCs(paneltitle)
@@ -68,7 +68,7 @@ Function DQS_DataAcq(panelTitle)
 	do
 		DoXOPIdle
 
-		moreData = HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos)
+		moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos)
 		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
 		if(gotTPChannels)
@@ -91,14 +91,14 @@ End
 Function DQS_BkrdDataAcq(panelTitle)
 	string panelTitle
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_PrepareAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	HW_PrepareAcq(HARDWARE_ITC_DAC, deviceID, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
+		DQ_StartDAQDeviceTimer(panelTitle)
 	endif
 
-	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 	ED_MarkSweepStart(panelTitle)
 
 	DQS_StartBackgroundFifoMonitor()
@@ -115,8 +115,8 @@ static Function DQS_StopDataAcq(panelTitle, [forcedStop])
 		forcedStop = !!forcedStop
 	endif
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC=1, flags=HARDWARE_ABORT_ON_ERROR)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1, zeroDAC=1, flags=HARDWARE_ABORT_ON_ERROR)
 	SWS_SaveAcquiredData(panelTitle, forcedStop = forcedStop)
 
 	if(forcedStop)
@@ -139,9 +139,9 @@ Function DQS_FIFOMonitor(s)
 	variable fifoPos, moreData, anaFuncReturn, result
 
 	SVAR panelTitleG       = $GetPanelTitleGlobal()
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
+	NVAR deviceID = $GetDAQDeviceID(panelTitleG)
 
-	moreData = HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos, flags=HARDWARE_ABORT_ON_ERROR)
+	moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos, flags=HARDWARE_ABORT_ON_ERROR)
 
 	SCOPE_UpdateOscilloscopeData(panelTitleG, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 

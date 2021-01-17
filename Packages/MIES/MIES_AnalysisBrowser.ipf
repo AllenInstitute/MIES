@@ -1640,19 +1640,19 @@ static Function AB_LoadSweepFromNWBgeneric(h5_groupID, nwbVersion, channelList, 
 		IPNWB#AnalyseChannelName(channel, p)
 
 		switch(p.channelType)
-			case ITC_XOP_CHANNEL_TYPE_DAC:
+			case XOP_CHANNEL_TYPE_DAC:
 				channelName = "DA"
 				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel)
 				channelName += "_" + num2str(p.channelNumber)
 				fakeConfigWave = 1
 				break
-			case ITC_XOP_CHANNEL_TYPE_ADC:
+			case XOP_CHANNEL_TYPE_ADC:
 				channelName = "AD"
 				wave loaded = IPNWB#LoadTimeseries(h5_groupID, channel, nwbVersion)
 				channelName += "_" + num2str(p.channelNumber)
 				fakeConfigWave = 1
 				break
-			case ITC_XOP_CHANNEL_TYPE_TTL:
+			case XOP_CHANNEL_TYPE_TTL:
 				channelName  = "TTL"
 				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel)
 				channelName += "_" + num2str(p.channelNumber)
@@ -1744,8 +1744,8 @@ static Function AB_SortConfigSweeps(config)
 	Make/I/Free/N=(numRows) keyPrimary, keySecondary
 	Make/Free/N=(numRows)/I/U valindex = p
 
-	//sort order: ITC_XOP_CHANNEL_TYPE_DAC = 1, ITC_XOP_CHANNEL_TYPE_ADC = 0, ITC_XOP_CHANNEL_TYPE_TTL = 3
-	MultiThread keyPrimary[]   = config[p][%type] == ITC_XOP_CHANNEL_TYPE_ADC ? 2 : config[p][%type]
+	//sort order: XOP_CHANNEL_TYPE_DAC = 1, XOP_CHANNEL_TYPE_ADC = 0, XOP_CHANNEL_TYPE_TTL = 3
+	MultiThread keyPrimary[]   = config[p][%type] == XOP_CHANNEL_TYPE_ADC ? 2 : config[p][%type]
 	MultiThread keySecondary[] = config[p][%number]
 	Sort/A {keyPrimary, keySecondary}, valindex
 

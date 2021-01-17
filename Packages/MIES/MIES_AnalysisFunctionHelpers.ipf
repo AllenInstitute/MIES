@@ -101,26 +101,26 @@ End
 /// @brief Return the column index into `DAQDataWave` for the given channel/type
 ///        combination
 ///
-/// @param ITCChanConfigWave ITC configuration wave, most users need to call
-///                          `GetITCChanConfigWave(panelTitle)` to get that wave.
-/// @param channelNumber     channel number (0-based)
-/// @param channelType       channel type, one of @ref ItcXopChannelConstants
-Function AFH_GetITCDataColumn(ITCChanConfigWave, channelNumber, channelType)
-	WAVE ITCChanConfigWave
+/// @param DAQConfigWave DAQ configuration wave, most users need to call
+///                      `GetDAQConfigWave(panelTitle)` to get that wave.
+/// @param channelNumber channel number (0-based)
+/// @param channelType   channel type, one of @ref XopChannelConstants
+Function AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
+	WAVE DAQConfigWave
 	variable channelNumber, channelType
 
 	variable numRows, i
 
 	ASSERT(IsFinite(channelNumber), "Non-finite channel number")
 
-	numRows = DimSize(ITCChanConfigWave, ROWS)
+	numRows = DimSize(DAQConfigWave, ROWS)
 	for(i = 0; i < numRows; i += 1)
 
-		if(channelType != ITCChanConfigWave[i][0])
+		if(channelType != DAQConfigWave[i][0])
 			continue
 		endif
 
-		if(channelNumber != ITCChanConfigWave[i][1])
+		if(channelNumber != DAQConfigWave[i][1])
 			continue
 		endif
 
@@ -136,36 +136,36 @@ End
 
 /// @brief Return all channel units as free text wave
 ///
-/// @param ITCChanConfigWave ITC configuration wave, most users need to call
-///                          `GetITCChanConfigWave(panelTitle)` to get that wave.
-Function/WAVE AFH_GetChannelUnits(ITCChanConfigWave)
-	WAVE ITCChanConfigWave
+/// @param DAQConfigWave DAQ configuration wave, most users need to call
+///                      `GetDAQConfigWave(panelTitle)` to get that wave.
+Function/WAVE AFH_GetChannelUnits(DAQConfigWave)
+	WAVE DAQConfigWave
 
 	string units
 
-	if(IsValidConfigWave(ITCChanConfigWave, version=1))
-		units = GetStringFromWaveNote(ITCChanConfigWave, CHANNEL_UNIT_KEY, keySep = "=")
+	if(IsValidConfigWave(DAQConfigWave, version=1))
+		units = GetStringFromWaveNote(DAQConfigWave, CHANNEL_UNIT_KEY, keySep = "=")
 		return ListToTextWave(units, ",")
 	else
-		units = note(ITCChanConfigWave)
+		units = note(DAQConfigWave)
 		return ListToTextWave(units, ";")
 	endif
 End
 
 /// @brief Return the channel unit
 ///
-/// @param ITCChanConfigWave ITC configuration wave, most users need to call
-///                          `GetITCChanConfigWave(panelTitle)` to get that wave.
-/// @param channelNumber     channel number (0-based)
-/// @param channelType       channel type, one of @ref ItcXopChannelConstants
-Function/S AFH_GetChannelUnit(ITCChanConfigWave, channelNumber, channelType)
-	WAVE ITCChanConfigWave
+/// @param DAQConfigWave DAQ configuration wave, most users need to call
+///                      `GetDAQConfigWave(panelTitle)` to get that wave.
+/// @param channelNumber channel number (0-based)
+/// @param channelType   channel type, one of @ref XopChannelConstants
+Function/S AFH_GetChannelUnit(DAQConfigWave, channelNumber, channelType)
+	WAVE DAQConfigWave
 	variable channelNumber, channelType
 
 	variable idx
 
-	idx = AFH_GetITCDataColumn(ITCChanConfigWave, channelNumber, channelType)
-	WAVE/T units = AFH_GetChannelUnits(ITCChanConfigWave)
+	idx = AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
+	WAVE/T units = AFH_GetChannelUnits(DAQConfigWave)
 
 	if(idx >= DimSize(units, ROWS))
 		return ""
@@ -370,7 +370,7 @@ End
 /// 	variable sweepNo = 5
 /// 	WAVE sweep = GetSweepWave(panelTitle, sweepNo)
 /// 	variable headstage = 1
-/// 	WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, ITC_XOP_CHANNEL_TYPE_ADC)
+/// 	WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, XOP_CHANNEL_TYPE_ADC)
 /// \endrst
 ///
 /// Extract the TTL channel 1:
@@ -381,13 +381,13 @@ End
 /// 	variable sweepNo = 6
 /// 	WAVE sweep = GetSweepWave(panelTitle, sweepNo)
 /// 	variable ttlChannel = 1
-/// 	WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, ttlChannel, ITC_XOP_CHANNEL_TYPE_TTL)
+/// 	WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, ttlChannel, XOP_CHANNEL_TYPE_TTL)
 /// \endrst
 ///
 /// @param panelTitle            device
 /// @param sweep                 sweep wave
 /// @param headstageOrChannelNum headstage [0, NUM_HEADSTAGES[ or channel number for TTL channels [0, NUM_DA_TTL_CHANNELS]
-/// @param channelType           One of @ref ItcXopChannelConstants
+/// @param channelType           One of @ref XopChannelConstants
 /// @param config                [optional, defaults to config wave of the sweep returned by GetConfigWave()] config wave
 Function/WAVE AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstageOrChannelNum, channelType, [config])
 	string panelTitle
@@ -402,20 +402,20 @@ Function/WAVE AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstageOrChann
 	endif
 
 	switch(channelType)
-		case ITC_XOP_CHANNEL_TYPE_DAC:
+		case XOP_CHANNEL_TYPE_DAC:
 			channelNum = AFH_GetDACFromHeadstage(panelTitle, headstageOrChannelNum)
 			break
-		case ITC_XOP_CHANNEL_TYPE_ADC:
+		case XOP_CHANNEL_TYPE_ADC:
 			channelNum = AFH_GetADCFromHeadstage(panelTitle, headstageOrChannelNum)
 			break
-		case ITC_XOP_CHANNEL_TYPE_TTL:
+		case XOP_CHANNEL_TYPE_TTL:
 			channelNum = headstageOrChannelNum
 			break
 		default:
 			ASSERT(0, "Invalid channeltype")
 	endswitch
 
-	col = AFH_GetITCDataColumn(config, channelNum, channelType)
+	col = AFH_GetDAQDataColumn(config, channelNum, channelType)
 	ASSERT(IsFinite(col), "invalid headstage and/or channelType")
 
 	return ExtractOneDimDataFromSweep(config, sweep, col)

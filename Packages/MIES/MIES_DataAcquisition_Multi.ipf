@@ -127,17 +127,17 @@ End
 Function DQM_TerminateOngoingDAQHelper(panelTitle)
 	String panelTitle
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 
 	variable hardwareType = GetHardwareType(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
-		TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+		TFH_StopFIFODaemon(HARDWARE_ITC_DAC, deviceID)
 	endif
-	HW_StopAcq(hardwareType, ITCDeviceIDGlobal, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StopAcq(hardwareType, deviceID, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
 
 	// remove device passed in from active device lists
-	DQM_RemoveDevice(panelTitle, ITCDeviceIDGlobal)
+	DQM_RemoveDevice(panelTitle, deviceID)
 
 	// determine if device removed was the last device on the list, if yes stop the background function
 	if(DimSize(ActiveDeviceList, ROWS) == 0)
@@ -174,21 +174,21 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 			DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
 		endif
 
-		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+		DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
 		NVAR maxITI = $GetMaxIntertrialInterval(panelTitle)
 	catch
 		if(initialSetupReq)
 			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 		else // required for RA for the lead device only
-			DQ_StopITCDeviceTimer(panelTitle)
+			DQ_StopDAQDeviceTimer(panelTitle)
 		endif
 
 		return NaN
 	endtry
 
 	// configure passed device
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	HW_PrepareAcq(GetHardwareType(panelTitle), deviceID, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(!DeviceHasFollower(panelTitle))
 		DAP_UpdateITIAcrossSets(panelTitle, maxITI)
@@ -209,7 +209,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 				DAP_OneTimeCallBeforeDAQ(followerPanelTitle, DAQ_BG_MULTI_DEVICE)
 			endif
 
-			DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
+			DC_Configure(followerPanelTitle, DATA_ACQUISITION_MODE)
 
 			NVAR maxITI = $GetMaxIntertrialInterval(panelTitle)
 			acrossYokingMaxITI = max(maxITI, acrossYokingMaxITI)
@@ -223,7 +223,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 
 			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 		else // required for RA for the lead device only
-			DQ_StopITCDeviceTimer(panelTitle)
+			DQ_StopDAQDeviceTimer(panelTitle)
 		endif
 
 		return NaN
@@ -236,8 +236,8 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 	for(i = 0; i < numFollower; i += 1)
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
-		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerPanelTitle)
-		HW_ITC_PrepareAcq(ITCDeviceIDGlobal, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+		NVAR deviceID = $GetDAQDeviceID(followerPanelTitle)
+		HW_ITC_PrepareAcq(deviceID, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 	endfor
 
 	// start lead device
@@ -250,7 +250,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 	endfor
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		DQ_StartITCDeviceTimer(panelTitle)
+		DQ_StartDAQDeviceTimer(panelTitle)
 	endif
 
 	// trigger
@@ -296,7 +296,7 @@ End
 Function DQM_StopBackgroundTimer(panelTitle)
 	string panelTitle
 
-	WAVE/SDFR=GetActiveITCDevicesTimerFolder() ActiveDevTimeParam
+	WAVE/SDFR=GetActiveDAQDevicesTimerFolder() ActiveDevTimeParam
 
 	DQM_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
 	variable DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
@@ -311,9 +311,9 @@ End
 Function DQM_Timer(s)
 	STRUCT WMBackgroundStruct &s
 
-	WAVE/SDFR=GetActiveITCDevicesTimerFolder() ActiveDevTimeParam
-	// column 0 = ITCDeviceIDGlobal; column 1 = Start time; column 2 = run time; column 3 = end time
-	WAVE/T/SDFR=GetActiveITCDevicesTimerFolder() TimerFunctionListWave
+	WAVE/SDFR=GetActiveDAQDevicesTimerFolder() ActiveDevTimeParam
+	// column 0 = deviceID; column 1 = Start time; column 2 = run time; column 3 = end time
+	WAVE/T/SDFR=GetActiveDAQDevicesTimerFolder() TimerFunctionListWave
 	// column 0 = panel title; column 1 = list of functions
 	variable i
 	string panelTitle
@@ -347,15 +347,15 @@ static Function DQM_StartBckrdFIFOMonitor()
 	CtrlNamedBackground $TASKNAME_FIFOMONMD, start
 End
 
-static Function DQM_StopDataAcq(panelTitle, ITCDeviceIDGlobal)
+static Function DQM_StopDataAcq(panelTitle, deviceID)
 	String panelTitle
-	Variable ITCDeviceIDGlobal
+	Variable deviceID
 
 	variable hardwareType = GetHardwareType(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
-		TFH_StopFIFODaemon(hardwareType, ITCDeviceIDGlobal)
+		TFH_StopFIFODaemon(hardwareType, deviceID)
 	endif
-	HW_StopAcq(hardwareType, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StopAcq(hardwareType, deviceID, prepareForDAQ = 1, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
 
 	SWS_SaveAcquiredData(panelTitle)
 	RA_ContinueOrStop(panelTitle, multiDevice=1)
@@ -369,17 +369,17 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
 
-	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID   = $GetDAQDeviceID(panelTitle)
 
 	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER && DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		DQ_StartITCDeviceTimer(panelTitle)
+		DQ_StartDAQDeviceTimer(panelTitle)
 	endif
 
 	variable hardwareType = GetHardwareType(panelTitle)
-	HW_StartAcq(hardwareType, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StartAcq(hardwareType, deviceID, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
 	ED_MarkSweepStart(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
-		TFH_StartFIFOStopDaemon(hardwareType, ITCDeviceIDGlobal)
+		TFH_StartFIFOStopDaemon(hardwareType, deviceID)
 	endif
 
 	DQM_AddDevice(panelTitle)
@@ -392,16 +392,16 @@ End
 /// @brief Removes a device from the ActiveDeviceList
 ///
 /// @param panelTitle panel title
-/// @param ITCDeviceIDGlobal device id of the device to be removed
-static Function DQM_RemoveDevice(panelTitle, ITCDeviceIDGlobal)
+/// @param deviceID   id of the device to be removed
+static Function DQM_RemoveDevice(panelTitle, deviceID)
 	string panelTitle
-	variable ITCDeviceIDGlobal
+	variable deviceID
 
 	variable row
 
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 
-	row = DQM_GetActiveDeviceRow(ITCDeviceIDGlobal)
+	row = DQM_GetActiveDeviceRow(deviceID)
 	DeleteWavePoint(ActiveDeviceList, ROWS, row)
 End
 
@@ -430,13 +430,13 @@ static Function DQM_AddDevice(panelTitle)
 	variable numberOfRows
 
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
-	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID   = $GetDAQDeviceID(panelTitle)
 	WAVE ActiveDeviceList    = GetDQMActiveDeviceList()
 
 	numberOfRows = DimSize(ActiveDeviceList, ROWS)
 	Redimension/N=(numberOfRows + 1, 4) ActiveDeviceList
 
-	ActiveDeviceList[numberOfRows][%DeviceID] = ITCDeviceIDGlobal
+	ActiveDeviceList[numberOfRows][%DeviceID] = deviceID
 	ActiveDeviceList[numberOfRows][%ADChannelToMonitor] = ADChannelToMonitor
 	ActiveDeviceList[numberOfRows][%HardwareType] = GetHardwareType(panelTitle)
 	ActiveDeviceList[numberOfRows][%ActiveChunk] = NaN
@@ -449,14 +449,14 @@ static Function DQM_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, star
 	variable rowToRemove = NaN
 	variable numberOfRows
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	DFREF dfr = GetActiveITCDevicesTimerFolder()
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	DFREF dfr = GetActiveDAQDevicesTimerFolder()
 
 	WAVE/Z/SDFR=dfr ActiveDevTimeParam
-	if(addOrRemoveDevice == 1) // add a ITC device
+	if(addOrRemoveDevice == 1) // add a DAQ device
 		if(!WaveExists(ActiveDevTimeParam))
 			Make/N=(1, 5) dfr:ActiveDevTimeParam/Wave=ActiveDevTimeParam
-			ActiveDevTimeParam[0][0] = ITCDeviceIDGlobal
+			ActiveDevTimeParam[0][0] = deviceID
 			ActiveDevTimeParam[0][1] = startTime
 			ActiveDevTimeParam[0][2] = RunTime
 			ActiveDevTimeParam[0][3] = EndTime
@@ -464,15 +464,15 @@ static Function DQM_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, star
 		else
 			numberOfRows = DimSize(ActiveDevTimeParam, ROWS)
 			Redimension/N=(numberOfRows + 1, 5) ActiveDevTimeParam
-			ActiveDevTimeParam[numberOfRows][0] = ITCDeviceIDGlobal
+			ActiveDevTimeParam[numberOfRows][0] = deviceID
 			ActiveDevTimeParam[numberOfRows][1] = startTime
 			ActiveDevTimeParam[numberOfRows][2] = RunTime
 			ActiveDevTimeParam[numberOfRows][3] = EndTime
 			//ActiveDevTimeParam[0][4] = Elapsed time - calculated by background timer
 		endif
-	elseif(addOrRemoveDevice == -1) // remove a ITC device
-		Duplicate/FREE/R=[][0] ActiveDevTimeParam ListOfITCDeviceIDGlobal
-		FindValue/V=(ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal
+	elseif(addOrRemoveDevice == -1) // remove a DAQ device
+		Duplicate/FREE/R=[][0] ActiveDevTimeParam ListOfdeviceID
+		FindValue/V=(deviceID) ListOfdeviceID
 		rowToRemove = V_Value
 		ASSERT(rowToRemove >= 0, "Trying to remove a non existing device")
 		DeletePoints/M=(ROWS) rowToRemove, 1, ActiveDevTimeParam
@@ -494,7 +494,7 @@ static Function DQM_MakeOrUpdtDevTimerTxtWv(panelTitle, listOfFunctions, rowToRe
 
 	variable numberOfRows
 
-	DFREF dfr = GetActiveITCDevicesTimerFolder()
+	DFREF dfr = GetActiveDAQDevicesTimerFolder()
 	WAVE/Z/T/SDFR=dfr TimerFunctionListWave
 
 	if(addOrRemoveDevice == 1) // Add a device

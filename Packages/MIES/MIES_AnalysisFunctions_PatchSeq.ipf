@@ -148,7 +148,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, total
 
 	if(!WaveExists(sweepWave))
 		WAVE sweepWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
-		WAVE config    = GetITCChanConfigWave(panelTitle)
+		WAVE config    = GetDAQConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
 	endif
@@ -162,7 +162,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, total
 			continue
 		endif
 
-		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, i, ITC_XOP_CHANNEL_TYPE_DAC, config = config)
+		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, i, XOP_CHANNEL_TYPE_DAC, config = config)
 		level = WaveMin(singleDA, totalOnsetDelay, inf) + GetMachineEpsilon(WaveType(singleDA))
 
 		FindLevel/Q/R=(totalOnsetDelay, inf)/EDGE=1 singleDA, level
@@ -267,7 +267,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTimeMax, chunkStartTimeMax + chunkLengthTime, fifoInStimsetTime + totalOnsetDelay
 	DEBUGPRINT(msg)
 
-	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE config = GetDAQConfigWave(panelTitle)
 
 	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShort       = NaN
 	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShortPassed = NaN
@@ -295,7 +295,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 
 		ADC = AFH_GetADCFromHeadstage(panelTitle, i)
 		ASSERT(IsFinite(ADC), "This analysis function does not work with unassociated AD channels")
-		ADcol = AFH_GetITCDataColumn(config, ADC, ITC_XOP_CHANNEL_TYPE_ADC)
+		ADcol = AFH_GetDAQDataColumn(config, ADC, XOP_CHANNEL_TYPE_ADC)
 
 		ADunit = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), index = ADC)
 
@@ -733,7 +733,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = (p == headstage ? 0 : NaN)
 
 	if(WaveRefsEqual(sweepWave, GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)))
-		WAVE config = GetITCChanConfigWave(panelTitle)
+		WAVE config = GetDAQConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
 	endif
@@ -752,7 +752,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	sprintf msg, "Type %d, headstage %d, totalOnsetDelay %g, numberOfSpikesReq %d", type, headstage, totalOnsetDelay, numberOfSpikesReq
 	DEBUGPRINT(msg)
 
-	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC, config = config)
+	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
 	minVal = WaveMin(singleDA, totalOnsetDelay, inf)
 	maxVal = WaveMax(singleDA, totalOnsetDelay, inf)
 
@@ -832,7 +832,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 			level = PSQ_SPIKE_LEVEL
 		endif
 
-		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_ADC, config = config)
+		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
 		ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
 		if(numberOfSpikesReq == 1)
@@ -2617,7 +2617,7 @@ Function PSQ_Ramp(panelTitle, s)
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITIONS)
 			ED_AddEntryToLabnotebook(panelTitle, key, resultTxT, overrideSweepNo = s.sweepNo, unit = "ms")
 
-			NVAR deviceID = $GetITCDeviceIDGlobal(panelTitle)
+			NVAR deviceID = $GetDAQDeviceID(panelTitle)
 			NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 
 			hardwareType = GetHardwareType(panelTitle)
@@ -2671,7 +2671,7 @@ Function PSQ_Ramp(panelTitle, s)
 				// DA output runs on the AD tasks clock source ai
 				// we stop DA and set the analog out to 0, the AD task keeps on running
 
-				WAVE config = GetITCChanConfigWave(panelTitle)
+				WAVE config = GetDAQConfigWave(panelTitle)
 				fifoName = GetNIFIFOName(deviceID)
 
 				HW_NI_StopDAC(deviceID)

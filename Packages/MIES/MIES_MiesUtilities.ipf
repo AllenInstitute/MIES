@@ -163,34 +163,34 @@ static Function/WAVE ExtractLBColumn(values, col, suffix)
 	return singleColumn
 End
 
-/// @brief Return a list of the AD channels from the ITC config
+/// @brief Return a list of the AD channels from the DAQ config
 Function/WAVE GetADCListFromConfig(config)
 	WAVE config
 
-	return GetChanneListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_ADC)
+	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_ADC)
 End
 
-/// @brief Return a list of the DA channels from the ITC config
+/// @brief Return a list of the DA channels from the DAQ config
 Function/WAVE GetDACListFromConfig(config)
 	WAVE config
 
-	return GetChanneListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_DAC)
+	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_DAC)
 End
 
-/// @brief Return a list of the TTL channels from the ITC config
+/// @brief Return a list of the TTL channels from the DAQ config
 Function/WAVE GetTTLListFromConfig(config)
 	WAVE config
 
-	return GetChanneListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_TTL)
+	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_TTL)
 End
 
 /// @brief Return a wave with all active channels
 ///
 /// @todo change to return a 0/1 wave with constant size a la DAG_GetChannelState
 ///
-/// @param config       ITCChanConfigWave as passed to the ITC XOP
+/// @param config       DAQConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
-static Function/WAVE GetChanneListFromITCConfig(config, channelType)
+static Function/WAVE GetChanneListFromDAQConfigWave(config, channelType)
 	WAVE config
 	variable channelType
 
@@ -241,28 +241,28 @@ End
 Function/WAVE GetTTLTypesFromConfig(config)
 	WAVE config
 
-	return GetTypeListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_TTL)
+	return GetTypeListFromITCConfig(config, XOP_CHANNEL_TYPE_TTL)
 End
 
 /// @brief Return a types of the AD channels from the ITC config
 Function/WAVE GetADCTypesFromConfig(config)
 	WAVE config
 
-	return GetTypeListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_ADC)
+	return GetTypeListFromITCConfig(config, XOP_CHANNEL_TYPE_ADC)
 End
 
 /// @brief Return a types of the DA channels from the ITC config
 Function/WAVE GetDACTypesFromConfig(config)
 	WAVE config
 
-	return GetTypeListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_DAC)
+	return GetTypeListFromITCConfig(config, XOP_CHANNEL_TYPE_DAC)
 End
 
 /// @brief Return a wave with all active channels
 ///
 /// @todo change to return a 0/1 wave with constant size a la DAG_GetChannelState
 ///
-/// @param config       ITCChanConfigWave as passed to the ITC XOP
+/// @param config       DAQConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
 static Function/WAVE GetTypeListFromITCConfig(config, channelType)
 	WAVE config
@@ -295,7 +295,7 @@ End
 Function GotTPChannelsOnADCs(panelTitle)
 	string panelTitle
 
-	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE config = GetDAQConfigWave(panelTitle)
 	WAVE ADCmode = GetADCTypesFromConfig(config)
 	FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
 	return (V_Value != -1)
@@ -736,7 +736,7 @@ End
 /// @param sweepNo         sweep number
 /// @param setting         name of the labnotebook entry to search
 /// @param channelNumber   channel number
-/// @param channelType     channel type, one of @ref ItcXopChannelConstants
+/// @param channelType     channel type, one of @ref XopChannelConstants
 /// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes.
 ///                        If you don't care about the entry source type pass #UNKNOWN_MODE.
 ///
@@ -747,10 +747,10 @@ static Function [WAVE/Z wv, variable index] GetLastSettingChannelInternal(WAVE n
 	string entryName
 
 	switch(channelType)
-		case ITC_XOP_CHANNEL_TYPE_DAC:
+		case XOP_CHANNEL_TYPE_DAC:
 			entryName = "DAC"
 			break
-		case ITC_XOP_CHANNEL_TYPE_ADC:
+		case XOP_CHANNEL_TYPE_ADC:
 			entryName = "ADC"
 			break
 		default:
@@ -1705,8 +1705,8 @@ Function/S GetAllDevices()
 	string folder, number, device, folders, subFolders, subFolder
 	string path, list = ""
 
-	string devicesFolderPath = GetITCDevicesFolderAsString()
-	DFREF devicesFolder = GetITCDevicesFolder()
+	string devicesFolderPath = GetDAQDevicesFolderAsString()
+	DFREF devicesFolder = GetDAQDevicesFolder()
 
 	folders = GetListOfObjects(devicesFolder, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
 	numEntries = ItemsInList(folders)
@@ -1727,9 +1727,9 @@ Function/S GetAllDevices()
 
 				if(DataFolderExists(path))
 					DFREF dfr = $path
-					NVAR/SDFR=dfr/Z ITCDeviceIDGlobal
+					NVAR/SDFR=dfr/Z deviceID, ITCDeviceIDGlobal
 
-					if(NVAR_Exists(ITCDeviceIDGlobal))
+					if(NVAR_Exists(deviceID) || NVAR_Exists(ITCDeviceIDGlobal))
 						list = AddListItem(device, list, ";", inf)
 					endif
 				endif
@@ -1741,9 +1741,9 @@ Function/S GetAllDevices()
 
 			if(DataFolderExists(path))
 				DFREF dfr = $path
-				NVAR/SDFR=dfr/Z ITCDeviceIDGlobal
+					NVAR/SDFR=dfr/Z deviceID, ITCDeviceIDGlobal
 
-				if(NVAR_Exists(ITCDeviceIDGlobal))
+				if(NVAR_Exists(deviceID) || NVAR_Exists(ITCDeviceIDGlobal))
 					list = AddListItem(device, list, ";", inf)
 				endif
 			endif
@@ -1865,14 +1865,14 @@ End
 /// Holds invalid wave refs for non-existing entries.
 ///
 /// @param sweepDFR    datafolder reference with 1D sweep data
-/// @param channelType One of @ref ItcXopChannelConstants
+/// @param channelType One of @ref XopChannelConstants
 ///
-/// @see GetITCDataSingleColumnWave() or SplitSweepIntoComponents()
-Function/WAVE GetITCDataSingleColumnWaves(sweepDFR, channelType)
+/// @see GetDAQDataSingleColumnWave() or SplitSweepIntoComponents()
+Function/WAVE GetDAQDataSingleColumnWaves(sweepDFR, channelType)
 	DFREF sweepDFR
 	variable channelType
 
-	Make/FREE/WAVE/N=(GetNumberFromType(itcVar=channelType)) matches = GetITCDataSingleColumnWave(sweepDFR, channelType, p)
+	Make/FREE/WAVE/N=(GetNumberFromType(xopVar=channelType)) matches = GetDAQDataSingleColumnWave(sweepDFR, channelType, p)
 
 	return matches
 End
@@ -1882,11 +1882,11 @@ End
 /// Returned wave reference can be invalid.
 ///
 /// @param sweepDFR      datafolder holding 1D waves
-/// @param channelType   One of @ref ItcXopChannelConstants
+/// @param channelType   One of @ref XopChannelConstants
 /// @param channelNumber channel number
 /// @param splitTTLBits  [optional, defaults to false] return a single bit of the TTL wave
 /// @param ttlBit        [optional] number specifying the TTL bit
-Function/WAVE GetITCDataSingleColumnWave(sweepDFR, channelType, channelNumber, [splitTTLBits, ttlBit])
+Function/WAVE GetDAQDataSingleColumnWave(sweepDFR, channelType, channelNumber, [splitTTLBits, ttlBit])
 	DFREF sweepDFR
 	variable channelType, channelNumber
 	variable splitTTLBits, ttlBit
@@ -1900,11 +1900,11 @@ Function/WAVE GetITCDataSingleColumnWave(sweepDFR, channelType, channelNumber, [
 	endif
 
 	ASSERT(ParamIsDefault(splitTTLBits) + ParamIsDefault(ttlBit) != 1, "Expected both or none of splitTTLBits and ttlBit")
-	ASSERT(channelNumber < GetNumberFromType(itcVar=channelType), "Invalid channel index")
+	ASSERT(channelNumber < GetNumberFromType(xopVar=channelType), "Invalid channel index")
 
-	wvName = StringFromList(channelType, ITC_CHANNEL_NAMES) + "_" + num2str(channelNumber)
+	wvName = StringFromList(channelType, XOP_CHANNEL_NAMES) + "_" + num2str(channelNumber)
 
-	if(channelType == ITC_XOP_CHANNEL_TYPE_TTL && splitTTLBits)
+	if(channelType == XOP_CHANNEL_TYPE_TTL && splitTTLBits)
 		wvName += "_" + num2str(ttlBit)
 	endif
 
@@ -2367,7 +2367,7 @@ End
 ///	\endrst
 ///
 /// @param graph           window
-/// @param config          ITC config wave
+/// @param config          DAQ config wave
 /// @param sweepNo         number of the sweep
 /// @param numericalValues numerical labnotebook wave
 /// @param textualValues   textual labnotebook wave
@@ -2542,9 +2542,9 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	WAVE/Z adChannelType = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
 
 	MAKE/FREE/B/N=(NUM_CHANNEL_TYPES) channelTypes
-	channelTypes[0] = ITC_XOP_CHANNEL_TYPE_DAC
-	channelTypes[1] = ITC_XOP_CHANNEL_TYPE_ADC
-	channelTypes[2] = ITC_XOP_CHANNEL_TYPE_TTL
+	channelTypes[0] = XOP_CHANNEL_TYPE_DAC
+	channelTypes[1] = XOP_CHANNEL_TYPE_ADC
+	channelTypes[2] = XOP_CHANNEL_TYPE_TTL
 
 	MAKE/FREE/B/N=(NUM_CHANNEL_TYPES) activeChanCount = 0
 
@@ -2558,7 +2558,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 		// and take the first active channel from the list of channels per type
 		for(i = 0; i < NUM_CHANNEL_TYPES; i += 1)
 			switch(channelTypes[i])
-				case ITC_XOP_CHANNEL_TYPE_DAC:
+				case XOP_CHANNEL_TYPE_DAC:
 					if(!tgs.displayDAC)
 						continue
 					endif
@@ -2571,7 +2571,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					numVertWaves     = 1
 					numChannels      = numDACs
 					break
-				case ITC_XOP_CHANNEL_TYPE_ADC:
+				case XOP_CHANNEL_TYPE_ADC:
 					if(!tgs.displayADC)
 						continue
 					endif
@@ -2584,7 +2584,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					numVertWaves     = 1
 					numChannels      = numADCs
 					break
-				case ITC_XOP_CHANNEL_TYPE_TTL:
+				case XOP_CHANNEL_TYPE_TTL:
 					if(!tgs.displayTTL                                      \
 					   || (tgs.displayDAC && numDACs != activeChanCount[0]) \
 					   || (tgs.displayADC && numADCs != activeChanCount[1]))
@@ -2623,11 +2623,11 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 			// ignore TP during DAQ channels
 			if(WaveExists(status) && IsFinite(headstage))
-				if(channelTypes[i] == ITC_XOP_CHANNEL_TYPE_DAC          \
+				if(channelTypes[i] == XOP_CHANNEL_TYPE_DAC          \
 				   && WaveExists(daChannelType)                         \
 				   && daChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
 						continue
-				elseif(channelTypes[i] == ITC_XOP_CHANNEL_TYPE_ADC          \
+				elseif(channelTypes[i] == XOP_CHANNEL_TYPE_ADC          \
 				       && WaveExists(adChannelType)                         \
 				       && adChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
 						continue
@@ -2654,7 +2654,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 				ASSERT(DataFolderExistsDFR(singleSweepDFR), "Missing singleSweepDFR")
 
-				WAVE/Z wv = GetITCDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
+				WAVE/Z wv = GetDAQDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
 				if(!WaveExists(wv))
 					continue
 				endif
@@ -2695,7 +2695,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						vertAxis += "_HS_" + num2str(headstage)
 					endif
 
-					if(tgs.dDAQDisplayMode && channelTypes[i] != ITC_XOP_CHANNEL_TYPE_TTL) // TTL channels don't have dDAQ mode
+					if(tgs.dDAQDisplayMode && channelTypes[i] != XOP_CHANNEL_TYPE_TTL) // TTL channels don't have dDAQ mode
 
 						if(dDAQEnabled)
 							// fallback to manual calculation
@@ -2729,7 +2729,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						xRangeEnd   = NaN
 					endif
 
-					if(tgs.dDAQDisplayMode && oodDAQEnabled && channelTypes[i] != ITC_XOP_CHANNEL_TYPE_TTL)
+					if(tgs.dDAQDisplayMode && oodDAQEnabled && channelTypes[i] != XOP_CHANNEL_TYPE_TTL)
 						offset = -(delayOnsetUser + delayOnsetAuto) * samplingInt
 					else
 						offset = 0.0
@@ -3651,13 +3651,13 @@ End
 ///
 /// @param var    numeric channel types
 /// @param str    string channel types
-/// @param itcVar numeric ITC XOP channel types
-Function GetNumberFromType([var, str, itcVar])
+/// @param xopVar numeric XOP channel types
+Function GetNumberFromType([var, str, xopVar])
 	variable var
 	string str
-	variable itcVar
+	variable xopVar
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(itcVar) == 2, "Expected exactly one parameter")
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(xopVar) == 2, "Expected exactly one parameter")
 
 	if(!ParamIsDefault(str))
 		strswitch(str)
@@ -3702,13 +3702,13 @@ Function GetNumberFromType([var, str, itcVar])
 				ASSERT(0, "invalid type")
 				break
 		endswitch
-	elseif(!ParamIsDefault(itcVar))
-		switch(itcVar)
-			case ITC_XOP_CHANNEL_TYPE_ADC:
+	elseif(!ParamIsDefault(xopVar))
+		switch(xopVar)
+			case XOP_CHANNEL_TYPE_ADC:
 				return NUM_AD_CHANNELS
 				break
-			case ITC_XOP_CHANNEL_TYPE_DAC:
-			case ITC_XOP_CHANNEL_TYPE_TTL:
+			case XOP_CHANNEL_TYPE_DAC:
+			case XOP_CHANNEL_TYPE_TTL:
 				return NUM_DA_TTL_CHANNELS
 				break
 			default:
@@ -3722,7 +3722,7 @@ End
 ///
 /// @param config config wave
 /// @param sweep  sweep wave or hardware data wave from all hardware types
-/// @param index  index into `sweep`, can be queried with #AFH_GetITCDataColumn
+/// @param index  index into `sweep`, can be queried with #AFH_GetDAQDataColumn
 ///
 /// @returns a reference to a free wave with the single channel data
 Function/Wave ExtractOneDimDataFromSweep(config, sweep, index)
@@ -4062,7 +4062,7 @@ Function/WAVE GetSweepUserData(string graph, string key, [variable channelType, 
 		return TUD_GetUserDataAsWave(graph, key, keys = {"traceType", "occurence"}, values = {"sweep", "0"})
 	elseif(!ParamIsDefault(channelType))
 		return TUD_GetUserDataAsWave(graph, key, keys = {"traceType", "occurence", "channelType"},            \
-		                             values = {"sweep", "0", StringFromList(channelType, ITC_CHANNEL_NAMES)})
+		                             values = {"sweep", "0", StringFromList(channelType, XOP_CHANNEL_NAMES)})
 	elseif(!ParamIsDefault(region))
 		return TUD_GetUserDataAsWave(graph, key, keys = {"traceType", "occurence", "region"}, \
 		                             values = {"sweep", "0", num2str(region)})
@@ -5066,18 +5066,18 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 	endif
 
 	strswitch(task)
-		case "TestPulseMD":
+		case TASKNAME_TPMD:
 			WAVE deviceIDList = GetActiveDevicesTPMD()
 			break
-		case "ITC_TimerMD":
-			WAVE/Z/SDFR=GetActiveITCDevicesTimerFolder() deviceIDList = ActiveDevTimeParam
+		case TASKNAME_TIMERMD:
+			WAVE/Z/SDFR=GetActiveDAQDevicesTimerFolder() deviceIDList = ActiveDevTimeParam
 			break
-		case "ITC_FIFOMonitorMD":
+		case TASKNAME_FIFOMONMD:
 			WAVE deviceIDList = GetDQMActiveDeviceList()
 			break
-		case "TestPulse":
-		case "ITC_Timer":
-		case "ITC_FIFOMonitor":
+		case TASKNAME_TP:
+		case TASKNAME_TIMER:
+		case TASKNAME_FIFOMON:
 			// single device tasks, nothing more to do
 			return 1
 			break
@@ -5091,10 +5091,10 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 		return 1
 	endif
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
 	// running in multi device mode
-	FindValue/V=(ITCDeviceIDGlobal)/RMD=[][0] deviceIDList
+	FindValue/V=(deviceID)/RMD=[][0] deviceIDList
 	return V_Value != -1
 End
 
@@ -5598,9 +5598,9 @@ Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
 	if(IsNaN(channelType))
 		sprintf key, "%s UNASSOC_%d", setting, channelNumber
 	else
-		ASSERT(channelType == ITC_XOP_CHANNEL_TYPE_DAC || channelType == ITC_XOP_CHANNEL_TYPE_ADC, "Invalid channel type")
-		ASSERT(IsInteger(channelNumber) && channelNumber >= 0 && channelNumber < GetNumberFromType(itcVar = channelType), "channelNumber is out of range")
-		sprintf key, "%s u_%s%d", setting, StringFromList(channelType, ITC_CHANNEL_NAMES), channelNumber
+		ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC, "Invalid channel type")
+		ASSERT(IsInteger(channelNumber) && channelNumber >= 0 && channelNumber < GetNumberFromType(xopVar = channelType), "channelNumber is out of range")
+		sprintf key, "%s u_%s%d", setting, StringFromList(channelType, XOP_CHANNEL_NAMES), channelNumber
 	endif
 
 	return key
@@ -5665,7 +5665,7 @@ End
 /// @param numericalValues numerical labnotebook
 /// @param sweep           sweep number
 /// @param sweepWave       DAQDataWave
-/// @param configWave      ITCChanConfigWave
+/// @param configWave      DAQConfigWave
 /// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
 /// @param rescale         One of @ref TTLRescalingOptions
 Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, rescale, [targetDFR])
@@ -5686,7 +5686,7 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 
 	numRows = DimSize(configWave, ROWS)
 	for(i = 0; i < numRows; i += 1)
-		channelType = StringFromList(configWave[i][0], ITC_CHANNEL_NAMES)
+		channelType = StringFromList(configWave[i][0], XOP_CHANNEL_NAMES)
 		ASSERT(!isEmpty(channelType), "empty channel type")
 		channelNumber = configWave[i][1]
 		ASSERT(IsFinite(channelNumber), "non-finite channel number")
@@ -5884,8 +5884,8 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 			continue
 		endif
 
-		DAcol = AFH_GetITCDataColumn(config, DACs[i], ITC_XOP_CHANNEL_TYPE_DAC)
-		ADcol = AFH_GetITCDataColumn(config, ADCs[i], ITC_XOP_CHANNEL_TYPE_ADC)
+		DAcol = AFH_GetDAQDataColumn(config, DACs[i], XOP_CHANNEL_TYPE_DAC)
+		ADcol = AFH_GetDAQDataColumn(config, ADCs[i], XOP_CHANNEL_TYPE_ADC)
 
 		WAVE DA = ExtractOneDimDataFromSweep(config, sweep, DACol)
 		WAVE AD = ExtractOneDimDataFromSweep(config, sweep, ADcol)
@@ -6002,7 +6002,7 @@ End
 ///
 /// @param config wave reference to a ITCConfigWave
 ///
-/// @param version [optional, default=ITC_CONFIG_WAVE_VERSION], check against a specific version
+/// @param version [optional, default=DAQ_CONFIG_WAVE_VERSION], check against a specific version
 ///                current versions known are 0 (equals NaN), 1, 2
 threadsafe Function IsValidConfigWave(config, [version])
 	WAVE/Z config
@@ -6015,12 +6015,12 @@ threadsafe Function IsValidConfigWave(config, [version])
 	endif
 
 	if(ParamIsDefault(version))
-		version = ITC_CONFIG_WAVE_VERSION
+		version = DAQ_CONFIG_WAVE_VERSION
 	endif
 
 	waveVersion = GetWaveVersion(config)
 
-	// we know version NaN, 1 and 2, see GetITCChanConfigWave()
+	// we know version NaN, 1 and 2, see GetDAQConfigWave()
 	if(version == 2 && waveVersion >= 2)
 		return DimSize(config, ROWS) > 0 && DimSize(config, COLS) >= 6
 	elseif(version == 1 && waveVersion >= 1)
@@ -6054,13 +6054,13 @@ End
 ///
 /// @param sweep         sweep wave
 /// @param config        config wave
-/// @param configVersion [optional, defaults to #ITC_CONFIG_WAVE_VERSION] minimum required version of the config wave
+/// @param configVersion [optional, defaults to #DAQ_CONFIG_WAVE_VERSION] minimum required version of the config wave
 threadsafe Function IsValidSweepAndConfig(sweep, config, [configVersion])
 	WAVE/Z sweep, config
 	variable configVersion
 
 	if(ParamIsDefault(configVersion))
-		configVersion = ITC_CONFIG_WAVE_VERSION
+		configVersion = DAQ_CONFIG_WAVE_VERSION
 	endif
 
 	if(IsWaveRefWave(sweep))

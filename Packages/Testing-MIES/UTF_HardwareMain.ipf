@@ -178,13 +178,13 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	SVAR miesVersion = root:miesVersion
 	string/G $(GetMiesPathAsString() + ":version") = miesVersion
 
-	GetITCDevicesFolder()
+	GetDAQDevicesFolder()
 
 	SVAR ITCDeviceList = root:ITCDeviceList
-	string/G $(GetITCDevicesFolderAsString() + ":ITCDeviceList") = ITCDeviceList
+	string/G $(GetDAQDevicesFolderAsString() + ":ITCDeviceList") = ITCDeviceList
 
 	SVAR NIDeviceList = root:NIDeviceList
-	string/G $(GetITCDevicesFolderAsString() + ":NIDeviceList") = NIDeviceList
+	string/G $(GetDAQDevicesFolderAsString() + ":NIDeviceList") = NIDeviceList
 
 #ifndef TESTS_WITH_NI_HARDWARE
 	HW_ITC_CloseAllDevices()
@@ -510,7 +510,7 @@ Function ClampModeDuringITI_IGNORE(s)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 
-	if(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING && IsDeviceActiveWithBGTask(device, "ITC_TimerMD"))
+	if(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING && IsDeviceActiveWithBGTask(device, TASKNAME_TIMERMD))
 		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
 		return 1
 	endif

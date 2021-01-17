@@ -809,7 +809,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			///
 			/// returns [[channelName, channelNumber]+]
 			String channelName, channelNumber
-			String regExp = "^(?i)(" + ReplaceString(";", ITC_CHANNEL_NAMES, "|") + ")([0-9]+)?$"
+			String regExp = "^(?i)(" + ReplaceString(";", XOP_CHANNEL_NAMES, "|") + ")([0-9]+)?$"
 			numIndices = JSON_GetArraySize(jsonID, jsonPath)
 
 			Make/N=(numIndices, 2)/FREE out = NaN
@@ -828,7 +828,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 					out[i][%channelNumber] = str2num(channelNumber)
 				endif
 				SF_ASSERT(!isFinite(out[i][%channelNumber]) || out[i][%channelNumber] < NUM_MAX_CHANNELS, "Maximum Number Of Channels exceeded.")
-				out[i][%channelType] = WhichListItem(channelName, ITC_CHANNEL_NAMES, ";", 0, 0)
+				out[i][%channelType] = WhichListItem(channelName, XOP_CHANNEL_NAMES, ";", 0, 0)
 			endfor
 			out[][] = out[p][q] < 0 ? NaN : out[p][q]
 			break
@@ -967,7 +967,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			endif
 
 			for(i = 0; i < DimSize(activeChannels, ROWS); i += 1)
-				str = StringFromList(activeChannels[i][%channelType], ITC_CHANNEL_NAMES) + num2istr(activeChannels[i][%channelNumber])
+				str = StringFromList(activeChannels[i][%channelType], XOP_CHANNEL_NAMES) + num2istr(activeChannels[i][%channelNumber])
 				SetDimLabel COLS, i, $str, out
 			endfor
 			break
@@ -1272,7 +1272,7 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 		for(j = 0; j < DimSize(channels, ROWS); j += 1)
 			if(channelType != channels[j][%channelType])
 				channelType = channels[j][%channelType]
-				WAVE channelTypeIndex = FindIndizes(traces, colLabel = "channelType", str = StringFromList(channelType, ITC_CHANNEL_NAMES))
+				WAVE channelTypeIndex = FindIndizes(traces, colLabel = "channelType", str = StringFromList(channelType, XOP_CHANNEL_NAMES))
 			endif
 			if(!WaveExists(channelTypeIndex))
 				continue
@@ -1365,7 +1365,7 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 			MultiThread sweepData[pOffset, pOffSet + (pEnd[i][j] - pStart[i][j])][i][j] = sweep[pStart[i][j] + (p - pOffset)]
 
 			if(i == 0)
-				dimLabel = StringFromList(channels[j][%channelType], ITC_CHANNEL_NAMES) + num2istr(channels[j][%channelNumber])
+				dimLabel = StringFromList(channels[j][%channelType], XOP_CHANNEL_NAMES) + num2istr(channels[j][%channelNumber])
 				SetDimLabel LAYERS, j, $dimLabel, sweepData
 			endif
 		endfor
@@ -1453,10 +1453,10 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 		"Undefined labnotebook mode. Use one in group DataAcqModes")
 
 	Make/FREE/WAVE/N=2 channelNumbers
-	Make/FREE/N=(GetNumberFromType(itcVar=ITC_XOP_CHANNEL_TYPE_ADC)) channelNumbersAD = NaN
-	channelNumbers[ITC_XOP_CHANNEL_TYPE_ADC] = channelNumbersAD
-	Make/FREE/N=(GetNumberFromType(itcVar=ITC_XOP_CHANNEL_TYPE_DAC)) channelNumbersDA = NaN
-	channelNumbers[ITC_XOP_CHANNEL_TYPE_DAC] = channelNumbersDA
+	Make/FREE/N=(GetNumberFromType(xopVar=XOP_CHANNEL_TYPE_ADC)) channelNumbersAD = NaN
+	channelNumbers[XOP_CHANNEL_TYPE_ADC] = channelNumbersAD
+	Make/FREE/N=(GetNumberFromType(xopVar=XOP_CHANNEL_TYPE_DAC)) channelNumbersDA = NaN
+	channelNumbers[XOP_CHANNEL_TYPE_DAC] = channelNumbersDA
 
 	// search sweeps for active channels
 	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
@@ -1465,10 +1465,10 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 		for(j = 0; j < DimSize(channels, ROWS); j += 1)
 			channelType = channels[j][0]
 			switch(channelType)
-				case ITC_XOP_CHANNEL_TYPE_DAC:
+				case XOP_CHANNEL_TYPE_DAC:
 					setting = "DAC"
 					break
-				case ITC_XOP_CHANNEL_TYPE_ADC:
+				case XOP_CHANNEL_TYPE_ADC:
 					setting = "ADC"
 					break
 				default:

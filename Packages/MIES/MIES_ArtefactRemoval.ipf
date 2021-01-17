@@ -50,7 +50,7 @@ static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 		dac = statusDAC[i]
 		adc = statusADC[i]
 
-		WAVE wv = GetITCDataSingleColumnWave(sweepDFR, ITC_XOP_CHANNEL_TYPE_DAC, dac)
+		WAVE wv = GetDAQDataSingleColumnWave(sweepDFR, XOP_CHANNEL_TYPE_DAC, dac)
 
 		WaveStats/Q/M=1 wv
 		if(V_max > 0)
@@ -228,7 +228,7 @@ static Function AR_HandleRanges(graph, [removeRange])
 	endif
 
 	DFREF sweepDFR = AR_GetSweepFolder(graph)
-	WAVE/WAVE ADCs = GetITCDataSingleColumnWaves(sweepDFR, ITC_XOP_CHANNEL_TYPE_ADC)
+	WAVE/WAVE ADCs = GetDAQDataSingleColumnWaves(sweepDFR, XOP_CHANNEL_TYPE_ADC)
 
 	ASSERT(DimSize(listBoxWave, ROWS) == DimSize(artefactWave, ROWS), "Unexpected dimension sizes")
 

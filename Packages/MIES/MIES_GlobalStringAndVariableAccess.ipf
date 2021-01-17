@@ -274,11 +274,11 @@ Function/S GetFollowerList(leadPanel)
 	return GetSVARAsString(GetDevicePath(leadPanel), "ListOfFollowerITC1600s", initialValue="")
 End
 
-/// @brief Returns the absolute path to the ITC device ID
-Function/S GetITCDeviceIDGlobal(panelTitle)
+/// @brief Returns the absolute path to the device ID
+Function/S GetDAQDeviceID(panelTitle)
 	string panelTitle
 
-	return GetNVARAsString(GetDevicePath(panelTitle), "ITCDeviceIDGlobal", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(panelTitle), "deviceID", initialValue=NaN)
 End
 
 /// @brief Returns the absolute path to the testpulse averaging buffer size
@@ -324,7 +324,7 @@ End
 Function/S GetDevicePanelTitleList()
 	string panelTitle
 
-	return GetSVARAsString(GetITCDevicesFolder(), "ITCPanelTitleList", initialValue="")
+	return GetSVARAsString(GetDAQDevicesFolder(), "lockedDevices", initialValue="")
 End
 
 /// @brief Return the absolute path to the user comment string
@@ -343,7 +343,7 @@ End
 
 /// @brief Return the ADC to monitor
 ///
-/// This is the first actice AD channel in DAQDataWave and ITCChanConfigWave.
+/// This is the first actice AD channel in DAQDataWave and DAQConfigWave.
 Function/S GetADChannelToMonitor(panelTitle)
 	string panelTitle
 
@@ -354,7 +354,7 @@ End
 /// @todo remove and use background struct members for the deviceID and GetDeviceMapping instead
 Function/S GetPanelTitleGlobal()
 
-	return GetSVARAsString(GetITCDevicesFolder(), "panelTitleG")
+	return GetSVARAsString(GetDAQDevicesFolder(), "panelTitleG")
 End
 
 /// @brief Return the active set count
@@ -392,7 +392,7 @@ End
 Function/S GetNIDeviceList()
 
 	// note: this global gets killed in IH_KillTemporaries
-	return GetSVARAsString(GetITCDevicesFolder(), "NIDeviceList", initialValue="")
+	return GetSVARAsString(GetDAQDevicesFolder(), "NIDeviceList", initialValue="")
 End
 
 /// @brief Returns ITC device list
@@ -401,7 +401,7 @@ End
 Function/S GetITCDeviceList()
 
 	// note: this global gets killed in IH_KillTemporaries
-	return GetSVARAsString(GetITCDevicesFolder(), "ITCDeviceList", initialValue="")
+	return GetSVARAsString(GetDAQDevicesFolder(), "ITCDeviceList", initialValue="")
 End
 
 /// @brief Returns the last time stamp HW_NI_RepeatAcqHook was called
@@ -569,19 +569,19 @@ End
 /// @brief Return the list of functions to be executed after ITI in repeated acquisition
 Function/S GetRepeatedAcquisitionFuncList()
 
-	return GetSVARAsString(GetITCDevicesFolder(), "repeatedAcqFuncList", initialValue = "")
+	return GetSVARAsString(GetDAQDevicesFolder(), "repeatedAcqFuncList", initialValue = "")
 End
 
 /// @brief Return the start time, in ticks, of the ITI cycle
 Function/S GetRepeatedAcquisitionStart()
 
-	return GetNVARAsString(GetITCDevicesFolder(), "repeatedAcqStart", initialValue = 0)
+	return GetNVARAsString(GetDAQDevicesFolder(), "repeatedAcqStart", initialValue = 0)
 End
 
 /// @brief Return the duration, in ticks, of the ITI cycle
 Function/S GetRepeatedAcquisitionDuration()
 
-	return GetNVARAsString(GetITCDevicesFolder(), "repeatedAcqDuration", initialValue = 0)
+	return GetNVARAsString(GetDAQDevicesFolder(), "repeatedAcqDuration", initialValue = 0)
 End
 
 /// @brief Return the current fifo position (a length)
@@ -606,7 +606,7 @@ End
 
 /// @brief Return the maximum ITI of all active sets
 ///
-/// Only meaningful after preparing DAQ in DC_ConfigureDataForITC()
+/// Only meaningful after preparing DAQ in DC_Configure()
 Function/S GetMaxIntertrialInterval(panelTitle)
 	string panelTitle
 

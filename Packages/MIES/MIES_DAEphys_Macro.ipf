@@ -2963,7 +2963,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_Independent,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_Hardware_Independent,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Hardware_Status,pos={128.00,852.00},size={189.00,18.00},bodyWidth=99,proc=DAP_SetVar_UpdateGuiState
-	SetVariable setvar_Hardware_Status,title="ITC DAC Status:"
+	SetVariable setvar_Hardware_Status,title="DAC Status:"
 	SetVariable setvar_Hardware_Status,userdata(ResizeControlsInfo)= A"!!,G\"!!#De!!#AL!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_Hardware_Status,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Hardware_Status,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
@@ -3697,7 +3697,7 @@ Window DA_Ephys() : Panel
 	Button button_Settings_UpdateDACList,userdata(Config_RestorePriority)=  "25"
 	Button button_Hardware_P_Enable,pos={336.00,528.00},size={60.00,45.00},proc=P_ButtonProc_Enable
 	Button button_Hardware_P_Enable,title="Enable"
-	Button button_Hardware_P_Enable,help={"Enable ITC devices used for pressure regulation."}
+	Button button_Hardware_P_Enable,help={"Enable DAQ devices used for pressure regulation."}
 	Button button_Hardware_P_Enable,userdata(tabnum)=  "6"
 	Button button_Hardware_P_Enable,userdata(tabcontrol)=  "ADC"
 	Button button_Hardware_P_Enable,userdata(ResizeControlsInfo)= A"!!,HbJ,ht=5QF,i!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3706,7 +3706,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_P_Enable,fSize=14
 	Button button_Hardware_P_Disable,pos={399.00,528.00},size={60.00,45.00},disable=2,proc=P_ButtonProc_Disable
 	Button button_Hardware_P_Disable,title="Disable"
-	Button button_Hardware_P_Disable,help={"Enable ITC devices used for pressure regulation."}
+	Button button_Hardware_P_Disable,help={"Enable DAQ devices used for pressure regulation."}
 	Button button_Hardware_P_Disable,userdata(tabnum)=  "6"
 	Button button_Hardware_P_Disable,userdata(tabcontrol)=  "ADC"
 	Button button_Hardware_P_Disable,userdata(ResizeControlsInfo)= A"!!,I/!!#Cg5QF,i!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -4451,9 +4451,9 @@ Window DA_Ephys() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;UGH0;UGV1;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)=  "NAME:UGV0;WIN:ITC1600_Dev_0;TYPE:User;HORIZONTAL:0;POSITION:459.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-25;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)=  "NAME:UGH0;WIN:ITC1600_Dev_0;TYPE:User;HORIZONTAL:1;POSITION:854.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-27;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV1)=  "NAME:UGV1;WIN:ITC1600_Dev_0;TYPE:User;HORIZONTAL:0;POSITION:481.00;GUIDE1:FL;GUIDE2:;RELPOSITION:481;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)=  "NAME:UGV0;WIN:DA_Ephys;TYPE:User;HORIZONTAL:0;POSITION:459.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-25;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)=  "NAME:UGH0;WIN:DA_Ephys;TYPE:User;HORIZONTAL:1;POSITION:854.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-27;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV1)=  "NAME:UGV1;WIN:DA_Ephys;TYPE:User;HORIZONTAL:0;POSITION:481.00;GUIDE1:FL;GUIDE2:;RELPOSITION:481;"
 	SetWindow kwTopWin,userdata(Config_PanelType)=  "DA_Ephys"
 	SetWindow kwTopWin,userdata(Config_RadioCouplingFunc)=  "DAP_GetRadioButtonCoupling"
 	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)=  "1"

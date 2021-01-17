@@ -227,7 +227,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 	variable entry, index
 
 	switch(params.channelType)
-		case ITC_XOP_CHANNEL_TYPE_DAC:
+		case XOP_CHANNEL_TYPE_DAC:
 			channelName = "DA"
 			WAVE loadedFromNWB = IPNWB#LoadStimulus(groupID, channel)
 			channelName += "_" + num2str(params.channelNumber)
@@ -244,7 +244,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 
 			CHECK_EQUAL_VAR(entry, params.channelNumber)
 			break
-		case ITC_XOP_CHANNEL_TYPE_ADC:
+		case XOP_CHANNEL_TYPE_ADC:
 			channelName = "AD"
 			WAVE loadedFromNWB = IPNWB#LoadTimeseries(groupID, channel, NWB_VERSION)
 			channelName += "_" + num2str(params.channelNumber)
@@ -261,7 +261,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 
 			CHECK_EQUAL_VAR(entry, params.channelNumber)
 			break
-		case ITC_XOP_CHANNEL_TYPE_TTL:
+		case XOP_CHANNEL_TYPE_TTL:
 			channelName  = "TTL"
 			WAVE loadedFromNWB = IPNWB#LoadStimulus(groupID, channel)
 			channelName += "_" + num2str(params.channelNumber)
@@ -285,13 +285,13 @@ static Function/WAVE LoadTimeSeries(groupID, channel, channelType)
 	string channel
 
 	switch(channelType)
-		case ITC_XOP_CHANNEL_TYPE_DAC:
+		case XOP_CHANNEL_TYPE_DAC:
 			return IPNWB#LoadStimulus(groupID, channel)
 			break
-		case ITC_XOP_CHANNEL_TYPE_ADC:
+		case XOP_CHANNEL_TYPE_ADC:
 			return IPNWB#LoadTimeseries(groupID, channel, NWB_VERSION)
 			break
-		case ITC_XOP_CHANNEL_TYPE_TTL:
+		case XOP_CHANNEL_TYPE_TTL:
 			return IPNWB#LoadStimulus(groupID, channel)
 			break
 		default:
@@ -360,11 +360,11 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 
 	// stimulus_description
 	stimulus = IPNWB#ReadTextAttributeAsString(channelGroupID, ".", "stimulus_description")
-	if(params.channelType == ITC_XOP_CHANNEL_TYPE_DAC && IsNaN(params.electrodeNumber))
+	if(params.channelType == XOP_CHANNEL_TYPE_DAC && IsNaN(params.electrodeNumber))
 		stimulus_expected = "PLACEHOLDER"
-	elseif(params.channelType == ITC_XOP_CHANNEL_TYPE_ADC && IsNaN(params.electrodeNumber)) // unassoc AD
+	elseif(params.channelType == XOP_CHANNEL_TYPE_ADC && IsNaN(params.electrodeNumber)) // unassoc AD
 		stimulus_expected = "PLACEHOLDER"
-	elseif(params.channelType == ITC_XOP_CHANNEL_TYPE_TTL)
+	elseif(params.channelType == XOP_CHANNEL_TYPE_TTL)
 		WAVE/T/Z TTLStimsets = GetTTLStimSets(numericalValues, textualValues, sweep)
 		CHECK_WAVE(TTLStimsets, TEXT_WAVE)
 
@@ -396,10 +396,10 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	neurodata_type = IPNWB#ReadNeuroDataType(groupID, channel)
 	switch(clampMode)
 		case V_CLAMP_MODE:
-			if(params.channelType == ITC_XOP_CHANNEL_TYPE_ADC)
+			if(params.channelType == XOP_CHANNEL_TYPE_ADC)
 				str = "VoltageClampSeries"
 				CHECK_EQUAL_STR(neurodata_type, str)
-			elseif(params.channelType == ITC_XOP_CHANNEL_TYPE_DAC)
+			elseif(params.channelType == XOP_CHANNEL_TYPE_DAC)
 				str = "VoltageClampStimulusSeries"
 				CHECK_EQUAL_STR(neurodata_type, str)
 			else
@@ -407,10 +407,10 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 			endif
 			break
 		case  I_CLAMP_MODE:
-			if(params.channelType == ITC_XOP_CHANNEL_TYPE_ADC)
+			if(params.channelType == XOP_CHANNEL_TYPE_ADC)
 				str = "CurrentClampSeries"
 				CHECK_EQUAL_STR(neurodata_type, str)
-			elseif(params.channelType == ITC_XOP_CHANNEL_TYPE_DAC)
+			elseif(params.channelType == XOP_CHANNEL_TYPE_DAC)
 				str = "CurrentClampStimulusSeries"
 				CHECK_EQUAL_STR(neurodata_type, str)
 			else
@@ -418,7 +418,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 			endif
 			break
 		case I_EQUAL_ZERO_MODE:
-			if(params.channelType == ITC_XOP_CHANNEL_TYPE_ADC)
+			if(params.channelType == XOP_CHANNEL_TYPE_ADC)
 				str = "IZeroClampSeries"
 				CHECK_EQUAL_STR(neurodata_type, str)
 			else
@@ -438,7 +438,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	// gain
 	if(IsFinite(params.electrodeNumber))
 		REQUIRE_NEQ_VAR(params.channelType, NaN)
-		key = StringFromList(params.channelType, ITC_CHANNEL_NAMES) + " Gain"
+		key = StringFromList(params.channelType, XOP_CHANNEL_NAMES) + " Gain"
 		WAVE/Z gains = GetLastSetting(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
 		CHECK_WAVE(gains, NUMERIC_WAVE)
 
@@ -537,7 +537,7 @@ static Function/DF TestSweepData(entry, device, sweep)
 			WAVE clampMode = GetLastSetting(numericalValues, sweep, "Clamp Mode", DATA_ACQUISITION_MODE)
 
 			if(clampMode[headstage] == I_EQUAL_ZERO_MODE \
-			   && !cmpstr(channelTypeStr, StringFromList(ITC_XOP_CHANNEL_TYPE_DAC, ITC_CHANNEL_NAMES)))
+			   && !cmpstr(channelTypeStr, StringFromList(XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_NAMES)))
 				continue
 			endif
 		endif

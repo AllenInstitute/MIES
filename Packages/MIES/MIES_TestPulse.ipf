@@ -24,8 +24,8 @@ Function TP_CreateTPAvgBuffer(panelTitle)
 
 	variable numADCs
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
 	numADCs = DimSize(ADCs, ROWS)
 
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
@@ -685,8 +685,8 @@ Function TP_Setup(panelTitle, runMode, [fast])
 		NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
 		runModeGlobal = runMode
 
-		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-		HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+		NVAR deviceID = $GetDAQDeviceID(panelTitle)
+		HW_PrepareAcq(GetHardwareType(panelTitle), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 		return NaN
 	endif
 
@@ -702,10 +702,10 @@ Function TP_Setup(panelTitle, runMode, [fast])
 	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
 	runModeGlobal = runMode
 
-	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
+	DC_Configure(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	HW_PrepareAcq(GetHardwareType(panelTitle), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 End
 
 /// @brief Common setup calls for TP and TP during DAQ

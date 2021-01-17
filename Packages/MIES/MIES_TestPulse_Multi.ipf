@@ -19,7 +19,7 @@ static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 
 /// @brief Start the test pulse when MD support is activated.
 ///
-/// Handles the TP initiation for all ITC devices. Yoked ITC1600s are handled specially using the external trigger.
+/// Handles the TP initiation for all DAQ devices. Yoked ITC1600s are handled specially using the external trigger.
 /// The external trigger is assumed to be a arduino device using the arduino squencer.
 Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 	string panelTitle
@@ -150,18 +150,18 @@ static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
 	TPM_AddDevice(panelTitle)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_ResetFifo(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-			HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
-			TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode)
+			HW_ITC_ResetFifo(deviceID, flags=HARDWARE_ABORT_ON_ERROR)
+			HW_StartAcq(HARDWARE_ITC_DAC, deviceID, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
+			TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, deviceID, triggerMode)
 			break
 		case HARDWARE_NI_DAC:
-			HW_StartAcq(HARDWARE_NI_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR, repeat=1)
+			HW_StartAcq(HARDWARE_NI_DAC, deviceID, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR, repeat=1)
 			NVAR tpCounter = $GetNITestPulseCounter(panelTitle)
 			tpCounter = 0
 			break
@@ -346,16 +346,16 @@ static Function TPM_StopTPMDWrapper(panelTitle, [fast])
 		fast = !!fast
 	endif
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
 	variable hardwareType = GetHardwareType(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
-		TFH_StopFifoDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+		TFH_StopFifoDaemon(HARDWARE_ITC_DAC, deviceID)
 	endif
 
-	if(!HW_SelectDevice(hardwareType, ITCDeviceIDGlobal, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP) \
-	   && HW_IsRunning(hardwareType, ITCDeviceIDGlobal, flags = HARDWARE_ABORT_ON_ERROR))
-		HW_StopAcq(hardwareType, ITCDeviceIDGlobal, zeroDAC = 1)
+	if(!HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP) \
+	   && HW_IsRunning(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR))
+		HW_StopAcq(hardwareType, deviceID, zeroDAC = 1)
 		TPM_RemoveDevice(panelTitle)
 		if(!TPM_HasActiveDevices())
 			CtrlNamedBackground $TASKNAME_TPMD, stop
@@ -378,13 +378,13 @@ static Function TPM_RemoveDevice(panelTitle)
 	string msg
 
 	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
 	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX) - 1
 	ASSERT(idx >= 0, "Invalid index")
 
 	Duplicate/FREE/R=[0, idx][0] ActiveDevicesTPMD, deviceIDs
-	FindValue/V=(ITCDeviceIDGlobal) deviceIDs
+	FindValue/V=(deviceID) deviceIDs
 	ASSERT(V_Value != -1, "Could not find the device")
 
 	// overwrite the to be removed device with the last one
@@ -403,18 +403,18 @@ static Function TPM_AddDevice(panelTitle)
 	variable idx
 	string msg
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
 
 	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX)
 	EnsureLargeEnoughWave(ActiveDevicesTPMD, minimumSize=idx + 1)
 
-	ActiveDevicesTPMD[idx][%DeviceID]     = ITCDeviceIDGlobal
+	ActiveDevicesTPMD[idx][%DeviceID]     = deviceID
 	ActiveDevicesTPMD[idx][%HardwareType] = GetHardwareType(panelTitle)
 	ActiveDevicesTPMD[idx][%activeChunk] = NaN
 
 	SetNumberInWaveNote(ActiveDevicesTPMD, NOTE_INDEX, idx + 1)
 
-	sprintf msg, "Adding device %s with deviceID %d in row %d", panelTitle, ITCDeviceIDGlobal, idx
+	sprintf msg, "Adding device %s with deviceID %d in row %d", panelTitle, deviceID, idx
 	DEBUGPRINT(msg)
 End

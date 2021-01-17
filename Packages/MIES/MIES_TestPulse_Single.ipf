@@ -35,13 +35,12 @@ End
 Function TPS_TestPulseFunc(s)
 	STRUCT BackgroundStruct &s
 
-	variable readTimeStamp
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	// create a copy as panelTitleG is killed in TPS_StopTestPulseSingleDevice
 	// but we still need it afterwards
 	string panelTitle = panelTitleG
 
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
 	if(s.wmbs.started)
 		s.wmbs.started = 0
@@ -50,15 +49,15 @@ Function TPS_TestPulseFunc(s)
 		s.count += 1
 	endif
 
-	HW_ITC_ResetFifo(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_ITC_ResetFifo(deviceID, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
+
 	do
 		// nothing
-	while (HW_ITC_MoreData(ITCDeviceIDGlobal))
+	while (HW_ITC_MoreData(deviceID))
 
-	readTimeStamp = ticks * TICKS_TO_SECONDS
+	HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1)
 
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 	SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 
 	SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)
@@ -140,7 +139,7 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 	string panelTitle
 	variable elapsedTime
 
-	variable i, refTime, timeLeft, readTimeStamp
+	variable i, refTime, timeLeft
 	string oscilloscopeSubwindow
 
 	if(ParamIsDefault(elapsedTime))
@@ -150,23 +149,21 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 	endif
 
 	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 
 	do
 		DoXOPIdle
-		HW_ITC_ResetFifo(ITCDeviceIDGlobal)
-		HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+		HW_ITC_ResetFifo(deviceID)
+		HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 
 		do
 			// nothing
-		while (HW_ITC_MoreData(ITCDeviceIDGlobal))
+		while (HW_ITC_MoreData(deviceID))
 
-		readTimeStamp = ticks * TICKS_TO_SECONDS
-
-		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
+		HW_StopAcq(HARDWARE_ITC_DAC, deviceID, prepareForDAQ = 1)
 		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 
-			SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)
+		SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)
 
 		if(IsFinite(refTime))
 			timeLeft = max((refTime + elapsedTime) - RelativeNowHighPrec(), 0)

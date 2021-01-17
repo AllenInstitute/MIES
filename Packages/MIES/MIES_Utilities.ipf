@@ -107,7 +107,7 @@ Function ASSERT(var, errorMsg)
 			miesVersionStr = ""
 		endif
 
-		SVAR/Z lockedDevices = root:MIES:HardwareDevices:ITCPanelTitleList
+		SVAR/Z lockedDevices = root:MIES:HardwareDevices:lockedDevices
 
 		Make/FREE/T sweeps = { NONE }
 		Make/FREE/T tpStates = { NONE }

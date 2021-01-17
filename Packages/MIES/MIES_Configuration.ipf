@@ -1951,7 +1951,7 @@ End
 
 /// @brief Retrieves current amplifier and pressure settings to json
 ///
-/// @param[in] panelTitle ITC device panel
+/// @param[in] panelTitle device
 /// @returns jsonID ID of json object with user pressure configuration data
 static Function CONF_GetAmplifierSettings(panelTitle)
 	string panelTitle
@@ -2075,7 +2075,7 @@ End
 
 /// @brief Restore the per headstage amplifier settings
 ///
-/// @param[in] panelTitle ITC device panel
+/// @param[in] panelTitle device
 /// @param[in] headStage  MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param[in] jsonID     ID of json object with configuration data
 /// @param[in] basePath   absolute path in the json file to search the entries

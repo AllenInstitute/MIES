@@ -299,7 +299,7 @@ End
 /// @param traceData        2D wave with trace information, from GetTraceInfos()
 /// @param idx              Index into traceData, used for determining sweep numbers, labnotebooks, etc.
 /// @param region           Region (headstage) to get pulse starting times for
-/// @param channelTypeStr   Type of the channel, one of @ref ITC_CHANNEL_NAMES
+/// @param channelTypeStr   Type of the channel, one of @ref XOP_CHANNEL_NAMES
 /// @param removeOnsetDelay [optional, defaults to true] Remove the onset delay from the starting times (true) or not (false)
 Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [removeOnsetDelay])
 	WAVE/T traceData
@@ -349,7 +349,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 			return $""
 		endif
 
-		WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, ITC_XOP_CHANNEL_TYPE_DAC, channel)
+		WAVE DA = GetDAQDataSingleColumnWave(singleSweepFolder, XOP_CHANNEL_TYPE_DAC, channel)
 		WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, fullPath, channel, totalOnsetDelay)
 
 #ifdef AUTOMATED_TESTING
@@ -699,8 +699,8 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	lblACTIVEREGION = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVEREGION")
 	lblACTIVECHANNEL = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVECHANNEL")
 
-	channelType = ITC_XOP_CHANNEL_TYPE_ADC
-	channelTypeStr = StringFromList(channelType, ITC_CHANNEL_NAMES)
+	channelType = XOP_CHANNEL_TYPE_ADC
+	channelTypeStr = StringFromList(channelType, XOP_CHANNEL_NAMES)
 	sweepList  = ""
 	channelList = ""
 
@@ -771,7 +771,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			WAVE numericalValues = $traceData[idx][lblTracenumericalValues]
 			DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][lblTraceFullpath])
 			ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
-			WAVE wv = GetITCDataSingleColumnWave(singleSweepFolder, channelType, channelNumber)
+			WAVE wv = GetDAQDataSingleColumnWave(singleSweepFolder, channelType, channelNumber)
 
 			DFREF singlePulseFolder = GetSingleSweepFolder(pulseAverageDFR, sweepNo)
 			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
@@ -2433,11 +2433,11 @@ End
 
 /// @brief Generate the wave name for a single pulse
 Function/S PA_GeneratePulseWaveName(variable channelType, variable channelNumber, variable region, variable pulseIndex)
-	ASSERT(channelType < ItemsInList(ITC_CHANNEL_NAMES), "Invalid channel type")
-	ASSERT(channelNumber < GetNumberFromType(itcVar=channelType) , "Invalid channel number")
+	ASSERT(channelType < ItemsInList(XOP_CHANNEL_NAMES), "Invalid channel type")
+	ASSERT(channelNumber < GetNumberFromType(xopVar=channelType) , "Invalid channel number")
 	ASSERT(IsInteger(pulseIndex) && pulseIndex >= 0, "Invalid pulseIndex")
 
-	return StringFromList(channelType, ITC_CHANNEL_NAMES) + num2str(channelNumber) + \
+	return StringFromList(channelType, XOP_CHANNEL_NAMES) + num2str(channelNumber) + \
 	       "_R" + num2str(region) + "_P" + num2str(pulseIndex)
 End
 
