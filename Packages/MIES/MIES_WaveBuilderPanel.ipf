@@ -1584,7 +1584,7 @@ End
 Function WBP_ButtonProc_OpenAnaFuncs(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string userFile, baseName, fileName
+	string userFile, baseName, fileName, func
 	variable refNum
 
 	switch(ba.eventCode)
@@ -1593,6 +1593,13 @@ Function WBP_ButtonProc_OpenAnaFuncs(ba) : ButtonControl
 			if(TP_GetNumDevicesWithTPRunning() > 0)
 				printf "The analysis function procedure window can not be opened when the testpulse is running.\n"
 				ControlWindowToFront()
+				break
+			endif
+
+			func = GetPopupMenuString(panel, "popup_af_generic_S9")
+
+			if(cmpstr(func, NONE))
+				DisplayProcedure func
 				break
 			endif
 
