@@ -1971,9 +1971,11 @@ Function WBP_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
 
 	params = WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
 
+#ifndef AUTOMATED_TESTING
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
 		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
 	endif
+#endif
 
 	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
 End
