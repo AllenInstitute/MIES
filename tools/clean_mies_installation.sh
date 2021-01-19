@@ -134,7 +134,7 @@ do
     continue
   fi
 
-  if [ $version -le 8 ]
+  if [ $i -le 8 ]
   then
     cp -r  "$base_folder"/Packages/HDF-IP${i}  "$user_proc"
   fi
@@ -159,7 +159,7 @@ do
     cp -r  "$base_folder"/XOPs-IP${i}/*  "$xops32"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/*  "$xops64"
   else
-    if [ $version -le 8 ]
+    if [ $i -le 8 ]
     then
       cp -r  "$base_folder"/XOPs-IP${i}/HDF5*  "$xops32"
       cp -r  "$base_folder"/XOPs-IP${i}-64bit/HDF5*  "$xops64"
