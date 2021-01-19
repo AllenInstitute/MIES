@@ -1602,7 +1602,7 @@ static Function [variable minTrials, variable maxTrials] MSQ_GetSpikeControlTria
 	WaveTransform/O zapNans, trialsLBN
 #endif
 
-	[minTrials, maxTrials] = WaveMinAndMax(trialsLBN)
+	[minTrials, maxTrials] = WaveMinAndMaxWrapper(trialsLBN)
 
 	return [minTrials, maxTrials]
 End

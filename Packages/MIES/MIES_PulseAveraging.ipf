@@ -517,7 +517,7 @@ threadsafe static Function PA_UpdateMinAndMax(WAVE wv, WAVE noteWave)
 
 	variable minimum, maximum
 
-	[minimum, maximum] = WaveMinAndMax(wv)
+	[minimum, maximum] = WaveMinAndMaxWrapper(wv)
 	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MINIMUM, minimum, format="%.15f")
 	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MAXIMUM, maximum, format="%.15f")
 End
