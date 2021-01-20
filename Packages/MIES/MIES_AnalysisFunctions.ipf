@@ -995,7 +995,8 @@ End
 ///   number of sweeps must be larger than the number of rows in the targetVoltages wave below.
 /// - Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)
 /// - All active headstages must be in "Current Clamp"
-/// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on the next sweep if the measured resistance is smaller than 20MOhm
+/// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on
+/// the next sweep if the measured resistance is smaller than 20MOhm
 Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 	variable sweepNo, index, i, targetV
 	variable amps
