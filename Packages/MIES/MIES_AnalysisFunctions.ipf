@@ -941,6 +941,52 @@ Function SetDAScale(panelTitle, headstage, [absolute, relative, offset, roundTop
 	PGC_SetAndActivateControl(panelTitle, ctrl, val = amps)
 End
 
+/// @brief Return a list of required parameters
+Function/S ReachTargetVoltage_GetParams()
+	return "[EnableIndexing:variable],[IndexingEndStimsetAllIC:variable]"
+End
+
+Function/S ReachTargetVoltage_GetHelp(string name)
+
+	strswitch(name)
+		case "EnableIndexing":
+			return "Enable Locked Indexing in preDAQ event"
+			break
+		 case "IndexingEndStimsetAllIC":
+			return "Indexing end stimulus set for all IC headstages"
+		 default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
+End
+
+Function/S ReachTargetVoltage_CheckParam(string name, string params)
+
+	variable val
+	string str
+
+	strswitch(name)
+		case "EnableIndexing":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "IndexingEndStimsetAllIC":
+			str = AFH_GetAnalysisParamTextual(name, params)
+			if(IsEmpty(str))
+				return "Invalid value " + str
+			endif
+
+			// we don't check if the stimset exists, as that might not yet be the case
+
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
+End
+
 /// @brief Analysis function to experimentally determine the cell resistance by sweeping
 /// through a wave of target voltages.
 ///
@@ -953,8 +999,8 @@ End
 Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 	variable sweepNo, index, i, targetV
 	variable amps
-	variable autoBiasCheck, holdingPotential
-	string msg
+	variable autoBiasCheck, holdingPotential, indexing
+	string msg, name, control
 
 	// BEGIN CHANGE ME
 	Make/FREE targetVoltages = {0.002, -0.002, -0.005, -0.01, -0.015} // units are Volts, i.e. 70mV = 0.070V
@@ -1013,6 +1059,25 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 0)
 
 			PGC_SetAndActivateControl(panelTitle,"Setvar_DataAcq_dDAQDelay", val = 500)
+
+			indexing = !!AFH_GetAnalysisParamNumerical("EnableIndexing", s.params, defValue = 0)
+
+			if(indexing)
+				name = AFH_GetAnalysisParamTextual("IndexingEndStimsetAllIC", s.params)
+				WAVE/z stimset = WB_CreateAndGetStimSet(name)
+
+				if(!WaveExists(stimset))
+					printf "Abort: The analysis parameter IndexingEndStimsetAllIC holds \"%s\" which is not a valid stimset.", name
+					ControlWindowToFront()
+					return 1
+				endif
+
+				PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 1)
+				PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 1)
+
+				control = GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+				PGC_SetAndActivateControl(panelTitle, control , str = name)
+			endif
 
 			return Nan
 			break
