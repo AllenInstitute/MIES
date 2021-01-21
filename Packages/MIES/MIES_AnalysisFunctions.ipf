@@ -1003,18 +1003,12 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 	variable autoBiasCheck, holdingPotential, indexing
 	string msg, name, control
 
-	// BEGIN CHANGE ME
-	Make/FREE targetVoltages = {0.002, -0.002, -0.005, -0.01, -0.015} // units are Volts, i.e. 70mV = 0.070V
-	// END CHANGE ME
-
-	WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
-
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	WAVE ampParam = GetAmplifierParamStorageWave(panelTitle)
-
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
+			WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+			WAVE ampParam = GetAmplifierParamStorageWave(panelTitle)
+			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
 			targetVoltagesIndex[s.headstage] = -1
 
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
@@ -1080,78 +1074,85 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 				PGC_SetAndActivateControl(panelTitle, control , str = name)
 			endif
 
-			return Nan
 			break
 		case POST_SWEEP_EVENT:
+			// BEGIN CHANGE ME
+			Make/FREE targetVoltages = {0.002, -0.002, -0.005, -0.01, -0.015} // units are Volts, i.e. 70mV = 0.070V
+			// END CHANGE ME
+
+			WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+
+			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
 			targetVoltagesIndex[s.headstage] += 1
+
+			// only do something if we are called for the very last headstage
+			if(DAP_GetHighestActiveHeadstage(panelTitle) != s.headstage)
+				return NaN
+			endif
+
+			WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
+			ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
+
+			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
+
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+			WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+
+			CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
+
+			ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
+			ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
+
+			PlotResistanceGraph(panelTitle)
+
+			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
+			ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
+
+			for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+				if(!statusHS[i])
+					continue
+				endif
+
+				index = targetVoltagesIndex[i]
+
+				if(index == DimSize(targetVoltages, ROWS))
+					// reached last sweep of stimset, do nothing
+					continue
+				endif
+
+				// index equals the number of sweeps in the stimset on the last call (*post* sweep event)
+				if(index > DimSize(targetVoltages, ROWS))
+					printf "(%s): Skipping analysis function \"%s\".\r", panelTitle, GetRTStackInfo(1)
+					printf "The stimset has too many sweeps, increase the size of DAScales.\r"
+					continue
+				endif
+
+				// check initial response
+				if(index == 0 && resistanceFitted[i] <= 20e6)
+					amps = -100e-12
+					targetVoltagesIndex[i] = -1
+				else
+					amps = targetVoltages[index] / resistanceFitted[i]
+				endif
+
+				index = targetVoltagesIndex[i]
+				targetV = (index >= 0 && index < DimSize(targetVoltages, ROWS)) ? targetVoltages[index] : NaN
+				sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", panelTitle, i, resistanceFitted[i], targetV, amps
+				DEBUGPRINT(msg)
+
+				SetDAScale(panelTitle, i, absolute=amps)
+			endfor
 			break
 		default:
-			ASSERT(0, "Unknown eventType")
+			// do nothing
 			break
 	endswitch
-
-	// only do something if we are called for the very last headstage
-	if(DAP_GetHighestActiveHeadstage(panelTitle) != s.headstage)
-		return NaN
-	endif
-
-	WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
-	ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
-
-	sweepNo = ExtractSweepNumber(NameOfWave(sweep))
-
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues   = GetLBTextualValues(panelTitle)
-
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
-
-	CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
-
-	ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
-	ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
-
-	PlotResistanceGraph(panelTitle)
-
-	WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
-	ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
-
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-
-		if(!statusHS[i])
-			continue
-		endif
-
-		index = targetVoltagesIndex[i]
-
-		if(index == DimSize(targetVoltages, ROWS))
-			// reached last sweep of stimset, do nothing
-			continue
-		endif
-
-		// index equals the number of sweeps in the stimset on the last call (*post* sweep event)
-		if(index > DimSize(targetVoltages, ROWS))
-			printf "(%s): Skipping analysis function \"%s\".\r", panelTitle, GetRTStackInfo(1)
-			printf "The stimset has too many sweeps, increase the size of DAScales.\r"
-			continue
-		endif
-
-		// check initial response
-		if(index == 0 && resistanceFitted[i] <= 20e6)
-			amps = -100e-12
-			targetVoltagesIndex[i] = -1
-		else
-			amps = targetVoltages[index] / resistanceFitted[i]
-		endif
-
-		index = targetVoltagesIndex[i]
-		targetV = (index >= 0 && index < DimSize(targetVoltages, ROWS)) ? targetVoltages[index] : NaN
-		sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", panelTitle, i, resistanceFitted[i], targetV, amps
-		DEBUGPRINT(msg)
-
-		SetDAScale(panelTitle, i, absolute=amps)
-	endfor
 End
 
 /// @brief Analysis function to set GUI controls or notebooks in the events
