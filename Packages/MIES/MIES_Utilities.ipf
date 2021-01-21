@@ -1703,14 +1703,23 @@ End
 Function IsDriveValid(absPath)
 	string absPath
 
-	string path, drive
+	string drive
 
-	// convert to ":" folder separators
-	path  = ParseFilePath(5, absPath, ":", 0, 0)
-	drive = StringFromList(0, path, ":")
-
+	drive = GetDrive(absPath)
 	return FolderExists(drive)
 End
+
+/// @brief Return the windows drive letter of the given path
+Function/S GetDrive(string path)
+
+	string drive
+
+	path  = GetHFSPath(path)
+	drive = StringFromList(0, path, ":")
+	ASSERT(strlen(drive) == 1, "Expected a single letter for the drive")
+
+	return drive
+end
 
 /// @brief Create a folder recursively on disk given an absolute path
 ///
@@ -1725,10 +1734,8 @@ Function CreateFolderOnDisk(absPath)
 	ASSERT(!FileExists(path), "The path which we should create exists, but points to a file")
 
 	tempPath = UniqueName("tempPath", 12, 0)
-
 	numParts = ItemsInList(path, ":")
-	partialPath = StringFromList(0, path, ":")
-	ASSERT(strlen(partialPath) == 1, "Expected a single drive letter for the first path component")
+	partialPath = GetDrive(path)
 
 	// we skip the first one as that is the drive letter
 	for(i = 1; i < numParts; i += 1)
