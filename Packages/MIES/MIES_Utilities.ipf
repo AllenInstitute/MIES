@@ -1703,14 +1703,23 @@ End
 Function IsDriveValid(absPath)
 	string absPath
 
-	string path, drive
+	string drive
 
-	// convert to ":" folder separators
-	path  = ParseFilePath(5, absPath, ":", 0, 0)
-	drive = StringFromList(0, path, ":")
-
+	drive = GetDrive(absPath)
 	return FolderExists(drive)
 End
+
+/// @brief Return the windows drive letter of the given path
+Function/S GetDrive(string path)
+
+	string drive
+
+	path  = GetHFSPath(path)
+	drive = StringFromList(0, path, ":")
+	ASSERT(strlen(drive) == 1, "Expected a single letter for the drive")
+
+	return drive
+end
 
 /// @brief Create a folder recursively on disk given an absolute path
 ///
@@ -1721,16 +1730,12 @@ Function CreateFolderOnDisk(absPath)
 	string path, partialPath, tempPath
 	variable numParts, i
 
-	// convert to ":" folder separators
-	path = ParseFilePath(5, absPath, ":", 0, 0)
-
+	path = GetHFSPath(absPath)
 	ASSERT(!FileExists(path), "The path which we should create exists, but points to a file")
 
 	tempPath = UniqueName("tempPath", 12, 0)
-
 	numParts = ItemsInList(path, ":")
-	partialPath = StringFromList(0, path, ":")
-	ASSERT(strlen(partialPath) == 1, "Expected a single drive letter for the first path component")
+	partialPath = GetDrive(path)
 
 	// we skip the first one as that is the drive letter
 	for(i = 1; i < numParts; i += 1)
@@ -2002,6 +2007,11 @@ Function/S GetWindowsPath(path)
 	string path
 
 	return ParseFilepath(5, path, "\\", 0, 0)
+End
+
+/// @brief Return the path converted to a HFS style (aka ":" separated) path
+Function/S GetHFSPath(string path)
+	return ParseFilePath(5, path, ":", 0, 0)
 End
 
 /// @brief Set the given bit mask in var
@@ -4439,19 +4449,19 @@ Function GetPlotArea(win, s)
 	s.bottom = V_bottom
 End
 
-/// @brief Check that the given path on disc has enough free space
+/// @brief Check that the given path on disk has enough free space
 ///
-/// @param discPath          path on disc to check
+/// @param diskPath          path on disk to check
 /// @param requiredFreeSpace required free space in GB
-Function HasEnoughDiscspaceFree(discPath, requiredFreeSpace)
-	string discPath
+Function HasEnoughDiskspaceFree(diskPath, requiredFreeSpace)
+	string diskPath
 	variable requiredFreeSpace
 
 	variable leftOverBytes
 
-	ASSERT(FolderExists(discPath), "discPath does not point to an existing folder")
+	ASSERT(FolderExists(diskPath), "discPath does not point to an existing folder")
 
-	leftOverBytes = MU_GetFreeDiskSpace(GetWindowsPath(discPath))
+	leftOverBytes = MU_GetFreeDiskSpace(GetWindowsPath(diskPath))
 
 	return IsFinite(leftOverBytes) && leftOverBytes >= requiredFreeSpace
 End

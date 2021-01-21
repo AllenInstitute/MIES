@@ -1,4 +1,4 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=VeryBasicHardwareTesting
@@ -37,5 +37,5 @@ static Function EnsureEnoughDiscSpace()
 
 	PathInfo home
 	REQUIRE(V_flag)
-	REQUIRE(HasEnoughDiscspaceFree(S_path, MINIMUM_FREE_DISC_SPACE))
+	REQUIRE(HasEnoughDiskspaceFree(S_path, MINIMUM_FREE_DISK_SPACE))
 End

@@ -2102,8 +2102,8 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 	PathInfo home
 	if(V_Flag) // saved experiment
-		if(!HasEnoughDiscspaceFree(S_path, MINIMUM_FREE_DISC_SPACE))
-			printf "%s: The free disc space is less than %.0W0PB.\r", panelTitle, MINIMUM_FREE_DISC_SPACE
+		if(!HasEnoughDiskspaceFree(S_path, MINIMUM_FREE_DISK_SPACE))
+			printf "%s: The amount of free disk space on drive \"%s:\" is less than %.0W0PB. Therefore it is not possible to acquire data in MIES.\nPlease contact your hardware administrator.\r", panelTitle, GetDrive(S_path), MINIMUM_FREE_DISK_SPACE
 			ControlWindowToFront()
 			return 1
 		endif
