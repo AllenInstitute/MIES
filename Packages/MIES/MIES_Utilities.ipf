@@ -1721,9 +1721,7 @@ Function CreateFolderOnDisk(absPath)
 	string path, partialPath, tempPath
 	variable numParts, i
 
-	// convert to ":" folder separators
-	path = ParseFilePath(5, absPath, ":", 0, 0)
-
+	path = GetHFSPath(absPath)
 	ASSERT(!FileExists(path), "The path which we should create exists, but points to a file")
 
 	tempPath = UniqueName("tempPath", 12, 0)
@@ -2002,6 +2000,11 @@ Function/S GetWindowsPath(path)
 	string path
 
 	return ParseFilepath(5, path, "\\", 0, 0)
+End
+
+/// @brief Return the path converted to a HFS style (aka ":" separated) path
+Function/S GetHFSPath(string path)
+	return ParseFilePath(5, path, ":", 0, 0)
 End
 
 /// @brief Set the given bit mask in var
