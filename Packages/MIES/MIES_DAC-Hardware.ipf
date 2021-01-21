@@ -1919,9 +1919,9 @@ static Constant HW_NI_FIFOSIZE =  10
 // HW_NI_FIFO_MIN_FREE_DISC_SPACE = SAFETY * HW_NI_FIFOSIZE * sizeof(double) * NI_MAX_SAMPLE_RATE
 // HW_NI_FIFO_MIN_FREE_DISC_SPACE = 2      * 120            *              8 * 500000
 #if defined(IGOR64)
-static Constant HW_NI_FIFO_MIN_FREE_DISC_SPACE = 960000000
+static Constant HW_NI_FIFO_MIN_FREE_DISK_SPACE = 960000000
 #else
-static Constant HW_NI_FIFO_MIN_FREE_DISC_SPACE =  80000000
+static Constant HW_NI_FIFO_MIN_FREE_DISK_SPACE =  80000000
 #endif
 
 /// @name Functions for interfacing with National Instruments Hardware
@@ -1946,8 +1946,8 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	fifoName = GetNIFIFOName(deviceID)
 	try
 		ClearRTError()
-		if(!HasEnoughDiscspaceFree(SpecialDirPath("Temporary", 0, 0, 0), HW_NI_FIFO_MIN_FREE_DISC_SPACE))
-			printf "%s: Can not start acquisition. Not enough free disk space for data buffer.\rThe free disk space is less than %.0W0PB.\r", panelTitle, HW_NI_FIFO_MIN_FREE_DISC_SPACE
+		if(!HasEnoughDiskspaceFree(SpecialDirPath("Temporary", 0, 0, 0), HW_NI_FIFO_MIN_FREE_DISK_SPACE))
+			printf "%s: Can not start acquisition. Not enough free disk space for data buffer.\rThe free disk space is less than %.0W0PB.\r", panelTitle, HW_NI_FIFO_MIN_FREE_DISK_SPACE
 			ControlWindowToFront()
 			return NaN
 		endif

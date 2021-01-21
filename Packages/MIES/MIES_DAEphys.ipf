@@ -2102,7 +2102,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 	PathInfo home
 	if(V_Flag) // saved experiment
-		if(!HasEnoughDiscspaceFree(S_path, MINIMUM_FREE_DISC_SPACE))
+		if(!HasEnoughDiskspaceFree(S_path, MINIMUM_FREE_DISK_SPACE))
 			printf "%s: The free disc space is less than %.0W0PB.\r", panelTitle, MINIMUM_FREE_DISC_SPACE
 			ControlWindowToFront()
 			return 1
