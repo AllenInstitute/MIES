@@ -150,6 +150,8 @@ static Function PS_RB1_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // we don't test the BL QC code path here anymore
@@ -213,6 +215,8 @@ static Function PS_RB2_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -274,6 +278,8 @@ static Function PS_RB3_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -335,6 +341,8 @@ static Function PS_RB4_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -396,6 +404,8 @@ static Function PS_RB5_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -457,6 +467,8 @@ static Function PS_RB6_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -521,6 +533,8 @@ static Function PS_RB7_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -592,6 +606,8 @@ static Function PS_RB8_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_SMALL)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_LARGE stepsize
@@ -660,6 +676,8 @@ static Function PS_RB9_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_SMALL)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_SMALL stepsize
@@ -730,4 +748,6 @@ static Function PS_RB10_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES, query = 1)
 	WAVE/Z limitedResolution = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(limitedResolution, {1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+
+	CheckDashboard(str, {setPassed})
 End

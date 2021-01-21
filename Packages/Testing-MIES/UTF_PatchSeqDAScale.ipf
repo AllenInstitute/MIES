@@ -156,6 +156,8 @@ Function PS_DS_Sub1_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CheckDashboard(str, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -218,6 +220,8 @@ Function PS_DS_Sub2_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CheckDashboard(str, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -281,6 +285,8 @@ Function PS_DS_Sub3_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CheckDashboard(str, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -473,6 +479,8 @@ Function PS_DS_Sub6_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CheckDashboard(str, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -538,6 +546,8 @@ Function PS_DS_Sub7_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -30, -30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CheckDashboard(str, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -607,6 +617,8 @@ Function PS_DS_Sub8_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -50, -50, -70, -70, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CheckDashboard(str, setPassed)
 End
 
 // The decision logic *without* FinalSlopePercent is the same as for Sub, only the plotting is different
@@ -679,6 +691,8 @@ Function PS_DS_Supra1_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CheckDashboard(str, setPassed)
 End
 
 Function PS_SetOffsetOp_IGNORE(device)
@@ -756,6 +770,8 @@ Function PS_DS_Supra2_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE * 20, PSQ_DS_OFFSETSCALE_FAKE * 40}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CheckDashboard(str, setPassed)
 End
 
 // FinalSlopePercent present but not reached
@@ -834,6 +850,8 @@ Function PS_DS_Supra3_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40, PSQ_DS_OFFSETSCALE_FAKE + 60, PSQ_DS_OFFSETSCALE_FAKE + 80, PSQ_DS_OFFSETSCALE_FAKE + 100}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CheckDashboard(str, setPassed)
 End
 
 // FinalSlopePercent present and reached
@@ -912,6 +930,8 @@ Function PS_DS_Supra4_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40, PSQ_DS_OFFSETSCALE_FAKE + 60, PSQ_DS_OFFSETSCALE_FAKE + 80, PSQ_DS_OFFSETSCALE_FAKE + 100}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CheckDashboard(str, setPassed)
 End
 
 static Constant DAScaleModifierPerc = 25
@@ -1007,4 +1027,6 @@ Function PS_DS_Supra5_REENTRY([str])
 	// 4. last inside
 	// 5. last above
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CheckDashboard(str, setPassed)
 End

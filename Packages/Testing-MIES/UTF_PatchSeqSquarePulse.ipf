@@ -131,6 +131,8 @@ static Function PS_SP1_REENTRY([str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -188,6 +190,8 @@ static Function PS_SP2_REENTRY([str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -245,6 +249,8 @@ static Function PS_SP3_REENTRY([str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -302,6 +308,8 @@ static Function PS_SP4_REENTRY([str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, NaN, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -360,6 +368,8 @@ static Function PS_SP5_REENTRY([str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -419,6 +429,8 @@ static Function PS_SP6_REENTRY([str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {-50e-12, NaN, NaN, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -476,4 +488,6 @@ static Function PS_SP7_REENTRY([str])
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {-50e-12, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
+
+	CheckDashboard(str, {setPassed})
 End

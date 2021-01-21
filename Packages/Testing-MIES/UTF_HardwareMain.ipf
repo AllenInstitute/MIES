@@ -729,3 +729,26 @@ Function CheckLBRowCache_IGNORE(string panelTitle)
 		endfor
 	endfor
 End
+
+Function CheckDashboard(string device, WAVE headstageQC)
+
+	string databrowser
+	variable numEntries, i, state
+
+	databrowser = DB_FindDataBrowser(device)
+	DFREF dfr = BSP_GetFolder(databrowser, MIES_BSP_PANEL_FOLDER)
+	WAVE/T/Z listWave = GetAnaFuncDashboardListWave(dfr)
+	CHECK_WAVE(listWave, TEXT_WAVE)
+
+	// Check that we have acquired some sweeps
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+
+	numEntries = GetNumberFromWaveNote(listWave, NOTE_INDEX)
+
+	for(i = 0; i < numEntries; i += 1)
+		state = !cmpstr(listWave[0][%Result], DASHBOARD_PASSING_MESSAGE)
+		CHECK_EQUAL_VAR(state, headstageQC[i])
+	endfor
+End

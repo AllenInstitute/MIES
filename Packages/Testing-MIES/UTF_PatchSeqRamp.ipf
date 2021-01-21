@@ -186,6 +186,8 @@ static Function PS_RA1_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {15000, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1)
+
+	CheckDashboard(str, setPassed)
 End
 
 // we don't test the BL QC code path here anymore
@@ -241,6 +243,8 @@ static Function PS_RA2_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {15000, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1)
+
+	CheckDashboard(str, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -300,6 +304,8 @@ static Function PS_RA3_REENTRY([str])
 
 	WAVE durations = GetLastSetting(numericalValues, sweeps[2], key, UNKNOWN_MODE)
 	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
+
+	CheckDashboard(str, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -353,6 +359,8 @@ static Function PS_RA4_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
+
+	CheckDashboard(str, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -412,6 +420,8 @@ static Function PS_RA5_REENTRY([str])
 
 	WAVE durations = GetLastSetting(numericalValues, sweeps[2], key, UNKNOWN_MODE)
 	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
+
+	CheckDashboard(str, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -471,4 +481,6 @@ static Function PS_RA6_REENTRY([str])
 
 	WAVE durations = GetLastSetting(numericalValues, sweeps[2], key, UNKNOWN_MODE)
 	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
+
+	CheckDashboard(str, setPassed)
 End
