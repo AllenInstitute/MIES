@@ -19,6 +19,7 @@
 #include "UTF_PatchSeqSquarePulse"
 #include "UTF_PatchSeqRheobase"
 #include "UTF_PatchSeqRamp"
+#include "UTF_ReachTargetVoltage"
 #include "UTF_MultiPatchSeqFastRheoEstimate"
 #include "UTF_MultiPatchSeqDAScale"
 #include "UTF_MultiPatchSeqSpikeControl"
@@ -46,6 +47,7 @@ Function run()
 	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqRheobase.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqRamp.ipf", list, ";", inf)
+	list = AddListItem("UTF_ReachTargetVoltage.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)

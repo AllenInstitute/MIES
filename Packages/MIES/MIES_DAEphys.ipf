@@ -2773,7 +2773,16 @@ static Function DAP_CheckAnalysisFunctionAndParameter(panelTitle, setName)
 			printf "(%s) The event type \"%s\" for stim set %s can not be used together with foreground DAQ\r", panelTitle, StringFromList(i, EVENT_NAME_LIST), setName
 			ControlWindowToFront()
 			return 1
-		elseif(i != GENERIC_EVENT)
+		endif
+
+		if(i != GENERIC_EVENT)
+			FUNCREF AF_PROTO_ANALYSIS_FUNC_V3 f3 = $func
+			if(FuncRefIsAssigned(FuncRefInfo(f3)))
+				printf "(%s) The analysis function %s for stim set %s is of type V3 but associated with the event type \"%s\", which is not supported.\nPlease reassign the analysis function to the stimset in the wavebuilder.\r", panelTitle, func, setName, StringFromList(i, EVENT_NAME_LIST)
+				ControlWindowToFront()
+				return 1
+			endif
+
 			continue
 		endif
 

@@ -1,0 +1,56 @@
+#pragma TextEncoding = "UTF-8"
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
+#pragma ModuleName=ReachTargetVoltageTesting
+
+static Constant HEADSTAGE = 0
+
+static Function RTVWorks_Setter(device)
+	string device
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "ReachTargetVoltage"
+
+	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
+End
+
+static Function [WAVE/Z deltaI, WAVE/Z deltaV, WAVE/Z resistance, WAVE/Z resistanceErr] GetLBNEntries_IGNORE(string device, variable sweepNo)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	WAVE/Z deltaI        = GetLastSettingEachSCI(numericalValues, sweepNo, "USER_Delta I", HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z deltaV        = GetLastSettingEachSCI(numericalValues, sweepNo, "USER_Delta V", HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z resistance    = GetLastSettingEachSCI(numericalValues, sweepNo, "USER_ResistanceFromFit", HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z resistanceErr = GetLastSettingEachSCI(numericalValues, sweepNo, "USER_ResistanceFromFit_Err", HEADSTAGE, UNKNOWN_MODE)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function RTV_Works([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AnalysisFunctionTesting#AcquireData(s, "StimulusSetA_DA_0", str, preAcquireFunc = RTVWorks_Setter)
+End
+
+static Function RTV_Works_REENTRY([str])
+	string str
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	WAVE/Z deltaI, deltaV, resistance, resistanceErr
+	[deltaI, deltaV, resistance, resistanceErr] = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_WAVE(deltaI, NUMERIC_WAVE)
+	CHECK_WAVE(deltaV, NUMERIC_WAVE)
+	CHECK_WAVE(resistance, NUMERIC_WAVE)
+	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
+End
