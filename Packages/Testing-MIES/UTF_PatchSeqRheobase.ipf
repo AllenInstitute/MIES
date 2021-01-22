@@ -56,7 +56,7 @@ static Function AcquireData(s, finalDAScaleFake, device)
 	DoUpdate/W=$device
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	OpenDatabrowser()
+	DB_OpenDatabrowser()
 End
 
 static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)
@@ -98,6 +98,7 @@ static Function PS_RB1_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay, initialDAScale
+	variable stepSize
 	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 15)
@@ -147,8 +148,10 @@ static Function PS_RB1_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
-	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // we don't test the BL QC code path here anymore
@@ -172,7 +175,7 @@ static Function PS_RB2_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
-	variable initialDAScale
+	variable initialDAScale, stepsize
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -210,8 +213,10 @@ static Function PS_RB2_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
-	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -233,7 +238,7 @@ static Function PS_RB3_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
-	variable initialDAScale
+	variable initialDAScale, stepsize
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -269,6 +274,12 @@ static Function PS_RB3_REENTRY([str])
 
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -290,7 +301,7 @@ static Function PS_RB4_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
-	variable initialDAScale
+	variable initialDAScale, stepsize
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -328,8 +339,10 @@ static Function PS_RB4_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
-	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -351,7 +364,7 @@ static Function PS_RB5_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
-	variable initialDAScale
+	variable initialDAScale, stepsize
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -389,8 +402,10 @@ static Function PS_RB5_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
-	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -412,7 +427,7 @@ static Function PS_RB6_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
-	variable initialDAScale
+	variable initialDAScale, stepsize
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -450,8 +465,10 @@ static Function PS_RB6_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
-	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -474,7 +491,7 @@ static Function PS_RB7_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
-	variable initialDAScale
+	variable initialDAScale, stepsize
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -514,8 +531,10 @@ static Function PS_RB7_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
-	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -541,7 +560,7 @@ static Function PS_RB8_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
-	variable initialDAScale
+	variable initialDAScale, stepsize
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -585,8 +604,10 @@ static Function PS_RB8_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
-	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_SMALL)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_SMALL)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_LARGE stepsize
@@ -610,7 +631,7 @@ static Function PS_RB9_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
-	variable initialDAScale
+	variable initialDAScale, stepsize
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -653,8 +674,10 @@ static Function PS_RB9_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
-	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_SMALL)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_SMALL)
+
+	CheckDashboard(str, {setPassed})
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_SMALL stepsize
@@ -678,7 +701,7 @@ static Function PS_RB10_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
-	variable initialDAScale
+	variable initialDAScale, stepsize
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(str)
@@ -719,10 +742,12 @@ static Function PS_RB10_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
-	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_SMALL)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_SMALL)
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES, query = 1)
 	WAVE/Z limitedResolution = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(limitedResolution, {1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+
+	CheckDashboard(str, {setPassed})
 End

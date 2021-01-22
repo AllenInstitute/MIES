@@ -63,6 +63,8 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 		preAcquireFunc(device)
 	endif
 
+	DB_OpenDatabrowser()
+
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
@@ -241,6 +243,8 @@ static Function MSQ_SC1_REENTRY([str])
 	// our failed pulses are from region 0 and 1, but we only count diagonal pulses
 	CHECK_EQUAL_TEXTWAVES(failedPulses_HS0, {"P0_R0;", "P0_R0;", "P0_R0;", "P0_R0;"}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(failedPulses_HS1, {"P0_R1;", "P0_R1;", "P0_R1;", "P0_R1;"}, mode = WAVE_DATA)
+
+	CheckDashboard(str, {0, 0})
 End
 
 static Function MSQ_SC2_IGNORE(device)
@@ -301,6 +305,8 @@ static Function MSQ_SC2_REENTRY([str])
 
 	CHECK_WAVE(failedPulses_HS0, NULL_WAVE)
 	CHECK_WAVE(failedPulses_HS1, NULL_WAVE)
+
+	CheckDashboard(str, {1, 1})
 End
 
 static Function MSQ_SC3_IGNORE(device)
@@ -375,6 +381,8 @@ static Function MSQ_SC3_REENTRY([str])
 
 	CHECK_EQUAL_TEXTWAVES(failedPulses_HS0, {"", "P4_R0;P5_R0;", ""}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(failedPulses_HS1, {"", "P4_R1;P5_R1;", ""}, mode = WAVE_DATA)
+
+	CheckDashboard(str, {1, 1})
 End
 
 static Function MSQ_SC4_IGNORE(device)
@@ -451,4 +459,6 @@ static Function MSQ_SC4_REENTRY([str])
 
 	CHECK_EQUAL_TEXTWAVES(failedPulses_HS0, {"P3_R0;", "", ""}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(failedPulses_HS1, {"", "P4_R1;P5_R1;", ""}, mode = WAVE_DATA)
+
+	CheckDashboard(str, {1, 1})
 End

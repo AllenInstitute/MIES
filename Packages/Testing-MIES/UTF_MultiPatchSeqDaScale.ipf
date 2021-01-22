@@ -60,7 +60,7 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	MSQ_CreateOverrideResults(device, 0, MSQ_DA_SCALE)
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	OpenDatabrowser()
+	DB_OpenDatabrowser()
 End
 
 static Constant INDEP_EACH_SCI = 0x01
@@ -132,4 +132,6 @@ static Function MSQ_DS1_REENTRY([str])
 
 	WAVE/Z stimScale = GetResults_IGNORE(sweepNo, str, STIMSET_SCALE_FACTOR_KEY, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(stimScale, {33, 43, 53, 63, 73}, mode = WAVE_DATA)
+
+	CheckDashboard(str, setPass)
 End
