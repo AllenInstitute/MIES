@@ -274,6 +274,15 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 		endfor
 	endif
 
+	// Handle "TP during DAQ" DA channels being the only active ones
+	if(Sum(statusDAFiltered) == 0 && Sum(statusTTLFiltered) == 0)
+		WAVE statusDAFilteredTPDuringDAQ = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_TP)
+
+		if(Sum(statusDAFilteredTPDuringDAQ) > 0)
+			MaxNoOfSweeps = 1
+		endif
+	endif
+
 	return DEBUGPRINTv(MaxNoOfSweeps)
 End
 
