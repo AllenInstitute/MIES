@@ -450,7 +450,9 @@ End
 
 /// @brief Single pulse wave creator
 ///
-/// The wave note for the pulse waves is stored in a separate empty wave. This speeds up caching logic for the pulse waves a lot.
+/// The wave note for the pulse waves is stored in a separate empty wave. This speeds up the caching
+/// logic for the pulse waves a lot.
+///
 /// The wave note is used for documenting the applied operations:
 /// - `$NOTE_KEY_FAILED_PULSE_LEVEL`: Level used for failed pulse search
 /// - `$NOTE_KEY_NUMBER_OF_SPIKES`: Number of spikes used for failed pulse search
@@ -467,7 +469,7 @@ End
 ///
 /// Diagonal pulses only with failed pulse search enabled:
 /// - `$NOTE_KEY_PULSE_HAS_FAILED`: Pulse has failed
-/// - `$NOTE_KEY_PULSE_SPIKE_POSITIONS`: Comma separated list of spike positions
+/// - `$NOTE_KEY_PULSE_SPIKE_POSITIONS`: Comma separated list of spike positions in ms. `0` is the start of the pulse.
 static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(WAVE/Z wv, DFREF singleSweepFolder, variable channelType, variable channelNumber, variable region, variable pulseIndex, variable first, variable length)
 
 	variable existingLength
