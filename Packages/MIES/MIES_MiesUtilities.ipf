@@ -2403,7 +2403,13 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	WAVE DACs = GetDACListFromConfig(config)
 	WAVE TTLs = GetTTLListFromConfig(config)
 
-	BSP_RemoveDisabledChannels(channelSelWave, ADCs, DACs, numericalValues, sweepNo)
+	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
+	WAVE/D/Z statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
+	if(!WaveExists(statusHS))
+		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCs[p]) && IsFinite(DACs[p])
+	endif
+
+	BSP_RemoveDisabledChannels(channelSelWave, ADCs, DACs, statusHS, numericalValues, sweepNo)
 
 	numDACs = DimSize(DACs, ROWS)
 	numADCs = DimSize(ADCs, ROWS)
@@ -2412,7 +2418,6 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	// introduced in db531d20 (DC_PlaceDataIn ITCDataWave: Document the digitizer hardware type, 2018-07-30)
 	// before that we only had ITC hardware
 	hardwareType           = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
-	WAVE/Z statusHS        = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackZeroBits = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackOneBits  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
 	WAVE/Z/T ttlChannels   = GetLastSetting(textualValues, sweepNo, "TTL channels", DATA_ACQUISITION_MODE)
