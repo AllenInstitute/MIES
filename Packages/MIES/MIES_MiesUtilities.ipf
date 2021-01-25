@@ -6770,7 +6770,11 @@ Function/WAVE GetTraceInfos(string graph, [WAVE/T addFilterKeys, WAVE/T addFilte
 		Concatenate/FREE/NP/T {addFilterValues}, values
 	endif
 
-	WAVE matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = keys, values = values)
+	WAVE/Z matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = keys, values = values)
+
+	if(!WaveExists(matches))
+		return $""
+	endif
 
 	WAVE/T graphUserData = GetGraphUserData(graph)
 
