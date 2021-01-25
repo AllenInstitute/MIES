@@ -1718,6 +1718,41 @@ static Function MSQ_LastSweepInSet(string panelTitle, variable sweepNo, variable
 	return (sweepSetCount[headstage] + 1) == sweepsInSet
 End
 
+/// Given a list of pulses by their indizes, this function return only the diagonal
+/// ones which are matching the given sweep
+Function/WAVE MSQ_SpikeControlFilterPulses(WAVE/WAVE propertiesWaves, WAVE/Z indizesAll, WAVE/Z indizesSweep)
+
+	variable i, j, size
+
+	if(!WaveExists(indizesAll))
+		return $""
+	endif
+
+	WAVE/Z indizesFiltered = GetSetIntersection(indizesSweep, indizesAll)
+
+	if(!WaveExists(indizesFiltered))
+		return $""
+	endif
+
+	Duplicate/FREE indizesFiltered, indizesFilteredDiagonal
+
+	size = DimSize(indizesFiltered, ROWS)
+	for(i = 0; i < size; i += 1)
+		WAVE noteWave = propertiesWaves[indizesFiltered[i]][%PULSENOTE]
+		if(GetNumberFromWaveNote(noteWave, NOTE_KEY_PULSE_IS_DIAGONAL) == 1)
+			indizesFilteredDiagonal[j++] = indizesFiltered[i]
+		endif
+	endfor
+
+	if(j == 0)
+		return $""
+	endif
+
+	Redimension/N=(j) indizesFilteredDiagonal
+
+	return indizesFilteredDiagonal
+End
+
 static Function MSQ_WriteSpikeControlLBNEntries(string panelTitle, variable sweepNo, variable headstage)
 
 	string databrowser, str, key
@@ -1770,33 +1805,17 @@ static Function MSQ_WriteSpikeControlLBNEntries(string panelTitle, variable swee
 		WAVE/Z indizesFailedPulsesAll = FindIndizes(properties, colLabel = "PulseHasFailed", var = 1, endRow = endRow)
 	endif
 
+	WAVE/Z indizesSweep = FindIndizes(properties, colLabel = "Sweep", var = sweepNo, endRow = endRow)
+	ASSERT(WaveExists(indizesSweep), "Could not find sweeps with sweepNo")
+
+	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
+
 	// Get the indizes of the failed pulses from sweepNo
 	//
 	// We need to distinguish two cases:
 	// - All pulses pass -> indizesFailedPulsesAll does not exist
-	// - Some pulses fail but not from sweepNo -> indizesFailedPulsesSweep does not exist
-	if(WaveExists(indizesFailedPulsesAll))
-		WAVE/Z indizesSweep = FindIndizes(properties, colLabel = "Sweep", var = sweepNo, endRow = endRow)
-		ASSERT(WaveExists(indizesSweep), "Could not find sweeps with sweepNo")
-
-		WAVE/Z indizesFailedPulsesSweep = GetSetIntersection(indizesSweep, indizesFailedPulsesAll)
-
-		if(WaveExists(indizesFailedPulsesSweep))
-			WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
-			Duplicate/FREE indizesFailedPulsesSweep, indizesFailedPulses
-			size = DimSize(indizesFailedPulsesSweep, ROWS)
-			j = 0
-			for(i = 0; i < size; i += 1)
-				if(GetNumberFromWaveNote(propertiesWaves[indizesFailedPulsesSweep[i]][%PULSENOTE], NOTE_KEY_PULSE_IS_DIAGONAL) == 1)
-					indizesFailedPulses[j] = indizesFailedPulsesSweep[i]
-					j += 1
-				endif
-			endfor
-
-			ASSERT(j > 0, "Could not find a diagonal failing pulse")
-			Redimension/N=(j) indizesFailedPulses
-		endif
-	endif
+	// - Some pulses fail but not from sweepNo -> MSQ_SpikeControlFilterPulses filters these out
+	WAVE/Z indizesFailedPulses = MSQ_SpikeControlFilterPulses(propertiesWaves, indizesFailedPulsesAll, indizesSweep)
 
 	if(WaveExists(indizesFailedPulses))
 		Make/FREE/N=(DimSize(indizesFailedPulses, ROWS)) failedHeadstagesWithDuplicates = properties[indizesFailedPulses[p]][%Headstage]
