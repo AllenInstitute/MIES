@@ -2380,7 +2380,7 @@ End
 /// @param bdi [optional, default = n/a] initialized BufferedDrawInfo structure, when given draw calls are buffered instead for later execution @sa OVS_EndIncrementalUpdate
 Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues,  WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave[, STRUCT BufferedDrawInfo &bdi])
 
-	variable axisIndex, numChannels, offset
+	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
 	variable moreData, chan, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, headstage
@@ -2727,16 +2727,6 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 					else
 						xRangeStart = NaN
 						xRangeEnd   = NaN
-					endif
-
-					if(tgs.dDAQDisplayMode && oodDAQEnabled && channelTypes[i] != XOP_CHANNEL_TYPE_TTL)
-						offset = -(delayOnsetUser + delayOnsetAuto) * samplingInt
-					else
-						offset = 0.0
-					endif
-
-					if(DimOffset(wv, ROWS) != offset)
-						SetScale/P x, offset, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
 					endif
 
 					sprintf trace, "T%0*d", TRACE_NAME_NUM_DIGITS, traceIndex
