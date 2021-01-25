@@ -4505,6 +4505,8 @@ End
 /// @param mode         mode, one of @ref FindLevelModes
 /// @param maxNumLevels [optional, defaults to number of points/rows] maximum number of levels to find
 ///
+/// The returned levels are in the wave's row units.
+///
 /// FINDLEVEL_MODE_SINGLE:
 /// - Return a 1D wave with as many rows as columns in the input data
 /// - Contents are the x values of the first level or NaN if none could be found
