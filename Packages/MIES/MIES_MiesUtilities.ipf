@@ -3788,7 +3788,7 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 	STRUCT PostPlotSettings pps
 	InitPostPlotSettings(graph, pps)
 
-	if(pps.zeroTraces || pps.averageTraces)
+	if(pps.zeroTraces)
 		WAVE/T/Z traces = GetAllSweepTraces(graph, prefixTraces = 0)
 	else
 		WAVE/T/Z traces = $""
@@ -3797,7 +3797,7 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
 	TimeAlignMainWindow(graph, pps)
 
-	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
+	AverageWavesFromSameYAxisIfReq(graph, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
 
 	if(ParamIsDefault(additionalData))
@@ -4070,13 +4070,11 @@ End
 /// @brief Average traces in the graph from the same y-axis and append them to the graph
 ///
 /// @param graph             graph with traces create by #CreateTiledChannelGraph
-/// @param traces            all traces of the graph except suplimentary ones like the average trace
 /// @param averagingEnabled  switch if averaging is enabled or not
 /// @param averageDataFolder permanent datafolder where the average waves can be stored
 /// @param hideSweep         are normal channel traces hidden or not
-static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, averageDataFolder, hideSweep)
+static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageDataFolder, hideSweep)
 	string graph
-	WAVE/T/Z traces
 	variable averagingEnabled
 	DFREF averageDataFolder
 	variable hideSweep
@@ -4098,6 +4096,8 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		RemoveEmptyDataFolder(averageDataFolder)
 		return NaN
 	endif
+
+	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"sweep"})
 
 	if(!WaveExists(traces))
 		return NaN
