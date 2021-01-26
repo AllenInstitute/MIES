@@ -4097,6 +4097,15 @@ static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageD
 		return NaN
 	endif
 
+	// remove existing average traces
+	WAVE/T/Z averageTraces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Average"})
+	numTraces = WaveExists(averageTraces) ? DimSize(averageTraces, ROWS) : 0
+	for(i = 0; i < numTraces; i += 1)
+		trace = averageTraces[i]
+		RemoveFromGraph/W=$graph $trace
+		TUD_RemoveUserData(graph, trace)
+	endfor
+
 	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"sweep"})
 
 	if(!WaveExists(traces))
