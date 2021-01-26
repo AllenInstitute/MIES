@@ -2729,6 +2729,9 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 							xRangeStart = delayOnsetUser + delayOnsetAuto + xRangeStart / samplingInt
 							xRangeEnd   = delayOnsetUser + delayOnsetAuto + xRangeEnd / samplingInt
 						endif
+
+						xRangeStart = floor(xRangeStart)
+						xRangeEnd   = ceil(xRangeEnd)
 					else
 						xRangeStart = NaN
 						xRangeEnd   = NaN
@@ -2759,7 +2762,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						endif
 					else
 						horizAxis = vertAxis + "_b"
-						sprintf traceRange, "[%g,%g][0]", xRangeStart, xRangeEnd
+						sprintf traceRange, "[%d,%d][0]", xRangeStart, xRangeEnd
 						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue, 65535) wv[xRangeStart, xRangeEnd][0]/TN=$trace
 						first = first
 						last  = first + (xRangeEnd - xRangeStart) / totalXRange
