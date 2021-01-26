@@ -300,8 +300,7 @@ End
 /// @param idx              Index into traceData, used for determining sweep numbers, labnotebooks, etc.
 /// @param region           Region (headstage) to get pulse starting times for
 /// @param channelTypeStr   Type of the channel, one of @ref XOP_CHANNEL_NAMES
-/// @param removeOnsetDelay [optional, defaults to true] Remove the onset delay from the starting times (true) or not (false)
-Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [removeOnsetDelay])
+Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 	WAVE/T traceData
 	variable idx, region
 	string channelTypeStr
@@ -310,12 +309,6 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	variable sweepNo, totalOnsetDelay, channel
 	string str, fullPath
 
-	if(ParamIsDefault(removeOnsetDelay))
-		removeOnsetDelay = 1
-	else
-		removeOnsetDelay = !!removeOnsetDelay
-	endif
-
 	sweepNo = str2num(traceData[idx][%sweepNumber])
 
 	WAVE/Z textualValues   = $traceData[idx][%textualValues]
@@ -323,9 +316,6 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 
 	ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "Missing labnotebook waves")
 
-	if(removeOnsetDelay)
-		totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
-	endif
 
 	WAVE/Z/T epochs = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	if(WaveExists(epochs))
@@ -350,6 +340,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 		endif
 
 		WAVE DA = GetDAQDataSingleColumnWave(singleSweepFolder, XOP_CHANNEL_TYPE_DAC, channel)
+		totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 		WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, fullPath, channel, totalOnsetDelay)
 
 #ifdef AUTOMATED_TESTING
@@ -381,8 +372,6 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 			return $""
 		endif
 	endif
-
-	pulseStartTimes[] -= totalOnsetDelay
 
 	return pulseStartTimes
 End
@@ -790,7 +779,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 				// ignore wave offset, as it is only used for display purposes
 				// but use the totalOnsetDelay of this sweep
-				first  = round((pulseStartTimes[k] + totalOnsetDelay) / DimDelta(wv, ROWS))
+				first  = round((pulseStartTimes[k]) / DimDelta(wv, ROWS))
 				length = round(pulseToPulseLength / DimDelta(wv, ROWS))
 
 				WAVE/Z pulseWave, pulseWaveNote
