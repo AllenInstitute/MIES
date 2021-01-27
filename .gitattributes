@@ -57,4 +57,9 @@ Packages/Artwork      export-ignore
 tools/unit-testing/*.pxp filter=compress
 *.nwb filter=compress
 
+# github specialities, see https://github.com/github/linguist
+Packages/doc/* linguist-documentation
+
 tools/installer/nsis/* linguist-vendored
+tools/installer/Shelllink/* linguist-vendored
+tools/installer/AccessControl/* linguist-vendored
