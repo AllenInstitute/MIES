@@ -420,22 +420,6 @@
 // data is properly NaNed on the left and right edge.
 static Constant PA_TEST_FP_EPSILON = 1E-6
 
-// todo remove string constants here
-// these should be defined MIES_Constant.ipf and then used everywhere
-
-static StrConstant PAT_AVG_PREFIX = "average_"
-static StrConstant PAT_DECONV_PREFIX = "deconv_"
-
-static StrConstant PA_TEST_KEY_WAVEMIN = "WaveMinimum"
-static StrConstant PA_TEST_KEY_WAVEMAX = "WaveMaximum"
-static StrConstant PA_TEST_KEY_PULSELENGTH = "PulseLength"
-
-static StrConstant PA_TEST_KEY_TA_FP = "TimeAlignmentFeaturePosition"
-static StrConstant PA_TEST_KEY_TA_TO = "TimeAlignmentTotalOffset"
-
-static StrConstant PA_TEST_KEY_IMG_PMIN = "PulsesMinimum"
-static StrConstant PA_TEST_KEY_IMG_PMAX = "PulsesMaximum"
-
 // use copy of mies folder and restore it each time
 Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
@@ -910,13 +894,13 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_ZEROED)
 	CHECK_EQUAL_VAR(setting, s.zeroPulses)
 
-	setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_WAVEMIN)
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_WAVE_MINIMUM)
 	CHECK_CLOSE_VAR(setting, WaveMin(pulse), tol = PA_TEST_FP_EPSILON)
 
-	setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_WAVEMAX)
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_WAVE_MAXIMUM)
 	CHECK_CLOSE_VAR(setting, WaveMax(pulse), tol = PA_TEST_FP_EPSILON)
 
-	setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_PULSELENGTH)
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_LENGTH)
 	CHECK_EQUAL_VAR(setting, DimSize(pulse, ROWS))
 End
 
@@ -932,10 +916,10 @@ static Function PAT_CheckImageWaveNote(string win, WAVE iData, STRUCT PA_Test &p
 
 	Duplicate/FREE/RMD=[][0, patest.pulseCnt - 1] iData, pulseData
 
-	setting = GetNumberFromWaveNote(iData, PA_TEST_KEY_IMG_PMIN)
+	setting = GetNumberFromWaveNote(iData, NOTE_KEY_IMG_PMIN)
 	CHECK_CLOSE_VAR(setting, WaveMin(pulseData), tol = PA_TEST_FP_EPSILON)
 
-	setting = GetNumberFromWaveNote(iData, PA_TEST_KEY_IMG_PMAX)
+	setting = GetNumberFromWaveNote(iData, NOTE_KEY_IMG_PMAX)
 	CHECK_CLOSE_VAR(setting, WaveMax(pulseData), tol = PA_TEST_FP_EPSILON)
 End
 
@@ -943,7 +927,7 @@ static Function PAT_CheckAverageWaveNote(WAVE avg)
 
 	variable setting
 
-	setting = GetNumberFromWaveNote(avg, PA_TEST_KEY_WAVEMAX)
+	setting = GetNumberFromWaveNote(avg, NOTE_KEY_WAVE_MAXIMUM)
 	CHECK_CLOSE_VAR(setting, WaveMax(avg), tol = PA_TEST_FP_EPSILON)
 End
 
@@ -961,15 +945,15 @@ static Function PAT_CheckPulseWaveNoteTA(WAVE pulse, WAVE pulseDiag, variable ac
 		WaveStats/Q/M=1 pulse
 		CHECK_EQUAL_VAR(V_maxLoc, 0)
 
-		setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_TA_FP)
+		setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_TIMEALIGN_FEATURE_POS)
 		WaveStats/Q/M=1 pulseBak
 		CHECK_CLOSE_VAR(setting, V_maxLoc, tol = PA_TEST_FP_EPSILON)
 
-		setting2 = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_TA_TO)
+		setting2 = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_TIMEALIGN_TOTAL_OFFSET)
 		CHECK_EQUAL_VAR(setting, -setting2)
 		CHECK_CLOSE_VAR(setting2, DimOffset(pulse, ROWS), tol = PA_TEST_FP_EPSILON)
 	else
-		setting = PAT_GetNumberFromPulseWaveNote(pulse, PA_TEST_KEY_TA_TO)
+		setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_TIMEALIGN_TOTAL_OFFSET)
 		WaveStats/Q/M=1 pulseBak
 		CHECK_SMALL_VAR(V_maxLoc + setting, tol = PA_TEST_FP_EPSILON)
 		CHECK_EQUAL_VAR(setting, DimOffset(pulse, ROWS))
@@ -1171,7 +1155,7 @@ static Function PAT_BasicAverageCheck()
 
 	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize)
 
-	traceList = GrepList(traceListAll, PAT_AVG_PREFIX)
+	traceList = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
 	traceNum = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize)
 
@@ -1211,7 +1195,7 @@ static Function PAT_ExtendedAverageCheck()
 
 	traceListAll = PAT_GetTraces(graph, 3 * patest.layoutSize)
 
-	traceList = GrepList(traceListAll, PAT_AVG_PREFIX)
+	traceList = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
 	traceNum = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize)
 
@@ -1241,7 +1225,7 @@ static Function PAT_BasicDeconvCheck()
 
 	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize / 2)
 
-	traceList = GrepList(traceListAll, PAT_DECONV_PREFIX)
+	traceList = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
 	traceNum = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize / 2)
 
@@ -1284,7 +1268,7 @@ static Function PAT_BasicDeconvOnlyCheck()
 
 	traceListAll = PAT_GetTraces(graph, patest.layoutSize / 2)
 
-	traceList = GrepList(traceListAll, PAT_DECONV_PREFIX)
+	traceList = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
 	traceNum = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize / 2)
 
@@ -1413,7 +1397,7 @@ static Function PAT_DontShowIndividualPulses()
 	traceList = PAT_GetTraces(graph, patest.layoutSize)
 
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_indPulses", val = 1)
-	traceListAvg = GrepList(traceList, PAT_AVG_PREFIX)
+	traceListAvg = GrepList(traceList, PA_AVERAGE_WAVE_PREFIX)
 	size = sqrt(patest.layoutSize)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
@@ -1427,7 +1411,7 @@ static Function PAT_DontShowIndividualPulses()
 	traceList = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize / 2)
 
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_indPulses", val = 1)
-	traceListDeconv = GrepList(traceList, PAT_DECONV_PREFIX)
+	traceListDeconv = GrepList(traceList, PA_DECONVOLUTION_WAVE_PREFIX)
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			if(i == j)
@@ -1459,7 +1443,7 @@ static Function PAT_ExtendedDeconvCheckTau()
 
 	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize +  + patest.layoutSize / 2)
 
-	traceList = GrepList(traceListAll, PAT_DECONV_PREFIX)
+	traceList = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
 	traceNum = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize / 2)
 
@@ -1498,7 +1482,7 @@ static Function PAT_ExtendedDeconvCheckSmooth()
 
 	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize +  + patest.layoutSize / 2)
 
-	traceList = GrepList(traceListAll, PAT_DECONV_PREFIX)
+	traceList = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
 	traceNum = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize / 2)
 
@@ -1544,7 +1528,7 @@ static Function PAT_ExtendedDeconvCheckDisplay()
 
 	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize +  + patest.layoutSize / 2)
 
-	traceList = GrepList(traceListAll, PAT_DECONV_PREFIX)
+	traceList = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
 	traceNum = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize / 2)
 
@@ -1632,7 +1616,7 @@ static Function PAT_BasicOVSAverageCheck()
 
 	traceListAll = PAT_GetTraces(graph, 3 * patest.layoutSize)
 
-	traceList = GrepList(traceListAll, PAT_AVG_PREFIX)
+	traceList = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
 	traceNum = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, patest.layoutSize)
 
@@ -1891,11 +1875,11 @@ static Function PAT_FailedPulseCheck3()
 
 	traceListAll = PAT_GetTraces(graph, patest5.layoutSize + avgTraceNum + deconvTraceNum)
 
-	traceListAvg = GrepList(traceListAll, PAT_AVG_PREFIX)
+	traceListAvg = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
 	traceNum = ItemsInList(traceListAvg)
 	CHECK_EQUAL_VAR(traceNum, avgTraceNum)
 
-	traceListDeconv = GrepList(traceListAll, PAT_DECONV_PREFIX)
+	traceListDeconv = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
 	traceNum = ItemsInList(traceListDeconv)
 	CHECK_EQUAL_VAR(traceNum, deconvTraceNum)
 
@@ -1948,7 +1932,7 @@ static Function PAT_FailedPulseCheck4()
 
 	traceListAll = PAT_GetTraces(graph, deconvTraceNum)
 
-	traceListDeconv = GrepList(traceListAll, PAT_DECONV_PREFIX)
+	traceListDeconv = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
 	traceNum = ItemsInList(traceListDeconv)
 	CHECK_EQUAL_VAR(traceNum, deconvTraceNum)
 
@@ -2082,11 +2066,11 @@ static Function PAT_MultiSweepAvg()
 
 	traceListAll = PAT_GetTraces(graph, patest.layoutSize + patest.layoutSize + avgTraceNum + deconvTraceNum)
 
-	traceListAvg = GrepList(traceListAll, PAT_AVG_PREFIX)
+	traceListAvg = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
 	traceNum = ItemsInList(traceListAvg)
 	CHECK_EQUAL_VAR(traceNum, avgTraceNum)
 
-	traceListDeconv = GrepList(traceListAll, PAT_DECONV_PREFIX)
+	traceListDeconv = GrepList(traceListAll, PA_DECONVOLUTION_WAVE_PREFIX)
 	traceNum = ItemsInList(traceListDeconv)
 	CHECK_EQUAL_VAR(traceNum, deconvTraceNum)
 
@@ -2163,7 +2147,7 @@ static Function PAT_IncrementalSweepAddPartialAvgCheck()
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 2)
 
 	traceListAll = PAT_GetTraces(graph, 5 + 4)
-	traceList = GrepList(traceListAll, PAT_AVG_PREFIX)
+	traceList = GrepList(traceListAll, PA_AVERAGE_WAVE_PREFIX)
 	traceNum = ItemsInList(traceList)
 	CHECK_EQUAL_VAR(traceNum, 4)
 End
@@ -2303,8 +2287,8 @@ static Function PAT_BasicImagePlotDeconvolution()
 				imageName = PAT_FindImageNames(imageList, patest.channels[i], patest.regions[j])
 
 				WAVE iData = ImageNameToWaveRef(imageWin, imageName)
-				vMin = GetNumberFromWaveNote(iData, PA_TEST_KEY_IMG_PMIN)
-				vMax = GetNumberFromWaveNote(iData, PA_TEST_KEY_IMG_PMAX)
+				vMin = GetNumberFromWaveNote(iData, NOTE_KEY_IMG_PMIN)
+				vMax = GetNumberFromWaveNote(iData, NOTE_KEY_IMG_PMAX)
 				Duplicate/FREE refData[i][j], adaptedRefData
 				adaptedRefData = limit(adaptedRefData[p], vMin, vMax)
 

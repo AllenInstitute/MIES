@@ -756,13 +756,21 @@ Constant NOISE_TYPE_BROWN = 2
 StrConstant NOISE_TYPES_STRINGS = "White;Pink;Brown"
 StrConstant PULSE_TYPES_STRINGS = "Square;Triangle"
 
-StrConstant NOTE_KEY_ZEROED               = "Zeroed"
-StrConstant NOTE_KEY_TIMEALIGN            = "TimeAlign"
-StrConstant NOTE_KEY_ARTEFACT_REMOVAL     = "ArtefactRemoval"
-StrConstant NOTE_KEY_SEARCH_FAILED_PULSE  = "SearchFailedPulses"
-StrConstant NOTE_KEY_FAILED_PULSE_LEVEL   = "FailedPulseLevel"
-StrConstant NOTE_KEY_NUMBER_OF_SPIKES     = "NumberOfSpikes"
-StrConstant NOTE_KEY_PULSE_SORT_ORDER     = "PulseSortOrder"
+StrConstant NOTE_KEY_ZEROED                 = "Zeroed"
+StrConstant NOTE_KEY_TIMEALIGN              = "TimeAlign"
+StrConstant NOTE_KEY_ARTEFACT_REMOVAL       = "ArtefactRemoval"
+StrConstant NOTE_KEY_SEARCH_FAILED_PULSE    = "SearchFailedPulses"
+StrConstant NOTE_KEY_FAILED_PULSE_LEVEL     = "FailedPulseLevel"
+StrConstant NOTE_KEY_NUMBER_OF_SPIKES       = "NumberOfSpikes"
+StrConstant NOTE_KEY_PULSE_SORT_ORDER       = "PulseSortOrder"
+StrConstant NOTE_KEY_WAVE_MINIMUM           = "WaveMinimum"
+StrConstant NOTE_KEY_WAVE_MAXIMUM           = "WaveMaximum"
+StrConstant NOTE_KEY_PULSE_LENGTH           = "PulseLength"
+StrConstant NOTE_KEY_TIMEALIGN_FEATURE_POS  = "TimeAlignmentFeaturePosition"
+StrConstant NOTE_KEY_TIMEALIGN_TOTAL_OFFSET = "TimeAlignmentTotalOffset"
+StrConstant NOTE_KEY_IMG_PMIN               = "PulsesMinimum"
+StrConstant NOTE_KEY_IMG_PMAX               = "PulsesMaximum"
+StrConstant NOTE_KEY_PULSE_IS_DIAGONAL      = "IsDiagonal"
 
 /// Only present for diagonal pulses
 /// @{
@@ -1316,9 +1324,9 @@ Constant PA_GETSETWAVES_NEW = 0x04
 
 /// @}
 
-StrConstant PULSEWAVE_NOTE_SUFFIX = "_note"
-StrConstant PA_NOTE_KEY_PULSE_ISDIAGONAL = "IsDiagonal"
+StrConstant PULSEWAVE_NOTE_SUFFIX        = "_note"
 StrConstant PA_AVERAGE_WAVE_PREFIX       = "average_"
+StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 
 /// @name Indices into PA properties wave
 /// @anchor PAPropertyWaveIndices

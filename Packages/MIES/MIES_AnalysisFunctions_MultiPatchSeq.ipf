@@ -1769,7 +1769,7 @@ static Function MSQ_WriteSpikeControlLBNEntries(string panelTitle, variable swee
 			size = DimSize(indizesFailedPulsesSweep, ROWS)
 			j = 0
 			for(i = 0; i < size; i += 1)
-				if(GetNumberFromWaveNote(propertiesWaves[indizesFailedPulsesSweep[i]][%PULSENOTE], PA_NOTE_KEY_PULSE_ISDIAGONAL) == 1)
+				if(GetNumberFromWaveNote(propertiesWaves[indizesFailedPulsesSweep[i]][%PULSENOTE], NOTE_KEY_PULSE_IS_DIAGONAL) == 1)
 					indizesFailedPulses[j] = indizesFailedPulsesSweep[i]
 					j += 1
 				endif

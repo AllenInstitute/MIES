@@ -4309,7 +4309,7 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 	if(writeSourcePaths)
 		AddEntryIntoWaveNoteAsList(freeAverageWave, "SourceWavesForAverage", str=ReplaceString(";", WaveRefWaveToList(waveRefs, 0), "|"))
 	endif
-	SetNumberInWaveNote(freeAverageWave, "WaveMaximum", WaveMax(freeAverageWave), format = "%.15f")
+	SetNumberInWaveNote(freeAverageWave, NOTE_KEY_WAVE_MAXIMUM, WaveMax(freeAverageWave), format = "%.15f")
 
 	CA_StoreEntryIntoCache(key, freeAverageWave, options=CA_OPTS_NO_DUPLICATE)
 
@@ -4450,7 +4450,7 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 		DEBUGPRINT("old DimOffset", var=DimOffset(wv, ROWS))
 		DEBUGPRINT("new DimOffset", var=DimOffset(wv, ROWS) + offset)
 		SetScale/P x, DimOffset(wv, ROWS) + offset, DimDelta(wv, ROWS), wv
-		SetNumberInWaveNote(wv, "TimeAlignmentTotalOffset", offset)
+		SetNumberInWaveNote(wv, NOTE_KEY_TIMEALIGN_TOTAL_OFFSET, offset)
 		SetNumberInWaveNote(wv, NOTE_KEY_TIMEALIGN, 1)
 	endfor
 End

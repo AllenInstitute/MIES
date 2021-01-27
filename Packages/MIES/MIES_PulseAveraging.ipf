@@ -29,8 +29,6 @@ static StrConstant PA_DRAWLAYER_FAILED_PULSES = "ProgBack"
 static StrConstant PA_GRAPH_PREFIX          = "PulseAverage"
 static StrConstant PA_SOURCE_WAVE_TIMESTAMP = "SOURCE_WAVE_TS"
 
-static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
-
 static StrConstant PA_SETTINGS = "PulseAverageSettings"
 
 static StrConstant PA_USER_DATA_X_START_RELATIVE_PREFIX = "XAxisStartPlotRelative_"
@@ -456,15 +454,15 @@ End
 /// The wave note is used for documenting the applied operations:
 /// - `$NOTE_KEY_FAILED_PULSE_LEVEL`: Level used for failed pulse search
 /// - `$NOTE_KEY_NUMBER_OF_SPIKES`: Number of spikes used for failed pulse search
-/// - `PulseLength`: Length in points of the pulse wave (before any operations)
+/// - `$NOTE_KEY_PULSE_LENGTH`: Length in points of the pulse wave (before any operations)
 /// - `$NOTE_KEY_SEARCH_FAILED_PULSE`: Checkbox state of "Search failed pulses"
 /// - `$NOTE_KEY_TIMEALIGN`: Time alignment was active and applied
-/// - `TimeAlignmentTotalOffset`: Calculated offset from time alignment
+/// - `$NOTE_KEY_TIMEALIGN_TOTAL_OFFSET`: Calculated offset from time alignment
 /// - `$NOTE_KEY_ZEROED`: Zeroing was active and applied
-/// - `WaveMinimum`: Minimum value of the data
-/// - `WaveMaximum`: Maximum value of the data
-/// - `TimeAlignmentFeaturePosition`: Position where the feature for time alignment was found
-/// - `$PA_NOTE_KEY_PULSE_ISDIAGONAL`: Stores if pulse is shown in the diagonal of the output layout
+/// - `$NOTE_KEY_WAVE_MINIMUM`: Minimum value of the data
+/// - `$NOTE_KEY_WAVE_MAXIMUM`: Maximum value of the data
+/// - `$NOTE_KEY_TIMEALIGN_FEATURE_POS`: Position where the feature for time alignment was found
+/// - `$NOTE_KEY_PULSE_IS_DIAGONAL`: Stores if pulse is shown in the diagonal of the output layout
 /// - `$PA_SOURCE_WAVE_TIMESTAMP`: Last modification time of the pulse wave before creation.
 ///
 /// Diagonal pulses only with failed pulse search enabled:
@@ -483,7 +481,7 @@ static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(W
 	WAVE singlePulseWave = GetPulseAverageWave(singleSweepFolder, length, channelType, channelNumber, region, pulseIndex)
 	WAVE singlePulseWaveNote = GetPulseAverageWaveNoteWave(singleSweepFolder, length, channelType, channelNumber, region, pulseIndex)
 
-	existingLength = GetNumberFromWaveNote(singlePulseWaveNote, "PulseLength")
+	existingLength = GetNumberFromWaveNote(singlePulseWaveNote, NOTE_KEY_PULSE_LENGTH)
 
 	if(existingLength != length)
 		Redimension/N=(length) singlePulseWave
@@ -503,7 +501,7 @@ static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(W
 
 	PA_UpdateMinAndMax(singlePulseWave, singlePulseWaveNote)
 
-	SetNumberInWaveNote(singlePulseWaveNote, "PulseLength", length)
+	SetNumberInWaveNote(singlePulseWaveNote, NOTE_KEY_PULSE_LENGTH, length)
 
 	SetNumberInWaveNote(singlePulseWaveNote, PA_SOURCE_WAVE_TIMESTAMP, ModDate(wv))
 
@@ -518,8 +516,8 @@ threadsafe static Function PA_UpdateMinAndMax(WAVE wv, WAVE noteWave)
 	variable minimum, maximum
 
 	[minimum, maximum] = WaveMinAndMax(wv)
-	SetNumberInWaveNote(noteWave, "WaveMinimum", minimum, format="%.15f")
-	SetNumberInWaveNote(noteWave, "WaveMaximum", maximum, format="%.15f")
+	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MINIMUM, minimum, format="%.15f")
+	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MAXIMUM, maximum, format="%.15f")
 End
 
 /// @brief Generate a key for a pulse
@@ -898,7 +896,7 @@ threadsafe static Function PA_SetDiagonalityNote(WAVE indices, variable startInd
 
 	if(startIndex < numEntries)
 		Duplicate/FREE indices, indexHelper
-		indexHelper[startIndex, numEntries - 1] = SetNumberInWaveNote(propertiesWaves[indices[p]][1], PA_NOTE_KEY_PULSE_ISDIAGONAL, isDiagonal)
+		indexHelper[startIndex, numEntries - 1] = SetNumberInWaveNote(propertiesWaves[indices[p]][1], NOTE_KEY_PULSE_IS_DIAGONAL, isDiagonal)
 	endif
 End
 
@@ -2106,7 +2104,7 @@ threadsafe static Function PA_StoreMaxAndUnitsInWaveNote(WAVE/Z w, WAVE/Z unitSo
 	endif
 
 	SetScale d, 0, 0, WaveUnits(unitSource, -1), w
-	SetNumberInWaveNote(w, "WaveMaximum", WaveMax(w), format = "%.15f")
+	SetNumberInWaveNote(w, NOTE_KEY_WAVE_MAXIMUM, WaveMax(w), format = "%.15f")
 	return 0
 End
 
@@ -2188,7 +2186,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, ST
 			WAVE/Z averageWave
 			[averageWave, baseName] = GetPAPermanentAverageWave(pasi.pulseAverageDFR, channelNumber, region)
 			if(WaveExists(averageWave))
-				maximum = GetNumberFromWaveNote(averageWave, "WaveMaximum")
+				maximum = GetNumberFromWaveNote(averageWave, NOTE_KEY_WAVE_MAXIMUM)
 				length  = pa.yScaleBarLength * (IsFinite(maximum) ? sign(maximum) : +1)
 				xUnit   = WaveUnits(averageWave, ROWS)
 				yUnit   = WaveUnits(averageWave, -1)
@@ -2208,8 +2206,8 @@ static Function	[variable vert_min, variable vert_max, variable horiz_min, varia
 
 	variable numPulses = DimSize(setWaves2, ROWS)
 
-	Make/D/FREE/N=(numPulses) vertDataMin = GetNumberFromWaveNote(setWaves2[p][1], "WaveMinimum")
-	Make/D/FREE/N=(numPulses) vertDataMax = GetNumberFromWaveNote(setWaves2[p][1], "WaveMaximum")
+	Make/D/FREE/N=(numPulses) vertDataMin = GetNumberFromWaveNote(setWaves2[p][1], NOTE_KEY_WAVE_MINIMUM)
+	Make/D/FREE/N=(numPulses) vertDataMax = GetNumberFromWaveNote(setWaves2[p][1], NOTE_KEY_WAVE_MAXIMUM)
 
 	Make/D/FREE/N=(numPulses) horizDataMin = leftx(setWaves2[p][0])
 	Make/D/FREE/N=(numPulses) horizDataMax = pnt2x(setWaves2[p][0], DimSize(setWaves2[p][0], ROWS) - 1)
@@ -2650,7 +2648,7 @@ threadsafe static Function PA_GetFeaturePosition(WAVE wv, WAVE noteWave)
 
 	variable featurePos
 
-	featurePos = GetNumberFromWaveNote(noteWave, "TimeAlignmentFeaturePosition")
+	featurePos = GetNumberFromWaveNote(noteWave, NOTE_KEY_TIMEALIGN_FEATURE_POS)
 
 	if(IsFinite(featurePos))
 		return featurePos
@@ -2658,7 +2656,7 @@ threadsafe static Function PA_GetFeaturePosition(WAVE wv, WAVE noteWave)
 
 	WaveStats/M=1/Q wv
 	featurePos = V_maxLoc
-	SetNumberInWaveNote(noteWave, "TimeAlignmentFeaturePosition", featurePos, format="%.15g")
+	SetNumberInWaveNote(noteWave, NOTE_KEY_TIMEALIGN_FEATURE_POS, featurePos, format="%.15g")
 	return featurePos
 End
 
@@ -2682,7 +2680,7 @@ threadsafe static Function PA_SetFeaturePosition(WAVE wv, WAVE noteWave, variabl
 	DEBUGPRINT_TS("old DimOffset", var=DimOffset(wv, ROWS))
 	DEBUGPRINT_TS("new DimOffset", var=DimOffset(wv, ROWS) + offset)
 	SetScale/P x, DimOffset(wv, ROWS) + offset, DimDelta(wv, ROWS), wv
-	SetNumberInWaveNote(noteWave, "TimeAlignmentTotalOffset", offset, format="%.15g")
+	SetNumberInWaveNote(noteWave, NOTE_KEY_TIMEALIGN_TOTAL_OFFSET, offset, format="%.15g")
 	SetNumberInWaveNote(noteWave, NOTE_KEY_TIMEALIGN, 1)
 End
 
@@ -2890,8 +2888,8 @@ static Function PA_AddColorScales(string win, STRUCT PulseAverageSettings &pa, S
 			ASSERT(V_flag == 0, "Missing axis")
 			SetAxis/W=$graph $vertAxis, lastEntry - 0.5, -0.5
 
-			minimum = GetNumberFromWaveNote(img, "PulsesMinimum")
-			maximum = GetNumberFromWaveNote(img, "PulsesMaximum")
+			minimum = GetNumberFromWaveNote(img, NOTE_KEY_IMG_PMIN)
+			maximum = GetNumberFromWaveNote(img, NOTE_KEY_IMG_PMAX)
 
 			// gather min/max for diagonal and off-diagonal elements
 			if(i == j)
@@ -3344,8 +3342,8 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				vert_max = NaN
 			endif
 
-			SetNumberInWaveNote(img, "PulsesMinimum", vert_min)
-			SetNumberInWaveNote(img, "PulsesMaximum", vert_max)
+			SetNumberInWaveNote(img, NOTE_KEY_IMG_PMIN, vert_min)
+			SetNumberInWaveNote(img, NOTE_KEY_IMG_PMAX, vert_max)
 
 			if(pa.showAverage && WaveExists(averageWave))
 				// when all pulses from the set fail, we don't have an average wave
