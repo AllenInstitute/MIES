@@ -3821,12 +3821,12 @@ End
 /// LineBreakingIntoPar
 /// @{
 
-Function/WAVE LBP_NonFiniteValues()
+Function/WAVE NonFiniteValues()
 	Make/D/FREE data = {NaN, Inf, -Inf}
 	return data
 End
 
-// UTF_TD_GENERATOR LBP_NonFiniteValues
+// UTF_TD_GENERATOR NonFiniteValues
 Function LBP_Aborts([var])
 	variable var
 
