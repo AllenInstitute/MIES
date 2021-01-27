@@ -3135,7 +3135,7 @@ Function DAP_GetInfoFromControl(panelTitle, ctrl, mode, headStage)
 			else
 				ctrlNo = str2num(ctrlSuffix)
 				ASSERT(IsFinite(ctrlNo), "non finite number parsed from control")
-				if(mod(ctrlNo, 2) == 0)
+				if(IsEven(ctrlNo))
 					mode = V_CLAMP_MODE
 					headStage = ctrlNo / 2
 				else

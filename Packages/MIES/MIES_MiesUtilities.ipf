@@ -6256,7 +6256,7 @@ Function GetDecimatedWaveSize(numRows, decimationFactor, method)
 		case DECIMATION_MINMAX:
 			decimatedSize = ceil(numRows / decimationFactor)
 			// make it even
-			decimatedSize = mod(decimatedSize, 2) == 0 ? decimatedSize : ++decimatedSize
+			decimatedSize = IsEven(decimatedSize) ? decimatedSize : ++decimatedSize
 			return decimatedSize
 		default:
 			ASSERT(0, "Invalid method")
@@ -6369,7 +6369,7 @@ Function DecimateWithMethod(input, output, decimationFactor, method, [firstRowIn
 	// END parameter checking
 
 	numRowsDecimated = GetDecimatedWaveSize(numRowsInp, decimationFactor, method)
-	ASSERT(mod(numRowsDecimated, 2) == 0, "numRowsDecimated must be even")
+	ASSERT(IsEven(numRowsDecimated), "numRowsDecimated must be even")
 	numOutputPairs = numRowsDecimated / 2
 
 	ASSERT(DimSize(output, ROWS) == numRowsDecimated, "Output wave has the wrong size.")

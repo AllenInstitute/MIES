@@ -243,8 +243,8 @@ static Function SI_FillActiveChannelsStruct(panelTitle, ac)
 	string panelTitle
 	STRUCT ActiveChannels &ac
 
-	ASSERT(mod(NUM_DA_TTL_CHANNELS, 2) == 0, "Expected even number of DA/TTL channels")
-	ASSERT(mod(NUM_AD_CHANNELS, 2) == 0, "Expected even number of AD channels")
+	ASSERT(IsEven(NUM_DA_TTL_CHANNELS), "Expected even number of DA/TTL channels")
+	ASSERT(IsEven(NUM_AD_CHANNELS), "Expected even number of AD channels")
 
 	WAVE statusDA  = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
 	WAVE statusAD  = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ADC)
