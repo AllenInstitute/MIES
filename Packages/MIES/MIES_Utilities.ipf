@@ -606,6 +606,16 @@ threadsafe Function IsInteger(var)
 	return IsFinite(var) && trunc(var) == var
 End
 
+threadsafe Function IsEven(variable var)
+
+	return IsInteger(var) && mod(var, 2) == 0
+End
+
+threadsafe Function IsOdd(variable var)
+
+	return IsInteger(var) && mod(var, 2) != 0
+End
+
 /// @brief Downsample data
 ///
 /// Downsampling is performed on each @b column of the input wave.

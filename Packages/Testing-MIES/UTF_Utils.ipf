@@ -4560,3 +4560,39 @@ Function EVOB_Works()
 End
 
 /// @}
+
+/// IsEven
+/// @{
+
+Function IE_Works()
+	CHECK(IsEven(0))
+	CHECK(!IsEven(-1))
+	CHECK(IsEven(-2))
+	CHECK(IsEven(2))
+	CHECK(!IsEven(1.5))
+End
+
+// UTF_TD_GENERATOR NonFiniteValues
+Function IE_FalseWithNonFiniteValues([variable var])
+	CHECK(!IsEven(var))
+End
+
+/// @}
+
+/// IsOdd
+/// @{
+
+Function IO_Works()
+	CHECK(!IsOdd(0))
+	CHECK(!IsOdd(-2))
+	CHECK(IsOdd(-1))
+	CHECK(IsOdd(1))
+	CHECK(!IsOdd(1.5))
+End
+
+// UTF_TD_GENERATOR NonFiniteValues
+Function IO_FalseWithNonFiniteValues([variable var])
+	CHECK(!IsOdd(var))
+End
+
+/// @}
