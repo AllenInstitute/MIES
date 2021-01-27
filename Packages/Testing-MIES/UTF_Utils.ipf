@@ -451,6 +451,15 @@ Function ReturnsCorrectType()
 	CHECK_EQUAL_WAVES(data1, matches)
 End
 
+Function WorksWithTheSameWaves()
+
+	Make/Free/D data = p
+
+	WAVE matches = GetSetIntersection(data, data)
+	CHECK_EQUAL_WAVES(data, matches)
+	CHECK(!WaveRefsEqual(data, matches))
+End
+
 Function ReturnsInvalidWaveRefWOMatches1()
 
 	Make/Free/D/N=0 data1

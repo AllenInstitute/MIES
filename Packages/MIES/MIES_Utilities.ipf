@@ -3618,6 +3618,9 @@ Function/WAVE GetSetIntersection(wave1, wave2)
 
 	if(wave1Rows == 0 || wave2Rows == 0)
 		return $""
+	elseif(WaveRefsEqual(wave1, wave2))
+		Duplicate/FREE wave1, matches
+		return matches
 	endif
 
 	if(wave1Rows > wave2Rows)
