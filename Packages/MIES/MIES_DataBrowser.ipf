@@ -842,7 +842,6 @@ Function DB_AddSweepToGraph(string win, variable index[, STRUCT BufferedDrawInfo
 	graph  = GetMainWindow(win)
 	device = BSP_GetDevice(win)
 
-	WAVE channelSel = BSP_GetChannelSelectionWave(win)
 	WAVE numericalValues = DB_GetNumericalValues(win)
 	WAVE textualValues   = DB_GetTextualValues(win)
 
