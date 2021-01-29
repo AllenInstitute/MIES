@@ -1205,7 +1205,7 @@ Function/WAVE BSP_GetTextualValues(string win, [variable sweepNumber])
 End
 
 /// @brief Return the wave with the selected channels respecting the overlay
-/// sweeps headstage ignore list. The wave has the same layout as B
+/// sweeps headstage ignore list. The wave has the same layout as BSP_GetChannelSelectionWave.
 Function/WAVE BSP_FetchSelectedChannels(string graph, [variable index, variable sweepNo])
 
 	if(ParamIsDefault(index) && !ParamIsDefault(sweepNo))
