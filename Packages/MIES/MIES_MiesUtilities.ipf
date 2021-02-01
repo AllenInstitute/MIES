@@ -2489,6 +2489,11 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			endif
 
 			for(i = 0; i < numEntries; i += 1)
+
+				// we still gather regions from deselected headstages to help overlaying multiple sweeps with the same
+				// oodDAQ regions and removed headstages.
+				// If we would remove them here the plotting would get messed up.
+
 				// use only the selected region if requested
 				if(tgs.dDAQHeadstageRegions >= 0 && tgs.dDAQHeadstageRegions < NUM_HEADSTAGES && tgs.dDAQHeadstageRegions != i)
 					continue
