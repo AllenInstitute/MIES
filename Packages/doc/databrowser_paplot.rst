@@ -21,14 +21,10 @@ The PA plot shows AD data from each headstage and will have 16 (4 rows x 4
 columns) PA sets (either in 16 plots on a single graph or 16 individual graphs;
 user-defined).
 
-To gather PA sets for a column of (4) sets, pulse timing data from a DA channel
-(of a headstage) are used time-align AD regions for each active headstage. A
-row (of sets) is from the same AD channel of a headstage and uses regions
-determined by unique DA channels e.g., the top left set of traces is from the
-AD channel of the first active headstage, time aligned by the DA channel of the
-first active headstage. The set immediately to the right of the top left set of
-traces, is from the the same AD channel, time aligned by the DA channel on the
-next active headstage.
+The diagonal entries hold the extracted single pulses for each headstage. In the other rows of each column are the
+regions plotted which are extracted from the other headstages at the same time coordinates as the diagonal pulses.
+So each row shows different regions from the same headstages, and each column shows the same region but from different
+headstages.
 
 The following two figures, :ref:`Figure Pulse Average Trace plot` and
 :ref:`Figure Pulse Average Image plot`, were created with multiple sweeps
@@ -68,13 +64,11 @@ Image plot
 
    <p>&nbsp;&nbsp;&nbsp;<br></p>
 
-The image graph supplements the trace plot :ref:`Figure Pulse Average Trace
-plot`. It renders more quickly than the trace plot, especially with many
-(overlayed) sweeps. Each (horizontal) line of the image plot corresponds to a
-pulse (unique time-series) and encodes the voltage or current in color
-(user-defined color mapping). Deconvolution and average lines (extra wide) are
-at the bottom of each set image. Image-space is left blank when data is not
-shown. The image is filled from bottom to top depending on the
+The image graph supplements the trace plot :ref:`Figure Pulse Average Trace plot`. It renders more quickly than the
+trace plot, especially with many (overlayed) sweeps. Each (horizontal) line of the image plot corresponds to a pulse
+(unique time-series) and encodes the voltage or current in color (user-defined color mapping). Deconvolution and average
+lines (extra wide) are at the bottom of each set image. Image-space is left blank when data is not shown. The image is
+filled from top to bottom where the interleaving between pulses and sweeps depends on the
 :ref:`db_paplot_image_sortorder`.
 
 .. _db_paplot_image_sortorder:
@@ -84,7 +78,7 @@ Sort Order
 
 The following tables visualizes the display of one image set with two sweeps
 overlayed and three pulses using different ``Sort Order`` settings. The
-ordering is always ascending and from bottom to top. Due to implementation
+ordering is always ascending and from top to bottom. Due to implementation
 details the ``Sweep`` sort order allows **much** faster incremental updates
 (only relevant during data acqisition).
 
@@ -93,21 +87,21 @@ details the ``Sweep`` sort order allows **much** faster incremental updates
    +----------------+----------------+
    | Sweep          | Pulse          |
    +================+================+
-   |Pulse 2, Sweep 1|Pulse 2, Sweep 1|
-   +----------------+----------------+
-   |Pulse 1, Sweep 1|Pulse 2, Sweep 0|
-   +----------------+----------------+
-   |Pulse 0, Sweep 1|Pulse 1, Sweep 1|
-   +----------------+----------------+
-   |Pulse 2, Sweep 0|Pulse 1, Sweep 0|
+   |Pulse 0, Sweep 0|Pulse 0, Sweep 0|
    +----------------+----------------+
    |Pulse 1, Sweep 0|Pulse 0, Sweep 1|
    +----------------+----------------+
-   |Pulse 0, Sweep 0|Pulse 0, Sweep 0|
+   |Pulse 2, Sweep 0|Pulse 1, Sweep 1|
    +----------------+----------------+
-   |Deconvolution   |Deconvolution   |
+   |Pulse 0, Sweep 1|Pulse 1, Sweep 0|
+   +----------------+----------------+
+   |Pulse 1, Sweep 1|Pulse 2, Sweep 1|
+   +----------------+----------------+
+   |Pulse 2, Sweep 1|Pulse 2, Sweep 0|
    +----------------+----------------+
    |Average         |Average         |
+   +----------------+----------------+
+   |Deconvolution   |Deconvolution   |
    +----------------+----------------+
 
 .. _db_paplot_timealignment:
@@ -119,7 +113,7 @@ Time alignment removes the pulse to pulse jitter in pulse evoked event (action p
 
 The algorithm is as follows:
 
-- Get the feature position ``featurePos`` for all pulses which belong to the
+- Get the feature position ``featurePos`` (wave maximum) for all pulses which belong to the
   same set. Store these feature positions using their sweep number and pulse
   index as key.
 - Now shift all pulses in all sets from the same region by ``-featurePos``
@@ -225,6 +219,8 @@ Pulse responses may be filtered by their amplitude.
 - ``Level``: Level in y-data units to search for failed pulses. Every pulse not
   reaching that level is considered failing. As mentioned in
   :ref:`db_paplot_operation_order` that search is done before zeroing.
+- ``Number of Spikes``: Number of required spikes for each pulse. Use ``NaN`` for accepting any non-zero spike count as
+  passing.
 
 .. [#1] See `doi:10.1152/jn.00942.2007 <https://www.physiology.org/doi/full/10.1152/jn.00942.2007>`__ for the implemented method
 .. [#2] The following equation holds:
