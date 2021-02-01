@@ -332,7 +332,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			evalRangeTime = 1.5
 
 			// check 1: RMS of the last 1.5ms of the baseline should be below 0.07mV
-			rmsShort[i]       = PSQ_CalculateRMS(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
+			rmsShort[i]       = PSQ_Calculate(scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
 			rmsShortPassed[i] = rmsShort[i] < PSQ_RMS_SHORT_THRESHOLD
 
 			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], ToPassFail(rmsShortPassed[i])
@@ -353,7 +353,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			evalRangeTime = chunkLengthTime
 
 			// check 2: RMS of the last 500ms of the baseline should be below 0.50mV
-			rmsLong[i]       = PSQ_CalculateRMS(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
+			rmsLong[i]       = PSQ_Calculate(scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
 			rmsLongPassed[i] = rmsLong[i] < PSQ_RMS_LONG_THRESHOLD
 
 			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], ToPassFail(rmsLongPassed[i])
@@ -374,7 +374,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			evalRangeTime = chunkLengthTime
 
 			// check 3: Average voltage within 1mV of auto bias target voltage
-			avgVoltage[i]    = PSQ_CalculateAvg(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
+			avgVoltage[i]    = PSQ_Calculate(scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
 			targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
 
 			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
@@ -539,11 +539,11 @@ static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 	endswitch
 End
 
-// @brief Calculate the average from `startTime` spanning
-//        `rangeTime` milliseconds
-static Function PSQ_CalculateAvg(wv, column, startTime, rangeTime)
+// @brief Calculate a value from `startTime` spanning
+//        `rangeTime` milliseconds according to `method`
+static Function PSQ_Calculate(wv, column, startTime, rangeTime, method)
 	WAVE wv
-	variable column, startTime, rangeTime
+	variable column, startTime, rangeTime, method
 
 	variable rangePoints, startPoints
 
@@ -555,34 +555,24 @@ static Function PSQ_CalculateAvg(wv, column, startTime, rangeTime)
 	endif
 
 	MatrixOP/FREE data = subWaveC(wv, startPoints, column, rangePoints)
-	MatrixOP/FREE avg  = mean(data)
 
-	ASSERT(IsFinite(avg[0]), "result must be finite")
+	switch(method)
+		case PSQ_CALC_METHOD_AVG:
+			MatrixOP/FREE result = mean(data)
+			break
+		case PSQ_CALC_METHOD_RMS:
+			// This differs from what WaveStats returns in `V_sdev` as we divide by
+			// `N` but WaveStats by `N -1`
+			MatrixOP/FREE avg = mean(data)
+			MatrixOP/FREE result = sqrt(sumSqr(data - avg[0]) / numRows(data))
+			break
+		default:
+			ASSERT(0, "Unknown method")
+	endswitch
 
-	return avg[0]
-End
+	ASSERT(IsFinite(result[0]), "result must be finite")
 
-// @brief Calculate the RMS minus the average from `startTime` spanning
-//        `rangeTime` milliseconds
-//
-// @note: This differs from what WaveStats returns in `V_sdev` as we divide by
-//        `N` but WaveStats by `N -1`.
-static Function PSQ_CalculateRMS(wv, column, startTime, rangeTime)
-	WAVE wv
-	variable column, startTime, rangeTime
-
-	variable rangePoints, startPoints
-
-	startPoints = startTime / DimDelta(wv, ROWS)
-	rangePoints = rangeTime / DimDelta(wv, ROWS)
-
-	MatrixOP/FREE data = subWaveC(wv, startPoints, column, rangePoints)
-	MatrixOP/FREE avg  = mean(data)
-	MatrixOP/FREE rms  = sqrt(sumSqr(data - avg[0]) / numRows(data))
-
-	ASSERT(IsFinite(rms[0]), "result must be finite")
-
-	return rms[0]
+	return result[0]
 End
 
 /// @brief Return the number of already acquired sweeps from the given
