@@ -185,6 +185,7 @@ static Function TestEpochsMonotony(e, DAChannel)
 					break
 				endif
 			endfor
+			REQUIRE(marker[epochNr])
 			// for remaining epoch no identical start time of smaller epoch segment was found
 			// there should be an identical start time from a smaller segment due to the idea that the (non-oodDAQRegions) epochs are ordered tree like
 			REQUIRE(i < epochCnt)
