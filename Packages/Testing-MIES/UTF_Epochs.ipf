@@ -108,6 +108,7 @@ static Function TestEpochChannelTight(e)
 End
 
 static Constant OODDAQ_PRECISION = 0.001
+static Constant OTHER_EPOCHS_PRECISION = 0.05
 
 static Function TestEpochsMonotony(e, DAChannel)
 	WAVE/T e
@@ -202,6 +203,16 @@ static Function TestEpochsMonotony(e, DAChannel)
 		if(numtype(amplitude) != 2)
 			WaveStats/R=(first, last)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_max, amplitude)
+		endif
+
+		if(strsearch(e[i][2], "Baseline", 0) > 0)
+			WaveStats/R=(first, last)/Q/M=1 DAChannel
+			CHECK_EQUAL_VAR(V_min, 0)
+
+			// take away some off the egdes due to decimation
+			// offsets are in ms
+			WaveStats/R=(first + OTHER_EPOCHS_PRECISION, last - OTHER_EPOCHS_PRECISION)/Q/M=1 DAChannel
+			CHECK_EQUAL_VAR(V_max, 0)
 		endif
 	endfor
 End
