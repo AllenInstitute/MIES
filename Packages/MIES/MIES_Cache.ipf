@@ -92,8 +92,8 @@ Function/S CA_DistDAQCreateCacheKey(params)
 	return num2istr(crc) + "Version 4"
 End
 
-/// @brief Cache key generator for @c FindLevel in PA_CalculatePulseStartTimes()
-Function/S CA_PulseStartTimes(wv, fullPath, channelNumber, totalOnsetDelay)
+/// @brief Cache key generator for @c FindLevel in PA_CalculatePulseTimes()
+Function/S CA_PulseTimes(wv, fullPath, channelNumber, totalOnsetDelay)
 	WAVE wv
 	string fullPath
 	variable channelNumber, totalOnsetDelay
@@ -106,7 +106,7 @@ Function/S CA_PulseStartTimes(wv, fullPath, channelNumber, totalOnsetDelay)
 	crc = StringCRC(crc, num2istr(channelNumber))
 	crc = StringCRC(crc, num2str(totalOnsetDelay))
 
-	return num2istr(crc) + "Version 1"
+	return num2istr(crc) + "Version 2"
 End
 
 /// @brief Cache key generator for PA_SmoothDeconv()

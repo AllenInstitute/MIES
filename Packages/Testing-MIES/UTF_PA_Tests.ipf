@@ -874,7 +874,7 @@ End
 static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 
 	STRUCT PulseAverageSettings s
-	variable setting
+	variable setting, minimum, first, last
 
 	MIES_PA#PA_GatherSettings(win, s)
 
@@ -902,6 +902,22 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_LENGTH)
 	CHECK_EQUAL_VAR(setting, DimSize(pulse, ROWS))
+
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_START)
+	CHECK(IsFinite(setting) && setting >= 0)
+
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_END)
+	CHECK(IsFinite(setting) && setting > 0)
+
+	first = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_START)
+	last  = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_END)
+	CHECK(first < last)
+
+	// no zeros inside the pulse
+	// this requires that the DA and AD channels on the hardware are connected directly when acquiring this data
+	// ditch the first and last 0.1 ms to avoid any decimation issues
+	minimum = WaveMin(pulse, first + 0.1, last - 0.1)
+	CHECK(minimum > 0)
 End
 
 static Function PAT_CheckImageWaveNote(string win, WAVE iData, STRUCT PA_Test &patest)
