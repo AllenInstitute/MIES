@@ -23,10 +23,10 @@ The epoch information can be retrieved from the lab notebook with
     WAVE/T epochChannel = ListToTextWaveMD(epochLBEntries[channelNumber], 2, rowSep = ":", colSep = ",")
 
 The epochChannel wave has four columns:
-Column 1: start time
-Column 2: end time
-Column 3: epoch description - a semi-colon separated list of epoch descriptors. e.g., `Epoch=1;Type=Pulse Train;Amplitude=1;Pulse=0;`
-Column 4: (tree) level. e.g., wavebuilder defined EPOCH tree level = 1, a sub epoch of a wavebuilder defined EPOCH = 2
+- Column 1: start time
+- Column 2: end time
+- Column 3: epoch description - a semi-colon separated list of epoch descriptors. e.g., ``Epoch=1;Type=Pulse Train;Amplitude=1;Pulse=0;``
+- Column 4: (tree) level. e.g., wavebuilder defined EPOCH tree level = 1, a sub epoch of a wavebuilder defined EPOCH = 2 and so on
 
 Each row is an epoch entry.
 
