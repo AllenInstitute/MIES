@@ -946,14 +946,15 @@ Function BSP_GUIToChannelSelectionWave(win, ctrl, checked)
 	endif
 End
 
-/// @brief Removes the disabled channels and headstages from `ADCs` and `DACs`
+/// @brief Removes the disabled channels and headstages from `ADCs`, `DACs` and `statusHS`
 ///
 /// `channelSel` will be the result from BSP_FetchSelectedChannels() which is a
 /// copy of the permanent channel selection wave.
-Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo)
+Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, statusHS, numericalValues, sweepNo)
 	WAVE channelSel
 	WAVE ADCs, DACs, numericalValues
 	variable sweepNo
+	WAVE statusHS
 
 	variable numADCs, numDACs, i
 
@@ -966,13 +967,14 @@ Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, swe
 
 	WAVE/Z statusDAC = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 	WAVE/Z statusADC = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
-	WAVE/Z statusHS  = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 
 	// disable the AD/DA channels not wanted by the headstage setting first
+	// adapt statusHS as well
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		if(!channelSel[i][%HEADSTAGE] && statusHS[i])
+		if(!channelSel[i][%HEADSTAGE])
 			channelSel[statusADC[i]][%AD] = 0
 			channelSel[statusDAC[i]][%DA] = 0
+			statusHS[i] = 0
 		endif
 	endfor
 
@@ -1203,7 +1205,7 @@ Function/WAVE BSP_GetTextualValues(string win, [variable sweepNumber])
 End
 
 /// @brief Return the wave with the selected channels respecting the overlay
-/// sweeps headstage ignore list. The wave has the same layout as B
+/// sweeps headstage ignore list. The wave has the same layout as BSP_GetChannelSelectionWave.
 Function/WAVE BSP_FetchSelectedChannels(string graph, [variable index, variable sweepNo])
 
 	if(ParamIsDefault(index) && !ParamIsDefault(sweepNo))

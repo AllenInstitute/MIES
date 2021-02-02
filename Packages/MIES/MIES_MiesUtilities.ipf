@@ -2380,7 +2380,7 @@ End
 /// @param bdi [optional, default = n/a] initialized BufferedDrawInfo structure, when given draw calls are buffered instead for later execution @sa OVS_EndIncrementalUpdate
 Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WAVE numericalValues,  WAVE/T textualValues, STRUCT TiledGraphSettings &tgs, DFREF sweepDFR, WAVE/T axisLabelCache, variable &traceIndex, string experiment, WAVE channelSelWave[, STRUCT BufferedDrawInfo &bdi])
 
-	variable axisIndex, numChannels, offset
+	variable axisIndex, numChannels
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
 	variable moreData, chan, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, headstage
@@ -2403,7 +2403,13 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	WAVE DACs = GetDACListFromConfig(config)
 	WAVE TTLs = GetTTLListFromConfig(config)
 
-	BSP_RemoveDisabledChannels(channelSelWave, ADCs, DACs, numericalValues, sweepNo)
+	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
+	WAVE/D/Z statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
+	if(!WaveExists(statusHS))
+		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCs[p]) && IsFinite(DACs[p])
+	endif
+
+	BSP_RemoveDisabledChannels(channelSelWave, ADCs, DACs, statusHS, numericalValues, sweepNo)
 
 	numDACs = DimSize(DACs, ROWS)
 	numADCs = DimSize(ADCs, ROWS)
@@ -2412,7 +2418,6 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	// introduced in db531d20 (DC_PlaceDataIn ITCDataWave: Document the digitizer hardware type, 2018-07-30)
 	// before that we only had ITC hardware
 	hardwareType           = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
-	WAVE/Z statusHS        = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackZeroBits = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackOneBits  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
 	WAVE/Z/T ttlChannels   = GetLastSetting(textualValues, sweepNo, "TTL channels", DATA_ACQUISITION_MODE)
@@ -2484,6 +2489,11 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			endif
 
 			for(i = 0; i < numEntries; i += 1)
+
+				// we still gather regions from deselected headstages to help overlaying multiple sweeps with the same
+				// oodDAQ regions and removed headstages.
+				// If we would remove them here the plotting would get messed up.
+
 				// use only the selected region if requested
 				if(tgs.dDAQHeadstageRegions >= 0 && tgs.dDAQHeadstageRegions < NUM_HEADSTAGES && tgs.dDAQHeadstageRegions != i)
 					continue
@@ -2724,19 +2734,12 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 							xRangeStart = delayOnsetUser + delayOnsetAuto + xRangeStart / samplingInt
 							xRangeEnd   = delayOnsetUser + delayOnsetAuto + xRangeEnd / samplingInt
 						endif
+
+						xRangeStart = floor(xRangeStart)
+						xRangeEnd   = ceil(xRangeEnd)
 					else
 						xRangeStart = NaN
 						xRangeEnd   = NaN
-					endif
-
-					if(tgs.dDAQDisplayMode && oodDAQEnabled && channelTypes[i] != XOP_CHANNEL_TYPE_TTL)
-						offset = -(delayOnsetUser + delayOnsetAuto) * samplingInt
-					else
-						offset = 0.0
-					endif
-
-					if(DimOffset(wv, ROWS) != offset)
-						SetScale/P x, offset, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
 					endif
 
 					sprintf trace, "T%0*d", TRACE_NAME_NUM_DIGITS, traceIndex
@@ -2764,7 +2767,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						endif
 					else
 						horizAxis = vertAxis + "_b"
-						sprintf traceRange, "[%g,%g][0]", xRangeStart, xRangeEnd
+						sprintf traceRange, "[%d,%d][0]", xRangeStart, xRangeEnd
 						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(s.red, s.green, s.blue, 65535) wv[xRangeStart, xRangeEnd][0]/TN=$trace
 						first = first
 						last  = first + (xRangeEnd - xRangeStart) / totalXRange
@@ -3790,7 +3793,7 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 	STRUCT PostPlotSettings pps
 	InitPostPlotSettings(graph, pps)
 
-	if(pps.zeroTraces || pps.averageTraces)
+	if(pps.zeroTraces)
 		WAVE/T/Z traces = GetAllSweepTraces(graph, prefixTraces = 0)
 	else
 		WAVE/T/Z traces = $""
@@ -3799,7 +3802,7 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
 	TimeAlignMainWindow(graph, pps)
 
-	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
+	AverageWavesFromSameYAxisIfReq(graph, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
 
 	if(ParamIsDefault(additionalData))
@@ -4072,13 +4075,11 @@ End
 /// @brief Average traces in the graph from the same y-axis and append them to the graph
 ///
 /// @param graph             graph with traces create by #CreateTiledChannelGraph
-/// @param traces            all traces of the graph except suplimentary ones like the average trace
 /// @param averagingEnabled  switch if averaging is enabled or not
 /// @param averageDataFolder permanent datafolder where the average waves can be stored
 /// @param hideSweep         are normal channel traces hidden or not
-static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, averageDataFolder, hideSweep)
+static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageDataFolder, hideSweep)
 	string graph
-	WAVE/T/Z traces
 	variable averagingEnabled
 	DFREF averageDataFolder
 	variable hideSweep
@@ -4100,6 +4101,17 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		RemoveEmptyDataFolder(averageDataFolder)
 		return NaN
 	endif
+
+	// remove existing average traces
+	WAVE/T/Z averageTraces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Average"})
+	numTraces = WaveExists(averageTraces) ? DimSize(averageTraces, ROWS) : 0
+	for(i = 0; i < numTraces; i += 1)
+		trace = averageTraces[i]
+		RemoveFromGraph/W=$graph $trace
+		TUD_RemoveUserData(graph, trace)
+	endfor
+
+	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"sweep"})
 
 	if(!WaveExists(traces))
 		return NaN
@@ -6780,7 +6792,11 @@ Function/WAVE GetTraceInfos(string graph, [WAVE/T addFilterKeys, WAVE/T addFilte
 		Concatenate/FREE/NP/T {addFilterValues}, values
 	endif
 
-	WAVE matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = keys, values = values)
+	WAVE/Z matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = keys, values = values)
+
+	if(!WaveExists(matches))
+		return $""
+	endif
 
 	WAVE/T graphUserData = GetGraphUserData(graph)
 
