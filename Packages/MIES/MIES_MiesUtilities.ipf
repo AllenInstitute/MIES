@@ -7005,8 +7005,8 @@ Function MapAnaFuncToConstant(anaFunc)
 			return MSQ_FAST_RHEO_EST
 		case "MSQ_DAScale":
 			return MSQ_DA_SCALE
-		case "MSQ_SpikeControl":
-			return MSQ_SPIKE_CONTROL
+		case "SC_SpikeControl":
+			return SC_SPIKE_CONTROL
 		default:
 			return NaN
 	endswitch
@@ -7031,7 +7031,7 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 		case MSQ_FAST_RHEO_EST:
 			prefix = MSQ_FRE_LBN_PREFIX
 			break
-		case MSQ_SPIKE_CONTROL:
+		case SC_SPIKE_CONTROL:
 			prefix = MSQ_SC_LBN_PREFIX
 			break
 		case PSQ_DA_SCALE:

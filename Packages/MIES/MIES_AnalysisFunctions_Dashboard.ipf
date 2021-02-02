@@ -168,7 +168,8 @@ static Function AD_FillWaves(panelTitle, list, info)
 
 				// MSQ_SC
 				// - MSQ_FMT_LBN_RERUN_TRIALS_EXC present
-				// - Failed pulses
+				// - Spike counts state
+				// - Spontaneous spiking check
 				// - Not enough sweeps
 
 				// PSQ_DA
@@ -193,9 +194,6 @@ static Function AD_FillWaves(panelTitle, list, info)
 					case MSQ_FAST_RHEO_EST:
 						msg = AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
 						break
-					case MSQ_SPIKE_CONTROL:
-						msg = AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
-						break
 					case PSQ_DA_SCALE:
 						msg = AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
 						break
@@ -207,6 +205,9 @@ static Function AD_FillWaves(panelTitle, list, info)
 						break
 					case PSQ_SQUARE_PULSE:
 						msg = AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
+						break
+					case SC_SPIKE_CONTROL:
+						msg = AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
 						break
 					default:
 						ASSERT(0, "Unsupported analysis function")
@@ -234,7 +235,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 				case PSQ_SQUARE_PULSE:
 				case MSQ_DA_SCALE:
 				case MSQ_FAST_RHEO_EST:
-				case MSQ_SPIKE_CONTROL:
+				case SC_SPIKE_CONTROL:
 					key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 					WAVE sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 					ASSERT(DimSize(sweeps, ROWS) == DimSize(sweepPass, ROWS), "Unexpected wave sizes")
@@ -481,7 +482,7 @@ static Function/S AD_GetSpikeControlFailMsg(WAVE numericalValues, WAVE textualVa
 
 	string key, msg
 
-	key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC, query = 1)
+	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC, query = 1)
 	WAVE/Z trialsExceeded = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	if(AD_LabnotebookEntryExistsAndIsTrue(trialsExceeded))
