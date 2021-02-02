@@ -771,6 +771,8 @@ StrConstant NOTE_KEY_TIMEALIGN_TOTAL_OFFSET = "TimeAlignmentTotalOffset"
 StrConstant NOTE_KEY_IMG_PMIN               = "PulsesMinimum"
 StrConstant NOTE_KEY_IMG_PMAX               = "PulsesMaximum"
 StrConstant NOTE_KEY_PULSE_IS_DIAGONAL      = "IsDiagonal"
+StrConstant NOTE_KEY_PULSE_START            = "PulseStart"
+StrConstant NOTE_KEY_PULSE_END              = "PulseEnd"
 
 /// Only present for diagonal pulses
 /// @{
