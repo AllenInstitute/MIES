@@ -2098,6 +2098,7 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 	variable epochCount, totalDuration
 	variable epochNr, pulseNr, numPulses, epochType, flipping, pulseToPulseLength, stimEpochAmplitude, amplitude
 	variable pulseDuration
+	variable subsubEpochBegin, subsubEpochEnd
 	string type, startTimesList
 	string stimNote = note(stimset)
 
@@ -2210,6 +2211,35 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 
 						epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 						DC_AddEpoch(panelTitle, channel, subEpochBegin, subEpochEnd, epSubSubName, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+
+						// active
+						subsubEpochBegin = subEpochBegin
+						// we never have a trailing baseline after the last pulse in the epoch
+						// to avoid decimation errors we assign all of the left over time to pulse active
+						subsubEpochEnd = (pulseNr == (flipping ? 0 : numPulses - 1)) ? subEpochEnd : (subEpochBegin + pulseDuration)
+
+						if(subsubEpochBegin >= stimsetEnd || subsubEpochEnd <= stimsetBegin)
+							DEBUGPRINT("Warning: sub sub epoch of active pulse starts after stimset end or ends before stimset start.")
+						else
+							epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+							epSubSubName = epSubSubName + "Active"
+							DC_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubName, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+
+							// baseline
+							subsubEpochBegin = subsubEpochEnd
+							subsubEpochEnd   = subEpochEnd
+
+							if(subsubEpochBegin >= stimsetEnd || subsubEpochEnd <= stimsetBegin)
+								DEBUGPRINT("Warning: sub sub epoch of pulse active starts after stimset end or ends before stimset start.")
+							elseif(subsubEpochBegin >= subsubEpochEnd)
+								DEBUGPRINT("Warning: sub sub epoch of pulse baseline is not present.")
+							else
+								epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+								epSubSubName = RemoveByKey("Amplitude", epSubSubName, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+								epSubSubName = epSubSubName + "Baseline"
+								DC_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubName, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+							endif
+						endif
 					endif
 				endfor
 			else
