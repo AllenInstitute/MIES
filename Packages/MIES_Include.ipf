@@ -16,13 +16,12 @@
 // They are defined here so that we can parse them from within IP.
 //
 // .. |IgorPro8Nightly| replace:: `Igor Pro 8 <https://www.byte-physics.de/Downloads/WinIgor8_06MAY2020.zip>`__
-// .. |IgorPro9Nightly| replace:: `Igor Pro 9 <https://www.byte-physics.de/Downloads/WinIgor9_06NOV2020.zip>`__
+// .. |IgorPro9Nightly| replace:: `Igor Pro 9 <https://www.byte-physics.de/Downloads/WinIgor9_02FEB2021.zip>`__
 
 #pragma IgorVersion=8.04
 
 #if IgorVersion() >= 9.0
-// @todo this is currently out of sync with the above nightly link, the build version is beta2 exactly
-#if (NumberByKey("BUILD", IgorInfo(0)) < 36586)
+#if (NumberByKey("BUILD", IgorInfo(0)) < 37086)
 #define TOO_OLD_IGOR
 #endif
 #else
