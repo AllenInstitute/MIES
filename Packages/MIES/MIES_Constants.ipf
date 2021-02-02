@@ -900,6 +900,7 @@ Constant PSQ_RB_POST_BL_EVAL_RANGE = 500
 
 Constant PSQ_DS_BL_EVAL_RANGE_MS = 500
 Constant PSQ_DS_PULSE_DUR        = 1000
+Constant PSQ_DS_SPIKE_LEVEL      = -20 // mV
 
 Constant PSQ_RA_BL_EVAL_RANGE = 500
 
@@ -912,6 +913,7 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 
 Constant PSQ_CALC_METHOD_AVG = 0x1 // average
 Constant PSQ_CALC_METHOD_RMS = 0x2 // root-mean-square (rms)
+Constant PSQ_CALC_METHOD_MAX = 0x4 // max
 /// @}
 
 /// @name PatchSeq labnotebook constants
@@ -949,6 +951,8 @@ StrConstant PSQ_FMT_LBN_CR_INSIDE_BOUNDS   = "%s inside bounds"
 StrConstant PSQ_FMT_LBN_CR_BOUNDS_ACTION   = "%s bounds action"
 StrConstant PSQ_FMT_LBN_CR_CYCLES          = "%s cycle x values"
 StrConstant PSQ_FMT_LBN_CR_BOUNDS_STATE    = "%s bounds state"
+StrConstant PSQ_FMT_LBN_CR_SPIKE_SEARCH    = "%s spike search"
+StrConstant PSQ_FMT_LBN_CR_SPIKE_DETECT    = "%s spike detected" // same value as PSQ_FMT_LBN_SPIKE_DETECT
 /// @}
 
 /// @name PatchSeq and MultiPatchSeq types of analysis functions

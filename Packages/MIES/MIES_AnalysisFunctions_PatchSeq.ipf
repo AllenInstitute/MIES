@@ -55,6 +55,8 @@
 /// PSQ_FMT_LBN_CR_RESISTANCE       Calculated resistance in Ohm from DAScale sub threshold   Numerical                CR                       No                     No
 /// PSQ_FMT_LBN_CR_BOUNDS_ACTION    Action according to min/max positions                     Numerical                CR                       No                     No
 /// PSQ_FMT_LBN_CR_BOUNDS_STATE     Upper and Lower bounds state according to min/max pos.    Textual                  CR                       No                     No
+/// PSQ_FMT_LBN_CR_SPIKE_SEARCH     Spike search was enabled/disabled                         Numerical                CR                       No                     No
+/// PSQ_FMT_LBN_CR_SPIKE_DETECT     At least one spike was detected                           Numerical                CR                       No                     Yes
 /// =============================== ========================================================= ======================== ======================== =====================  =====================
 ///
 /// \endrst
@@ -566,6 +568,9 @@ static Function PSQ_Calculate(wv, column, startTime, rangeTime, method)
 			MatrixOP/FREE avg = mean(data)
 			MatrixOP/FREE result = sqrt(sumSqr(data - avg[0]) / numRows(data))
 			break
+		case PSQ_CALC_METHOD_MAX:
+			MatrixOP/FREE result = maxVal(data)
+			break
 		default:
 			ASSERT(0, "Unknown method")
 	endswitch
@@ -759,7 +764,8 @@ End
 /// @param[in] type                  One of @ref PatchSeqAnalysisFunctionTypes
 /// @param[in] sweepWave             sweep wave with acquired data
 /// @param[in] headstage             headstage in the range [0, NUM_HEADSTAGES[
-/// @param[in] totalOnsetDelay       total delay in ms until the stimset data starts
+/// @param[in] offset                offset in ms where the spike search should start, commonly the totalOnsetDelay
+/// @param[in] level                 set the level for the spike search
 /// @param[in] numberOfSpikesReq     [optional, defaults to one] number of spikes to look for
 ///                                  Positive finite value: Return value is 1 iff at least `numberOfSpikes` were found
 ///                                  Inf: Return value is 1 if at least 1 spike was found
@@ -767,16 +773,16 @@ End
 /// @param[out] numberOfSpikesFound  [optional] returns the number of spikes found
 ///
 /// @return labnotebook value wave suitable for ED_AddEntryToLabnotebook()
-static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage, totalOnsetDelay, [numberOfSpikesReq, spikePositions, numberOfSpikesFound])
+static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage, offset, level, [numberOfSpikesReq, spikePositions, numberOfSpikesFound])
 	string panelTitle
 	variable type
 	WAVE sweepWave
-	variable headstage, totalOnsetDelay
+	variable headstage, offset, level
 	variable numberOfSpikesReq
 	WAVE spikePositions
 	variable &numberOfSpikesFound
 
-	variable level, first, last, overrideValue
+	variable first, last, overrideValue
 	variable minVal, maxVal, numSpikesFoundOverride
 	string msg
 
@@ -799,32 +805,37 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		numberOfSpikesFound = NaN
 	endif
 
-	sprintf msg, "Type %d, headstage %d, totalOnsetDelay %g, numberOfSpikesReq %d", type, headstage, totalOnsetDelay, numberOfSpikesReq
+	sprintf msg, "Type %d, headstage %d, offset %g, numberOfSpikesReq %d", type, headstage, offset, numberOfSpikesReq
 	DEBUGPRINT(msg)
 
-	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
-	minVal = WaveMin(singleDA, totalOnsetDelay, inf)
-	maxVal = WaveMax(singleDA, totalOnsetDelay, inf)
-
-	if(minVal == 0 && maxVal == 0)
-		if(type == PSQ_SQUARE_PULSE)
-			first = 0
-			last = inf
-		else
-			return spikeDetection
-		endif
+	if(type == PSQ_CHIRP)
+		first = offset
+		last  = inf
 	else
-		level = minVal + GetMachineEpsilon(WaveType(singleDA))
+		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
+		minVal = WaveMin(singleDA, offset, inf)
+		maxVal = WaveMax(singleDA, offset, inf)
 
-		Make/FREE/D levels
-		FindLevels/R=(totalOnsetDelay, inf)/Q/N=2/DEST=levels singleDA, level
-		ASSERT(V_LevelsFound == 2, "Could not find two levels")
-		first = levels[0]
-
-		if(type == PSQ_DA_SCALE)
-			last = levels[1]
+		if(minVal == 0 && maxVal == 0)
+			if(type == PSQ_SQUARE_PULSE)
+				first = 0
+				last = inf
+			else
+				return spikeDetection
+			endif
 		else
-			last  = inf
+			level = minVal + GetMachineEpsilon(WaveType(singleDA))
+
+			Make/FREE/D levels
+			FindLevels/R=(offset, inf)/Q/N=2/DEST=levels singleDA, level
+			ASSERT(V_LevelsFound == 2, "Could not find two levels")
+			first = levels[0]
+
+			if(type == PSQ_DA_SCALE)
+				last = levels[1]
+			else
+				last  = inf
+			endif
 		endif
 	endif
 
@@ -833,6 +844,10 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		NVAR count = $GetCount(panelTitle)
 
 		switch(type)
+			case PSQ_CHIRP:
+				overrideValue = NaN // TODO
+				numSpikesFoundOverride = overrideValue > 0
+				break
 			case PSQ_RHEOBASE:
 				overrideValue = overrideResults[0][count][1]
 				numSpikesFoundOverride = overrideValue > 0
@@ -873,20 +888,16 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 			numberOfSpikesFound = numSpikesFoundOverride
 		endif
 	else
-		if(type == PSQ_RAMP) // during midsweep
+		if(type == PSQ_RAMP || type == PSQ_CHIRP) // during midsweep
 			// use the first active AD channel
-			level = PSQ_SPIKE_LEVEL * SWS_GetChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)[1]
-		elseif(type == PSQ_DA_SCALE)
-			level = -20
-		else
-			level = PSQ_SPIKE_LEVEL
+			level *= SWS_GetChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)[1]
 		endif
 
 		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
 		ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
 		if(numberOfSpikesReq == 1)
-			// search the spike from the rising edge till the end of the wave
+			// search the spike from the start till the end
 			FindLevel/Q/R=(first, last)/B=3 singleAD, level
 			spikeDetection[headstage] = !V_flag
 
@@ -1448,7 +1459,7 @@ Function PSQ_DAScale(panelTitle, s)
 									  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
 					WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_DA_SCALE, sweep, s.headstage, totalOnsetDelay, \
-								                              numberOfSpikesReq = inf, numberOfSpikesFound = numberOfSpikes)
+															  PSQ_DS_SPIKE_LEVEL, numberOfSpikesReq = inf, numberOfSpikesFound = numberOfSpikes)
 					key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SPIKE_DETECT)
 					ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
@@ -1878,7 +1889,8 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, s.sweepNo)
 
-			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_SQUARE_PULSE, sweepWave, s.headstage, totalOnsetDelay)
+			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_SQUARE_PULSE, sweepWave, s.headstage, \
+			                                          totalOnsetDelay, PSQ_SPIKE_LEVEL)
 			key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT)
 
@@ -2189,7 +2201,8 @@ Function PSQ_Rheobase(panelTitle, s)
 
 			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, s.sweepNo)
 
-			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RHEOBASE, sweepWave, s.headstage, totalOnsetDelay)
+			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RHEOBASE, sweepWave, s.headstage, totalOnsetDelay, \
+			                                          PSQ_SPIKE_LEVEL)
 			key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT)
 
@@ -2693,7 +2706,7 @@ Function PSQ_Ramp(panelTitle, s)
 
 		Make/FREE/D spikePos
 		WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RAMP, s.rawDACWave, s.headstage, \
-												  totalOnsetDelay, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes)
+												  totalOnsetDelay, PSQ_SPIKE_LEVEL, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes)
 
 		if(spikeDetection[s.headstage] \
 		   && ((PSQ_TestOverrideActive() && (fifoInStimsetTime > WaveMax(spikePos))) || !PSQ_TestOverrideActive()))
@@ -2998,6 +3011,24 @@ static Function PSQ_CR_DetermineScalingFactor(STRUCT ChirpBoundsInfo &lowerInfo,
 	return (lowerInfo.centerFac + upperInfo.centerFac) / 2
 End
 
+/// @brief Return the baseline voltage in `mV` from the first baseline chunk for PSQ_Chirp
+Function PSQ_Chirp_GetBaseLineVoltage(string panelTitle, variable sweepNo, variable headstage)
+	variable baselineVoltage
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_TARGETV, chunk = 0, query = 1)
+
+	WAVE/Z baselineLBN = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	ASSERT(WaveExists(baselineLBN), "Missing targetV from LBN")
+
+	baselineVoltage = baselineLBN[headstage] / 1000
+	ASSERT(IsFinite(baselineVoltage), "Invalid baseline voltage")
+
+	return baselineVoltage
+End
+
 /// @brief Determine the bounds action given the requested chirp slice
 ///
 /// @param panelTitle                  device
@@ -3042,12 +3073,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 	if(PSQ_TestOverrideActive())
 		baselineVoltage = PSQ_CR_BASELINE_V_FAKE
 	else
-		key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_TARGETV, chunk = 0, query = 1)
-		WAVE numericalValues = GetLBNumericalValues(panelTitle)
-		WAVE/Z baselineLBN = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
-		ASSERT(WaveExists(baselineLBN), "Missing targetV from LBN")
-		baselineVoltage = baselineLBN[headstage] / 1000
-		ASSERT(IsFinite(baselineVoltage), "Invalid baseline voltage")
+		baselineVoltage = PSQ_Chirp_GetBaseLineVoltage(panelTitle, sweepNo, headstage)
 	endif
 
 	sprintf msg, "baselineVoltage %g, lowerValue %g, upperValue %g", baselineVoltage, lowerValue, upperValue
@@ -3218,6 +3244,10 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV."
 		case "NumberOfChirpCycles":
 			return "Number of acquired chirp cycles for the bounds evaluation to start."
+		case "SpikeSearch":
+			return "Toggle spike search starting with the pulse onset. Defaults to off."
+		case "SpikeLevel":
+			return "Absolute level for spike search, required when SpikeSearch is enabled."
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 			break
@@ -3244,6 +3274,18 @@ Function/S PSQ_Chirp_CheckParam(string name, string params)
 				return "Must be a finite non-zero integer"
 			endif
 			break
+		case "SpikeLevel":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val))
+				return "Must be a finite value"
+			endif
+			break
+		case "SpikeSearch":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val))
+				return "Must be a finite value"
+			endif
+			break
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 			break
@@ -3252,7 +3294,7 @@ End
 
 /// @brief Return a list of required analysis functions for PSQ_Chirp()
 Function/S PSQ_Chirp_GetParams()
-	return "LowerRelativeBound:variable,UpperRelativeBound:variable,[NumberOfChirpCycles:variable]"
+	return "LowerRelativeBound:variable,UpperRelativeBound:variable,[NumberOfChirpCycles:variable, SpikeSearch:variable, SpikeLevel:variable]"
 End
 
 /// @brief Analysis function for determining the impedance of the cell using a sine chirp stim set
@@ -3303,7 +3345,7 @@ Function PSQ_Chirp(panelTitle, s)
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
 	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, numBaselineChunks, chirpStart, chirpDuration
-	variable numberOfChirpCycles, cycleEnd, maxOccurences
+	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeSearch
 	string setName, key, msg, stimset, str
 
 	lowerRelativeBound = AFH_GetAnalysisParamNumerical("LowerRelativeBound", s.params)
@@ -3353,6 +3395,9 @@ Function PSQ_Chirp(panelTitle, s)
 				ControlWindowToFront()
 				return 1
 			endif
+
+			spikeSearch = AFH_GetAnalysisParamNumerical("SpikeSearch", s.params, defValue = 0)
+			// TODO can we write into the LBN here?
 
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
@@ -3504,15 +3549,30 @@ Function PSQ_Chirp(panelTitle, s)
 	sprintf msg, "Midsweep: insideBounds %g, baselineQCPassed %g", insideBounds, baselineQCPassed
 	DEBUGPRINT(msg)
 
-	if(IsFinite(insideBounds) && IsFinite(baselineQCPassed)) // nothing more to do
-		return NaN
-	endif
-
 	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
 	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
+
+	STRUCT PSQ_PulseSettings ps
+	PSQ_GetPulseSettingsForType(PSQ_CHIRP, ps)
+
+	if(fifoInStimsetTime > ps.prePulseChunkLength)
+		level = AFH_GetAnalysisParamNumerical(s.params, "SpikeLevel")
+		WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_CHIRP, s.scaledDACWave, s.headstage, totalOnsetDelay + ps.prePulseChunkLength , \
+                                                level, numberOfSpikesFound = numberOfSpikesFound)
+                                                
+      if(numberOfSpikesFound > 0)
+			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_DETECT)
+			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+			abortDueToSpikes = 1
+		endif
+	endif
+
+	if(IsFinite(insideBounds) && IsFinite(baselineQCPassed)) // nothing more to do
+		return NaN
+	endif
 
 	if(IsNaN(baselineQCPassed))
 		numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_CHIRP)
@@ -3608,7 +3668,9 @@ Function PSQ_Chirp(panelTitle, s)
 		endswitch
 	endif
 
-	if(IsFinite(baselineQCPassed) && baselineQCPassed)
+	if(abortDueToSpikes)
+		return ANALYSIS_FUNC_RET_EARLY_STOP
+	elseif(IsFinite(baselineQCPassed) && baselineQCPassed)
 		ASSERT(IsFinite(insideBounds), "Must be already checked")
 		return ANALYSIS_FUNC_RET_EARLY_STOP
 	elseif(IsFinite(baselineQCPassed) && !baselineQCPassed)
