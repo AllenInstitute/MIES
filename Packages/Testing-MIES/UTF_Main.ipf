@@ -21,16 +21,59 @@
 #include "UTF_HelperFunctions"
 #include "UTF_WaveAveraging"
 
+// Entry point for UTF
 Function run()
+	return RunWithOpts()
+End
+
+// Examples:
+// - RunWithOpts()
+// - RunWithOpts(testsuite = "UTF_Configuration.ipf")
+// - RunWithOpts(testcase = "TestFindLevel")
+Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
+	variable debugMode
+	string list = ""
+	string name = "MIES"
+
 	// speeds up testing to start with a fresh copy
 	KillWindow/Z HistoryCarbonCopy
-
 	DisableDebugOutput()
-	string procList = ""
-	procList += "UTF_AnalysisFunctionHelpers.ipf;UTF_WaveVersioning.ipf;UTF_UpgradeWaveLocationAndGetIt.ipf;"
-	procList += "UTF_Utils.ipf;UTF_Labnotebook.ipf;UTF_WaveBuilder.ipf;UTF_WaveBuilderRegression.ipf;UTF_PGCSetAndActivateControl.ipf;"
-	procList += "UTF_UpgradeDataFolderLocation.ipf;UTF_AsynFrameworkTest.ipf;UTF_SweepFormula.ipf;UTF_Configuration.ipf;UTF_TraceUserData.ipf;"
-	procList += "UTF_WaveAveraging.ipf"
 
-	RunTest(procList, enableJU = 1)
+	if(ParamIsDefault(allowdebug))
+		debugMode = 0
+	else
+		debugMode = IUTF_DEBUG_FAILED_ASSERTION | IUTF_DEBUG_ENABLE | IUTF_DEBUG_ON_ERROR | IUTF_DEBUG_NVAR_SVAR_WAVE
+	endif
+
+	if(ParamIsDefault(testcase))
+		testcase = ""
+	endif
+
+	// sorted list
+	list = AddListItem("UTF_AnalysisFunctionHelpers.ipf", list, ";", inf)
+	list = AddListItem("UTF_AsynFrameworkTest.ipf", list, ";", inf)
+	list = AddListItem("UTF_Configuration.ipf", list, ";", inf)
+	list = AddListItem("UTF_Labnotebook.ipf", list, ";", inf)
+	list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", inf)
+	list = AddListItem("UTF_SweepFormula.ipf", list, ";", inf)
+	list = AddListItem("UTF_TraceUserData.ipf", list, ";", inf)
+	list = AddListItem("UTF_UpgradeDataFolderLocation.ipf", list, ";", inf)
+	list = AddListItem("UTF_UpgradeWaveLocationAndGetIt.ipf", list, ";", inf)
+	list = AddListItem("UTF_Utils.ipf", list, ";", inf)
+	list = AddListItem("UTF_WaveAveraging.ipf", list, ";", inf)
+	list = AddListItem("UTF_WaveBuilder.ipf", list, ";", inf)
+	list = AddListItem("UTF_WaveBuilderRegression.ipf", list, ";", inf)
+	list = AddListItem("UTF_WaveVersioning.ipf", list, ";", inf)
+
+	if(ParamIsDefault(testsuite))
+		testsuite = list
+	else
+		// do nothing
+	endif
+
+	if(IsEmpty(testcase))
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode)
+	else
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase)
+	endif
 End
