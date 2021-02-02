@@ -2097,7 +2097,7 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 	string epSweepName, epSubName, epSubSubName, epSpecifier
 	variable epochCount, totalDuration
 	variable epochNr, pulseNr, numPulses, epochType, flipping, pulseToPulseLength, stimEpochAmplitude, amplitude
-	variable pulseDuration, wroteValidSubEpochOnce
+	variable pulseDuration
 	string type, startTimesList
 	string stimNote = note(stimset)
 
@@ -2165,10 +2165,9 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 		endif
 
 		DC_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epSubName, 1, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+
 		// Add Sub Sub Epochs
 		if(epochType == EPOCH_TYPE_PULSE_TRAIN)
-
-			wroteValidSubEpochOnce = 0
 			WAVE startTimes = WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epochNr, pulseToPulseLength)
 			startTimes *= 1000
 			numPulses = DimSize(startTimes, ROWS)
@@ -2203,11 +2202,6 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 
 							epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 							DC_AddEpoch(panelTitle, channel, subEpochBegin, subEpochEnd, epSubSubName, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
-							// baseline after rightmost pulse? -> assign into rightmost pulse
-							if(!wroteValidSubEpochOnce && subEpochEnd < epochEnd && subEpochEnd < stimsetEnd)
-								subEpochEnd = epochEnd
-								wroteValidSubEpochOnce = 1
-							endif
 						endif
 					else
 						subEpochBegin = epochBegin + startTimes[pulseNr]
