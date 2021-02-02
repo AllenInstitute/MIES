@@ -18,11 +18,11 @@ The epoch information can be retrieved from the lab notebook with
 
  .. code-block:: igorpro
 
-    WAVE/T textualValues   = GetLBTextualValues(device)
+    WAVE/T textualValues  = GetLBTextualValues(device)
     WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNumber, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
-    WAVE/T epochChannel = ListToTextWaveMD(epochLBEntries[channelNumber], 2, rowSep = ":", colSep = ",")
+    WAVE/T epochHeadstage = ListToTextWaveMD(epochLBEntries[headstage], 2, rowSep = ":", colSep = ",")
 
-The epochChannel wave has four columns:
+The epochHeadstage wave has four columns:
 - Column 1: start time
 - Column 2: end time
 - Column 3: epoch description - a semi-colon separated list of epoch descriptors. e.g., ``Epoch=1;Type=Pulse Train;Amplitude=1;Pulse=0;``
