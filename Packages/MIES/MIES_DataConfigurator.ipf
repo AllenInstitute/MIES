@@ -2329,6 +2329,8 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 				pulseDuration = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, key="Pulse duration", sweep=sweep, epoch=epochNr)
 				pulseDuration *= 1000
 
+				// with flipping we iterate the pulses from large to small time points
+
 				for(pulseNr = 0; pulseNr < numPulses; pulseNr += 1)
 					if(flipping)
 						// shift all flipped pulse intervalls by pulseDuration to the left, except the rightmost with pulseNr 0
@@ -2339,44 +2341,32 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 							subEpochEnd = epochEnd - startTimes[pulseNr - 1] - pulseDuration
 							subEpochBegin = pulseNr + 1 == numPulses ? epochBegin : subEpochEnd - ptp[pulseNr]
 						endif
-
-						if(subEpochBegin > epochEnd || subEpochEnd < epochBegin)
-							DEBUGPRINT("Warning: sub epoch of flipped pulse starts after epoch end or ends before epoch start.")
-						elseif(subEpochBegin > stimsetEnd || subEpochEnd < stimsetBegin)
-							DEBUGPRINT("Warning: sub epoch of flipped pulse starts after stimset end or ends before stimset start.")
-						else
-							subEpochBegin = limit(subEpochBegin, epochBegin, Inf)
-							subEpochEnd = limit(subEpochEnd, -Inf, epochEnd)
-							// baseline before leftmost pulse?
-							if(pulseNr == numPulses - 1 && subEpochBegin > epochBegin && subEpochBegin > stimsetBegin)
-								DC_AddEpoch(panelTitle, channel, epochBegin, subEpochBegin, EPOCH_BASELINE_REGION_KEY, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
-							endif
-
-							epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-							DC_AddEpoch(panelTitle, channel, subEpochBegin, subEpochEnd, epSubSubName, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
-						endif
 					else
 						subEpochBegin = epochBegin + startTimes[pulseNr]
 						subEpochEnd = pulseNr + 1 == numPulses ? epochEnd : subEpochBegin + ptp[pulseNr + 1]
-						if(subEpochBegin > epochEnd || subEpochEnd < epochBegin)
-							DEBUGPRINT("Warning: sub epoch of pulse starts after epoch end or ends before epoch start.")
-						elseif(subEpochBegin > stimsetEnd || subEpochEnd < stimsetBegin)
-							DEBUGPRINT("Warning: sub epoch of pulse starts after stimset end or ends before stimset start.")
-						else
-							subEpochBegin = limit(subEpochBegin, epochBegin, Inf)
-							subEpochEnd = limit(subEpochEnd, -Inf, epochEnd)
-							if(!pulseNr && subEpochBegin > epochBegin && subEpochbegin > stimsetBegin)
-								DC_AddEpoch(panelTitle, channel, epochBegin, subEpochBegin, EPOCH_BASELINE_REGION_KEY, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
-							endif
-							epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-							DC_AddEpoch(panelTitle, channel, subEpochBegin, subEpochEnd, epSubSubName, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+					endif
+
+					if(subEpochBegin >= epochEnd || subEpochEnd <= epochBegin)
+						DEBUGPRINT("Warning: sub epoch of pulse starts after epoch end or ends before epoch start.")
+					elseif(subEpochBegin >= stimsetEnd || subEpochEnd <= stimsetBegin)
+						DEBUGPRINT("Warning: sub epoch of pulse starts after stimset end or ends before stimset start.")
+					else
+						subEpochBegin = limit(subEpochBegin, epochBegin, Inf)
+						subEpochEnd = limit(subEpochEnd, -Inf, epochEnd)
+
+						// baseline before leftmost/rightmose pulse?
+						if(((pulseNr == numPulses - 1 && flipping) || (!pulseNr && !flipping)) \
+						   && subEpochBegin > epochBegin && subEpochBegin > stimsetBegin)
+							DC_AddEpoch(panelTitle, channel, epochBegin, subEpochBegin, EPOCH_BASELINE_REGION_KEY, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 						endif
+
+						epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+						DC_AddEpoch(panelTitle, channel, subEpochBegin, subEpochEnd, epSubSubName, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 					endif
 				endfor
 			else
 				DC_AddEpoch(panelTitle, channel, epochBegin, epochEnd, EPOCH_BASELINE_REGION_KEY, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 			endif
-
 		else
 			// Epoch details on other types not implemented yet
 		endif
