@@ -1334,8 +1334,8 @@ End
 /// @brief Handle marking pulses as failed/passed if required
 static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi)
 	variable numTotalPulses, sweepNo
-	variable region, pulse, pulseHasFailed, jsonID, referencePulseHasFailed
-	variable numActive, numEntries, i, j, k, idx, startEntry
+	variable region, pulse, jsonID, referencePulseHasFailed
+	variable numActive, numEntries, i, j, k, idx, startEntry, entriesToUpdate
 	string key
 
 	WAVE properties = pasi.properties
@@ -1367,18 +1367,25 @@ static Function PA_MarkFailedPulses(STRUCT PulseAverageSettings &pa, STRUCT Puls
 		WAVE indices = pasi.setIndicesUnsorted[i][i]
 		numEntries = pasi.numEntries[i][i]
 		startEntry = pasi.startEntry[i][i]
+
+		// startEntry is the first valid index, numEntries past the last valid index
+		entriesToUpdate = numEntries - startEntry
+
+		if(entriesToUpdate > 0)
+			Make/FREE/N=(entriesToUpdate) pulseHasFailed
+			Multithread pulseHasFailed[] = PA_PulseHasFailed(propertiesWaves[indices[startEntry + p]][PA_PROPERTIESWAVES_INDEX_PULSE],        \
+			                                                 propertiesWaves[indices[startEntry + p]][PA_PROPERTIESWAVES_INDEX_PULSENOTE], pa)
+		endif
+
 		for(j = startEntry; j < numEntries; j += 1)
 			idx = indices[j]
 
-			WAVE noteWave  = propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
-			WAVE pulseWave = propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSE]
-			pulseHasFailed = PA_PulseHasFailed(pulseWave, noteWave, pa)
-			properties[idx][PA_PROPERTIES_INDEX_PULSEHASFAILED] = pulseHasFailed
+			properties[idx][PA_PROPERTIES_INDEX_PULSEHASFAILED] = pulseHasFailed[j - startEntry]
 
 			sweepNo = properties[idx][PA_PROPERTIES_INDEX_SWEEP]
 			pulse   = properties[idx][PA_PROPERTIES_INDEX_PULSE]
 			key = PA_GenerateFailedPulseKey(sweepNo, region, pulse)
-			JSON_SetVariable(jsonID, key, pulseHasFailed)
+			JSON_SetVariable(jsonID, key, properties[idx][PA_PROPERTIES_INDEX_PULSEHASFAILED])
 		endfor
 	endfor
 
@@ -2383,7 +2390,7 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 	SetDrawEnv/W=$graph pop
 End
 
-static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRUCT PulseAverageSettings &s)
+ threadsafe static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRUCT PulseAverageSettings &s)
 
 	variable level, hasFailed, failedNumberOfSpikes, numLevels, maxNumLevels
 
@@ -2401,23 +2408,23 @@ static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRUCT PulseAve
 		return hasFailed
 	endif
 
-	ASSERT(GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED) != 1, "Single pulse wave must not be zeroed here")
+	ASSERT_TS(GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED) != 1, "Single pulse wave must not be zeroed here")
 
 	// allow at most 1 pulse per ms
 	maxNumLevels = round(DimSize(pulseWave, ROWS) * DimDelta(pulseWave, ROWS))
 	WAVE/Z levels = FindLevelWrapper(pulseWave, s.failedPulsesLevel, FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI, \
 	                                 maxNumLevels = maxNumLevels)
 
-	ASSERT(WaveExists(levels), "FindLevelWrapper returned a non-existing wave")
+	ASSERT_TS(WaveExists(levels), "FindLevelWrapper returned a non-existing wave")
 
 	numLevels = str2num(GetDimLabel(levels, ROWS, 0))
-	ASSERT(IsFinite(numLevels), "Number of levels is not finite")
+	ASSERT_TS(IsFinite(numLevels), "Number of levels is not finite")
 	SetNumberInWaveNote(noteWave, NOTE_KEY_PULSE_FOUND_SPIKES, numLevels)
 
 	if(numLevels == 0)
 		Redimension/N=(0) levels
 	else
-		ASSERT(DimSize(levels, ROWS) == 1, "Unexpected number of rows")
+		ASSERT_TS(DimSize(levels, ROWS) == 1, "Unexpected number of rows")
 		Redimension/E=1/N=(max(1, DimSize(levels, COLS))) levels
 	endif
 
