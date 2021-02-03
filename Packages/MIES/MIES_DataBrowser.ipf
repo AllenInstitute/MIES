@@ -183,6 +183,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_pulseAver_searchFailedPulses WIN = $bsPanel, value= 0
 	CheckBox check_pulseAver_hideFailedPulses WIN = $bsPanel, value= 0
 	SetVariable setvar_pulseAver_failedPulses_level WIN = $bsPanel, value= _NUM:0
+	SetVariable setvar_pulseAver_numberOfSpikes WIN = $bsPanel, value= _NUM:NaN
 
 	// END PA
 
