@@ -51,6 +51,8 @@ static Constant PA_DISPLAYMODE_ALL    = 0xFF
 
 static Constant PA_COLORSCALE_PANEL_WIDTH = 150
 
+static Constant PA_PEAK_BOX_AVERAGE = 5
+
 /// @name Pulse sort order
 /// Popupmenu indizes for the PA plot controls
 /// @{
@@ -2392,7 +2394,8 @@ End
 
  threadsafe static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRUCT PulseAverageSettings &s)
 
-	variable level, hasFailed, failedNumberOfSpikes, numLevels, maxNumLevels
+	variable level, hasFailed, failedNumberOfSpikes, numLevels, maxNumLevels, numSpikes
+	variable first, last, i, err, idx
 
 	if(!s.searchFailedPulses)
 		return 0
@@ -2411,26 +2414,47 @@ End
 	ASSERT_TS(GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED) != 1, "Single pulse wave must not be zeroed here")
 
 	// allow at most 1 pulse per ms
-	maxNumLevels = round(DimSize(pulseWave, ROWS) * DimDelta(pulseWave, ROWS))
-	WAVE/Z levels = FindLevelWrapper(pulseWave, s.failedPulsesLevel, FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI, \
+	maxNumLevels = round(DimSize(pulseWave, ROWS) * DimDelta(pulseWave, ROWS)) * 2
+	WAVE/Z levels = FindLevelWrapper(pulseWave, s.failedPulsesLevel, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_MULTI, \
 	                                 maxNumLevels = maxNumLevels)
 
 	ASSERT_TS(WaveExists(levels), "FindLevelWrapper returned a non-existing wave")
+	ASSERT_TS(DimSize(levels, ROWS) == 1, "Unexpected number of rows")
 
 	numLevels = str2num(GetDimLabel(levels, ROWS, 0))
 	ASSERT_TS(IsFinite(numLevels), "Number of levels is not finite")
-	SetNumberInWaveNote(noteWave, NOTE_KEY_PULSE_FOUND_SPIKES, numLevels)
 
-	if(numLevels == 0)
-		Redimension/N=(0) levels
-	else
-		ASSERT_TS(DimSize(levels, ROWS) == 1, "Unexpected number of rows")
-		Redimension/E=1/N=(max(1, DimSize(levels, COLS))) levels
+	if(IsOdd(numLevels))
+		// throw away the last level
+		Redimension/N=(1, --numLevels) levels
 	endif
 
-	SetStringInWaveNote(noteWave, NOTE_KEY_PULSE_SPIKE_POSITIONS, NumericWaveToList(levels, ","))
+	numSpikes = numLevels / 2
+	ASSERT_TS(IsInteger(numSpikes), "Expected an integer number of peaks")
 
-	hasFailed = !((numLevels == s.failedNumberOfSpikes) || (numLevels > 0 && IsNaN(s.failedNumberOfSpikes)))
+	Make/D/FREE/N=(numSpikes) spikePositions
+
+	// now we use FindPeak between two consecutive edges (rising and falling) in a loop
+	for(i = 0; i < numSpikes; i += 1)
+		first = levels[i * 2]
+		last  = levels[i * 2 + 1]
+
+		err = 0
+		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(s.failedPulsesLevel)/R=(first, last) pulseWave; err = GetRTError(1)
+
+		if(!err)
+			ASSERT_TS(!V_Flag, "Could not find peak but FindLevelWrapper was successfull, this is unexpected.")
+			spikePositions[idx++] = V_PeakLoc
+		endif
+	endfor
+
+	numSpikes = idx
+	Redimension/N=(numSpikes) spikePositions
+
+	SetStringInWaveNote(noteWave, NOTE_KEY_PULSE_SPIKE_POSITIONS, NumericWaveToList(spikePositions, ","))
+	SetNumberInWaveNote(noteWave, NOTE_KEY_PULSE_FOUND_SPIKES, numSpikes)
+
+	hasFailed = !((numSpikes == s.failedNumberOfSpikes) || (numSpikes > 0 && IsNaN(s.failedNumberOfSpikes)))
 	SetNumberInWaveNote(noteWave, NOTE_KEY_PULSE_HAS_FAILED, hasFailed)
 
 	// NOTE_KEY_FAILED_PULSE_LEVEL and NOTE_KEY_NUMBER_OF_SPIKES is written in PA_MarkFailedPulses for all pulses
