@@ -400,9 +400,9 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 				return NaN
 			else
 				return 0
-			else
-				ASSERT(0, "unknown baseline type")
 			endif
+		else
+			ASSERT(0, "unknown baseline type")
 		endif
 	endif
 
