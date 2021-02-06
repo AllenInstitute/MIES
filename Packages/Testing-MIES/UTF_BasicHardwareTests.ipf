@@ -3059,6 +3059,39 @@ Function TPDuringDAQOnlyTP_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 End
 
+Function TPDuringDAQOnlyTPWithLockedIndexing_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function TPDuringDAQOnlyTPWithLockedIndexing([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_3")
+	AcquireData(s, str, preAcquireFunc=TPDuringDAQOnlyTPWithLockedIndexing_IGNORE)
+
+	PGC_SetAndActivateControl(str, "Check_DataAcq_Indexing", val = 1)
+	PGC_SetAndActivateControl(str, "Check_DataAcq1_IndexingLocked", val = 0)
+End
+
+Function TPDuringDAQOnlyTPWithLockedIndexing_REENTRY([str])
+	string str
+
+	variable sweepNo, col, tpAmplitude
+	string ctrl
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	// generic properties are checked in TPDuringDAQOnlyTP
+End
+
 Function TPDuringDAQTPAndAssoc_IGNORE(device)
 	string device
 
