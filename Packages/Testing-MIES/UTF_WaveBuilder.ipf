@@ -24,19 +24,35 @@ Function CopyWaves_IGNORE()
 	DuplicateDataFolder/O=2 $GetWBSvdStimSetDAPathAsString(), root:wavebuilder_misc:DAWaves
 End
 
+Function/WAVE WB_FetchRefWave_IGNORE(string name)
+
+	string majorVersion = num2istr(IgorVersion())
+
+	DFREF dfr = root:wavebuilder_misc:DAWaves
+	WAVE/SDFR=dfr/Z overrideWave = $(name + "_IP" + majorVersion)
+	if(WaveExists(overrideWave))
+		return overrideWave
+	endif
+
+	WAVE/SDFR=dfr/Z wv = $name
+	CHECK_WAVE(wv, NORMAL_WAVE)
+
+	return wv
+End
+
 Function WB_RegressionTest()
 
 	variable i, numEntries
 	variable j, sweepCount, duration, k, epochCount
 	string list, stimset, text
 
-	DFREF ref = root:wavebuilder_misc:DAWaves
 	DFREF dfr = GetWBSvdStimSetParamDAPath()
 	list = GetListOfObjects(dfr, "WP_.*")
 
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
 		stimset = ReplaceString("WP_", StringFromList(i, list), "")
+
 		// stock MIES stimset
 		CHECK(!WB_StimsetIsFromThirdParty(stimset))
 
@@ -55,7 +71,7 @@ Function WB_RegressionTest()
 		CHECK_EQUAL_VAR(MIES_WAVEGETTERS#GetWaveVersion(SegWvType), MIES_WAVEGETTERS#GetSegWvTypeVersion())
 
 		// check against our stimset generated with earlier versions
-		WAVE/SDFR=ref refWave = $stimset
+		WAVE refWave = WB_FetchRefWave_IGNORE(stimset)
 		CHECK_EQUAL_WAVES(refWave, wv, mode = WAVE_DATA | WAVE_DATA_TYPE | WAVE_SCALING | DIMENSION_LABELS | DIMENSION_UNITS | DIMENSION_SIZES | DATA_UNITS | DATA_FULL_SCALE, tol = 1e-12)
 
 		text = note(wv)
