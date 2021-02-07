@@ -1324,7 +1324,7 @@ static Function WB_SawToothSegment(pa)
 
 	Wave SegmentWave = GetSegmentWave(duration=pa.duration)
 
-	MultiThread SegmentWave = 1 * pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+	MultiThread SegmentWave = pa.amplitude * sawtooth(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
 End
 
 static Function WB_CreatePulse(wv, pulseType, amplitude, first, last)
