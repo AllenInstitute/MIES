@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(369.75,170,801.75,605)/K=1  as "DataBrowser"
+	Display /W=(387.75,660.5,819.75,1095.5)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel
 	Button button_BSP_open,title="<<",help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)= A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -77,7 +77,6 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=1/W=(399,0,0,585)  as " "
 	ModifyPanel fixedSize=0
-	SetDrawLayer UserBack
 	GroupBox group_properties_sweepFormula,pos={5.00,85.00},size={388.00,499.00},disable=1
 	GroupBox group_properties_sweepFormula,userdata(tabnum)=  "5"
 	GroupBox group_properties_sweepFormula,userdata(tabcontrol)=  "Settings"
@@ -105,7 +104,7 @@ Window DataBrowser() : Graph
 	ListBox list_of_ranges,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_of_ranges,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_of_ranges,userdata(Config_DontRestore)=  "1"
-	ListBox list_of_ranges,userdata(Config_DontSave)=  "1",row= 122,widths={50,50}
+	ListBox list_of_ranges,userdata(Config_DontSave)=  "1",row= 209,widths={50,50}
 	PopupMenu popup_overlaySweeps_select,pos={123.00,99.00},size={143.00,19.00},bodyWidth=109,disable=3,proc=OVS_PopMenuProc_Select
 	PopupMenu popup_overlaySweeps_select,title="Select"
 	PopupMenu popup_overlaySweeps_select,help={"Select sweeps according to various properties"}
@@ -580,7 +579,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_overridePulseLength,userdata(ResizeControlsInfo)= A"!!,Gf!!#BN!!#@l!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_overridePulseLength,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_overridePulseLength,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_pulseAver_overridePulseLength,value= _NUM:10
+	SetVariable setvar_pulseAver_overridePulseLength,limits={0,inf,1},value= _NUM:10
 	SetVariable setvar_pulseAver_endPulse,pos={218.00,254.00},size={122.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common
 	SetVariable setvar_pulseAver_endPulse,title="Ending pulse"
 	SetVariable setvar_pulseAver_endPulse,help={"Index of the last pulse to display"}
@@ -589,7 +588,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_endPulse,userdata(ResizeControlsInfo)= A"!!,Gj!!#B8!!#@X!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_endPulse,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_endPulse,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_pulseAver_endPulse,value= _NUM:inf
+	SetVariable setvar_pulseAver_endPulse,limits={0,inf,1},value= _NUM:inf
 	SetVariable setvar_pulseAver_startPulse,pos={214.00,232.00},size={126.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common
 	SetVariable setvar_pulseAver_startPulse,title="Starting pulse"
 	SetVariable setvar_pulseAver_startPulse,help={"Index of the first pulse to display"}
@@ -598,7 +597,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_startPulse,userdata(ResizeControlsInfo)= A"!!,Gf!!#B\"!!#@`!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_startPulse,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_startPulse,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_pulseAver_startPulse,value= _NUM:0
+	SetVariable setvar_pulseAver_startPulse,limits={0,inf,1},value= _NUM:0
 	CheckBox check_pulseAver_multGraphs,pos={212.00,165.00},size={121.00,15.00},disable=1,proc=PA_CheckProc_Common
 	CheckBox check_pulseAver_multGraphs,title="Use multiple graphs"
 	CheckBox check_pulseAver_multGraphs,help={"Show the single pulses in multiple graphs or only one graph with mutiple axis."}
@@ -934,7 +933,7 @@ Window DataBrowser() : Graph
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,C$!!#BQJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
 	GroupBox group_enable_sweepFormula,pos={5.00,25.00},size={388.00,50.00},disable=1
 	GroupBox group_enable_sweepFormula,title="SweepFormula",userdata(tabnum)=  "5"
 	GroupBox group_enable_sweepFormula,userdata(tabcontrol)=  "Settings"

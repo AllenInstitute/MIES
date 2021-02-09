@@ -451,6 +451,15 @@ Function ReturnsCorrectType()
 	CHECK_EQUAL_WAVES(data1, matches)
 End
 
+Function WorksWithTheSameWaves()
+
+	Make/Free/D data = p
+
+	WAVE matches = GetSetIntersection(data, data)
+	CHECK_EQUAL_WAVES(data, matches)
+	CHECK(!WaveRefsEqual(data, matches))
+End
+
 Function ReturnsInvalidWaveRefWOMatches1()
 
 	Make/Free/D/N=0 data1
@@ -3821,12 +3830,12 @@ End
 /// LineBreakingIntoPar
 /// @{
 
-Function/WAVE LBP_NonFiniteValues()
+Function/WAVE NonFiniteValues()
 	Make/D/FREE data = {NaN, Inf, -Inf}
 	return data
 End
 
-// UTF_TD_GENERATOR LBP_NonFiniteValues
+// UTF_TD_GENERATOR NonFiniteValues
 Function LBP_Aborts([var])
 	variable var
 
@@ -4548,6 +4557,42 @@ Function EVOB_Works()
 	CHECK(!EqualValuesOrBothNaN(Inf, NaN))
 	CHECK(!EqualValuesOrBothNaN(NaN, Inf))
 	CHECK(EqualValuesOrBothNaN(NaN, NaN))
+End
+
+/// @}
+
+/// IsEven
+/// @{
+
+Function IE_Works()
+	CHECK(IsEven(0))
+	CHECK(!IsEven(-1))
+	CHECK(IsEven(-2))
+	CHECK(IsEven(2))
+	CHECK(!IsEven(1.5))
+End
+
+// UTF_TD_GENERATOR NonFiniteValues
+Function IE_FalseWithNonFiniteValues([variable var])
+	CHECK(!IsEven(var))
+End
+
+/// @}
+
+/// IsOdd
+/// @{
+
+Function IO_Works()
+	CHECK(!IsOdd(0))
+	CHECK(!IsOdd(-2))
+	CHECK(IsOdd(-1))
+	CHECK(IsOdd(1))
+	CHECK(!IsOdd(1.5))
+End
+
+// UTF_TD_GENERATOR NonFiniteValues
+Function IO_FalseWithNonFiniteValues([variable var])
+	CHECK(!IsOdd(var))
 End
 
 /// @}

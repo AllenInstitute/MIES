@@ -606,6 +606,16 @@ threadsafe Function IsInteger(var)
 	return IsFinite(var) && trunc(var) == var
 End
 
+threadsafe Function IsEven(variable var)
+
+	return IsInteger(var) && mod(var, 2) == 0
+End
+
+threadsafe Function IsOdd(variable var)
+
+	return IsInteger(var) && mod(var, 2) != 0
+End
+
 /// @brief Downsample data
 ///
 /// Downsampling is performed on each @b column of the input wave.
@@ -3618,6 +3628,9 @@ Function/WAVE GetSetIntersection(wave1, wave2)
 
 	if(wave1Rows == 0 || wave2Rows == 0)
 		return $""
+	elseif(WaveRefsEqual(wave1, wave2))
+		Duplicate/FREE wave1, matches
+		return matches
 	endif
 
 	if(wave1Rows > wave2Rows)
@@ -4504,6 +4517,8 @@ End
 /// @param edge         type of the edge, one of @ref FindLevelEdgeTypes
 /// @param mode         mode, one of @ref FindLevelModes
 /// @param maxNumLevels [optional, defaults to number of points/rows] maximum number of levels to find
+///
+/// The returned levels are in the wave's row units.
 ///
 /// FINDLEVEL_MODE_SINGLE:
 /// - Return a 1D wave with as many rows as columns in the input data

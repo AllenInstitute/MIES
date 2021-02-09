@@ -31,9 +31,34 @@
 
 StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
 
+// Entry point for UTF
 Function run()
+	return RunWithOpts()
+End
 
+// Examples:
+// - RunWithOpts()
+// - RunWithOpts(testsuite = "UTF_Epochs.ipf")
+// - RunWithOpts(testcase = "EP_EpochTest7")
+Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
+
+	variable debugMode
 	string list = ""
+	string name = "MIES with Hardware"
+
+	// speeds up testing to start with a fresh copy
+	KillWindow/Z HistoryCarbonCopy
+	DisableDebugOutput()
+
+	if(ParamIsDefault(allowdebug))
+		debugMode = 0
+	else
+		debugMode = IUTF_DEBUG_FAILED_ASSERTION | IUTF_DEBUG_ENABLE | IUTF_DEBUG_ON_ERROR | IUTF_DEBUG_NVAR_SVAR_WAVE
+	endif
+
+	if(ParamIsDefault(testcase))
+		testcase = ""
+	endif
 
 	list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list, ";", inf)
 	list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", inf)
@@ -52,7 +77,17 @@ Function run()
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
 
-	RunTest(list, name = "MIES with Hardware", enableJU = 1)
+	if(ParamIsDefault(testsuite))
+		testsuite = list
+	else
+		// do nothing
+	endif
+
+	if(IsEmpty(testcase))
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode)
+	else
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase)
+	endif
 End
 
 Function/WAVE DeviceNameGeneratorMD1()

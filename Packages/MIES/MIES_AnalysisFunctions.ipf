@@ -1257,7 +1257,7 @@ Function SetControlInEvent(panelTitle, s)
 			printf "(%s): The analysis parameter's %s payload is empty.\r", panelTitle, guiElem
 			ControlWindowToFront()
 			return 1
-		elseif(DimSize(data, ROWS) == 0 || mod(DimSize(data, ROWS), 2) != 0 || DimSize(data, COLS) != 0)
+		elseif(DimSize(data, ROWS) == 0 || !IsEven(DimSize(data, ROWS)) || DimSize(data, COLS) != 0)
 			printf "(%s): The analysis parameter's %s payload has not a multiple of two rows.\r", panelTitle, guiElem
 			ControlWindowToFront()
 			return 1
