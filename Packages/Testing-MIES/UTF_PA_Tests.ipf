@@ -1651,6 +1651,8 @@ static Function PAT_FailedPulseCheck1()
 	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
 	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 4)
+
+	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 5)
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_searchFailedPulses", val = 1)
 
 	traceListAll = PAT_GetTraces(graph, 2 * patest0.layoutSize)
@@ -1669,7 +1671,7 @@ static Function PAT_FailedPulseCheck1()
 				endif
 
 				pulseHasFailed = 0
-				numSpikes = 1000
+				numSpikes = 1
 
 				traceName = StringFromList(k, traceNames)
 				if(k == 1)
@@ -1706,9 +1708,9 @@ static Function PAT_FailedPulseCheck1()
 
 				if(numSpikes == 1)
 					if(i == 0 && j == 0)
-						spikePositions = "0.00700875,"
+						spikePositions = "0.0213333,"
 					else
-						spikePositions = "0.00306933,"
+						spikePositions = "0.02,"
 					endif
 				else
 					spikePositions = ""
@@ -1744,9 +1746,9 @@ static Function PAT_FailedPulseCheck1()
 
 				if(numSpikes == 1)
 					if(i == 0 && j == 0)
-						spikePositions = "0.00700875,"
+						spikePositions = "0.0213333,"
 					else
-						spikePositions = "0.00306933,"
+						spikePositions = "0.02,"
 					endif
 				else
 					spikePositions = ""
@@ -1782,9 +1784,9 @@ static Function PAT_FailedPulseCheck1()
 
 				if(numSpikes == 1)
 					if(i == 0 && j == 0)
-						spikePositions = "0.00700875,"
+						spikePositions = "0.0213333,"
 					else
-						spikePositions = "0.00306933,"
+						spikePositions = "0.02,"
 					endif
 				else
 					spikePositions = ""
@@ -1815,7 +1817,7 @@ static Function PAT_FailedPulseCheck2()
 	OVS_ChangeSweepSelectionState(bspName, 0, sweepNo = 0)
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 5)
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_searchFailedPulses", val = 1)
-	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 1)
+	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 20)
 
 	size = sqrt(patest5.layoutSize)
 	traceListAll = PAT_GetTraces(graph, patest5.layoutSize)
@@ -1825,7 +1827,7 @@ static Function PAT_FailedPulseCheck2()
 			traceName = PAT_FindTraceNames(traceListAll, patest5.channels[i], region, 0)
 
 			pulseHasFailed = (region == 5)
-			numSpikes = (i == 0 && j == 0) ? 0 : 1000
+			numSpikes = (i == 0 && j == 0) ? 0 : 1
 
 			WAVE pData = TraceNameToWaveRef(graph, traceName)
 			PAT_CheckPulseWaveNote(bspName, pData)
@@ -2539,7 +2541,7 @@ static Function PAT_ImagePlotPartialFullFail()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_zero", val = 1)
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_searchFailedPulses", val = 1)
-	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 104)
+	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 90)
 	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 5)
 
 	imageList = PAT_GetImages(imageWin, patest.layoutSize)

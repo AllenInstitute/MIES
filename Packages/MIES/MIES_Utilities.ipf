@@ -1068,12 +1068,12 @@ End
 /// @brief Update the string value of `key` found in the wave note to `str`
 ///
 /// The expected wave note format is: `key1:val1;key2:str2;`
-Function SetStringInWaveNote(wv, key, str)
+threadsafe Function SetStringInWaveNote(wv, key, str)
 	Wave wv
 	string key, str
 
-	ASSERT(WaveExists(wv), "Missing wave")
-	ASSERT(!IsEmpty(key), "Empty key")
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+	ASSERT_TS(!IsEmpty(key), "Empty key")
 
 	Note/K wv, ReplaceStringByKey(key, note(wv), str)
 End
@@ -3095,7 +3095,7 @@ End
 /// @param wv     numeric wave
 /// @param sep    separator
 /// @param format [optional, defaults to `%g`] sprintf conversion specifier
-Function/S NumericWaveToList(wv, sep, [format])
+threadsafe Function/S NumericWaveToList(wv, sep, [format])
 	WAVE wv
 	string sep, format
 
@@ -3105,11 +3105,11 @@ Function/S NumericWaveToList(wv, sep, [format])
 		format = "%g"
 	endif
 
-	ASSERT(IsNumericWave(wv), "Expected a numeric wave")
-	ASSERT(DimSize(wv, COLS) == 0, "Expected a 1D wave")
+	ASSERT_TS(IsNumericWave(wv), "Expected a numeric wave")
+	ASSERT_TS(DimSize(wv, COLS) == 0, "Expected a 1D wave")
 
 	if(IsFloatingPointWave(wv))
-		ASSERT(!GrepString(format, "%.*d"), "%d triggers an Igor bug")
+		ASSERT_TS(!GrepString(format, "%.*d"), "%d triggers an Igor bug")
 	endif
 
 	wfprintf list, format + sep, wv
@@ -3168,7 +3168,7 @@ End
 /// @param list     List of dimension labels, semicolon separated.
 /// @param dim      Wave dimension, see, @ref WaveDimensions
 /// @param startPos [optional, defaults to 0] First dimLabel index
-Function SetWaveDimLabel(wv, list, dim, [startPos])
+threadsafe Function SetWaveDimLabel(wv, list, dim, [startPos])
 	WAVE wv
 	string list
 	variable dim
@@ -3182,8 +3182,8 @@ Function SetWaveDimLabel(wv, list, dim, [startPos])
 		startPos = 0
 	endif
 
-	ASSERT(startPos >= 0, "Illegal negative startPos")
-	ASSERT(dimlabelCount <= dimsize(wv, dim) + startPos, "Dimension label count exceeds dimension size")
+	ASSERT_TS(startPos >= 0, "Illegal negative startPos")
+	ASSERT_TS(dimlabelCount <= dimsize(wv, dim) + startPos, "Dimension label count exceeds dimension size")
 	for(i = 0; i < dimlabelCount;i += 1)
 		labelName = stringfromlist(i, list)
 		setDimLabel dim, i + startPos, $labelName, Wv
@@ -4530,7 +4530,7 @@ End
 ///
 /// In both cases the dimension label of the each column holds the number of found levels
 /// in each data colum. This will be always 1 for FINDLEVEL_MODE_SINGLE.
-Function/WAVE FindLevelWrapper(WAVE data, variable level, variable edge, variable mode, [variable maxNumLevels])
+threadsafe Function/WAVE FindLevelWrapper(WAVE data, variable level, variable edge, variable mode, [variable maxNumLevels])
 	variable numCols, numColsFixed, numRows, xDelta, maxLevels, numLevels
 	variable first, last, i, xLevel, found, columnOffset
 
@@ -4542,17 +4542,17 @@ Function/WAVE FindLevelWrapper(WAVE data, variable level, variable edge, variabl
 	if(ParamIsDefault(maxNumLevels))
 		maxNumLevels = numRows
 	else
-		ASSERT(IsInteger(maxNumLevels) && maxNumLevels > 0, "maxNumLevels has to be a positive integer")
-		ASSERT(mode == FINDLEVEL_MODE_MULTI, "maxNumLevels can only be combined with FINDLEVEL_MODE_MULTI mode")
+		ASSERT_TS(IsInteger(maxNumLevels) && maxNumLevels > 0, "maxNumLevels has to be a positive integer")
+		ASSERT_TS(mode == FINDLEVEL_MODE_MULTI, "maxNumLevels can only be combined with FINDLEVEL_MODE_MULTI mode")
 	endif
 
-	ASSERT(IsNumericWave(data), "Expected numeric wave")
-	ASSERT(numRows >= 2, "Expected wave with more than two rows")
-	ASSERT(IsFinite(level), "Expected finite level")
-	ASSERT(edge == FINDLEVEL_EDGE_INCREASING || edge == FINDLEVEL_EDGE_DECREASING || edge == FINDLEVEL_EDGE_BOTH, "Invalid edge type")
-	ASSERT(mode == FINDLEVEL_MODE_SINGLE || mode == FINDLEVEL_MODE_MULTI, "Invalid mode type")
+	ASSERT_TS(IsNumericWave(data), "Expected numeric wave")
+	ASSERT_TS(numRows >= 2, "Expected wave with more than two rows")
+	ASSERT_TS(IsFinite(level), "Expected finite level")
+	ASSERT_TS(edge == FINDLEVEL_EDGE_INCREASING || edge == FINDLEVEL_EDGE_DECREASING || edge == FINDLEVEL_EDGE_BOTH, "Invalid edge type")
+	ASSERT_TS(mode == FINDLEVEL_MODE_SINGLE || mode == FINDLEVEL_MODE_MULTI, "Invalid mode type")
 
-	ASSERT(DimSize(data, LAYERS) <= 1, "Unexpected input dimension")
+	ASSERT_TS(DimSize(data, LAYERS) <= 1, "Unexpected input dimension")
 
 	Redimension/N=(numColsFixed * numRows)/E=1 data
 
@@ -4601,7 +4601,7 @@ Function/WAVE FindLevelWrapper(WAVE data, variable level, variable edge, variabl
 
 			return resultMulti
 		default:
-			ASSERT(0, "Impossible case")
+			ASSERT_TS(0, "Impossible case")
 	endswitch
 End
 
@@ -5508,7 +5508,7 @@ Function/WAVE RemoveUnusedRows(WAVE wv)
 End
 
 /// @brief Check wether `val1` and `val2` are equal or both NaN
-Function EqualValuesOrBothNaN(variable left, variable right)
+threadsafe Function EqualValuesOrBothNaN(variable left, variable right)
 
 	return (IsNaN(left) && IsNaN(right)) || (left == right)
 End
