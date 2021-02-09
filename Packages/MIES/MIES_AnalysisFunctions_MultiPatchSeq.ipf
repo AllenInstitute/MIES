@@ -1890,14 +1890,16 @@ Function/S MSQ_SpikeControl_GetHelp(name)
 	string name
 
 	strswitch(name)
-		 case "FailedPulseLevel":
-			 return "[Optional, uses the already set value] Numeric level to use for the failed pulse search in the PA plot tab."
-		 case "MaxTrials":
-			 return "[Optional, defaults to infinity] A sweep is rerun this many times on a failed headstage."
+		case "FailedPulseLevel":
+			return "[Optional, uses the already set value] Numeric level to use for the failed pulse search in the PA plot tab."
+			break
+		case "MaxTrials":
+			return "[Optional, defaults to infinity] A sweep is rerun this many times on a failed headstage."
+			break
 		case "DAScaleOperator":
-			 return "Set the math operator to use for combining the DAScale and the "          \
-					+ "offset. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
-			 break
+			return "Set the math operator to use for combining the DAScale and the "          \
+			       + "offset. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
+			break
 		case "DAScaleModifier":
 			return "Offset value to the DA Scale of headstages with failed pulses"
 			break
