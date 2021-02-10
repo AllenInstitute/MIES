@@ -153,33 +153,46 @@ static Function/WAVE GetResults_IGNORE(string device, variable sweepNo, string s
 	endswitch
 End
 
+static Function/WAVE GetLBNEntriesWave_IGNORE()
+
+	Make/FREE/WAVE/N=(14) wv
+
+	SetDimensionLabels(wv, "sweepPass;setPass;setSweepCount_HS0;setSweepCount_HS1;rerunTrials_HS0;rerunTrials_HS1;rerunTrialsExceeded_HS0;rerunTrialsExceeded_HS1;" \
+	                       + "headstagePass_HS0;headstagePass_HS1;stimScale_HS0;stimScale_HS1;failedPulses_HS0;failedPulses_HS1", ROWS)
+
+	return wv
+End
+
 // @todo use functions like this one here for all future analysis function tests
 // as that ensure that we don't forget anything and avoid code duplication
-static Function [WAVE/Z setPass, WAVE/Z sweepPass, WAVE/Z headstagePass_HS0, WAVE/Z headstagePass_HS1, WAVE/Z setSweepCount_HS0, WAVE/Z setSweepCount_HS1, WAVE/Z rerunTrials_HS0, WAVE/Z rerunTrials_HS1, WAVE/Z rerunTrialsExceeded_HS0, WAVE/Z rerunTrialsExceeded_HS1, WAVE/Z stimScale_HS0, WAVE/Z stimScale_HS1, WAVE/T/Z failedPulses_HS0, WAVE/T/Z failedPulses_HS1] GetLBNEntries_IGNORE(string device, variable sweepNo)
+static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
-	WAVE/Z setPass = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/WAVE wv = GetLBNEntriesWave_IGNORE()
 
-	WAVE/Z setSweepCount_HS0 = GetLastSettingEachSCI(numericalValues, sweepNo, "Set Sweep Count", 0, DATA_ACQUISITION_MODE)
-	WAVE/Z setSweepCount_HS1 = GetLastSettingEachSCI(numericalValues, sweepNo, "Set Sweep Count", 1, DATA_ACQUISITION_MODE)
+	wv[%sweepPass] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	wv[%setPass] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 
-	WAVE/Z rerunTrials_HS0 = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL, 0, EACH_SCI)
-	WAVE/Z rerunTrials_HS1 = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL, 1, EACH_SCI)
+	wv[%setSweepCount_HS0] = GetLastSettingEachSCI(numericalValues, sweepNo, "Set Sweep Count", 0, DATA_ACQUISITION_MODE)
+	wv[%setSweepCount_HS1] = GetLastSettingEachSCI(numericalValues, sweepNo, "Set Sweep Count", 1, DATA_ACQUISITION_MODE)
 
-	WAVE/Z rerunTrialsExceeded_HS0 = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL_EXC, 0, EACH_SCI)
-	WAVE/Z rerunTrialsExceeded_HS1 = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL_EXC, 1, EACH_SCI)
+	wv[%rerunTrials_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL, 0, EACH_SCI)
+	wv[%rerunTrials_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL, 1, EACH_SCI)
 
-	WAVE/Z headstagePass_HS0 = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
-	WAVE/Z headstagePass_HS1 = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	wv[%rerunTrialsExceeded_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL_EXC, 0, EACH_SCI)
+	wv[%rerunTrialsExceeded_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL_EXC, 1, EACH_SCI)
 
-	WAVE/Z stimScale_HS0 = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
-	WAVE/Z stimScale_HS1 = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)
+	wv[%headstagePass_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	wv[%headstagePass_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 
+	wv[%stimScale_HS0] = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
+	wv[%stimScale_HS1] = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)
 
-	WAVE/T/Z failedPulses_HS0 = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_FAILED_PULSES, 0, EACH_SCI, textualEntry = 1)
-	WAVE/T/Z failedPulses_HS1 = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_FAILED_PULSES, 1, EACH_SCI, textualEntry = 1)
+	wv[%failedPulses_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_FAILED_PULSES, 0, EACH_SCI, textualEntry = 1)
+	wv[%failedPulses_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_FAILED_PULSES, 1, EACH_SCI, textualEntry = 1)
+
+	return wv
 End
 
 static Function MSQ_SC1_IGNORE(device)
@@ -217,32 +230,29 @@ static Function MSQ_SC1_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 3)
 
-	WAVE/Z setPass, sweepPass, headstagePass_HS0, headstagePass_HS1, setSweepCount_HS0, setSweepCount_HS1, setSweepCount_HS0, setSweepCount_HS1
-	WAVE/Z rerunTrials_HS0, rerunTrials_HS1, rerunTrialsExceeded_HS0, rerunTrialsExceeded_HS1, stimScale_HS0, stimScale_HS1
-	WAVE/T/Z failedPulses_HS0, failedPulses_HS1
-	[setPass, sweepPass, headstagePass_HS0, headstagePass_HS1, setSweepCount_HS0, setSweepCount_HS1, rerunTrials_HS0, rerunTrials_HS1, rerunTrialsExceeded_HS0, rerunTrialsExceeded_HS1, stimScale_HS0, stimScale_HS1, failedPulses_HS0, failedPulses_HS1] = GetLBNEntries_IGNORE(str, sweepNo)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	CHECK_EQUAL_WAVES(setPass, {0}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 0, 0}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(headstagePass_HS0, {0, 0, 0, 0}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(headstagePass_HS1, {0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%headstagePass_HS0], {0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%headstagePass_HS1], {0, 0, 0, 0}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(setSweepCount_HS0, {0, 0, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(setSweepCount_HS1, {0, 0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS0], {0, 0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS1], {0, 0, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(rerunTrials_HS0, {0, 1, 0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(rerunTrials_HS1, {0, 1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrials_HS0], {0, 1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrials_HS1], {0, 1, 0, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(rerunTrialsExceeded_HS0, {0, 1, NaN, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(rerunTrialsExceeded_HS1, {0, 1, NaN, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrialsExceeded_HS0], {0, 1, NaN, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrialsExceeded_HS1], {0, 1, NaN, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(stimScale_HS0, {1, 2.5, 4, 5.5}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(stimScale_HS1, {1, 2.5, 4, 5.5}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 2.5, 4, 5.5}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 2.5, 4, 5.5}, mode = WAVE_DATA)
 
 	// our failed pulses are from region 0 and 1, but we only count diagonal pulses
-	CHECK_EQUAL_TEXTWAVES(failedPulses_HS0, {"P0_R0;", "P0_R0;", "P0_R0;", "P0_R0;"}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(failedPulses_HS1, {"P0_R1;", "P0_R1;", "P0_R1;", "P0_R1;"}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%failedPulses_HS0], {"P0_R0;", "P0_R0;", "P0_R0;", "P0_R0;"}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%failedPulses_HS1], {"P0_R1;", "P0_R1;", "P0_R1;", "P0_R1;"}, mode = WAVE_DATA)
 
 	CheckDashboard(str, {0, 0})
 End
@@ -280,31 +290,28 @@ static Function MSQ_SC2_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 1)
 
-	WAVE/Z setPass, sweepPass, headstagePass_HS0, headstagePass_HS1, setSweepCount_HS0, setSweepCount_HS1, setSweepCount_HS0, setSweepCount_HS1
-	WAVE/Z rerunTrials_HS0, rerunTrials_HS1, rerunTrialsExceeded_HS0, rerunTrialsExceeded_HS1, stimScale_HS0, stimScale_HS1
-	WAVE/T/Z failedPulses_HS0, failedPulses_HS1
-	[setPass, sweepPass, headstagePass_HS0, headstagePass_HS1, setSweepCount_HS0, setSweepCount_HS1, rerunTrials_HS0, rerunTrials_HS1, rerunTrialsExceeded_HS0, rerunTrialsExceeded_HS1, stimScale_HS0, stimScale_HS1, failedPulses_HS0, failedPulses_HS1] = GetLBNEntries_IGNORE(str, sweepNo)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	CHECK_EQUAL_WAVES(setPass, {1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(sweepPass, {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(headstagePass_HS0, {1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(headstagePass_HS1, {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%headstagePass_HS0], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%headstagePass_HS1], {1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(setSweepCount_HS0, {0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(setSweepCount_HS1, {0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS0], {0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS1], {0, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(rerunTrials_HS0, {0, 0}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(rerunTrials_HS1, {0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrials_HS0], {0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrials_HS1], {0, 0}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(rerunTrialsExceeded_HS0, {0, NaN}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(rerunTrialsExceeded_HS1, {0, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrialsExceeded_HS0], {0, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrialsExceeded_HS1], {0, NaN}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(stimScale_HS0, {1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(stimScale_HS1, {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 1}, mode = WAVE_DATA)
 
-	CHECK_WAVE(failedPulses_HS0, NULL_WAVE)
-	CHECK_WAVE(failedPulses_HS1, NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%failedPulses_HS0], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%failedPulses_HS1], NULL_WAVE)
 
 	CheckDashboard(str, {1, 1})
 End
@@ -354,33 +361,30 @@ static Function MSQ_SC3_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 2)
 
-	WAVE/Z setPass, sweepPass, headstagePass_HS0, headstagePass_HS1, setSweepCount_HS0, setSweepCount_HS1, setSweepCount_HS0, setSweepCount_HS1
-	WAVE/Z rerunTrials_HS0, rerunTrials_HS1, rerunTrialsExceeded_HS0, rerunTrialsExceeded_HS1, stimScale_HS0, stimScale_HS1
-	WAVE/T/Z failedPulses_HS0, failedPulses_HS1
-	[setPass, sweepPass, headstagePass_HS0, headstagePass_HS1, setSweepCount_HS0, setSweepCount_HS1, rerunTrials_HS0, rerunTrials_HS1, rerunTrialsExceeded_HS0, rerunTrialsExceeded_HS1, stimScale_HS0, stimScale_HS1, failedPulses_HS0, failedPulses_HS1] = GetLBNEntries_IGNORE(str, sweepNo)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	CHECK_EQUAL_WAVES(setPass, {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(sweepPass, {1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 0, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(headstagePass_HS0, {1, 0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(headstagePass_HS1, {1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%headstagePass_HS0], {1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%headstagePass_HS1], {1, 0, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(setSweepCount_HS0, {0, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(setSweepCount_HS1, {0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS0], {0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS1], {0, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(rerunTrials_HS0, {0, 0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(rerunTrials_HS1, {0, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrials_HS0], {0, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrials_HS1], {0, 0, 1}, mode = WAVE_DATA)
 
 	// the last one is 0 because of PRE_SET_EVENT called multiple times
-	CHECK_EQUAL_WAVES(rerunTrialsExceeded_HS0, {0, NaN, 0}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(rerunTrialsExceeded_HS1, {0, NaN, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrialsExceeded_HS0], {0, NaN, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrialsExceeded_HS1], {0, NaN, 0}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(stimScale_HS0, {1, 1, 2}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(stimScale_HS1, {1, 1, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 1, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 1, 2}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_TEXTWAVES(failedPulses_HS0, {"", "P4_R0;P5_R0;", ""}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(failedPulses_HS1, {"", "P4_R1;P5_R1;", ""}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%failedPulses_HS0], {"", "P4_R0;P5_R0;", ""}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%failedPulses_HS1], {"", "P4_R1;P5_R1;", ""}, mode = WAVE_DATA)
 
 	CheckDashboard(str, {1, 1})
 End
@@ -432,33 +436,30 @@ static Function MSQ_SC4_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 2)
 
-	WAVE/Z setPass, sweepPass, headstagePass_HS0, headstagePass_HS1, setSweepCount_HS0, setSweepCount_HS1, setSweepCount_HS0, setSweepCount_HS1
-	WAVE/Z rerunTrials_HS0, rerunTrials_HS1, rerunTrialsExceeded_HS0, rerunTrialsExceeded_HS1, stimScale_HS0, stimScale_HS1
-	WAVE/T/Z failedPulses_HS0, failedPulses_HS1
-	[setPass, sweepPass, headstagePass_HS0, headstagePass_HS1, setSweepCount_HS0, setSweepCount_HS1, rerunTrials_HS0, rerunTrials_HS1, rerunTrialsExceeded_HS0, rerunTrialsExceeded_HS1, stimScale_HS0, stimScale_HS1, failedPulses_HS0, failedPulses_HS1] = GetLBNEntries_IGNORE(str, sweepNo)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	CHECK_EQUAL_WAVES(setPass, {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(sweepPass, {0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(headstagePass_HS0, {0, 1, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(headstagePass_HS1, {1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%headstagePass_HS0], {0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%headstagePass_HS1], {1, 0, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(setSweepCount_HS0, {0, 0, 1}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(setSweepCount_HS1, {0, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS0], {0, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS1], {0, 0, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(rerunTrials_HS0, {0, 1, 0}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(rerunTrials_HS1, {0, 1, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrials_HS0], {0, 1, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrials_HS1], {0, 1, 0}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(rerunTrialsExceeded_HS0, {0, NaN, NaN}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(rerunTrialsExceeded_HS1, {0, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrialsExceeded_HS0], {0, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrialsExceeded_HS1], {0, NaN, NaN}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(stimScale_HS0, {1, 2, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 2, 2}, mode = WAVE_DATA)
 	// 1 for the third sweep, because the second sweep passed
-	CHECK_EQUAL_WAVES(stimScale_HS1, {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 1, 1}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_TEXTWAVES(failedPulses_HS0, {"P3_R0;", "", ""}, mode = WAVE_DATA)
-	CHECK_EQUAL_TEXTWAVES(failedPulses_HS1, {"", "P4_R1;P5_R1;", ""}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%failedPulses_HS0], {"P3_R0;", "", ""}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%failedPulses_HS1], {"", "P4_R1;P5_R1;", ""}, mode = WAVE_DATA)
 
 	CheckDashboard(str, {1, 1})
 End
