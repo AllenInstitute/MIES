@@ -3140,9 +3140,9 @@ Function/Wave MakeWaveFree(wv)
 	return wv
 End
 
-/// @brief Sets the dimensionlabes of a wave
+/// @brief Sets the dimension labels of a wave
 ///
-/// @param wv       Wave to add dimLables
+/// @param wv       Wave to add dim labels
 /// @param list     List of dimension labels, semicolon separated.
 /// @param dim      Wave dimension, see, @ref WaveDimensions
 /// @param startPos [optional, defaults to 0] First dimLabel index
@@ -3154,17 +3154,17 @@ threadsafe Function SetWaveDimLabel(wv, list, dim, [startPos])
 
 	string labelName
 	variable i
-	variable dimlabelCount = itemsinlist(list)
+	variable dimlabelCount = ItemsInlist(list)
 
-	if(paramIsDefault(startPos))
+	if(ParamIsDefault(startPos))
 		startPos = 0
 	endif
 
 	ASSERT_TS(startPos >= 0, "Illegal negative startPos")
-	ASSERT_TS(dimlabelCount <= dimsize(wv, dim) + startPos, "Dimension label count exceeds dimension size")
+	ASSERT_TS(dimlabelCount <= DimSize(wv, dim) + startPos, "Dimension label count exceeds dimension size")
 	for(i = 0; i < dimlabelCount;i += 1)
-		labelName = stringfromlist(i, list)
-		setDimLabel dim, i + startPos, $labelName, Wv
+		labelName = StringFromList(i, list)
+		SetDimLabel dim, i + startPos, $labelName, Wv
 	endfor
 End
 
