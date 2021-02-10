@@ -3146,7 +3146,7 @@ End
 /// @param list     List of dimension labels, semicolon separated.
 /// @param dim      Wave dimension, see, @ref WaveDimensions
 /// @param startPos [optional, defaults to 0] First dimLabel index
-threadsafe Function SetWaveDimLabel(wv, list, dim, [startPos])
+threadsafe Function SetDimensionLabels(wv, list, dim, [startPos])
 	WAVE wv
 	string list
 	variable dim
@@ -4567,10 +4567,10 @@ threadsafe Function/WAVE FindLevelWrapper(WAVE data, variable level, variable ed
 	switch(mode)
 		case FINDLEVEL_MODE_SINGLE:
 			Make/D/FREE/N=(DimSize(resultSingle, ROWS)) numMaxLevels = 1
-			SetWaveDimLabel(resultSingle, NumericWaveToList(numMaxLevels, ";"), ROWS)
+			SetDimensionLabels(resultSingle, NumericWaveToList(numMaxLevels, ";"), ROWS)
 			return resultSingle
 		case FINDLEVEL_MODE_MULTI:
-			SetWaveDimLabel(resultMulti, NumericWaveToList(numMaxLevels, ";"), ROWS)
+			SetDimensionLabels(resultMulti, NumericWaveToList(numMaxLevels, ";"), ROWS)
 
 			// avoid single column waves
 			if(DimSize(resultMulti, COLS) == 1)

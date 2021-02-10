@@ -5276,7 +5276,7 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	SetDimLabel COLS, 16, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX), wv
 	SetDimLabel COLS, 17, HSMode_delayed, wv
 
-	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_NUM)
+	SetDimensionLabels(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_NUM)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
 	DAG_RecordGuiStateNum(panelTitle, GuiState = wv)
@@ -5335,7 +5335,7 @@ Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
 	SetDimLabel COLS,  8, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE), wv
 	SetDimLabel COLS,  9, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT), wv
 
-	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_TXT)
+	SetDimensionLabels(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_TXT)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
 	DAG_RecordGuiStateTxT(panelTitle, Guistate = wv)
@@ -6003,7 +6003,7 @@ Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
 		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 3) dfr:$newName/Wave=wv
 	endif
 
-	SetWaveDimLabel(wv, "Stimset;TTLStimset;StimsetAndClampMode", LAYERS)
+	SetDimensionLabels(wv, "Stimset;TTLStimset;StimsetAndClampMode", LAYERS)
 	SetNumberInWaveNote(wv, "NeedsUpdate", 1)
 	SetWaveVersion(wv, versionOfNewWave)
 
