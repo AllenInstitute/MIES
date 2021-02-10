@@ -1546,28 +1546,6 @@ Function/S RemovePrefix(str, [startStr])
 	return 	str[strlen(startStr), length - 1]
 End
 
-/// @brief Set column dimension labels from the first row of the key wave
-///
-/// Specialized function from the experiment documentation file needed also in other places.
-Function SetDimensionLabels(keys, values)
-	Wave/T keys
-	Wave values
-
-	variable i, numCols
-	string text
-
-	numCols = DimSize(values, COLS)
-	ASSERT(DimSize(keys, COLS) == numCols, "Mismatched column sizes")
-	ASSERT(DimSize(keys, ROWS) > 0 , "Expected at least one row in the key wave")
-
-	for(i = 0; i < numCols; i += 1)
-		text = keys[0][i]
-		text = text[0,MAX_OBJECT_NAME_LENGTH_IN_BYTES - 1]
-		ASSERT(!isEmpty(text), "Empty key")
-		SetDimLabel COLS, i, $text, keys, values
-	endfor
-End
-
 /// @brief Returns a unique and non-existing file or folder name
 ///
 /// @warning This function must *not* be used for security relevant purposes,

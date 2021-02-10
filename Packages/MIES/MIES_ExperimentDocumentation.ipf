@@ -84,7 +84,7 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 
 	SetNumberInWaveNote(textualValues, NOTE_INDEX, rowIndex + 1)
 
-	SetDimensionLabels(textualKeys, textualValues)
+	LBN_SetDimensionLabels(textualKeys, textualValues)
 End
 
 /// @brief Add numerical entries to the labnotebook
@@ -136,7 +136,7 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 
 	SetNumberInWaveNote(numericalValues, NOTE_INDEX, rowIndex + 1)
 
-	SetDimensionLabels(numericalKeys, numericalValues)
+	LBN_SetDimensionLabels(numericalKeys, numericalValues)
 End
 
 /// @brief Add custom entries to the numerical/textual labnotebook for the very last sweep acquired.

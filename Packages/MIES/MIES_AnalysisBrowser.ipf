@@ -1005,12 +1005,12 @@ static Function AB_updateLabelsInLabNotebook(dfr)
 
 	str = GetDimLabel(textualValues, COLS, 0)
 	if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
-		SetDimensionLabels(textualKeys, textualValues)
+		LBN_SetDimensionLabels(textualKeys, textualValues)
 	endif
 
 	str = GetDimLabel(numericalKeys, COLS, 0)
 	if(isEmpty(str) || !cmpstr(str, "dimLabelText"))
-		SetDimensionLabels(numericalKeys, numericalValues)
+		LBN_SetDimensionLabels(numericalKeys, numericalValues)
 	endif
 
 	return 1

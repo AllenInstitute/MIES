@@ -185,6 +185,7 @@ End
 #include "MIES_IgorHooks"
 #include "MIES_Indexing"
 #include "MIES_IVSCC"
+#include "MIES_Labnotebook"
 #include "MIES_Menu"
 #include "MIES_MiesUtilities"
 #include "MIES_NeuroDataWithoutBorders"
