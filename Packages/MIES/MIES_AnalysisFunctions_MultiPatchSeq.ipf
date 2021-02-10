@@ -1883,7 +1883,9 @@ static Function MSQ_SkipsExhausted(variable minTrials, string params)
 End
 
 Function/S MSQ_SpikeControl_GetParams()
-	return "[FailedPulseLevel:variable],[MaxTrials:variable],DAScaleOperator:string,DAScaleModifier:variable"
+	return "[FailedPulseLevel:variable],[MaxTrials:variable],DAScaleOperator:string,DAScaleModifier:variable,"             \
+            + "DAScaleSpikePositionOperator:variable,DAScaleSpikePositionModifier:variable,MinimumSpikePosition:variable," \
+            + "[IdealNumberOfSpikesPerPulse:variable],AutoBiasBaselineModifier:variable"
 End
 
 Function/S MSQ_SpikeControl_GetHelp(name)
@@ -1897,11 +1899,27 @@ Function/S MSQ_SpikeControl_GetHelp(name)
 			return "[Optional, defaults to infinity] A sweep is rerun this many times on a failed headstage."
 			break
 		case "DAScaleOperator":
-			return "Set the math operator to use for combining the DAScale and the "          \
-			       + "offset. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
+			return "Set the math operator to use for combining the DAScale and the "            \
+			       + "modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 			break
 		case "DAScaleModifier":
-			return "Offset value to the DA Scale of headstages with failed pulses"
+			return "Modifier value to the DA Scale of headstages with failed pulses"
+			break
+		case "DAScaleSpikePositionOperator":
+			return "Set the math operator to use for combining the DAScale and the "                           \
+			       + "spike position modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
+			break
+		case "DAScaleSpikePositionModifier":
+			return "Modifier value to the DA Scale of headstages with failing spike positions."
+			break
+		case "MinimumSpikePosition":
+			return "Minimum allowed spike positions in pulse active coordinate system (0 - 100)."
+			break
+		case "IdealNumberOfSpikesPerPulse":
+			return "[Optional, uses the already set value] Ideal number of spike which should be present. Overwrites the PA plot GUI value."
+			break
+		case "AutoBiasBaselineModifier":
+			return "Auto bias modifier value in mV on failing baseline QC."
 			break
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
@@ -1928,14 +1946,34 @@ Function/S MSQ_SpikeControl_CheckParam(string name, string params)
 			endif
 			break
 		case "DAScaleOperator":
+		case "DAScaleSpikePositionOperator":
 			str = AFH_GetAnalysisParamTextual(name, params)
 			if(cmpstr(str, "+") && cmpstr(str, "*"))
 				return "Invalid string " + str
 			endif
 			break
 		case "DAScaleModifier":
+		case "DAScaleSpikePositionModifier":
 			val = AFH_GetAnalysisParamNumerical(name, params)
 			if(!IsFinite(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "MinimumSpikePosition":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val) || !(val >= 0 && val <= 100))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "IdealNumberOfSpikesPerPulse":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val) || val <= 0)
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "AutoBiasBaselineModifier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val) || abs(val) >= 1000)
 				return "Invalid value " + num2str(val)
 			endif
 			break
