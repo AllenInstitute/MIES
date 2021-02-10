@@ -1921,6 +1921,41 @@ End
 /// .. image:: /dot/multi-patch-seq-spike-control.svg
 /// \endrst
 ///
+/// For judging the quality of the spike positions we have introduced a new coordinate system which
+/// we call pulse active coordinate system (`PA crd`).
+///
+/// Consider the following pulse on the DA wave and the response spike in the AD wave
+///
+/// @verbatim
+///
+///        +---------+
+///        |         |
+///        |         |
+///        |         |
+///        |         |
+///        |         |
+///        |         |
+/// -------+         +----------------------
+///
+///                   X
+///                  XXX
+///                 X   XX
+///                X      XX
+///               X         X
+///              X           X
+///             X             X
+///            X               X
+///           X                X
+///          X                  X
+///         X                   X
+/// -------X                    X--------
+///
+/// @endverbatim
+///
+/// and the let pulse active start at 5ms and end at 15ms. We define the start as 0 and the end as 100.
+/// Therefore the spike position will be 110 in `PA crd` which is one point after the end of the pulse.
+///
+/// The graphs were made with http://asciiflow.com.
 Function MSQ_SpikeControl(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
