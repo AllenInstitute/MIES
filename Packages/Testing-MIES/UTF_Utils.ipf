@@ -4596,3 +4596,62 @@ Function IO_FalseWithNonFiniteValues([variable var])
 End
 
 /// @}
+
+/// RemovePrefix
+/// @{
+
+Function RP_Works()
+
+	string ref, str
+
+	str = RemovePrefix("")
+	CHECK_EMPTY_STR(str)
+
+	str = RemovePrefix("abcd")
+	ref = "bcd"
+	CHECK_EQUAL_STR(ref, str)
+
+	str = RemovePrefix("abcd", startStr = "ab")
+	ref = "cd"
+	CHECK_EQUAL_STR(ref, str)
+
+	// no match, wrong
+	str = RemovePrefix("abcd", startStr = "123")
+	ref = "abcd"
+	CHECK_EQUAL_STR(ref, str)
+
+	// no match, too long
+	str = RemovePrefix("abcd", startStr = "abcde")
+	ref = "abcd"
+	CHECK_EQUAL_STR(ref, str)
+End
+
+/// @}
+
+/// RemovePrefixFromListItem
+/// @{
+
+Function RPFLI_Works()
+
+	string ref, str
+
+	// empty list
+	str = RemovePrefixFromListItem("abcd", "")
+	CHECK_EMPTY_STR(str)
+
+	// empty prefix
+	str = RemovePrefixFromListItem("", "abcd")
+	ref = "abcd;"
+	CHECK_EQUAL_STR(ref, str)
+
+	// works
+	str = RemovePrefixFromListItem("a", "aa;ab")
+	ref = "a;b;"
+	CHECK_EQUAL_STR(ref, str)
+
+	// works with custom list sep
+	str = RemovePrefixFromListItem("a", "aa|ab", listSep = "|")
+	ref = "a|b|"
+	CHECK_EQUAL_STR(ref, str)
+End
+/// @}
