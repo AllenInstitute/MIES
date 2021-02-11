@@ -114,6 +114,7 @@ static Function TestEpochsMonotony(e, DAChannel)
 	WAVE DAChannel
 
 	variable i, epochCnt, rowCnt, beginInt, endInt, epochNr, dur, amplitude, center, DAAmp
+	variable first, last
 	string s
 
 	rowCnt = DimSize(e, ROWS)
@@ -194,9 +195,12 @@ static Function TestEpochsMonotony(e, DAChannel)
 
 	// check amplitudes
 	for(i = 0; i < epochCnt; i += 1)
+		first = startT[i] * 1000
+		last  = endT[i] * 1000
+
 		amplitude = NumberByKey("Amplitude", e[i][2], "=")
 		if(numtype(amplitude) != 2)
-			WaveStats/R=(startT[i] * 1000, endT[i] * 1000)/Q/M=1 DAChannel
+			WaveStats/R=(first, last)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_max, amplitude)
 		endif
 	endfor
