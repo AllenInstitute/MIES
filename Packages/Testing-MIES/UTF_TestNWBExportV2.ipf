@@ -321,7 +321,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	if(!cmpstr(headstageDesc, "PLACEHOLDER"))
 		headstage = NaN
 	else
-		headstage = str2num(RemovePrefix(headstageDesc, startStr="Headstage "))
+		headstage = str2num(RemovePrefix(headstageDesc, start = "Headstage "))
 		REQUIRE(headstage >= 0 && headstage < NUM_HEADSTAGES)
 	endif
 

@@ -1517,19 +1517,28 @@ Function/S UniqueWaveName(dfr, baseName)
 	return ""
 End
 
-/// @brief Remove str with the first character removed, or
-/// if given with startStr removed
+/// @brief Remove a prefix from a string
 ///
-/// Same semantics as the RemoveEnding builtin
-Function/S RemovePrefix(str, [startStr])
-	string str, startStr
+/// Same semantics as the RemoveEnding builtin for regExp == 0.
+///
+/// @param str    string to potentially remove something from its beginning
+/// @param start  [optional, defaults to the first character] Remove this from
+///               the begin pf str
+/// @param regExp [optional, defaults to false] If start is a simple string (false)
+///               or a regular expression (true)
+Function/S RemovePrefix(string str, [string start, variable regExp])
+	variable length, pos, skipLength, err
+	string regExpResult
 
-	variable length, pos
+	if(ParamIsDefault(regExp))
+		regExp = 0
+	else
+		regExp = !!regExp
+	endif
 
 	length = strlen(str)
 
-	if(ParamIsDefault(startStr))
-
+	if(ParamIsDefault(start))
 		if(length <= 0)
 			return str
 		endif
@@ -1537,13 +1546,25 @@ Function/S RemovePrefix(str, [startStr])
 		return str[1, length - 1]
 	endif
 
-	pos = strsearch(str, startStr, 0)
+	if(regExp)
+		SplitString/E="^(" + start + ")" str, regExpResult; err = GetRTError(1)
 
-	if(pos != 0)
-		return str
+		if(V_flag == 1 && err == 0)
+			skipLength = strlen(regExpResult)
+		else
+			return str
+		endif
+	else
+		pos = strsearch(str, start, 0)
+
+		if(pos != 0)
+			return str
+		endif
+
+		skipLength = strlen(start)
 	endif
 
-	return 	str[strlen(startStr), length - 1]
+	return str[skipLength, length - 1]
 End
 
 /// @brief Returns a unique and non-existing file or folder name
@@ -2390,22 +2411,25 @@ End
 
 /// @brief Remove a string prefix from each list item and
 ///        return the new list
-Function/S RemovePrefixFromListItem(prefix, list, [listSep])
-	string prefix, list
-	string listSep
+Function/S RemovePrefixFromListItem(string prefix, string list, [string listSep, variable regExp])
+	string result, entry
+	variable numEntries, i
 
 	if(ParamIsDefault(listSep))
 		listSep = ";"
 	endif
 
-	string result, entry
-	variable numEntries, i
+	if(ParamIsDefault(regExp))
+		regExp = 0
+	else
+		regExp = !!regExp
+	endif
 
 	result = ""
 	numEntries = ItemsInList(list, listSep)
 	for(i = 0; i < numEntries; i += 1)
 		entry = StringFromList(i, list, listSep)
-		result = AddListItem(RemovePrefix(entry, startStr = prefix), result, listSep, inf)
+		result = AddListItem(RemovePrefix(entry, start = prefix, regExp = regExp), result, listSep, inf)
 	endfor
 
 	return result

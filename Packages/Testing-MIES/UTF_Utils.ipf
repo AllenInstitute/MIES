@@ -4611,17 +4611,32 @@ Function RP_Works()
 	ref = "bcd"
 	CHECK_EQUAL_STR(ref, str)
 
-	str = RemovePrefix("abcd", startStr = "ab")
+	str = RemovePrefix("abcd", start = "ab")
 	ref = "cd"
 	CHECK_EQUAL_STR(ref, str)
 
 	// no match, wrong
-	str = RemovePrefix("abcd", startStr = "123")
+	str = RemovePrefix("abcd", start = "123")
 	ref = "abcd"
 	CHECK_EQUAL_STR(ref, str)
 
 	// no match, too long
-	str = RemovePrefix("abcd", startStr = "abcde")
+	str = RemovePrefix("abcd", start = "abcde")
+	ref = "abcd"
+	CHECK_EQUAL_STR(ref, str)
+
+	// regexp
+	str = RemovePrefix("abcd123", start = "[a-z]*", regexp = 1)
+	ref = "123"
+	CHECK_EQUAL_STR(ref, str)
+
+	// regexp, no match
+	str = RemovePrefix("abcd", start = "[0-9]*", regexp = 1)
+	ref = "abcd"
+	CHECK_EQUAL_STR(ref, str)
+
+	// invalid regexp
+	str = RemovePrefix("abcd", start = "[::I_DONT_EXIST::]*", regexp = 1)
 	ref = "abcd"
 	CHECK_EQUAL_STR(ref, str)
 End
@@ -4652,6 +4667,11 @@ Function RPFLI_Works()
 	// works with custom list sep
 	str = RemovePrefixFromListItem("a", "aa|ab", listSep = "|")
 	ref = "a|b|"
+	CHECK_EQUAL_STR(ref, str)
+
+	// regexp works
+	str = RemovePrefixFromListItem("[a-z]*", "a12;bcdf45", regExp = 1)
+	ref = "12;45;"
 	CHECK_EQUAL_STR(ref, str)
 End
 /// @}

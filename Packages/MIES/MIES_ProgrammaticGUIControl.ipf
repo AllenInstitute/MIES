@@ -83,8 +83,8 @@ static Function [string value, variable type] PGC_ParsePopupMenuValue(string rec
 	listOrFunc = ReplaceString("\\\"", listOrFunc, "\"")
 
 	// misc cleanup
-	listOrFunc = RemovePrefix(listOrFunc, startStr="#")
-	listOrFunc = RemovePrefix(listOrFunc, startStr="\"")
+	listOrFunc = RemovePrefix(listOrFunc, start = "#")
+	listOrFunc = RemovePrefix(listOrFunc, start = "\"")
 	listOrFunc = RemoveEnding(listOrFunc, "\"")
 
 	SplitString/E="^\"\*([A-Z]{1,})\*\"$" listOrFunc, builtinPopupMenu

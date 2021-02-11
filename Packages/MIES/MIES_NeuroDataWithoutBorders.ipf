@@ -1114,7 +1114,7 @@ static Function NWB_WriteStimsetCustomWave(nwbVersion, locationID, custom_wave, 
 	// build path for NWB file
 	pathInNWB = GetWavesDataFolder(custom_wave, 1)
 	pathInNWB = RemoveEnding(pathInNWB, ":")
-	pathInNWB = RemovePrefix(pathInNWB, startStr = "root")
+	pathInNWB = RemovePrefix(pathInNWB, start = "root")
 	pathInNWB = ReplaceString(":", pathInNWB, "/")
 	pathInNWB = "/general/stimsets/referenced" + pathInNWB
 
@@ -1316,7 +1316,7 @@ Function NWB_LoadCustomWave(locationID, fullPath, overwrite)
 		endif
 	endif
 
-	pathInNWB = RemovePrefix(fullPath, startStr = "root:")
+	pathInNWB = RemovePrefix(fullPath, start = "root:")
 	pathInNWB = ReplaceString(":", pathInNWB, "/")
 	pathInNWB = "/general/stimsets/referenced/" + pathInNWB
 

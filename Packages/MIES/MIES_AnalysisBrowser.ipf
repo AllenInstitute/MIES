@@ -86,7 +86,7 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 	map[index][%DiscLocation] = discLocation
 
 	// %FileName = filename + extension
-	relativePath = RemovePrefix(discLocation, startStr=baseFolder)
+	relativePath = RemovePrefix(discLocation, start = baseFolder)
 	map[index][%FileName] = relativePath
 
 	extension = "." + GetFileSuffix(discLocation)
@@ -107,7 +107,7 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 	// %DataFolder = igor friendly DF name
 	DFREF dfr = GetAnalysisFolder()
 	DFREF expFolder = UniqueDataFolder(dfr, RemoveEnding(relativePath, extension))
-	dataFolder = RemovePrefix(GetDataFolder(1, expFolder), startStr=GetDataFolder(1, dfr))
+	dataFolder = RemovePrefix(GetDataFolder(1, expFolder), start = GetDataFolder(1, dfr))
 	map[index][%DataFolder] = RemoveEnding(dataFolder, ":")
 
 	index += 1
@@ -2106,7 +2106,7 @@ static Function AB_LoadWave(expFilePath, fullPath, overwrite)
 	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
 
 	dataFolder = GetFolder(fullPath)
-	loadList = AddListItem(RemovePrefix(fullPath, startStr = dataFolder), loadList)
+	loadList = AddListItem(RemovePrefix(fullPath, start = dataFolder), loadList)
 	if(isEmpty(dataFolder))
 		dataFolder = "root:"
 	endif

@@ -1721,7 +1721,7 @@ Function/S GetAllDevices()
 			numDevices = ItemsInList(subFolders)
 			for(j = 0; j < numDevices ; j += 1)
 				subFolder = StringFromList(j, subFolders)
-				number = RemovePrefix(subFolder, startStr = "Device")
+				number = RemovePrefix(subFolder, start = "Device")
 				device = BuildDeviceString(folder, number)
 				path   = GetDevicePathAsString(device)
 
@@ -4177,7 +4177,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageD
 				k += 1
 			endif
 		elseif(StringMatch(axis, VERT_AXIS_BASE_NAME + "*"))
-			averageWaveName = "average" + RemovePrefix(axis, startStr=VERT_AXIS_BASE_NAME)
+			averageWaveName = "average" + RemovePrefix(axis, start = VERT_AXIS_BASE_NAME)
 		else
 			sprintf averageWaveName, "average_%d", k
 			k += 1
