@@ -6716,13 +6716,9 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 
 	endRow = numRows - 1
 	MatrixOp/Free result = replace(maxCols(subRange(matches, startRow, endRow, startLayer, endLayer)^t)^t, -1, NaN)
-	WaveTransform/O zapNaNs, result
 
-	if(DimSize(result, ROWS) == 0)
-		return $""
-	endif
-
-	return result
+	WAVE/Z reduced = ZapNaNs(result)
+	return reduced
 End
 
 /// @brief Searches the column colLabel in wv for an non-empty

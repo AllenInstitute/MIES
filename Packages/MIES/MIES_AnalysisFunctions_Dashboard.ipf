@@ -239,12 +239,12 @@ static Function AD_FillWaves(panelTitle, list, info)
 					WAVE sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 					ASSERT(DimSize(sweeps, ROWS) == DimSize(sweepPass, ROWS), "Unexpected wave sizes")
 
-					Duplicate/FREE sweeps, passingSweeps, failingSweeps
-					passingSweeps[] = sweepPass[p]  ? sweeps[p] : NaN
-					failingSweeps[] = !sweepPass[p] ? sweeps[p] : NaN
+					Duplicate/FREE sweeps, passingSweepsAll, failingSweepsAll
+					passingSweepsAll[] = sweepPass[p]  ? sweeps[p] : NaN
+					failingSweepsAll[] = !sweepPass[p] ? sweeps[p] : NaN
 
-					WaveTransform/O zapNaNs, passingSweeps
-					WaveTransform/O zapNaNs, failingSweeps
+					WAVE/Z passingSweeps = ZapNaNs(passingSweepsAll)
+					WAVE/Z fallingSweeps = ZapNaNs(failingSweepsAll)
 
 					break
 				case PSQ_RHEOBASE:
@@ -260,7 +260,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 						Duplicate/FREE/R=[0, firstValid - 1] sweeps, failingSweeps
 					else
 						Duplicate/FREE sweeps, failingSweeps
-						Make/FREE/N=0 passingSweeps
+						WAVE/Z passingSweeps
 					endif
 					break
 				default:
@@ -303,8 +303,8 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 	// ~THOMASB/mies-igor:feature/larger-fifo-for-NI to master, 2019-02-09)
 	// this labnotebook key does not exist
 	if(WaveExists(spikeWithDAScaleZero))
-		WaveTransform/O zapNaNs, spikeWithDAScaleZero
-		if(DimSize(spikeWithDAScaleZero, ROWS) == 3)
+		WAVE spikeWithDAScaleZeroReduced = ZapNaNs(spikeWithDAScaleZero)
+		if(DimSize(spikeWithDAScaleZeroReduced, ROWS) == 3)
 			return "Failure as we did had three spikes with a DAScale of 0.0pA."
 		endif
 	endif

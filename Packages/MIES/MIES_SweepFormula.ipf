@@ -1300,8 +1300,8 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 	// ASSERT if sweeps are from different experiments
 	Duplicate/FREE indices wv
 	Redimension/N=(numpnts(wv))/E=1 wv
-	WaveTransform zapNaNs, wv
-	if(DimSize(wv, ROWS) == 0)
+	WAVE/z wvReduced = ZapNaNs(wv)
+	if(!WaveExists(wvReduced))
 		DebugPrint("No matching sweep.")
 		return $""
 	endif

@@ -4676,3 +4676,38 @@ Function RPFLI_Works()
 	CHECK_EQUAL_STR(ref, str)
 End
 /// @}
+
+// ZapNaNs
+/// @{
+
+Function ZN_AbortsWithInvalidWaveInput()
+
+	try
+		Make/FREE/T wv
+		ZapNaNs(wv); AbortONRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function ZN_EmptyToNull()
+
+	Make/FREE/N=0 wv
+	WAVE/Z reduced = ZapNaNs(wv)
+	CHECK_WAVE(reduced, NULL_WAVE)
+End
+
+Function ZN_AllNaNToNull()
+
+	Make/FREE/N=2 wv = {NaN, NaN}
+	WAVE/Z reduced = ZapNaNs(wv)
+	CHECK_WAVE(reduced, NULL_WAVE)
+End
+Function ZN_RemovesNaNs()
+
+	Make/FREE wv = {NaN, inf, 1}
+	WAVE/Z reduced = ZapNaNs(wv)
+	CHECK_EQUAL_WAVES(reduced, {inf, 1})
+End
+/// @}

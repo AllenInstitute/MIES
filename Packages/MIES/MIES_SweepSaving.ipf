@@ -217,14 +217,14 @@ Function SWS_DeleteDataWaves(panelTitle)
 		return NaN
 	endif
 
-	Make/FREE/N=(numItems) matches
-	MultiThread matches[] = ExtractSweepNumber(StringFromList(p, list)) >= sweepNo ? p : NaN
+	Make/FREE/N=(numItems) matchesWithNaNs
+	MultiThread matchesWithNaNs[] = ExtractSweepNumber(StringFromList(p, list)) >= sweepNo ? p : NaN
 
-	WaveTransForm/Z zapNaNs, matches
+	WAVE/Z matches = ZapNaNs(matchesWithNaNs)
 
 	DEBUGPRINT_ELAPSED(refTime)
 
-	if(DimSize(matches, ROWS) == 0)
+	if(!WaveExists(matches))
 		return NaN
 	endif
 

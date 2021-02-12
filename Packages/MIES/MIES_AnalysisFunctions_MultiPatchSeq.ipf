@@ -790,13 +790,9 @@ static Function MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, type, str,
 		return 0
 	endif
 
-	WaveTransform/O zapNaNs, values
+	WAVE/Z reduced = ZapNaNs(values)
 
-	if(DimSize(values, ROWS) == 0)
-		return 0
-	endif
-
-	return Sum(values) >= 1
+	return WaveExists(reduced) && Sum(reduced) >= 1
 End
 
 /// @brief Return the last entry for a given headstage from the full SCI.
@@ -812,7 +808,6 @@ static Function MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, type, s
 	variable headstage
 
 	string key
-	variable numEntries
 
 	key = CreateAnaFuncLBNKey(type, str, query = 1)
 	WAVE/Z values = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
@@ -821,15 +816,13 @@ static Function MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, type, s
 		return NaN
 	endif
 
-	WaveTransform/O zapNaNs, values
+	WAVE/Z reduced = ZapNans(values)
 
-	numEntries = DimSize(values, ROWS)
-
-	if(numEntries == 0)
+	if(!WaveExists(reduced))
 		return NaN
 	endif
 
-	return values[numEntries - 1]
+	return reduced[DimSize(reduced, ROWS) - 1]
 End
 
 /// @brief Return a list of required parameters for MSQ_FastRheoEst()
@@ -1220,9 +1213,9 @@ Function MSQ_FastRheoEst(panelTitle, s)
 						continue
 					endif
 
-					WAVE/Z finalDAScale = GetLastSettingEachSCI(numericalValues, s.sweepNo, key, i, UNKNOWN_MODE)
-					if(WaveExists(finalDAScale))
-						WaveTransform/O zapNans, finalDAScale
+					WAVE/Z finalDAScaleAll = GetLastSettingEachSCI(numericalValues, s.sweepNo, key, i, UNKNOWN_MODE)
+					if(WaveExists(finalDAScaleAll))
+						WAVE finalDAScale = ZapNaNs(finalDAScaleAll)
 						ASSERT(DimSize(finalDAScale, ROWS) == 1, "Unexpected finalDAScale")
 						val = max(postDAQDAScaleFactor * finalDAScale[0], minRheoOffset * 1e-12 + finalDAScale[0])
 					else
@@ -1624,13 +1617,8 @@ static Function [variable minTrials, variable maxTrials] MSQ_GetSpikeControlTria
 	key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL)
 	ED_AddEntryToLabnotebook(panelTitle, key, trialsLBN, overrideSweepNo = sweepNo)
 
-#if IgorVersion() >= 9
-	MatrixOP/O trialsLBN = zapNans(trialsLBN)
-#else
-	WaveTransform/O zapNans, trialsLBN
-#endif
-
-	[minTrials, maxTrials] = WaveMinAndMaxWrapper(trialsLBN)
+	WAVE trialsLBNReduced = ZapNaNs(trialsLBN)
+	[minTrials, maxTrials] = WaveMinAndMaxWrapper(trialsLBNReduced)
 
 	return [minTrials, maxTrials]
 End
@@ -1685,9 +1673,9 @@ static Function MSQ_GetSetSweepCount(WAVE numericalValues, variable sweepNo)
 
 	WAVE setSweepCountLBN = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
 
-	WaveTransform/O zapNans, setSweepCountLBN
-	setSweepCount = setSweepCountLBN[0]
-	ASSERT(IsConstant(setSweepCountLBN, setSweepCount), "Unexpected set sweep counts")
+	WAVE setSweepCountLBNReduced = ZapNaNs(setSweepCountLBN)
+	setSweepCount = setSweepCountLBNReduced[0]
+	ASSERT(IsConstant(setSweepCountLBNReduced, setSweepCount), "Unexpected set sweep counts")
 
 	return setSweepCount
 End
@@ -1806,11 +1794,8 @@ static Function MSQ_WriteSpikeControlLBNEntries(string panelTitle, variable swee
 			indizesFailedPulsesAll[idx++] = i
 		endfor
 
-		WaveTransform zapNans, indizesFailedPulsesAll
-
-		if(DimSize(indizesFailedPulsesAll, ROWS) == 0)
-			KillWaves/Z indizesFailedPulsesAll
-		endif
+		WAVE/Z indizesFailedPulsesAllReduced = ZapNans(indizesFailedPulsesAll)
+		WAVE/Z indizesFailedPulsesAll = indizesFailedPulsesAllReduced
 	else
 		WAVE/Z indizesFailedPulsesAll = FindIndizes(properties, colLabel = "PulseHasFailed", var = 1, endRow = endRow)
 	endif

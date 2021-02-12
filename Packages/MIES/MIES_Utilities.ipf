@@ -5266,11 +5266,13 @@ Function/WAVE ConvertToUniqueNumber(WAVE/T wv, [variable doZapNaNs, variable doS
 	Make/D/FREE/N=(DimSize(unique, ROWS)) numeric = str2num(unique[p])
 
 	if(doZapNaNs)
-		WaveTransform/O zapNaNs, numeric
-	endif
+		WAVE/Z numericReduced = ZapNaNs(numeric)
 
-	if(DimSize(numeric, ROWS) == 0)
-		return $""
+		if(!WaveExists(numericReduced))
+			return $""
+		endif
+
+		WAVE numeric = numericReduced
 	endif
 
 	if(DoSort)
@@ -5565,4 +5567,27 @@ threadsafe Function/WAVE DuplicateWaveToFree(Wave w)
 	Duplicate/FREE w, wFree
 
 	return wFree
+End
+
+/// @brief Removes all NaNs from the input wave
+Function/WAVE ZapNaNs(WAVE data)
+
+	ASSERT(IsFloatingPointWave(data), "Can only work with floating point waves")
+
+	if(DimSize(data, ROWS) == 0)
+		return $""
+	endif
+
+#if IgorVersion() >= 9
+	MatrixOP/FREE dup = zapNans(data)
+#else
+	Duplicate/FREE data, dup
+	WaveTransform/O zapNans, dup
+#endif
+
+	if(DimSize(dup, ROWS) == 0)
+		return $""
+	endif
+
+	return dup
 End
