@@ -428,14 +428,19 @@ End
 Function/S AFH_GetAnalysisFunctions(versionBitMask)
 	variable versionBitMask
 
-	string funcList, func
+	string funcList, func, list, procWin
 	string funcListClean = ""
 	variable numEntries, i, valid_f1, valid_f2, valid_f3
 
-	funcList  = FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions.ipf")
-	funcList += FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions_PatchSeq.ipf")
-	funcList += FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions_MultiPatchSeq.ipf")
-	funcList += FunctionList("*", ";", "KIND:2,WIN:UserAnalysisFunctions.ipf")
+	funcList = FunctionList("*", ";", "KIND:2,WIN:UserAnalysisFunctions.ipf")
+
+	// gather all analysis functions from these files
+	list = WinList("MIES_AnalysisFunctions*.ipf", ";", "WIN:128")
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		procWin = StringFromList(i, list)
+		funcList += FunctionList("*", ";", "KIND:2,WIN:" + procWin)
+	endfor
 
 	numEntries = ItemsInList(funcList)
 	for(i = 0; i < numEntries; i += 1)
