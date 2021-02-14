@@ -265,7 +265,9 @@ static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 	WAVE params.preload = preload
 
 #if defined(DEBUGGING_ENABLED)
-	OOD_Debugging(params)
+	if(DP_DebuggingEnabledForCaller())
+		OOD_Debugging(params)
+	endif
 #endif
 
 End
