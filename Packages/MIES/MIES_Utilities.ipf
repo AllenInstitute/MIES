@@ -206,12 +206,19 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 		print "Please provide the following information if you contact the MIES developers:"
 		print "################################"
 		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+#endif // AUTOMATED_TESTING
+
+#if !defined(AUTOMATED_TESTING) || defined(AUTOMATED_TESTING_DEBUGGING)
 
 #if IgorVersion() >= 9.0
 		print GetStackTrace()
 #else
 		print "stacktrace not available"
 #endif
+
+#endif // !AUTOMATED_TESTING || AUTOMATED_TESTING_DEBUGGING
+
+#ifndef AUTOMATED_TESTING
 
 		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
