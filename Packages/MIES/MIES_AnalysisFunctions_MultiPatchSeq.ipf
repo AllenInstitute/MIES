@@ -895,8 +895,8 @@ End
 /// - Assumes that the stimset has a square pulse
 ///
 /// Testing:
-/// For testing the spike detection logic, the results can be defined in the wave
-/// root:overrideResults. @see MSQ_CreateOverrideResults()
+/// For testing the spike detection logic, the results can be defined in the override wave,
+/// @see MSQ_CreateOverrideResults().
 ///
 /// Decision logic flowchart:
 ///
