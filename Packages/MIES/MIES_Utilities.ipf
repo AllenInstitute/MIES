@@ -2929,14 +2929,14 @@ End
 ///
 /// Counterpart @see ConvertListToTextWave
 /// @see NumericWaveToList
-Function/S TextWaveToList(txtWave, sep[, colSep, stopOnEmpty])
-	WAVE/T txtWave
-	string sep, colSep
-	variable stopOnEmpty
-
+Function/S TextWaveToList(WAVE/T/Z txtWave, string sep, [string colSep, variable stopOnEmpty])
 	string entry, colList
 	string list = ""
 	variable i, j, numRows, numCols
+
+	if(!WaveExists(txtWave))
+		return ""
+	endif
 
 	ASSERT(IsTextWave(txtWave), "Expected a text wave")
 	ASSERT(DimSize(txtWave, LAYERS) == 0, "Expected a 1D or 2D wave")
@@ -3107,11 +3107,13 @@ End
 /// @param wv     numeric wave
 /// @param sep    separator
 /// @param format [optional, defaults to `%g`] sprintf conversion specifier
-threadsafe Function/S NumericWaveToList(wv, sep, [format])
-	WAVE wv
-	string sep, format
+threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format])
 
 	string list = ""
+
+	if(!WaveExists(wv))
+		return ""
+	endif
 
 	if(ParamIsDefault(format))
 		format = "%g"
