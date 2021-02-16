@@ -770,6 +770,7 @@ Function/Wave GetUniqueEntries(wv, [caseSensitive])
 
 	FindDuplicates/RN=result wv
 
+	/// @todo this should be removed as it does not belong into this function
 	WaveTransform/O zapNaNs wv
 	WaveTransform/O zapINFs wv
 
