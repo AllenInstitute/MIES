@@ -5290,12 +5290,12 @@ Function UploadJSONPayload(jsonID)
 End
 
 /// @brief Convert a text wave to a double wave with optional support for removing NaNs and sorting
-Function/WAVE ConvertToUniqueNumber(WAVE/T wv, [variable zapNaNs, variable doSort])
+Function/WAVE ConvertToUniqueNumber(WAVE/T wv, [variable doZapNaNs, variable doSort])
 
-	if(ParamIsDefault(zapNaNs))
-		zapNaNs = 0
+	if(ParamIsDefault(doZapNaNs))
+		doZapNaNs = 0
 	else
-		zapNaNs = !!zapNaNs
+		doZapNaNs = !!doZapNaNs
 	endif
 
 	if(ParamIsDefault(doSort))
@@ -5308,7 +5308,7 @@ Function/WAVE ConvertToUniqueNumber(WAVE/T wv, [variable zapNaNs, variable doSor
 
 	Make/D/FREE/N=(DimSize(unique, ROWS)) numeric = str2num(unique[p])
 
-	if(zapNaNs)
+	if(doZapNaNs)
 		WaveTransform/O zapNaNs, numeric
 	endif
 

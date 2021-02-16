@@ -2173,7 +2173,7 @@ Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
 
 	// number of headstages
 	WAVE/T/Z headstagesNonUnique = TUD_GetUserDataAsWave(graph, "headstage")
-	WAVE/Z headstages = ConvertToUniqueNumber(headstagesNonUnique, zapNaNs = 1, doSort = 1)
+	WAVE/Z headstages = ConvertToUniqueNumber(headstagesNonUnique, doZapNaNs = 1, doSort = 1)
 
 	numBlocksHS = WaveExists(headstages) ? DimSize(headstages, ROWS) : 0
 
