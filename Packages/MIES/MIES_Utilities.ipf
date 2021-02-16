@@ -138,7 +138,13 @@ Function ASSERT(var, errorMsg)
 		print "Please provide the following information if you contact the MIES developers:"
 		print "################################"
 		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+#endif // AUTOMATED_TESTING
+
+#if !defined(AUTOMATED_TESTING) || defined(AUTOMATED_TESTING_DEBUGGING)
 		print GetStackTrace()
+#endif
+
+#ifndef AUTOMATED_TESTING
 		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
 		printf "Locked device: [%s]\r", RemoveEnding(lockedDevicesStr, ";")
