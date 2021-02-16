@@ -490,7 +490,7 @@ End
 
 /// @brief Return the number of passed sweeps in all sweeps from the given
 ///        repeated acquisition cycle.
-Function MSQ_NumPassesInSet(numericalValues, type, sweepNo, headstage)
+static Function MSQ_NumPassesInSet(numericalValues, type, sweepNo, headstage)
 	WAVE numericalValues
 	variable type, sweepNo, headstage
 
