@@ -405,7 +405,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	// BEGIN TEST
 
 	if(PSQ_TestOverrideActive())
-		WAVE/SDFR=root: overrideResults
+		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 		chunkPassed = overrideResults[chunk][count][0]
 	endif
@@ -779,7 +779,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	endif
 
 	if(PSQ_TestOverrideActive())
-		WAVE/SDFR=root: overrideResults
+		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 
 		switch(type)
@@ -2341,7 +2341,7 @@ Function PSQ_GetFinalDAScaleFake()
 
 	ASSERT(PSQ_TestOverrideActive(), "Should not be called in production.")
 
-	WAVE/Z/SDFR=root: overrideResults
+	WAVE overrideResults = GetOverrideResults()
 	ASSERT(WaveExists(overrideResults), "overrideResults wave must exist")
 
 	daScale = GetNumberFromWaveNote(overrideResults, PSQ_RB_FINALSCALE_FAKE_KEY)

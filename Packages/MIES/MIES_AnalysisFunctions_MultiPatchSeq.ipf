@@ -373,7 +373,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 
 	// BEGIN TEST
 	if(MSQ_TestOverrideActive())
-		WAVE/SDFR=root: overrideResults
+		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 		chunkPassed = overrideResults[chunk][count][0]
 	endif
@@ -668,7 +668,7 @@ static Function/WAVE MSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
 	if(MSQ_TestOverrideActive())
-		WAVE/SDFR=root: overrideResults
+		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 
 		switch(type)
@@ -732,7 +732,7 @@ static Function MSQ_TestOverrideActive()
 
 	variable numberOfOverrideWarnings
 
-	WAVE/Z/SDFR=root: overrideResults
+	WAVE/Z overrideResults = GetOverrideResults()
 
 	if(WaveExists(overrideResults))
 		numberOfOverrideWarnings = GetNumberFromWaveNote(overrideResults, "OverrideWarningIssued")
