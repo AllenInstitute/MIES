@@ -284,6 +284,17 @@ static Function/S AD_FormatListKey(variable stimsetCycleID, variable headstage)
 	return num2str(stimsetCycleID) + "_HS" + num2str(headstage)
 End
 
+static Function AD_LabnotebookEntryExistsAndIsTrue(WAVE/Z data)
+
+	if(!WaveExists(data))
+		return 0
+	endif
+
+	WAVE/Z reduced = ZapNaNs(data)
+
+	return WaveExists(reduced) && Sum(reduced) > 0
+End
+
 /// @brief Return an appropriate error message for why #PSQ_SQUARE_PULSE failed
 ///
 /// @param numericalValues Numerical labnotebook
@@ -432,18 +443,16 @@ static Function/S AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC, query = 1)
 	WAVE/Z daScaleExc = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	ASSERT(WaveExists(daScaleExc), "Missing DAScale exceeded LBN entry")
-	WaveTransform/O zapNaNs, daScaleExc
 
-	if(Sum(daScaleExc) > 0)
+	if(AD_LabnotebookEntryExistsAndIsTrue(daScaleExc))
 		return "Max DA scale exceeded failure"
 	endif
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES, query = 1)
 	WAVE/Z limitedResolution = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	ASSERT(WaveExists(limitedResolution), "Missing limited resolution labnotebook entry")
-	WaveTransform/O zapNaNs, limitedResolution
 
-	if(Sum(limitedResolution) > 0)
+	if(AD_LabnotebookEntryExistsAndIsTrue(limitedResolution))
 		return "Failure due to limited resolution"
 	endif
 
@@ -461,11 +470,8 @@ static Function/S AD_GetFastRheoEstFailMsg(WAVE numericalValues, variable sweepN
 	key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_EXC, query = 1)
 	WAVE/Z daScaleExc = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
-	if(WaveExists(daScaleExc))
-		WaveTransform/O zapNaNs, daScaleExc
-		if(Sum(daScaleExc) > 0)
-			return "Max DA scale exceeded failure"
-		endif
+	if(AD_LabnotebookEntryExistsAndIsTrue(daScaleExc))
+		return "Max DA scale exceeded failure"
 	endif
 
 	return "Failure as we ran out of sweeps"
@@ -478,11 +484,8 @@ static Function/S AD_GetSpikeControlFailMsg(WAVE numericalValues, WAVE textualVa
 	key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC, query = 1)
 	WAVE/Z trialsExceeded = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
-	if(WaveExists(trialsExceeded))
-		WaveTransform/O zapNaNs, trialsExceeded
-		if(Sum(trialsExceeded) > 0)
-			return "Maximum number of rerun trials exceeded"
-		endif
+	if(AD_LabnotebookEntryExistsAndIsTrue(trialsExceeded))
+		return "Maximum number of rerun trials exceeded"
 	endif
 
 	return "Failure as we ran out of sweeps"
