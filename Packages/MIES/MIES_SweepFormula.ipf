@@ -1494,26 +1494,26 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 		endfor
 	endfor
 
-	// remove unmatched channel numbers
-	for(i = 0; i < DimSize(channelNumbers, ROWS); i += 1)
-		WAVE wv = channelNumbers[i]
-		WaveTransform zapNaNs, wv
-		numIndices += DimSize(wv, ROWS)
-	endfor
-
 	// create channels wave
-	Make/FREE/N=(numIndices, 2) out
+	Make/FREE/N=(NUM_MAX_CHANNELS, 2) out
 	SetDimLabel COLS, 0, channelType, out
 	SetDimLabel COLS, 1, channelNumber, out
 	numIndices = 0
 	for(i = 0; i < DimSize(channelNumbers, ROWS); i += 1)
 		WAVE wv = channelNumbers[i]
 		for(j = 0; j < DimSize(wv, ROWS); j += 1)
+
+			if(IsNaN(wv[j]))
+				continue
+			endif
+
 			out[numIndices][%channelType] = i
 			out[numIndices][%channelNumber] = wv[j]
 			numIndices += 1
 		endfor
 	endfor
+
+	Redimension/N=(numIndices, -1) out
 
 	return out
 End
