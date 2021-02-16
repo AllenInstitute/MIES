@@ -353,18 +353,15 @@ Function/WAVE PA_GetPulseInfos(traceData, idx, region, channelTypeStr)
 
 	ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "Missing labnotebook waves")
 
+	sprintf str, "Calculated pulse starting times for headstage %d", region
+	DEBUGPRINT(str)
+
 	WAVE/Z/T epochs = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	if(WaveExists(epochs))
-		WAVE/Z pulseInfos = PA_RetrievePulseInfosFromEpochs(epochs[region])
+		WAVE/Z pulseInfosEpochs = PA_RetrievePulseInfosFromEpochs(epochs[region])
 	endif
 
-#ifdef AUTOMATED_TESTING
-	WAVE/Z DBG_pulseInfosEpochs = pulseInfos
-	WAVE/Z pulseInfos = $""
-#endif
-
-	if(!WaveExists(pulseInfos))
-
+	if(!WaveExists(pulseInfosEpochs) || defined(AUTOMATED_TESTING))
 		fullPath = traceData[idx][%fullPath]
 		DFREF singleSweepFolder = GetWavesDataFolderDFR($fullPath)
 		ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
@@ -379,41 +376,45 @@ Function/WAVE PA_GetPulseInfos(traceData, idx, region, channelTypeStr)
 
 		WAVE DA = GetDAQDataSingleColumnWave(singleSweepFolder, XOP_CHANNEL_TYPE_DAC, channel)
 		totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
-		WAVE/Z pulseInfos = PA_CalculatePulseInfos(DA, fullPath, channel, totalOnsetDelay)
+		WAVE/Z pulseInfosCalc = PA_CalculatePulseInfos(DA, fullPath, channel, totalOnsetDelay)
+	endif
 
 #ifdef AUTOMATED_TESTING
-		variable i, j
-		variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 2
-
-		WAVE/Z DBG_pulseInfosCalc = pulseInfos
-		if(WaveExists(DBG_pulseInfosEpochs) && WaveExists(DBG_pulseInfosCalc))
-			if(DimSize(DBG_pulseInfosEpochs, ROWS) != DimSize(DBG_pulseInfosCalc, ROWS))
-				print/D "Warn: Differing dimensions in pulse infos from epochs:\r", DBG_pulseInfosEpochs, "\r from Calculation:\r", DBG_pulseInfosCalc
-			else
-				for(i = 0; i < DimSize(DBG_pulseInfosEpochs, ROWS); i += 1)
-					for(j = 0; j < DimSize(DBG_pulseInfosEpochs, COLS); j += 1)
-						if(abs(DBG_pulseInfosEpochs[i][j] - DBG_pulseInfosCalc[i][j]) > warnDiffms                          \
-						   && j == DimSize(DBG_pulseInfosEpochs, COLS) - 1 && i == DimSize(DBG_pulseInfosEpochs, ROWS) - 1)
-							print/D "Warn: Differing pulse infos in [" + num2str(i) + ", " + GetDimLabel(DBG_pulseInfosEpochs, COLS, j) + "], from epochs:\r", DBG_pulseInfosEpochs, "from Calculation:\r", DBG_pulseInfosCalc
-							break
-						endif
-					endfor
-				endfor
-			endif
-		endif
-		if(WaveExists(DBG_pulseInfosEpochs) && !WaveExists(DBG_pulseInfosCalc))
-			print/D "Warn: Returned pulse start times from Epochs but got none from Calculation. From Epochs:\r", DBG_pulseInfosEpochs
-		endif
+	PA_DiffPulseInfos(numericalValues, sweepNo, pulseInfosEpochs, pulseInfosCalc)
 #endif
 
-		sprintf str, "Calculated pulse starting times for headstage %d", region
-		DEBUGPRINT(str)
+	if(WaveExists(pulseInfosEpochs))
+		return pulseInfosEpochs
+	endif
 
-		if(!WaveExists(pulseInfos))
-			return $""
+	return pulseInfosCalc
+End
+
+/// @brief Compare epoch and calculated pulse infos
+static Function PA_DiffPulseInfos(WAVE numericalValues, variable sweepNo, WAVE/Z pulseInfosEpochs, WAVE/Z pulseInfosCalc)
+	variable i, j
+
+	variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 2
+
+	if(WaveExists(pulseInfosEpochs) && WaveExists(pulseInfosCalc))
+		if(DimSize(pulseInfosEpochs, ROWS) != DimSize(pulseInfosCalc, ROWS))
+			print/D "Warn: Differing dimensions in pulse infos from epochs:\r", pulseInfosEpochs, "\r from Calculation:\r", pulseInfosCalc
+		else
+			for(i = 0; i < DimSize(pulseInfosEpochs, ROWS); i += 1)
+				for(j = 0; j < DimSize(pulseInfosEpochs, COLS); j += 1)
+					if(abs(pulseInfosEpochs[i][j] - pulseInfosCalc[i][j]) > warnDiffms                          \
+					   && j == DimSize(pulseInfosEpochs, COLS) - 1 && i == DimSize(pulseInfosEpochs, ROWS) - 1)
+						print/D "Warn: Differing pulse infos in [" + num2str(i) + ", " + GetDimLabel(pulseInfosEpochs, COLS, j) + "], from epochs:\r", pulseInfosEpochs, "from Calculation:\r", pulseInfosCalc
+						break
+					endif
+				endfor
+			endfor
 		endif
 	endif
-	return pulseInfos
+
+	if(WaveExists(pulseInfosEpochs) && !WaveExists(pulseInfosCalc))
+		print/D "Warn: Returned pulse start times from Epochs but got none from Calculation. From Epochs:\r", pulseInfosEpochs
+	endif
 End
 
 /// @brief Extracts the pulse info from the lab notebook and returns them as wave
