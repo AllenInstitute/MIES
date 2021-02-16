@@ -48,14 +48,15 @@ digraph "G" {
 		color = "2"
 	]
 	"Prepare DAQ" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Pre DAQ Event"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
 		fillcolor = "1"
 		shape = "ellipse"
 		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
 	]
 	"Pre Set Event" [
 		fontsize = "13"
@@ -78,15 +79,14 @@ digraph "G" {
 		color = "2"
 	]
 	"Enable \"Multidevice DAQ\"" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Enable oodDAQ"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
 		fillcolor = "1"
 		shape = "ellipse"
 		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
 	]
 	"All checks passed" [
 		fontsize = "13"
@@ -154,7 +154,7 @@ digraph "G" {
 	"n38" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Set \"Failed pulse level\" from\n analysis parameter if present"
+		label = "Set \"Ideal Number of Spikes\" from\n analysis parameter in PA plot\b store in labnotebook"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -221,39 +221,6 @@ digraph "G" {
 		colorscheme = "blues4"
 		color = "2"
 		label = "Adjust several other controls\n as done with SetControlInEvent normally"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n48" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Read failed pulses from the last sweep from\n the PA plot properties waves\n (diagonal elements only)"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n49" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Add failed pulses in the format\n\"PX_RY\" into the textual labnotebook"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n50" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Add headstage QC into numerical\n labnotebook. Headstages without\nfailed pulses are passing."
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -363,7 +330,7 @@ digraph "G" {
 	"n62" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Increase DA scale for failed headstages\n according to analysis parameters\n \"DAScaleModifier\" and \"DAScaleOperator\""
+		label = "Increase DA scale according to analysis parameters\n \"DAScaleModifier\" and \"DAScaleOperator\""
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -463,6 +430,358 @@ digraph "G" {
 		colorscheme = "blues4"
 		color = "2"
 		label = "Is \"Unlocked indexing\" active"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n69" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "\"Failed Pulse Level\"\nanalysis parameter present?"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n71" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Read \"Failed Pulse Level\" from PA plot"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n72" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Set \"Failed Pulse Level\" in PA plot"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n60" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Add \"Failed Pulse Level\" into labnotebook"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n73" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Iterate over all active headstages"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n74" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Was spontaneous spiking detected?"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n75" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Add \"Auto bias baseline modifier\" analysis parameter\n value to autobias target voltage"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n79" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Spike Count state?"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n81" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Decrease DA Scale according to analysis parameters\n \"DAScaleModifier\" and \"DAScaleOperator\"\n by using the inverse (*) or the minus (+)\n of the value depending on the operator"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n82" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Warn user in history once\nduring this RA cycle"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n83" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Increase DA scale according to analysis parameters\n \"DAScaleModifier\" (multiply by two)\n and \"DAScaleOperator\""
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n77" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Increase DA scale according to analysis parameters\n \"DAScaleSpikePositionModifier\"\n and \"DAScaleSpikePositionOperator\""
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n80" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Gather all pulses from each active headstage"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n84" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "From each pulse read out the number of\n spikes and the spike positions"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n85" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Set oodDAQ regions to NaN from the AD data\nand check if the maximum\n is below the \"Failed Pulse Level\""
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n86" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Store the number of spikes\n in the textual labnotebook"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n87" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Convert the spike positions to\n \"Pulse active coordinate system\"\n and store them in the textual labnotebook."
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n61" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Set \"Spontaneous spike check\"\n as passed in labnotebook."
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n64" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Set \"Spontaneous spike check\"\n as failed in labnotebook."
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n78" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Read \"Ideal number of spikes\" from labotebook"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n89" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Check if the average is larger than\n the analysis parameter \"Minimum Spike Position\"."
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n91" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Set \"Spike position QC\"\n as failed in labnotebok"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n93" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Compare the \"Ideal number of spikes\"\n with the actual number of spikes\n in each pulse for all\n pulses for a headstage"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n97" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Add \"Spike counts state\" with\n \"Good/Too few/Too many/Mixed\" to\n textual labnotebook.\n \"Mixed\" happens when it is\n \"Too Few\" on some pulses\n and \"Too Many\" on others."
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n98" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Set \"Spike position QC\"\n as passed in labnotebok"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n92" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "For all spikes of a pulse\n calculate the average spike position"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n99" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Spontaneous spike QC"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n100" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Mark headstage as failed"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n101" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Spike counts state"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n103" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Mark headstage as passed"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n88" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Headstage passed?"
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+	]
+	"n94" [
+		colorscheme = "blues4"
+		color = "2"
+		label = "Spike position passed?"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -570,43 +889,7 @@ digraph "G" {
 		colorscheme = "blues3"
 		color = "2"
 	]
-	"n38" -> "n40" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
 	"n42" -> "n43" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Post Sweep Event" -> "n48" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"n48" -> "n49" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"n50" -> "n51" [
 		fontsize = "10"
 		fontname = "Helvetica"
 		fontcolor = "3"
@@ -729,15 +1012,6 @@ digraph "G" {
 		colorscheme = "blues3"
 		color = "2"
 	]
-	"n53" -> "n62" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
 	"n56" -> "n63" [
 		fontsize = "10"
 		fontname = "Helvetica"
@@ -822,33 +1096,6 @@ digraph "G" {
 		colorscheme = "blues3"
 		color = "2"
 	]
-	"Post Sweep Event" -> "n58" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"n49" -> "n50" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"n59" -> "n50" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
 	"n41" -> "Enable \"Multidevice DAQ\"" [
 		fontsize = "10"
 		fontname = "Helvetica"
@@ -890,6 +1137,394 @@ digraph "G" {
 		fontname = "Helvetica"
 		fontcolor = "3"
 		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n69" -> "n71" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n69" -> "n72" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n38" -> "n69" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n71" -> "n60" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n72" -> "n60" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n60" -> "n40" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n59" -> "n51" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n74" -> "n75" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n79" -> "n81" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Too Many"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n79" -> "n82" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Mixed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n79" -> "n83" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Too Few"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n82" -> "n62" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n80" -> "n84" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n87" -> "n85" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n85" -> "n61" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n85" -> "n64" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n84" -> "n86" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n86" -> "n87" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n78" -> "n93" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = ""
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n93" -> "n97" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n87" -> "n78" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n87" -> "n92" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n92" -> "n89" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n89" -> "n91" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n89" -> "n98" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n99" -> "n100" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Failed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n99" -> "n101" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Passed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n101" -> "n100" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = ""
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n103" -> "n58" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n100" -> "n58" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Post Sweep Event" -> "n80" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n101" -> "n103" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Good"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n73" -> "n88" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n88" -> "n74" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Failed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n94" -> "n77" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Failed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n88" -> "n79" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Failed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n88" -> "n94" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Passed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n58" -> "n73" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n97" -> "n99" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n64" -> "n99" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"n61" -> "n99" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
 		style = "solid"
 		comment = "Wildcard edge"
 		colorscheme = "blues3"
