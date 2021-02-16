@@ -4115,12 +4115,20 @@ Function HasOneValidEntry(wv)
 
 	variable numEntries
 
-	ASSERT(IsFloatingPointWave(wv), "Unexpected wave type")
-
 	numEntries = numpnts(wv)
+
+	if(IsNumericWave(wv))
+		ASSERT(IsFloatingPointWave(wv), "Requires floating point type or text wave")
+		WAVE stats = wv
+	else
+		ASSERT(IsTextWave(wv), "Expected a text wave")
+		WAVE/T wvText = wv
+		Make/FREE/N=(numEntries) stats = strlen(wvText[p]) == 0 ? NaN : 1
+	endif
+
 	ASSERT(numEntries > 0, "Empty wave")
 
-	WaveStats/Q/M=1 wv
+	WaveStats/Q/M=1 stats
 	return V_numNaNs != numEntries
 End
 

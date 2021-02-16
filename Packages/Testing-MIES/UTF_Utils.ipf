@@ -1765,17 +1765,6 @@ End
 /// @{
 /// HasOneValidEntry
 
-Function HOV_AssertsInvalidType()
-
-	Make/B wv
-	try
-		HasOneValidEntry(wv)
-		FAIL()
-	catch
-		PASS()
-	endtry
-End
-
 Function HOV_AssertsOnInvalidType()
 
 	Make/B wv
@@ -1836,6 +1825,19 @@ Function HOV_WorksWith2D()
 
 	Make/R/N=(10, 9) wv = NaN
 	wv[2, 3] = 4711
+	CHECK(HasOneValidEntry(wv))
+End
+
+Function HOV_WorksWithText1()
+
+	Make/FREE/T/N=(2) wv = ""
+	CHECK(!HasOneValidEntry(wv))
+End
+
+Function HOV_WorksWithText2()
+
+	Make/FREE/T/N=(2) wv = ""
+	wv[0] = "a"
 	CHECK(HasOneValidEntry(wv))
 End
 
