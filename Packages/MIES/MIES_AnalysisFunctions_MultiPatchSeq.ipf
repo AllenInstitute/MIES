@@ -1350,6 +1350,24 @@ static Function MSQ_ForceSetEvent(panelTitle, headstage)
 	setEventFlag[DAC][%POST_SET_EVENT] = 1
 End
 
+/// @brief Common pre DAQ calls for all multipatch analysis functions
+Function MSQ_CommonPreDAQ(string panelTitle, variable headstage)
+
+	if(headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+		return NaN
+	endif
+
+	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")            \
+	   && !DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
+		print "Only locked indexing is supported"
+		ControlWindowToFront()
+		return 1
+	endif
+
+	PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
+	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+End
+
 /// @brief Require parameters from stimset
 Function/S MSQ_DAScale_GetParams()
 	return "DAScales:wave"
@@ -2088,22 +2106,4 @@ Function MSQ_SpikeControl(panelTitle, s)
 		default:
 			break
 	endswitch
-End
-
-/// @brief Common pre DAQ calls for all multipatch analysis functions
-static Function MSQ_CommonPreDAQ(string panelTitle, variable headstage)
-
-	if(headstage != DAP_GetHighestActiveHeadstage(panelTitle))
-		return NaN
-	endif
-
-	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")            \
-	   && !DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
-		print "Only locked indexing is supported"
-		ControlWindowToFront()
-		return 1
-	endif
-
-	PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
-	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
 End
