@@ -824,7 +824,7 @@ End
 ///
 /// The wave note holds a list of channel units. The order
 /// is the same as the rows. TTL channels don't have units. Querying the
-/// channel unit should always be done via AFH_GetChannelUnit()/AFH_GetChannelUnits().
+/// channel unit should always be done via AFH_GetChannelUnit() or AFH_GetChannelUnits().
 ///
 /// This wave is also used for NI devices as configuration template. There is one difference though:
 /// While for ITC devices there is one TTL row for each rack,
@@ -842,6 +842,7 @@ End
 /// - Due to the wave versioning the channel unit is now stored with the
 ///   #CHANNEL_UNIT_KEY as key and it is now separated not with semicolon
 ///   anymore but a comma.
+///
 /// Version 2 changes:
 /// - DAQChannelType column added
 Function/Wave GetDAQConfigWave(panelTitle)
@@ -1042,7 +1043,7 @@ Function/S GetDevSpecLabNBFolderAsString(panelTitle)
 End
 
 /// @brief Return the datafolder reference to the device specific settings key
-/// @deprecated, don't use for new code
+/// @deprecated don't use for new code
 Function/DF GetDevSpecLabNBSettKeyFolder(panelTitle)
 	string panelTitle
 
@@ -1050,7 +1051,7 @@ Function/DF GetDevSpecLabNBSettKeyFolder(panelTitle)
 End
 
 /// @brief Return the full path to the device specific settings key, e.g. root:mies:LabNoteBook:ITC18USB:Device0:KeyWave
-/// @deprecated, don't use for new code
+/// @deprecated don't use for new code
 Function/S GetDevSpecLabNBSettKeyFolderAS(panelTitle)
 	string panelTitle
 
@@ -1058,7 +1059,7 @@ Function/S GetDevSpecLabNBSettKeyFolderAS(panelTitle)
 End
 
 /// @brief Return the datafolder reference to the device specific settings history
-/// @deprecated, don't use for new code
+/// @deprecated don't use for new code
 Function/DF GetDevSpecLabNBSettHistFolder(panelTitle)
 	string panelTitle
 
@@ -1066,7 +1067,7 @@ Function/DF GetDevSpecLabNBSettHistFolder(panelTitle)
 End
 
 /// @brief Return the full path to the device specific settings history, e.g. root:mies:LabNoteBook:ITC18USB:Device0:settingsHistory
-/// @deprecated, don't use for new code
+/// @deprecated don't use for new code
 Function/S GetDevSpecLabNBSettHistFolderAS(panelTitle)
 	string panelTitle
 
@@ -1074,7 +1075,7 @@ Function/S GetDevSpecLabNBSettHistFolderAS(panelTitle)
 End
 
 /// @brief Return the datafolder reference to the device specific text doc key
-/// @deprecated, don't use for new code
+/// @deprecated don't use for new code
 Function/DF GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 	string panelTitle
 
@@ -1082,7 +1083,7 @@ Function/DF GetDevSpecLabNBTxtDocKeyFolder(panelTitle)
 End
 
 /// @brief Return the full path to the device specific text doc key, e.g. root:mies:LabNoteBook:ITC18USB:Device0:textDocKeyWave
-/// @deprecated, don't use for new code
+/// @deprecated don't use for new code
 Function/S GetDevSpecLabNBTextDocKeyFoldAS(panelTitle)
 	string panelTitle
 
@@ -1090,7 +1091,7 @@ Function/S GetDevSpecLabNBTextDocKeyFoldAS(panelTitle)
 End
 
 /// @brief Return the datafolder reference to the device specific text documentation
-/// @deprecated, don't use for new code
+/// @deprecated don't use for new code
 Function/DF GetDevSpecLabNBTextDocFolder(panelTitle)
 	string panelTitle
 
@@ -1098,7 +1099,7 @@ Function/DF GetDevSpecLabNBTextDocFolder(panelTitle)
 End
 
 /// @brief Return the full path to the device specific text documentation, e.g. root:mies:LabNoteBook:ITC18USB:Device0:textDocumentation
-/// @deprecated, don't use for new code
+/// @deprecated don't use for new code
 Function/S GetDevSpecLabNBTextDocFolderAS(panelTitle)
 	string panelTitle
 
@@ -1474,7 +1475,7 @@ End
 /// Rows:
 /// - Sweep numbers (only existing sweeps)
 ///
-/// Cols:
+/// Columns:
 /// - 0: First row
 /// - 1: Last row
 ///
@@ -1546,7 +1547,7 @@ End
 /// Rows:
 /// - Sweep numbers
 ///
-/// Cols:
+/// Columns:
 /// - One for each LBN key
 ///
 /// Layers:
@@ -1625,7 +1626,7 @@ End
 /// Rows:
 /// - One for each sweep number
 ///
-/// Cols:
+/// Columns:
 /// - RAC (repeated acquisition cycle IDs) sweeps
 /// - SCI (simset cycle IDs) sweeps
 ///
@@ -2116,40 +2117,40 @@ End
 /// - Only one
 ///
 /// Columns:
-/// - 0: Stim set
-/// - 1: DA unit
-/// - 2: AD unit
-/// - 3: TTL rack zero stim sets (ITC hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
-/// - 4: TTL rack one stim sets (ITC hardware), same for the second rack
-/// - 5: Analysis function pre daq
-/// - 6: Analysis function mid sweep
-/// - 7: Analysis function post sweep
-/// - 8: Analysis function post set
-/// - 9: Analysis function post daq
-/// -10: Analysis function pre sweep
-/// -11: Analysis function generic
-/// -12: Analysis function pre set
-/// -13: Analysis function parameters
-/// -14: oodDAQ regions list
-///      - Format: `$begin1-$end1;$begin2-$end2;...`.
-///      - Unit: `stimset build ms`.
-/// -15: Electrode
-/// -16: High precision sweep start timestamp in ISO8601 format
-/// -17: Stimset wave note
-/// -18: TTL rack zero set sweep counts (ITC hardware)
-/// -19: TTL rack one set sweep counts (ITC hardware)
-/// -20: TTL set sweep counts (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
-/// -21: TTL stim sets (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
-/// -22: TTL channels (NI hardware), string list  in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
-/// -23: Follower Device, list of follower devices
-/// -24: MIES version, multi line mies version string
-/// -25: Igor Pro version
-/// -26: Digitizer Hardware Name
-/// -27: Digitizer Serial Numbers
-/// -28: Epochs
-/// -29: JSON config file: path (`|` separated list of full file paths)
-/// -30: JSON config file: SHA-256 hash (`|` separated list of hashes)
-/// -31: JSON config file: stimset nwb file path
+/// -  0: Stim set
+/// -  1: DA unit
+/// -  2: AD unit
+/// -  3: TTL rack zero stim sets (ITC hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
+/// -  4: TTL rack one stim sets (ITC hardware), same for the second rack
+/// -  5: Analysis function pre daq
+/// -  6: Analysis function mid sweep
+/// -  7: Analysis function post sweep
+/// -  8: Analysis function post set
+/// -  9: Analysis function post daq
+/// - 10: Analysis function pre sweep
+/// - 11: Analysis function generic
+/// - 12: Analysis function pre set
+/// - 13: Analysis function parameters
+/// - 14: oodDAQ regions list
+///       - Format: `$begin1-$end1;$begin2-$end2;...`.
+///       - Unit: `stimset build ms`.
+/// - 15: Electrode
+/// - 16: High precision sweep start timestamp in ISO8601 format
+/// - 17: Stimset wave note
+/// - 18: TTL rack zero set sweep counts (ITC hardware)
+/// - 19: TTL rack one set sweep counts (ITC hardware)
+/// - 20: TTL set sweep counts (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
+/// - 21: TTL stim sets (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
+/// - 22: TTL channels (NI hardware), string list  in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
+/// - 23: Follower Device, list of follower devices
+/// - 24: MIES version, multi line mies version string
+/// - 25: Igor Pro version
+/// - 26: Digitizer Hardware Name
+/// - 27: Digitizer Serial Numbers
+/// - 28: Epochs
+/// - 29: JSON config file: path (`|` separated list of full file paths)
+/// - 30: JSON config file: SHA-256 hash (`|` separated list of hashes)
+/// - 31: JSON config file: stimset nwb file path
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
@@ -2351,7 +2352,7 @@ End
 /// Rows:
 /// - StopCollectionPoint
 ///
-/// Cols:
+/// Columns:
 /// - Number of active channels
 ///
 /// Type:
@@ -2395,7 +2396,7 @@ End
 /// Rows:
 /// - Holds exactly one TP
 ///
-/// Cols:
+/// Columns:
 /// - DA/AD/TTLs data, same order as GetDAQDataWave()
 Function/Wave GetTPOscilloscopeWave(panelTitle)
 	string panelTitle
@@ -3540,7 +3541,7 @@ End
 /// -  8: Analysis function, pre sweep
 /// -  9: Analysis function, generic
 /// - 10: Unused
-/// - 11-26: Explicit delta values. ";" separated list as long as the number of sweeps.
+/// - 11-26: Explicit delta values. `;` separated list as long as the number of sweeps.
 /// - 27: Analysis function, pre set
 /// - 28: Explicit delta value for "Inter trial interval"
 /// - 29: Analysis function parameters. See below for a detailed explanation.
@@ -3569,7 +3570,7 @@ End
 /// Analysis function parameters
 ///
 /// Format of a single parameter:
-/// - `$name:(variable|string|wave|textwave)=$value`
+/// - `name:(variable|string|wave|textwave)=value`
 ///
 /// For these building blocks the following restrictions hold
 /// - `name`: Must be a valid non-liberal igor object name
@@ -3768,7 +3769,7 @@ End
 /// Rows:
 /// - One row
 ///
-/// - Columns:
+/// Columns:
 /// - 0: Async Measurement 0
 /// - 1: Async Measurement 1
 /// - 2: Async Measurement 2
@@ -3778,7 +3779,7 @@ End
 /// - 6: Async Measurement 6
 /// - 7: Async Measurement 7
 ///
-/// - Layers:
+/// Layers:
 ///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncMeasurementWave()
 
@@ -3910,7 +3911,7 @@ End
 /// - 38: Async Alarm 6 Max
 /// - 39: Async Alarm 7 Max
 ///
-/// - Layers:
+/// Layers:
 ///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncSettingsWave()
 
@@ -4210,7 +4211,7 @@ End
 /// - 14: Async 6 Units
 /// - 15: Async 7 Units
 ///
-/// - Layers:
+/// Layers:
 ///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncSettingsTextWave()
 
@@ -4464,16 +4465,16 @@ End
 /// - 0 - 7: Headstage 0 through 7
 ///
 /// Columns:
-/// - 0: Pressure method. -1 = none, 0 = Approach, 1 = Seal, 2 = Break In, 3 = Clear
-/// - 1: List position of DAC (used for presssure control) selected for headstage
-/// - 2: Type of DAC, index into #HARDWARE_DAC_TYPES
-/// - 3: Device ID used by Instrutech DACs or index into HW_NI_ListDevices depending on column 2
-/// - 4: DA channel used for pressure regulation.
-/// - 5: Gain of DA channel used for presssure regulation.
-/// - 6: AD channel used for pressure regulation.
-/// - 7: Gain of AD channel used for pressure regulation.
-/// - 8: TTL channel A used for pressure regulation.
-/// - 9: Pipette pressure setting while pipette is positioned in air/outside of bath.
+/// -  0: Pressure method. -1 = none, 0 = Approach, 1 = Seal, 2 = Break In, 3 = Clear
+/// -  1: List position of DAC (used for presssure control) selected for headstage
+/// -  2: Type of DAC, index into #HARDWARE_DAC_TYPES
+/// -  3: Device ID used by Instrutech DACs or index into HW_NI_ListDevices depending on column 2
+/// -  4: DA channel used for pressure regulation.
+/// -  5: Gain of DA channel used for presssure regulation.
+/// -  6: AD channel used for pressure regulation.
+/// -  7: Gain of AD channel used for pressure regulation.
+/// -  8: TTL channel A used for pressure regulation.
+/// -  9: Pipette pressure setting while pipette is positioned in air/outside of bath.
 /// - 10: Pipette pressure setting for pipette positioned in the bath.
 /// - 11: Pipette pressure setting for pipette positioned in the slice.
 /// - 12: Pipette pressure setting for pipette positioned near the target cell.
@@ -4889,13 +4890,13 @@ End
 /// @brief Return AnalysisBrowser indexing storage wave
 ///
 /// Rows:
-/// Experiments found in current Directory
+/// - Experiments found in current Directory
 ///
 /// Columns:
-/// 0: %DiscLocation:  Path to Experiment on Disc
-/// 1: %FileName:      Name of File in experiment column in ExperimentBrowser
-/// 2: %DataFolder     Data folder inside current Igor experiment
-/// 3: %FileType       File Type identifier for routing to loader functions
+/// - 0: %DiscLocation:  Path to Experiment on Disc
+/// - 1: %FileName:      Name of File in experiment column in ExperimentBrowser
+/// - 2: %DataFolder     Data folder inside current Igor experiment
+/// - 3: %FileType       File Type identifier for routing to loader functions
 Function/Wave GetAnalysisBrowserMap()
 	DFREF dfr = GetAnalysisFolder()
 	variable versionOfWave = 2
@@ -5087,12 +5088,12 @@ End
 /// @brief Return the indexing storage wave
 ///
 /// Rows:
-/// 0: DA (#CHANNEL_TYPE_DAC)
-/// 0: TTL (#CHANNEL_TYPE_TTL)
+/// - 0: DA (#CHANNEL_TYPE_DAC)
+/// - 1: TTL (#CHANNEL_TYPE_TTL)
 ///
-/// Cols:
-/// 0: Popup menu index of Wave (stimset)
-/// 1: Popup menu index of Indexing end wave (stimset)
+/// Columns:
+/// - 0: Popup menu index of Wave (stimset)
+/// - 1: Popup menu index of Indexing end wave (stimset)
 ///
 /// All zero-based as returned by GetPopupMenuIndex().
 ///
@@ -5207,19 +5208,19 @@ End
 /// - Column specific GUI control settings usually associated with control name number
 ///
 /// Columns:
-/// - 0: State of control Check_DataAcqHS_RowNum. 0 = UnChecked, 1 = Checked
-/// - 1: Clamp mode of HS number that matches Row number. 0 = VC, 1 = IC, 2 = NC.
-/// - 2: State of control Check_DA_RowNum. 0 = UnChecked, 1 = Checked
-/// - 3: Internal number stored in control Gain_DA_RowNum. Gain is user/hardware defined.
-/// - 4: Internal number stored in setvar:Scale_DA_RowNum. Scalar is user defined.
-/// - 5: PopupMenu Index of popupMenu:Wave_DA_RowNum. Stores index
-///  	 of active DA stimulus set during data acquisition. Stores index of next DA
-///      stimulus set when data acquistion is not active.
-/// - 6: PopupMenu Index of popupMenu:IndexEnd_DA_RowNum. Stores the
-///      index of the last DA stimulus set used in indexed aquisition mode.
-/// - 7: State of checkbox control Check_AD_RowNum. 0 = UnChecked, 1 = Checked
-/// - 8: Internal number stored in Gain_AD_RowNum. Gain is user/hardware defined.
-/// - 9: State of checkbox control Check_TTL_RowNum.  0 = UnChecked, 1 = Checked
+/// -  0: State of control Check_DataAcqHS_RowNum. 0 = UnChecked, 1 = Checked
+/// -  1: Clamp mode of HS number that matches Row number. 0 = VC, 1 = IC, 2 = NC.
+/// -  2: State of control Check_DA_RowNum. 0 = UnChecked, 1 = Checked
+/// -  3: Internal number stored in control Gain_DA_RowNum. Gain is user/hardware defined.
+/// -  4: Internal number stored in setvar:Scale_DA_RowNum. Scalar is user defined.
+/// -  5: PopupMenu Index of popupMenu:Wave_DA_RowNum. Stores index
+///       of active DA stimulus set during data acquisition. Stores index of next DA
+///       stimulus set when data acquistion is not active.
+/// -  6: PopupMenu Index of popupMenu:IndexEnd_DA_RowNum. Stores the
+///       index of the last DA stimulus set used in indexed aquisition mode.
+/// -  7: State of checkbox control Check_AD_RowNum. 0 = UnChecked, 1 = Checked
+/// -  8: Internal number stored in Gain_AD_RowNum. Gain is user/hardware defined.
+/// -  9: State of checkbox control Check_TTL_RowNum.  0 = UnChecked, 1 = Checked
 /// - 10: PopupMenu Index of popupMenu:Wave_TTL_RowNum. Stores
 ///       index of active TTL stimulus set during data acquisition. Stores index of
 ///       next TTL stimulus set when data acquistion is not active.
@@ -5448,7 +5449,7 @@ End
 /// Rows:
 /// - One for each cache entry
 ///
-/// Cols:
+/// Columns:
 /// - 0: Number of cache hits   (Incremented for every read)
 /// - 1: Number of cache misses (Increment for every failed lookup)
 /// - 2: Modification timestamp (Updated on write)
@@ -5943,7 +5944,7 @@ End
 /// Rows:
 /// - Same index as in GetOverlaySweepsListWave() and GetOverlaySweepsListSelWave()
 ///
-/// Cols:
+/// Columns:
 /// - #NUM_HEADSTAGES, 1 if active and 0 if removed
 Function/WAVE GetOverlaySweepHeadstageRemoval(DFREF dfr)
 	variable versionOfNewWave = 1
@@ -6407,7 +6408,7 @@ End
 /// Rows:
 /// - NUM_DA_TTL_CHANNELS
 ///
-/// Cols:
+/// Columns:
 /// - PRE_SET_EVENT
 /// - POST_SET_EVENT
 Function/WAVE GetSetEventFlag(panelTitle)
@@ -6782,9 +6783,11 @@ End
 
 /// @brief Return the wave for trace counts per graph for pulse averaging plot
 /// rows one per graph, dimlabel is graph name
-/// col 0 trace names of all average traces
-/// col 1 trace names of all deconvolution traces
-/// col 2 list of used image names
+///
+/// Columns:
+/// - 0: trace names of all average traces
+/// - 1: trace names of all deconvolution traces
+/// - 2: list of used image names
 Function/WAVE GetPAGraphData()
 
 	variable versionOfNewWave = 1
