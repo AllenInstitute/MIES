@@ -1512,7 +1512,7 @@ Function/S UniqueWaveName(dfr, baseName)
 	ASSERT(DataFolderExistsDFR(dfr), "dfr does not exist")
 
 	// shorten basename so that we can attach some numbers
-	baseName = CleanupName(baseName[0, 26], 0)
+	baseName = CleanupName(baseName[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - 5], 0)
 	path = GetDataFolder(1, dfr)
 	name = baseName
 
