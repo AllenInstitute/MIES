@@ -9,6 +9,10 @@
 /// @file MIES_WaveBuilderPanel.ipf
 /// @brief __WBP__ Panel for creating stimulus sets
 
+Menu "TracePopup"
+	"Open stimulus set in wavebuilder", /Q, WB_OpenStimulusSetInWaveBuilder()
+End
+
 static StrConstant panel              = "WaveBuilder"
 static StrConstant WaveBuilderGraph   = "WaveBuilder#WaveBuilderGraph"
 static StrConstant AnalysisParamGUI   = "WaveBuilder#AnalysisParamGUI"
@@ -31,6 +35,39 @@ static Constant  STIMULUS_TYPE_TLL           = 2
 static Constant FROM_PANEL_TO_WAVE = 0x1
 static Constant FROM_WAVE_TO_PANEL = 0x2
 /// @}
+
+Function WB_OpenStimulusSetInWaveBuilder()
+
+	string graph, trace, extPanel, waveBuilder
+	variable sweepNo, headstage
+
+	GetLastUserMenuInfo
+	graph = S_graphName
+	trace = S_traceName
+
+	extPanel = BSP_GetPanel(graph)
+
+	if(!WindowExists(extPanel))
+		printf "Context menu option \"%s\" is only useable for the databrowser/sweepbrowser.\r", S_Value
+		ControlWindowToFront()
+		return NaN
+	endif
+
+	sweepNo = str2num(TUD_GetUserData(graph, trace, "sweepNumber"))
+	headstage = str2num(TUD_GetUserData(graph, trace, "headstage"))
+	WAVE/T textualValues = $TUD_GetUserData(graph, trace, "textualValues")
+
+	WAVE/T/Z stimset = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+
+	if(!WaveExists(stimset))
+		printf "Context menu option \"%s\" could not find the stimulus set of the trace %s.\r", S_Value, trace
+		ControlWindowToFront()
+		return NaN
+	endif
+
+	waveBuilder = WBP_CreateWaveBuilderPanel()
+	PGC_SetAndActivateControl(waveBuilder, "popup_WaveBuilder_SetList", str = stimset[headstage])
+End
 
 Function/S WBP_CreateWaveBuilderPanel()
 
