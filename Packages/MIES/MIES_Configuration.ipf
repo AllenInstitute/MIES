@@ -1806,7 +1806,7 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 	string panelTitle
 	variable jsonID, midExp
 
-	variable i, type, numRows, ampSerial, ampChannel, index, value
+	variable i, type, numRows, ampSerial, ampChannel, index, value, warnMissingMCCSync
 	string jsonPath, jsonBasePath
 	string ampSerialList = ""
 	string ampTitleList = ""
@@ -1847,6 +1847,8 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 
 	PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateAmpStatus")
 	PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateDACList")
+
+	warnMissingMCCSync = !GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC")
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		PGC_SetAndActivateControl(panelTitle, "Popup_Settings_HeadStage", val = i)
@@ -1903,6 +1905,11 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 
 			if(IsFinite(ampSerial))
 				if(!midExp)
+					if(warnMissingMCCSync)
+						printf "The sync MIES to MCC settings checkbox is not checked.\rRestored amplifier settings will not be applied to Multiclamp commander."
+						warnMissingMCCSync = 0
+					endif
+
 					CONF_RestoreAmplifierSettings(panelTitle, i, jsonID, jsonBasePath)
 				else
 					CONF_MCC_MidExp(panelTitle, i, jsonID)
