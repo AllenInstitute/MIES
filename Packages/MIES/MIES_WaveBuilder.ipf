@@ -779,7 +779,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	Make/FREE/N=0 WaveBuilderWave
 
 	string customWaveName, debugMsg, defMode, formula, formula_version
-	variable i, j, type, accumulatedDuration, pulseToPulseLength
+	variable i, j, type, accumulatedDuration, pulseToPulseLength, index, first, last
 	STRUCT SegmentParameters params
 
 	if(stepCount == 0)
@@ -1008,8 +1008,10 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		if(stepCount == 0)
 			WAVE epochID = GetEpochID()
 			for(i = 0; i < numEpochs; i += 1)
-				epochID[i][%timeBegin] = accumulatedDuration - epochID[i][%timeBegin]
-				epochID[i][%timeEnd]   = accumulatedDuration - epochID[i][%timeEnd]
+				first = epochID[i][%timeBegin]
+				last = epochID[i][%timeEnd]
+				epochID[i][%timeEnd]   = accumulatedDuration - first
+				epochID[i][%timeBegin] = accumulatedDuration - last
 			endfor
 		endif
 	endif
