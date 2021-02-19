@@ -211,3 +211,19 @@ Function PS_SerializeSettings(string package, variable JSONid)
 		ClearRTError()
 	endtry
 End
+
+/// Caller *must* invalidate JSONid after return.
+Function PS_OpenNotebook(string package, variable JSONid)
+	string name, path
+
+	PS_SerializeSettings(package, JSONid)
+
+	name = CleanupName(package, 0)
+
+	if(WindowExists(name))
+		DoWindow/F $name
+	else
+		path = PS_GetSettingsFile(package)
+		OpenNotebook/ENCG=1/N=$name path
+	endif
+End
