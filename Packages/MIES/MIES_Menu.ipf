@@ -211,4 +211,5 @@ Function ClearPackageSettings()
 
 	JSONid = GenerateSettingsDefaults()
 	PS_WriteSettings("MIES", JSONid)
+	JSON_Release(JSONId)
 End
