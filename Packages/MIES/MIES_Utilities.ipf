@@ -5189,14 +5189,8 @@ Function UploadCrashDumps()
 	JSON_AddString(jsonID, "/timestamp", GetISO8601TimeStamp())
 
 	JSON_AddTreeArray(jsonID, "/payload")
-
-	if(numFiles > 0)
-		AddPayloadEntries(jsonID, files, isBinary = 1)
-	endif
-
-	if(numLogs > 0)
-		AddPayloadEntries(jsonID, logs, isBinary = 1)
-	endif
+	AddPayloadEntriesFromFiles(jsonID, files, isBinary = 1)
+	AddPayloadEntriesFromFiles(jsonID, logs, isBinary = 1)
 
 	PathInfo $diagSymbPath
 	diagPath = S_path
@@ -5222,14 +5216,33 @@ End
 
 /// @brief Helper function for UploadCrashDumps
 ///
-/// Fill `payload` array
-static Function AddPayloadEntries(jsonID, paths, [isBinary])
-	variable jsonID
-	WAVE/T paths
-	variable isBinary
-
+/// Fill `payload` array with content from files
+Function AddPayloadEntriesFromFiles(variable jsonID, WAVE/T paths, [variable isBinary])
 	string data, fName, filepath, jsonpath
 	variable numEntries, i, offset
+
+	numEntries = DimSize(paths, ROWS)
+	Make/FREE/N=(numEntries)/T values, keys
+
+	for(i = 0; i < numEntries; i += 1)
+		[data, fName] = LoadTextFile(paths[i])
+		values[i] = data
+
+		keys[i] = GetFile(paths[i])
+	endfor
+
+	AddPayloadEntries(jsonID, keys, values, isBinary = isBinary)
+End
+
+/// @brief Helper function for UploadCrashDumps
+///
+/// Fill `payload` array
+Function AddPayloadEntries(variable jsonID, WAVE/T keys, WAVE/T values, [variable isBinary])
+	string jsonpath
+	variable numEntries, i, offset
+
+	numEntries = DimSize(keys, ROWS)
+	ASSERT(numEntries == DimSize(values, ROWS), "Mismatched dimensions")
 
 	if(ParamIsDefault(isBinary))
 		isBinary = 0
@@ -5237,24 +5250,23 @@ static Function AddPayloadEntries(jsonID, paths, [isBinary])
 		isBinary = !!isBinary
 	endif
 
-	numEntries = DimSize(paths, ROWS)
+	if(!numEntries)
+		return NaN
+	endif
 
 	offset = JSON_GetArraySize(jsonID, "/payload")
 	JSON_AddObjects(jsonID, "/payload", objCount = numEntries)
 
 	for(i = 0; i < numEntries; i += 1)
 		jsonpath = "/payload/" + num2str(offset + i) + "/"
-		filepath = paths[i]
 
-		JSON_AddString(jsonID, jsonpath + "name", GetFile(filepath))
-
-		[data, fName] = LoadTextFile(filepath)
+		JSON_AddString(jsonID, jsonpath + "name", keys[i])
 
 		if(isBinary)
 			JSON_AddString(jsonID, jsonpath + "encoding", "base64")
-			JSON_AddString(jsonID, jsonpath + "contents", Base64Encode(data))
+			JSON_AddString(jsonID, jsonpath + "contents", Base64Encode(values[i]))
 		else
-			JSON_AddString(jsonID, jsonpath + "contents", data)
+			JSON_AddString(jsonID, jsonpath + "contents", values[i])
 		endif
 	endfor
 End
