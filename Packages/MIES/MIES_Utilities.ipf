@@ -5152,67 +5152,6 @@ Function/S ConvertListToRegexpWithAlternations(list)
 	return regexpList
 End
 
-/// @brief Convert the Igor Pro crash dumps and the report file to JSON and upload them
-///
-/// Does nothing if none of these files exists.
-///
-/// The uploaded files are moved out of the way afterwards.
-///
-/// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
-///
-/// @return 1 if crash dumps had been uploaded, 0 otherwise
-Function UploadCrashDumps()
-
-	string diagSymbPath, basePath, diagPath
-	variable jsonID, numFiles, numLogs, referenceTime
-
-	referenceTime = DEBUG_TIMER_START()
-
-	diagSymbPath = GetSymbolicPathForDiagnosticsDirectory()
-
-	WAVE/T files = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".dmp"), "|")
-	WAVE/T logs = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".txt"), "|")
-	numFiles = DimSize(files, ROWS)
-	numLogs = DimSize(logs, ROWS)
-
-	if(!numFiles && !numLogs)
-		return 0
-	endif
-
-	printf "Please wait while we upload %d crash dumps. This might take a while.\r", numFiles + numLogs
-	ControlWindowToFront()
-
-	jsonID = JSON_New()
-
-	JSON_AddString(jsonID, "/computer", GetEnvironmentVariable("COMPUTERNAME"))
-	JSON_AddString(jsonID, "/user", IgorInfo(7))
-	JSON_AddString(jsonID, "/timestamp", GetISO8601TimeStamp())
-
-	AddPayloadEntriesFromFiles(jsonID, files, isBinary = 1)
-	AddPayloadEntriesFromFiles(jsonID, logs, isBinary = 1)
-
-	PathInfo $diagSymbPath
-	diagPath = S_path
-
-	basePath = GetUniqueSymbolicPath()
-	NewPath/Q/O/Z $basePath diagPath + "..:"
-
-#ifdef DEBUGGING_ENABLED
-	SaveTextFile(JSON_dump(jsonID, indent=4), diagPath + "..:" + UniqueFileOrFolder(basePath, "crash-dumps", suffix = ".json"))
-#endif // DEBUGGING_ENABLED
-
-	UploadJSONPayload(jsonID)
-	JSON_Release(jsonID)
-
-#ifndef DEBUGGING_ENABLED
-	MoveFolder/P=$basePath "Diagnostics" as UniqueFileOrFolder(basePath, "Diagnostics_old")
-#endif // DEBUGGING_ENABLED
-
-	DEBUGPRINT_ELAPSED(referenceTime)
-
-	return 1
-End
-
 /// @brief Helper function for UploadCrashDumps
 ///
 /// Fill `payload` array with content from files
