@@ -687,7 +687,7 @@ Window DataBrowser() : Graph
 	GroupBox group_pulseAver_deconv,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_OVS,pos={164.00,47.00},size={51.00,15.00},disable=1,proc=BSP_CheckProc_OverlaySweeps
 	CheckBox check_BrowserSettings_OVS,title="enable"
-	CheckBox check_BrowserSettings_OVS,help={"Adds unplotted sweep to graph. Removes plotted sweep from graph."}
+	CheckBox check_BrowserSettings_OVS,help={"Toggle plotting plot multiple sweeps overlayed in the same graph"}
 	CheckBox check_BrowserSettings_OVS,userdata(tabnum)=  "1"
 	CheckBox check_BrowserSettings_OVS,userdata(tabcontrol)=  "Settings"
 	CheckBox check_BrowserSettings_OVS,userdata(ResizeControlsInfo)= A"!!,G4!!#>J!!#>Z!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
