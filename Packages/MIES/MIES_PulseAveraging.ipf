@@ -2595,6 +2595,12 @@ Function PA_SetVarProc_Common(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
+			if(!cmpstr(sva.ctrlName, "setvar_pulseAver_numberOfSpikes"))
+				// switch to 1 on up/down buttons only
+				if(IsNaN(sva.dVal) && sva.eventCode == 1)
+					SetSetVariable(sva.win, sva.ctrlName, 1)
+				endif
+			endif
 			PA_Update(sva.win, POST_PLOT_CONSTANT_SWEEPS)
 			break
 	endswitch
