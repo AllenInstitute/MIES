@@ -207,7 +207,7 @@ static Function TestEpochsMonotony(e, DAChannel)
 			amplitude = NumberByKey("Amplitude", name, "=")
 			CHECK(IsFinite(amplitude))
 
-			WaveStats/R=(first, last)/Q/M=1 DAChannel
+			WaveStats/R=(first + OTHER_EPOCHS_PRECISION, last - OTHER_EPOCHS_PRECISION)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_max, amplitude)
 
 			// check that the level 3 pulse epoch is really only the pulse
