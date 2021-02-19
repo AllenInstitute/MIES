@@ -5188,7 +5188,6 @@ Function UploadCrashDumps()
 	JSON_AddString(jsonID, "/user", IgorInfo(7))
 	JSON_AddString(jsonID, "/timestamp", GetISO8601TimeStamp())
 
-	JSON_AddTreeArray(jsonID, "/payload")
 	AddPayloadEntriesFromFiles(jsonID, files, isBinary = 1)
 	AddPayloadEntriesFromFiles(jsonID, logs, isBinary = 1)
 
@@ -5248,6 +5247,10 @@ Function AddPayloadEntries(variable jsonID, WAVE/T keys, WAVE/T values, [variabl
 		isBinary = 0
 	else
 		isBinary = !!isBinary
+	endif
+
+	if(!JSON_Exists(jsonID, "/payload"))
+		JSON_AddTreeArray(jsonID, "/payload")
 	endif
 
 	if(!numEntries)
