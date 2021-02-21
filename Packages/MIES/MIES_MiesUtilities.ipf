@@ -3386,7 +3386,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 
 		ModifyGraph/W=$graph userData($trace)={key, USERDATA_MODIFYGRAPH_REPLACE, key}
 
-		[s] = GetTraceColor(i)
+		[s] = GetHeadstageColor(i)
 		ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue), marker($trace)=i
 		SetAxis/W=$graph/A=2 $axis
 	endfor
@@ -3412,7 +3412,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 					continue
 				endif
 
-				[s] = GetTraceColor(j)
+				[s] = GeHeadstageColor(j)
 				sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", s.red, s.green, s.blue, j + 1
 				text = ReplaceString("\\", text, "\\\\")
 				tagString = tagString + tmp + text + "\r"
