@@ -4318,7 +4318,7 @@ End
 /// If val is complex only the real part is converted to a string.
 /// @param[in] val       number that should be converted to a string
 /// @param[in] precision [optional, default 5] number of precision digits after the decimal dot using "round-half-to-even" rounding rule.
-///                      Precision must be in the range 0 to 15.
+///                      Precision must be in the range 0 to #MAX_DOUBLE_PRECISION.
 /// @return string with textual number representation
 Function/S num2strHighPrec(val, [precision])
 	variable val, precision
@@ -4326,7 +4326,7 @@ Function/S num2strHighPrec(val, [precision])
 	string str
 
 	precision = ParamIsDefault(precision) ? 5 : precision
-	ASSERT(precision >= 0 && precision <= 15, "Invalid precision, must be >= 0 and <= 15.")
+	ASSERT(precision >= 0 && precision <= MAX_DOUBLE_PRECISION, "Invalid precision, must be >= 0 and <= MAX_DOUBLE_PRECISION")
 
 	sprintf str, "%.*f", precision, val
 

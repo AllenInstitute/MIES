@@ -1369,3 +1369,5 @@ StrConstant BUFFEREDDRAWDDAQAXES = "dDAQAxes"
 StrConstant TP_PROPERTIES_HASH = "TestPulsePropertiesHash"
 
 StrConstant DASHBOARD_PASSING_MESSAGE = "Pass"
+
+Constant MAX_DOUBLE_PRECISION = 15
