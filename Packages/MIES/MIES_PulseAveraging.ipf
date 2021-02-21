@@ -85,6 +85,8 @@ static Constant PA_INDICESCHANGE_ADDED = 3
 static Constant PA_PASIINIT_BASE = 0x01
 static Constant PA_PASIINIT_INDICEMETA = 0x02
 
+static Constant PA_MINIMUM_SPIKE_WIDTH = 0.2 // ms
+
 // comment out to show all the axes, useful for debugging
 #define PA_HIDE_AXIS
 // comment out to show execution times in debugging mode
@@ -2496,6 +2498,10 @@ End
 	for(i = 0; i < numSpikes; i += 1)
 		first = levels[i * 2]
 		last  = levels[i * 2 + 1]
+
+		if((last - first) < PA_MINIMUM_SPIKE_WIDTH)
+			continue
+		endif
 
 		err = 0
 		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(s.failedPulsesLevel)/R=(first, last) pulseWave; err = GetRTError(1)
