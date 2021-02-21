@@ -3310,6 +3310,10 @@ Function UpdateLBGraphLegend(graph, [traceList])
 	for(i = 0 ; i < numEntries; i += 1)
 		trace = StringFromList(i, traceList)
 
+		if(str2num(GetUserData(graph, trace, "IsTextData")))
+			continue
+		endif
+
 		str += "\\s(" + PossiblyQuoteName(trace) + ") "
 
 		if(i < NUM_HEADSTAGES)
@@ -3389,10 +3393,16 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 		endif
 
 		ModifyGraph/W=$graph userData($trace)={key, USERDATA_MODIFYGRAPH_REPLACE, key}
+		ModifyGraph/W=$graph userData($trace)={IsTextData, USERDATA_MODIFYGRAPH_REPLACE, num2str(isTextData)}
 
 		[s] = GetHeadstageColor(i)
 		ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue, IsTextData ? 0 : inf), marker($trace)=i
 		SetAxis/W=$graph/A=2 $axis
+
+		// we only need one trace, all the info is in the tag
+		if(isTextData)
+			break
+		endif
 	endfor
 
 	if(isTextData)
