@@ -517,7 +517,7 @@ threadsafe static Function PA_UpdateMinAndMax(WAVE wv, WAVE noteWave)
 
 	variable minimum, maximum
 
-	[minimum, maximum] = WaveMinAndMax(wv)
+	[minimum, maximum] = WaveMinAndMaxWrapper(wv)
 	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MINIMUM, minimum, format="%.15f")
 	SetNumberInWaveNote(noteWave, NOTE_KEY_WAVE_MAXIMUM, maximum, format="%.15f")
 End
@@ -2413,8 +2413,8 @@ End
 
 	ASSERT_TS(GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED) != 1, "Single pulse wave must not be zeroed here")
 
-	// allow at most 1 pulse per ms
-	maxNumLevels = round(DimSize(pulseWave, ROWS) * DimDelta(pulseWave, ROWS)) * 2
+	// allow at most 1 pulse per ms, but at least 1
+	maxNumLevels = max(1, round(DimSize(pulseWave, ROWS) * DimDelta(pulseWave, ROWS)) * 2)
 	WAVE/Z levels = FindLevelWrapper(pulseWave, s.failedPulsesLevel, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_MULTI, \
 	                                 maxNumLevels = maxNumLevels)
 

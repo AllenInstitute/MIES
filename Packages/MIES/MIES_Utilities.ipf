@@ -5308,18 +5308,27 @@ Function [STRUCT RGBAColor result] ParseColorSpec(string str)
 	result.alpha = (V_Flag == 4) ? str2num(str4) : 655356
 End
 
+/// @brief Determine min and max
+threadsafe Function [variable minimum, variable maximum] WaveMinAndMaxWrapper(WAVE wv, [variable x1, variable x2])
+
+	if(ParamIsDefault(x1) && ParamIsDefault(x2))
 #if IgorVersion() < 9.0
-
-/// @brief Compatibility function for older IP versions
-///
-/// This function is builtin in IP9.
-threadsafe Function [variable minimum, variable maximum] WaveMinAndMax(WAVE wv)
-
-	minimum = WaveMin(wv)
-	maximum = WaveMax(wv)
-End
-
+		minimum = WaveMin(wv)
+		maximum = WaveMax(wv)
+#else
+	   [minimum, maximum] = WaveMinAndMax(wv)
 #endif
+	elseif(!ParamIsDefault(x1) && !ParamIsDefault(x2))
+#if IgorVersion() < 9.0
+		minimum = WaveMin(wv, x1, x2)
+		maximum = WaveMax(wv, x1, x2)
+#else
+	   [minimum, maximum] = WaveMinAndMax(wv, x1, x2)
+#endif
+	else
+		ASSERT_TS(0, "Unsupported case")
+	endif
+End
 
 /// @brief Helper function to be able to index waves stored in wave reference
 /// waves in wave assignment statements.
@@ -5495,7 +5504,7 @@ Function IsConstant(WAVE wv, variable val)
 
 	variable minimum, maximum
 
-	[minimum, maximum] = WaveMinAndMax(wv)
+	[minimum, maximum] = WaveMinAndMaxWrapper(wv)
 
 	return (minimum == val && maximum == val) || (IsNaN(minimum) && IsNaN(maximum) && IsNaN(val))
 End

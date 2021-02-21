@@ -269,12 +269,12 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 
 	WAVE config = GetDAQConfigWave(panelTitle)
 
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShort       = NaN
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShortPassed = NaN
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLong        = NaN
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLongPassed  = NaN
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgVoltage     = NaN
-	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) targetVPassed  = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShort       = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShortPassed = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLong        = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLongPassed  = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgVoltage     = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) targetVPassed  = NaN
 
 	targetV = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
 
@@ -311,7 +311,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			rmsShort[i]       = PSQ_CalculateRMS(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			rmsShortPassed[i] = rmsShort[i] < PSQ_RMS_SHORT_THRESHOLD
 
-			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], SelectString(rmsShortPassed[i], "failed", "passed")
+			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], ToPassFail(rmsShortPassed[i])
 			DEBUGPRINT(msg)
 		else
 			sprintf msg, "RMS noise short: (%s)\r", "skipped"
@@ -332,7 +332,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			rmsLong[i]       = PSQ_CalculateRMS(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			rmsLongPassed[i] = rmsLong[i] < PSQ_RMS_LONG_THRESHOLD
 
-			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], SelectString(rmsLongPassed[i], "failed", "passed")
+			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], ToPassFail(rmsLongPassed[i])
 			DEBUGPRINT(msg)
 		else
 			sprintf msg, "RMS noise long: (%s)\r", "skipped"
@@ -353,7 +353,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			avgVoltage[i]    = PSQ_CalculateAvg(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
 
-			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], SelectString(targetVPassed[i], "failed", "passed")
+			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
 			DEBUGPRINT(msg)
 		else
 			sprintf msg, "Average voltage of %gms: (%s)\r", evalRangeTime, "skipped"
@@ -411,7 +411,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	endif
 	// END TEST
 
-	sprintf msg, "Chunk %d %s", chunk, SelectString(chunkPassed, "failed", "passed")
+	sprintf msg, "Chunk %d %s", chunk, ToPassFail(chunkPassed)
 	DEBUGPRINT(msg)
 
 	// document chunk results
@@ -1531,7 +1531,7 @@ Function PSQ_DAScale(panelTitle, s)
 				setPassed = enoughSweepsPassed
 			endif
 
-			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
+			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
 			DEBUGPRINT(msg)
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
@@ -1644,7 +1644,7 @@ Function PSQ_DAScale(panelTitle, s)
 
 	baselineQCPassed = (ret == 0)
 
-	sprintf msg, "BL QC %s, last evaluated chunk %d returned with %g\r", SelectString(baselineQCPassed, "failed", "passed"), i, ret
+	sprintf msg, "BL QC %s, last evaluated chunk %d returned with %g\r", ToPassFail(baselineQCPassed), i, ret
 	DEBUGPRINT(msg)
 
 	// document BL QC results
@@ -1849,7 +1849,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 				SetDAScale(panelTitle, s.headstage, absolute=DAScale + stepsize)
 			endif
 
-			sprintf msg, "Sweep has %s\r", SelectString(sweepPassed, "failed", "passed")
+			sprintf msg, "Sweep has %s\r", ToPassFail(sweepPassed)
 			DEBUGPRINT(msg)
 
 			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = NaN
@@ -1868,7 +1868,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 				RA_SkipSweeps(panelTitle, inf)
 			endif
 
-			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
+			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
 			DEBUGPRINT(msg)
 
 			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
@@ -2322,7 +2322,7 @@ Function PSQ_Rheobase(panelTitle, s)
 
 	baselineQCPassed = (ret == 0)
 
-	sprintf msg, "Baseline QC %s, last evaluated chunk %d returned with %g\r", SelectString(baselineQCPassed, "failed", "passed"), i, ret
+	sprintf msg, "Baseline QC %s, last evaluated chunk %d returned with %g\r", ToPassFail(baselineQCPassed), i, ret
 	DEBUGPRINT(msg)
 
 	// document BL QC results
@@ -2542,7 +2542,7 @@ Function PSQ_Ramp(panelTitle, s)
 				endif
 			endif
 
-			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, sweeps passed %d, required passes %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, PSQ_RA_NUM_SWEEPS_PASS
+			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, sweeps passed %d, required passes %d\r", ToPassFail(sweepPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, PSQ_RA_NUM_SWEEPS_PASS
 			DEBUGPRINT(msg)
 
 			break
@@ -2551,7 +2551,7 @@ Function PSQ_Ramp(panelTitle, s)
 
 			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_RAMP, s.sweepNo, s.headstage) >= PSQ_RA_NUM_SWEEPS_PASS
 
-			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
+			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
 			DEBUGPRINT(msg)
 
 			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
@@ -2745,7 +2745,7 @@ Function PSQ_Ramp(panelTitle, s)
 		if(IsFinite(ret))
 			baselineQCPassed = (ret == 0)
 
-			sprintf msg, "Baseline QC/Sweep has %s, last evaluated chunk %d returned with %g\r", SelectString(baselineQCPassed, "failed", "passed"), i, ret
+			sprintf msg, "Baseline QC/Sweep has %s, last evaluated chunk %d returned with %g\r", ToPassFail(baselineQCPassed), i, ret
 			DEBUGPRINT(msg)
 
 			// document BL QC results
