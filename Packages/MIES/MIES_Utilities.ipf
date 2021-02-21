@@ -5152,84 +5152,35 @@ Function/S ConvertListToRegexpWithAlternations(list)
 	return regexpList
 End
 
-/// @brief Convert the Igor Pro crash dumps and the report file to JSON and upload them
+/// @brief Helper function for UploadCrashDumps
 ///
-/// Does nothing if none of these files exists.
-///
-/// The uploaded files are moved out of the way afterwards.
-///
-/// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
-///
-/// @return 1 if crash dumps had been uploaded, 0 otherwise
-Function UploadCrashDumps()
+/// Fill `payload` array with content from files
+Function AddPayloadEntriesFromFiles(variable jsonID, WAVE/T paths, [variable isBinary])
+	string data, fName, filepath, jsonpath
+	variable numEntries, i, offset
 
-	string diagSymbPath, basePath, diagPath
-	variable jsonID, numFiles, numLogs, referenceTime
+	numEntries = DimSize(paths, ROWS)
+	Make/FREE/N=(numEntries)/T values, keys
 
-	referenceTime = DEBUG_TIMER_START()
+	for(i = 0; i < numEntries; i += 1)
+		[data, fName] = LoadTextFile(paths[i])
+		values[i] = data
 
-	diagSymbPath = GetSymbolicPathForDiagnosticsDirectory()
+		keys[i] = GetFile(paths[i])
+	endfor
 
-	WAVE/T files = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".dmp"), "|")
-	WAVE/T logs = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".txt"), "|")
-	numFiles = DimSize(files, ROWS)
-	numLogs = DimSize(logs, ROWS)
-
-	if(!numFiles && !numLogs)
-		return 0
-	endif
-
-	printf "Please wait while we upload %d crash dumps. This might take a while.\r", numFiles + numLogs
-	ControlWindowToFront()
-
-	jsonID = JSON_New()
-
-	JSON_AddString(jsonID, "/computer", GetEnvironmentVariable("COMPUTERNAME"))
-	JSON_AddString(jsonID, "/user", IgorInfo(7))
-	JSON_AddString(jsonID, "/timestamp", GetISO8601TimeStamp())
-
-	JSON_AddTreeArray(jsonID, "/payload")
-
-	if(numFiles > 0)
-		AddPayloadEntries(jsonID, files, isBinary = 1)
-	endif
-
-	if(numLogs > 0)
-		AddPayloadEntries(jsonID, logs, isBinary = 1)
-	endif
-
-	PathInfo $diagSymbPath
-	diagPath = S_path
-
-	basePath = GetUniqueSymbolicPath()
-	NewPath/Q/O/Z $basePath diagPath + "..:"
-
-#ifdef DEBUGGING_ENABLED
-	SaveTextFile(JSON_dump(jsonID, indent=4), diagPath + "..:" + UniqueFileOrFolder(basePath, "crash-dumps", suffix = ".json"))
-#endif // DEBUGGING_ENABLED
-
-	UploadJSONPayload(jsonID)
-	JSON_Release(jsonID)
-
-#ifndef DEBUGGING_ENABLED
-	MoveFolder/P=$basePath "Diagnostics" as UniqueFileOrFolder(basePath, "Diagnostics_old")
-#endif // DEBUGGING_ENABLED
-
-	DEBUGPRINT_ELAPSED(referenceTime)
-
-	return 1
+	AddPayloadEntries(jsonID, keys, values, isBinary = isBinary)
 End
 
 /// @brief Helper function for UploadCrashDumps
 ///
 /// Fill `payload` array
-static Function AddPayloadEntries(jsonID, paths, [isBinary])
-	variable jsonID
-	WAVE/T paths
-	variable isBinary
-
-	string data, fName, filepath, jsonpath
+Function AddPayloadEntries(variable jsonID, WAVE/T keys, WAVE/T values, [variable isBinary])
+	string jsonpath
 	variable numEntries, i, offset
+
+	numEntries = DimSize(keys, ROWS)
+	ASSERT(numEntries == DimSize(values, ROWS), "Mismatched dimensions")
 
 	if(ParamIsDefault(isBinary))
 		isBinary = 0
@@ -5237,24 +5188,27 @@ static Function AddPayloadEntries(jsonID, paths, [isBinary])
 		isBinary = !!isBinary
 	endif
 
-	numEntries = DimSize(paths, ROWS)
+	if(!JSON_Exists(jsonID, "/payload"))
+		JSON_AddTreeArray(jsonID, "/payload")
+	endif
+
+	if(!numEntries)
+		return NaN
+	endif
 
 	offset = JSON_GetArraySize(jsonID, "/payload")
 	JSON_AddObjects(jsonID, "/payload", objCount = numEntries)
 
 	for(i = 0; i < numEntries; i += 1)
 		jsonpath = "/payload/" + num2str(offset + i) + "/"
-		filepath = paths[i]
 
-		JSON_AddString(jsonID, jsonpath + "name", GetFile(filepath))
-
-		[data, fName] = LoadTextFile(filepath)
+		JSON_AddString(jsonID, jsonpath + "name", keys[i])
 
 		if(isBinary)
 			JSON_AddString(jsonID, jsonpath + "encoding", "base64")
-			JSON_AddString(jsonID, jsonpath + "contents", Base64Encode(data))
+			JSON_AddString(jsonID, jsonpath + "contents", Base64Encode(values[i]))
 		else
-			JSON_AddString(jsonID, jsonpath + "contents", data)
+			JSON_AddString(jsonID, jsonpath + "contents", values[i])
 		endif
 	endfor
 End
