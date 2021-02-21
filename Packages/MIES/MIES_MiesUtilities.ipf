@@ -3337,15 +3337,16 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 
 	string unit, lbl, axis, trace, text, tagString, tmp
 	string traceList = ""
-	variable i, j, numEntries, row, col, numRows, sweepCol
+	variable i, j, row, col, numRows, sweepCol
 	variable isTimeAxis, isTextData, xPos
 	STRUCT RGBColor s
 
-	if(GetKeyWaveParameterAndUnit(keys, key, lbl, unit, col))
+	WAVE/T/Z traces
+	[traces, lbl, unit, col] = GetPropertiesForLabnotebookEntry(keys, key)
+
+	if(!WaveExists(traces))
 		return NaN
 	endif
-
-	lbl = LineBreakingIntoPar(lbl)
 
 	WAVE valuesDat = ExtractLBColumnTimeStamp(values)
 
@@ -3355,17 +3356,13 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 
 	axis = GetNextFreeAxisName(graph, VERT_AXIS_BASE_NAME)
 
-	numRows    = DimSize(values, ROWS)
-	numEntries = DimSize(values, LAYERS)
-
 	if(IsTextData)
 		WAVE valuesNull  = ExtractLBColumnEmpty(values)
 		WAVE valuesSweep = ExtractLBColumnSweep(values)
 	endif
 
-	for(i = 0; i < numEntries; i += 1)
-
-		trace = CleanupName(lbl[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - 5] + " (" + num2str(i + 1) + ")", 1) // +1 because the headstage number is 1-based
+	for(i = 0; i < LABNOTEBOOK_LAYER_COUNT; i += 1)
+		trace = traces[i]
 		traceList = AddListItem(trace, traceList, ";", inf)
 
 		if(isTextData)
@@ -3393,37 +3390,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 
 	if(isTextData)
 		WAVE/T valuesText = values
-		for(i = 0; i < numRows; i += 1)
-			if(isTimeAxis)
-				xPos = valuesDat[i]
-			else
-				xPos = valuesSweep[i]
-			endif
-
-			if(!IsFinite(xPos))
-				continue
-			endif
-
-			tagString = ""
-			for(j = 0; j < numEntries; j += 1)
-				text = valuesText[i][col][j]
-
-				if(IsEmpty(text))
-					continue
-				endif
-
-				[s] = GeHeadstageColor(j)
-				sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", s.red, s.green, s.blue, j + 1
-				text = ReplaceString("\\", text, "\\\\")
-				tagString = tagString + tmp + text + "\r"
-			endfor
-
-			if(IsEmpty(tagString))
-				continue
-			endif
-
-			Tag/W=$graph/F=0/L=0/X=0.00/Y=0.00/O=90 $trace, i, RemoveEnding(tagString, "\r")
-		endfor
+		AddTagsForTextualLBNEntries(graph, keys, valuesText, key)
 	endif
 
 	if(!isEmpty(unit))
@@ -3443,6 +3410,82 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 	SetLabNotebookBottomLabel(graph, isTimeAxis)
 	EquallySpaceAxis(graph, axisRegExp=VERT_AXIS_BASE_NAME + ".*")
 	UpdateLBGraphLegend(graph, traceList=traceList)
+End
+
+Function [WAVE/T/Z traces, string name, string unit, variable col] GetPropertiesForLabnotebookEntry(WAVE/T keys, string key)
+
+	if(GetKeyWaveParameterAndUnit(keys, key, name, unit, col))
+		return [$"", "", "", NaN]
+	endif
+
+	name = LineBreakingIntoPar(name)
+
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/T traces = CleanupName(name[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - 5] + " (" + num2str(p + 1) + ")", 0) // +1 because the headstage number is 1-based
+
+	return [traces, name, unit, col]
+End
+
+Function AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/T values, string key, [variable firstSweep])
+	variable i, j, numRows, numEntries, isTimeAxis, col, sweepCol, firstRow
+	string tagString, tmp, text, unit, lbl, name
+	STRUCT RGBColor s
+
+	WAVE/T/Z traces
+	[traces, lbl, unit, col] = GetPropertiesForLabnotebookEntry(keys, key)
+
+	if(!WaveExists(traces))
+		return NaN
+	endif
+
+	WAVE valuesSweep = ExtractLBColumnSweep(values)
+	WAVE valuesDat = ExtractLBColumnTimeStamp(values)
+
+	isTimeAxis = CheckIfXAxisIsTime(graph)
+	sweepCol   = GetSweepColumn(values)
+
+	if(isTimeAxis)
+		WAVE xPos = valuesSweep
+	else
+		WAVE xPos = valuesDat
+	endif
+
+	numRows    = DimSize(values, ROWS)
+	numEntries = DimSize(values, LAYERS)
+
+	if(ParamIsDefault(firstSweep))
+		firstRow = 0
+	else
+		FindValue/V=(firstSweep) valuesSweep
+		firstRow = V_value
+	endif
+
+	for(i = firstRow; i < numRows; i += 1)
+		if(!IsFinite(xPos[i]))
+			continue
+		endif
+
+		tagString = ""
+		for(j = 0; j < LABNOTEBOOK_LAYER_COUNT; j += 1)
+			text = values[i][col][j]
+
+			if(IsEmpty(text))
+				continue
+			endif
+
+			[s] = GetHeadstageColor(j)
+			sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", s.red, s.green, s.blue, j + 1
+			text = ReplaceString("\\", text, "\\\\")
+			tagString = tagString + tmp + text + "\r"
+		endfor
+
+		if(IsEmpty(tagString))
+			continue
+		endif
+
+		name = traces[0] + "_" + num2str(i)
+
+		Tag/C/N=$name/W=$graph/F=0/L=0/X=0.00/Y=0.00/O=90 $traces[0], i, RemoveEnding(tagString, "\r")
+	endfor
 End
 
 /// @brief Switch the labnotebook graph x axis type (time <-> sweep numbers)
