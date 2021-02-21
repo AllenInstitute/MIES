@@ -152,10 +152,13 @@ static Function/WAVE ExtractLBColumn(values, col, suffix)
 		SetDimLabel ROWS, -1, $colName, singleColumn
 	endif
 
+	SetNumberInWaveNote(singleColumn, NOTE_INDEX, nextRowIndex)
+
 	if(IsTextWave(singleColumn))
 		WAVE/T singleColumnFree = MakeWaveFree(singleColumn)
 		Make/O/D/N=(DimSize(singleColumnFree, ROWS), DimSize(singleColumnFree, COLS), DimSize(singleColumnFree, LAYERS), DimSize(singleColumnFree, CHUNKS)) dfr:$name/Wave=singleColumnFromText
 		CopyScales singleColumnFree, singleColumnFromText
+		Note/K singleColumnFromText, note(singleColumnFree)
 		singleColumnFromText = str2num(singleColumnFree)
 		return singleColumnFromText
 	endif
@@ -3466,7 +3469,7 @@ Function AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/T values, s
 		WAVE xPos = valuesDat
 	endif
 
-	numRows    = DimSize(values, ROWS)
+	numRows    = GetNumberFromWaveNote(values, NOTE_INDEX)
 	numEntries = DimSize(values, LAYERS)
 
 	if(ParamIsDefault(firstSweep))
