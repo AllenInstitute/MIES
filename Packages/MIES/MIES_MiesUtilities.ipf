@@ -3287,7 +3287,7 @@ End
 Function UpdateLBGraphLegend(graph, [traceList])
 	string graph, traceList
 
-	string str
+	string str, trace, header
 	variable numEntries, i
 
 	if(!windowExists(graph))
@@ -3303,11 +3303,14 @@ Function UpdateLBGraphLegend(graph, [traceList])
 		return NaN
 	endif
 
-	str = "\\JCHeadstage\r"
+	header = "\\JCHeadstage\r"
+	str = ""
 
 	numEntries = ItemsInList(traceList)
 	for(i = 0 ; i < numEntries; i += 1)
-		str += "\\s(" + PossiblyQuoteName(StringFromList(i, traceList)) + ") "
+		trace = StringFromList(i, traceList)
+
+		str += "\\s(" + PossiblyQuoteName(trace) + ") "
 
 		if(i < NUM_HEADSTAGES)
 			str += num2str(i + 1)
@@ -3320,7 +3323,11 @@ Function UpdateLBGraphLegend(graph, [traceList])
 		endif
 	endfor
 
-	str = RemoveEnding(str, "\r")
+	if(IsEmpty(str))
+		return NaN
+	endif
+
+	str = RemoveEnding(header + str, "\r")
 	TextBox/C/W=$graph/N=text0/F=2 str
 End
 
