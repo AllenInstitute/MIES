@@ -3451,13 +3451,18 @@ Function SwitchLBGraphXAxis(graph, numericalValues, textualValues)
 	WAVE numericalValues, textualValues
 
 	string trace, dataUnits, list, wvName
-	variable i, numEntries, isTimeAxis, sweepCol
+	variable i, numEntries, isTimeAxis, sweepCol, isTextData
 
 	list = TraceNameList(graph, ";", 0 + 1)
 
 	if(isEmpty(list))
 		return NaN
 	endif
+
+	WAVE numericalValuesDat     = ExtractLBColumnTimeStamp(numericalValues)
+	WAVE/Z numericalValuesSweep = $""
+	WAVE textualValuesDat        = ExtractLBColumnTimeStamp(textualValues)
+	WAVE textualValuesSweep      = ExtractLBColumnSweep(textualValues)
 
 	isTimeAxis = CheckIfXAxisIsTime(graph)
 	sweepCol   = GetSweepColumn(numericalValues)
@@ -3469,20 +3474,22 @@ Function SwitchLBGraphXAxis(graph, numericalValues, textualValues)
 		// instance does not matter as all instances use the same xwave
 		wvName = StringByKey("XWAVE", TraceInfo(graph, trace, 0))
 
-		if(StringMatch(wvName, "numericalValues*"))
-			WAVE valuesDat     = ExtractLBColumnTimeStamp(numericalValues)
-			WAVE/Z valuesSweep = $""
+		isTextData = StringMatch(wvName, "textualValues*")
+
+		if(isTextData)
+			WAVE valuesSweep = textualValuesSweep
+			WAVE valuesDat   = textualValuesDat
 		else
-			WAVE valuesDat   = ExtractLBColumnTimeStamp(textualValues)
-			WAVE valuesSweep = ExtractLBColumnSweep(textualValues)
+			WAVE/Z valuesSweep = $""
+			WAVE valuesDat     = numericalValuesDat
 		endif
 
 		// change from timestamps to sweepNums
 		if(isTimeAxis)
-			if(!WaveExists(valuesSweep))
-				ReplaceWave/W=$graph/X trace=$trace, numericalValues[][sweepCol][0]
-			else
+			if(isTextData)
 				ReplaceWave/W=$graph/X trace=$trace, valuesSweep
+			else
+				ReplaceWave/W=$graph/X trace=$trace, numericalValues[][sweepCol][0]
 			endif
 		else // other direction
 			ReplaceWave/W=$graph/X trace=$trace, valuesDat
