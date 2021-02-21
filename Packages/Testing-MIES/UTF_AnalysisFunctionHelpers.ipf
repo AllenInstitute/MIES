@@ -338,6 +338,43 @@ Function AE_WorksMultiValues()
 	CHECK_EQUAL_VAR(numericalValues[0][0][0], 0)
 End
 
+Function AE_NumericHasCorrectTimeStamps()
+
+	variable row, col, ts
+	string key = "someKey"
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[0, NUM_HEADSTAGES - 1] = p^2
+	ED_AddEntryToLabnotebook(device, key, values)
+
+	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
+	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
+
+	CHECK_WAVE(numericalKeys, TEXT_WAVE)
+	CHECK_WAVE(numericalValues, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+
+	// key is added with prefix, so there is no full match
+	FindValue/TXOP=4/TEXT=key numericalKeys
+	CHECK_EQUAL_VAR(V_Value, -1)
+
+	FindValue/TEXT=key numericalKeys
+	col = floor(V_Value / DimSize(numericalKeys, ROWS))
+	row = V_Value - col * DimSize(numericalKeys, ROWS)
+	CHECK_EQUAL_VAR(row, 0)
+	CHECK_EQUAL_VAR(col, 4)
+
+	ts = numericalValues[0][1][0]
+	// entry has timestamp with full resolution
+	CHECK(!IsInteger(ts))
+	// and at most 1s old
+	CHECK((DateTime - ts) < 1)
+
+	// same for UTC variant
+	ts = numericalValues[0][2][0]
+	CHECK(!IsInteger(ts))
+	CHECK((DateTimeInUTC() - ts) < 1)
+End
+
 Function AE_WorksIndepHeadstage()
 
 	variable row, col, i
@@ -536,6 +573,40 @@ Function AE_TextWorksIndepHeadstage()
 
 	// inserted under correct sweep number
 	CHECK_EQUAL_VAR(str2num(textualValues[0][0][0]), 0)
+End
+
+Function AE_TextHasCorrectTimeStamps()
+
+	variable row, col, ts
+	string key = "someKey"
+
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
+	values[LABNOTEBOOK_LAYER_COUNT - 1] = "4711"
+	ED_AddEntryToLabnotebook(device, key, values)
+
+	WAVE/T textualKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:textualKeys
+	WAVE/T textualValues = root:MIES:LabNoteBook:ITC18USB:Device0:textualValues
+
+	// key is added with prefix, so there is no full match
+	FindValue/TXOP=4/TEXT=key textualKeys
+	CHECK_EQUAL_VAR(V_Value, -1)
+
+	FindValue/TEXT=key textualKeys
+	col = floor(V_Value / DimSize(textualKeys, ROWS))
+	row = V_Value - col * DimSize(textualKeys, ROWS)
+	CHECK_EQUAL_VAR(row, 0)
+	CHECK_EQUAL_VAR(col, 4)
+
+	ts = str2num(textualValues[0][1][0])
+	// entry has timestamp with full resolution
+	CHECK(!IsInteger(ts))
+	// and at most 1s old
+	CHECK((DateTime - ts) < 1)
+
+	// same for UTC variant
+	ts = str2num(textualValues[0][2][0])
+	CHECK(!IsInteger(ts))
+	CHECK((DateTimeInUTC() - ts) < 1)
 End
 
 Function AE_NormalizesEOLs()
