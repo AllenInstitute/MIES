@@ -109,7 +109,7 @@ Function OpenAboutDialog()
 
 	version = ROStr(GetMiesVersion())
 	version = StringFromList(0, version, "\r")
-	version = RemovePrefix(version, startStr = "Release_")
+	version = RemovePrefix(version, start = "Release_")
 	Notebook $nb text="Version: " + version  + "\r"
 	Notebook $nb text="\r"
 	NotebookAction/W=$nb name=Action1, title="Report an Issue/Enhancement proposal", ignoreErrors=1

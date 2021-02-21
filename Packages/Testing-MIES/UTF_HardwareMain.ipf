@@ -783,9 +783,10 @@ Function CheckDashboard(string device, WAVE headstageQC)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 	numEntries = GetNumberFromWaveNote(listWave, NOTE_INDEX)
+	CHECK(numEntries > 0)
 
 	for(i = 0; i < numEntries; i += 1)
-		state = !cmpstr(listWave[0][%Result], DASHBOARD_PASSING_MESSAGE)
+		state = !cmpstr(listWave[i][%Result], DASHBOARD_PASSING_MESSAGE)
 		CHECK_EQUAL_VAR(state, headstageQC[i])
 	endfor
 End

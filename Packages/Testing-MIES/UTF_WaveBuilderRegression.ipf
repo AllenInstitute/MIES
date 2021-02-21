@@ -57,7 +57,7 @@ Function/WAVE WB_GatherStimsets()
 	list = RemovePrefixFromListItem("WP_", list)
 	WAVE/T wv = ListToTextWave(list, ";")
 
-	SetWaveDimLabel(wv, list, ROWS)
+	SetDimensionLabels(wv, list, ROWS)
 
 	return wv
 End

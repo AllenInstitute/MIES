@@ -1138,8 +1138,8 @@ End
 /// - Each 500ms (#PSQ_DS_BL_EVAL_RANGE_MS) of the baseline is a chunk
 ///
 /// Testing:
-/// For testing the sweep/set passing/fail logic can be defined in the wave
-/// root:overrideResults. @see PSQ_CreateOverrideResults()
+/// For testing the spike detection logic, the results can be defined in the override wave,
+/// @see PSQ_CreateOverrideResults().
 ///
 /// Reading the results from the labnotebook:
 ///
@@ -1698,8 +1698,8 @@ End
 /// - Assumes that the stimset has a pulse
 ///
 /// Testing:
-/// For testing the spike detection logic, the results can be defined in the wave
-/// root:overrideResults. @see PSQ_CreateOverrideResults()
+/// For testing the spike detection logic, the results can be defined in the override wave,
+/// @see PSQ_CreateOverrideResults().
 ///
 /// Decision logic flowchart:
 ///
@@ -1934,8 +1934,8 @@ End
 /// - Post pulse baseline length a multiple of #PSQ_RB_POST_BL_EVAL_RANGE
 ///
 /// Testing:
-/// For testing the spike detection logic, the results can be defined in the wave
-/// root:overrideResults. @see PSQ_CreateOverrideResults()
+/// For testing the spike detection logic, the results can be defined in the override wave,
+/// @see PSQ_CreateOverrideResults().
 ///
 /// Decision logic flowchart:
 ///
@@ -2401,8 +2401,8 @@ End
 /// - Post pulse baseline length is at least two times #PSQ_RA_BL_EVAL_RANGE
 ///
 /// Testing:
-/// For testing the spike detection logic, the results can be defined in the wave
-/// root:overrideResults. @see PSQ_CreateOverrideResults()
+/// For testing the spike detection logic, the results can be defined in the override wave,
+/// @see PSQ_CreateOverrideResults().
 ///
 /// Decision logic flowchart:
 ///

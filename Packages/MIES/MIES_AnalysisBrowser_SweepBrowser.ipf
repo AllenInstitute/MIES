@@ -216,7 +216,7 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 		numWaves = ItemsInList(list)
 		for(j = 0; j < numWaves; j += 1)
 			path = StringFromList(j, list)
-			channelNumber = str2num(RemovePrefix(GetBaseName(path), startstr=channel + "_"))
+			channelNumber = str2num(RemovePrefix(GetBaseName(path), start = channel + "_"))
 			ASSERT(IsFinite(channelNumber), "Extracted non finite channel number")
 
 			strswitch(channel)

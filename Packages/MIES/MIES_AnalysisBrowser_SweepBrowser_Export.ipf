@@ -356,7 +356,7 @@ static Function SBE_ExportSweepBrowser(sett)
 	// replace relative reference to sweepBrowserDFR
 	// with absolut ones to newPrefix
 	folder = GetDataFolder(1, sweepBrowserDFR)
-	folder = RemovePrefix(folder, startStr="root:")
+	folder = RemovePrefix(folder, start = "root:")
 	folder = ":::::::" + folder
 	graphMacro = ReplaceString(folder, graphMacro, newPrefix + ":")
 
@@ -373,7 +373,7 @@ static Function SBE_ExportSweepBrowser(sett)
 		if(DataFolderRefsEqual(loc, sweepBrowserDFR))
 			DFREF dfr = createDFWithAllParents(newPrefix)
 		else
-			relativeDest = RemovePrefix(GetDataFolder(1, loc), startStr=analysisPrefix)
+			relativeDest = RemovePrefix(GetDataFolder(1, loc), start = analysisPrefix)
 			DFREF dfr = createDFWithAllParents(newPrefix + relativeDest)
 		endif
 
@@ -524,7 +524,7 @@ static Function SBE_ExportSweepBrowser(sett)
 	endfor
 
 	if(doCreateNewGraph)
-		graphName = RemovePrefix(newPrefix, startStr="root:")
+		graphName = RemovePrefix(newPrefix, start = "root:")
 		if(WindowExists(graphName))
 			graphName = UniqueName(graphName, 6, 0)
 		endif

@@ -1201,7 +1201,7 @@ static Function UpgradeLabNotebook(panelTitle)
 		numericalValues[][2][] = NaN
 		numericalKeys[][2]           = ""
 		numericalKeys[0][2]          = "TimeStampSinceIgorEpochUTC"
-		SetDimensionLabels(numericalKeys, numericalValues)
+		LBN_SetDimensionLabels(numericalKeys, numericalValues)
 
 		DEBUGPRINT("Upgraded numerical labnotebook to hold UTC timestamps")
 	endif
@@ -1218,7 +1218,7 @@ static Function UpgradeLabNotebook(panelTitle)
 		textualValues[][2][]   = ""
 		textualKeys[][2]  = ""
 		textualKeys[0][2] = "TimeStampSinceIgorEpochUTC"
-		SetDimensionLabels(textualKeys, textualValues)
+		LBN_SetDimensionLabels(textualKeys, textualValues)
 
 		DEBUGPRINT("Upgraded textual labnotebook to hold UTC timestamps")
 	endif
@@ -1237,7 +1237,7 @@ static Function UpgradeLabNotebook(panelTitle)
 		numericalValues[][3][] = NaN
 		numericalKeys[][3]     = ""
 		numericalKeys[0][3]    = "EntrySourceType"
-		SetDimensionLabels(numericalKeys, numericalValues)
+		LBN_SetDimensionLabels(numericalKeys, numericalValues)
 
 		DEBUGPRINT("Upgraded numerical labnotebook to hold entry source type column")
 	endif
@@ -1254,7 +1254,7 @@ static Function UpgradeLabNotebook(panelTitle)
 		textualValues[][3][] = ""
 		textualKeys[][3]     = ""
 		textualKeys[0][3]    = "EntrySourceType"
-		SetDimensionLabels(textualKeys, textualValues)
+		LBN_SetDimensionLabels(textualKeys, textualValues)
 
 		DEBUGPRINT("Upgraded textual labnotebook to hold entry source type column")
 	endif
@@ -1305,8 +1305,8 @@ static Function UpgradeLabNotebook(panelTitle)
 
 	if(WaveVersionIsSmaller(numericalKeys, 37))
 		// reapply the dimension labels as the old ones were cut off after 31 bytes
-		SetDimensionLabels(numericalKeys, numericalValues)
-		SetDimensionLabels(textualKeys, textualValues)
+		LBN_SetDimensionLabels(numericalKeys, numericalValues)
+		LBN_SetDimensionLabels(textualKeys, textualValues)
 	endif
 
 	if(WaveVersionIsSmaller(numericalKeys, 39))
@@ -5276,7 +5276,7 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	SetDimLabel COLS, 16, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX), wv
 	SetDimLabel COLS, 17, HSMode_delayed, wv
 
-	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_NUM)
+	SetDimensionLabels(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_NUM)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
 	DAG_RecordGuiStateNum(panelTitle, GuiState = wv)
@@ -5335,7 +5335,7 @@ Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
 	SetDimLabel COLS,  8, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE), wv
 	SetDimLabel COLS,  9, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT), wv
 
-	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_TXT)
+	SetDimensionLabels(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_TXT)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
 	DAG_RecordGuiStateTxT(panelTitle, Guistate = wv)
@@ -6003,7 +6003,7 @@ Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
 		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 3) dfr:$newName/Wave=wv
 	endif
 
-	SetWaveDimLabel(wv, "Stimset;TTLStimset;StimsetAndClampMode", LAYERS)
+	SetDimensionLabels(wv, "Stimset;TTLStimset;StimsetAndClampMode", LAYERS)
 	SetNumberInWaveNote(wv, "NeedsUpdate", 1)
 	SetWaveVersion(wv, versionOfNewWave)
 

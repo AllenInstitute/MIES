@@ -150,7 +150,7 @@ Function TUD_SetUserData(string graph, string trace, string key, string value)
 
 	if(TUD_GetTraceCount(graph) == 0)
 		 Redimension/N=(-1, 1) graphUserData
-		 SetWaveDimLabel(graphUserData, "traceName", COLS)
+		 SetDimensionLabels(graphUserData, "traceName", COLS)
 	endif
 
 	row = TUD_ConvertTraceNameToRowIndex(graphUserData, trace, create = 1)
@@ -182,14 +182,14 @@ Function TUD_SetUserDataFromWaves(string graph, string trace, WAVE/T keys, WAVE/
 	if(TUD_GetTraceCount(graph) == 0)
 		numCols = DimSize(keys, ROWS) + 1
 		Redimension/N=(-1, numCols) graphUserData
-		SetWaveDimLabel(graphUserData, "traceName;" + TextWaveToList(keys, ";"), COLS)
+		SetDimensionLabels(graphUserData, "traceName;" + TextWaveToList(keys, ";"), COLS)
 		first = 1
 		last  = numCols - 1
 	elseif(first == -2 && last == -2)
 		numExistingCols = DimSize(graphUserData, COLS)
 		numCols = numExistingCols + DimSize(keys, ROWS)
 		Redimension/N=(-1, numCols) graphUserData
-		SetWaveDimLabel(graphUserData, TextWaveToList(keys, ";"), COLS, startPos = numExistingCols)
+		SetDimensionLabels(graphUserData, TextWaveToList(keys, ";"), COLS, startPos = numExistingCols)
 		first = numExistingCols
 		last  = numCols - 1
 	endif

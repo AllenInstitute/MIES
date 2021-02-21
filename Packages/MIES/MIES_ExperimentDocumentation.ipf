@@ -84,7 +84,7 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 
 	SetNumberInWaveNote(textualValues, NOTE_INDEX, rowIndex + 1)
 
-	SetDimensionLabels(textualKeys, textualValues)
+	LBN_SetDimensionLabels(textualKeys, textualValues)
 End
 
 /// @brief Add numerical entries to the labnotebook
@@ -136,7 +136,7 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 
 	SetNumberInWaveNote(numericalValues, NOTE_INDEX, rowIndex + 1)
 
-	SetDimensionLabels(numericalKeys, numericalValues)
+	LBN_SetDimensionLabels(numericalKeys, numericalValues)
 End
 
 /// @brief Add custom entries to the numerical/textual labnotebook for the very last sweep acquired.
@@ -166,7 +166,9 @@ End
 ///
 /// @param panelTitle      device
 /// @param key             name under which to store the entry.
-/// @param values          entry to add, wave can be numeric (floating point) or text, must have #LABNOTEBOOK_LAYER_COUNT rows.
+/// @param values          entry to add, wave can be numeric (floating point) or text, must have
+///                        #LABNOTEBOOK_LAYER_COUNT rows. It can be all NaN or empty (text), this is useful
+///                        if you want to make the key known without adding an entry.
 /// @param unit            [optional, defaults to ""] physical unit of the entry
 /// @param tolerance       [optional, defaults to #LABNOTEBOOK_NO_TOLERANCE] tolerance of the entry, used for
 ///                        judging if a change is "relevant" and should then be written to the sweep wave
@@ -201,6 +203,8 @@ Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance, ove
 	WaveStats/Q/M=1 stats
 	ASSERT((IsFinite(stats[INDEP_HEADSTAGE]) && V_numNaNs == NUM_HEADSTAGES) || !IsFinite(stats[INDEP_HEADSTAGE]), \
 	  "The independent headstage entry can not be combined with headstage dependent entries.")
+
+	// we allow all entries to be NaN or empty
 
 	if(ParamIsDefault(unit))
 		unit = ""

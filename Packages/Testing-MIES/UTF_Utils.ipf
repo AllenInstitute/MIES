@@ -1765,17 +1765,6 @@ End
 /// @{
 /// HasOneValidEntry
 
-Function HOV_AssertsInvalidType()
-
-	Make/B wv
-	try
-		HasOneValidEntry(wv)
-		FAIL()
-	catch
-		PASS()
-	endtry
-End
-
 Function HOV_AssertsOnInvalidType()
 
 	Make/B wv
@@ -1836,6 +1825,19 @@ Function HOV_WorksWith2D()
 
 	Make/R/N=(10, 9) wv = NaN
 	wv[2, 3] = 4711
+	CHECK(HasOneValidEntry(wv))
+End
+
+Function HOV_WorksWithText1()
+
+	Make/FREE/T/N=(2) wv = ""
+	CHECK(!HasOneValidEntry(wv))
+End
+
+Function HOV_WorksWithText2()
+
+	Make/FREE/T/N=(2) wv = ""
+	wv[0] = "a"
 	CHECK(HasOneValidEntry(wv))
 End
 
@@ -2513,20 +2515,6 @@ End
 /// TextWaveToList
 /// @{
 
-/// @brief Fail due to null wave
-Function TextWaveToListFail0()
-
-	WAVE/T w=$""
-	string list
-
-	try
-		list = TextWaveToList(w, ";")
-		FAIL()
-	catch
-		PASS()
-	endtry
-End
-
 /// @brief Fail due to numeric wave
 Function TextWaveToListFail1()
 
@@ -2667,6 +2655,16 @@ Function TextWaveToListWorks5()
 	w = {{"1", "", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
 	refList = "1,4,7,;"
 	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	CHECK_EQUAL_STR(list, refList)
+End
+
+/// @brief null wave
+Function TextWaveToListWorks6()
+
+	string list
+	string refList = ""
+
+	list = TextWaveToList($"", ";")
 	CHECK_EQUAL_STR(list, refList)
 End
 /// @}
@@ -3907,6 +3905,9 @@ Function NWLWorks()
 	Make/FREE/N=0 dataEmpty
 	result = NumericWaveToList(dataEmpty, ";")
 	CHECK_EMPTY_STR(result)
+
+	result = NumericWaveToList($"", ";")
+	CHECK_EMPTY_STR(result)
 End
 
 Function NWLChecksInput()
@@ -4595,4 +4596,83 @@ Function IO_FalseWithNonFiniteValues([variable var])
 	CHECK(!IsOdd(var))
 End
 
+/// @}
+
+/// RemovePrefix
+/// @{
+
+Function RP_Works()
+
+	string ref, str
+
+	str = RemovePrefix("")
+	CHECK_EMPTY_STR(str)
+
+	str = RemovePrefix("abcd")
+	ref = "bcd"
+	CHECK_EQUAL_STR(ref, str)
+
+	str = RemovePrefix("abcd", start = "ab")
+	ref = "cd"
+	CHECK_EQUAL_STR(ref, str)
+
+	// no match, wrong
+	str = RemovePrefix("abcd", start = "123")
+	ref = "abcd"
+	CHECK_EQUAL_STR(ref, str)
+
+	// no match, too long
+	str = RemovePrefix("abcd", start = "abcde")
+	ref = "abcd"
+	CHECK_EQUAL_STR(ref, str)
+
+	// regexp
+	str = RemovePrefix("abcd123", start = "[a-z]*", regexp = 1)
+	ref = "123"
+	CHECK_EQUAL_STR(ref, str)
+
+	// regexp, no match
+	str = RemovePrefix("abcd", start = "[0-9]*", regexp = 1)
+	ref = "abcd"
+	CHECK_EQUAL_STR(ref, str)
+
+	// invalid regexp
+	str = RemovePrefix("abcd", start = "[::I_DONT_EXIST::]*", regexp = 1)
+	ref = "abcd"
+	CHECK_EQUAL_STR(ref, str)
+End
+
+/// @}
+
+/// RemovePrefixFromListItem
+/// @{
+
+Function RPFLI_Works()
+
+	string ref, str
+
+	// empty list
+	str = RemovePrefixFromListItem("abcd", "")
+	CHECK_EMPTY_STR(str)
+
+	// empty prefix
+	str = RemovePrefixFromListItem("", "abcd")
+	ref = "abcd;"
+	CHECK_EQUAL_STR(ref, str)
+
+	// works
+	str = RemovePrefixFromListItem("a", "aa;ab")
+	ref = "a;b;"
+	CHECK_EQUAL_STR(ref, str)
+
+	// works with custom list sep
+	str = RemovePrefixFromListItem("a", "aa|ab", listSep = "|")
+	ref = "a|b|"
+	CHECK_EQUAL_STR(ref, str)
+
+	// regexp works
+	str = RemovePrefixFromListItem("[a-z]*", "a12;bcdf45", regExp = 1)
+	ref = "12;45;"
+	CHECK_EQUAL_STR(ref, str)
+End
 /// @}

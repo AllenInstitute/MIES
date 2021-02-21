@@ -8,6 +8,7 @@ Packages/MIES/backup
 *.orig
 *.rej
 *.T0
+*.autosave
 
 # mies version file
 version.txt

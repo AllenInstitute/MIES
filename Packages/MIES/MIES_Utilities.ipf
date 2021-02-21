@@ -138,7 +138,13 @@ Function ASSERT(var, errorMsg)
 		print "Please provide the following information if you contact the MIES developers:"
 		print "################################"
 		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+#endif // AUTOMATED_TESTING
+
+#if !defined(AUTOMATED_TESTING) || defined(AUTOMATED_TESTING_DEBUGGING)
 		print GetStackTrace()
+#endif
+
+#ifndef AUTOMATED_TESTING
 		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
 		printf "Locked device: [%s]\r", RemoveEnding(lockedDevicesStr, ";")
@@ -206,12 +212,19 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 		print "Please provide the following information if you contact the MIES developers:"
 		print "################################"
 		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+#endif // AUTOMATED_TESTING
+
+#if !defined(AUTOMATED_TESTING) || defined(AUTOMATED_TESTING_DEBUGGING)
 
 #if IgorVersion() >= 9.0
 		print GetStackTrace()
 #else
 		print "stacktrace not available"
 #endif
+
+#endif // !AUTOMATED_TESTING || AUTOMATED_TESTING_DEBUGGING
+
+#ifndef AUTOMATED_TESTING
 
 		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
@@ -757,6 +770,7 @@ Function/Wave GetUniqueEntries(wv, [caseSensitive])
 
 	FindDuplicates/RN=result wv
 
+	/// @todo this should be removed as it does not belong into this function
 	WaveTransform/O zapNaNs wv
 	WaveTransform/O zapINFs wv
 
@@ -1517,19 +1531,28 @@ Function/S UniqueWaveName(dfr, baseName)
 	return ""
 End
 
-/// @brief Remove str with the first character removed, or
-/// if given with startStr removed
+/// @brief Remove a prefix from a string
 ///
-/// Same semantics as the RemoveEnding builtin
-Function/S RemovePrefix(str, [startStr])
-	string str, startStr
+/// Same semantics as the RemoveEnding builtin for regExp == 0.
+///
+/// @param str    string to potentially remove something from its beginning
+/// @param start  [optional, defaults to the first character] Remove this from
+///               the begin pf str
+/// @param regExp [optional, defaults to false] If start is a simple string (false)
+///               or a regular expression (true)
+threadsafe Function/S RemovePrefix(string str, [string start, variable regExp])
+	variable length, pos, skipLength, err
+	string regExpResult
 
-	variable length, pos
+	if(ParamIsDefault(regExp))
+		regExp = 0
+	else
+		regExp = !!regExp
+	endif
 
 	length = strlen(str)
 
-	if(ParamIsDefault(startStr))
-
+	if(ParamIsDefault(start))
 		if(length <= 0)
 			return str
 		endif
@@ -1537,35 +1560,25 @@ Function/S RemovePrefix(str, [startStr])
 		return str[1, length - 1]
 	endif
 
-	pos = strsearch(str, startStr, 0)
+	if(regExp)
+		SplitString/E="^(" + start + ")" str, regExpResult; err = GetRTError(1)
 
-	if(pos != 0)
-		return str
+		if(V_flag == 1 && err == 0)
+			skipLength = strlen(regExpResult)
+		else
+			return str
+		endif
+	else
+		pos = strsearch(str, start, 0)
+
+		if(pos != 0)
+			return str
+		endif
+
+		skipLength = strlen(start)
 	endif
 
-	return 	str[strlen(startStr), length - 1]
-End
-
-/// @brief Set column dimension labels from the first row of the key wave
-///
-/// Specialized function from the experiment documentation file needed also in other places.
-Function SetDimensionLabels(keys, values)
-	Wave/T keys
-	Wave values
-
-	variable i, numCols
-	string text
-
-	numCols = DimSize(values, COLS)
-	ASSERT(DimSize(keys, COLS) == numCols, "Mismatched column sizes")
-	ASSERT(DimSize(keys, ROWS) > 0 , "Expected at least one row in the key wave")
-
-	for(i = 0; i < numCols; i += 1)
-		text = keys[0][i]
-		text = text[0,MAX_OBJECT_NAME_LENGTH_IN_BYTES - 1]
-		ASSERT(!isEmpty(text), "Empty key")
-		SetDimLabel COLS, i, $text, keys, values
-	endfor
+	return str[skipLength, length - 1]
 End
 
 /// @brief Returns a unique and non-existing file or folder name
@@ -2411,26 +2424,26 @@ Function/S AddPrefixToEachListItem(prefix, list)
 End
 
 /// @brief Remove a string prefix from each list item and
-/// return the new list
-Function/S RemovePrefixFromListItem(prefix, list, [listSep])
-	string prefix, list
-	string listSep
+///        return the new list
+threadsafe Function/S RemovePrefixFromListItem(string prefix, string list, [string listSep, variable regExp])
+	string result, entry
+	variable numEntries, i
+
 	if(ParamIsDefault(listSep))
 		listSep = ";"
 	endif
 
-	string result, entry
-	variable numEntries, i, len
+	if(ParamIsDefault(regExp))
+		regExp = 0
+	else
+		regExp = !!regExp
+	endif
 
 	result = ""
-	len = strlen(prefix)
 	numEntries = ItemsInList(list, listSep)
 	for(i = 0; i < numEntries; i += 1)
 		entry = StringFromList(i, list, listSep)
-		if(!cmpstr(entry[0,(len-1)], prefix))
-			entry = entry[(len),inf]
-		endif
-		result = AddListItem(entry, result, listSep, inf)
+		result = AddListItem(RemovePrefix(entry, start = prefix, regExp = regExp), result, listSep, inf)
 	endfor
 
 	return result
@@ -2917,14 +2930,14 @@ End
 ///
 /// Counterpart @see ConvertListToTextWave
 /// @see NumericWaveToList
-Function/S TextWaveToList(txtWave, sep[, colSep, stopOnEmpty])
-	WAVE/T txtWave
-	string sep, colSep
-	variable stopOnEmpty
-
+Function/S TextWaveToList(WAVE/T/Z txtWave, string sep, [string colSep, variable stopOnEmpty])
 	string entry, colList
 	string list = ""
 	variable i, j, numRows, numCols
+
+	if(!WaveExists(txtWave))
+		return ""
+	endif
 
 	ASSERT(IsTextWave(txtWave), "Expected a text wave")
 	ASSERT(DimSize(txtWave, LAYERS) == 0, "Expected a 1D or 2D wave")
@@ -3095,11 +3108,13 @@ End
 /// @param wv     numeric wave
 /// @param sep    separator
 /// @param format [optional, defaults to `%g`] sprintf conversion specifier
-threadsafe Function/S NumericWaveToList(wv, sep, [format])
-	WAVE wv
-	string sep, format
+threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format])
 
 	string list = ""
+
+	if(!WaveExists(wv))
+		return ""
+	endif
 
 	if(ParamIsDefault(format))
 		format = "%g"
@@ -3162,13 +3177,13 @@ Function/Wave MakeWaveFree(wv)
 	return wv
 End
 
-/// @brief Sets the dimensionlabes of a wave
+/// @brief Sets the dimension labels of a wave
 ///
-/// @param wv       Wave to add dimLables
+/// @param wv       Wave to add dim labels
 /// @param list     List of dimension labels, semicolon separated.
 /// @param dim      Wave dimension, see, @ref WaveDimensions
 /// @param startPos [optional, defaults to 0] First dimLabel index
-threadsafe Function SetWaveDimLabel(wv, list, dim, [startPos])
+threadsafe Function SetDimensionLabels(wv, list, dim, [startPos])
 	WAVE wv
 	string list
 	variable dim
@@ -3176,17 +3191,17 @@ threadsafe Function SetWaveDimLabel(wv, list, dim, [startPos])
 
 	string labelName
 	variable i
-	variable dimlabelCount = itemsinlist(list)
+	variable dimlabelCount = ItemsInlist(list)
 
-	if(paramIsDefault(startPos))
+	if(ParamIsDefault(startPos))
 		startPos = 0
 	endif
 
 	ASSERT_TS(startPos >= 0, "Illegal negative startPos")
-	ASSERT_TS(dimlabelCount <= dimsize(wv, dim) + startPos, "Dimension label count exceeds dimension size")
+	ASSERT_TS(dimlabelCount <= DimSize(wv, dim) + startPos, "Dimension label count exceeds dimension size")
 	for(i = 0; i < dimlabelCount;i += 1)
-		labelName = stringfromlist(i, list)
-		setDimLabel dim, i + startPos, $labelName, Wv
+		labelName = StringFromList(i, list)
+		SetDimLabel dim, i + startPos, $labelName, Wv
 	endfor
 End
 
@@ -4103,12 +4118,20 @@ Function HasOneValidEntry(wv)
 
 	variable numEntries
 
-	ASSERT(IsFloatingPointWave(wv), "Unexpected wave type")
-
 	numEntries = numpnts(wv)
+
+	if(IsNumericWave(wv))
+		ASSERT(IsFloatingPointWave(wv), "Requires floating point type or text wave")
+		WAVE stats = wv
+	else
+		ASSERT(IsTextWave(wv), "Expected a text wave")
+		WAVE/T wvText = wv
+		Make/FREE/N=(numEntries) stats = strlen(wvText[p]) == 0 ? NaN : 1
+	endif
+
 	ASSERT(numEntries > 0, "Empty wave")
 
-	WaveStats/Q/M=1 wv
+	WaveStats/Q/M=1 stats
 	return V_numNaNs != numEntries
 End
 
@@ -4589,10 +4612,10 @@ threadsafe Function/WAVE FindLevelWrapper(WAVE data, variable level, variable ed
 	switch(mode)
 		case FINDLEVEL_MODE_SINGLE:
 			Make/D/FREE/N=(DimSize(resultSingle, ROWS)) numMaxLevels = 1
-			SetWaveDimLabel(resultSingle, NumericWaveToList(numMaxLevels, ";"), ROWS)
+			SetDimensionLabels(resultSingle, NumericWaveToList(numMaxLevels, ";"), ROWS)
 			return resultSingle
 		case FINDLEVEL_MODE_MULTI:
-			SetWaveDimLabel(resultMulti, NumericWaveToList(numMaxLevels, ";"), ROWS)
+			SetDimensionLabels(resultMulti, NumericWaveToList(numMaxLevels, ";"), ROWS)
 
 			// avoid single column waves
 			if(DimSize(resultMulti, COLS) == 1)
@@ -5224,12 +5247,12 @@ Function UploadJSONPayload(jsonID)
 End
 
 /// @brief Convert a text wave to a double wave with optional support for removing NaNs and sorting
-Function/WAVE ConvertToUniqueNumber(WAVE/T wv, [variable zapNaNs, variable doSort])
+Function/WAVE ConvertToUniqueNumber(WAVE/T wv, [variable doZapNaNs, variable doSort])
 
-	if(ParamIsDefault(zapNaNs))
-		zapNaNs = 0
+	if(ParamIsDefault(doZapNaNs))
+		doZapNaNs = 0
 	else
-		zapNaNs = !!zapNaNs
+		doZapNaNs = !!doZapNaNs
 	endif
 
 	if(ParamIsDefault(doSort))
@@ -5242,7 +5265,7 @@ Function/WAVE ConvertToUniqueNumber(WAVE/T wv, [variable zapNaNs, variable doSor
 
 	Make/D/FREE/N=(DimSize(unique, ROWS)) numeric = str2num(unique[p])
 
-	if(zapNaNs)
+	if(doZapNaNs)
 		WaveTransform/O zapNaNs, numeric
 	endif
 
