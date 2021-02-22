@@ -49,7 +49,7 @@ Menu "Mies Panels"
 		"Turn off ASLR (requires UAC elevation)"   , /Q, TurnOffASLR()
 		"Open debug panel"                         , /Q, DP_OpenDebugPanel()
 		"Check Installation"                       , /Q, CHI_CheckInstallation()
-		"Start Background Task watcher panel"      , /Q, BkgWatcher#BW_StartPanel()
+		"Start Background Task watcher panel"      , /Q, OpenBackgroundWatcherPanel()
 		"Enable Independent Module editing"        , /Q, SetIgorOption IndependentModuleDev=1
 		"Reset and store current DA_EPHYS panel"   , /Q, DAP_EphysPanelStartUpSettings()
 		"Reset and store current DataBrowser panel", /Q, DB_ResetAndStoreCurrentDBPanel()
@@ -162,6 +162,16 @@ Function ButtonProc_AboutMIESCopy(ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+Function OpenBackgroundWatcherPanel()
+
+	if(!QuerySetIgorOption("BACKGROUND_TASK_DEBUGGING", globalSymbol = 1))
+		Execute/P/Q "SetIgorOption poundDefine=BACKGROUND_TASK_DEBUGGING"
+		Execute/P/Q "COMPILEPROCEDURES "
+	endif
+
+	Execute/P/Q "BkgWatcher#BW_StartPanel()"
 End
 
 /// @brief Custom notebook action for the "About MIES" dialog

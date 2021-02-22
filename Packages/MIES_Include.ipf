@@ -157,7 +157,11 @@ End
 #include "MIES_Async"
 #include "MIES_Blowout"
 #include "MIES_BrowserSettingsPanel"
+
+#if defined(BACKGROUND_TASK_DEBUGGING)
 #include "MIES_BackgroundWatchdog"
+#endif
+
 #include "MIES_Cache"
 #include "MIES_CheckInstallation"
 #include "MIES_Configuration"
