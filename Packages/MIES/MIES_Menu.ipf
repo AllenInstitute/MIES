@@ -46,6 +46,7 @@ Menu "Mies Panels"
 	"-"
 	SubMenu "Advanced"
 		"Restart ZeroMQ Message Handler"           , /Q, StartZeroMQMessageHandler()
+		"Open package settings"                    , /Q, OpenPackageSettingsAsNotebook()
 		"Turn off ASLR (requires UAC elevation)"   , /Q, TurnOffASLR()
 		"Open debug panel"                         , /Q, DP_OpenDebugPanel()
 		"Check Installation"                       , /Q, CHI_CheckInstallation()
@@ -221,4 +222,11 @@ Function ClearPackageSettings()
 
 	JSONid = GenerateSettingsDefaults()
 	PS_WriteSettings("MIES", JSONid)
+	JSON_Release(JSONId)
+End
+
+Function OpenPackageSettingsAsNotebook()
+	NVAR JSONid = $GetSettingsJSONid()
+	PS_OpenNotebook("MIES", JSONid)
+	JSONid = NaN
 End

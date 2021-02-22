@@ -74,13 +74,7 @@ End
 static Function IH_SerializeSettings()
 	NVAR JSONid = $GetSettingsJSONid()
 
-	try
-		ClearRTError()
-		PS_StoreWindowCoordinates(JSONid); AbortOnRTE
-		PS_WriteSettings("MIES", JSONid); AbortOnRTE
-	catch
-		ClearRTError()
-	endtry
+	PS_SerializeSettings("MIES", JSONid)
 
 	JSONid = NaN
 End

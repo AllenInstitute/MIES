@@ -117,7 +117,7 @@ End
 /// @brief Store the coordinates of all registered windows in the JSON settings file
 ///
 /// The windows must have been registered beforehand with PS_InitCoordinates().
-Function PS_StoreWindowCoordinates(variable JSONid)
+static Function PS_StoreWindowCoordinates(variable JSONid)
 
 	string list, win, part
 	variable i, numEntries, store
@@ -195,5 +195,35 @@ Function PS_InitCoordinates(variable JSONid, string win, string name, [variable 
 
 	if(addHook)
 		SetWindow $win, hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
+	endif
+End
+
+/// @brief Write the current JSON settings to disc
+///
+/// Caller *must* invalidate JSONid after return.
+Function PS_SerializeSettings(string package, variable JSONid)
+
+	try
+		ClearRTError()
+		PS_StoreWindowCoordinates(JSONid); AbortOnRTE
+		PS_WriteSettings(package, JSONid); AbortOnRTE
+	catch
+		ClearRTError()
+	endtry
+End
+
+/// Caller *must* invalidate JSONid after return.
+Function PS_OpenNotebook(string package, variable JSONid)
+	string name, path
+
+	PS_SerializeSettings(package, JSONid)
+
+	name = CleanupName(package, 0)
+
+	if(WindowExists(name))
+		DoWindow/F $name
+	else
+		path = PS_GetSettingsFile(package)
+		OpenNotebook/ENCG=1/N=$name path
 	endif
 End
