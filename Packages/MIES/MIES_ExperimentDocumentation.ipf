@@ -63,9 +63,9 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 
 	// store the current time in a variable first
 	// so that all layers have the same timestamp
-	timestamp = num2str(DateTime)
+	timestamp = num2strHighPrec(DateTime, precision = 3)
 	textualValues[rowIndex][1][] = timestamp
-	timestamp = num2str(DateTimeInUTC())
+	timestamp = num2strHighPrec(DateTimeInUTC(), precision = 3)
 	textualValues[rowIndex][2][] = timestamp
 
 	WAVE textualValuesDat = ExtractLBColumnTimeStamp(textualValues)
