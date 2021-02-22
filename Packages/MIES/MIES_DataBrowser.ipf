@@ -563,6 +563,8 @@ Function DB_UpdateToLastSweep(win)
 	if(SF_IsActive(win))
 		PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
 	endif
+
+	DB_UpdateTagsForTextualLBNEntries(win, last)
 End
 
 /// @brief procedure for the open button of the side panel
@@ -644,6 +646,35 @@ static Function DB_UnsetDynamicSettingsHistory(win)
 	shPanel = DB_GetSettingsHistoryPanel(win)
 	ASSERT(WindowExists(shPanel), "external SettingsHistory panel not found")
 	SetWindow $shPanel, hook(main)=$""
+End
+
+static Function DB_UpdateTagsForTextualLBNEntries(string databrowser, variable sweepNo)
+	string lbGraph, traceList, key, trace
+	variable i, numTraces
+
+	lbGraph = DB_GetLabNotebookGraph(databrowser)
+
+	WAVE/T textualValues = DB_GetTextualValues(databrowser)
+	WAVE/T textualKeys   = DB_GetTextualKeys(databrowser)
+
+	traceList = TraceNameList(lbGraph, ";", 0 + 1)
+	numTraces = ItemsInList(traceList)
+
+	if(!numTraces)
+		return NaN
+	endif
+
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traceList)
+
+		if(!str2num(GetUserData(lbGraph, trace, "IsTextData")))
+			continue
+		endif
+
+		key = GetUserData(lbGraph, trace, "key")
+		ASSERT(!IsEmpty(key), "Missing key")
+		AddTagsForTextualLBNEntries(lbGraph, textualKeys, textualValues, key, firstSweep = sweepNo)
+	endfor
 End
 
 /// @brief panel close hook for settings history panel

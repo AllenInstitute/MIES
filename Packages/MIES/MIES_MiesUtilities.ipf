@@ -152,10 +152,13 @@ static Function/WAVE ExtractLBColumn(values, col, suffix)
 		SetDimLabel ROWS, -1, $colName, singleColumn
 	endif
 
+	SetNumberInWaveNote(singleColumn, NOTE_INDEX, nextRowIndex)
+
 	if(IsTextWave(singleColumn))
 		WAVE/T singleColumnFree = MakeWaveFree(singleColumn)
 		Make/O/D/N=(DimSize(singleColumnFree, ROWS), DimSize(singleColumnFree, COLS), DimSize(singleColumnFree, LAYERS), DimSize(singleColumnFree, CHUNKS)) dfr:$name/Wave=singleColumnFromText
 		CopyScales singleColumnFree, singleColumnFromText
+		Note/K singleColumnFromText, note(singleColumnFree)
 		singleColumnFromText = str2num(singleColumnFree)
 		return singleColumnFromText
 	endif
@@ -3287,7 +3290,7 @@ End
 Function UpdateLBGraphLegend(graph, [traceList])
 	string graph, traceList
 
-	string str
+	string str, trace, header
 	variable numEntries, i
 
 	if(!windowExists(graph))
@@ -3303,11 +3306,18 @@ Function UpdateLBGraphLegend(graph, [traceList])
 		return NaN
 	endif
 
-	str = "\\JCHeadstage\r"
+	header = "\\JCHeadstage\r"
+	str = ""
 
 	numEntries = ItemsInList(traceList)
 	for(i = 0 ; i < numEntries; i += 1)
-		str += "\\s(" + PossiblyQuoteName(StringFromList(i, traceList)) + ") "
+		trace = StringFromList(i, traceList)
+
+		if(str2num(GetUserData(graph, trace, "IsTextData")))
+			continue
+		endif
+
+		str += "\\s(" + PossiblyQuoteName(trace) + ") "
 
 		if(i < NUM_HEADSTAGES)
 			str += num2str(i + 1)
@@ -3320,7 +3330,11 @@ Function UpdateLBGraphLegend(graph, [traceList])
 		endif
 	endfor
 
-	str = RemoveEnding(str, "\r")
+	if(IsEmpty(str))
+		return NaN
+	endif
+
+	str = RemoveEnding(header + str, "\r")
 	TextBox/C/W=$graph/N=text0/F=2 str
 End
 
@@ -3337,15 +3351,16 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 
 	string unit, lbl, axis, trace, text, tagString, tmp
 	string traceList = ""
-	variable i, j, numEntries, row, col, numRows, sweepCol
+	variable i, j, row, col, numRows, sweepCol
 	variable isTimeAxis, isTextData, xPos
 	STRUCT RGBColor s
 
-	if(GetKeyWaveParameterAndUnit(keys, key, lbl, unit, col))
+	WAVE/T/Z traces
+	[traces, lbl, unit, col] = GetPropertiesForLabnotebookEntry(keys, key)
+
+	if(!WaveExists(traces))
 		return NaN
 	endif
-
-	lbl = LineBreakingIntoPar(lbl)
 
 	WAVE valuesDat = ExtractLBColumnTimeStamp(values)
 
@@ -3355,17 +3370,13 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 
 	axis = GetNextFreeAxisName(graph, VERT_AXIS_BASE_NAME)
 
-	numRows    = DimSize(values, ROWS)
-	numEntries = DimSize(values, LAYERS)
-
 	if(IsTextData)
 		WAVE valuesNull  = ExtractLBColumnEmpty(values)
 		WAVE valuesSweep = ExtractLBColumnSweep(values)
 	endif
 
-	for(i = 0; i < numEntries; i += 1)
-
-		trace = CleanupName(lbl[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - 5] + " (" + num2str(i + 1) + ")", 1) // +1 because the headstage number is 1-based
+	for(i = 0; i < LABNOTEBOOK_LAYER_COUNT; i += 1)
+		trace = traces[i]
 		traceList = AddListItem(trace, traceList, ";", inf)
 
 		if(isTextData)
@@ -3385,45 +3396,21 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 		endif
 
 		ModifyGraph/W=$graph userData($trace)={key, USERDATA_MODIFYGRAPH_REPLACE, key}
+		ModifyGraph/W=$graph userData($trace)={IsTextData, USERDATA_MODIFYGRAPH_REPLACE, num2str(isTextData)}
 
-		[s] = GetTraceColor(i)
-		ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue), marker($trace)=i
+		[s] = GetHeadstageColor(i)
+		ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue, IsTextData ? 0 : inf), marker($trace)=i
 		SetAxis/W=$graph/A=2 $axis
+
+		// we only need one trace, all the info is in the tag
+		if(isTextData)
+			break
+		endif
 	endfor
 
 	if(isTextData)
 		WAVE/T valuesText = values
-		for(i = 0; i < numRows; i += 1)
-			if(isTimeAxis)
-				xPos = valuesDat[i]
-			else
-				xPos = valuesSweep[i]
-			endif
-
-			if(!IsFinite(xPos))
-				continue
-			endif
-
-			tagString = ""
-			for(j = 0; j < numEntries; j += 1)
-				text = valuesText[i][col][j]
-
-				if(IsEmpty(text))
-					continue
-				endif
-
-				[s] = GetTraceColor(j)
-				sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", s.red, s.green, s.blue, j + 1
-				text = ReplaceString("\\", text, "\\\\")
-				tagString = tagString + tmp + text + "\r"
-			endfor
-
-			if(IsEmpty(tagString))
-				continue
-			endif
-
-			Tag/W=$graph/F=0/L=0/X=0.00/Y=0.00/O=90 $trace, i, RemoveEnding(tagString, "\r")
-		endfor
+		AddTagsForTextualLBNEntries(graph, keys, valuesText, key)
 	endif
 
 	if(!isEmpty(unit))
@@ -3445,19 +3432,100 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 	UpdateLBGraphLegend(graph, traceList=traceList)
 End
 
+Function [WAVE/T/Z traces, string name, string unit, variable col] GetPropertiesForLabnotebookEntry(WAVE/T keys, string key)
+
+	if(GetKeyWaveParameterAndUnit(keys, key, name, unit, col))
+		return [$"", "", "", NaN]
+	endif
+
+	name = LineBreakingIntoPar(name)
+
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/T traces = CleanupName(name[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - 5] + " (" + num2str(p + 1) + ")", 0) // +1 because the headstage number is 1-based
+
+	return [traces, name, unit, col]
+End
+
+Function AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/T values, string key, [variable firstSweep])
+	variable i, j, numRows, numEntries, isTimeAxis, col, sweepCol, firstRow
+	string tagString, tmp, text, unit, lbl, name
+	STRUCT RGBColor s
+
+	WAVE/T/Z traces
+	[traces, lbl, unit, col] = GetPropertiesForLabnotebookEntry(keys, key)
+
+	if(!WaveExists(traces))
+		return NaN
+	endif
+
+	WAVE valuesSweep = ExtractLBColumnSweep(values)
+	WAVE valuesDat = ExtractLBColumnTimeStamp(values)
+
+	isTimeAxis = CheckIfXAxisIsTime(graph)
+	sweepCol   = GetSweepColumn(values)
+
+	if(isTimeAxis)
+		WAVE xPos = valuesSweep
+	else
+		WAVE xPos = valuesDat
+	endif
+
+	numRows    = GetNumberFromWaveNote(values, NOTE_INDEX)
+	numEntries = DimSize(values, LAYERS)
+
+	if(ParamIsDefault(firstSweep))
+		firstRow = 0
+	else
+		FindValue/V=(firstSweep) valuesSweep
+		firstRow = V_value
+	endif
+
+	for(i = firstRow; i < numRows; i += 1)
+		if(!IsFinite(xPos[i]))
+			continue
+		endif
+
+		tagString = ""
+		for(j = 0; j < LABNOTEBOOK_LAYER_COUNT; j += 1)
+			text = values[i][col][j]
+
+			if(IsEmpty(text))
+				continue
+			endif
+
+			[s] = GetHeadstageColor(j)
+			sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", s.red, s.green, s.blue, j + 1
+			text = ReplaceString("\\", text, "\\\\")
+			tagString = tagString + tmp + text + "\r"
+		endfor
+
+		if(IsEmpty(tagString))
+			continue
+		endif
+
+		name = traces[0] + "_" + num2str(i)
+
+		Tag/C/N=$name/W=$graph/F=0/L=0/X=0.00/Y=0.00/O=90 $traces[0], i, RemoveEnding(tagString, "\r")
+	endfor
+End
+
 /// @brief Switch the labnotebook graph x axis type (time <-> sweep numbers)
 Function SwitchLBGraphXAxis(graph, numericalValues, textualValues)
 	string graph
 	WAVE numericalValues, textualValues
 
 	string trace, dataUnits, list, wvName
-	variable i, numEntries, isTimeAxis, sweepCol
+	variable i, numEntries, isTimeAxis, sweepCol, isTextData
 
 	list = TraceNameList(graph, ";", 0 + 1)
 
 	if(isEmpty(list))
 		return NaN
 	endif
+
+	WAVE numericalValuesDat     = ExtractLBColumnTimeStamp(numericalValues)
+	WAVE/Z numericalValuesSweep = $""
+	WAVE textualValuesDat        = ExtractLBColumnTimeStamp(textualValues)
+	WAVE textualValuesSweep      = ExtractLBColumnSweep(textualValues)
 
 	isTimeAxis = CheckIfXAxisIsTime(graph)
 	sweepCol   = GetSweepColumn(numericalValues)
@@ -3469,20 +3537,22 @@ Function SwitchLBGraphXAxis(graph, numericalValues, textualValues)
 		// instance does not matter as all instances use the same xwave
 		wvName = StringByKey("XWAVE", TraceInfo(graph, trace, 0))
 
-		if(StringMatch(wvName, "numericalValues*"))
-			WAVE valuesDat     = ExtractLBColumnTimeStamp(numericalValues)
-			WAVE/Z valuesSweep = $""
+		isTextData = StringMatch(wvName, "textualValues*")
+
+		if(isTextData)
+			WAVE valuesSweep = textualValuesSweep
+			WAVE valuesDat   = textualValuesDat
 		else
-			WAVE valuesDat   = ExtractLBColumnTimeStamp(textualValues)
-			WAVE valuesSweep = ExtractLBColumnSweep(textualValues)
+			WAVE/Z valuesSweep = $""
+			WAVE valuesDat     = numericalValuesDat
 		endif
 
 		// change from timestamps to sweepNums
 		if(isTimeAxis)
-			if(!WaveExists(valuesSweep))
-				ReplaceWave/W=$graph/X trace=$trace, numericalValues[][sweepCol][0]
-			else
+			if(isTextData)
 				ReplaceWave/W=$graph/X trace=$trace, valuesSweep
+			else
+				ReplaceWave/W=$graph/X trace=$trace, numericalValues[][sweepCol][0]
 			endif
 		else // other direction
 			ReplaceWave/W=$graph/X trace=$trace, valuesDat
