@@ -35,8 +35,9 @@
 /// Pre Sweep    Immediately before the sweep starts            None
 /// Pre Set      Before a new set starts                        None
 /// Post Sweep   After each sweep (before possible ITI pause)   None
-/// Post Set     After a *full* set has been acquired           This event is not always reached as the user might not acquire all steps
-///                                                             of a set or indexing on multiple headstages is used.
+/// Post Set     After a *full* set has been acquired           This event is not always reached as the user might not acquire
+///                                                             all steps of a set. With indexing, locked and unlocked, only
+///                                                             the post set events for fully acquired stimsets are reached.
 /// Post DAQ     After DAQ has finished and before potential    None
 ///              "TP after DAQ"
 /// =========== ============================================== ===============================================================
