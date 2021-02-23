@@ -51,6 +51,7 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 	variable sweepNo, entrySourceType
 
 	variable rowIndex, numCols, i, lastValidIncomingLayer
+	string timestamp
 
 	WAVE/T textualValues = GetLBTextualValues(panelTitle)
 	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
@@ -58,9 +59,14 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
 
 	textualValues[rowIndex][0][] = num2istr(sweepNo)
-	textualValues[rowIndex][1][] = num2str(DateTime)
-	textualValues[rowIndex][2][] = num2str(DateTimeInUTC())
 	textualValues[rowIndex][3][] = num2istr(entrySourceType)
+
+	// store the current time in a variable first
+	// so that all layers have the same timestamp
+	timestamp = num2strHighPrec(DateTime, precision = 3)
+	textualValues[rowIndex][1][] = timestamp
+	timestamp = num2strHighPrec(DateTimeInUTC(), precision = 3)
+	textualValues[rowIndex][2][] = timestamp
 
 	WAVE textualValuesDat = ExtractLBColumnTimeStamp(textualValues)
 	EnsureLargeEnoughWave(textualValuesDat, minimumSize=rowIndex, dimension=ROWS)
@@ -101,7 +107,7 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 	variable sweepNo
 	variable entrySourceType
 
-	variable rowIndex, numCols, lastValidIncomingLayer, i
+	variable rowIndex, numCols, lastValidIncomingLayer, i, timestamp
 
 	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
@@ -109,9 +115,14 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, numericalKeys, numericalValues, rowIndex)
 
 	numericalValues[rowIndex][0][] = sweepNo
-	numericalValues[rowIndex][1][] = DateTime
-	numericalValues[rowIndex][2][] = DateTimeInUTC()
 	numericalValues[rowIndex][3][] = entrySourceType
+
+	// store the current time in a variable first
+	// so that all layers have the same timestamp
+	timestamp = DateTime
+	numericalValues[rowIndex][1][] = timestamp
+	timestamp = DateTimeInUTC()
+	numericalValues[rowIndex][2][] = timestamp
 
 	WAVE numericalValuesDat = ExtractLBColumnTimeStamp(numericalValues)
 	EnsureLargeEnoughWave(numericalValuesDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)

@@ -47,6 +47,13 @@ then
   igorProVersion="IP_8_64"
 fi
 
+# handle release branches without experiment file
+if [ ! -e "${experiment}" ]
+then
+  echo "Skipping tests for ${experiment} as it does not exist".
+  exit 0
+fi
+
 igorProPath=$(./get-igor-path.sh ${igorProVersion})
 
 echo "Running experiment $experiment"
