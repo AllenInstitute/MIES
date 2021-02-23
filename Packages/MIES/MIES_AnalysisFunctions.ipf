@@ -999,8 +999,8 @@ End
 /// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on
 /// the next sweep if the measured resistance is smaller than 20MOhm
 Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
-	variable sweepNo, index, i, targetV
-	variable amps
+	variable sweepNo, index, i, targetV, prevActiveHS, prevSendToAllAmp
+	variable amps, result
 	variable autoBiasCheck, holdingPotential, indexing
 	string msg, name, control
 
@@ -1078,8 +1078,23 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 
 				control = GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 				PGC_SetAndActivateControl(panelTitle, control , str = name)
-			endif
 
+				DFREF dfr = GetUniqueTempPath()
+				Make/D/N=(LABNOTEBOOK_LAYER_COUNT) dfr:autobiasV/WAVE=autobiasV
+
+				autobiasV[] = (p < NUM_HEADSTAGES && statusHS[p] == 1) ? -70 : NaN
+
+				Duplicate/FREE autobiasV, autobiasVMock
+				autobiasVMock[] = autobiasVMock[p] + 1
+
+				result = ID_AskUserForHeadstageSettings("Autobias V", autobiasV, autobiasVMock)
+
+				if(result)
+					return 1
+				endif
+
+				ED_AddEntryToLabnotebook(panelTitle, "Autobias target voltage from dialog", autobiasV, unit = "mV", overrideSweepNo = s.sweepNo)
+			endif
 			break
 		case POST_SWEEP_EVENT:
 			// BEGIN CHANGE ME
@@ -1154,6 +1169,38 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 
 				SetDAScale(panelTitle, i, absolute=amps)
 			endfor
+			break
+		case POST_SET_EVENT:
+			if(DAP_GetHighestActiveHeadstage(panelTitle) != s.headstage)
+				return NaN
+			endif
+
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+			WAVE/Z autobiasFromDialog = GetLastSettingSCI(numericalValues, s.sweepNo, LABNOTEBOOK_USER_PREFIX + "Autobias target voltage from dialog", s.headstage, UNKNOWN_MODE)
+			if(WaveExists(autobiasFromDialog))
+				WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+				prevActiveHS = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+				prevSendToAllAmp = GetCheckBoxState(panelTitle, "Check_DataAcq_SendToAllAmp")
+				PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
+
+				for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+					if(!statusHS[i])
+						continue
+					endif
+
+					ASSERT(IsFinite(autoBiasFromDialog[i]), "Autobias target voltage can not be NaN")
+					PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = i, switchTab = 1)
+					PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_AutoBiasV", val = autoBiasFromDialog[i])
+				endfor
+
+				if(prevActiveHS != GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage"))
+					PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = prevActiveHS)
+				endif
+
+				PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp", val = prevSendToAllAmp)
+			endif
 			break
 		default:
 			// do nothing
