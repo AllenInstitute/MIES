@@ -177,6 +177,7 @@ Function TEST_BEGIN_OVERRIDE(name)
 
 	NVAR interactiveMode = $GetInteractiveMode()
 	interactiveMode = 0
+	variable/G root:interactiveMode = interactiveMode
 
 //	DisableDebugOutput()
 //	EnableDebugoutput()
@@ -214,6 +215,9 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	SVAR miesVersion = root:miesVersion
 	string/G $(GetMiesPathAsString() + ":version") = miesVersion
+
+	NVAR interactiveMode = root:interactiveMode
+	variable/G $(GetMiesPathAsString() + ":interactiveMode") = interactiveMode
 
 	GetDAQDevicesFolder()
 
