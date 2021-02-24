@@ -16,24 +16,34 @@
 ///
 /// \rst
 ///
-/// =========================== ==================================================================== ================= ================= ===================== =====================
-/// Naming constant             Description                                                          Labnotebook       Analysis function Per Chunk?            Headstage dependent?
-/// =========================== ==================================================================== ================= ================= ===================== =====================
-/// MSQ_FMT_LBN_SPIKE_DETECT    The required number of spikes were detected on the sweep             Numerical         FRE               No                    Yes
-/// MSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                            Numerical         FRE               No                    Yes
-/// MSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success            Numerical         FRE               No                    Yes
-/// MSQ_FMT_LBN_HEADSTAGE_PASS  Pass/fail state of the headstage                                     Numerical         FRE, DS, SC       No                    Yes
-/// MSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                                Numerical         FRE, DS, SC       No                    No
-/// MSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                                  Numerical         FRE, DS, SC       No                    No
-/// MSQ_FMT_LBN_ACTIVE_HS       Active headstages in pre set event                                   Numerical         FRE, DS           No                    Yes
-/// MSQ_FMT_LBN_DASCALE_EXC     Allowed DAScale exceeded given limit                                 Numerical         FRE               No                    Yes
-/// MSQ_FMT_LBN_PULSE_DUR       Square pulse duration in ms                                          Numerical         FRE               No                    Yes
-/// MSQ_FMT_LBN_FAILED_PULSES   Semicolon separated list of failed pulses in the format              Textual           SC                No                    Yes
-///                             ``P{1}_R{2}`` with the pulse index (``{1}``) and region
-///                             (``{2}``)
-/// MSQ_FMT_LBN_RERUN_TRIAL     Number of repetitions of given stimulus set sweep                    Numerical         SC                No                    Yes
-/// MSQ_FMT_LBN_RERUN_TRIAL_EXC Number of repetitions was exceeded for that stimulus sweep set count Numerical         SC                No                    Yes
-/// =========================== ==================================================================== ================= ================= ===================== =====================
+/// ================================ ==================================================================== =========== ============= ======= ========== =========== ================ =================
+/// Naming constant                  Description                                                          Labnotebook Analysis      Per     Headstage  List?       Key-Value pairs? Values are lists?
+///                                                                                                                   function      chunk?  dependent? (semicolon) (colon)          (comma)
+/// ================================ ==================================================================== =========== ============= ======= ========== =========== ================ =================
+/// MSQ_FMT_LBN_SPIKE_DETECT         The required number of spikes were detected on the sweep             Numerical   FRE           No      Yes        No          No                No
+/// MSQ_FMT_LBN_STEPSIZE             Current DAScale step size                                            Numerical   FRE           No      Yes        No          No                No
+/// MSQ_FMT_LBN_FINAL_SCALE          Final DAScale of the given headstage, only set on success            Numerical   FRE           No      Yes        No          No                No
+/// MSQ_FMT_LBN_HEADSTAGE_PASS       Pass/fail state of the headstage                                     Numerical   FRE, DS, SC   No      Yes        No          No                No
+/// MSQ_FMT_LBN_SWEEP_PASS           Pass/fail state of the complete sweep                                Numerical   FRE, DS, SC   No      No         No          No                No
+/// MSQ_FMT_LBN_SET_PASS             Pass/fail state of the complete set                                  Numerical   FRE, DS, SC   No      No         No          No                No
+/// MSQ_FMT_LBN_ACTIVE_HS            Active headstages in pre set event                                   Numerical   FRE, DS       No      Yes        No          No                No
+/// MSQ_FMT_LBN_DASCALE_EXC          Allowed DAScale exceeded given limit                                 Numerical   FRE           No      Yes        No          No                No
+/// MSQ_FMT_LBN_PULSE_DUR            Square pulse duration in ms                                          Numerical   FRE           No      Yes        No          No                No
+/// MSQ_FMT_LBN_SPIKE_POSITIONS      Spike positions with ``P{1}_R{2}``, pulse index (``{1}``) and        Textual     SC            No      Yes        Yes         Yes               Yes
+///                                  region (``{2}``), as key and the spike positions as value in pulse
+///                                  active coordinate system (0 - 100)
+/// MSQ_FMT_LBN_SPIKE_COUNTS         Spike count with ``P{1}_R{2}``, pulse index (``{1}``) and            Textual     SC            No      Yes        Yes         Yes               No
+///                                  region (``{2}``), as key and the spike counts as value
+/// MSQ_FMT_LBN_SPIKE_POSITION_PASS  Pass/fail state of the spike positions                               Numerical   SC            No      Yes        No          No                No
+/// MSQ_FMT_LBN_SPIKE_COUNTS_STATE   Result of the spike count check:                                     Textual     SC            No      Yes        No          No                No
+///                                  ``Too few``/``Too many``/``Pass``/``Mixed``
+/// MSQ_FMT_LBN_SPONT_SPIKE_PASS     Pass/fail state of the complete baseline                             Numerical   SC            No      Yes        No          No                No
+/// MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS   Ideal number of spikes (-1 for not present)                          Numerical   SC            No      No         No          No                No
+/// MSQ_FMT_LBN_FAILED_PULSE_LEVEL   Failed pulse level                                                   Numerical   SC            No      No         No          No                No
+/// MSQ_FMT_LBN_RERUN_TRIAL          Number of repetitions of given stimulus set sweep due to relevant    Numerical   SC            No      Yes        No          No                No
+///                                  QC failures (spike count or baseline)
+/// MSQ_FMT_LBN_RERUN_TRIAL_EXC      Number of repetitions was exceeded for that stimulus sweep set count Numerical   SC            No      Yes        No          No                No
+/// ================================ ==================================================================== =========== ============= ======= ========== =========== ================ =================
 ///
 /// \endrst
 ///
@@ -373,7 +383,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 
 	// BEGIN TEST
 	if(MSQ_TestOverrideActive())
-		WAVE/SDFR=root: overrideResults
+		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 		chunkPassed = overrideResults[chunk][count][0]
 	endif
@@ -534,6 +544,9 @@ End
 ///
 /// #MSQ_FAST_RHEO_EST
 ///
+/// Type:
+/// - Double wave
+///
 /// Value:
 /// - x position in ms where the spike is in each sweep/step
 ///   For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
@@ -548,10 +561,15 @@ End
 ///
 /// Nothing
 ///
-/// #MSQ_SPIKE_CONTROL
+/// #SC_SPIKE_CONTROL
+///
+/// Type:
+/// - Text wave
 ///
 /// Value:
-/// - Pulse failing state (1 failed, 0 passed)
+/// - Key-Valuse pairs in format `key1:value1;key2:value2;` where value can be a comma separated list
+/// - `SpontaneousSpikeMax`: single value denoting the maximum value for the spontaneous spiking check
+/// - `SpikePosition_ms`: comma separated list with the spike positions in ms. Zero is the start of each pulse
 ///
 /// Rows:
 /// - Sweeps in set
@@ -568,7 +586,7 @@ Function/WAVE MSQ_CreateOverrideResults(panelTitle, headstage, type)
 	string panelTitle
 	variable headstage, type
 
-	variable DAC, numCols, numRows, numLayers, numChunks
+	variable DAC, numCols, numRows, numLayers, numChunks, typeOfWave
 	string stimset
 
 	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
@@ -583,21 +601,24 @@ Function/WAVE MSQ_CreateOverrideResults(panelTitle, headstage, type)
 			numCols = Sum(MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE))
 			numLayers = 0
 			numChunks = 0
+			typeOfWave = IGOR_TYPE_64BIT_FLOAT
 		case MSQ_DA_SCALE:
 			// nothing to set
 			break
-		case MSQ_SPIKE_CONTROL:
+		case SC_SPIKE_CONTROL:
 			// safe upper default
 			numRows = 100
 			numCols = NUM_HEADSTAGES
 			numLayers = 10
 			numChunks = 10
+			typeOfWave = 0 // text wave
 			break
 		default:
 			ASSERT(0, "invalid type")
 	endswitch
 
-	Make/D/O/N=(numRows, numCols, numLayers, numChunks) root:overrideResults/Wave=overrideResults = 0
+	KillOrMoveToTrash(wv = GetOverrideResults())
+	Make/Y=(typeOfWave)/N=(numRows, numCols, numLayers, numChunks) root:overrideResults/Wave=overrideResults
 
 	return overrideResults
 End
@@ -668,7 +689,7 @@ static Function/WAVE MSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
 	if(MSQ_TestOverrideActive())
-		WAVE/SDFR=root: overrideResults
+		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 
 		switch(type)
@@ -728,11 +749,10 @@ static Function/WAVE MSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 End
 
 /// @brief Return if the analysis function results are overriden for testing purposes
-static Function MSQ_TestOverrideActive()
-
+Function MSQ_TestOverrideActive()
 	variable numberOfOverrideWarnings
 
-	WAVE/Z/SDFR=root: overrideResults
+	WAVE/Z overrideResults = GetOverrideResults()
 
 	if(WaveExists(overrideResults))
 		numberOfOverrideWarnings = GetNumberFromWaveNote(overrideResults, "OverrideWarningIssued")
@@ -780,13 +800,9 @@ static Function MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, type, str,
 		return 0
 	endif
 
-	WaveTransform/O zapNaNs, values
+	WAVE/Z reduced = ZapNaNs(values)
 
-	if(DimSize(values, ROWS) == 0)
-		return 0
-	endif
-
-	return Sum(values) >= 1
+	return WaveExists(reduced) && Sum(reduced) >= 1
 End
 
 /// @brief Return the last entry for a given headstage from the full SCI.
@@ -811,15 +827,13 @@ static Function MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, type, s
 		return NaN
 	endif
 
-	WaveTransform/O zapNaNs, values
+	WAVE/Z reduced = ZapNans(values)
 
-	numEntries = DimSize(values, ROWS)
-
-	if(numEntries == 0)
+	if(!WaveExists(reduced))
 		return NaN
 	endif
 
-	return values[numEntries - 1]
+	return reduced[DimSize(reduced, ROWS) - 1]
 End
 
 /// @brief Return a list of required parameters for MSQ_FastRheoEst()
@@ -1210,9 +1224,9 @@ Function MSQ_FastRheoEst(panelTitle, s)
 						continue
 					endif
 
-					WAVE/Z finalDAScale = GetLastSettingEachSCI(numericalValues, s.sweepNo, key, i, UNKNOWN_MODE)
-					if(WaveExists(finalDAScale))
-						WaveTransform/O zapNans, finalDAScale
+					WAVE/Z finalDAScaleAll = GetLastSettingEachSCI(numericalValues, s.sweepNo, key, i, UNKNOWN_MODE)
+					if(WaveExists(finalDAScaleAll))
+						WAVE finalDAScale = ZapNaNs(finalDAScaleAll)
 						ASSERT(DimSize(finalDAScale, ROWS) == 1, "Unexpected finalDAScale")
 						val = max(postDAQDAScaleFactor * finalDAScale[0], minRheoOffset * 1e-12 + finalDAScale[0])
 					else
@@ -1579,531 +1593,4 @@ Function MSQ_DAScale(panelTitle, s)
 			DAScalesIndex[i] += 1
 		endfor
 	endif
-End
-
-static Function [variable minTrials, variable maxTrials] MSQ_GetSpikeControlTrials(string panelTitle, variable sweepNo)
-
-	string key
-
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL, query = 1)
-	WAVE/Z trialsLBN = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
-
-	if(!WaveExists(trialsLBN))
-		Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE trialsLBN = NaN
-		trialsLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1 ? 0 : NaN)
-	else
-		// check if we are still repeating the same sweep or have started a new one
-
-		WAVE setSweepCountPrev = GetLastSetting(numericalValues, sweepNo - 1, "Set Sweep Count", DATA_ACQUISITION_MODE)
-		WAVE setSweepCount     = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
-
-		WAVE stimsetAcqCycleIDPrev = GetLastSetting(numericalValues, sweepNo - 1, "Stimset Acq Cycle ID", DATA_ACQUISITION_MODE)
-		WAVE stimsetAcqCycleID     = GetLastSetting(numericalValues, sweepNo, "Stimset Acq Cycle ID", DATA_ACQUISITION_MODE)
-
-		if(EqualWaves(setSweepCountPrev, setSweepCount, 1) && EqualWaves(stimsetAcqCycleIDPrev, stimsetAcqCycleID, 1))
-			trialsLBN[0, NUM_HEADSTAGES - 1] += (statusHS[p] == 1)
-		else
-			trialsLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1 ? 0 : NaN)
-		endif
-	endif
-
-	key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL)
-	ED_AddEntryToLabnotebook(panelTitle, key, trialsLBN, overrideSweepNo = sweepNo)
-
-#if IgorVersion() >= 9
-	MatrixOP/O trialsLBN = zapNans(trialsLBN)
-#else
-	WaveTransform/O zapNans, trialsLBN
-#endif
-
-	[minTrials, maxTrials] = WaveMinAndMaxWrapper(trialsLBN)
-
-	return [minTrials, maxTrials]
-End
-
-/// @brief Return a 2D wave with the headstage QC result as a function of the set sweep count
-///
-/// Value:
-/// - Cumulated headstage QC result
-///
-/// Rows:
-/// - Headstage
-///
-/// Cols:
-/// - Stimulus set sweep count
-static Function/WAVE MSQ_GetHeadstageQCForSetCount(string panelTitle, variable sweepNo, variable headstage)
-
-	variable DAC, sweepsInSet, i, numSweeps, setSweepCount
-	string stimset, key
-
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-
-	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
-	stimset = AFH_GetStimSetName(paneltitle, DAC, CHANNEL_TYPE_DAC)
-	sweepsInSet = IDX_NumberOfSweepsInSet(stimset)
-
-	// now we need to check that we have for every set sweep count
-	// in the SCI one sweep where every headstage passed at least once
-	// Or to rephrase that all headstages passed with all set sweep counts
-	// sweep counts: [0, sweepsInSet - 1]
-
-	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
-	ASSERT(WaveExists(sweeps), "No sweeps acquired?")
-
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT, sweepsInSet) headstageQCTotalPerSweepCount = 0
-
-	numSweeps = DimSize(sweeps, ROWS)
-	for(i = 0; i < numSweeps; i += 1)
-		key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_HEADSTAGE_PASS, query = 1)
-		WAVE headstageQCLBN = GetLastSetting(numericalValues, sweeps[i], key, UNKNOWN_MODE)
-
-		setSweepCount = MSQ_GetSetSweepCount(numericalValues, sweeps[i])
-
-		headstageQCTotalPerSweepCount[][setSweepCount] += IsFinite(headstageQCLBN[p]) ? headstageQCLBN[p] : NaN
-	endfor
-
-	return headstageQCTotalPerSweepCount
-End
-
-static Function MSQ_GetSetSweepCount(WAVE numericalValues, variable sweepNo)
-
-	variable setSweepCount
-
-	WAVE setSweepCountLBN = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
-
-	WaveTransform/O zapNans, setSweepCountLBN
-	setSweepCount = setSweepCountLBN[0]
-	ASSERT(IsConstant(setSweepCountLBN, setSweepCount), "Unexpected set sweep counts")
-
-	return setSweepCount
-End
-
-static Function MSQ_GetSpikeControlSetPassed(string panelTitle, variable sweepNo, variable headstage)
-
-	WAVE headstageQCTotalPerSweepCount = MSQ_GetHeadstageQCForSetCount(panelTitle, sweepNo, headstage)
-
-	FindValue/V=(0.0) headstageQCTotalPerSweepCount
-
-	return V_Value == -1
-End
-
-static Function MSQ_GetSpikeControlSweepPassed(string panelTitle, variable sweepNo, variable headstage)
-
-	variable setSweepCount
-
-	WAVE headstageQCTotalPerSweepCount = MSQ_GetHeadstageQCForSetCount(panelTitle, sweepNo, headstage)
-
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	setSweepCount = MSQ_GetSetSweepCount(numericalValues, sweepNo)
-
-	FindValue/RMD=[][setSweepCount]/V=(0.0) headstageQCTotalPerSweepCount
-
-	return V_Value == -1
-End
-
-static Function MSQ_LastSweepInSet(string panelTitle, variable sweepNo, variable headstage)
-
-	variable DAC, sweepsInSet
-
-	DAC = AFH_GetHeadstageFromDAC(panelTitle, headstage)
-	sweepsInSet = IDX_NumberOfSweepsInSet(AFH_GetStimSetName(paneltitle, DAC, CHANNEL_TYPE_DAC))
-
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE/Z sweepSetCount = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
-
-	return (sweepSetCount[headstage] + 1) == sweepsInSet
-End
-
-static Function MSQ_WriteSpikeControlLBNEntries(string panelTitle, variable sweepNo, variable headstage)
-
-	string databrowser, str, key
-	variable i, j, k, numFailedPulses, idx, endRow, sweepPassed, size
-	variable pulseIndex, region, pulseFailedState, headstageProp, sweepNoProp
-
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE headstageQC = NaN
-	headstageQC[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 1 : NaN
-
-	Make/T/N=(LABNOTEBOOK_LAYER_COUNT)/FREE failedPulsesLBN = ""
-
-	databrowser = DB_FindDataBrowser(panelTitle)
-	DFREF dfr = BSP_GetFolder(databrowser, MIES_BSP_PANEL_FOLDER)
-	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(dfr)
-	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-
-	size = GetNumberFromWaveNote(properties, NOTE_INDEX)
-	endRow = limit(size - 1, 0, inf)
-
-	Make/FREE/N=(size) indizesFailedPulsesAll = NaN
-
-	// see MSQ_CreateOverrideResults() for the wave layout
-	if(MSQ_TestOverrideActive())
-		WAVE/SDFR=root: overrideResults
-
-		for(i = 0; i < size; i += 1)
-
-			headstageProp = properties[i][%Headstage]
-			region = properties[i][%Region]
-			pulseIndex = properties[i][%Pulse]
-			sweepNoProp = properties[i][%Sweep]
-
-			pulseFailedState = overrideResults[sweepNoProp][headstageProp][pulseIndex][region]
-
-			if(pulseFailedState == 0)
-				continue
-			endif
-
-			indizesFailedPulsesAll[idx++] = i
-		endfor
-
-		WaveTransform zapNans, indizesFailedPulsesAll
-
-		if(DimSize(indizesFailedPulsesAll, ROWS) == 0)
-			KillWaves/Z indizesFailedPulsesAll
-		endif
-	else
-		WAVE/Z indizesFailedPulsesAll = FindIndizes(properties, colLabel = "PulseHasFailed", var = 1, endRow = endRow)
-	endif
-
-	// Get the indizes of the failed pulses from sweepNo
-	//
-	// We need to distinguish two cases:
-	// - All pulses pass -> indizesFailedPulsesAll does not exist
-	// - Some pulses fail but not from sweepNo -> indizesFailedPulsesSweep does not exist
-	if(WaveExists(indizesFailedPulsesAll))
-		WAVE/Z indizesSweep = FindIndizes(properties, colLabel = "Sweep", var = sweepNo, endRow = endRow)
-		ASSERT(WaveExists(indizesSweep), "Could not find sweeps with sweepNo")
-
-		WAVE/Z indizesFailedPulsesSweep = GetSetIntersection(indizesSweep, indizesFailedPulsesAll)
-
-		if(WaveExists(indizesFailedPulsesSweep))
-			WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
-			Duplicate/FREE indizesFailedPulsesSweep, indizesFailedPulses
-			size = DimSize(indizesFailedPulsesSweep, ROWS)
-			j = 0
-			for(i = 0; i < size; i += 1)
-				if(GetNumberFromWaveNote(propertiesWaves[indizesFailedPulsesSweep[i]][%PULSENOTE], NOTE_KEY_PULSE_IS_DIAGONAL) == 1)
-					indizesFailedPulses[j] = indizesFailedPulsesSweep[i]
-					j += 1
-				endif
-			endfor
-
-			ASSERT(j > 0, "Could not find a diagonal failing pulse")
-			Redimension/N=(j) indizesFailedPulses
-		endif
-	endif
-
-	if(WaveExists(indizesFailedPulses))
-		Make/FREE/N=(DimSize(indizesFailedPulses, ROWS)) failedHeadstagesWithDuplicates = properties[indizesFailedPulses[p]][%Headstage]
-		WAVE failedHeadstages = GetUniqueEntries(failedHeadstagesWithDuplicates)
-
-		// see "Indexing with an Index wave"
-		headstageQC[failedHeadstages] = 0
-
-		numFailedPulses = DimSize(indizesFailedPulses, ROWS)
-		for(i = 0; i < numFailedPulses; i += 1)
-			idx = indizesFailedPulses[i]
-
-			headstageProp = properties[idx][%Headstage]
-			pulseIndex = properties[idx][%Pulse]
-			region = properties[idx][%Region]
-			sprintf str, "P%d_R%d", pulseIndex, region
-
-			failedPulsesLBN[headstageProp] = AddListItem(str, failedPulsesLBN[headstageProp], ";", Inf)
-		endfor
-	endif
-
-	key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_HEADSTAGE_PASS)
-	ED_AddEntryToLabnotebook(panelTitle, key, headstageQC, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
-
-	if(WaveExists(failedPulsesLBN))
-		key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_FAILED_PULSES)
-		ED_AddEntryToLabnotebook(panelTitle, key, failedPulsesLBN, overrideSweepNo = sweepNo)
-	endif
-
-	sweepPassed = MSQ_GetSpikeControlSweepPassed(panelTitle, sweepNo, headstage)
-
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sweepQC = NaN
-	sweepQC[INDEP_HEADSTAGE] = sweepPassed
-	key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_SWEEP_PASS)
-	ED_AddEntryToLabnotebook(panelTitle, key, sweepQC, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
-
-	return sweepPassed
-End
-
-static Function MSQ_CanStillSkip(variable maxTrials, string params)
-
-	// 1st trial: 0
-	// 2nd trial: 1
-	// maxTrialsAllowed 2 -> don't skip anymore
-	variable maxTrialsAllowed = AFH_GetAnalysisParamNumerical("MaxTrials", params, defValue = Inf)
-
-	return DEBUGPRINTv(maxTrials < (maxTrialsAllowed - 1))
-End
-
-static Function MSQ_SkipsExhausted(variable minTrials, string params)
-
-	variable maxTrialsAllowed = AFH_GetAnalysisParamNumerical("MaxTrials", params, defValue = Inf)
-
-	return DEBUGPRINTv(minTrials >= maxTrialsAllowed)
-End
-
-Function/S MSQ_SpikeControl_GetParams()
-	return "[FailedPulseLevel:variable],[MaxTrials:variable],DAScaleOperator:string,DAScaleModifier:variable"
-End
-
-Function/S MSQ_SpikeControl_GetHelp(name)
-	string name
-
-	strswitch(name)
-		 case "FailedPulseLevel":
-			 return "[Optional, uses the already set value] Numeric level to use for the failed pulse search in the PA plot tab."
-		 case "MaxTrials":
-			 return "[Optional, defaults to infinity] A sweep is rerun this many times on a failed headstage."
-		case "DAScaleOperator":
-			 return "Set the math operator to use for combining the DAScale and the "          \
-					+ "offset. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
-			 break
-		case "DAScaleModifier":
-			return "Offset value to the DA Scale of headstages with failed pulses"
-			break
-		default:
-			ASSERT(0, "Unimplemented for parameter " + name)
-			break
-	endswitch
-End
-
-Function/S MSQ_SpikeControl_CheckParam(string name, string params)
-
-	variable val
-	string str
-
-	strswitch(name)
-		case "FailedPulseLevel":
-			val = AFH_GetAnalysisParamNumerical(name, params)
-			if(!IsFinite(val))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "MaxTrials":
-			val = AFH_GetAnalysisParamNumerical(name, params)
-			if(!IsFinite(val))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "DAScaleOperator":
-			str = AFH_GetAnalysisParamTextual(name, params)
-			if(cmpstr(str, "+") && cmpstr(str, "*"))
-				return "Invalid string " + str
-			endif
-			break
-		case "DAScaleModifier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
-			if(!IsFinite(val))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-	endswitch
-
-	return ""
-End
-
-/// @brief Analysis function to check sweeps for failed pulses and rerun them if the pulses failed.
-///
-/// Decision logic flowchart:
-///
-/// \rst
-/// .. image:: /dot/multi-patch-seq-spike-control.svg
-/// \endrst
-///
-Function MSQ_SpikeControl(panelTitle, s)
-	string panelTitle
-	STRUCT AnalysisFunction_V3 &s
-
-	variable i, index, ret, headstagePassed, sweepPassed, val, failedPulseLevel, maxTrialsAllowed
-	variable daScaleModifier, DAC, setPassed, minTrials, maxTrials, skippedBack
-	string msg, key, ctrl, databrowser, bsPanel, scPanel, daScaleOperator, stimset
-	string stimsets = ""
-
-	switch(s.eventType)
-		case PRE_DAQ_EVENT:
-			return MSQ_CommonPreDAQ(panelTitle, s.headstage)
-
-			break
-		case PRE_SET_EVENT:
-
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
-				return NaN
-			endif
-
-			databrowser = DB_FindDataBrowser(panelTitle)
-			if(IsEmpty(databrowser)) // not yet open
-				databrowser = DB_OpenDataBrowser()
-			endif
-
-			bsPanel = BSP_GetPanel(databrowser)
-			scPanel = BSP_GetSweepControlsPanel(databrowser)
-
-			if(!BSP_HasBoundDevice(bsPanel))
-				PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = panelTitle)
-			endif
-
-			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 1)
-			PGC_SetAndActivateControl(bsPanel, "check_ovs_clear_on_new_stimset_cycle", val = 1)
-
-			PGC_SetAndActivateControl(scPanel, "check_SweepControl_AutoUpdate", val = 1)
-
-			PGC_SetAndActivateControl(bsPanel, "check_pulseAver_searchFailedPulses", val = 1)
-
-			failedPulseLevel = AFH_GetAnalysisParamNumerical("FailedPulseLevel", s.params)
-			if(IsFinite(failedPulseLevel)) // parameter is present
-				PGC_SetAndActivateControl(bsPanel, "setvar_pulseAver_failedPulses_level", val = failedPulseLevel)
-			endif
-
-			// turn on PA plot at the end to skip expensive updating
-			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_PA", val = 1)
-
-			WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
-			if(Sum(statusTTL) != 0)
-				printf "(%s) Analysis function does not support TTL channels.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			endif
-
-			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-			for(i = 0; i < NUM_HEADSTAGES; i += 1)
-
-				if(!statusHS[i])
-					continue
-				endif
-
-				DAC = AFH_GetDACFromHeadstage(panelTitle, i)
-				ASSERT(IsFinite(DAC), "Unexpected unassociated DAC")
-				stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
-				stimsets = AddListItem(stimset, stimsets, ";", inf)
-			endfor
-
-			if(ItemsInList(GetUniqueTextEntriesFromList(stimsets)) > 1)
-				printf "(%s): Not all headstages have the same stimset.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			endif
-
-			// set more controls usually done from SetControlInEvent analysis function
-			// remove once https://github.com/AllenInstitute/MIES/issues/671 is resolved
-			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_OnsetDelayUser", val = 500)
-			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_TerminationDelay", val = 1000)
-			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_dDAQDelay", val = 0)
-			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_dDAQOptOvPre", val = 0)
-			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_dDAQOptOvPost", val = 250)
-			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_SetRepeats", val = 1)
-
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) rerunExceeded = NaN
-			rerunExceeded[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 0 : NaN
-			key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC)
-			ED_AddEntryToLabnotebook(panelTitle, key, rerunExceeded, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
-
-			break
-		case POST_SWEEP_EVENT:
-
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
-				return NaN
-			endif
-
-			sweepPassed = MSQ_WriteSpikeControlLBNEntries(panelTitle, s.sweepNo, s.headstage)
-
-			[minTrials, maxTrials] = MSQ_GetSpikeControlTrials(panelTitle, s.sweepNo)
-
-			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-			if(!sweepPassed)
-				if(MSQ_CanStillSkip(maxTrials, s.params))
-					skippedBack = 1
-					RA_SkipSweeps(panelTitle, -1, limitToSetBorder=1)
-				else
-					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) rerunExceeded = NaN
-					rerunExceeded[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 1 : NaN
-					key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC)
-					ED_AddEntryToLabnotebook(panelTitle, key, rerunExceeded, unit = LABNOTEBOOK_BINARY_UNIT)
-				endif
-
-				daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)
-				daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", s.params)
-
-				WAVE numericalValues = GetLBNumericalValues(panelTitle)
-
-				key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_HEADSTAGE_PASS, query = 1)
-				WAVE headstageQC = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
-
-				for(i = 0; i < NUM_HEADSTAGES; i += 1)
-					if(!statusHS[i])
-						continue
-					endif
-
-					if(headstageQC[i] == 1)
-						continue
-					endif
-
-					strswitch(daScaleOperator)
-						case "+":
-							SetDAScale(panelTitle, i, offset = daScaleModifier)
-							break
-						case "*":
-							SetDAScale(panelTitle, i, relative = daScaleModifier)
-							break
-						default:
-							ASSERT(0, "Invalid operator")
-							break
-					endswitch
-				endfor
-			endif
-
-			setPassed = MSQ_GetSpikeControlSetPassed(panelTitle, s.sweepNo, s.headstage)
-
-			// check if we can still pass
-			if(!setPassed)
-				if(MSQ_SkipsExhausted(minTrials, s.params))
-					// if the minimum trials value has already reached the maximum
-					// allowed trials we are done and the set has not passed
-				elseif(MSQ_LastSweepInSet(panelTitle, s.sweepNo, s.headstage) && !skippedBack)
-					// work around broken XXX_SET_EVENT
-					// we are done and were not successful
-				else
-					// still some trials left
-					setPassed = NaN
-				endif
-			endif
-
-			if(IsFinite(setPassed))
-				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) setQC = NaN
-				setQC[INDEP_HEADSTAGE] = setPassed
-				key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_SET_PASS)
-				ED_AddEntryToLabnotebook(panelTitle, key, setQC, unit = LABNOTEBOOK_BINARY_UNIT)
-
-				RA_SkipSweeps(panelTitle, inf, limitToSetBorder=1)
-				AD_UpdateAllDatabrowser()
-			endif
-
-			break
-		case POST_SET_EVENT:
-			// work around XXX_SET_EVENT issues
-			break
-		case POST_DAQ_EVENT:
-
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
-				return NaN
-			endif
-
-			AD_UpdateAllDatabrowser()
-			break
-		default:
-			break
-	endswitch
 End

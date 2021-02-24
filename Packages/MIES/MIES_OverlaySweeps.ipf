@@ -24,7 +24,7 @@ Function OVS_IgnoreHeadstageInOverlay()
 
 	extPanel = BSP_GetPanel(graph)
 
-	if(!WindowExists(graph))
+	if(!WindowExists(extPanel))
 		printf "Context menu option \"%s\" is only useable for overlay sweeps.\r", S_Value
 		ControlWindowToFront()
 		return NaN

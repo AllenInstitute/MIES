@@ -150,6 +150,7 @@ End
 #include "MIES_AnalysisFunctions_PatchSeq"
 #include "MIES_AnalysisFunctions_Dashboard"
 #include "MIES_AnalysisFunctions_MultiPatchSeq"
+#include "MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl"
 #include "MIES_AnalysisFunctionPrototypes"
 #include "MIES_AnalysisFunctions"
 #include "MIES_ArtefactRemoval"

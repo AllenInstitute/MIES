@@ -69,11 +69,10 @@ Function SB_GetIndexFromSweepDataPath(win, dataDFR)
 	Duplicate/FREE indizesSweep, matches
 	matches[] = (IsFinite(GetRowIndex(indizesDevice, val=indizesSweep[p])) && IsFinite(GetRowIndex(indizesDataFolder, val=indizesSweep[p]))) ? indizesSweep[p] : NaN
 
-	WaveTransform zapNans, matches
+	WAVE reduced = ZapNaNs(matches)
+	ASSERT(Dimsize(reduced, ROWS) == 1, "Unexpected number of matches")
 
-	ASSERT(Dimsize(matches, ROWS) == 1, "Unexpected number of matches")
-
-	return matches[0]
+	return reduced[0]
 End
 
 /// @brief set graph userdata similar to DB_SetUserData()

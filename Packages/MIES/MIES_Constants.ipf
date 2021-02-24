@@ -771,6 +771,8 @@ StrConstant NOTE_KEY_TIMEALIGN_TOTAL_OFFSET = "TimeAlignmentTotalOffset"
 StrConstant NOTE_KEY_IMG_PMIN               = "PulsesMinimum"
 StrConstant NOTE_KEY_IMG_PMAX               = "PulsesMaximum"
 StrConstant NOTE_KEY_PULSE_IS_DIAGONAL      = "IsDiagonal"
+StrConstant NOTE_KEY_PULSE_START            = "PulseStart"
+StrConstant NOTE_KEY_PULSE_END              = "PulseEnd"
 
 /// Only present for diagonal pulses
 /// @{
@@ -957,7 +959,7 @@ Constant PSQ_RAMP          = 0x08
 /// @{
 Constant MSQ_FAST_RHEO_EST = 0x10
 Constant MSQ_DA_SCALE      = 0x20
-Constant MSQ_SPIKE_CONTROL = 0x40
+Constant SC_SPIKE_CONTROL  = 0x40
 /// @}
 
 /// @}
@@ -1009,27 +1011,50 @@ Constant MSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
 Constant MSQ_TARGETV_THRESHOLD   = 1    // mV
 /// @}
 
+/// @name MultiPatchSeq SpikeControl
+/// @{
+
+/// @name Spike Counts state constants
+/// @anchor SpikeCountsStateConstants
+/// @{
+Constant SC_SPIKE_COUNT_NUM_GOOD     = 0x0
+Constant SC_SPIKE_COUNT_NUM_TOO_FEW  = 0x1
+Constant SC_SPIKE_COUNT_NUM_TOO_MANY = 0x2
+Constant SC_SPIKE_COUNT_NUM_MIXED    = 0x4
+
+StrConstant SC_SPIKE_COUNT_STATE_STR_GOOD        = "Good"
+StrConstant SC_SPIKE_COUNT_STATE_STR_TOO_FEW     = "Too few"
+StrConstant SC_SPIKE_COUNT_STATE_STR_TOO_MANY    = "Too many"
+StrConstant SC_SPIKE_COUNT_STATE_STR_MIXED       = "Mixed"
+/// @}
+
+/// @}
+
 /// @anchor MultiPatchSeqLabnotebookFormatStrings
 /// @{
-StrConstant MSQ_FMT_LBN_DASCALE_EXC    = "%s DAScale exceeded"
-StrConstant MSQ_FMT_LBN_STEPSIZE          = "%s step size"
-StrConstant MSQ_FMT_LBN_SPIKE_DETECT      = "%s spike detected"
-StrConstant MSQ_FMT_LBN_SPIKE_POSITIONS   = "%s spike positions"
-StrConstant MSQ_FMT_LBN_FINAL_SCALE       = "%s final DAScale"
-StrConstant MSQ_FMT_LBN_INITIAL_SCALE     = "%s initial DAScale"
-StrConstant MSQ_FMT_LBN_RMS_SHORT_PASS    = "%s Chk%d S-RMS QC"
-StrConstant MSQ_FMT_LBN_RMS_LONG_PASS     = "%s Chk%d L-RMS QC"
-StrConstant MSQ_FMT_LBN_TARGETV_PASS      = "%s Chk%d T-V BL QC"
-StrConstant MSQ_FMT_LBN_CHUNK_PASS        = "%s Chk%d BL QC"
-StrConstant MSQ_FMT_LBN_BL_QC_PASS        = "%s Baseline QC"
-StrConstant MSQ_FMT_LBN_HEADSTAGE_PASS    = "%s Headstage QC"
-StrConstant MSQ_FMT_LBN_SWEEP_PASS        = "%s Sweep QC"
-StrConstant MSQ_FMT_LBN_SET_PASS          = "%s Set QC"
-StrConstant MSQ_FMT_LBN_PULSE_DUR         = "%s Pulse duration"
-StrConstant MSQ_FMT_LBN_ACTIVE_HS         = "%s Active Headstage"
-StrConstant MSQ_FMT_LBN_FAILED_PULSES     = "%s Failed Pulses"
-StrConstant MSQ_FMT_LBN_RERUN_TRIAL       = "%s Rerun Trials"
-StrConstant MSQ_FMT_LBN_RERUN_TRIAL_EXC   = "%s Rerun Trials exceeded"
+StrConstant MSQ_FMT_LBN_DASCALE_EXC          = "%s DAScale exceeded"
+StrConstant MSQ_FMT_LBN_STEPSIZE             = "%s step size"
+StrConstant MSQ_FMT_LBN_SPIKE_DETECT         = "%s spike detected"
+StrConstant MSQ_FMT_LBN_SPIKE_POSITIONS      = "%s Spike positions"
+StrConstant MSQ_FMT_LBN_SPIKE_COUNTS         = "%s Spike counts"
+StrConstant MSQ_FMT_LBN_FINAL_SCALE          = "%s final DAScale"
+StrConstant MSQ_FMT_LBN_INITIAL_SCALE        = "%s initial DAScale"
+StrConstant MSQ_FMT_LBN_RMS_SHORT_PASS       = "%s Chk%d S-RMS QC"
+StrConstant MSQ_FMT_LBN_RMS_LONG_PASS        = "%s Chk%d L-RMS QC"
+StrConstant MSQ_FMT_LBN_TARGETV_PASS         = "%s Chk%d T-V BL QC"
+StrConstant MSQ_FMT_LBN_CHUNK_PASS           = "%s Chk%d BL QC"
+StrConstant MSQ_FMT_LBN_SPONT_SPIKE_PASS     = "%s Spontaneous Spiking QC"
+StrConstant MSQ_FMT_LBN_HEADSTAGE_PASS       = "%s Headstage QC"
+StrConstant MSQ_FMT_LBN_SWEEP_PASS           = "%s Sweep QC"
+StrConstant MSQ_FMT_LBN_SET_PASS             = "%s Set QC"
+StrConstant MSQ_FMT_LBN_PULSE_DUR            = "%s Pulse duration"
+StrConstant MSQ_FMT_LBN_ACTIVE_HS            = "%s Active Headstage"
+StrConstant MSQ_FMT_LBN_FAILED_PULSE_LEVEL   = "%s Failed Pulse Level"
+StrConstant MSQ_FMT_LBN_SPIKE_POSITION_PASS  = "%s Spike positions QC"
+StrConstant MSQ_FMT_LBN_SPIKE_COUNTS_STATE   = "%s Spike counts state"
+StrConstant MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS   = "%s Ideal spike counts"
+StrConstant MSQ_FMT_LBN_RERUN_TRIAL          = "%s Rerun Trials"
+StrConstant MSQ_FMT_LBN_RERUN_TRIAL_EXC      = "%s Rerun Trials exceeded"
 /// @}
 
 Constant TP_MD_THREAD_DEAD_MAX_RETRIES = 10

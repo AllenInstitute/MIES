@@ -3,6 +3,9 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=Epochs
 
+static Constant OODDAQ_PRECISION       = 0.001
+static Constant OTHER_EPOCHS_PRECISION = 0.050
+
 /// @brief Acquire data with the given DAQSettings on two headstages
 static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ])
 	STRUCT DAQSettings& s
@@ -107,14 +110,13 @@ static Function TestEpochChannelTight(e)
 	endfor
 End
 
-static Constant OODDAQ_PRECISION = 0.001
-
 static Function TestEpochsMonotony(e, DAChannel)
 	WAVE/T e
 	WAVE DAChannel
 
 	variable i, epochCnt, rowCnt, beginInt, endInt, epochNr, dur, amplitude, center, DAAmp
-	string s
+	variable first, last, level, range
+	string s, name
 
 	rowCnt = DimSize(e, ROWS)
 
@@ -185,18 +187,45 @@ static Function TestEpochsMonotony(e, DAChannel)
 					break
 				endif
 			endfor
+			REQUIRE(marker[epochNr])
 			// for remaining epoch no identical start time of smaller epoch segment was found
 			// there should be an identical start time from a smaller segment due to the idea that the (non-oodDAQRegions) epochs are ordered tree like
 			REQUIRE(i < epochCnt)
 		endif
 	while(1)
 
-	// check amplitudes
 	for(i = 0; i < epochCnt; i += 1)
-		amplitude = NumberByKey("Amplitude", e[i][2], "=")
-		if(numtype(amplitude) != 2)
-			WaveStats/R=(startT[i] * 1000, endT[i] * 1000)/Q/M=1 DAChannel
+		name  = e[i][2]
+		level = str2num(e[i][3])
+		first = startT[i] * 1000
+		last  = endT[i] * 1000
+		range = last - first
+
+		// check amplitudes
+		if(strsearch(name, "Amplitude", 0) > 0)
+
+			amplitude = NumberByKey("Amplitude", name, "=")
+			CHECK(IsFinite(amplitude))
+
+			WaveStats/R=(first + OTHER_EPOCHS_PRECISION, last - OTHER_EPOCHS_PRECISION)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_max, amplitude)
+
+			// check that the level 3 pulse epoch is really only the pulse
+			if(level == 3)
+				WaveStats/R=(first + OTHER_EPOCHS_PRECISION, last - OTHER_EPOCHS_PRECISION)/Q/M=1 DAChannel
+				CHECK_EQUAL_VAR(V_min, amplitude)
+			endif
+		endif
+
+		// check baseline
+		if(strsearch(name, "Baseline", 0) > 0)
+			WaveStats/R=(first, last)/Q/M=1 DAChannel
+			CHECK_EQUAL_VAR(V_min, 0)
+
+			// take something around the egdes due to decimation
+			// offsets are in ms
+			WaveStats/R=(first + OTHER_EPOCHS_PRECISION, last - OTHER_EPOCHS_PRECISION)/Q/M=1 DAChannel
+			CHECK_EQUAL_VAR(V_max, 0)
 		endif
 	endfor
 End

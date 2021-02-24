@@ -874,7 +874,7 @@ End
 static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 
 	STRUCT PulseAverageSettings s
-	variable setting
+	variable setting, minimum, first, last
 
 	MIES_PA#PA_GatherSettings(win, s)
 
@@ -902,6 +902,22 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_LENGTH)
 	CHECK_EQUAL_VAR(setting, DimSize(pulse, ROWS))
+
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_START)
+	CHECK(IsFinite(setting) && setting >= 0)
+
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_END)
+	CHECK(IsFinite(setting) && setting > 0)
+
+	first = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_START)
+	last  = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_END)
+	CHECK(first < last)
+
+	// no zeros inside the pulse
+	// this requires that the DA and AD channels on the hardware are connected directly when acquiring this data
+	// ditch the first and last 0.1 ms to avoid any decimation issues
+	minimum = WaveMin(pulse, first + 0.1, last - 0.1)
+	CHECK(minimum > 0)
 End
 
 static Function PAT_CheckImageWaveNote(string win, WAVE iData, STRUCT PA_Test &patest)
@@ -1872,8 +1888,8 @@ static Function PAT_FailedPulseCheck3()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_deconv", val = 1)
 
 	size = sqrt(patest5.layoutSize)
-	avgTraceNum = patest5.layoutSize - size
-	deconvTraceNum = 4
+	avgTraceNum = 3
+	deconvTraceNum = 2
 
 	traceListAll = PAT_GetTraces(graph, patest5.layoutSize + avgTraceNum + deconvTraceNum)
 
@@ -1888,7 +1904,7 @@ static Function PAT_FailedPulseCheck3()
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			region = patest5.regions[j]
-			if(region != 5)
+			if(region == 3)
 				traceName = PAT_FindTraceNameAvgDeconv(traceListAvg, patest5.channels[i], region)
 				PAT_VerifyTraceAxes(graph, traceName, i + 1, j + 1, patest5)
 				WAVE pData = TraceNameToWaveRef(graph, traceName)
@@ -1896,7 +1912,8 @@ static Function PAT_FailedPulseCheck3()
 			else
 				traceName = PAT_FindTraceNameAvgDeconv(traceListAvg, patest5.channels[i], region, checkForNoTrace = 1)
 			endif
-			if(region != 5 && i != j)
+
+			if(region == 3 && i != j)
 				traceName = PAT_FindTraceNameAvgDeconv(traceListDeconv, patest5.channels[i], region)
 				PAT_VerifyTraceAxes(graph, traceName, i + 1, j + 1, patest5)
 				CHECK(PAT_CheckIfTracesAreFront(traceListDeconv, traceName, patest5.channels[i], patest5.regions[j], 0))
@@ -1930,7 +1947,7 @@ static Function PAT_FailedPulseCheck4()
 	PGC_SetAndActivateControl(bspName, "check_pulseAver_indPulses", val = 0)
 
 	size = sqrt(patest5.layoutSize)
-	deconvTraceNum = 4
+	deconvTraceNum = 2
 
 	traceListAll = PAT_GetTraces(graph, deconvTraceNum)
 
@@ -1941,7 +1958,7 @@ static Function PAT_FailedPulseCheck4()
 	for(i = 0; i < size; i += 1)
 		for(j = 0; j < size; j += 1)
 			region = patest5.regions[j]
-			if(region != 5 && i != j)
+			if(region == 3 && i != j)
 				traceName = PAT_FindTraceNameAvgDeconv(traceListDeconv, patest5.channels[i], region)
 				PAT_VerifyTraceAxes(graph, traceName, i + 1, j + 1, patest5)
 				CHECK(PAT_CheckIfTracesAreFront(traceListDeconv, traceName, patest5.channels[i], patest5.regions[j], 0))

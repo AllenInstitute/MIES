@@ -6716,13 +6716,9 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 
 	endRow = numRows - 1
 	MatrixOp/Free result = replace(maxCols(subRange(matches, startRow, endRow, startLayer, endLayer)^t)^t, -1, NaN)
-	WaveTransform/O zapNaNs, result
 
-	if(DimSize(result, ROWS) == 0)
-		return $""
-	endif
-
-	return result
+	WAVE/Z reduced = ZapNaNs(result)
+	return reduced
 End
 
 /// @brief Searches the column colLabel in wv for an non-empty
@@ -7009,8 +7005,8 @@ Function MapAnaFuncToConstant(anaFunc)
 			return MSQ_FAST_RHEO_EST
 		case "MSQ_DAScale":
 			return MSQ_DA_SCALE
-		case "MSQ_SpikeControl":
-			return MSQ_SPIKE_CONTROL
+		case "SC_SpikeControl":
+			return SC_SPIKE_CONTROL
 		default:
 			return NaN
 	endswitch
@@ -7035,7 +7031,7 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 		case MSQ_FAST_RHEO_EST:
 			prefix = MSQ_FRE_LBN_PREFIX
 			break
-		case MSQ_SPIKE_CONTROL:
+		case SC_SPIKE_CONTROL:
 			prefix = MSQ_SC_LBN_PREFIX
 			break
 		case PSQ_DA_SCALE:

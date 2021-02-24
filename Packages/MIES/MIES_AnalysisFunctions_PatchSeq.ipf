@@ -405,7 +405,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	// BEGIN TEST
 
 	if(PSQ_TestOverrideActive())
-		WAVE/SDFR=root: overrideResults
+		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 		chunkPassed = overrideResults[chunk][count][0]
 	endif
@@ -779,7 +779,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	endif
 
 	if(PSQ_TestOverrideActive())
-		WAVE/SDFR=root: overrideResults
+		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 
 		switch(type)
@@ -1810,8 +1810,8 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 					key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
 					WAVE spikeWithDAScaleZero = GetLastSettingIndepEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
-					WaveTransform/O zapNaNs, spikeWithDAScaleZero
-					if(DimSize(spikeWithDAScaleZero, ROWS) == PSQ_NUM_MAX_DASCALE_ZERO)
+					WAVE spikeWithDAScaleZeroReduced = ZapNaNs(spikeWithDAScaleZero)
+					if(DimSize(spikeWithDAScaleZeroReduced, ROWS) == PSQ_NUM_MAX_DASCALE_ZERO)
 						PSQ_ForceSetEvent(panelTitle, s.headstage)
 						RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 					endif
@@ -2341,7 +2341,7 @@ Function PSQ_GetFinalDAScaleFake()
 
 	ASSERT(PSQ_TestOverrideActive(), "Should not be called in production.")
 
-	WAVE/Z/SDFR=root: overrideResults
+	WAVE overrideResults = GetOverrideResults()
 	ASSERT(WaveExists(overrideResults), "overrideResults wave must exist")
 
 	daScale = GetNumberFromWaveNote(overrideResults, PSQ_RB_FINALSCALE_FAKE_KEY)

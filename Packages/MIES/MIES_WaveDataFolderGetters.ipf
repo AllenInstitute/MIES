@@ -21,6 +21,8 @@ static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 static Constant WAVE_TYPE_NUMERICAL = 0x1
 static Constant WAVE_TYPE_TEXTUAL   = 0x2
 
+static Constant PULSE_WAVE_VERSION = 3
+
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
 /// Rows:
@@ -5634,7 +5636,7 @@ Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, regio
 	DFREF dfr
 	variable length, channelType, pulseIndex, channelNumber, region
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = PULSE_WAVE_VERSION
 	string wvName
 
 	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
@@ -5667,7 +5669,7 @@ Function/WAVE GetPulseAverageWaveNoteWave(dfr, length, channelType, channelNumbe
 	DFREF dfr
 	variable length, channelType, pulseIndex, channelNumber, region
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = PULSE_WAVE_VERSION
 	string wvName
 
 	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
@@ -6822,4 +6824,35 @@ Function [WAVE avg_, string baseName_] GetPAPermanentAverageWave(DFREF dfr, vari
 	WAVE/Z avg = dfr:$wName
 
 	return [avg, baseName]
+End
+
+/// @brief Return a free wave for storing timing information of single pulses
+///
+/// Rows:
+/// - Pulses
+///
+/// Columns:
+/// - Length: Total length including baseline
+/// - PulseStart: Start of the pulse (aka begin of active)
+/// - PulseEnd: End of the pulse (aka end of active)
+Function/WAVE GetPulseInfoWave()
+
+	Make/D/FREE/N=(0, 3) pulseInfo
+
+	SetDimLabel COLS, 0, Length, pulseInfo
+	SetDimLabel COLS, 1, PulseStart, pulseInfo
+	SetDimLabel COLS, 2, PulseEnd, pulseInfo
+
+	return pulseInfo
+End
+
+/// @brief Return the wave used for storing mock data for the analysis function tests
+///
+/// This wave is created by MSQ_CreateOverrideResults() or PSQ_CreateOverrideResults() and does also not
+/// folow our usual rules so it might not exist.
+Function/WAVE GetOverrideResults()
+
+	WAVE/Z/SDFR=root: overrideResults
+
+	return overrideResults
 End

@@ -215,7 +215,15 @@ static Function/WAVE SBE_GetPulseStartTimesForSel()
 	idx    = indizes[0]
 	region = str2num(traceData[idx][%headstage])
 
-	return PA_GetPulseStartTimes(traceData, idx, region, "AD", removeOnsetDelay = 0)
+	WAVE/Z pulseInfos = PA_GetPulseInfos(traceData, idx, region, "AD")
+
+	if(!WaveExists(pulseInfos))
+		return $""
+	endif
+
+	Duplicate/FREE/RMD=[][FindDimLabel(pulseInfos, ROWS, "PulseStart")] pulseInfos, pulseStartTimes
+
+	return pulseStartTimes
 End
 
 /// @brief Display the export panel

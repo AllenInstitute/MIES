@@ -85,6 +85,8 @@ static Constant PA_INDICESCHANGE_ADDED = 3
 static Constant PA_PASIINIT_BASE = 0x01
 static Constant PA_PASIINIT_INDICEMETA = 0x02
 
+static Constant PA_MINIMUM_SPIKE_WIDTH = 0.2 // ms
+
 // comment out to show all the axes, useful for debugging
 #define PA_HIDE_AXIS
 // comment out to show execution times in debugging mode
@@ -232,23 +234,21 @@ static Function/WAVE PA_GetAxes(STRUCT PulseAverageSettings &pa, variable channe
 	return w
 End
 
-/// @brief Derive the pulse starting times from a DA wave
+/// @brief Derive the pulse infos from a DA wave
 ///
 /// Uses plain FindLevels after the onset delay using 10% of the full range
 /// above the minimum as threshold
 ///
-/// @return wave with pulse starting times, or an invalid wave reference if none could be found.
-static Function/WAVE PA_CalculatePulseStartTimes(DA, fullPath, channelNumber, totalOnsetDelay)
-	WAVE DA
-	variable channelNumber
-	string fullPath
-	variable totalOnsetDelay
-
-	variable level, delta, searchStart
+/// @return pulse info wave or if nothing could be found, an invalid wave reference
+static Function/WAVE PA_CalculatePulseInfos(WAVE DA, string fullPath, variable channelNumber, variable totalOnsetDelay)
+	variable level, delta, searchStart, numLevels, numPulses
 	string key
+
+	variable first
+
 	ASSERT(totalOnsetDelay >= 0, "Invalid onsetDelay")
 
-	key = CA_PulseStartTimes(DA, fullPath, channelNumber, totalOnsetDelay)
+	key = CA_PulseTimes(DA, fullPath, channelNumber, totalOnsetDelay)
 	WAVE/Z cache = CA_TryFetchingEntryFromCache(key)
 	if(WaveExists(cache))
 		return cache
@@ -263,7 +263,7 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, fullPath, channelNumber, to
 	endif
 
 	MAKE/FREE/D levels
-	FindLevels/Q/R=(searchStart, inf)/EDGE=1/DEST=levels DA, level
+	FindLevels/Q/R=(searchStart, inf)/EDGE=(FINDLEVEL_EDGE_BOTH)/DEST=levels DA, level
 
 	if(DimSize(levels, ROWS) == 0)
 		return $""
@@ -274,8 +274,46 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, fullPath, channelNumber, to
 	// round to the last wave point
 	levels[] = levels[p] - mod(levels[p], delta)
 
-	CA_StoreEntryIntoCache(key, levels)
-	return levels
+	numLevels = DimSize(levels, ROWS)
+
+	if(IsOdd(numLevels))
+		// no baseline at the begin or end
+		// let's fake it so that we have an even number of edges
+
+		first = ScaleToIndex(DA, levels[0], ROWS)
+
+		// determine edge type of first level
+		if(DA[first] < DA[first + 1])
+			// rising
+			// fake trailing falling edge
+			Redimension/N=(++numLevels) levels
+			levels[numLevels - 1] = IndexToScale(DA, DimSize(DA, ROWS) - 1, ROWS)
+		else
+			// falling
+			// fake leading rising edge
+			InsertPoints/M=(ROWS) 0, 1, levels
+			levels[0] = IndexToScale(DA, 0, ROWS)
+			numLevels += 1
+		endif
+	endif
+
+	numPulses = numLevels / 2
+	ASSERT(IsInteger(numPulses), "Odd number of values (literally).")
+
+	WAVE pulseInfos = GetPulseInfoWave()
+	Redimension/N=(numPulses, -1) pulseInfos
+
+	pulseInfos[][%PulseStart] = levels[p * 2]
+	pulseInfos[][%PulseEnd]   = levels[p * 2 + 1]
+
+	if(numPulses > 1)
+		pulseInfos[0, numPulses - 2][%Length] = pulseInfos[p + 1][%PulseStart] - pulseInfos[p][%PulseStart]
+	endif
+	pulseInfos[numPulses - 1][%Length] = IndexToScale(DA, DimSize(DA, ROWS) - 1, ROWS) - pulseInfos[numPulses - 1][%PulseStart]
+
+	CA_StoreEntryIntoCache(key, pulseInfos)
+
+	return pulseInfos
 End
 
 /// @brief Return a wave with headstage numbers, duplicates replaced with NaN
@@ -294,27 +332,21 @@ static Function/WAVE PA_GetUniqueHeadstages(WAVE/T traceData)
 	return GetUniqueEntries(headstages)
 End
 
-/// @brief Return the pulse starting times
+/// @brief Return pulse infos
 ///
 /// @param traceData        2D wave with trace information, from GetTraceInfos()
 /// @param idx              Index into traceData, used for determining sweep numbers, labnotebooks, etc.
 /// @param region           Region (headstage) to get pulse starting times for
 /// @param channelTypeStr   Type of the channel, one of @ref XOP_CHANNEL_NAMES
-/// @param removeOnsetDelay [optional, defaults to true] Remove the onset delay from the starting times (true) or not (false)
-Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [removeOnsetDelay])
+///
+/// @return invalid wave reference if no pulses could be found or 2D wave see GetPulseInfoWave()
+Function/WAVE PA_GetPulseInfos(traceData, idx, region, channelTypeStr)
 	WAVE/T traceData
 	variable idx, region
 	string channelTypeStr
-	variable removeOnsetDelay
 
 	variable sweepNo, totalOnsetDelay, channel
 	string str, fullPath
-
-	if(ParamIsDefault(removeOnsetDelay))
-		removeOnsetDelay = 1
-	else
-		removeOnsetDelay = !!removeOnsetDelay
-	endif
 
 	sweepNo = str2num(traceData[idx][%sweepNumber])
 
@@ -323,22 +355,15 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 
 	ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "Missing labnotebook waves")
 
-	if(removeOnsetDelay)
-		totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
-	endif
+	sprintf str, "Calculated pulse starting times for headstage %d", region
+	DEBUGPRINT(str)
 
 	WAVE/Z/T epochs = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	if(WaveExists(epochs))
-		WAVE/Z pulseStartTimes = PA_RetrievePulseStartTimesFromEpochs(epochs[region])
+		WAVE/Z pulseInfosEpochs = PA_RetrievePulseInfosFromEpochs(epochs[region])
 	endif
 
-#ifdef AUTOMATED_TESTING
-	WAVE/Z DBG_pulseStartTimesEpochs = pulseStartTimes
-	WAVE/Z pulseStartTimes = $""
-#endif
-
-	if(!WaveExists(pulseStartTimes))
-
+	if(!WaveExists(pulseInfosEpochs) || defined(AUTOMATED_TESTING))
 		fullPath = traceData[idx][%fullPath]
 		DFREF singleSweepFolder = GetWavesDataFolderDFR($fullPath)
 		ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
@@ -349,93 +374,123 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 			return $""
 		endif
 
+		totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
+
 		WAVE DA = GetDAQDataSingleColumnWave(singleSweepFolder, XOP_CHANNEL_TYPE_DAC, channel)
-		WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, fullPath, channel, totalOnsetDelay)
+		totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
+		WAVE/Z pulseInfosCalc = PA_CalculatePulseInfos(DA, fullPath, channel, totalOnsetDelay)
+	endif
 
 #ifdef AUTOMATED_TESTING
-		variable i
-		variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 2
+	PA_DiffPulseInfos(numericalValues, sweepNo, pulseInfosEpochs, pulseInfosCalc)
+#endif
 
-		WAVE DBG_pulseStartTimesCalc = pulseStartTimes
-		if(WaveExists(DBG_pulseStartTimesEpochs) && WaveExists(DBG_pulseStartTimesCalc))
-			if(DimSize(DBG_pulseStartTimesEpochs, ROWS) != DimSize(DBG_pulseStartTimesCalc, ROWS))
-				print/D "Warn: Pulse start time from epochs:\r", DBG_pulseStartTimesEpochs, "\r from Calculation:\r", DBG_pulseStartTimesCalc
-			else
-				for(i = 0; i < DimSize(DBG_pulseStartTimesEpochs, ROWS); i += 1)
-					if(abs(DBG_pulseStartTimesEpochs[i] - DBG_pulseStartTimesCalc[i]) > warnDiffms)
-						print/D "Warn: Pulse start time from epochs:\r", DBG_pulseStartTimesEpochs, "from Calculation:\r", DBG_pulseStartTimesCalc
+	if(WaveExists(pulseInfosEpochs))
+		return pulseInfosEpochs
+	endif
+
+	return pulseInfosCalc
+End
+
+/// @brief Compare epoch and calculated pulse infos
+static Function PA_DiffPulseInfos(WAVE numericalValues, variable sweepNo, WAVE/Z pulseInfosEpochs, WAVE/Z pulseInfosCalc)
+	variable i, j
+
+	variable warnDiffms = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE) * 2
+
+	if(WaveExists(pulseInfosEpochs) && WaveExists(pulseInfosCalc))
+		if(DimSize(pulseInfosEpochs, ROWS) != DimSize(pulseInfosCalc, ROWS))
+			print/D "Warn: Differing dimensions in pulse infos from epochs:\r", pulseInfosEpochs, "\r from Calculation:\r", pulseInfosCalc
+		else
+			for(i = 0; i < DimSize(pulseInfosEpochs, ROWS); i += 1)
+				for(j = 0; j < DimSize(pulseInfosEpochs, COLS); j += 1)
+					if(abs(pulseInfosEpochs[i][j] - pulseInfosCalc[i][j]) > warnDiffms                          \
+					   && j == DimSize(pulseInfosEpochs, COLS) - 1 && i == DimSize(pulseInfosEpochs, ROWS) - 1)
+						print/D "Warn: Differing pulse infos in [" + num2str(i) + ", " + GetDimLabel(pulseInfosEpochs, COLS, j) + "], from epochs:\r", pulseInfosEpochs, "from Calculation:\r", pulseInfosCalc
 						break
 					endif
 				endfor
-			endif
-		endif
-		if(WaveExists(DBG_pulseStartTimesEpochs) && !WaveExists(DBG_pulseStartTimesCalc))
-			print/D "Warn: Returned pulse start times from Epochs but got none from Calculation. From Epochs:\r", DBG_pulseStartTimesEpochs
-		endif
-#endif
-
-		sprintf str, "Calculated pulse starting times for headstage %d", region
-		DEBUGPRINT(str)
-
-		if(!WaveExists(pulseStartTimes))
-			return $""
+			endfor
 		endif
 	endif
 
-	pulseStartTimes[] -= totalOnsetDelay
-
-	return pulseStartTimes
+	if(WaveExists(pulseInfosEpochs) && !WaveExists(pulseInfosCalc))
+		print/D "Warn: Returned pulse start times from Epochs but got none from Calculation. From Epochs:\r", pulseInfosEpochs
+	endif
 End
 
-/// @brief Extracts the pulse start times from the lab notebook and returns them as wave
+/// @brief Extracts the pulse info from the lab notebook and returns them as wave
+///
 /// @param[in] epochInfo epoch data to extract pulse starting times
-/// @returns 1D wave with pulse starting times in [ms] or null wave
-static Function/WAVE PA_RetrievePulseStartTimesFromEpochs(string epochInfo)
+/// @returns pulse info, see GetPulseInfoWave() or an invalid wave reference on error
+static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 
-	variable numRawEpochs, numPulseStarts, i
-	string epochStr, pulseInfo
+	variable numEpochs, idx, i, first, last, level
+	string name
 
 	if(IsEmpty(epochInfo))
 		return $""
 	endif
 
-	WAVE/T rawEpochs = ListToTextWave(epochInfo, ":")
-	numRawEpochs = DimSize(rawEpochs, ROWS)
-	Make/FREE/D/N=(numRawEpochs) pulseStartTimes
-	for(i = 0; i < numRawEpochs; i += 1)
-		epochStr = rawEpochs[i]
+	WAVE/T epochs = ListToTextWaveMD(epochInfo, 2, rowSep = ":", colSep = ",")
 
-		epochInfo = StringFromList(EPOCH_COL_NAME, epochStr, ",")
-		pulseInfo = StringByKey("Pulse", epochInfo, "=", ";")
-		if(!IsEmpty(pulseInfo) && NumberByKey("Amplitude", epochInfo, "=", ";") > 0)
-			pulseStartTimes[numPulseStarts] = str2num(StringFromList(EPOCH_COL_STARTTIME, epochStr, ";")) * 1E3
-			numPulseStarts += 1
-		endif
+	numEpochs = DimSize(epochs, ROWS)
+	WAVE/D pulseInfos = GetPulseInfoWave()
+	Redimension/N=(numEpochs, -1) pulseInfos
+
+	for(i = 0; i < numEpochs; i += 1)
+		first = str2num(epochs[i][EPOCH_COL_STARTTIME])
+		last  = str2num(epochs[i][EPOCH_COL_ENDTIME])
+		name  = epochs[i][EPOCH_COL_NAME]
+		level = str2num(epochs[i][EPOCH_COL_TREELEVEL])
+
+		switch(level)
+			case 2:
+			case 3:
+				if(strsearch(name, "Pulse=", 0) == -1)
+					continue
+				endif
+
+				if(level == 2)
+					pulseInfos[idx][%Length] = (last - first) * 1000
+				elseif(level == 3 && strsearch(name, "Active", 0) != -1)
+					pulseInfos[idx][%PulseStart] = first * 1000
+					pulseInfos[idx][%PulseEnd]   = last  * 1000
+					// incrementing it here also gives an
+					// empty wave for old epoch info without level 3
+					idx += 1
+				endif
+			default:
+				// do nothing
+				continue
+		endswitch
 	endfor
 
-	if(!numPulseStarts)
+	if(!idx)
 		return $""
 	endif
 
-	Redimension/N=(numPulseStarts) pulseStartTimes
-	return pulseStartTimes
+	Redimension/N=(idx, -1) pulseInfos
+	return pulseInfos
 End
 
-static Function PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, overridePulseLength, fixedPulseLength)
-	WAVE pulseStartTimes
-	variable startingPulse, endingPulse, overridePulseLength, fixedPulseLength
+static Function PA_GetPulseLength(WAVE pulseInfos, variable pulseIndex, variable overridePulseLength, variable fixedPulseLength)
 
-	variable numPulses, minimum
+	variable numPulses, minimum, lastPulseForMin
 
-	numPulses = DimSize(pulseStartTimes, ROWS)
-
-	if(numPulses <= 1 || fixedPulseLength)
+	if(fixedPulseLength)
 		return overridePulseLength
 	endif
 
-	Make/FREE/D/N=(numPulses) pulseLengths
-	pulseLengths[0] = NaN
-	pulseLengths[1, inf] = pulseStartTimes[p] - pulseStartTimes[p - 1]
+	numPulses = DimSize(pulseInfos, ROWS)
+
+	if(numPulses <= 1)
+		return pulseInfos[pulseIndex][%Length]
+	endif
+
+	// we ignore the pulse lengths for the last one if we can
+	lastPulseForMin = min(0, DimSize(pulseInfos, ROWS) - 2)
+	Duplicate/FREE/RMD=[0, lastPulseForMin][FindDimLabel(pulseInfos, COLS, "Length")] pulseInfos, pulseLengths
 
 	minimum = WaveMin(pulseLengths)
 
@@ -466,11 +521,13 @@ End
 /// - `$NOTE_KEY_TIMEALIGN_FEATURE_POS`: Position where the feature for time alignment was found
 /// - `$NOTE_KEY_PULSE_IS_DIAGONAL`: Stores if pulse is shown in the diagonal of the output layout
 /// - `$PA_SOURCE_WAVE_TIMESTAMP`: Last modification time of the pulse wave before creation.
+/// - `$NOTE_KEY_PULSE_START`: ms coordinates where the pulse starts
+/// - `$NOTE_KEY_PULSE_END`: ms coordinates where the pulse ends
 ///
 /// Diagonal pulses only with failed pulse search enabled:
 /// - `$NOTE_KEY_PULSE_HAS_FAILED`: Pulse has failed
 /// - `$NOTE_KEY_PULSE_SPIKE_POSITIONS`: Comma separated list of spike positions in ms. `0` is the start of the pulse.
-static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(WAVE/Z wv, DFREF singleSweepFolder, variable channelType, variable channelNumber, variable region, variable pulseIndex, variable first, variable length)
+static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(WAVE/Z wv, DFREF singleSweepFolder, variable channelType, variable channelNumber, variable region, variable pulseIndex, variable first, variable length, WAVE pulseInfos)
 
 	variable existingLength
 
@@ -500,6 +557,9 @@ static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(W
 	SetNumberInWaveNote(singlePulseWaveNote, NOTE_KEY_SEARCH_FAILED_PULSE, 0)
 	SetNumberInWaveNote(singlePulseWaveNote, NOTE_KEY_TIMEALIGN, 0)
 	SetNumberInWaveNote(singlePulseWaveNote, NOTE_KEY_ZEROED, 0)
+	// by definition the pulse wave starts with the rising edge of the active pulse
+	SetNumberInWaveNote(singlePulseWaveNote, NOTE_KEY_PULSE_START, 0)
+	SetNumberInWaveNote(singlePulseWaveNote, NOTE_KEY_PULSE_END, pulseInfos[pulseIndex][%PulseEnd] - pulseInfos[pulseIndex][%PulseStart])
 
 	PA_UpdateMinAndMax(singlePulseWave, singlePulseWaveNote)
 
@@ -730,12 +790,14 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			if(WhichListItem(channelNumberStr, channelList, PA_PROPERTIES_STRLIST_SEP) == -1)
 				channelList = AddListItem(channelNumberStr, channelList, PA_PROPERTIES_STRLIST_SEP, inf)
 			endif
+
 			// get pulse start times and from that number of pulses
-			WAVE/Z pulseStartTimes = PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
-			if(!WaveExists(pulseStartTimes))
+			WAVE/Z pulseInfos = PA_GetPulseInfos(traceData, idx, region, channelTypeStr)
+			if(!WaveExists(pulseInfos))
 				continue
 			endif
-			numPulsesTotal = DimSize(pulseStartTimes, ROWS)
+
+			numPulsesTotal = DimSize(pulseInfos, ROWS)
 			endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
 			numPulseCreate = endingPulse - startingPulseSett + 1
 			if(numPulseCreate <= 0)
@@ -768,8 +830,6 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				JSON_SetVariable(jsonID, key, lastSweep)
 			endif
 
-			pulseToPulseLength = PA_GetPulseLength(pulseStartTimes, startingPulseSett, endingPulse, pa.overridePulseLength, pa.fixedPulseLength)
-
 			WAVE numericalValues = $traceData[idx][lblTracenumericalValues]
 			DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][lblTraceFullpath])
 			ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
@@ -788,14 +848,14 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 			prevTotalPulseCounter = totalPulseCounter
 			for(k = startingPulseSett; k <= endingPulse; k += 1)
 
-				// ignore wave offset, as it is only used for display purposes
-				// but use the totalOnsetDelay of this sweep
-				first  = round((pulseStartTimes[k] + totalOnsetDelay) / DimDelta(wv, ROWS))
-				length = round(pulseToPulseLength / DimDelta(wv, ROWS))
+				pulseToPulseLength = PA_GetPulseLength(pulseInfos, k, pa.overridePulseLength, pa.fixedPulseLength)
+
+				first        = round(pulseInfos[k][%PulseStart] / DimDelta(wv, ROWS))
+				length       = round(pulseToPulseLength / DimDelta(wv, ROWS))
 
 				WAVE/Z pulseWave, pulseWaveNote
 				[pulseWave, pulseWaveNote] = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, \
-				                                                  region, k, first, length)
+							                                                region, k, first, length, pulseInfos)
 
 				if(!WaveExists(pulseWave))
 					continue
@@ -2438,6 +2498,10 @@ End
 	for(i = 0; i < numSpikes; i += 1)
 		first = levels[i * 2]
 		last  = levels[i * 2 + 1]
+
+		if((last - first) < PA_MINIMUM_SPIKE_WIDTH)
+			continue
+		endif
 
 		err = 0
 		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(s.failedPulsesLevel)/R=(first, last) pulseWave; err = GetRTError(1)
