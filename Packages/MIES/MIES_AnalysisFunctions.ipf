@@ -1007,21 +1007,28 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
 			WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
-			WAVE ampParam = GetAmplifierParamStorageWave(panelTitle)
-			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 			targetVoltagesIndex[s.headstage] = -1
 
-			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
-				printf "(%s) The analysis function %s does only work in clamp mode.\r", panelTitle, GetRTStackInfo(1)
-				ControlWindowToFront()
-				return 1
+			if(DAP_GetHighestActiveHeadstage(panelTitle) != s.headstage)
+				return NaN
 			endif
+
+			WAVE ampParam = GetAmplifierParamStorageWave(panelTitle)
+			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 				if(!statusHS[i])
 					continue
 				endif
+
+				if(DAG_GetHeadstageMode(panelTitle, i) != I_CLAMP_MODE)
+					printf "(%s) The analysis function %s does only work in clamp mode.\r", panelTitle, GetRTStackInfo(1)
+					ControlWindowToFront()
+					return 1
+				endif
+
+				SetDAScale(panelTitle, i, absolute=-20e-12)
 
 				autoBiasCheck = ampParam[%AutoBiasEnable][0][i]
 				holdingPotential = ampParam[%AutoBiasVcom][0][i]
@@ -1047,8 +1054,6 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
 			KillWindow/Z $RESISTANCE_GRAPH
-
-			SetDAScale(panelTitle, s.headstage, absolute=-20e-12)
 
 			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
 
