@@ -1558,7 +1558,12 @@ Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
 
 	sweepCol = GetSweepColumn(labnotebookValues)
 
-	Make/FREE/N=(DimSize(indizes, ROWS)) sweeps = labnotebookValues[indizes[p]][sweepCol][0]
+	if(IsTextWave(labnotebookValues))
+		WAVE/T labnotebookValuesText = labnotebookValues
+		Make/FREE/N=(DimSize(indizes, ROWS)) sweeps = str2num(labnotebookValuesText[indizes[p]][sweepCol][0])
+	else
+		Make/FREE/N=(DimSize(indizes, ROWS)) sweeps = labnotebookValues[indizes[p]][sweepCol][0]
+	endif
 
 	return DeleteDuplicates(sweeps)
 End
