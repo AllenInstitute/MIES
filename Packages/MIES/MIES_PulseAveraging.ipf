@@ -1464,6 +1464,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 	variable channelNumber, region
 	variable pulseHasFailed
 	variable hideTrace, lastSweep, alpha
+	variable firstActiveRegionIndex = NaN
 	variable hiddenTracesCount, avgPlotCount, deconPlotCount, plottedAvgTraces
 	variable jsonID, hideTraceJsonID, graphDataIndex, numHiddenTracesGraphs, graphHasChanged
 	variable startEntry, numEntries, idx, layoutChanged
@@ -1510,10 +1511,14 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 				continue
 			endif
 
+			if(IsNaN(firstActiveRegionIndex))
+				firstActiveRegionIndex = i
+			endif
+
 			for(j = 0; j < numActive; j += 1)
 				channelNumber = pasi.channels[j]
 				// graph change logic
-				if(!pa.multipleGraphs && j == 0 && i == 0 || pa.multipleGraphs)
+				if(!pa.multipleGraphs && j == 0 && i == firstActiveRegionIndex || pa.multipleGraphs)
 					graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, i + 1, j + 1, numActive)
 				endif
 				// build list of used graphs, when not incremental we clear it on first encounter
@@ -2154,6 +2159,7 @@ End
 static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSetIndices &pasi, variable displayMode, variable axisMode, [variable resetToUserLength])
 
 	variable i, j, numActive, region, channelNumber, drawXScaleBarOverride
+	variable firstActiveRegionIndex = NaN
 	variable maximum, length, drawYScaleBarOverride
 	string graph, vertAxis, horizAxis, xUnit, yUnit, baseName
 
@@ -2182,13 +2188,17 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, ST
 				continue
 			endif
 
+			if(IsNaN(firstActiveRegionIndex))
+				firstActiveRegionIndex = j
+			endif
+
 			graph = PA_GetGraph(win, pa, displayMode, channelNumber, region, j + 1, i + 1, numActive)
 
 			WAVE/T axesNames = pasi.axesNames[i][j]
 			vertAxis = axesNames[0]
 			horizAxis = axesNames[1]
 
-			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
+			if(!pa.multipleGraphs && i == 0 && j == firstActiveRegionIndex || pa.multipleGraphs)
 				SetDrawLayer/K/W=$graph $PA_DRAWLAYER_SCALEBAR
 			endif
 
