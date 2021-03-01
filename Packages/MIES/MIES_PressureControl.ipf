@@ -142,7 +142,7 @@ static Function P_RecordUserPressure(panelTitle)
 			continue
 		endif
 
-		TPStorage[count][i][%UserPressure]             = HW_ReadADC(hwType, deviceID, ADC)
+		TPStorage[count][i][%UserPressure]             = HW_ReadADC(hwType, deviceID, ADC, flags = HARDWARE_ABORT_ON_ERROR)
 		TPStorage[count][i][%UserPressureTimeStampUTC] = DateTimeInUTC()
 	endfor
 End
