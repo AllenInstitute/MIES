@@ -680,7 +680,7 @@ static Function WB_CalculateParameterWithDelta(operation, value, delta, dme, lde
 	string setName, paramName
 
 	string list, entry
-	variable listDelta
+	variable listDelta, numDeltaEntries
 
 	if(operation != DELTA_OPERATION_EXPLICIT)
 		// add the delta value
@@ -709,7 +709,11 @@ static Function WB_CalculateParameterWithDelta(operation, value, delta, dme, lde
 			break
 		case DELTA_OPERATION_EXPLICIT:
 			list = ldelta
-			if(sweep >= ItemsInList(ldelta))
+			numDeltaEntries = ItemsInList(ldelta)
+			// only warn once
+			if(numDeltaEntries >= numSweeps && sweep == 0)
+				printf "WB_AddDelta: Stimset \"%s\" has too few sweeps for the explicit delta values list \"%s\" of \"%s\"\r", setName, list, paramName
+			elseif(sweep >= numDeltaEntries)
 				printf "WB_AddDelta: Stimset \"%s\" has too many sweeps for the explicit delta values list \"%s\" of \"%s\"\r", setName, list, paramName
 				listDelta = 0
 			else
