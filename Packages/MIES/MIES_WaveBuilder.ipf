@@ -436,7 +436,7 @@ static Function/Wave WB_GetStimSet([setName])
 		data[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvTypeCopy, i, numEpochs, channelType, updateEpochIDWave, stimset = setName)
 		lengthOf1DWaves = max(DimSize(data[i], ROWS), lengthOf1DWaves)
 		if(i + 1 < numSweeps)
-			if(WB_AddDelta(setName, WPCopy, WP, WPT, SegWvTypeCopy, SegWvType, i))
+			if(WB_AddDelta(setName, WPCopy, WP, WPT, SegWvTypeCopy, SegWvType, i, numSweeps))
 				return $""
 			endif
 		endif
@@ -575,12 +575,13 @@ End
 /// @param SegWvType     segment parameter wave (temporary copy)
 /// @param SegWvTypeOrig segment parameter wave (original)
 /// @param sweep         sweep number
-static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, SegWvTypeOrig, sweep)
+/// @param numSweeps     total number of sweeps
+static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, SegWvTypeOrig, sweep, numSweeps)
 	string setName
 	Wave WP, WPOrig
 	WAVE SegWvType, SegWvTypeOrig
 	WAVE/T WPT
-	variable sweep
+	variable sweep, numSweeps
 
 	variable i, j
 	variable operation
@@ -612,7 +613,7 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, SegWvTypeOrig, 
 			ldelta        = WPT[%$s.ldelta][%Set][INDEP_EPOCH_TYPE]
 			originalValue = SegWvTypeOrig[%$s.main]
 
-			ret = WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, setName, s.main)
+			ret = WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, numSweeps, setName, s.main)
 
 			if(ret)
 				return ret
@@ -643,7 +644,7 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, SegWvTypeOrig, 
 			ldelta        = WPT[%$s.ldelta][j][type]
 			originalValue = WPOrig[%$s.main][j][type]
 
-			ret = WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, setName, s.main)
+			ret = WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, numSweeps, setName, s.main)
 
 			if(ret)
 				return ret
@@ -666,15 +667,16 @@ End
 /// @param[in]      ldelta        explicit list of delta values
 /// @param[in]      originalValue unmodified parameter value
 /// @param[in]      sweep         sweep number
+/// @param[in]      numSweeps     number of sweeps
 /// @param[in]      setName       name of the stimulus set (used for error reporting)
 /// @param[in]      paramName     name of the parameter (used for error reporting)
-static Function WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, setName, paramName)
+static Function WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, numSweeps, setName, paramName)
 	variable operation
 	variable &value
 	variable &delta
 	variable dme
 	string ldelta
-	variable originalValue, sweep
+	variable originalValue, sweep, numSweeps
 	string setName, paramName
 
 	string list, entry
