@@ -188,6 +188,7 @@ End
 #include "MIES_GuiUtilities"
 #include "MIES_IgorHooks"
 #include "MIES_Indexing"
+#include "MIES_InputDialog"
 #include "MIES_IVSCC"
 #include "MIES_Labnotebook"
 #include "MIES_Menu"
