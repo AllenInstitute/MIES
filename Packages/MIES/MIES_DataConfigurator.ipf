@@ -1085,6 +1085,8 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = 0
 
+	numADCEntries = DimSize(ADCList, ROWS)
+
 	ClearRTError()
 
 	// varies per DAC:
@@ -1101,6 +1103,8 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		WAVE testPulse = stimSet[0]
 		TPLength = setLength[0]
 		ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+		ASSERT(numADCEntries > 0, "Number of ADCs can not be zero")
+		ASSERT(numDACEntries > 0, "Number of DACs can not be zero")
 
 		struct HardwareDataTPInput s
 		s.hardwareType = hardwareType
@@ -1387,7 +1391,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, NaN, var=setLength[0])
 	endif
 
-	numADCEntries = DimSize(ADCList, ROWS)
 	for(i = 0; i < numADCEntries; i += 1)
 		channel = ADCList[i]
 		headstage = channelClampMode[channel][%ADC][%Headstage]
