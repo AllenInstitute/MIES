@@ -311,7 +311,7 @@ Function/S CA_SamplingIntervalKey(lut, s)
 	crc = StringCRC(crc, num2istr(s.numTTLRack2))
 
 	ASSERT(!IsFreeWave(lut), "lut can not be a free wave")
-	return num2istr(crc) + NameOfWave(lut) + num2str(ModDate(lut)) + "Version 1"
+	return num2istr(crc) + NameOfWave(lut) + num2istr(ModDate(lut)) + "Version 1"
 End
 
 /// @brief Generic key generator for storing throw away waves used for
