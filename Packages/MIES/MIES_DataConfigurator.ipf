@@ -85,11 +85,7 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 
 	DC_PlaceDataInDAQConfigWave(panelTitle, dataAcqOrTP)
 
-	gotTPChannels = GotTPChannelsOnADCs(paneltitle)
-
-	if(dataAcqOrTP == TEST_PULSE_MODE || gotTPChannels)
-		TP_CreateTestPulseWave(panelTitle, dataAcqOrTP)
-	endif
+	TP_CreateTestPulseWave(panelTitle, dataAcqOrTP)
 
 	DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 
@@ -99,6 +95,8 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 	ADChannelToMonitor = DimSize(GetDACListFromConfig(DAQConfigWave), ROWS)
+
+	gotTPChannels = GotTPChannelsOnADCs(paneltitle)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE || gotTPChannels)
 		TP_CreateTPAvgBuffer(panelTitle)
@@ -1268,8 +1266,8 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 							// space in ITCDataWave for the testpulse is allocated via an automatic increase
 							// of the onset delay
 							DC_AddEpochsFromTP(panelTitle, channel, baselinefrac, testPulseLength * samplingInterval, 0, "Inserted TP", DACAmp[i][%TPAMP])
-							ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][i] = \
-							limit(tpAmp, SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+							MultiThread ITCDataWave[0, testPulseLength - 1][i] =                        \
+							limit(tpAmp * testPulse[p], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 						endif
 						break
 					case HARDWARE_NI_DAC:
@@ -1293,8 +1291,8 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 							// space in ITCDataWave for the testpulse is allocated via an automatic increase
 							// of the onset delay
 							DC_AddEpochsFromTP(panelTitle, channel, baselinefrac, testPulseLength * samplingInterval, 0, "Inserted TP", DACAmp[i][%TPAMP])
-							NIChannel[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength] = \
-							limit(tpAmp, NI_DAC_MIN, NI_DAC_MAX); AbortOnRTE
+							MultiThread NIChannel[0, testPulseLength - 1] = \
+							limit(tpAmp * testPulse[p], NI_DAC_MIN, NI_DAC_MAX); AbortOnRTE
 						endif
 						break
 				endswitch
