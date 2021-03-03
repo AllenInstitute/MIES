@@ -1150,16 +1150,16 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 			WAVE/WAVE/Z NIDataWave
 
 			[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, hardwareType, numActiveChannels, \
-																				   samplingInterval, dataAcqOrTP)
+			                                                     samplingInterval, dataAcqOrTP)
 
 			switch(hardwareType)
 				case HARDWARE_ITC_DAC:
 					if(multiDevice)
-						Multithread ITCDataWave[][0, numDACEntries - 1] =              \
-						limit(                                                         \
-						(DAGain[q] * DACAmp[q][%TPAMP]) * testPulse[mod(p, TPLength)], \
-						SIGNED_INT_16BIT_MIN,                                          \
-						SIGNED_INT_16BIT_MAX); AbortOnRTE
+						Multithread ITCDataWave[][0, numDACEntries - 1] =                    \
+						limit(                                                               \
+						      (DAGain[q] * DACAmp[q][%TPAMP]) * testPulse[mod(p, TPLength)], \
+						      SIGNED_INT_16BIT_MIN,                                          \
+						      SIGNED_INT_16BIT_MAX); AbortOnRTE
 						cutOff = mod(DimSize(ITCDataWave, ROWS), TPLength)
 						if(cutOff > 0)
 							ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numDACEntries - 1] = 0
@@ -1167,9 +1167,9 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 					else
 						Multithread ITCDataWave[0, TPLength - 1][0, numDACEntries - 1] = \
 						limit(                                                           \
-						DAGain[q] * DACAmp[q][%TPAMP] * testPulse[p],                    \
-						SIGNED_INT_16BIT_MIN,                                            \
-						SIGNED_INT_16BIT_MAX); AbortOnRTE
+						      DAGain[q] * DACAmp[q][%TPAMP] * testPulse[p],              \
+						      SIGNED_INT_16BIT_MIN,                                      \
+						      SIGNED_INT_16BIT_MAX); AbortOnRTE
 					endif
 
 					SetStringInWaveNote(ITCDataWave, TP_PROPERTIES_HASH, key)
@@ -1181,9 +1181,9 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 						tpAmp = DACAmp[i][%TPAMP] * DAGain[i]
 						Multithread NIChannel[0, TPLength - 1] = \
 						limit(                                   \
-						tpAmp * testPulse[p],                    \
-						NI_DAC_MIN,                              \
-						NI_DAC_MAX); AbortOnRTE
+						      tpAmp * testPulse[p],              \
+						      NI_DAC_MIN,                        \
+						      NI_DAC_MAX); AbortOnRTE
 					endfor
 
 					SetStringInWaveNote(NIDataWave, TP_PROPERTIES_HASH, key)
@@ -1197,7 +1197,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		WAVE/WAVE/Z NIDataWave
 
 		[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, hardwareType, numActiveChannels, \
-																			   samplingInterval, dataAcqOrTP)
+		                                                     samplingInterval, dataAcqOrTP)
 
 		for(i = 0; i < numDACEntries; i += 1)
 			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
@@ -1208,11 +1208,11 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 				ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
 				switch(hardwareType)
 					case HARDWARE_ITC_DAC:
-						Multithread ITCDataWave[][i] =       \
-						limit(                               \
-						tpAmp * testPulse[mod(p, TPLength)], \
-						SIGNED_INT_16BIT_MIN,                \
-						SIGNED_INT_16BIT_MAX); AbortOnRTE
+						Multithread ITCDataWave[][i] =             \
+						limit(                                     \
+						      tpAmp * testPulse[mod(p, TPLength)], \
+						      SIGNED_INT_16BIT_MIN,                \
+						      SIGNED_INT_16BIT_MAX); AbortOnRTE
 						cutOff = mod(DimSize(ITCDataWave, ROWS), TPLength)
 						if(cutOff > 0)
 							ITCDataWave[DimSize(ITCDataWave, ROWS) - cutOff, *][i] = 0
@@ -1220,11 +1220,11 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 						break
 					case HARDWARE_NI_DAC:
 						WAVE NIChannel = NIDataWave[i]
-						Multithread NIChannel[] =            \
-						limit(                               \
-						tpAmp * testPulse[mod(p, TPLength)], \
-						NI_DAC_MIN,                          \
-						NI_DAC_MAX); AbortOnRTE
+						Multithread NIChannel[] =                  \
+						limit(                                     \
+						      tpAmp * testPulse[mod(p, TPLength)], \
+						      NI_DAC_MIN,                          \
+						      NI_DAC_MAX); AbortOnRTE
 						cutOff = mod(DimSize(NIChannel, ROWS), TPLength)
 						if(cutOff > 0)
 							NIChannel[DimSize(NIChannel, ROWS) - cutOff, *] = 0
@@ -1260,11 +1260,11 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 
 				switch(hardwareType)
 					case HARDWARE_ITC_DAC:
-						Multithread ITCDataWave[startOffset, startOffset + singleSetLength - 1][i] = \
-						limit(                                                                       \
-						DAScale * singleStimSet[decimationFactor * (p - startOffset)][stimsetCol],   \
-						SIGNED_INT_16BIT_MIN,                                                        \
-						SIGNED_INT_16BIT_MAX); AbortOnRTE
+						Multithread ITCDataWave[startOffset, startOffset + singleSetLength - 1][i] =     \
+						limit(                                                                           \
+						      DAScale * singleStimSet[decimationFactor * (p - startOffset)][stimsetCol], \
+						      SIGNED_INT_16BIT_MIN,                                                      \
+						      SIGNED_INT_16BIT_MAX); AbortOnRTE
 
 						if(globalTPInsert)
 							// space in ITCDataWave for the testpulse is allocated via an automatic increase
@@ -1285,11 +1285,11 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 						// for ITC decimationFactor is always >= 1 since the stimSets are generated for the ITC max. sample rate
 						WAVE NIChannel = NIDataWave[i]
 						lastValidRow = DimSize(singleStimSet, ROWS) - 1
-						MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                            \
-						limit(                                                                                             \
-						DAScale * singleStimSet[limit(decimationFactor * (p - startOffset), 0, lastValidRow)][stimsetCol], \
-						NI_DAC_MIN,                                                                                        \
-						NI_DAC_MAX); AbortOnRTE
+						MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                                  \
+						limit(                                                                                                   \
+						      DAScale * singleStimSet[limit(decimationFactor * (p - startOffset), 0, lastValidRow)][stimsetCol], \
+						      NI_DAC_MIN,                                                                                        \
+						      NI_DAC_MAX); AbortOnRTE
 
 						if(globalTPInsert)
 							// space in ITCDataWave for the testpulse is allocated via an automatic increase
