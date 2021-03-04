@@ -3384,10 +3384,9 @@ static Function DAP_SetHeadstageChanControls(panelTitle, headstage, clampMode, [
 	DAP_AllChanDASettings(panelTitle, headStage, delayed = delayed)
 End
 
-/// See @ref MCCSyncOverrides for allowed values of `mccMiesSyncOverride`
-static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode, mccMiesSyncOverride)
+static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode)
 	string panelTitle
-	variable headStage, clampMode, mccMiesSyncOverride
+	variable headStage, clampMode
 
 	string highlightSpec = "\\f01\\Z11"
 
@@ -3396,7 +3395,7 @@ static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode, mccMie
 	AI_SyncAmpStorageToGUI(panelTitle, headStage)
 	PGC_SetAndActivateControl(panelTitle, "tab_DataAcq_Amp", val = clampMode)
 
-	if(DAG_GetNumericalValue(panelTitle, "check_Settings_SyncMiesToMCC") && mccMiesSyncOverride == DO_MCC_MIES_SYNCING)
+	if(DAG_GetNumericalValue(panelTitle, "check_Settings_SyncMiesToMCC"))
 		AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 	endif
 
@@ -3781,7 +3780,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		P_UpdatePressureType(panelTitle)
 		P_LoadPressureButtonState(panelTitle)
 		P_UpdatePressureModeTabs(panelTitle, headStage)
-		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode, DO_MCC_MIES_SYNCING)
+		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode)
 		SCOPE_SetADAxisLabel(panelTitle, UNKNOWN_MODE, HeadStage)
 		P_RunP_ControlIfTPOFF(panelTitle)
 	endif
