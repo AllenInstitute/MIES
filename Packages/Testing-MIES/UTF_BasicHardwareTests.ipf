@@ -2623,10 +2623,16 @@ Function EnableApplyOnModeSwitch_IGNORE(device)
 	string ctrl
 
 	ctrl = GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	PGC_SetAndActivateControl(device, ctrl, str = "StimulusSetA_DA_0")
+	PGC_SetAndActivateControl(device, ctrl, str = "StimulusSetE_DA_0")
 
 	ctrl = GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	PGC_SetAndActivateControl(device, ctrl, str = "StimulusSetF_DA_0")
+
+	ctrl = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	PGC_SetAndActivateControl(device, ctrl, str = "StimulusSetA_DA_0")
+
+	ctrl = GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	PGC_SetAndActivateControl(device, ctrl, str = "StimulusSetC_DA_0")
 
 	PGC_SetAndActivateControl(device, "check_DA_applyOnModeSwitch", val=1)
 End
@@ -2677,6 +2683,18 @@ Function ChangeCMDuringSweepWMS_REENTRY([str])
 
 	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+
+	WAVE/T textualValues   = GetLBTextualValues(str)
+	WAVE   numericalValues = GetLBNumericalValues(str)
+
+	// the stimsets are not changed as this is delayed clamp mode change in action
+	WAVE/T/Z foundStimSets = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, 0, DATA_ACQUISITION_MODE)
+	REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(foundStimSets, {"StimulusSetA_DA_0", "StimulusSetA_DA_0", "StimulusSetA_DA_0"})
+
+	WAVE/T/Z foundStimSets = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, 1, DATA_ACQUISITION_MODE)
+	REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(foundStimSets, {"StimulusSetC_DA_0", "StimulusSetC_DA_0", "StimulusSetC_DA_0"})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
