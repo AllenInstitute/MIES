@@ -528,7 +528,7 @@ Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
 
 	if(clampMode == V_CLAMP_MODE)
 
-		DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, SKIP_MCC_MIES_SYNCING)
+		DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, MCC_SKIP_UPDATES)
 		settingValue = AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite = 1)
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_VC", val = settingValue)
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_IC", val = settingValue)
@@ -545,7 +545,7 @@ Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
 		PGC_SetAndActivateControl(panelTitle,"check_DataAcq_AutoBias", val = CHECKBOX_SELECTED)
 		printf "HeadStage %d is in V-Clamp mode and has been configured from the MCC. I-Clamp settings were reset to initial values, check before switching!\r", headStage
 	elseif(clampMode == I_CLAMP_MODE)
-		DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, headStage, SKIP_MCC_MIES_SYNCING)
+		DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, headStage, MCC_SKIP_UPDATES)
 		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite = 1)
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_VC", val = settingValue)
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_IC", val = settingValue)

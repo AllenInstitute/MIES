@@ -383,12 +383,12 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 						PGC_SetAndActivateControl(panelTitle, "ADC", val=0)
 					endif
 
-					DAP_ChangeHeadStageMode(panelTitle, oppositeMode, i, SKIP_MCC_MIES_SYNCING)
+					DAP_ChangeHeadStageMode(panelTitle, oppositeMode, i, MCC_SKIP_UPDATES)
 					// selecting amplifier here, as the clamp mode is now different
 					value = AI_SendToAmp(panelTitle, i, oppositeMode, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 1)
 					AmpStorageWave[%$rowLabelOpposite][0][i] = value
 					AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCallOpposite)
-					DAP_ChangeHeadStageMode(panelTitle, clampMode, i, SKIP_MCC_MIES_SYNCING)
+					DAP_ChangeHeadStageMode(panelTitle, clampMode, i, MCC_SKIP_UPDATES)
 
 					if(oldTab != 0)
 						PGC_SetAndActivateControl(panelTitle, "ADC", val=oldTab)
