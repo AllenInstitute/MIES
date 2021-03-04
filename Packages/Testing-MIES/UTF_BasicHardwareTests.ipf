@@ -2768,13 +2768,13 @@ Function ChangeCMDuringSweep_REENTRY([str])
 	WAVE numericalValues = GetLBNumericalValues(str)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
 Function EnableApplyOnModeSwitch_IGNORE(device)
@@ -2836,13 +2836,13 @@ Function ChangeCMDuringSweepWMS_REENTRY([str])
 	WAVE numericalValues = GetLBNumericalValues(str)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode= WAVE_DATA)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/T textualValues   = GetLBTextualValues(str)
 	WAVE   numericalValues = GetLBNumericalValues(str)
@@ -2896,7 +2896,7 @@ Function ChangeCMDuringSweepNoRA_REENTRY([str])
 	WAVE numericalValues = GetLBNumericalValues(str)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
 Function ITISetupNoTP_IGNORE(device)
@@ -2946,13 +2946,13 @@ Function ChangeCMDuringITI_REENTRY([str])
 	WAVE numericalValues = GetLBNumericalValues(str)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
 Function ITISetupWithTP_IGNORE(device)
@@ -3005,13 +3005,13 @@ Function ChangeCMDuringITIWithTP_REENTRY([str])
 	WAVE numericalValues = GetLBNumericalValues(str)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
 Function TPDuringDAQOnlyTP_IGNORE(device)
