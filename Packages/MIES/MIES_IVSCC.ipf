@@ -188,6 +188,8 @@ Function IVS_ConfigureMCC()
 	if(oldTab != 0)
 		PGC_SetAndActivateControl(panelTitle, "ADC", val=oldTab)
 	endif
+
+	return numErrors
 End
 
 /// @brief Run the baseline QC check
