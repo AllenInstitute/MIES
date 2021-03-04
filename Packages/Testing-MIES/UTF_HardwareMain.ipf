@@ -492,6 +492,18 @@ Function JustDelay_IGNORE(s)
 	return 1
 End
 
+Function AutoPipetteOffsetAndStopTP_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
+
+	PGC_SetAndActivateControl(device, "button_DataAcq_AutoPipOffset_VC")
+	PGC_SetAndActivateControl(device, "StartTestPulseButton")
+
+	return 1
+End
+
 Function StopTP_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 

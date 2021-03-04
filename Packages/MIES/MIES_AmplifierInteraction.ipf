@@ -208,7 +208,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 	string ctrl
 	variable headStage, value, sendToAll, checkBeforeWrite, selectAmp
 
-	variable i, diff, selectedHeadstage, clampMode, oppositeMode
+	variable i, diff, selectedHeadstage, clampMode, oppositeMode, oldTab
 	variable runMode = TEST_PULSE_NOT_RUNNING
 	string str, rowLabel, rowLabelOpposite, ctrlToCall, ctrlToCallOpposite
 
@@ -378,12 +378,21 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCall)
 				// the pipette offset for the opposite mode has also changed, fetch that too
 				try
-					DAP_ChangeHeadStageMode(panelTitle, oppositeMode, i, SKIP_MCC_MIES_SYNCING)
+					oldTab = GetTabID(panelTitle, "ADC")
+					if(oldTab != 0)
+						PGC_SetAndActivateControl(panelTitle, "ADC", val=0)
+					endif
+
+					DAP_ChangeHeadStageMode(panelTitle, oppositeMode, i, MCC_SKIP_UPDATES)
 					// selecting amplifier here, as the clamp mode is now different
 					value = AI_SendToAmp(panelTitle, i, oppositeMode, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 1)
 					AmpStorageWave[%$rowLabelOpposite][0][i] = value
 					AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCallOpposite)
-					DAP_ChangeHeadStageMode(panelTitle, clampMode, i, SKIP_MCC_MIES_SYNCING)
+					DAP_ChangeHeadStageMode(panelTitle, clampMode, i, MCC_SKIP_UPDATES)
+
+					if(oldTab != 0)
+						PGC_SetAndActivateControl(panelTitle, "ADC", val=oldTab)
+					endif
 				catch
 					if(DAG_GetNumericalValue(panelTitle, "check_Settings_SyncMiesToMCC"))
 						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", panelTitle, ConvertAmplifierModeToString(oppositeMode), i

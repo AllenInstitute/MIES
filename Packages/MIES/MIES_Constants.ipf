@@ -673,12 +673,14 @@ Constant AMPLIFIER_CONNECTION_MCC_FAILED = 2 ///< calling MCC_SelectMultiClamp70
 StrConstant NWB_SOURCE_TTL_BIT = "TTLBit"
 StrConstant IPNWB_PLACEHOLDER = "PLACEHOLDER"
 
-/// @name Convenience constants for DAP_UpdateClampmodeTabs() and DAP_ChangeHeadStageMode()
-/// @anchor MCCSyncOverrides
+/// @name Constants for the options parameter of DAP_ChangeHeadStageMode()
+/// @anchor ClampModeChangeOptions
 /// @{
-Constant DO_MCC_MIES_SYNCING   = 0x0
-Constant SKIP_MCC_MIES_SYNCING = 0x1
-Constant NO_SLIDER_MOVEMENT    = 0x2
+Constant DO_MCC_MIES_SYNCING   = 0x0 ///< Default mode with all bells and whistles
+Constant NO_SLIDER_MOVEMENT    = 0x2 ///< Does not move the headstage slider
+Constant MCC_SKIP_UPDATES      = 0x4 ///< Skips all unnecessary updates. Intereseting for temporarily switching the clamp mode,
+                                     ///< e.g. for an auto MCC amplifier function.
+                                     ///< Using that option requires to switch the clamp mode back to its original value.
 /// @}
 
 /// Number of trials to find a suitable port for binding a ZeroMQ service
