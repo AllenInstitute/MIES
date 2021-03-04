@@ -788,7 +788,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, terminationDelay
-	variable decimationFactor, cutoff
+	variable decimationFactor, cutoff, row, column
 	variable multiplier, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, headstage
 	variable lastValidRow, isoodDAQMember, channel, tpAmp, DAScale, stimsetCol, startOffset, ret
 	variable TPLength
@@ -1085,6 +1085,8 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = 0
 
+	numADCEntries = DimSize(ADCList, ROWS)
+
 	ClearRTError()
 
 	// varies per DAC:
@@ -1101,6 +1103,8 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		WAVE testPulse = stimSet[0]
 		TPLength = setLength[0]
 		ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+		ASSERT(numADCEntries > 0, "Number of ADCs can not be zero")
+		ASSERT(numDACEntries > 0, "Number of DACs can not be zero")
 
 		struct HardwareDataTPInput s
 		s.hardwareType = hardwareType
@@ -1390,7 +1394,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, NaN, var=setLength[0])
 	endif
 
-	numADCEntries = DimSize(ADCList, ROWS)
 	for(i = 0; i < numADCEntries; i += 1)
 		channel = ADCList[i]
 		headstage = channelClampMode[channel][%ADC][%Headstage]
@@ -1446,8 +1449,10 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		endswitch
 	endif
 
-	if(DC_CheckIfDataWaveHasBorderVals(panelTitle, dataAcqOrTP))
-		printf "Error writing stimsets into DataWave: The values are out of range. Maybe the DA/AD Gain needs adjustment?\r"
+	[ret, row, column] = DC_CheckIfDataWaveHasBorderVals(panelTitle, dataAcqOrTP)
+
+	if(ret)
+		printf "Error writing into DataWave in %s mode: The values at [%g, %g] are out of range. Maybe the DA/AD Gain needs adjustment?\r", SelectString(dataAcqOrTP, "DATA_ACQUISITION", "TestPulse"), row, column
 		ControlWindowToFront()
 		Abort
 	endif
@@ -1551,7 +1556,7 @@ static Function DC_GenerateStimsetFingerprint(raCycleID, setName, setCycleCount,
 	return crc
 End
 
-static Function DC_CheckIfDataWaveHasBorderVals(string panelTitle, variable dataAcqOrTP)
+static Function [variable result, variable row, variable column] DC_CheckIfDataWaveHasBorderVals(string panelTitle, variable dataAcqOrTP)
 
 	variable hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
@@ -1563,16 +1568,16 @@ static Function DC_CheckIfDataWaveHasBorderVals(string panelTitle, variable data
 			FindValue/UOFV/I=(SIGNED_INT_16BIT_MIN) ITCDataWave
 
 			if(V_Value != -1)
-				return 1
+				return [1, V_row, V_col]
 			endif
 
 			FindValue/UOFV/I=(SIGNED_INT_16BIT_MAX) ITCDataWave
 
 			if(V_Value != -1)
-				return 1
+				return [1, V_row, V_col]
 			endif
 
-			return 0
+			return [0, NaN, NaN]
 			break
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
@@ -1585,16 +1590,16 @@ static Function DC_CheckIfDataWaveHasBorderVals(string panelTitle, variable data
 				FindValue/UOFV/V=(NI_DAC_MIN)/T=1E-6 NIChannel
 
 				if(V_Value != -1)
-					return 1
+					return [1, V_row, V_col]
 				endif
 
 				FindValue/UOFV/V=(NI_DAC_MAX)/T=1E-6 NIChannel
 
 				if(V_Value != -1)
-					return 1
+					return [1, V_row, V_col]
 				endif
 
-				return 0
+				return [0, NaN, NaN]
 			endfor
 			break
 	endswitch
