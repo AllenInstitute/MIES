@@ -3022,6 +3022,44 @@ Function TPDuringDAQOnlyTP_IGNORE(device)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function AutoPipetteOffsetIgnoresApplyOnModeSwitch([str])
+	string str
+
+	string ctrl
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc=EnableApplyOnModeSwitch_IGNORE, startTPInstead = 1)
+
+	CtrlNamedBackGround DelayReentry, start=(ticks + 300), period=60, proc=AutoPipetteOffsetAndStopTP_IGNORE
+	RegisterUTFMonitor("DelayReentry", BACKGROUNDMONMODE_AND, "AutoPipetteOffsetIgnoresApplyOnModeSwitch_REENTRY", timeout = 600, failOnTimeout = 1)
+End
+
+Function AutoPipetteOffsetIgnoresApplyOnModeSwitch_REENTRY([str])
+	string str
+
+	variable sweepNo
+	string ctrl, stimset, expected
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	CHECK_EQUAL_VAR(GetCheckBoxState(str, "check_DA_applyOnModeSwitch"), 1)
+
+	ctrl = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	stimset = GetPopupMenuString(str, ctrl)
+	expected = "StimulusSetA_DA_0"
+	CHECK_EQUAL_STR(stimset, expected)
+
+	ctrl = GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	stimset = GetPopupMenuString(str, ctrl)
+	expected = "StimulusSetC_DA_0"
+	CHECK_EQUAL_STR(stimset, expected)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 Function TPDuringDAQOnlyTP([str])
 	string str
 
