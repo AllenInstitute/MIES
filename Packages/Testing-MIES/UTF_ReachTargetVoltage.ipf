@@ -105,6 +105,6 @@ static Function RTV_WorksWithIndexing_REENTRY([str])
 	CHECK_WAVE(resistanceErr, NUMERIC_WAVE)
 	CHECK_WAVE(autobiasFromDialog, NUMERIC_WAVE)
 
-	CHECK_EQUAL_VAR(autobiasFromDialog[HEADSTAGE], -69)
+	CHECK_EQUAL_WAVES(autobiasFromDialog, {-69, NaN, NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(GetSetVariable(str, "setvar_DataAcq_AutoBiasV"), -69)
 End
