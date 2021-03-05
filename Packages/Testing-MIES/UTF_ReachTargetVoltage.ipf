@@ -23,6 +23,8 @@ static Function RTV_Works_Setter(device)
 	wv[][%Set] = ""
 	wv[%$"Analysis function (generic)"][%Set] = "ReachTargetVoltage"
 
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = HEADSTAGE)
+
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
 End
@@ -64,6 +66,8 @@ static Function RTV_WorksWithIndexing_Setter(device)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis function (generic)"][%Set] = "ReachTargetVoltage"
+
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = HEADSTAGE)
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
