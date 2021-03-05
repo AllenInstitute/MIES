@@ -54,6 +54,7 @@ Menu "Mies Panels"
 		"Enable Independent Module editing"        , /Q, SetIgorOption IndependentModuleDev=1
 		"Reset and store current DA_EPHYS panel"   , /Q, DAP_EphysPanelStartUpSettings()
 		"Reset and store current DataBrowser panel", /Q, DB_ResetAndStoreCurrentDBPanel()
+		"Reset and store current Wavebuilder panel", /Q, WBP_StartupSettings()
 		"Check GUI control procedures of top panel", /Q, SearchForInvalidControlProcs(GetCurrentWindow())
 		"Flush Cache"                              , /Q, CA_FlushCache()
 		"Output Cache statistics"                  , /Q, CA_OutputCacheStatistics()

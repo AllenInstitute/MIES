@@ -11,7 +11,7 @@
 
 Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(104,858,1136,1405)
+	NewPanel /K=1 /W=(126,813,1158,1360)
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "MS Sans Serif",fsize= 16,fstyle= 1
 	DrawText 186,27,"Sweep Parameters"
@@ -223,7 +223,7 @@ Window WaveBuilder() : Panel
 	Button button_WaveBuilder_setaxisA,userdata(ResizeControlsInfo)= A"!!,Cd!!#C]J,hpe!!#<hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_WaveBuilder_setaxisA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_WaveBuilder_setaxisA,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_WaveBuilder_OutputType,pos={29.00,45.00},size={125.00,19.00},bodyWidth=55,proc=WBP_PopMenuProc_WaveType,title="Wave Type"
+	PopupMenu popup_WaveBuilder_OutputType,pos={31.00,45.00},size={123.00,19.00},bodyWidth=55,proc=WBP_PopMenuProc_WaveType,title="Wave Type"
 	PopupMenu popup_WaveBuilder_OutputType,help={"Stimulus set output type. TTL selection limits certain paramater values. This may result in changes to the active parameter values."}
 	PopupMenu popup_WaveBuilder_OutputType,userdata(ResizeControlsInfo)= A"!!,CL!!#>B!!#@^!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_WaveBuilder_OutputType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -523,7 +523,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WB_DeltaMult_P51_5,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable SetVar_WB_DeltaMult_P51_5,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WB_DeltaMult_P51_5,value= _NUM:0
-	SetVariable SetVar_WaveBuilder_P45,pos={366.00,171.00},size={100.00,18.00},disable=1,proc=WBP_SetVarProc_UpdateParam,title="# Pulses"
+	SetVariable SetVar_WaveBuilder_P45,pos={366.00,171.00},size={100.00,18.00},disable=3,proc=WBP_SetVarProc_UpdateParam,title="# Pulses"
 	SetVariable SetVar_WaveBuilder_P45,help={"Number of pulses in epoch"}
 	SetVariable SetVar_WaveBuilder_P45,userdata(tabnum)=  "5"
 	SetVariable SetVar_WaveBuilder_P45,userdata(tabcontrol)=  "WBP_WaveType"
@@ -629,7 +629,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_exp_P56,mode=1,popvalue="Square",value= #"\"Square;Triangle\""
-	CheckBox check_NewSeedForEachSweep_P49_0,pos={880.00,57.00},size={86.00,15.00},disable=1,proc=WBP_CheckProc,title="Seed / Sweep"
+	CheckBox check_NewSeedForEachSweep_P49_0,pos={880.00,57.00},size={86.00,15.00},disable=3,proc=WBP_CheckProc,title="Seed / Sweep"
 	CheckBox check_NewSeedForEachSweep_P49_0,help={"When checked, the random number generator (RNG) seed is updated with each sweep. Seeds are saved with the stimulus."}
 	CheckBox check_NewSeedForEachSweep_P49_0,userdata(tabnum)=  "5"
 	CheckBox check_NewSeedForEachSweep_P49_0,userdata(tabcontrol)=  "WBP_WaveType"
@@ -637,7 +637,7 @@ Window WaveBuilder() : Panel
 	CheckBox check_NewSeedForEachSweep_P49_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_NewSeedForEachSweep_P49_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_NewSeedForEachSweep_P49_0,value= 0
-	Button button_NewSeed_P48_0,pos={880.00,98.00},size={72.00,20.00},disable=1,proc=WBP_ButtonProc_NewSeed,title="New Seed"
+	Button button_NewSeed_P48_0,pos={880.00,98.00},size={72.00,20.00},disable=3,proc=WBP_ButtonProc_NewSeed,title="New Seed"
 	Button button_NewSeed_P48_0,help={"Create a different epoch by changing the seed value of the PRNG "}
 	Button button_NewSeed_P48_0,userdata(tabnum)=  "5"
 	Button button_NewSeed_P48_0,userdata(tabcontrol)=  "WBP_WaveType"
@@ -701,7 +701,7 @@ Window WaveBuilder() : Panel
 	CheckBox check_UseStimsetSeed_P39,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_UseStimsetSeed_P39,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_UseStimsetSeed_P39,value= 1
-	CheckBox check_UseEpochSeed_P39_0,pos={880.00,79.00},size={121.00,15.00},disable=1,proc=WBP_CheckProc,title="Epoch/Stimset Seed"
+	CheckBox check_UseEpochSeed_P39_0,pos={880.00,79.00},size={121.00,15.00},disable=3,proc=WBP_CheckProc,title="Epoch/Stimset Seed"
 	CheckBox check_UseEpochSeed_P39_0,help={"Use the per-epoch random number generator (RNG) seed (checked) or use the stimset seed (unchecked).<br>Seeds are saved with the stimulus."}
 	CheckBox check_UseEpochSeed_P39_0,userdata(tabnum)=  "5"
 	CheckBox check_UseEpochSeed_P39_0,userdata(tabcontrol)=  "WBP_WaveType"
@@ -726,13 +726,13 @@ Window WaveBuilder() : Panel
 	Button button_toggle_params,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_toggle_params,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_op_P70,pos={635.00,74.00},size={75.00,19.00},bodyWidth=75,proc=WBP_PopupMenu
-	PopupMenu popup_WaveBuilder_op_P70,help={"Delta operation"}
+	PopupMenu popup_WaveBuilder_op_P70,help={"<html><ul><li>None: No delta</li><li>mult: delta *= mult</li><li>Logarithmic: delta = log(delta)</li><li>Squared: delta = delta^2</li><li>Power: delta = delta^(mult)</li><li>Alternate: delta *= -1</li><li>Explicit: delta = listitem</li></ul></html>"}
 	PopupMenu popup_WaveBuilder_op_P70,userdata(ResizeControlsInfo)= A"!!,J/^]6]c!!#?O!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_WaveBuilder_op_P70,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_op_P70,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_op_P70,mode=1,popvalue="None",value= #"\"None;Multiplier;Log;Squared;Power;Alternate;Explicit\""
 	PopupMenu popup_WaveBuilder_op_P71,pos={635.00,99.00},size={75.00,19.00},bodyWidth=75,disable=1,proc=WBP_PopupMenu
-	PopupMenu popup_WaveBuilder_op_P71,help={"Delta operation"}
+	PopupMenu popup_WaveBuilder_op_P71,help={"<html><ul><li>None: No delta</li><li>mult: delta *= mult</li><li>Logarithmic: delta = log(delta)</li><li>Squared: delta = delta^2</li><li>Power: delta = delta^(mult)</li><li>Alternate: delta *= -1</li><li>Explicit: delta = listitem</li></ul></html>"}
 	PopupMenu popup_WaveBuilder_op_P71,userdata(ResizeControlsInfo)= A"!!,J/^]6^@!!#?O!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_WaveBuilder_op_P71,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_op_P71,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
@@ -814,7 +814,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WB_DeltaMult_P57_DD01,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WB_DeltaMult_P57_DD01,value= _NUM:0
 	PopupMenu popup_WaveBuilder_op_P73,pos={635.00,122.00},size={75.00,19.00},bodyWidth=75,disable=1,proc=WBP_PopupMenu
-	PopupMenu popup_WaveBuilder_op_P73,help={"Delta operation"}
+	PopupMenu popup_WaveBuilder_op_P73,help={"<html><ul><li>None: No delta</li><li>mult: delta *= mult</li><li>Logarithmic: delta = log(delta)</li><li>Squared: delta = delta^2</li><li>Power: delta = delta^(mult)</li><li>Alternate: delta *= -1</li><li>Explicit: delta = listitem</li></ul></html>"}
 	PopupMenu popup_WaveBuilder_op_P73,userdata(tabnum)=  "5"
 	PopupMenu popup_WaveBuilder_op_P73,userdata(tabcontrol)=  "WBP_WaveType"
 	PopupMenu popup_WaveBuilder_op_P73,userdata(ResizeControlsInfo)= A"!!,J/^]6^n!!#?O!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -829,7 +829,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WB_DeltaMult_P58,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WB_DeltaMult_P58,value= _NUM:0
 	PopupMenu popup_WaveBuilder_op_P74,pos={635.00,145.00},size={75.00,19.00},bodyWidth=75,disable=1,proc=WBP_PopupMenu
-	PopupMenu popup_WaveBuilder_op_P74,help={"Delta operation"}
+	PopupMenu popup_WaveBuilder_op_P74,help={"<html><ul><li>None: No delta</li><li>mult: delta *= mult</li><li>Logarithmic: delta = log(delta)</li><li>Squared: delta = delta^2</li><li>Power: delta = delta^(mult)</li><li>Alternate: delta *= -1</li><li>Explicit: delta = listitem</li></ul></html>"}
 	PopupMenu popup_WaveBuilder_op_P74,userdata(tabnum)=  "5"
 	PopupMenu popup_WaveBuilder_op_P74,userdata(tabcontrol)=  "WBP_WaveType"
 	PopupMenu popup_WaveBuilder_op_P74,userdata(ResizeControlsInfo)= A"!!,J/^]6_6!!#?O!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -843,8 +843,8 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WB_DeltaMult_P69,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable SetVar_WB_DeltaMult_P69,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WB_DeltaMult_P69,value= _NUM:0
-	PopupMenu popup_WaveBuilder_op_P85,pos={635.00,168.00},size={75.00,19.00},bodyWidth=75,disable=1,proc=WBP_PopupMenu
-	PopupMenu popup_WaveBuilder_op_P85,help={"Delta operation"}
+	PopupMenu popup_WaveBuilder_op_P85,pos={635.00,168.00},size={75.00,19.00},bodyWidth=75,disable=3,proc=WBP_PopupMenu
+	PopupMenu popup_WaveBuilder_op_P85,help={"<html><ul><li>None: No delta</li><li>mult: delta *= mult</li><li>Logarithmic: delta = log(delta)</li><li>Squared: delta = delta^2</li><li>Power: delta = delta^(mult)</li><li>Alternate: delta *= -1</li><li>Explicit: delta = listitem</li></ul></html>"}
 	PopupMenu popup_WaveBuilder_op_P85,userdata(tabnum)=  "5"
 	PopupMenu popup_WaveBuilder_op_P85,userdata(tabcontrol)=  "WBP_WaveType"
 	PopupMenu popup_WaveBuilder_op_P85,userdata(ResizeControlsInfo)= A"!!,J/^]6_M!!#?O!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -859,7 +859,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WB_DeltaMult_P67,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WB_DeltaMult_P67,value= _NUM:0
 	PopupMenu popup_WaveBuilder_op_P83,pos={635.00,191.00},size={75.00,19.00},bodyWidth=75,disable=1,proc=WBP_PopupMenu
-	PopupMenu popup_WaveBuilder_op_P83,help={"Delta operation"}
+	PopupMenu popup_WaveBuilder_op_P83,help={"<html><ul><li>None: No delta</li><li>mult: delta *= mult</li><li>Logarithmic: delta = log(delta)</li><li>Squared: delta = delta^2</li><li>Power: delta = delta^(mult)</li><li>Alternate: delta *= -1</li><li>Explicit: delta = listitem</li></ul></html>"}
 	PopupMenu popup_WaveBuilder_op_P83,userdata(tabnum)=  "5"
 	PopupMenu popup_WaveBuilder_op_P83,userdata(tabcontrol)=  "WBP_WaveType"
 	PopupMenu popup_WaveBuilder_op_P83,userdata(ResizeControlsInfo)= A"!!,J/^]6_d!!#?O!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -874,7 +874,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WB_DeltaMult_P68,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WB_DeltaMult_P68,value= _NUM:0
 	PopupMenu popup_WaveBuilder_op_P84,pos={635.00,215.00},size={75.00,19.00},bodyWidth=75,disable=1,proc=WBP_PopupMenu
-	PopupMenu popup_WaveBuilder_op_P84,help={"Delta operation"}
+	PopupMenu popup_WaveBuilder_op_P84,help={"<html><ul><li>None: No delta</li><li>mult: delta *= mult</li><li>Logarithmic: delta = log(delta)</li><li>Squared: delta = delta^2</li><li>Power: delta = delta^(mult)</li><li>Alternate: delta *= -1</li><li>Explicit: delta = listitem</li></ul></html>"}
 	PopupMenu popup_WaveBuilder_op_P84,userdata(tabnum)=  "5"
 	PopupMenu popup_WaveBuilder_op_P84,userdata(tabcontrol)=  "WBP_WaveType"
 	PopupMenu popup_WaveBuilder_op_P84,userdata(ResizeControlsInfo)= A"!!,J/^]6`'!!#?O!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1085,7 +1085,7 @@ Window WaveBuilder() : Panel
 	SetVariable setvar_explDeltaValues_T19,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_explDeltaValues_T19,value= _STR:""
 	PopupMenu popup_WaveBuilder_op_P72,pos={635.00,50.00},size={75.00,19.00},bodyWidth=75,proc=WBP_PopupMenu
-	PopupMenu popup_WaveBuilder_op_P72,help={"Delta operation"}
+	PopupMenu popup_WaveBuilder_op_P72,help={"<html><ul><li>None: No delta</li><li>mult: delta *= mult</li><li>Logarithmic: delta = log(delta)</li><li>Squared: delta = delta^2</li><li>Power: delta = delta^(mult)</li><li>Alternate: delta *= -1</li><li>Explicit: delta = listitem</li></ul></html>"}
 	PopupMenu popup_WaveBuilder_op_P72,userdata(ResizeControlsInfo)= A"!!,J/^]6\\l!!#?O!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_WaveBuilder_op_P72,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_op_P72,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
@@ -1115,12 +1115,13 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WB_Multiplier_S95,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WB_Multiplier_S95,value= _NUM:0
 	PopupMenu popup_WaveBuilder_op_S94,pos={258.00,71.00},size={75.00,19.00},bodyWidth=75,proc=WBP_PopupMenu
-	PopupMenu popup_WaveBuilder_op_S94,help={"Delta operation"}
+	PopupMenu popup_WaveBuilder_op_S94,help={"<html><ul><li>None: No delta</li><li>mult: delta *= mult</li><li>Logarithmic: delta = log(delta)</li><li>Squared: delta = delta^2</li><li>Power: delta = delta^(mult)</li><li>Alternate: delta *= -1</li><li>Explicit: delta = listitem</li></ul></html>"}
 	PopupMenu popup_WaveBuilder_op_S94,userdata(ResizeControlsInfo)= A"!!,H<!!#?G!!#?O!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_WaveBuilder_op_S94,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_op_S94,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_op_S94,mode=1,popvalue="None",value= #"\"None;Multiplier;Log;Squared;Power;Alternate;Explicit\""
 	SetVariable setvar_explDeltaValues_T28_ALL,pos={209.00,94.00},size={125.00,18.00},disable=2,proc=WBP_SetVarProc_UpdateParam
+	SetVariable setvar_explDeltaValues_T28_ALL,help={"Semi-colon separated list of ITI deltas\nITI is the sum of all previous deltas, plus the initial ITI.\nFirst list item is applied to the second ITI. i.e., second ITI = first list item + initial ITI."}
 	SetVariable setvar_explDeltaValues_T28_ALL,userdata(ResizeControlsInfo)= A"!!,Ga!!#?u!!#@^!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_explDeltaValues_T28_ALL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_explDeltaValues_T28_ALL,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
@@ -1161,13 +1162,16 @@ Window WaveBuilder() : Panel
 	DefineGuide UGH1={FT,237},UGV0={FL,187}
 	SetWindow kwTopWin,hook(main)=WBP_MainWindowHook
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E<!!#Cm^]4?7zzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGH1;UGV0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)=  "NAME:UGH1;WIN:WaveBuilder;TYPE:User;HORIZONTAL:1;POSITION:237.00;GUIDE1:FT;GUIDE2:;RELPOSITION:237;"
-	SetWindow kwTopWin,userdata(panelVersion)=  "8"
+	SetWindow kwTopWin,userdata(panelVersion)=  "9"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)=  "NAME:UGV0;WIN:WaveBuilder;TYPE:User;HORIZONTAL:0;POSITION:187.00;GUIDE1:FL;GUIDE2:;RELPOSITION:187;"
+	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)=  "1"
+	SetWindow kwTopWin,userdata(JSONSettings_WindowName)=  "wavebuilder"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={774,410.25,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(186,270,1030,544)/FG=(UGV0,UGH1,FR,FB)/HOST=#
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
