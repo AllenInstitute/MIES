@@ -982,7 +982,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, setName[i], setCycleCount, setChecksum, dataAcqOrTP)
 			stimsetCycleID = DC_GetStimsetAcqCycleID(panelTitle, fingerprint, channel)
 
-			setEventFlag[i][] = (setColumn[i] + 1 == IDX_NumberOfSweepsInSet(setName[i]))
+			setEventFlag[channel][] = (setColumn[i] + 1 == IDX_NumberOfSweepsInSet(setName[i]))
 			DC_DocumentChannelProperty(panelTitle, STIMSET_ACQ_CYCLE_ID_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var=stimsetCycleID)
 		endif
 
