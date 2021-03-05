@@ -2044,3 +2044,83 @@ static Function AFT21_REENTRY([str])
 	expected = "StimulusSetA_DA_0"
 	REQUIRE_EQUAL_STR(stimset, expected)
 End
+
+static Function EnableOnlyHS1_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+End
+
+// POST_SET_EVENT works with only HS1 active
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function AFT22([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, "AnaFuncValidMult_DA*", str, numHeadstages = 2, preAcquireFunc = EnableOnlyHS1_IGNORE)
+End
+
+static Function AFT22_REENTRY([str])
+	string str
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 19)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT][1], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT][1], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT][1], 20)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT][1] >= 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT][1], 20)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT][1], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT][1], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT][1], 0)
+
+	WAVE/T textualValues = GetLBTextualValues(str)
+	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(anaFuncs, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
+
+	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(anaFuncs, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
+
+	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(anaFuncs, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
+
+	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(anaFuncs, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
+
+	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(anaFuncs, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
+
+	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(anaFuncs, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
+
+	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(anaFuncs, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"", "ValidMultHS_V1", "", "", "", "", "", "", ""})
+
+	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(anaFuncs, NULL_WAVE)
+End
