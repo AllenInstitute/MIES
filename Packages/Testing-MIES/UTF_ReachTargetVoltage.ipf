@@ -2,7 +2,7 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=ReachTargetVoltageTesting
 
-static Constant HEADSTAGE = 0
+static Constant HEADSTAGE = 1
 
 static Function [WAVE/Z deltaI, WAVE/Z deltaV, WAVE/Z resistance, WAVE/Z resistanceErr, WAVE/Z autobiasFromDialog] GetLBNEntries_IGNORE(string device, variable sweepNo)
 
@@ -27,6 +27,8 @@ static Function RTV_Works_Setter(device)
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -36,7 +38,7 @@ static Function RTV_Works([str])
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
-	AnalysisFunctionTesting#AcquireData(s, "StimulusSetA_DA_0", str, preAcquireFunc = RTV_Works_Setter)
+	AnalysisFunctionTesting#AcquireData(s, "StimulusSetA_DA_0", str, numHeadstages = 2, preAcquireFunc = RTV_Works_Setter)
 End
 
 static Function RTV_Works_REENTRY([str])
@@ -74,6 +76,8 @@ static Function RTV_WorksWithIndexing_Setter(device)
 
 	WBP_AddAnalysisParameter("StimulusSetA_DA_0", "EnableIndexing", var=1)
 	WBP_AddAnalysisParameter("StimulusSetA_DA_0", "IndexingEndStimsetAllIC", str="StimulusSetB_DA_0")
+
+	PGC_SetAndActivateControl(device, GetPanelControl(!HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -83,7 +87,7 @@ static Function RTV_WorksWithIndexing([str])
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
-	AnalysisFunctionTesting#AcquireData(s, "StimulusSetA_DA_0", str, preAcquireFunc = RTV_WorksWithIndexing_Setter)
+	AnalysisFunctionTesting#AcquireData(s, "StimulusSetA_DA_0", str, numHeadstages = 2, preAcquireFunc = RTV_WorksWithIndexing_Setter)
 End
 
 static Function RTV_WorksWithIndexing_REENTRY([str])
