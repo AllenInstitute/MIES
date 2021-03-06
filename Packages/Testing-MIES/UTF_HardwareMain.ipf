@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HardwareMain
 
-#include "MIES_include"
+#include "MIES_Include"
 #include "unit-testing"
 
 #include "UTF_AnalysisFunctionManagement"
