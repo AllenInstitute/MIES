@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Install MIES with potentially skipping the hardware XOPs. The installation is
 # either down from the git repo, from the release package or the installer itself.
 
