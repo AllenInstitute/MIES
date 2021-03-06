@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Install MIES with potentially skipping the hardware XOPs. The installation is
 # either down from the git repo, from the release package or the installer itself.
 
@@ -130,7 +132,7 @@ do
 
     # move shortcut to the main include file
     # into user procedures so that we can compilation test it
-    mv "$igor_proc"/MIES_include.lnk "$user_proc"
+    mv "$igor_proc"/MIES_Include.lnk "$user_proc"
     continue
   fi
 
@@ -141,7 +143,7 @@ do
 
   cp -r  "$base_folder"/Packages/Arduino  "$user_proc"
   cp -r  "$base_folder"/Packages/IPNWB  "$user_proc"
-  cp -r  "$base_folder"/Packages/MIES_include.ipf  "$user_proc"
+  cp -r  "$base_folder"/Packages/MIES_Include.ipf  "$user_proc"
   cp -r  "$base_folder"/Packages/MIES  "$user_proc"
   cp -r  "$base_folder"/Packages/Settings  "$user_proc"
   cp -r  "$base_folder"/Packages/Stimsets  "$user_proc"
