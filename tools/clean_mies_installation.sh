@@ -67,6 +67,10 @@ case $MSYSTEM in
       ;;
 esac
 
+wavemetrics_home="$USERPROFILE/Documents/WaveMetrics"
+
+rm -rf "$wavemetrics_home"
+
 if [ "$sourceLoc" = "git" ]
 then
   base_folder=$top_level
@@ -89,27 +93,26 @@ then
 elif [ "$sourceLoc" = "installer" ]
 then
   base_folder=$top_level
+
+  # requires an installer which does not trigger UAC
+  # installer always installs for all available and supported IP versions
+  if [ "$skipHardwareXOPs" = "1" ]
+  then
+    MSYS_NO_PATHCONV=1 $base_folder/MIES-*.exe /S /CIS /SKIPHWXOPS
+  else
+    MSYS_NO_PATHCONV=1 $base_folder/MIES-*.exe /S /CIS
+  fi
 fi
 
 versions="8 9"
 
 for i in $versions
 do
-  case $MSYSTEM in
-    MINGW*)
-        IGOR_USER_FILES="$USERPROFILE/Documents/WaveMetrics/Igor Pro ${i} User Files"
-        ;;
-      *)
-        IGOR_USER_FILES="$HOME/WaveMetrics/Igor Pro ${i} User Files"
-        ;;
-  esac
-
-  rm -rf "$IGOR_USER_FILES"
-
-  user_proc="$IGOR_USER_FILES/User Procedures"
-  igor_proc="$IGOR_USER_FILES/Igor Procedures"
-  xops64="$IGOR_USER_FILES/Igor Extensions (64-bit)"
-  xops32="$IGOR_USER_FILES/Igor Extensions"
+  igor_user_files="$wavemetrics_home/Igor Pro ${i} User Files"
+  user_proc="$igor_user_files/User Procedures"
+  igor_proc="$igor_user_files/Igor Procedures"
+  xops64="$igor_user_files/Igor Extensions (64-bit)"
+  xops32="$igor_user_files/Igor Extensions"
 
   mkdir -p "$user_proc"
 
@@ -120,14 +123,6 @@ do
 
   if [ "$sourceLoc" = "installer" ]
   then
-    # requires an installer which does not trigger UAC
-    if [ "$skipHardwareXOPs" = "1" ]
-    then
-      MSYS_NO_PATHCONV=1 $base_folder/MIES-*.exe /S /CIS /SKIPHWXOPS
-    else
-      MSYS_NO_PATHCONV=1 $base_folder/MIES-*.exe /S /CIS
-    fi
-
     # move shortcut to the main include file
     # into user procedures so that we can compilation test it
     mv "$igor_proc"/MIES_include.lnk "$user_proc"
@@ -171,10 +166,10 @@ do
 
   if [ "$sourceLoc" = "git" ]
   then
-    echo "Release: FAKE MIES VERSION" > "$IGOR_USER_FILES"/version.txt
+    echo "Release: FAKE MIES VERSION" > "$igor_user_files"/version.txt
   elif [ "$sourceLoc" = "release" ]
   then
-    cp "$base_folder"/version.txt "$IGOR_USER_FILES"
+    cp "$base_folder"/version.txt "$igor_user_files"
   fi
 done
 
