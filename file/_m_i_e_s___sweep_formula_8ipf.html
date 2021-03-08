@@ -1,0 +1,528 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File MIES_SweepFormula.ipf &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_SweepSaving.ipf" href="_m_i_e_s___sweep_saving_8ipf.html" />
+    <link rel="prev" title="File MIES_Structures.ipf" href="_m_i_e_s___structures_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_saving_8ipf.html" title="File MIES_SweepSaving.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___structures_8ipf.html" title="File MIES_Structures.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SweepFormula.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="file-mies-sweepformula-ipf">
+<span id="id1"></span><h1>File MIES_SweepFormula.ipf<a class="headerlink" href="#file-mies-sweepformula-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>SF</strong> Sweep formula allows to do analysis on sweeps with a dedicated formula language </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv417SF_StringifyState8variable">
+<span id="_CPPv317SF_StringifyState8variable"></span><span id="_CPPv217SF_StringifyState8variable"></span><span id="SF_StringifyState__variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ac2db39f8d8810aab41e04938bc2d1319"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">SF_StringifyState</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">state</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_StringifyState8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418SF_StringifyAction8variable">
+<span id="_CPPv318SF_StringifyAction8variable"></span><span id="_CPPv218SF_StringifyAction8variable"></span><span id="SF_StringifyAction__variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aef4da5faaa1b3c13632e9d7b00c96e59"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">SF_StringifyAction</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">action</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SF_StringifyAction8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv49SF_Assert8variable6string">
+<span id="_CPPv39SF_Assert8variable6string"></span><span id="_CPPv29SF_Assert8variable6string"></span><span id="SF_Assert__variable.string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a7c8b6bb0c3d0e779346ad4a1a003e05d"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SF_Assert</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">condition</span></em>, <span class="pre">string</span> <em><span class="pre">message</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49SF_Assert8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Assertion for sweep formula. </p>
+<p>This assertion does <em>not</em> indicate a genearl programmer error but a sweep formula user error.</p>
+<p>All programmer error checks must still use <a class="reference internal" href="_m_i_e_s___utilities_8ipf.html#_m_i_e_s___utilities_8ipf_1adedff2d30b70aff25b0fe5366700f564"><span class="std std-ref">ASSERT()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419SF_FormulaPreParser6string">
+<span id="_CPPv319SF_FormulaPreParser6string"></span><span id="_CPPv219SF_FormulaPreParser6string"></span><span id="SF_FormulaPreParser__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aee4b84e0016542764850fa0acdc70788"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">SF_FormulaPreParser</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">formula</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SF_FormulaPreParser6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>preparse user input to correct formula patterns </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>parsed formula </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416SF_FormulaParser6string8variable">
+<span id="_CPPv316SF_FormulaParser6string8variable"></span><span id="_CPPv216SF_FormulaParser6string8variable"></span><span id="SF_FormulaParser__string.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aa1dd432e148f3a46b3d6a776ca062e08"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SF_FormulaParser</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">formula</span></em>, <span class="pre">variable</span> <em><span class="pre">indentLevel</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SF_FormulaParser6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>serialize a string formula into JSON </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>a JSONid representation </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">formula</span></code>: string formula </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">indentLevel</span></code>: [internal use only] recursive call level, used for debug output </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417SF_EscapeJsonPath6string">
+<span id="_CPPv317SF_EscapeJsonPath6string"></span><span id="_CPPv217SF_EscapeJsonPath6string"></span><span id="SF_EscapeJsonPath__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a2657a15c56ad804fbb68c2c55cd1c26d"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">SF_EscapeJsonPath</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_EscapeJsonPath6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>add escape characters to a path element </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417SF_FormulaPlotter6string6string5dfref">
+<span id="_CPPv317SF_FormulaPlotter6string6string5dfref"></span><span id="_CPPv217SF_FormulaPlotter6string6string5dfref"></span><span id="SF_FormulaPlotter__string.string.dfref"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a43e4c857989db0b87642a65fe235ba97"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SF_FormulaPlotter</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">graph</span></em>, <span class="pre">string</span> <em><span class="pre">formula</span></em>, <span class="pre">dfref</span> <em><span class="pre">dfr</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417SF_FormulaPlotter6string6string5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Plot the formula using the data from graph. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">graph</span></code>: graph to pass to SF_FormulaExecutor </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">formula</span></code>: formula to plot </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dfr</span></code>: [optional, default current] working dataFolder </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416SF_SplitPlotting4wave8variable8variable8variable">
+<span id="_CPPv316SF_SplitPlotting4wave8variable8variable8variable"></span><span id="_CPPv216SF_SplitPlotting4wave8variable8variable8variable"></span><span id="SF_SplitPlotting__wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ac54da8871f54e7fcbe5d06ef0ef884a4"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SF_SplitPlotting</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">wv</span></em>, <span class="pre">variable</span> <em><span class="pre">dim</span></em>, <span class="pre">variable</span> <em><span class="pre">i</span></em>, <span class="pre">variable</span> <em><span class="pre">split</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SF_SplitPlotting4wave8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>utility function for <code class="docutils literal notranslate"><span class="pre">SF_FormulaPlotter</span></code> </p>
+<p>split dimension <code class="docutils literal notranslate"><span class="pre">dim</span></code> of wave <code class="docutils literal notranslate"><span class="pre">wv</span></code> into slices of size <code class="docutils literal notranslate"><span class="pre">split</span></code> and get the starting index <code class="docutils literal notranslate"><span class="pre">i</span></code> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421SF_GetSweepForFormula6string4wave4wave4wave">
+<span id="_CPPv321SF_GetSweepForFormula6string4wave4wave4wave"></span><span id="_CPPv221SF_GetSweepForFormula6string4wave4wave4wave"></span><span id="SF_GetSweepForFormula__string.wave.wave.wave"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a0a4fe660fdefd52f82c298a7f965f3d8"></span><em class="property"><span class="pre">static</span></em> <span class="pre">wave</span> <code class="sig-name descname"><span class="pre">SF_GetSweepForFormula</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">graph</span></em>, <span class="pre">wave</span> <em><span class="pre">range</span></em>, <span class="pre">wave</span> <em><span class="pre">channels</span></em>, <span class="pre">wave</span> <em><span class="pre">sweeps</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421SF_GetSweepForFormula6string4wave4wave4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427SF_FormulaWaveScaleTransfer4wave4wave8variable8variable">
+<span id="_CPPv327SF_FormulaWaveScaleTransfer4wave4wave8variable8variable"></span><span id="_CPPv227SF_FormulaWaveScaleTransfer4wave4wave8variable8variable"></span><span id="SF_FormulaWaveScaleTransfer__wave.wave.variable.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af532d409dbdc4e5fbd1538e933e87bf3"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SF_FormulaWaveScaleTransfer</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">source</span></em>, <span class="pre">wave</span> <em><span class="pre">dest</span></em>, <span class="pre">variable</span> <em><span class="pre">dimSource</span></em>, <span class="pre">variable</span> <em><span class="pre">dimDest</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SF_FormulaWaveScaleTransfer4wave4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>transfer the wave scaling from one wave to another </p>
+<p>Note: wave scale transfer requires wave units for the first wave in the array that</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>0 if wave scaling was transferred, 1 if not </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">source</span></code>: Wave whos scaling should get transferred </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dest</span></code>: Wave that accepts the new scaling </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dimSource</span></code>: dimension of the source wave </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dimDest</span></code>: dimension of the destination wave</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426SF_GetActiveChannelNumbers6string4wave4wave8variable">
+<span id="_CPPv326SF_GetActiveChannelNumbers6string4wave4wave8variable"></span><span id="_CPPv226SF_GetActiveChannelNumbers6string4wave4wave8variable"></span><span id="SF_GetActiveChannelNumbers__string.wave.wave.variable"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af6b47dc19f6bbd0536a30e7f2e9487d0"></span><em class="property"><span class="pre">static</span></em> <span class="pre">wave</span> <code class="sig-name descname"><span class="pre">SF_GetActiveChannelNumbers</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">graph</span></em>, <span class="pre">wave</span> <em><span class="pre">channels</span></em>, <span class="pre">wave</span> <em><span class="pre">sweeps</span></em>, <span class="pre">variable</span> <em><span class="pre">entrySourceType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426SF_GetActiveChannelNumbers6string4wave4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Use the labnotebook information to return the active channel numbers for a given set of sweeps. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>a <code class="docutils literal notranslate"><span class="pre">SF_FormulaExecutor</span></code> style <code class="docutils literal notranslate"><span class="pre">channels()</span></code> wave with two columns containing channelType and channelNumber </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">graph</span></code>: DataBrowser or SweepBrowser reference graph </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">channels</span></code>: <code class="docutils literal notranslate"><span class="pre">SF_FormulaExecutor</span></code> style <code class="docutils literal notranslate"><span class="pre">channels()</span></code> wave </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sweeps</span></code>: <code class="docutils literal notranslate"><span class="pre">SF_FormulaExecutor</span></code> style <code class="docutils literal notranslate"><span class="pre">sweeps()</span></code> wave </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">entrySourceType</span></code>: type of the labnotebook entry, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a>. If you don’t care about the entry source type pass <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a10e62aaf4581030a26adf8b4e18b81d6"><span class="std std-ref">UNKNOWN_MODE</span></a>. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428SF_button_sweepFormula_checkP14WMButtonAction">
+<span id="_CPPv328SF_button_sweepFormula_checkP14WMButtonAction"></span><span id="_CPPv228SF_button_sweepFormula_checkP14WMButtonAction"></span><span id="SF_button_sweepFormula_check__WMButtonActionP"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af1cb65280b52aa8f3633e309c4f0c941"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SF_button_sweepFormula_check</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428SF_button_sweepFormula_checkP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv411SF_IsActive6string">
+<span id="_CPPv311SF_IsActive6string"></span><span id="_CPPv211SF_IsActive6string"></span><span id="SF_IsActive__string"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a99eff8c9ec531a21be1bfbb714418dfe"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SF_IsActive</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">win</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411SF_IsActive6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>checks if SweepFormula (SF) is active. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430SF_button_sweepFormula_displayP14WMButtonAction">
+<span id="_CPPv330SF_button_sweepFormula_displayP14WMButtonAction"></span><span id="_CPPv230SF_button_sweepFormula_displayP14WMButtonAction"></span><span id="SF_button_sweepFormula_display__WMButtonActionP"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a65f3f85f963522f7e9e2be5fb0611c81"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SF_button_sweepFormula_display</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SF_button_sweepFormula_displayP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418SF_TabProc_FormulaP18WMTabControlAction">
+<span id="_CPPv318SF_TabProc_FormulaP18WMTabControlAction"></span><span id="_CPPv218SF_TabProc_FormulaP18WMTabControlAction"></span><span id="SF_TabProc_Formula__WMTabControlActionP"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ab3325942396d30f70f56c8e791e444ad"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SF_TabProc_Formula</span></code><span class="sig-paren">(</span><span class="pre">WMTabControlAction</span> <span class="pre">*</span><em><span class="pre">tca</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418SF_TabProc_FormulaP18WMTabControlAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Variables</p>
+<dl class="cpp var">
+<dt id="_CPPv422SF_STATE_UNINITIALIZED">
+<span id="_CPPv322SF_STATE_UNINITIALIZED"></span><span id="_CPPv222SF_STATE_UNINITIALIZED"></span><span id="SF_STATE_UNINITIALIZED__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aee34425a9ddc2654a52103839a6fc964"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_UNINITIALIZED</span></code> <span class="pre">=</span> <span class="pre">-</span><span class="pre">1</span><a class="headerlink" href="#_CPPv422SF_STATE_UNINITIALIZED" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv416SF_STATE_DEFAULT">
+<span id="_CPPv316SF_STATE_DEFAULT"></span><span id="_CPPv216SF_STATE_DEFAULT"></span><span id="SF_STATE_DEFAULT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a54de07d3361000508e51d1c10ac0d495"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_DEFAULT</span></code> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#_CPPv416SF_STATE_DEFAULT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv416SF_STATE_COLLECT">
+<span id="_CPPv316SF_STATE_COLLECT"></span><span id="_CPPv216SF_STATE_COLLECT"></span><span id="SF_STATE_COLLECT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a3974b3d01675964948d18f374f71ab65"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_COLLECT</span></code> <span class="pre">=</span> <span class="pre">1</span><a class="headerlink" href="#_CPPv416SF_STATE_COLLECT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv417SF_STATE_ADDITION">
+<span id="_CPPv317SF_STATE_ADDITION"></span><span id="_CPPv217SF_STATE_ADDITION"></span><span id="SF_STATE_ADDITION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aca836bde9a6feafa4bec06707705cb80"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_ADDITION</span></code> <span class="pre">=</span> <span class="pre">2</span><a class="headerlink" href="#_CPPv417SF_STATE_ADDITION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv420SF_STATE_SUBTRACTION">
+<span id="_CPPv320SF_STATE_SUBTRACTION"></span><span id="_CPPv220SF_STATE_SUBTRACTION"></span><span id="SF_STATE_SUBTRACTION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aee9a7526bb1761c5ed5a8be8a13dc6f7"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_SUBTRACTION</span></code> <span class="pre">=</span> <span class="pre">3</span><a class="headerlink" href="#_CPPv420SF_STATE_SUBTRACTION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv423SF_STATE_MULTIPLICATION">
+<span id="_CPPv323SF_STATE_MULTIPLICATION"></span><span id="_CPPv223SF_STATE_MULTIPLICATION"></span><span id="SF_STATE_MULTIPLICATION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aa335a2ee571cdcf4493aa924550c2ce7"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_MULTIPLICATION</span></code> <span class="pre">=</span> <span class="pre">4</span><a class="headerlink" href="#_CPPv423SF_STATE_MULTIPLICATION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv417SF_STATE_DIVISION">
+<span id="_CPPv317SF_STATE_DIVISION"></span><span id="_CPPv217SF_STATE_DIVISION"></span><span id="SF_STATE_DIVISION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a26ac81ccda01590f07f6a1d02d1ff697"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_DIVISION</span></code> <span class="pre">=</span> <span class="pre">5</span><a class="headerlink" href="#_CPPv417SF_STATE_DIVISION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv420SF_STATE_PARENTHESIS">
+<span id="_CPPv320SF_STATE_PARENTHESIS"></span><span id="_CPPv220SF_STATE_PARENTHESIS"></span><span id="SF_STATE_PARENTHESIS__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a6560bc7a41e15cb06b40852832fde08e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_PARENTHESIS</span></code> <span class="pre">=</span> <span class="pre">6</span><a class="headerlink" href="#_CPPv420SF_STATE_PARENTHESIS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv417SF_STATE_FUNCTION">
+<span id="_CPPv317SF_STATE_FUNCTION"></span><span id="_CPPv217SF_STATE_FUNCTION"></span><span id="SF_STATE_FUNCTION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aae6b7a59a5235ff51bfdb3b13c17277c"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_FUNCTION</span></code> <span class="pre">=</span> <span class="pre">7</span><a class="headerlink" href="#_CPPv417SF_STATE_FUNCTION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv414SF_STATE_ARRAY">
+<span id="_CPPv314SF_STATE_ARRAY"></span><span id="_CPPv214SF_STATE_ARRAY"></span><span id="SF_STATE_ARRAY__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a77553b0b997dac77d79fd638e914e1de"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_ARRAY</span></code> <span class="pre">=</span> <span class="pre">8</span><a class="headerlink" href="#_CPPv414SF_STATE_ARRAY" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv421SF_STATE_ARRAYELEMENT">
+<span id="_CPPv321SF_STATE_ARRAYELEMENT"></span><span id="_CPPv221SF_STATE_ARRAYELEMENT"></span><span id="SF_STATE_ARRAYELEMENT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a3fed87f42ab3b88445bb7ca47a08b23e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_ARRAYELEMENT</span></code> <span class="pre">=</span> <span class="pre">9</span><a class="headerlink" href="#_CPPv421SF_STATE_ARRAYELEMENT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv419SF_STATE_WHITESPACE">
+<span id="_CPPv319SF_STATE_WHITESPACE"></span><span id="_CPPv219SF_STATE_WHITESPACE"></span><span id="SF_STATE_WHITESPACE__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af8c671b59d1a17bf844868a4748e03d3"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_WHITESPACE</span></code> <span class="pre">=</span> <span class="pre">10</span><a class="headerlink" href="#_CPPv419SF_STATE_WHITESPACE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv416SF_STATE_COMMENT">
+<span id="_CPPv316SF_STATE_COMMENT"></span><span id="_CPPv216SF_STATE_COMMENT"></span><span id="SF_STATE_COMMENT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aa123aae6f7d458adcc699acbd4268ea6"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_COMMENT</span></code> <span class="pre">=</span> <span class="pre">11</span><a class="headerlink" href="#_CPPv416SF_STATE_COMMENT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv416SF_STATE_NEWLINE">
+<span id="_CPPv316SF_STATE_NEWLINE"></span><span id="_CPPv216SF_STATE_NEWLINE"></span><span id="SF_STATE_NEWLINE__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ab0d942a311bb952c4811ebea6f5de5fb"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_NEWLINE</span></code> <span class="pre">=</span> <span class="pre">12</span><a class="headerlink" href="#_CPPv416SF_STATE_NEWLINE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv418SF_STATE_OPERATION">
+<span id="_CPPv318SF_STATE_OPERATION"></span><span id="_CPPv218SF_STATE_OPERATION"></span><span id="SF_STATE_OPERATION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a6358c1bebaf96e8944c6637e1035f3b8"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_OPERATION</span></code> <span class="pre">=</span> <span class="pre">13</span><a class="headerlink" href="#_CPPv418SF_STATE_OPERATION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv415SF_STATE_STRING">
+<span id="_CPPv315SF_STATE_STRING"></span><span id="_CPPv215SF_STATE_STRING"></span><span id="SF_STATE_STRING__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ad1455d342c4612f9e25f0bcc157a9eae"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_STRING</span></code> <span class="pre">=</span> <span class="pre">14</span><a class="headerlink" href="#_CPPv415SF_STATE_STRING" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv425SF_STATE_STRINGTERMINATOR">
+<span id="_CPPv325SF_STATE_STRINGTERMINATOR"></span><span id="_CPPv225SF_STATE_STRINGTERMINATOR"></span><span id="SF_STATE_STRINGTERMINATOR__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1abd7e066c51af3564fe2112b920610eb1"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_STATE_STRINGTERMINATOR</span></code> <span class="pre">=</span> <span class="pre">15</span><a class="headerlink" href="#_CPPv425SF_STATE_STRINGTERMINATOR" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv423SF_ACTION_UNINITIALIZED">
+<span id="_CPPv323SF_ACTION_UNINITIALIZED"></span><span id="_CPPv223SF_ACTION_UNINITIALIZED"></span><span id="SF_ACTION_UNINITIALIZED__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1afe2f21d8104ac6bfc8470c560322e75f"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_ACTION_UNINITIALIZED</span></code> <span class="pre">=</span> <span class="pre">-</span><span class="pre">1</span><a class="headerlink" href="#_CPPv423SF_ACTION_UNINITIALIZED" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv414SF_ACTION_SKIP">
+<span id="_CPPv314SF_ACTION_SKIP"></span><span id="_CPPv214SF_ACTION_SKIP"></span><span id="SF_ACTION_SKIP__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a31c825bc269fc6ef8b24f7efe997111a"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_ACTION_SKIP</span></code> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#_CPPv414SF_ACTION_SKIP" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv417SF_ACTION_COLLECT">
+<span id="_CPPv317SF_ACTION_COLLECT"></span><span id="_CPPv217SF_ACTION_COLLECT"></span><span id="SF_ACTION_COLLECT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a1f378f9145947bd611817b682e712ec4"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_ACTION_COLLECT</span></code> <span class="pre">=</span> <span class="pre">1</span><a class="headerlink" href="#_CPPv417SF_ACTION_COLLECT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv421SF_ACTION_CALCULATION">
+<span id="_CPPv321SF_ACTION_CALCULATION"></span><span id="_CPPv221SF_ACTION_CALCULATION"></span><span id="SF_ACTION_CALCULATION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1abc699ce6dd13374a65d6ebbf5f7965dc"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_ACTION_CALCULATION</span></code> <span class="pre">=</span> <span class="pre">2</span><a class="headerlink" href="#_CPPv421SF_ACTION_CALCULATION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv425SF_ACTION_SAMECALCULATION">
+<span id="_CPPv325SF_ACTION_SAMECALCULATION"></span><span id="_CPPv225SF_ACTION_SAMECALCULATION"></span><span id="SF_ACTION_SAMECALCULATION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a2bdae39b1e2688603f8891d62dfb6de5"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_ACTION_SAMECALCULATION</span></code> <span class="pre">=</span> <span class="pre">3</span><a class="headerlink" href="#_CPPv425SF_ACTION_SAMECALCULATION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv421SF_ACTION_HIGHERORDER">
+<span id="_CPPv321SF_ACTION_HIGHERORDER"></span><span id="_CPPv221SF_ACTION_HIGHERORDER"></span><span id="SF_ACTION_HIGHERORDER__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a50fc25a29d346da7edba3ed5e26b3349"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_ACTION_HIGHERORDER</span></code> <span class="pre">=</span> <span class="pre">4</span><a class="headerlink" href="#_CPPv421SF_ACTION_HIGHERORDER" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv422SF_ACTION_ARRAYELEMENT">
+<span id="_CPPv322SF_ACTION_ARRAYELEMENT"></span><span id="_CPPv222SF_ACTION_ARRAYELEMENT"></span><span id="SF_ACTION_ARRAYELEMENT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ac11bd7180808edbe8807a5c678fced7a"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_ACTION_ARRAYELEMENT</span></code> <span class="pre">=</span> <span class="pre">5</span><a class="headerlink" href="#_CPPv422SF_ACTION_ARRAYELEMENT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv421SF_ACTION_PARENTHESIS">
+<span id="_CPPv321SF_ACTION_PARENTHESIS"></span><span id="_CPPv221SF_ACTION_PARENTHESIS"></span><span id="SF_ACTION_PARENTHESIS__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1af54f6cd5b396a6afd4ff9add80ef2d9b"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_ACTION_PARENTHESIS</span></code> <span class="pre">=</span> <span class="pre">6</span><a class="headerlink" href="#_CPPv421SF_ACTION_PARENTHESIS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv418SF_ACTION_FUNCTION">
+<span id="_CPPv318SF_ACTION_FUNCTION"></span><span id="_CPPv218SF_ACTION_FUNCTION"></span><span id="SF_ACTION_FUNCTION__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1aadae63818c171849977a1d4ae0173bb8"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_ACTION_FUNCTION</span></code> <span class="pre">=</span> <span class="pre">7</span><a class="headerlink" href="#_CPPv418SF_ACTION_FUNCTION" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv415SF_ACTION_ARRAY">
+<span id="_CPPv315SF_ACTION_ARRAY"></span><span id="_CPPv215SF_ACTION_ARRAY"></span><span id="SF_ACTION_ARRAY__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1ad591b58999b6e5f532cabe9e2205c47d"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_ACTION_ARRAY</span></code> <span class="pre">=</span> <span class="pre">8</span><a class="headerlink" href="#_CPPv415SF_ACTION_ARRAY" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv422SF_SWEEPFORMULA_REGEXP">
+<span id="_CPPv322SF_SWEEPFORMULA_REGEXP"></span><span id="_CPPv222SF_SWEEPFORMULA_REGEXP"></span><span id="SF_SWEEPFORMULA_REGEXP__stringC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a738a25392a9525a13ef3a588bd647411"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">SF_SWEEPFORMULA_REGEXP</span></code> <span class="pre">=</span> <span class="pre">&quot;^(.+?)(?:\\bvs\\b(.+))?$&quot;</span><a class="headerlink" href="#_CPPv422SF_SWEEPFORMULA_REGEXP" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Regular expression which extracts both formulas from <code class="docutils literal notranslate"><span class="pre">$a</span> <span class="pre">vs</span> <span class="pre">$b</span></code> </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv428SF_MAX_NUMPOINTS_FOR_MARKERS">
+<span id="_CPPv328SF_MAX_NUMPOINTS_FOR_MARKERS"></span><span id="_CPPv228SF_MAX_NUMPOINTS_FOR_MARKERS"></span><span id="SF_MAX_NUMPOINTS_FOR_MARKERS__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a80a18ef49b411f0cbd0072d4539ee93b"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_MAX_NUMPOINTS_FOR_MARKERS</span></code> <span class="pre">=</span> <span class="pre">1000</span><a class="headerlink" href="#_CPPv428SF_MAX_NUMPOINTS_FOR_MARKERS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv419SF_APFREQUENCY_FULL">
+<span id="_CPPv319SF_APFREQUENCY_FULL"></span><span id="_CPPv219SF_APFREQUENCY_FULL"></span><span id="SF_APFREQUENCY_FULL__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a67976a1fdcf6aff9a1b35daa13ac26f6"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_APFREQUENCY_FULL</span></code> <span class="pre">=</span> <span class="pre">0x0</span><a class="headerlink" href="#_CPPv419SF_APFREQUENCY_FULL" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv428SF_APFREQUENCY_INSTANTANEOUS">
+<span id="_CPPv328SF_APFREQUENCY_INSTANTANEOUS"></span><span id="_CPPv228SF_APFREQUENCY_INSTANTANEOUS"></span><span id="SF_APFREQUENCY_INSTANTANEOUS__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a3a7f8d933707056b66e1779f2f2289db"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_APFREQUENCY_INSTANTANEOUS</span></code> <span class="pre">=</span> <span class="pre">0x1</span><a class="headerlink" href="#_CPPv428SF_APFREQUENCY_INSTANTANEOUS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv422SF_APFREQUENCY_APCOUNT">
+<span id="_CPPv322SF_APFREQUENCY_APCOUNT"></span><span id="_CPPv222SF_APFREQUENCY_APCOUNT"></span><span id="SF_APFREQUENCY_APCOUNT__doubleC"></span><span class="target" id="_m_i_e_s___sweep_formula_8ipf_1a23c1adbcde43aa5597298336396ca95a"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">SF_APFREQUENCY_APCOUNT</span></code> <span class="pre">=</span> <span class="pre">0x2</span><a class="headerlink" href="#_CPPv422SF_APFREQUENCY_APCOUNT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_8ipf.html">File CompilationTester.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_utils_8ipf.html">File CompilationTesterUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___lab_notebook_t_p_storage_browser_8ipf.html">File MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html">File MIES_MiesUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___regenerate-_screenshots_8ipf.html">File MIES_Regenerate-Screenshots.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities_8ipf.html">File MIES_Utilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_8h.html">File interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="_m_i_e_s___structures_8ipf.html"
+                        title="previous chapter">File MIES_Structures.ipf</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="_m_i_e_s___sweep_saving_8ipf.html"
+                        title="next chapter">File MIES_SweepSaving.ipf</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___sweep_saving_8ipf.html" title="File MIES_SweepSaving.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___structures_8ipf.html" title="File MIES_Structures.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SweepFormula.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

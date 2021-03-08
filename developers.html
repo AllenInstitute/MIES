@@ -1,0 +1,578 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Developer &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Bug reporting" href="reportingbugs.html" />
+    <link rel="prev" title="Installation instructions" href="installation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="reportingbugs.html" title="Bug reporting"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation instructions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Developer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="developer">
+<h1>Developer<a class="headerlink" href="#developer" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="getting-mies">
+<h2>Getting MIES<a class="headerlink" href="#getting-mies" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="latest-development-version-from-main-branch">
+<h3>Latest development version from main branch<a class="headerlink" href="#latest-development-version-from-main-branch" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/AllenInstitute/MIES</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">./tools/initial-repo-config.sh</span></code> (Requires a Git Bash shell, named
+Git terminal in SourceTree)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Select the installer for the latest release in the next section (Support
+statement). For manual installation instructions see <a class="reference external" href="installation">here</a>.</p>
+<p>Pressure control may be implemented with ITC and/or NIDAQ hardware. For
+NIDAQ hardware, install the <a class="reference external" href="https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm">NIDAQ Tool
+MX</a>
+package from Wavemetrics.</p>
+<p>Depending on the bitness (64 or 32) of the Igor Pro version you plan to
+use (64-bit is recommended) install either version 2.2.2 of the
+Multiclamp Commander (64bit) or version 2.1.0.16 (32-bit). Both can be
+downloaded from
+<a class="reference external" href="http://mdc.custhelp.com/app/answers/detail/a_id/20059">here</a>.</p>
+<div class="section" id="silent-installation">
+<h3>Silent installation<a class="headerlink" href="#silent-installation" title="Permalink to this headline">¶</a></h3>
+<p>The installer is developed using <a class="reference external" href="https://nsis.sourceforge.io">NSIS</a> which also
+supports silent installation. The installer requires admin privileges also with
+silent installation.</p>
+<p>To perform a silent installation pass the <cite>/S</cite> command line option which will
+install with the following settings:</p>
+<ul class="simple">
+<li><p>Install for Igor Pro 8 64bit</p></li>
+<li><p>Admin installation into <cite>%PROGRAMFILES%MIES</cite> for the current user, pass <cite>/ALLUSER</cite> to install for all users</p></li>
+<li><p>Install all Hardware XOPs</p></li>
+</ul>
+<p>Previously existing MIES installations of the admin will be silently uninstalled.</p>
+</div>
+<div class="section" id="installer-details-and-limitations">
+<h3>Installer details and limitations<a class="headerlink" href="#installer-details-and-limitations" title="Permalink to this headline">¶</a></h3>
+<p>The installer uses the Nullsoft Installer System <a class="reference external" href="https://nsis.sourceforge.io">NSIS</a>.
+NSIS allows to create installers that require admin privileges and installers that
+run with user privileges only. By default an installer requiring admin privileges
+is created by executing <code class="docutils literal notranslate"><span class="pre">tools/create-installer.sh</span></code> from a MingW64 bash.
+With <code class="docutils literal notranslate"><span class="pre">tools/create-installer.sh</span> <span class="pre">1</span></code> a user mode installer can be created.</p>
+<p>The installer tries to detect if and where Igor Pro 8 and/or Igor Pro 9 is installed.
+It defaults then to the 64-bit version if the found Igor Pro(s) which is reflected
+in the default selection of the corresponding installer dialog. In silent mode the
+found defaults are automatically used. If in silent mode no Igor Pro installations are
+detected then only the main MIES files get installed.</p>
+<div class="section" id="installer-with-admin-privileges">
+<h4>Installer with admin privileges<a class="headerlink" href="#installer-with-admin-privileges" title="Permalink to this headline">¶</a></h4>
+<p>When run as user the installer asks for privilege elevation.</p>
+<p>Installs by default to the user folder e.g. <cite>\Users\Admin\Documents\MIES folder</cite>.
+Igor Pro integration through shortcuts is put to the user Igor Pro procedures/extension folders in
+<cite>\Users\Admin\Documents\WaveMetrics\Igor Pro X Folder</cite>.</p>
+<p>Installs with <cite>/ALLUSER</cite> or corresponding dialog selection to the <cite>\Program Files\MIES folder</cite>.
+Igor Pro integration through shortcuts is put to the global Igor Pro procedures/extension folders in
+<cite>\Program Files\Wavemetrics\Igor Pro X Folder</cite>.</p>
+<p>Prior installation it is detected by checking the installed programs list of windows (Apps &amp; Features)
+if MIES is already installed. If it is installed then the uninstaller is called first.
+If the installation was run silent then the uninstaller is also called silent.</p>
+<p>A limitation is that the installer can not detect if another user has a user installation of MIES.
+Thus such installation will remain in parallel and result in a double installation for that user (global and local).
+The local installation of this user has to be uninstalled. This can be done when the user is logged in through
+windows Apps &amp; Features.</p>
+</div>
+<div class="section" id="installer-with-user-privileges">
+<h4>Installer with user privileges<a class="headerlink" href="#installer-with-user-privileges" title="Permalink to this headline">¶</a></h4>
+<p>Installs by default to the user folder e.g. <cite>\Users\User\Documents\MIES folder</cite>.
+Igor Pro integration through shortcuts is put to the user Igor Pro procedures/extension folders in
+<cite>\Users\User\Documents\WaveMetrics\Igor Pro X Folder</cite>.</p>
+<p>Installation for all users is not supported as it would require administrative privileges.
+Thus the dialog option is greyed out. When <cite>/ALLUSER</cite> is specified an error message is shown.
+If <cite>/ALLUSER</cite> and <cite>/S</cite> for silent installation is specified the installer silently quits.</p>
+<p>Prior installation it is detected by checking the installed programs list of windows (Apps &amp; Features)
+if MIES is already installed. If it is installed then the uninstaller is called first.
+If the installation was run silent then the uninstaller is also called silent.
+The user can only uninstall previous installations from himself. If the previous installation
+was done by an admin the uninstaller will ask for privilege elevation.</p>
+</div>
+<div class="section" id="corrupted-installations">
+<h4>Corrupted installations<a class="headerlink" href="#corrupted-installations" title="Permalink to this headline">¶</a></h4>
+<p>After the installer has called a potential uninstaller it checks if the target Igor Pro procedures folder
+for the MIES integration has no shortcut to MIES. If there still exists a shortcut to MIES then further installation
+is aborted. The graphical installer gives a message box requesting a manual cleanup.
+Such case typically happens if shortcuts in the Igor Pro folders for integrating MIES were created manually.
+Then the shortcuts have to be removed manually first before a MIES installation is run.</p>
+</div>
+</div>
+</div>
+<div class="section" id="arduino">
+<h2>Arduino<a class="headerlink" href="#arduino" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h3>
+<p>Advanced measurement modes like Yoking require an Arduino for triggering
+the DAC hardware. The following steps have to be performed in order to
+get a working setup:</p>
+<ul class="simple">
+<li><p>Get an <a class="reference external" href="https://www.arduino.cc/en/Main/ArduinoBoardUno">Arduino
+UNO</a>, for easier
+PIN access a <a class="reference external" href="http://www.robotshop.com/en/dfrobot-arduino-compatible-screw-shield.html">screw
+shield</a>
+comes in handy too</p></li>
+<li><p>Connect the device to the PC via USB</p></li>
+<li><p>Install the Arduino studio from
+“Packages\Arduino\arduino-1.6.8-windows.exe”</p></li>
+<li><p>Extract “Packages\Arduino\Arduino-libraries-and-sequencer.zip” into
+“C:\Users\$username\Documents\Arduino”</p></li>
+<li><p>Start Arduino studio and try connecting to the device</p></li>
+<li><p>Load and compile the installed sequence “Igor_Sequencer3.ino”</p></li>
+<li><p>Connect Pin 12 and GND to the trigger input of the DAC hardware</p></li>
+</ul>
+</div>
+<div class="section" id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Connect Arduino</p></li>
+<li><p>Start Arduino studio and upload “Igor_Sequencer3.ino”</p></li>
+<li><p>Start Igor Pro</p></li>
+<li><p>Open the panel from the Arduino menu</p></li>
+<li><p>Connect</p></li>
+<li><p>Upload Sequence</p></li>
+<li><p>The start of DAQ is done by MIES itself</p></li>
+</ul>
+</div>
+<div class="section" id="building-the-documentation">
+<h3>Building the documentation<a class="headerlink" href="#building-the-documentation" title="Permalink to this headline">¶</a></h3>
+<p>(Currently only tested on Linux.)</p>
+<ul class="simple">
+<li><p>Install <a class="reference external" href="https://docker.io">Docker</a></p></li>
+<li><p>Execute <code class="docutils literal notranslate"><span class="pre">tools/docker/build-documentation.sh</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="updating-documentation">
+<h3>Updating documentation<a class="headerlink" href="#updating-documentation" title="Permalink to this headline">¶</a></h3>
+<p>Due to our excessive use of the breathe sphinx extension which feeds from
+doxygen, a full documentation build takes around 10 minutes. It is also not
+possible to use the sphinx autobuild feature, as it rebuilds all everything from
+scratch due to breathe.</p>
+<p>For fast read-write-view cycles while writing the user documentation do the following:</p>
+<ul class="simple">
+<li><p>Start with a clean <code class="docutils literal notranslate"><span class="pre">Packages/doc</span></code> folder</p></li>
+<li><p>Apply the <a class="reference download internal" download="" href="_downloads/8c6122504a04310fbb88df1eacbb7084/0001-WIP-fast-sphinx-rst-update-cyle.patch"><code class="xref download docutils literal notranslate"><span class="pre">patch</span></code></a>
+which temporarily removes breathe via <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">am</span> <span class="pre">...</span></code></p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">autobuild</span></code> which opens a local webbrowser and rebuilds after
+every change. This time incremental updates work.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="release-handling">
+<h2>Release Handling<a class="headerlink" href="#release-handling" title="Permalink to this headline">¶</a></h2>
+<p>If guidelines are not followed, the MIES version will be unknown, and
+data acquisition is blocked.</p>
+<div class="section" id="cutting-a-new-release">
+<h3>Cutting a new release<a class="headerlink" href="#cutting-a-new-release" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Checkout the main branch</p></li>
+<li><p>Check that MIES compiles</p></li>
+<li><p>Check that doxygen/sphinx/breathe returns neither errors nor warnings</p></li>
+<li><p>Paste the contents of <code class="docutils literal notranslate"><span class="pre">Packages\doc\releasenotes_template.rst</span></code> to
+the top of <code class="docutils literal notranslate"><span class="pre">Packages\doc\releasenotes.rst</span></code></p></li>
+<li><p>Call <code class="docutils literal notranslate"><span class="pre">tools\create-changelog.sh</span></code> which generate a raw changelog and
+fill <code class="docutils literal notranslate"><span class="pre">releasenotes.rst</span></code> with a cleaned up version of it.</p></li>
+<li><p>Tag the current state with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span> <span class="pre">Release_X.Y_*</span></code>, see <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">tag</span></code>
+for how the asterisk should look like</p></li>
+<li><p>Push the tag: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">origin</span> <span class="pre">$tag</span></code>. You can pass <code class="docutils literal notranslate"><span class="pre">--dry-run</span></code> for
+testing out what is getting pushed without pushing anything.</p></li>
+<li><p>Create the release branches:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">-b</span> <span class="pre">release/X.Y</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">push</span> <span class="pre">-u</span> <span class="pre">origin</span> <span class="pre">release/X.Y</span></code></p></li>
+</ul>
+</li>
+<li><p>Change the bamboo jobs using release branches to use the branch
+release/X.Y</p></li>
+<li><p>Create a new release on github and check that the bamboo job correctly
+uploads the artifacts</p></li>
+</ul>
+</div>
+<div class="section" id="creating-a-release-package-manually">
+<h3>Creating a release package manually<a class="headerlink" href="#creating-a-release-package-manually" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Open a git bash terminal by choosing Actions-&gt;”Open in terminal” in
+SourceTree</p></li>
+<li><p>Checkout the release branch <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">release/$myVersion</span></code></p></li>
+<li><p>If none exists create one with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">checkout</span> <span class="pre">-b</span> <span class="pre">release/$myVersion</span></code></p></li>
+<li><p>Change to the <code class="docutils literal notranslate"><span class="pre">tools</span></code> directory in the worktree root folder</p></li>
+<li><p>Execute <code class="docutils literal notranslate"><span class="pre">./create-release.sh</span></code></p></li>
+<li><p>The release package including the version information is then
+available as zip file</p></li>
+</ul>
+</div>
+<div class="section" id="installing-a-release">
+<h3>Installing a release<a class="headerlink" href="#installing-a-release" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Extract the zip archive into a folder on the target machine</p></li>
+<li><p>Follow the steps outlined in the section “Full Installation”</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="continuous-integration-server">
+<h2>Continuous integration server<a class="headerlink" href="#continuous-integration-server" title="Permalink to this headline">¶</a></h2>
+<p>Our <a class="reference external" href="http://bamboo.corp.alleninstitute.org/browse/MIES">CI server</a>,
+called bamboo, provides the following services for MIES:</p>
+<div class="section" id="automatic-release-package-building">
+<h3>Automatic release package building<a class="headerlink" href="#automatic-release-package-building" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The release branch, <code class="docutils literal notranslate"><span class="pre">release/$number</span></code> with the highest <code class="docutils literal notranslate"><span class="pre">$number</span></code>,
+is polled every 3 minutes for changes</p></li>
+<li><p>If changes are detected, a clone is fetched, and inside a checked out
+git working tree, the release script <code class="docutils literal notranslate"><span class="pre">tools/create-release.sh</span></code> is
+executed.</p></li>
+<li><p>The result of the release script, called an artifact in CI-speech, is
+then available as zip package from the <a class="reference external" href="http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful">Package
+section</a>.</p></li>
+<li><p>The release packaging job can be run on a linux box or on a windows
+box with git for windows installed. This is ensured by a platform
+requirement for the job.</p></li>
+</ul>
+</div>
+<div class="section" id="compilation-testing">
+<h3>Compilation testing<a class="headerlink" href="#compilation-testing" title="Permalink to this headline">¶</a></h3>
+<p>The full MIES installation and the partial installations are IGOR Pro
+compiled using a bamboo job. This allows to catch compile time errors
+early on. For testing compilation manually perform the following steps:</p>
+<ul class="simple">
+<li><p>Create in <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code> a shortcut pointing to
+<code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code> and <code class="docutils literal notranslate"><span class="pre">Packages\unit-testing</span></code></p></li>
+<li><p>Remove the shortcut <code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code> in
+<code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code></p></li>
+<li><p>Close all Igor Pro instances</p></li>
+<li><p>Execute <code class="docutils literal notranslate"><span class="pre">tools\unit-testing\check_mies_compilation.sh</span></code></p></li>
+<li><p>Watch the output</p></li>
+</ul>
+</div>
+<div class="section" id="unit-testing">
+<h3>Unit testing<a class="headerlink" href="#unit-testing" title="Permalink to this headline">¶</a></h3>
+<p>One of the bamboo jobs is responsible for executing our unit tests. All
+tests must be written using the <a class="reference external" href="https://docs.byte-physics.de/igor-unit-testing-framework">Igor Unit Testing
+Framework</a> and
+referenced in the main test experiment located in
+<code class="docutils literal notranslate"><span class="pre">tools\unit-testing\RunAllTests.pxp</span></code> For executing the tests manually
+perform the followings steps:</p>
+<ul class="simple">
+<li><p>Create in <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code> a shortcut pointing to
+<code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code>, <code class="docutils literal notranslate"><span class="pre">Packages\unit-testing</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Packages\Testing-MIES</span></code></p></li>
+<li><p>Remove the shortcut <code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code> in
+<code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code></p></li>
+<li><p>Close all Igor Pro instances</p></li>
+<li><p>Execute <code class="docutils literal notranslate"><span class="pre">tools\unit-testing\autorun-test.bat</span></code></p></li>
+<li><p>Watch the output</p></li>
+</ul>
+</div>
+<div class="section" id="documentation-building">
+<h3>Documentation building<a class="headerlink" href="#documentation-building" title="Permalink to this headline">¶</a></h3>
+<p>The documentation for the main branch is automatically built and
+uploaded by <a class="reference external" href="http://bamboo.corp.alleninstitute.org/browse/MIES-CM">this</a> bamboo job.</p>
+</div>
+<div class="section" id="setting-up-a-continous-integration-server-linux">
+<h3>Setting up a continous integration server (Linux)<a class="headerlink" href="#setting-up-a-continous-integration-server-linux" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="preliminaries">
+<h4>Preliminaries<a class="headerlink" href="#preliminaries" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Linux box with fixed IP</p></li>
+<li><p>Choose a user, here named <code class="docutils literal notranslate"><span class="pre">ci</span></code>, for running the tests.</p></li>
+<li><p>Make sure that the user is <strong>not</strong> a member of the <code class="docutils literal notranslate"><span class="pre">wheel</span></code> group so that
+it can not gain root access.</p></li>
+<li><p>Install the bare-minimum packages and use the latest debian stable</p></li>
+</ul>
+</div>
+<div class="section" id="enable-ssh-access">
+<h4>Enable SSH access<a class="headerlink" href="#enable-ssh-access" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Setup remote SSH access with public keys. On the client (your PC!)
+try logging into using SSH.</p></li>
+<li><p>Disable password authentication in <code class="docutils literal notranslate"><span class="pre">/etc/ssh/sshd_config</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="install-required-software">
+<h4>Install required software<a class="headerlink" href="#install-required-software" title="Permalink to this headline">¶</a></h4>
+<ul>
+<li><p>Install <a class="reference external" href="https://docker.io">Docker</a></p></li>
+<li><p>Wine 64-bit: <code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">install</span> <span class="pre">wine</span></code></p></li>
+<li><p>Wine 32-bit: <code class="docutils literal notranslate"><span class="pre">dpkg</span> <span class="pre">--add-architecture</span> <span class="pre">i386</span> <span class="pre">&amp;&amp;</span> <span class="pre">apt</span> <span class="pre">update</span> <span class="pre">&amp;&amp;</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">wine32</span></code></p></li>
+<li><p>Misc required software: <code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">install</span> <span class="pre">git</span> <span class="pre">cron-apt</span></code></p></li>
+<li><p>Enable automatic updates: <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">&quot;dist-upgrade</span> <span class="pre">-y</span> <span class="pre">-o</span> <span class="pre">APT::Get::Show-Upgraded=true&quot;</span> <span class="pre">&gt;</span> <span class="pre">/etc/cron-apt/action.d/4-upgrade</span></code></p></li>
+<li><p>Install OpenJDK 8 by adding a file with the following
+sources in <code class="docutils literal notranslate"><span class="pre">/etc/apt/sources.list.d/</span></code>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ buster main
+</pre></div>
+</div>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">update</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apt</span> <span class="pre">install</span> <span class="pre">adoptopenjdk-8-hotspot-jre</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">update-alternatives</span> <span class="pre">--config</span> <span class="pre">java</span></code> and select version 8</p></li>
+</ul>
+</div>
+<div class="section" id="setup-bamboo-agent">
+<h4>Setup bamboo agent<a class="headerlink" href="#setup-bamboo-agent" title="Permalink to this headline">¶</a></h4>
+<ul>
+<li><p>Install the bamboo agent according to the
+<a class="reference external" href="http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action">instructions</a>
+and run it once to create the <code class="docutils literal notranslate"><span class="pre">bamboo-agent-home</span></code> directory</p></li>
+<li><p>Create a file <code class="docutils literal notranslate"><span class="pre">/etc/systemd/system/bamboo.service</span></code> with the following contents</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[Unit]
+Description=Atlassian Bamboo
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User=ci
+ExecStart=/home/ci/bamboo-agent-home/bin/bamboo-agent.sh start
+ExecStop=/home/ci/bamboo-agent-home/bin/bamboo-agent.sh stop
+SuccessExitStatus=143
+Environment=&quot;PATH=/home/ci/.local/bin:/usr/local/bin:/usr/bin:/bin&quot;
+
+[Install]
+WantedBy=multi-user.target
+</pre></div>
+</div>
+</li>
+<li><p>Enable it with <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">enable</span> <span class="pre">bamboo.service</span></code></p></li>
+<li><p>Reboot the system and check that the agent runs</p></li>
+<li><p>Add a fitting <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Pro</span> <span class="pre">(new)</span></code> capability to the agent in bamboo.</p></li>
+<li><p>Make the agent dedicated to the <code class="docutils literal notranslate"><span class="pre">MIES-Igor</span></code> project.</p></li>
+<li><p>Be sure that the “git” capability and the “bash” executable capability are
+present as well</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="setting-up-a-continous-integration-server-windows">
+<h3>Setting up a continous integration server (Windows)<a class="headerlink" href="#setting-up-a-continous-integration-server-windows" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Windows 10 with “Remote Desktop” enabled user</p></li>
+<li><p>Install the folllowing programs:</p>
+<ul>
+<li><p>Java 8</p></li>
+<li><p>Git (choose the installer option which will make the Unix tools
+available in cmd as well)</p></li>
+<li><p>Multiclamp Commander (see above for specifics). After installing the
+32-bit version, save the folder <code class="docutils literal notranslate"><span class="pre">c:\Program</span> <span class="pre">Files</span> <span class="pre">(x86)\Molecular</span> <span class="pre">Devices</span></code>
+somewhere, reinstall the 64-bit version and put the saved folder back. In
+that way you can use both versions at the same time.</p></li>
+<li><p>NIDAQ-mx driver package 19.0 or later</p></li>
+<li><p>NIDAQ-mx XOP from WaveMetrics</p></li>
+<li><p>HEKA Harware Drivers 2014-03 Windows.zip</p></li>
+<li><p>Igor Pro 8 (and a possible nightly version on top of it)</p></li>
+<li><p>Install bamboo remote agent according to
+<a class="reference external" href="http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action">http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action</a>.</p></li>
+</ul>
+</li>
+<li><p>Start Igor Pro and open a DA_Ephys panel, lock the device. This will
+not work, so follow the posted suggestions to get it working (registry fix and ASLR fix).</p></li>
+<li><p>Add a fitting <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Pro</span> <span class="pre">(new)</span></code> capability to the agent in bamboo.</p></li>
+<li><p>Make the agent dedicated to the <code class="docutils literal notranslate"><span class="pre">MIES-Igor</span></code> project.</p></li>
+<li><p>Be sure that the “git” capability and the “bash” executable capability are
+present as well</p></li>
+<li><p>Create the folder <code class="docutils literal notranslate"><span class="pre">$HOME/.credentials</span></code> and place the file <code class="docutils literal notranslate"><span class="pre">github_api_token</span></code> from an existing CI machine there</p></li>
+<li><p>Copy <code class="docutils literal notranslate"><span class="pre">tools/start-bamboo-agent-windows.sh</span></code> and <code class="docutils literal notranslate"><span class="pre">tools/start-bamboo-agent-windows.bat</span></code> to <code class="docutils literal notranslate"><span class="pre">$HOME</span></code></p></li>
+<li><p>Edit <code class="docutils literal notranslate"><span class="pre">tools/start-bamboo-agent-windows.bat</span></code> so that is points to the existing Git location</p></li>
+<li><p>Add shortcuts to <code class="docutils literal notranslate"><span class="pre">$HOME/start-bamboo-agent-windows.bat</span></code> and <code class="docutils literal notranslate"><span class="pre">MC700B.exe</span></code> into <code class="docutils literal notranslate"><span class="pre">C:\Users\$User\AppData\Roaming\Microsoft\Windows\Start</span> <span class="pre">Menu\Programs\Startup</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="available-ci-servers">
+<h3>Available CI servers<a class="headerlink" href="#available-ci-servers" title="Permalink to this headline">¶</a></h3>
+<p>Given are the bamboo agent names, their capabilities and notable properties.</p>
+<p>Linux MIES Ephys:</p>
+<ul class="simple">
+<li><p>Capabilities:</p>
+<ul>
+<li><p>Igor Pro (new) = Linux</p></li>
+</ul>
+</li>
+<li><p>Debian 10 (buster)</p></li>
+<li><p>No Hardware</p></li>
+<li><p>No Igor Pro</p></li>
+<li><p>Docker</p></li>
+</ul>
+<p>NI MIES Ephys:</p>
+<ul class="simple">
+<li><p>Capabilities:</p>
+<ul>
+<li><p>Igor Pro (new) = Windows 10</p></li>
+</ul>
+</li>
+<li><p>ITC-1600 hardware with one rack, 2 AD/DA channels are looped</p></li>
+<li><p>NI PCIe-6343, 2 AD/DA channels are looped</p></li>
+<li><p>MCC demo amplifier only</p></li>
+<li><p>Latest required nightly version of Igor Pro 8</p></li>
+</ul>
+<p>Windows 10 S30 MIES CI:</p>
+<ul class="simple">
+<li><p>Capabilities:</p>
+<ul>
+<li><p>Igor Pro (new) = Windows 7</p></li>
+</ul>
+</li>
+<li><p>ITC18-USB hardware, 2 AD/DA channels are looped</p></li>
+<li><p>MCC demo amplifier only</p></li>
+<li><p>Latest required nightly version of Igor Pro 8</p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-mies">Getting MIES</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#latest-development-version-from-main-branch">Latest development version from main branch</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#silent-installation">Silent installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installer-details-and-limitations">Installer details and limitations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#installer-with-admin-privileges">Installer with admin privileges</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#installer-with-user-privileges">Installer with user privileges</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#corrupted-installations">Corrupted installations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#arduino">Arduino</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-the-documentation">Building the documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#updating-documentation">Updating documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#release-handling">Release Handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cutting-a-new-release">Cutting a new release</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-a-release-package-manually">Creating a release package manually</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installing-a-release">Installing a release</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#continuous-integration-server">Continuous integration server</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#automatic-release-package-building">Automatic release package building</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compilation-testing">Compilation testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#unit-testing">Unit testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation-building">Documentation building</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-a-continous-integration-server-linux">Setting up a continous integration server (Linux)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#preliminaries">Preliminaries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#enable-ssh-access">Enable SSH access</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#install-required-software">Install required software</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setup-bamboo-agent">Setup bamboo agent</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-a-continous-integration-server-windows">Setting up a continous integration server (Windows)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#available-ci-servers">Available CI servers</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation instructions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="reportingbugs.html"
+                        title="next chapter">Bug reporting</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="reportingbugs.html" title="Bug reporting"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation instructions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Developer</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

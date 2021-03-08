@@ -1,0 +1,4 @@
+Struct BackgroundStruct
+=======================
+
+.. doxygenstruct:: BackgroundStruct

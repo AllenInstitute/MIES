@@ -1,0 +1,4 @@
+Struct IPNWB::VectorIndex
+=========================
+
+.. doxygenstruct:: IPNWB::VectorIndex

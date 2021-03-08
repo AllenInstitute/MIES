@@ -1,0 +1,4 @@
+Struct IPNWB::HDF5DataInfo
+==========================
+
+.. doxygenstruct:: IPNWB::HDF5DataInfo

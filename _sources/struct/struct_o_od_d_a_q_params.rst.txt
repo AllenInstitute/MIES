@@ -1,0 +1,4 @@
+Struct OOdDAQParams
+===================
+
+.. doxygenstruct:: OOdDAQParams

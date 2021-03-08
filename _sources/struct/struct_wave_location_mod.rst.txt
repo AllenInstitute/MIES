@@ -1,0 +1,4 @@
+Struct WaveLocationMod
+======================
+
+.. doxygenstruct:: WaveLocationMod

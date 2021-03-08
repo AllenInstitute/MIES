@@ -1,0 +1,4 @@
+Struct IPNWB::GeneralInfo
+=========================
+
+.. doxygenstruct:: IPNWB::GeneralInfo

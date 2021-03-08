@@ -1,0 +1,4 @@
+Struct IPNWB::TimeSeriesProperties
+==================================
+
+.. doxygenstruct:: IPNWB::TimeSeriesProperties

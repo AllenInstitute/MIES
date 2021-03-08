@@ -1,0 +1,1296 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File MIES_DAEphys.ipf &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_DAEphys_GuiState.ipf" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html" />
+    <link rel="prev" title="File MIES_DAC-Hardware.ipf" href="_m_i_e_s___d_a_c-_hardware_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html" title="File MIES_DAEphys_GuiState.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___d_a_c-_hardware_8ipf.html" title="File MIES_DAC-Hardware.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_DAEphys.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="file-mies-daephys-ipf">
+<span id="id1"></span><h1>File MIES_DAEphys.ipf<a class="headerlink" href="#file-mies-daephys-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>DAP</strong> Main data acquisition panel routines </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv426DAP_GetRadioButtonCouplingv">
+<span id="_CPPv326DAP_GetRadioButtonCouplingv"></span><span id="_CPPv226DAP_GetRadioButtonCouplingv"></span><span id="DAP_GetRadioButtonCoupling"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a8e215ebc03ec1aec6157f21003d5335a"></span><span class="pre">wave</span> <code class="sig-name descname"><span class="pre">DAP_GetRadioButtonCoupling</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DAP_GetRadioButtonCouplingv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Creates meta information about coupled CheckBoxes (Radio Button) controls Used for saving/restoring the GUI state. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>Free text wave with lists of coupled CheckBox controls </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419DAP_GetNIDeviceListv">
+<span id="_CPPv319DAP_GetNIDeviceListv"></span><span id="_CPPv219DAP_GetNIDeviceListv"></span><span id="DAP_GetNIDeviceList"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1acc3b5391210c9e24aa924c2d01af32f6"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GetNIDeviceList</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DAP_GetNIDeviceListv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a list of DAC devices for NI devices. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>list of NI DAC devices </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_GetITCDeviceListv">
+<span id="_CPPv320DAP_GetITCDeviceListv"></span><span id="_CPPv220DAP_GetITCDeviceListv"></span><span id="DAP_GetITCDeviceList"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ad912d8cd4f901587d1fb7ff369c857d2"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GetITCDeviceList</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_GetITCDeviceListv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a list of ITC devices for DAC. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_GetDACDeviceListv">
+<span id="_CPPv320DAP_GetDACDeviceListv"></span><span id="_CPPv220DAP_GetDACDeviceListv"></span><span id="DAP_GetDACDeviceList"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a050510d31819e1721c345caefdc13c4c"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GetDACDeviceList</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_GetDACDeviceListv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns a list of available ITC and NI devices. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>list of DAC devices </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429DAP_EphysPanelStartUpSettingsv">
+<span id="_CPPv329DAP_EphysPanelStartUpSettingsv"></span><span id="_CPPv229DAP_EphysPanelStartUpSettingsv"></span><span id="DAP_EphysPanelStartUpSettings"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a2f896d5f60ac36cd0eb244cd7046abb6"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_EphysPanelStartUpSettings</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DAP_EphysPanelStartUpSettingsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Restores the base state of the DA_Ephys panel. Useful when adding controls to GUI. Facilitates use of auto generation of GUI code. Useful when template experiment file has been overwritten. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv414DAP_WindowHookP15WMWinHookStruct">
+<span id="_CPPv314DAP_WindowHookP15WMWinHookStruct"></span><span id="_CPPv214DAP_WindowHookP15WMWinHookStruct"></span><span id="DAP_WindowHook__WMWinHookStructP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a11edfa5cf202c043a7fbc8b2cec6b594"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_WindowHook</span></code><span class="sig-paren">(</span><span class="pre">WMWinHookStruct</span> <span class="pre">*</span><em><span class="pre">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414DAP_WindowHookP15WMWinHookStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_FormatStimSetPopupValue8variable6string">
+<span id="_CPPv327DAP_FormatStimSetPopupValue8variable6string"></span><span id="_CPPv227DAP_FormatStimSetPopupValue8variable6string"></span><span id="DAP_FormatStimSetPopupValue__variable.string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a6aa944de2d3a851d3e43b5ac08edc40d"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_FormatStimSetPopupValue</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">channelType</span></em>, <span class="pre">string</span> <em><span class="pre">searchString</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_FormatStimSetPopupValue8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a popValue string suitable for stimsets. </p>
+<p><dl class="xrefsect">
+<dt>
+<a class="reference internal" href="../todo.html#todo_1_todo000011"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>rework the code to have a fixed popValue </p>
+</dd></dl>
+
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418DAP_DeviceIsLeader6string">
+<span id="_CPPv318DAP_DeviceIsLeader6string"></span><span id="_CPPv218DAP_DeviceIsLeader6string"></span><span id="DAP_DeviceIsLeader__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a1dc47394c8457e1ef4c4543f02d15fc9"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_DeviceIsLeader</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DAP_DeviceIsLeader6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check by querying the GUI if the device is a leader. </p>
+<p>Outside callers should use <a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html#_m_i_e_s___mies_utilities_8ipf_1aa5af3cb1ccfcd87d7033555ef6d97cdf"><span class="std std-ref">DeviceHasFollower()</span></a> instead. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_UpdateAllYokeControlsv">
+<span id="_CPPv325DAP_UpdateAllYokeControlsv"></span><span id="_CPPv225DAP_UpdateAllYokeControlsv"></span><span id="DAP_UpdateAllYokeControls"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ac719837a2141450657efc15c6d89759b"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateAllYokeControls</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_UpdateAllYokeControlsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Updates the yoking controls on all locked/unlocked panels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_GUIListOfYokedDevicesv">
+<span id="_CPPv325DAP_GUIListOfYokedDevicesv"></span><span id="_CPPv225DAP_GUIListOfYokedDevicesv"></span><span id="DAP_GUIListOfYokedDevices"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a591e8db19bfb1d9e2949107f3a3e6511"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GUIListOfYokedDevices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_GUIListOfYokedDevicesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_UpdateYokeControls6string">
+<span id="_CPPv322DAP_UpdateYokeControls6string"></span><span id="_CPPv222DAP_UpdateYokeControls6string"></span><span id="DAP_UpdateYokeControls__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ad11353299a64ecb572838d8c7ab831b1"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateYokeControls</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_UpdateYokeControls6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_TabControlFinalHookP18WMTabControlAction">
+<span id="_CPPv323DAP_TabControlFinalHookP18WMTabControlAction"></span><span id="_CPPv223DAP_TabControlFinalHookP18WMTabControlAction"></span><span id="DAP_TabControlFinalHook__WMTabControlActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a63cfe666d38d2de16ef8fb0ae1ae8557"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_TabControlFinalHook</span></code><span class="sig-paren">(</span><span class="pre">WMTabControlAction</span> <span class="pre">*</span><em><span class="pre">tca</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_TabControlFinalHookP18WMTabControlAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Called by ACL tab control after the tab is updated. see line 257 of ACL_TabUtilities.ipf. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429DAP_SetVarProc_Channel_SearchP19WMSetVariableAction">
+<span id="_CPPv329DAP_SetVarProc_Channel_SearchP19WMSetVariableAction"></span><span id="_CPPv229DAP_SetVarProc_Channel_SearchP19WMSetVariableAction"></span><span id="DAP_SetVarProc_Channel_Search__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ae73243b4c645649e7af729b71192ec2c"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVarProc_Channel_Search</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DAP_SetVarProc_Channel_SearchP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_DAorTTLCheckProcP16WMCheckboxAction">
+<span id="_CPPv320DAP_DAorTTLCheckProcP16WMCheckboxAction"></span><span id="_CPPv220DAP_DAorTTLCheckProcP16WMCheckboxAction"></span><span id="DAP_DAorTTLCheckProc__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1af4d9e19afb08146f844674a150d1ee3b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_DAorTTLCheckProc</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_DAorTTLCheckProcP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_CheckProc_Channel_AllP16WMCheckboxAction">
+<span id="_CPPv325DAP_CheckProc_Channel_AllP16WMCheckboxAction"></span><span id="_CPPv225DAP_CheckProc_Channel_AllP16WMCheckboxAction"></span><span id="DAP_CheckProc_Channel_All__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aba6e5c5715fd05f12f781284ab44d194"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_Channel_All</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_CheckProc_Channel_AllP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416DAP_IsAllControl8variable">
+<span id="_CPPv316DAP_IsAllControl8variable"></span><span id="_CPPv216DAP_IsAllControl8variable"></span><span id="DAP_IsAllControl__variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a9b44bd9988cfc2b8ba938c1d7f9dd761"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_IsAllControl</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">channelIndex</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416DAP_IsAllControl8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Determines if the control refers to an “All” control. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_DACHasExpectedClampMode6string8variable8variable8variable">
+<span id="_CPPv327DAP_DACHasExpectedClampMode6string8variable8variable8variable"></span><span id="_CPPv227DAP_DACHasExpectedClampMode6string8variable8variable8variable"></span><span id="DAP_DACHasExpectedClampMode__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ae0588371746f9b38657ab2cf96a30c2b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_DACHasExpectedClampMode</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">controlChannelIndex</span></em>, <span class="pre">variable</span> <em><span class="pre">channelNumber</span></em>, <span class="pre">variable</span> <em><span class="pre">channelType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_DACHasExpectedClampMode6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Helper for “All” controls in the DA tab. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>0 if the given channel is a DA channel and not in the expected clamp mode as determined by <code class="docutils literal notranslate"><span class="pre">controlChannelIndex</span></code>, 1 otherwise </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416DAP_CheckProc_ADP16WMCheckboxAction">
+<span id="_CPPv316DAP_CheckProc_ADP16WMCheckboxAction"></span><span id="_CPPv216DAP_CheckProc_ADP16WMCheckboxAction"></span><span id="DAP_CheckProc_AD__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ad9cd55b80fab339f8b5c6ef190864967"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_AD</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416DAP_CheckProc_ADP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424GetHeadstageFromSettings6string8variable8variable8variable">
+<span id="_CPPv324GetHeadstageFromSettings6string8variable8variable8variable"></span><span id="_CPPv224GetHeadstageFromSettings6string8variable8variable8variable"></span><span id="GetHeadstageFromSettings__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aa4fec8956372a0408211cb121db847c0"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">GetHeadstageFromSettings</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">channelType</span></em>, <span class="pre">variable</span> <em><span class="pre">channelNumber</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424GetHeadstageFromSettings6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get the headstage for the given channel number and type from the amplifier settings. </p>
+<p>This is different from what GetChannelClampMode holds as we here hold the setup information and GetChannelClampMode holds what is currently active. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_AdaptAssocHeadstageState6string6string">
+<span id="_CPPv328DAP_AdaptAssocHeadstageState6string6string"></span><span id="_CPPv228DAP_AdaptAssocHeadstageState6string6string"></span><span id="DAP_AdaptAssocHeadstageState__string.string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a8c151734db504d8e6bba546d38151385"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_AdaptAssocHeadstageState</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">string</span> <em><span class="pre">checkboxCtrl</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_AdaptAssocHeadstageState6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Adapt the state of the associated headstage on DA/AD channel change. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_GetRAAcquisitionCycleID6string">
+<span id="_CPPv327DAP_GetRAAcquisitionCycleID6string"></span><span id="_CPPv227DAP_GetRAAcquisitionCycleID6string"></span><span id="DAP_GetRAAcquisitionCycleID__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a86d7172cf5cca93e536f7cbdab9f65e1"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_GetRAAcquisitionCycleID</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_GetRAAcquisitionCycleID6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the repeated acquisition cycle ID for the given devide. </p>
+<p>Follower and leader will have the same repeated acquisition cycle ID. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424DAP_OneTimeCallBeforeDAQ6string8variable">
+<span id="_CPPv324DAP_OneTimeCallBeforeDAQ6string8variable"></span><span id="_CPPv224DAP_OneTimeCallBeforeDAQ6string8variable"></span><span id="DAP_OneTimeCallBeforeDAQ__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ade9564b1e71dc5bcf1d77dd1d62b5299"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_OneTimeCallBeforeDAQ</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">runMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DAP_OneTimeCallBeforeDAQ6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>One time initialization before data acquisition. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">runMode</span></code>: One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DAQRunModes"><span class="std std-ref">DAQRunModes</span></a> except DAQ_NOT_RUNNING </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_ResetClampModeTitle6string6string">
+<span id="_CPPv323DAP_ResetClampModeTitle6string6string"></span><span id="_CPPv223DAP_ResetClampModeTitle6string6string"></span><span id="DAP_ResetClampModeTitle__string.string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ae7a59f1eb8b24e3b9a66f8c050d01d7c"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ResetClampModeTitle</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">string</span> <em><span class="pre">ctrl</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_ResetClampModeTitle6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_ResetGUIAfterDAQ6string">
+<span id="_CPPv320DAP_ResetGUIAfterDAQ6string"></span><span id="_CPPv220DAP_ResetGUIAfterDAQ6string"></span><span id="DAP_ResetGUIAfterDAQ__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a8beddf886fda166a1332ba148dbfe589"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ResetGUIAfterDAQ</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_ResetGUIAfterDAQ6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Enable all controls which were disabled before DAQ by <a class="reference internal" href="#_m_i_e_s___d_a_ephys_8ipf_1ade9564b1e71dc5bcf1d77dd1d62b5299"><span class="std std-ref">DAP_OneTimeCallBeforeDAQ</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_OneTimeCallAfterDAQ6string8variable8variable">
+<span id="_CPPv323DAP_OneTimeCallAfterDAQ6string8variable8variable"></span><span id="_CPPv223DAP_OneTimeCallAfterDAQ6string8variable8variable"></span><span id="DAP_OneTimeCallAfterDAQ__string.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ab4862c922d8d504fb2c4464eb807cbe9"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_OneTimeCallAfterDAQ</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">forcedStop</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">startTPAfterDAQ</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_OneTimeCallAfterDAQ6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>One time cleaning up after data acquisition. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">forcedStop</span></code>: [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">startTPAfterDAQ</span></code>: [optional, defaults to true] start “TP after DAQ” if enabled at the end </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_CheckProc_IndexingStateP16WMCheckboxAction">
+<span id="_CPPv327DAP_CheckProc_IndexingStateP16WMCheckboxAction"></span><span id="_CPPv227DAP_CheckProc_IndexingStateP16WMCheckboxAction"></span><span id="DAP_CheckProc_IndexingState__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a010c0ff471c73d97498dc3afac411a6d"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_IndexingState</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_CheckProc_IndexingStateP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426DAP_CheckProc_ShowScopeWinP16WMCheckboxAction">
+<span id="_CPPv326DAP_CheckProc_ShowScopeWinP16WMCheckboxAction"></span><span id="_CPPv226DAP_CheckProc_ShowScopeWinP16WMCheckboxAction"></span><span id="DAP_CheckProc_ShowScopeWin__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aca7ee625018066a9ed93252923032c78"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_ShowScopeWin</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DAP_CheckProc_ShowScopeWinP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_TurnOffAllChannels6string8variable">
+<span id="_CPPv322DAP_TurnOffAllChannels6string8variable"></span><span id="_CPPv222DAP_TurnOffAllChannels6string8variable"></span><span id="DAP_TurnOffAllChannels__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ac14d1c73fcb3766f998d203949ea7053"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_TurnOffAllChannels</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">channelType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_TurnOffAllChannels6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_ButtonProc_AllChanOffP14WMButtonAction">
+<span id="_CPPv325DAP_ButtonProc_AllChanOffP14WMButtonAction"></span><span id="_CPPv225DAP_ButtonProc_AllChanOffP14WMButtonAction"></span><span id="DAP_ButtonProc_AllChanOff__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a66b4ef63eac50fb773f7f8245327493a"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_AllChanOff</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_ButtonProc_AllChanOffP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_UpdateITIAcrossSets6string8variable">
+<span id="_CPPv323DAP_UpdateITIAcrossSets6string8variable"></span><span id="_CPPv223DAP_UpdateITIAcrossSets6string8variable"></span><span id="DAP_UpdateITIAcrossSets__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1abb1eade33bbc086ff8824faa8862cb41"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateITIAcrossSets</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">maxITI</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_UpdateITIAcrossSets6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Update the ITI for the given device, takes care of handling yoked devices. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430DAP_PopMenuChkProc_StimSetListP13WMPopupAction">
+<span id="_CPPv330DAP_PopMenuChkProc_StimSetListP13WMPopupAction"></span><span id="_CPPv230DAP_PopMenuChkProc_StimSetListP13WMPopupAction"></span><span id="DAP_PopMenuChkProc_StimSetList__WMPopupActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a0d3a834d8cd514806b091a17b71ee2e6"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_PopMenuChkProc_StimSetList</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430DAP_PopMenuChkProc_StimSetListP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Procedure for DA/TTL popupmenus including indexing wave popupmenus. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_SetVarProc_DA_ScaleP19WMSetVariableAction">
+<span id="_CPPv323DAP_SetVarProc_DA_ScaleP19WMSetVariableAction"></span><span id="_CPPv223DAP_SetVarProc_DA_ScaleP19WMSetVariableAction"></span><span id="DAP_SetVarProc_DA_Scale__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a67c7944a0760f24925f17fcd5b675aab"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVarProc_DA_Scale</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_SetVarProc_DA_ScaleP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429DAP_SetVarProc_NextSweepLimitP19WMSetVariableAction">
+<span id="_CPPv329DAP_SetVarProc_NextSweepLimitP19WMSetVariableAction"></span><span id="_CPPv229DAP_SetVarProc_NextSweepLimitP19WMSetVariableAction"></span><span id="DAP_SetVarProc_NextSweepLimit__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aa7d41a9e35c6030ee6dc0e696dd3a08b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVarProc_NextSweepLimit</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DAP_SetVarProc_NextSweepLimitP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417DAP_SweepRollback6string8variable8variable">
+<span id="_CPPv317DAP_SweepRollback6string8variable8variable"></span><span id="_CPPv217DAP_SweepRollback6string8variable8variable"></span><span id="DAP_SweepRollback__string.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a50a914434585e40902c0a43084fbfcd4"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SweepRollback</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">paneltitle</span></em>, <span class="pre">variable</span> <em><span class="pre">sweepNo</span></em>, <span class="pre">variable</span> <em><span class="pre">newSweepNo</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417DAP_SweepRollback6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431DAP_UpdateSweepLimitsAndDisplay6string8variable">
+<span id="_CPPv331DAP_UpdateSweepLimitsAndDisplay6string8variable"></span><span id="_CPPv231DAP_UpdateSweepLimitsAndDisplay6string8variable"></span><span id="DAP_UpdateSweepLimitsAndDisplay__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a403ec8f37bbdc24a48049b525f863b9a"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateSweepLimitsAndDisplay</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">initial</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431DAP_UpdateSweepLimitsAndDisplay6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv414DAP_GetSampInt6string8variableP8variable">
+<span id="_CPPv314DAP_GetSampInt6string8variableP8variable"></span><span id="_CPPv214DAP_GetSampInt6string8variableP8variable"></span><span id="DAP_GetSampInt__string.variable.variableP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1addfdee90925d983a0d781a4eb61959e7"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_GetSampInt</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">dataAcqOrTP</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">valid</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414DAP_GetSampInt6string8variableP8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the sampling interval with taking the mode, the multiplier and the fixed frequency selection into account. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html#_m_i_e_s___sampling_interval_8ipf_1a62dbc0ac485925190de7f95f9aede566"><span class="std std-ref">SI_CalculateMinSampInterval()</span></a> </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">dataAcqOrTP</span></code>: one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">valid</span></code>: [optional] returns if the choosen sampling interval is valid or not (DAQ only) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_UpdateSweepSetVariables6string">
+<span id="_CPPv327DAP_UpdateSweepSetVariables6string"></span><span id="_CPPv227DAP_UpdateSweepSetVariables6string"></span><span id="DAP_UpdateSweepSetVariables__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aa3502eff1b742b7866695ede1b9fe3f2"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateSweepSetVariables</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_UpdateSweepSetVariables6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p><dl class="xrefsect">
+<dt>
+<a class="reference internal" href="../todo.html#todo_1_todo000012"><span class="std std-ref"><span class="pre">Todo:</span></span></a></dt>
+<dd><p>display correct values for yoked devices </p>
+</dd></dl>
+
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_SetVarProc_TotSweepCountP19WMSetVariableAction">
+<span id="_CPPv328DAP_SetVarProc_TotSweepCountP19WMSetVariableAction"></span><span id="_CPPv228DAP_SetVarProc_TotSweepCountP19WMSetVariableAction"></span><span id="DAP_SetVarProc_TotSweepCount__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ae7492409a4b0338ccd7c48f265d28ce2"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVarProc_TotSweepCount</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_SetVarProc_TotSweepCountP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431DAP_ButtonCtrlFindConnectedAmpsP14WMButtonAction">
+<span id="_CPPv331DAP_ButtonCtrlFindConnectedAmpsP14WMButtonAction"></span><span id="_CPPv231DAP_ButtonCtrlFindConnectedAmpsP14WMButtonAction"></span><span id="DAP_ButtonCtrlFindConnectedAmps__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a0566f145ca0b909ba6dfd66efa033112"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonCtrlFindConnectedAmps</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431DAP_ButtonCtrlFindConnectedAmpsP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431DAP_GetNiceAmplifierChannelListv">
+<span id="_CPPv331DAP_GetNiceAmplifierChannelListv"></span><span id="_CPPv231DAP_GetNiceAmplifierChannelListv"></span><span id="DAP_GetNiceAmplifierChannelList"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a1ab61d32eafe67ae7780d5efb03d0ec8"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GetNiceAmplifierChannelList</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431DAP_GetNiceAmplifierChannelListv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a nicely layouted list of amplifier channels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419DAP_GetAmplifierDef8variable8variable">
+<span id="_CPPv319DAP_GetAmplifierDef8variable8variable"></span><span id="_CPPv219DAP_GetAmplifierDef8variable8variable"></span><span id="DAP_GetAmplifierDef__variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a34282e52a25087edfb552e32b4c8469e"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GetAmplifierDef</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">ampSerial</span></em>, <span class="pre">variable</span> <em><span class="pre">ampChannel</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DAP_GetAmplifierDef8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421DAP_ParseAmplifierDef6stringP8variableP8variable">
+<span id="_CPPv321DAP_ParseAmplifierDef6stringP8variableP8variable"></span><span id="_CPPv221DAP_ParseAmplifierDef6stringP8variableP8variable"></span><span id="DAP_ParseAmplifierDef__string.variableP.variableP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a764be0dcecb418ca8500e1303ac84577"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ParseAmplifierDef</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">amplifierDef</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">ampSerial</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">ampChannelID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421DAP_ParseAmplifierDef6stringP8variableP8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Parse the entries which <a class="reference internal" href="#_m_i_e_s___d_a_ephys_8ipf_1a34282e52a25087edfb552e32b4c8469e"><span class="std std-ref">DAP_GetAmplifierDef()</span></a> created. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_SyncDeviceAssocSettToGUI6string8variable">
+<span id="_CPPv328DAP_SyncDeviceAssocSettToGUI6string8variable"></span><span id="_CPPv228DAP_SyncDeviceAssocSettToGUI6string8variable"></span><span id="DAP_SyncDeviceAssocSettToGUI__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a50676fb882a51684652bac970b563ba4"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SyncDeviceAssocSettToGUI</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_SyncDeviceAssocSettToGUI6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_PopMenuProc_HeadstageP13WMPopupAction">
+<span id="_CPPv325DAP_PopMenuProc_HeadstageP13WMPopupAction"></span><span id="_CPPv225DAP_PopMenuProc_HeadstageP13WMPopupAction"></span><span id="DAP_PopMenuProc_Headstage__WMPopupActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a33e3a2f6f40c0988377581b74104bf7b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_PopMenuProc_Headstage</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_PopMenuProc_HeadstageP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419DAP_PopMenuProc_CAAP13WMPopupAction">
+<span id="_CPPv319DAP_PopMenuProc_CAAP13WMPopupAction"></span><span id="_CPPv219DAP_PopMenuProc_CAAP13WMPopupAction"></span><span id="DAP_PopMenuProc_CAA__WMPopupActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a069f8049ed0274b8c7ee2e848a211ead"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_PopMenuProc_CAA</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DAP_PopMenuProc_CAAP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418DAP_SetVarProc_CAAP19WMSetVariableAction">
+<span id="_CPPv318DAP_SetVarProc_CAAP19WMSetVariableAction"></span><span id="_CPPv218DAP_SetVarProc_CAAP19WMSetVariableAction"></span><span id="DAP_SetVarProc_CAA__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a800dafc9331e476a6eb01b9a50b94823"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVarProc_CAA</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DAP_SetVarProc_CAAP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_ButtonProc_ClearChanConP14WMButtonAction">
+<span id="_CPPv327DAP_ButtonProc_ClearChanConP14WMButtonAction"></span><span id="_CPPv227DAP_ButtonProc_ClearChanConP14WMButtonAction"></span><span id="DAP_ButtonProc_ClearChanCon__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a957e6fdd42241f02513280b8768ffff9"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_ClearChanCon</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_ButtonProc_ClearChanConP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_CheckSettingsAcrossYoked6string8variable">
+<span id="_CPPv328DAP_CheckSettingsAcrossYoked6string8variable"></span><span id="_CPPv228DAP_CheckSettingsAcrossYoked6string8variable"></span><span id="DAP_CheckSettingsAcrossYoked__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ac80e626ff61562efa59785ae93910fdb"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckSettingsAcrossYoked</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">listOfFollowerDevices</span></em>, <span class="pre">variable</span> <em><span class="pre">mode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_CheckSettingsAcrossYoked6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check the settings across yoked devices. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417DAP_CheckSettings6string8variable">
+<span id="_CPPv317DAP_CheckSettings6string8variable"></span><span id="_CPPv217DAP_CheckSettings6string8variable"></span><span id="DAP_CheckSettings__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ae5d9e69624c335e679be4cddca73921b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckSettings</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">mode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417DAP_CheckSettings6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check if all settings are valid to send a test pulse or acquire data. </p>
+<p>For invalid settings an informative message is printed into the history area. <dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>0 for valid settings, 1 for invalid settings </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418DAP_CheckHeadStage6string8variable8variable">
+<span id="_CPPv318DAP_CheckHeadStage6string8variable8variable"></span><span id="_CPPv218DAP_CheckHeadStage6string8variable8variable"></span><span id="DAP_CheckHeadStage__string.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a32f6ef71cb4cf86b4ed0c6245b5917f9"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckHeadStage</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">variable</span> <em><span class="pre">mode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DAP_CheckHeadStage6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns 1 if the headstage has invalid settings, and zero if everything is okay. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv437DAP_CheckAnalysisFunctionAndParameter6string6string">
+<span id="_CPPv337DAP_CheckAnalysisFunctionAndParameter6string6string"></span><span id="_CPPv237DAP_CheckAnalysisFunctionAndParameter6string6string"></span><span id="DAP_CheckAnalysisFunctionAndParameter__string.string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a055a3b120c015fc9d910e76426af51c3"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckAnalysisFunctionAndParameter</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">string</span> <em><span class="pre">setName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv437DAP_CheckAnalysisFunctionAndParameter6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416DAP_CheckStimset6string8variable8variable8variable">
+<span id="_CPPv316DAP_CheckStimset6string8variable8variable8variable"></span><span id="_CPPv216DAP_CheckStimset6string8variable8variable8variable"></span><span id="DAP_CheckStimset__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a6b4d233f27a428d56583eaafaf3fa5f8"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckStimset</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">channelType</span></em>, <span class="pre">variable</span> <em><span class="pre">channel</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416DAP_CheckStimset6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431DAP_SyncChanAmpAssignToActiveHS6string">
+<span id="_CPPv331DAP_SyncChanAmpAssignToActiveHS6string"></span><span id="_CPPv231DAP_SyncChanAmpAssignToActiveHS6string"></span><span id="DAP_SyncChanAmpAssignToActiveHS__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aadbb11ae335db7a928af737d23c350e6"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SyncChanAmpAssignToActiveHS</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431DAP_SyncChanAmpAssignToActiveHS6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Synchronizes the contents of <code class="docutils literal notranslate"><span class="pre">ChanAmpAssign</span></code> and <code class="docutils literal notranslate"><span class="pre">ChanAmpAssignUnit</span></code> to all active headstages. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_ApplyClmpModeSavdSettngs6string8variable8variable">
+<span id="_CPPv328DAP_ApplyClmpModeSavdSettngs6string8variable8variable"></span><span id="_CPPv228DAP_ApplyClmpModeSavdSettngs6string8variable8variable"></span><span id="DAP_ApplyClmpModeSavdSettngs__string.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aac10e0f5eaf34836dfbb905169688bbc"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ApplyClmpModeSavdSettngs</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_ApplyClmpModeSavdSettngs6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Reads the channel amp waves and inserts that info into the DA_EPHYS panel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_RemoveClampModeSettings6string8variable8variable">
+<span id="_CPPv327DAP_RemoveClampModeSettings6string8variable8variable"></span><span id="_CPPv227DAP_RemoveClampModeSettings6string8variable8variable"></span><span id="DAP_RemoveClampModeSettings__string.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a56f767dff0d199558aa48ccb74a916de"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_RemoveClampModeSettings</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_RemoveClampModeSettings6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_GetClampModeControl8variable8variable">
+<span id="_CPPv323DAP_GetClampModeControl8variable8variable"></span><span id="_CPPv223DAP_GetClampModeControl8variable8variable"></span><span id="DAP_GetClampModeControl__variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a6b16972a6dbc44c10f72f57b796fcfb0"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GetClampModeControl</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">mode</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_GetClampModeControl8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the name of the checkbox control (radio button) handling the clamp mode of the given headstage or all headstages. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: One of the amplifier modes <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AmplifierClampModes"><span class="std std-ref">AmplifierClampModes</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headstage</span></code>: number of the headstage or one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AllHeadstageModeConstants"><span class="std std-ref">AllHeadstageModeConstants</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_GetInfoFromControl6string6stringP8variableP8variable">
+<span id="_CPPv322DAP_GetInfoFromControl6string6stringP8variableP8variable"></span><span id="_CPPv222DAP_GetInfoFromControl6string6stringP8variableP8variable"></span><span id="DAP_GetInfoFromControl__string.string.variableP.variableP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a8fd7b7e9e982e91009430b2455437a09"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_GetInfoFromControl</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">string</span> <em><span class="pre">ctrl</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">mode</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">headStage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_GetInfoFromControl6string6stringP8variableP8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return information readout from headstage and clamp mode controls. </p>
+<p>Users interested in the clamp mode of a known headstage should prefer <a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html#_m_i_e_s___d_a_ephys___gui_state_8ipf_1a41b015af6bf2cb9b824a0124581a2551"><span class="std std-ref">DAG_GetHeadstageMode()</span></a> instead.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">panelTitle</span></code>: panel </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">ctrl</span></code>: control can be either <code class="docutils literal notranslate"><span class="pre">Radio_ClampMode_*</span></code> or <code class="docutils literal notranslate"><span class="pre">Check_DataAcqHS_*</span></code> referring to an existing control </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">mode</span></code>: I_CLAMP_MODE, V_CLAMP_MODE or I_EQUAL_ZERO_MODE, the currently active mode for headstage controls and the clamp mode of the control for clamp mode controls </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">headStage</span></code>: number of the headstage or one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AllHeadstageModeConstants"><span class="std std-ref">AllHeadstageModeConstants</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_CheckProc_ClampModeP16WMCheckboxAction">
+<span id="_CPPv323DAP_CheckProc_ClampModeP16WMCheckboxAction"></span><span id="_CPPv223DAP_CheckProc_ClampModeP16WMCheckboxAction"></span><span id="DAP_CheckProc_ClampMode__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a7d1b4f03c2d6148c0bed788fcecd1045"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_ClampMode</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_CheckProc_ClampModeP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_CheckProc_HedstgeChckP16WMCheckboxAction">
+<span id="_CPPv325DAP_CheckProc_HedstgeChckP16WMCheckboxAction"></span><span id="_CPPv225DAP_CheckProc_HedstgeChckP16WMCheckboxAction"></span><span id="DAP_CheckProc_HedstgeChck__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a0cfa678c03ec64d0c123e6a8fe448ff9"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_HedstgeChck</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_CheckProc_HedstgeChckP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_ChangeHeadStageMode6string8variable8variable8variable">
+<span id="_CPPv323DAP_ChangeHeadStageMode6string8variable8variable8variable"></span><span id="_CPPv223DAP_ChangeHeadStageMode6string8variable8variable8variable"></span><span id="DAP_ChangeHeadStageMode__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a1739b8299bd26e5dae25041aa8d1d39e"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ChangeHeadStageMode</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em>, <span class="pre">variable</span> <em><span class="pre">options</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_ChangeHeadStageMode6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Change the clamp mode of the given headstage. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: Device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clampMode</span></code>: Clamp mode to activate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headstage</span></code>: Headstage [0, 8[ or use one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AllHeadstageModeConstants"><span class="std std-ref">AllHeadstageModeConstants</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options</span></code>: One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ClampModeChangeOptions"><span class="std std-ref">ClampModeChangeOptions</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_SetAmpModeControls6string8variable8variable8variable">
+<span id="_CPPv322DAP_SetAmpModeControls6string8variable8variable8variable"></span><span id="_CPPv222DAP_SetAmpModeControls6string8variable8variable8variable"></span><span id="DAP_SetAmpModeControls__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a28e4b5aed3f94932ca4c985095b29d28"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetAmpModeControls</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em>, <span class="pre">variable</span> <em><span class="pre">delayed</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_SetAmpModeControls6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sets the control state of the radio buttons used for setting the clamp mode on the Data Acquisition Tab of the DA_Ephys panel. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headstage</span></code>: controls associated with headstage are set </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clampMode</span></code>: clamp mode to activate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delayed</span></code>: indicate on the control that the change is delayed </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_SetHeadstageChanControls6string8variable8variable8variable">
+<span id="_CPPv328DAP_SetHeadstageChanControls6string8variable8variable8variable"></span><span id="_CPPv228DAP_SetHeadstageChanControls6string8variable8variable8variable"></span><span id="DAP_SetHeadstageChanControls__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a61122db5267036832dc47f6e3a1868f6"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetHeadstageChanControls</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em>, <span class="pre">variable</span> <em><span class="pre">delayed</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_SetHeadstageChanControls6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sets the DA and AD channel settings according to the headstage mode. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: Device (used for data acquisition) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headstage</span></code>: Channels associated with headstage are set </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clampMode</span></code>: Clamp mode to activate </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delayed</span></code>: [optional, defaults to false] Indicate that this is a delayed clamp mode change </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_UpdateClampmodeTabs6string8variable8variable">
+<span id="_CPPv323DAP_UpdateClampmodeTabs6string8variable8variable"></span><span id="_CPPv223DAP_UpdateClampmodeTabs6string8variable8variable"></span><span id="DAP_UpdateClampmodeTabs__string.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a457552094c93ef0669c9dace5441c724"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateClampmodeTabs</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_UpdateClampmodeTabs6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424DAP_ChangeHeadstageState6string6string8variable">
+<span id="_CPPv324DAP_ChangeHeadstageState6string6string8variable"></span><span id="_CPPv224DAP_ChangeHeadstageState6string6string8variable"></span><span id="DAP_ChangeHeadstageState__string.string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a2c8492fb58a300fe5d04d8553b1d48ea"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ChangeHeadstageState</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">string</span> <em><span class="pre">headStageCtrl</span></em>, <span class="pre">variable</span> <em><span class="pre">enabled</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DAP_ChangeHeadstageState6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_ToggleAcquisitionButton6string8variable">
+<span id="_CPPv327DAP_ToggleAcquisitionButton6string8variable"></span><span id="_CPPv227DAP_ToggleAcquisitionButton6string8variable"></span><span id="DAP_ToggleAcquisitionButton__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a2f6122f7769a7920e49956b50f6fd280"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ToggleAcquisitionButton</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">mode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_ToggleAcquisitionButton6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set the acquisition button text. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ToggleAcquisitionButtonConstants"><span class="std std-ref">ToggleAcquisitionButtonConstants</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_ToggleTestpulseButton6string8variable">
+<span id="_CPPv325DAP_ToggleTestpulseButton6string8variable"></span><span id="_CPPv225DAP_ToggleTestpulseButton6string8variable"></span><span id="DAP_ToggleTestpulseButton__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a7a54c49b01da15b024a6840cb75055a9"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ToggleTestpulseButton</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">mode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_ToggleTestpulseButton6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Set the testpulse button text. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1ToggleTestpulseButtonConstants"><span class="std std-ref">ToggleTestpulseButtonConstants</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_ListOfITCDevicesv">
+<span id="_CPPv320DAP_ListOfITCDevicesv"></span><span id="_CPPv220DAP_ListOfITCDevicesv"></span><span id="DAP_ListOfITCDevices"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1abcc6dffcb67da5d4604712d1da2e05f7"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_ListOfITCDevices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_ListOfITCDevicesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the list of potential followers for yoking.</p>
+<p>Used by popup_Hardware_AvailITC1600s from the hardware tab </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419DAP_ButtonProc_LeadP14WMButtonAction">
+<span id="_CPPv319DAP_ButtonProc_LeadP14WMButtonAction"></span><span id="_CPPv219DAP_ButtonProc_LeadP14WMButtonAction"></span><span id="DAP_ButtonProc_Lead__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a0f40929573be29fea1d3a45b9236398b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_Lead</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DAP_ButtonProc_LeadP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The Lead button in the yoking controls sets the attached ITC1600 as the device that will trigger all the other devices yoked to it. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426DAP_ButtonProc_IndependentP14WMButtonAction">
+<span id="_CPPv326DAP_ButtonProc_IndependentP14WMButtonAction"></span><span id="_CPPv226DAP_ButtonProc_IndependentP14WMButtonAction"></span><span id="DAP_ButtonProc_Independent__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a76dfef08e4951efd48fe29144546fe13"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_Independent</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DAP_ButtonProc_IndependentP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421DAP_ButtonProc_FollowP14WMButtonAction">
+<span id="_CPPv321DAP_ButtonProc_FollowP14WMButtonAction"></span><span id="_CPPv221DAP_ButtonProc_FollowP14WMButtonAction"></span><span id="DAP_ButtonProc_Follow__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a74fc38072b8b5a673e563cc0f09bae98"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_Follow</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421DAP_ButtonProc_FollowP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431DAP_SyncGuiFromLeaderToFollower6string">
+<span id="_CPPv331DAP_SyncGuiFromLeaderToFollower6string"></span><span id="_CPPv231DAP_SyncGuiFromLeaderToFollower6string"></span><span id="DAP_SyncGuiFromLeaderToFollower__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ad8124c99f843fc93e0de017e29e5cfb4"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SyncGuiFromLeaderToFollower</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431DAP_SyncGuiFromLeaderToFollower6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426DAP_ButtonProc_YokeReleaseP14WMButtonAction">
+<span id="_CPPv326DAP_ButtonProc_YokeReleaseP14WMButtonAction"></span><span id="_CPPv226DAP_ButtonProc_YokeReleaseP14WMButtonAction"></span><span id="DAP_ButtonProc_YokeRelease__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a0ef02e91898404578955a1cf428c6759"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_YokeRelease</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DAP_ButtonProc_YokeReleaseP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418DAP_RemoveYokedDAC6string">
+<span id="_CPPv318DAP_RemoveYokedDAC6string"></span><span id="_CPPv218DAP_RemoveYokedDAC6string"></span><span id="DAP_RemoveYokedDAC__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ac718e841b1e0cd10c084019d093407d2"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_RemoveYokedDAC</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelToDeYoke</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DAP_RemoveYokedDAC6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_RemoveAllYokedDACs6string">
+<span id="_CPPv322DAP_RemoveAllYokedDACs6string"></span><span id="_CPPv222DAP_RemoveAllYokedDACs6string"></span><span id="DAP_RemoveAllYokedDACs__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1afb46f72744f1d5f4c7a3b6b8aa401768"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_RemoveAllYokedDACs</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_RemoveAllYokedDACs6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426DAP_UpdateFollowerControls6string6string">
+<span id="_CPPv326DAP_UpdateFollowerControls6string6string"></span><span id="_CPPv226DAP_UpdateFollowerControls6string6string"></span><span id="DAP_UpdateFollowerControls__string.string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a3b75ef5d0fcbd82ddc9cfd68279a1bc9"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateFollowerControls</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">string</span> <em><span class="pre">panelToYoke</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DAP_UpdateFollowerControls6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sets the lists and buttons on the follower device actively being yoked. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_ButtonProc_AutoFillGainP14WMButtonAction">
+<span id="_CPPv327DAP_ButtonProc_AutoFillGainP14WMButtonAction"></span><span id="_CPPv227DAP_ButtonProc_AutoFillGainP14WMButtonAction"></span><span id="DAP_ButtonProc_AutoFillGain__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ae2286410e0abefb23f9274a2db911b85"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_AutoFillGain</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_ButtonProc_AutoFillGainP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_SliderProc_MIESHeadStageP14WMSliderAction">
+<span id="_CPPv328DAP_SliderProc_MIESHeadStageP14WMSliderAction"></span><span id="_CPPv228DAP_SliderProc_MIESHeadStageP14WMSliderAction"></span><span id="DAP_SliderProc_MIESHeadStage__WMSliderActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a6cb733efb1cae0717bb28e2e2e00862d"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SliderProc_MIESHeadStage</span></code><span class="sig-paren">(</span><span class="pre">WMSliderAction</span> <span class="pre">*</span><em><span class="pre">sc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_SliderProc_MIESHeadStageP14WMSliderAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424DAP_SetVarProc_AmpCntrlsP19WMSetVariableAction">
+<span id="_CPPv324DAP_SetVarProc_AmpCntrlsP19WMSetVariableAction"></span><span id="_CPPv224DAP_SetVarProc_AmpCntrlsP19WMSetVariableAction"></span><span id="DAP_SetVarProc_AmpCntrls__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a1fa85fe377c21a85280efb6de8f8b6b2"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVarProc_AmpCntrls</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DAP_SetVarProc_AmpCntrlsP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424DAP_ButtonProc_AmpCntrlsP14WMButtonAction">
+<span id="_CPPv324DAP_ButtonProc_AmpCntrlsP14WMButtonAction"></span><span id="_CPPv224DAP_ButtonProc_AmpCntrlsP14WMButtonAction"></span><span id="DAP_ButtonProc_AmpCntrls__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1af316ea8e1c3db516b562b08182a7b2bc"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_AmpCntrls</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DAP_ButtonProc_AmpCntrlsP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_CheckProc_AmpCntrlsP16WMCheckboxAction">
+<span id="_CPPv323DAP_CheckProc_AmpCntrlsP16WMCheckboxAction"></span><span id="_CPPv223DAP_CheckProc_AmpCntrlsP16WMCheckboxAction"></span><span id="DAP_CheckProc_AmpCntrls__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a1261f9225c4da2e6c2fe01b032fa8813"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_AmpCntrls</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_CheckProc_AmpCntrlsP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_CheckProc_MDEnableP16WMCheckboxAction">
+<span id="_CPPv322DAP_CheckProc_MDEnableP16WMCheckboxAction"></span><span id="_CPPv222DAP_CheckProc_MDEnableP16WMCheckboxAction"></span><span id="DAP_CheckProc_MDEnable__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aa0efd6735a093172383f7de42f517292"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_MDEnable</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_CheckProc_MDEnableP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Check box procedure for multiple device (MD) support. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_SwitchSingleMultiMode6string8variable">
+<span id="_CPPv325DAP_SwitchSingleMultiMode6string8variable"></span><span id="_CPPv225DAP_SwitchSingleMultiMode6string8variable"></span><span id="DAP_SwitchSingleMultiMode__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ab8e7282188543b7b352e1ab56580a1a5"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SwitchSingleMultiMode</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">stateChange</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_SwitchSingleMultiMode6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Enable/Disable the related controls for single and multi device DAQ. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stateChange</span></code>: [optional, defaults to false] multi device support has been changed from being enabled/disabled or vice versa. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_CheckProc_InsertTPP16WMCheckBoxAction">
+<span id="_CPPv322DAP_CheckProc_InsertTPP16WMCheckBoxAction"></span><span id="_CPPv222DAP_CheckProc_InsertTPP16WMCheckBoxAction"></span><span id="DAP_CheckProc_InsertTP__WMCheckBoxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a313e7eb9d0d63ba705a8336c373cdde1"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_InsertTP</span></code><span class="sig-paren">(</span><span class="pre">WMCheckBoxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_CheckProc_InsertTPP16WMCheckBoxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Controls TP Insertion into set sweeps before the sweep begins. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_UpdateOnsetDelay6string">
+<span id="_CPPv320DAP_UpdateOnsetDelay6string"></span><span id="_CPPv220DAP_UpdateOnsetDelay6string"></span><span id="DAP_UpdateOnsetDelay__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a84b2ae8609aebd2b634960f93b217071"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateOnsetDelay</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_UpdateOnsetDelay6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Update the onset delay due to the <code class="docutils literal notranslate"><span class="pre">Insert</span> <span class="pre">TP</span></code> setting. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_SetVarProc_TestPulseSettP19WMSetVariableAction">
+<span id="_CPPv328DAP_SetVarProc_TestPulseSettP19WMSetVariableAction"></span><span id="_CPPv228DAP_SetVarProc_TestPulseSettP19WMSetVariableAction"></span><span id="DAP_SetVarProc_TestPulseSett__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aec969c1ec63a73d65e6eee4cb222e56c"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVarProc_TestPulseSett</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_SetVarProc_TestPulseSettP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_UnlockAllDevicesv">
+<span id="_CPPv320DAP_UnlockAllDevicesv"></span><span id="_CPPv220DAP_UnlockAllDevicesv"></span><span id="DAP_UnlockAllDevices"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a699ae0f0de19d8a1c676e02114b8960e"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UnlockAllDevices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_UnlockAllDevicesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_CheckProc_RepeatedAcqP16WMCheckboxAction">
+<span id="_CPPv325DAP_CheckProc_RepeatedAcqP16WMCheckboxAction"></span><span id="_CPPv225DAP_CheckProc_RepeatedAcqP16WMCheckboxAction"></span><span id="DAP_CheckProc_RepeatedAcq__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a22fea97293a0976cc96ad573fdfcba01"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_RepeatedAcq</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_CheckProc_RepeatedAcqP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_ToggleCheckBoxes6string6string6string8variable">
+<span id="_CPPv320DAP_ToggleCheckBoxes6string6string6string8variable"></span><span id="_CPPv220DAP_ToggleCheckBoxes6string6string6string8variable"></span><span id="DAP_ToggleCheckBoxes__string.string.string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a9e4bac40e99cd1eea441072ebf6dd9a9"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ToggleCheckBoxes</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">win</span></em>, <span class="pre">string</span> <em><span class="pre">ctrl</span></em>, <span class="pre">string</span> <em><span class="pre">list</span></em>, <span class="pre">variable</span> <em><span class="pre">checked</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_ToggleCheckBoxes6string6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Allows two checkboxes to be treated as a group where only one can be checked at a time. </p>
+<p>Write into the GUI state wave as well </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_CheckProc_SyncCtrlP16WMCheckboxAction">
+<span id="_CPPv322DAP_CheckProc_SyncCtrlP16WMCheckboxAction"></span><span id="_CPPv222DAP_CheckProc_SyncCtrlP16WMCheckboxAction"></span><span id="DAP_CheckProc_SyncCtrl__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a500945ab7d7234edc324ec9aedb8db68"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_SyncCtrl</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_CheckProc_SyncCtrlP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_SetVarProc_SyncCtrlP19WMSetVariableAction">
+<span id="_CPPv323DAP_SetVarProc_SyncCtrlP19WMSetVariableAction"></span><span id="_CPPv223DAP_SetVarProc_SyncCtrlP19WMSetVariableAction"></span><span id="DAP_SetVarProc_SyncCtrl__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aa62e20cce23c8fb502fd65ed48e6cce1"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVarProc_SyncCtrl</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_SetVarProc_SyncCtrlP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_ButtonProc_TPDAQP14WMButtonAction">
+<span id="_CPPv320DAP_ButtonProc_TPDAQP14WMButtonAction"></span><span id="_CPPv220DAP_ButtonProc_TPDAQP14WMButtonAction"></span><span id="DAP_ButtonProc_TPDAQ__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ab999e1fca90d5d14ef5e0cc74dcdbe6f"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_TPDAQ</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_ButtonProc_TPDAQP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419DAP_GetCommentPanel6string">
+<span id="_CPPv319DAP_GetCommentPanel6string"></span><span id="_CPPv219DAP_GetCommentPanel6string"></span><span id="DAP_GetCommentPanel__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ae17efb70112e271361d2c5fc1b8b46e5"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GetCommentPanel</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DAP_GetCommentPanel6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the comment panel name. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_GetCommentNotebook6string">
+<span id="_CPPv322DAP_GetCommentNotebook6string"></span><span id="_CPPv222DAP_GetCommentNotebook6string"></span><span id="DAP_GetCommentNotebook__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a63f603862ac310ead857528d95d070bf"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GetCommentNotebook</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_GetCommentNotebook6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the full window path to the comment notebook. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_OpenCommentPanel6string">
+<span id="_CPPv320DAP_OpenCommentPanel6string"></span><span id="_CPPv220DAP_OpenCommentPanel6string"></span><span id="DAP_OpenCommentPanel__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a5d3232558626d9fde214353e7da29eec"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_OpenCommentPanel</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_OpenCommentPanel6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create the comment panel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_ButtonProc_OpenCommentNBP14WMButtonAction">
+<span id="_CPPv328DAP_ButtonProc_OpenCommentNBP14WMButtonAction"></span><span id="_CPPv228DAP_ButtonProc_OpenCommentNBP14WMButtonAction"></span><span id="DAP_ButtonProc_OpenCommentNB__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a8bd1fb12bb63a5f0cef3a989dd77a199"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_OpenCommentNB</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_ButtonProc_OpenCommentNBP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_FormatCommentString6string6string8variable">
+<span id="_CPPv323DAP_FormatCommentString6string6string8variable"></span><span id="_CPPv223DAP_FormatCommentString6string6string8variable"></span><span id="DAP_FormatCommentString__string.string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1abfadab7ec46e0e59d9cb7d50c5c6c1e9"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_FormatCommentString</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">string</span> <em><span class="pre">comment</span></em>, <span class="pre">variable</span> <em><span class="pre">sweepNo</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_FormatCommentString6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418DAP_AddUserComment6string">
+<span id="_CPPv318DAP_AddUserComment6string"></span><span id="_CPPv218DAP_AddUserComment6string"></span><span id="DAP_AddUserComment__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ab00428bf42cb3beff38397bf5a098126"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_AddUserComment</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DAP_AddUserComment6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add the current user comment of the previous sweep to the comment notebook and to the labnotebook. </p>
+<p>The <code class="docutils literal notranslate"><span class="pre">SetVariable</span></code> for the user comment is also cleared </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_LockCommentNotebook6string">
+<span id="_CPPv323DAP_LockCommentNotebook6string"></span><span id="_CPPv223DAP_LockCommentNotebook6string"></span><span id="DAP_LockCommentNotebook__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a3660e1854ea77c4488d474f6cf861f60"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_LockCommentNotebook</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_LockCommentNotebook6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Make the comment notebook read-only. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_UnlockCommentNotebook6string">
+<span id="_CPPv325DAP_UnlockCommentNotebook6string"></span><span id="_CPPv225DAP_UnlockCommentNotebook6string"></span><span id="DAP_UnlockCommentNotebook__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a583d4593c6a98000b1df53f5f41309cd"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UnlockCommentNotebook</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_UnlockCommentNotebook6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Make the comment notebook writeable. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424DAP_ClearCommentNotebook6string">
+<span id="_CPPv324DAP_ClearCommentNotebook6string"></span><span id="_CPPv224DAP_ClearCommentNotebook6string"></span><span id="DAP_ClearCommentNotebook__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a962a14fd70b1421aa6819b5df5d882ec"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ClearCommentNotebook</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DAP_ClearCommentNotebook6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Clear the comment notebook’s content and the serialized string. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426DAP_SerializeAllCommentNBsv">
+<span id="_CPPv326DAP_SerializeAllCommentNBsv"></span><span id="_CPPv226DAP_SerializeAllCommentNBsv"></span><span id="DAP_SerializeAllCommentNBs"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a717259fc76e7b072717d1c2b46a0bff3"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SerializeAllCommentNBs</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DAP_SerializeAllCommentNBsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Serialize all comment notebooks. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_SerializeCommentNotebook6string">
+<span id="_CPPv328DAP_SerializeCommentNotebook6string"></span><span id="_CPPv228DAP_SerializeCommentNotebook6string"></span><span id="DAP_SerializeCommentNotebook__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1afe10282119b13ec8152ac93c25ce3d8f"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SerializeCommentNotebook</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_SerializeCommentNotebook6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Copy the contents of the comment notebook to the user comment string. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_CommentPanelHookP15WMWinHookStruct">
+<span id="_CPPv320DAP_CommentPanelHookP15WMWinHookStruct"></span><span id="_CPPv220DAP_CommentPanelHookP15WMWinHookStruct"></span><span id="DAP_CommentPanelHook__WMWinHookStructP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ad9fdb2d6952528e82aff719e02fba844"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CommentPanelHook</span></code><span class="sig-paren">(</span><span class="pre">WMWinHookStruct</span> <span class="pre">*</span><em><span class="pre">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_CommentPanelHookP15WMWinHookStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_SetVarProc_TPAmpP19WMSetVariableAction">
+<span id="_CPPv320DAP_SetVarProc_TPAmpP19WMSetVariableAction"></span><span id="_CPPv220DAP_SetVarProc_TPAmpP19WMSetVariableAction"></span><span id="DAP_SetVarProc_TPAmp__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a35b1e92b2503c450db39874525285c2b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVarProc_TPAmp</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_SetVarProc_TPAmpP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_CreateDAEphysPanelv">
+<span id="_CPPv322DAP_CreateDAEphysPanelv"></span><span id="_CPPv222DAP_CreateDAEphysPanelv"></span><span id="DAP_CreateDAEphysPanel"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aa41a427ad050ba65c71d195bcc21bcce"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_CreateDAEphysPanel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_CreateDAEphysPanelv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Create a new DA_Ephys panel. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>panel name </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_CheckProc_LockedLogicP16WMCheckboxAction">
+<span id="_CPPv325DAP_CheckProc_LockedLogicP16WMCheckboxAction"></span><span id="_CPPv225DAP_CheckProc_LockedLogicP16WMCheckboxAction"></span><span id="DAP_CheckProc_LockedLogic__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ad4abf4775b9b091652231f9ae3964c40"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_LockedLogic</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_CheckProc_LockedLogicP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sets the locked indexing logic checkbox states. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421DAP_ParsePanelControl6stringP8variableP8variableP8variable">
+<span id="_CPPv321DAP_ParsePanelControl6stringP8variableP8variableP8variable"></span><span id="_CPPv221DAP_ParsePanelControl6stringP8variableP8variableP8variable"></span><span id="DAP_ParsePanelControl__string.variableP.variableP.variableP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a48c55785573442f9cf423b1e243b295e"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ParsePanelControl</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">ctrl</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">channelIndex</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">channelType</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">controlType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421DAP_ParsePanelControl6stringP8variableP8variableP8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Extracts <code class="docutils literal notranslate"><span class="pre">channelType</span></code>, <code class="docutils literal notranslate"><span class="pre">controlType</span></code> and <code class="docutils literal notranslate"><span class="pre">channelIndex</span></code> from <code class="docutils literal notranslate"><span class="pre">ctrl</span></code> </p>
+<p>Counterpart to <a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html#_m_i_e_s___mies_utilities_8ipf_1a80dd49d742170bcb1c28cbc0069e0789"><span class="std std-ref">GetPanelControl()</span></a></p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>0 if the control name could be parsed, one otherwise </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431DAP_UpdateListOfPressureDevicesv">
+<span id="_CPPv331DAP_UpdateListOfPressureDevicesv"></span><span id="_CPPv231DAP_UpdateListOfPressureDevicesv"></span><span id="DAP_UpdateListOfPressureDevices"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ab48b4d286c253c2398986d8ddceb8b1a"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateListOfPressureDevices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431DAP_UpdateListOfPressureDevicesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Update the list of available pressure devices on all locked device panels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420DAP_DeviceIsUnlocked6string">
+<span id="_CPPv320DAP_DeviceIsUnlocked6string"></span><span id="_CPPv220DAP_DeviceIsUnlocked6string"></span><span id="DAP_DeviceIsUnlocked__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a44dd1e0c360e3c7ec2fcddef10094459"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_DeviceIsUnlocked</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420DAP_DeviceIsUnlocked6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Query the device lock status. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>device lock status, 1 if unlocked, 0 if locked </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419DAP_AbortIfUnlocked6string">
+<span id="_CPPv319DAP_AbortIfUnlocked6string"></span><span id="_CPPv219DAP_AbortIfUnlocked6string"></span><span id="DAP_AbortIfUnlocked__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a586bfec2dfe77ef4ab98680d6fd15e1d"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_AbortIfUnlocked</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DAP_AbortIfUnlocked6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_CheckProc_UpdateGuiStateP16WMCheckboxAction">
+<span id="_CPPv328DAP_CheckProc_UpdateGuiStateP16WMCheckboxAction"></span><span id="_CPPv228DAP_CheckProc_UpdateGuiStateP16WMCheckboxAction"></span><span id="DAP_CheckProc_UpdateGuiState__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1afedbaafd96cb19e6ac968ffc3b654174"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_UpdateGuiState</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_CheckProc_UpdateGuiStateP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>GUI procedure which has the only purpose of storing the control state in the GUI state wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419DAP_SetVar_SetScaleP19WMSetVariableAction">
+<span id="_CPPv319DAP_SetVar_SetScaleP19WMSetVariableAction"></span><span id="_CPPv219DAP_SetVar_SetScaleP19WMSetVariableAction"></span><span id="DAP_SetVar_SetScale__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aaf7516709e70ed75490fbfb03295b824"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVar_SetScale</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DAP_SetVar_SetScaleP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_SetVar_UpdateGuiStateP19WMSetVariableAction">
+<span id="_CPPv325DAP_SetVar_UpdateGuiStateP19WMSetVariableAction"></span><span id="_CPPv225DAP_SetVar_UpdateGuiStateP19WMSetVariableAction"></span><span id="DAP_SetVar_UpdateGuiState__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a5b0bf9b888476e13b794958beba46b09"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVar_UpdateGuiState</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_SetVar_UpdateGuiStateP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_CheckProc_Settings_PUserP16WMCheckboxAction">
+<span id="_CPPv328DAP_CheckProc_Settings_PUserP16WMCheckboxAction"></span><span id="_CPPv228DAP_CheckProc_Settings_PUserP16WMCheckboxAction"></span><span id="DAP_CheckProc_Settings_PUser__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a231ff33c2e999f4d7b7d52309ef63411"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_Settings_PUser</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_CheckProc_Settings_PUserP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_ButtonProc_LockDevP14WMButtonAction">
+<span id="_CPPv322DAP_ButtonProc_LockDevP14WMButtonAction"></span><span id="_CPPv222DAP_ButtonProc_LockDevP14WMButtonAction"></span><span id="DAP_ButtonProc_LockDev__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aa2b3f33ffdbe98f8314726ac7e585466"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_LockDev</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_ButtonProc_LockDevP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426DAP_ButProc_Hrdwr_UnlckDevP14WMButtonAction">
+<span id="_CPPv326DAP_ButProc_Hrdwr_UnlckDevP14WMButtonAction"></span><span id="_CPPv226DAP_ButProc_Hrdwr_UnlckDevP14WMButtonAction"></span><span id="DAP_ButProc_Hrdwr_UnlckDev__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a4f4fa2e2ca3b57d56349f670c71ba87e"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButProc_Hrdwr_UnlckDev</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DAP_ButProc_Hrdwr_UnlckDevP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_UpdateDataFolderDisplay6string8variable">
+<span id="_CPPv327DAP_UpdateDataFolderDisplay6string8variable"></span><span id="_CPPv227DAP_UpdateDataFolderDisplay6string8variable"></span><span id="DAP_UpdateDataFolderDisplay__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a0bedb5ea6ca0f98c63eacb95bf5e60b2"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateDataFolderDisplay</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">locked</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_UpdateDataFolderDisplay6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv414DAP_LockDevice6string">
+<span id="_CPPv314DAP_LockDevice6string"></span><span id="_CPPv214DAP_LockDevice6string"></span><span id="DAP_LockDevice__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a8122ee8031ff127755ecc94240989083"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_LockDevice</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">win</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414DAP_LockDevice6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_LoadBuiltinStimsetsv">
+<span id="_CPPv323DAP_LoadBuiltinStimsetsv"></span><span id="_CPPv223DAP_LoadBuiltinStimsetsv"></span><span id="DAP_LoadBuiltinStimsets"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a1517e79cb68ff29950ed6c203660deef"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_LoadBuiltinStimsets</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_LoadBuiltinStimsetsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421DAP_ClearWaveIfExists10WaveOrNull">
+<span id="_CPPv321DAP_ClearWaveIfExists10WaveOrNull"></span><span id="_CPPv221DAP_ClearWaveIfExists10WaveOrNull"></span><span id="DAP_ClearWaveIfExists__WaveOrNull"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aec440b6889f713cc06914b10f45b95fa"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ClearWaveIfExists</span></code><span class="sig-paren">(</span><span class="pre">WaveOrNull</span> <em><span class="pre">wv</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421DAP_ClearWaveIfExists10WaveOrNull" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416DAP_UnlockDevice6string">
+<span id="_CPPv316DAP_UnlockDevice6string"></span><span id="_CPPv216DAP_UnlockDevice6string"></span><span id="DAP_UnlockDevice__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a1ac7957f00b68ac41f32c7b11583e695"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UnlockDevice</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416DAP_UnlockDevice6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429DAP_UpdateListOfLockedDevicesv">
+<span id="_CPPv329DAP_UpdateListOfLockedDevicesv"></span><span id="_CPPv229DAP_UpdateListOfLockedDevicesv"></span><span id="DAP_UpdateListOfLockedDevices"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a069121c88e25752d92199d2af0b32d2a"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateListOfLockedDevices</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DAP_UpdateListOfLockedDevicesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Update the list of locked devices. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429DAP_UpdateChanAmpAssignStorWv6string">
+<span id="_CPPv329DAP_UpdateChanAmpAssignStorWv6string"></span><span id="_CPPv229DAP_UpdateChanAmpAssignStorWv6string"></span><span id="DAP_UpdateChanAmpAssignStorWv__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a574369707567986df5ddb774144e7d88"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateChanAmpAssignStorWv</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DAP_UpdateChanAmpAssignStorWv6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_UpdateChanAmpAssignPanel6string">
+<span id="_CPPv328DAP_UpdateChanAmpAssignPanel6string"></span><span id="_CPPv228DAP_UpdateChanAmpAssignPanel6string"></span><span id="DAP_UpdateChanAmpAssignPanel__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aa898d9b4897caf667b894f781f34444f"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateChanAmpAssignPanel</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_UpdateChanAmpAssignPanel6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_SetITCDACasFollower6string6string">
+<span id="_CPPv323DAP_SetITCDACasFollower6string6string"></span><span id="_CPPv223DAP_SetITCDACasFollower6string6string"></span><span id="DAP_SetITCDACasFollower__string.string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a29ce01a55dc481d5397c7c156ea72ab5"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetITCDACasFollower</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">leadDAC</span></em>, <span class="pre">string</span> <em><span class="pre">followerDAC</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_SetITCDACasFollower6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>This function sets a ITC1600 device as a follower, ie. The internal clock is used to synchronize 2 or more PCI-1600. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421DAP_UpdateDAQControls6string8variable">
+<span id="_CPPv321DAP_UpdateDAQControls6string8variable"></span><span id="_CPPv221DAP_UpdateDAQControls6string8variable"></span><span id="DAP_UpdateDAQControls__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1af51566033b92fb49af6deebe8eb9c0d1"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_UpdateDAQControls</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">updateFlag</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421DAP_UpdateDAQControls6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Helper function to update all DAQ related controls after something changed. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">updateFlag</span></code>: One of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1UpdateControlsFlags"><span class="std std-ref">UpdateControlsFlags</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421DAP_AllChanDASettings6string8variable8variable">
+<span id="_CPPv321DAP_AllChanDASettings6string8variable8variable"></span><span id="_CPPv221DAP_AllChanDASettings6string8variable8variable"></span><span id="DAP_AllChanDASettings__string.variable.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ac9c39f2062a206ee710817a7427f83c7"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_AllChanDASettings</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">variable</span> <em><span class="pre">delayed</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421DAP_AllChanDASettings6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Applies user settings for the clamp mode stimulus sets (DA Set and Indexing End Set) on mode switch. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headStage</span></code>: MIES headstage number, must be in the range [0, NUM_HEADSTAGES] </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delayed</span></code>: [optional, defaults to false] On a delayed clamp mode change the stimulus set is not set. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424DAP_ButtonProc_skipSweepP14WMButtonAction">
+<span id="_CPPv324DAP_ButtonProc_skipSweepP14WMButtonAction"></span><span id="_CPPv224DAP_ButtonProc_skipSweepP14WMButtonAction"></span><span id="DAP_ButtonProc_skipSweep__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a9cf3495ed1446f8984457db37922a97b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_skipSweep</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DAP_ButtonProc_skipSweepP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423DAP_ButtonProc_skipBackP14WMButtonAction">
+<span id="_CPPv323DAP_ButtonProc_skipBackP14WMButtonAction"></span><span id="_CPPv223DAP_ButtonProc_skipBackP14WMButtonAction"></span><span id="DAP_ButtonProc_skipBack__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a76560c1eb9a139e22352630cd2b95fc5"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ButtonProc_skipBack</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423DAP_ButtonProc_skipBackP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416DAP_GetskipAhead6string">
+<span id="_CPPv316DAP_GetskipAhead6string"></span><span id="_CPPv216DAP_GetskipAhead6string"></span><span id="DAP_GetskipAhead__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a7b883ac7841ae4fd801a5c823c704854"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_GetskipAhead</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416DAP_GetskipAhead6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418DAP_ResetskipAhead6string">
+<span id="_CPPv318DAP_ResetskipAhead6string"></span><span id="_CPPv218DAP_ResetskipAhead6string"></span><span id="DAP_ResetskipAhead__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a7cd96bf0a5f3d6bd0744507d4cb49647"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ResetskipAhead</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DAP_ResetskipAhead6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424DAP_getFilteredSkipAhead6string8variable">
+<span id="_CPPv324DAP_getFilteredSkipAhead6string8variable"></span><span id="_CPPv224DAP_getFilteredSkipAhead6string8variable"></span><span id="DAP_getFilteredSkipAhead__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a0ce33c117c8e3f1b7d3b8a4d13ec39ba"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_getFilteredSkipAhead</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">skipAhead</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DAP_getFilteredSkipAhead6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421DAP_setSkipAheadLimit6string8variable">
+<span id="_CPPv321DAP_setSkipAheadLimit6string8variable"></span><span id="_CPPv221DAP_setSkipAheadLimit6string8variable"></span><span id="DAP_setSkipAheadLimit__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1afe62a1304c0d780407a2fe5fefdde9e5"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_setSkipAheadLimit</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">filteredSkipAhead</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421DAP_setSkipAheadLimit6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424DAP_SetVarProc_skipAheadP19WMSetVariableAction">
+<span id="_CPPv324DAP_SetVarProc_skipAheadP19WMSetVariableAction"></span><span id="_CPPv224DAP_SetVarProc_skipAheadP19WMSetVariableAction"></span><span id="DAP_SetVarProc_skipAhead__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a4fdea68c5bdf6a18cda2028f079e02b3"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_SetVarProc_skipAhead</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DAP_SetVarProc_skipAheadP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422DAP_CheckProc_RandomRAP16WMCheckboxAction">
+<span id="_CPPv322DAP_CheckProc_RandomRAP16WMCheckboxAction"></span><span id="_CPPv222DAP_CheckProc_RandomRAP16WMCheckboxAction"></span><span id="DAP_CheckProc_RandomRA__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ac1578f8cbe7d7e3164a92674b28d4462"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_RandomRA</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422DAP_CheckProc_RandomRAP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418DAP_CheckSkipAhead6string">
+<span id="_CPPv318DAP_CheckSkipAhead6string"></span><span id="_CPPv218DAP_CheckSkipAhead6string"></span><span id="DAP_CheckSkipAhead__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a16a525d2e3b7b0e5bf4852838feaa8be"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckSkipAhead</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418DAP_CheckSkipAhead6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429DAP_GetHighestActiveHeadstage6string8variable">
+<span id="_CPPv329DAP_GetHighestActiveHeadstage6string8variable"></span><span id="_CPPv229DAP_GetHighestActiveHeadstage6string8variable"></span><span id="DAP_GetHighestActiveHeadstage__string.variable"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aa821869c243aab5bfe09fd44bc32e6b9"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_GetHighestActiveHeadstage</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429DAP_GetHighestActiveHeadstage6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the highest active headstage (zero-based and therefore in the range [0, 7]) </p>
+<p><p>Return </p>
+<code class="docutils literal notranslate"><span class="pre">NaN</span></code> if no headstage is active at all. <dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">clampMode</span></code>: [optional, defaults to all clamp modes] Restrict to the given clamp mode</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430DAP_PopMenuProc_UpdateGuiStateP13WMPopupAction">
+<span id="_CPPv330DAP_PopMenuProc_UpdateGuiStateP13WMPopupAction"></span><span id="_CPPv230DAP_PopMenuProc_UpdateGuiStateP13WMPopupAction"></span><span id="DAP_PopMenuProc_UpdateGuiState__WMPopupActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ab1b767e05222634a514096217cd7fe4b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_PopMenuProc_UpdateGuiState</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430DAP_PopMenuProc_UpdateGuiStateP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425DAP_GetSamplingMultiplierv">
+<span id="_CPPv325DAP_GetSamplingMultiplierv"></span><span id="_CPPv225DAP_GetSamplingMultiplierv"></span><span id="DAP_GetSamplingMultiplier"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aaea9dc56b7263ee0bc5d8e33aeb32c7d"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GetSamplingMultiplier</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425DAP_GetSamplingMultiplierv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the list of available sampling multipliers. </p>
+<p>Has no <code class="docutils literal notranslate"><span class="pre">NONE</span></code> element as <code class="docutils literal notranslate"><span class="pre">1</span></code> means no multiplier. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424DAP_PopMenuProc_SampMultP13WMPopupAction">
+<span id="_CPPv324DAP_PopMenuProc_SampMultP13WMPopupAction"></span><span id="_CPPv224DAP_PopMenuProc_SampMultP13WMPopupAction"></span><span id="DAP_PopMenuProc_SampMult__WMPopupActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a98bba0bdfb107eddbefaa47688cd1187"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_PopMenuProc_SampMult</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424DAP_PopMenuProc_SampMultP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426DAP_GetSamplingFrequenciesv">
+<span id="_CPPv326DAP_GetSamplingFrequenciesv"></span><span id="_CPPv226DAP_GetSamplingFrequenciesv"></span><span id="DAP_GetSamplingFrequencies"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a42c5650c5844dc8e431dbb639b0d4010"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GetSamplingFrequencies</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426DAP_GetSamplingFrequenciesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the list of available fixed sampling frequencies. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428DAP_PopMenuProc_FixedSampIntP13WMPopupAction">
+<span id="_CPPv328DAP_PopMenuProc_FixedSampIntP13WMPopupAction"></span><span id="_CPPv228DAP_PopMenuProc_FixedSampIntP13WMPopupAction"></span><span id="DAP_PopMenuProc_FixedSampInt__WMPopupActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1aca41a3468c7b01a690253204531453e4"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_PopMenuProc_FixedSampInt</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428DAP_PopMenuProc_FixedSampIntP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419DAP_GetOsciUpdModesv">
+<span id="_CPPv319DAP_GetOsciUpdModesv"></span><span id="_CPPv219DAP_GetOsciUpdModesv"></span><span id="DAP_GetOsciUpdModes"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a9653faa4b083340f6aa5b2999c72d953"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">DAP_GetOsciUpdModes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419DAP_GetOsciUpdModesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the list of available Oscilloscope Update Modes. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_PopMenuProc_OsciUpdModeP13WMPopupAction">
+<span id="_CPPv327DAP_PopMenuProc_OsciUpdModeP13WMPopupAction"></span><span id="_CPPv227DAP_PopMenuProc_OsciUpdModeP13WMPopupAction"></span><span id="DAP_PopMenuProc_OsciUpdMode__WMPopupActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a127ac38892a0dfffd31866f96a539d40"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_PopMenuProc_OsciUpdMode</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_PopMenuProc_OsciUpdModeP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431DAP_ApplyDelayedClampModeChange6string">
+<span id="_CPPv331DAP_ApplyDelayedClampModeChange6string"></span><span id="_CPPv231DAP_ApplyDelayedClampModeChange6string"></span><span id="DAP_ApplyDelayedClampModeChange__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1abc6f60178881b6c1eb24751a4dd1e370"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ApplyDelayedClampModeChange</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431DAP_ApplyDelayedClampModeChange6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431DAP_ClearDelayedClampModeChange6string">
+<span id="_CPPv331DAP_ClearDelayedClampModeChange6string"></span><span id="_CPPv231DAP_ClearDelayedClampModeChange6string"></span><span id="DAP_ClearDelayedClampModeChange__string"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ad72c3344bca054e9007fd84541ecca19"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_ClearDelayedClampModeChange</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431DAP_ClearDelayedClampModeChange6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426ButtonProc_Hardware_rescanP14WMButtonAction">
+<span id="_CPPv326ButtonProc_Hardware_rescanP14WMButtonAction"></span><span id="_CPPv226ButtonProc_Hardware_rescanP14WMButtonAction"></span><span id="ButtonProc_Hardware_rescan__WMButtonActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a64592b7bf385864be9bddf2d3425e79b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">ButtonProc_Hardware_rescan</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426ButtonProc_Hardware_rescanP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427DAP_CheckProc_PowerSpectrumP16WMCheckboxAction">
+<span id="_CPPv327DAP_CheckProc_PowerSpectrumP16WMCheckboxAction"></span><span id="_CPPv227DAP_CheckProc_PowerSpectrumP16WMCheckboxAction"></span><span id="DAP_CheckProc_PowerSpectrum__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a3fce16e5b32f2bd046d95ac415dc849f"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">DAP_CheckProc_PowerSpectrum</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427DAP_CheckProc_PowerSpectrumP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Variables</p>
+<dl class="cpp var">
+<dt id="_CPPv417DATA_ACQU_TAB_NUM">
+<span id="_CPPv317DATA_ACQU_TAB_NUM"></span><span id="_CPPv217DATA_ACQU_TAB_NUM"></span><span id="DATA_ACQU_TAB_NUM__doubleC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a653d559f4ee091850858af57d00483f4"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">DATA_ACQU_TAB_NUM</span></code> <span class="pre">=</span> <span class="pre">0</span><a class="headerlink" href="#_CPPv417DATA_ACQU_TAB_NUM" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv416HARDWARE_TAB_NUM">
+<span id="_CPPv316HARDWARE_TAB_NUM"></span><span id="_CPPv216HARDWARE_TAB_NUM"></span><span id="HARDWARE_TAB_NUM__doubleC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a729e5db43ed0ec16325c92aecae96b8e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">HARDWARE_TAB_NUM</span></code> <span class="pre">=</span> <span class="pre">6</span><a class="headerlink" href="#_CPPv416HARDWARE_TAB_NUM" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv421YOKE_LIST_OF_CONTROLS">
+<span id="_CPPv321YOKE_LIST_OF_CONTROLS"></span><span id="_CPPv221YOKE_LIST_OF_CONTROLS"></span><span id="YOKE_LIST_OF_CONTROLS__stringC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ab10f5901ffb18d2a52fd150d9ed346d2"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">YOKE_LIST_OF_CONTROLS</span></code> <span class="pre">=</span> <span class="pre">&quot;button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke&quot;</span><a class="headerlink" href="#_CPPv421YOKE_LIST_OF_CONTROLS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv421YOKE_CONTROLS_DISABLE">
+<span id="_CPPv321YOKE_CONTROLS_DISABLE"></span><span id="_CPPv221YOKE_CONTROLS_DISABLE"></span><span id="YOKE_CONTROLS_DISABLE__stringC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a1520ffa2a42f737dfbb1abe329ba9786"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">YOKE_CONTROLS_DISABLE</span></code> <span class="pre">=</span> <span class="pre">&quot;StartTestPulseButton;DataAcquireButton;Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward&quot;</span><a class="headerlink" href="#_CPPv421YOKE_CONTROLS_DISABLE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv430YOKE_CONTROLS_DISABLE_AND_LINK">
+<span id="_CPPv330YOKE_CONTROLS_DISABLE_AND_LINK"></span><span id="_CPPv230YOKE_CONTROLS_DISABLE_AND_LINK"></span><span id="YOKE_CONTROLS_DISABLE_AND_LINK__stringC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a94124bba33e8f4e9f0611a3c97e7945d"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">YOKE_CONTROLS_DISABLE_AND_LINK</span></code> <span class="pre">=</span> <span class="pre">&quot;Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI;Setvar_DataAcq_dDAQOptOvPre;Setvar_DataAcq_dDAQOptOvPost;Check_DataAcq1_dDAQOptOv;setvar_DataAcq_dDAQOptOvRes&quot;</span><a class="headerlink" href="#_CPPv430YOKE_CONTROLS_DISABLE_AND_LINK" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Synced with <code class="docutils literal notranslate"><span class="pre">desc</span></code> in <a class="reference internal" href="#_m_i_e_s___d_a_ephys_8ipf_1ac80e626ff61562efa59785ae93910fdb"><span class="std std-ref">DAP_CheckSettingsAcrossYoked()</span></a> </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv48FOLLOWER">
+<span id="_CPPv38FOLLOWER"></span><span id="_CPPv28FOLLOWER"></span><span id="FOLLOWER__stringC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a626d8a7628449eedaeefd346bb93e31e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">FOLLOWER</span></code> <span class="pre">=</span> <span class="pre">&quot;Follower&quot;</span><a class="headerlink" href="#_CPPv48FOLLOWER" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv46LEADER">
+<span id="_CPPv36LEADER"></span><span id="_CPPv26LEADER"></span><span id="LEADER__stringC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a4adad611022dcd446f0ef531b9bafcd4"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">LEADER</span></code> <span class="pre">=</span> <span class="pre">&quot;Leader&quot;</span><a class="headerlink" href="#_CPPv46LEADER" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv413COMMENT_PANEL">
+<span id="_CPPv313COMMENT_PANEL"></span><span id="_CPPv213COMMENT_PANEL"></span><span id="COMMENT_PANEL__stringC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a6ee5b50282e1ce9b8707e42392b5e7e7"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">COMMENT_PANEL</span></code> <span class="pre">=</span> <span class="pre">&quot;UserComments&quot;</span><a class="headerlink" href="#_CPPv413COMMENT_PANEL" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv422COMMENT_PANEL_NOTEBOOK">
+<span id="_CPPv322COMMENT_PANEL_NOTEBOOK"></span><span id="_CPPv222COMMENT_PANEL_NOTEBOOK"></span><span id="COMMENT_PANEL_NOTEBOOK__stringC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a89a353c1fad1d95ec73ca2ea307336ea"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">COMMENT_PANEL_NOTEBOOK</span></code> <span class="pre">=</span> <span class="pre">&quot;NB&quot;</span><a class="headerlink" href="#_CPPv422COMMENT_PANEL_NOTEBOOK" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv420AMPLIFIER_DEF_FORMAT">
+<span id="_CPPv320AMPLIFIER_DEF_FORMAT"></span><span id="_CPPv220AMPLIFIER_DEF_FORMAT"></span><span id="AMPLIFIER_DEF_FORMAT__stringC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1ad25fedf867073150dba5740d772b86e9"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">AMPLIFIER_DEF_FORMAT</span></code> <span class="pre">=</span> <span class="pre">&quot;AmpNo</span> <span class="pre">%d</span> <span class="pre">Chan</span> <span class="pre">%d&quot;</span><a class="headerlink" href="#_CPPv420AMPLIFIER_DEF_FORMAT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv429GUI_CONTROLSAVESTATE_DISABLED">
+<span id="_CPPv329GUI_CONTROLSAVESTATE_DISABLED"></span><span id="_CPPv229GUI_CONTROLSAVESTATE_DISABLED"></span><span id="GUI_CONTROLSAVESTATE_DISABLED__stringC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a63dda65b1422fa2127b45ad65a91533a"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">GUI_CONTROLSAVESTATE_DISABLED</span></code> <span class="pre">=</span> <span class="pre">&quot;oldDisabledState&quot;</span><a class="headerlink" href="#_CPPv429GUI_CONTROLSAVESTATE_DISABLED" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv415NI_DAC_PATTERNS">
+<span id="_CPPv315NI_DAC_PATTERNS"></span><span id="_CPPv215NI_DAC_PATTERNS"></span><span id="NI_DAC_PATTERNS__stringC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a25af8b69adf5c81a1920c5f5ca5e114e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">NI_DAC_PATTERNS</span></code> <span class="pre">=</span> <span class="pre">&quot;AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8&quot;</span><a class="headerlink" href="#_CPPv415NI_DAC_PATTERNS" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv429DAP_WAITFORTPANALYSIS_TIMEOUT">
+<span id="_CPPv329DAP_WAITFORTPANALYSIS_TIMEOUT"></span><span id="_CPPv229DAP_WAITFORTPANALYSIS_TIMEOUT"></span><span id="DAP_WAITFORTPANALYSIS_TIMEOUT__doubleC"></span><span class="target" id="_m_i_e_s___d_a_ephys_8ipf_1a0b837019fc0fc67002f0ca01d17ee10c"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">DAP_WAITFORTPANALYSIS_TIMEOUT</span></code> <span class="pre">=</span> <span class="pre">2</span><a class="headerlink" href="#_CPPv429DAP_WAITFORTPANALYSIS_TIMEOUT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_8ipf.html">File CompilationTester.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_utils_8ipf.html">File CompilationTesterUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___lab_notebook_t_p_storage_browser_8ipf.html">File MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html">File MIES_MiesUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___regenerate-_screenshots_8ipf.html">File MIES_Regenerate-Screenshots.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities_8ipf.html">File MIES_Utilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_8h.html">File interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="_m_i_e_s___d_a_c-_hardware_8ipf.html"
+                        title="previous chapter">File MIES_DAC-Hardware.ipf</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html"
+                        title="next chapter">File MIES_DAEphys_GuiState.ipf</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html" title="File MIES_DAEphys_GuiState.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___d_a_c-_hardware_8ipf.html" title="File MIES_DAC-Hardware.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_DAEphys.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

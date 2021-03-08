@@ -1,0 +1,812 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File MIES_WaveBuilderPanel.ipf &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_WaveDataFolderGetters.ipf" href="_m_i_e_s___wave_data_folder_getters_8ipf.html" />
+    <link rel="prev" title="File MIES_WaveBuilder_Macro.ipf" href="_m_i_e_s___wave_builder___macro_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___wave_data_folder_getters_8ipf.html" title="File MIES_WaveDataFolderGetters.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___wave_builder___macro_8ipf.html" title="File MIES_WaveBuilder_Macro.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_WaveBuilderPanel.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="file-mies-wavebuilderpanel-ipf">
+<span id="id1"></span><h1>File MIES_WaveBuilderPanel.ipf<a class="headerlink" href="#file-mies-wavebuilderpanel-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>WBP</strong> Panel for creating stimulus sets </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Parameters for WBP_TranslateControlContents()</p>
+<dl class="cpp var">
+<dt id="_CPPv418FROM_PANEL_TO_WAVE">
+<span id="_CPPv318FROM_PANEL_TO_WAVE"></span><span id="_CPPv218FROM_PANEL_TO_WAVE"></span><span id="FROM_PANEL_TO_WAVE__doubleC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a470237a3fbe313488cb1efb7d68d4606"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">FROM_PANEL_TO_WAVE</span></code> <span class="pre">=</span> <span class="pre">0x1</span><a class="headerlink" href="#_CPPv418FROM_PANEL_TO_WAVE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv418FROM_WAVE_TO_PANEL">
+<span id="_CPPv318FROM_WAVE_TO_PANEL"></span><span id="_CPPv218FROM_WAVE_TO_PANEL"></span><span id="FROM_WAVE_TO_PANEL__doubleC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a98a824eda4170cec18e9d655f34c2d35"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">FROM_WAVE_TO_PANEL</span></code> <span class="pre">=</span> <span class="pre">0x2</span><a class="headerlink" href="#_CPPv418FROM_WAVE_TO_PANEL" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Unnamed Group</p>
+<dl class="cpp function">
+<dt id="_CPPv427WBP_GetAnalysisFunctions_V3v">
+<span id="_CPPv327WBP_GetAnalysisFunctions_V3v"></span><span id="_CPPv227WBP_GetAnalysisFunctions_V3v"></span><span id="WBP_GetAnalysisFunctions_V3"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a791e2929725ee2df753a3b7953056b70"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_GetAnalysisFunctions_V3</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427WBP_GetAnalysisFunctions_V3v" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Wrapper functions to be used in GUI recreation macros This avoids having to hardcode the parameter values. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv431WB_OpenStimulusSetInWaveBuilderv">
+<span id="_CPPv331WB_OpenStimulusSetInWaveBuilderv"></span><span id="_CPPv231WB_OpenStimulusSetInWaveBuilderv"></span><span id="WB_OpenStimulusSetInWaveBuilder"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1adf59633248beab8bcbe6bf5c9c5a7bd1"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WB_OpenStimulusSetInWaveBuilder</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431WB_OpenStimulusSetInWaveBuilderv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426WBP_CreateWaveBuilderPanelv">
+<span id="_CPPv326WBP_CreateWaveBuilderPanelv"></span><span id="_CPPv226WBP_CreateWaveBuilderPanelv"></span><span id="WBP_CreateWaveBuilderPanel"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a31135063570ff98618dc1c045244b74c"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_CreateWaveBuilderPanel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426WBP_CreateWaveBuilderPanelv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419WBP_StartupSettingsv">
+<span id="_CPPv319WBP_StartupSettingsv"></span><span id="_CPPv219WBP_StartupSettingsv"></span><span id="WBP_StartupSettings"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ad34ce6e1f2cdd802247eb8665e50d7ce"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_StartupSettings</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419WBP_StartupSettingsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420WBP_AddEpochHLTraces5dfref8variable8variable8variable">
+<span id="_CPPv320WBP_AddEpochHLTraces5dfref8variable8variable8variable"></span><span id="_CPPv220WBP_AddEpochHLTraces5dfref8variable8variable8variable"></span><span id="WBP_AddEpochHLTraces__dfref.variable.variable.variable"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ac699f2b08db8a5f353d5d4951dffe543"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_AddEpochHLTraces</span></code><span class="sig-paren">(</span><span class="pre">dfref</span> <em><span class="pre">dfr</span></em>, <span class="pre">variable</span> <em><span class="pre">epochHLType</span></em>, <span class="pre">variable</span> <em><span class="pre">epoch</span></em>, <span class="pre">variable</span> <em><span class="pre">numEpochs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420WBP_AddEpochHLTraces5dfref8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add epoch highlightning traces Uses fill-to-next on specially created waves added before and after the current trace. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421WBP_DisplaySetInPanelv">
+<span id="_CPPv321WBP_DisplaySetInPanelv"></span><span id="_CPPv221WBP_DisplaySetInPanelv"></span><span id="WBP_DisplaySetInPanel"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aedb279ad9da3d1c8cf82bf7bab855034"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_DisplaySetInPanel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421WBP_DisplaySetInPanelv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427WBP_UpdateDependentControls6string8variable">
+<span id="_CPPv327WBP_UpdateDependentControls6string8variable"></span><span id="_CPPv227WBP_UpdateDependentControls6string8variable"></span><span id="WBP_UpdateDependentControls__string.variable"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ad7719f6be6779006ef93d88ac5487525"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_UpdateDependentControls</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">checkBoxCtrl</span></em>, <span class="pre">variable</span> <em><span class="pre">checked</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427WBP_UpdateDependentControls6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Reponsible for adjusting controls which depend on other controls. </p>
+<p>Must be called before the changed settings are written into the parameter waves. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424WBP_UpdatePanelIfAllowedv">
+<span id="_CPPv324WBP_UpdatePanelIfAllowedv"></span><span id="_CPPv224WBP_UpdatePanelIfAllowedv"></span><span id="WBP_UpdatePanelIfAllowed"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a3f4292deb142befeb461a038c08882c9"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_UpdatePanelIfAllowed</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424WBP_UpdatePanelIfAllowedv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424WBP_ParameterWaveToPanel8variable">
+<span id="_CPPv324WBP_ParameterWaveToPanel8variable"></span><span id="_CPPv224WBP_ParameterWaveToPanel8variable"></span><span id="WBP_ParameterWaveToPanel__variable"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a73976175c840c61c5902898667f1af06"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ParameterWaveToPanel</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">stimulusType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424WBP_ParameterWaveToPanel8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Passes the data from the WP wave to the panel. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv414WBP_SetControl6string6string8variable6string">
+<span id="_CPPv314WBP_SetControl6string6string8variable6string"></span><span id="_CPPv214WBP_SetControl6string6string8variable6string"></span><span id="WBP_SetControl__string.string.variable.string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ae620e3e940fe52c070a26227fc788f2b"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_SetControl</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">win</span></em>, <span class="pre">string</span> <em><span class="pre">control</span></em>, <span class="pre">variable</span> <em><span class="pre">value</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">string</span> <em><span class="pre">str</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414WBP_SetControl6string6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Generic wrapper for setting a control’s value. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424WBP_ButtonProc_DeleteSetP14WMButtonAction">
+<span id="_CPPv324WBP_ButtonProc_DeleteSetP14WMButtonAction"></span><span id="_CPPv224WBP_ButtonProc_DeleteSetP14WMButtonAction"></span><span id="WBP_ButtonProc_DeleteSet__WMButtonActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a59cfbd3f1a49138c60d6e673b8b3b7a5"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ButtonProc_DeleteSet</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424WBP_ButtonProc_DeleteSetP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424WBP_ButtonProc_AutoScaleP14WMButtonAction">
+<span id="_CPPv324WBP_ButtonProc_AutoScaleP14WMButtonAction"></span><span id="_CPPv224WBP_ButtonProc_AutoScaleP14WMButtonAction"></span><span id="WBP_ButtonProc_AutoScale__WMButtonActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a065eeb3996e45f6e1ddb0f08c66ca035"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ButtonProc_AutoScale</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424WBP_ButtonProc_AutoScaleP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv413WBP_CheckProcP16WMCheckboxAction">
+<span id="_CPPv313WBP_CheckProcP16WMCheckboxAction"></span><span id="_CPPv213WBP_CheckProcP16WMCheckboxAction"></span><span id="WBP_CheckProc__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a26b3477e3ca37350f9f897c239f9b396"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_CheckProc</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413WBP_CheckProcP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418WBP_InitialTabHookP18WMTabControlAction">
+<span id="_CPPv318WBP_InitialTabHookP18WMTabControlAction"></span><span id="_CPPv218WBP_InitialTabHookP18WMTabControlAction"></span><span id="WBP_InitialTabHook__WMTabControlActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a214bd8c48ec12f29433118f182483707"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_InitialTabHook</span></code><span class="sig-paren">(</span><span class="pre">WMTabControlAction</span> <span class="pre">*</span><em><span class="pre">tca</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418WBP_InitialTabHookP18WMTabControlAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Additional <code class="docutils literal notranslate"><span class="pre">initialhook</span></code> called in <code class="docutils literal notranslate"><span class="pre">ACL_DisplayTab</span></code> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416WBP_FinalTabHookP18WMTabControlAction">
+<span id="_CPPv316WBP_FinalTabHookP18WMTabControlAction"></span><span id="_CPPv216WBP_FinalTabHookP18WMTabControlAction"></span><span id="WBP_FinalTabHook__WMTabControlActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a426fa16ae7db0a7eced0a5d8922af5a3"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_FinalTabHook</span></code><span class="sig-paren">(</span><span class="pre">WMTabControlAction</span> <span class="pre">*</span><em><span class="pre">tca</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416WBP_FinalTabHookP18WMTabControlAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Additional <code class="docutils literal notranslate"><span class="pre">finalhook</span></code> called in <code class="docutils literal notranslate"><span class="pre">ACL_DisplayTab</span></code> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422WBP_ButtonProc_SaveSetP14WMButtonAction">
+<span id="_CPPv322WBP_ButtonProc_SaveSetP14WMButtonAction"></span><span id="_CPPv222WBP_ButtonProc_SaveSetP14WMButtonAction"></span><span id="WBP_ButtonProc_SaveSet__WMButtonActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ac557bf1056a3cff093c097ab19e01cb6"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ButtonProc_SaveSet</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422WBP_ButtonProc_SaveSetP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426WBP_GetWaveTypeFromControl6string">
+<span id="_CPPv326WBP_GetWaveTypeFromControl6string"></span><span id="_CPPv226WBP_GetWaveTypeFromControl6string"></span><span id="WBP_GetWaveTypeFromControl__string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ad3e17d158e0e9e9da918c54516ad736b"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_GetWaveTypeFromControl</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">control</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426WBP_GetWaveTypeFromControl6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431WBP_ExtractRowNumberFromControl6string">
+<span id="_CPPv331WBP_ExtractRowNumberFromControl6string"></span><span id="_CPPv231WBP_ExtractRowNumberFromControl6string"></span><span id="WBP_ExtractRowNumberFromControl__string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a1656694ee0bb4cabe4eff4a96830e719"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ExtractRowNumberFromControl</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">control</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431WBP_ExtractRowNumberFromControl6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the row index into the parameter wave of the parameter represented by the named control. </p>
+<p><p>All entries are per epoch type and per epoch number except when the </p>
+<code class="docutils literal notranslate"><span class="pre">$suffix</span></code> is <code class="docutils literal notranslate"><span class="pre">ALL</span></code> which denotes that it is a setting for the full stimset. <dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">control</span></code>: name of the control, the expected format is <code class="docutils literal notranslate"><span class="pre">$str_$sep$row_$suffix</span></code> where <code class="docutils literal notranslate"><span class="pre">$str</span></code> may contain any characters but <code class="docutils literal notranslate"><span class="pre">$suffix</span></code> is not allowed to include the substring <code class="docutils literal notranslate"><span class="pre">_$sep</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424WBP_UpdateControlAndWave6string8variable6string">
+<span id="_CPPv324WBP_UpdateControlAndWave6string8variable6string"></span><span id="_CPPv224WBP_UpdateControlAndWave6string8variable6string"></span><span id="WBP_UpdateControlAndWave__string.variable.string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a9954768397ab6cffdf1c32eb362e9fd8"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_UpdateControlAndWave</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">control</span></em>, <span class="pre">variable</span> <em><span class="pre">var</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">string</span> <em><span class="pre">str</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424WBP_UpdateControlAndWave6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Update the named control and pass its new value into the parameter wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426WBP_SetVarProc_UpdateParamP19WMSetVariableAction">
+<span id="_CPPv326WBP_SetVarProc_UpdateParamP19WMSetVariableAction"></span><span id="_CPPv226WBP_SetVarProc_UpdateParamP19WMSetVariableAction"></span><span id="WBP_SetVarProc_UpdateParam__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a70bc5d95b612bd23f42a636930252fae"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_SetVarProc_UpdateParam</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426WBP_SetVarProc_UpdateParamP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422WBP_LowPassDeltaLimitsv">
+<span id="_CPPv322WBP_LowPassDeltaLimitsv"></span><span id="_CPPv222WBP_LowPassDeltaLimitsv"></span><span id="WBP_LowPassDeltaLimits"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a35ff306c1a2592c8abc0a078b5d4358e"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_LowPassDeltaLimits</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422WBP_LowPassDeltaLimitsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423WBP_HighPassDeltaLimitsv">
+<span id="_CPPv323WBP_HighPassDeltaLimitsv"></span><span id="_CPPv223WBP_HighPassDeltaLimitsv"></span><span id="WBP_HighPassDeltaLimits"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a881739c986f73b3f5a09acb50ea77f28"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_HighPassDeltaLimits</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423WBP_HighPassDeltaLimitsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418WBP_ChangeWaveTypev">
+<span id="_CPPv318WBP_ChangeWaveTypev"></span><span id="_CPPv218WBP_ChangeWaveTypev"></span><span id="WBP_ChangeWaveType"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a7668c9c54e2d3b88b1fb7151cd98fd24"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ChangeWaveType</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418WBP_ChangeWaveTypev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419WBP_GetStimulusTypev">
+<span id="_CPPv319WBP_GetStimulusTypev"></span><span id="_CPPv219WBP_GetStimulusTypev"></span><span id="WBP_GetStimulusType"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a13deb387d6f417c16e0d07c84939d28a"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_GetStimulusType</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419WBP_GetStimulusTypev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424WBP_PopMenuProc_WaveTypeP13WMPopupAction">
+<span id="_CPPv324WBP_PopMenuProc_WaveTypeP13WMPopupAction"></span><span id="_CPPv224WBP_PopMenuProc_WaveTypeP13WMPopupAction"></span><span id="WBP_PopMenuProc_WaveType__WMPopupActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ad09576fac80f3ee1e548b938ffc2d8c4"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_PopMenuProc_WaveType</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424WBP_PopMenuProc_WaveTypeP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418WBP_GetListOfWavesv">
+<span id="_CPPv318WBP_GetListOfWavesv"></span><span id="_CPPv218WBP_GetListOfWavesv"></span><span id="WBP_GetListOfWaves"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1abd518c46dfb8148da5d878b52259c4b6"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_GetListOfWaves</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418WBP_GetListOfWavesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430WBP_SetVarProc_SetSearchStringP19WMSetVariableAction">
+<span id="_CPPv330WBP_SetVarProc_SetSearchStringP19WMSetVariableAction"></span><span id="_CPPv230WBP_SetVarProc_SetSearchStringP19WMSetVariableAction"></span><span id="WBP_SetVarProc_SetSearchString__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ac1f63a6835b54eccddd3bef2af7fe1ef"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_SetVarProc_SetSearchString</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430WBP_SetVarProc_SetSearchStringP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426WBP_PopMenuProc_WaveToLoadP13WMPopupAction">
+<span id="_CPPv326WBP_PopMenuProc_WaveToLoadP13WMPopupAction"></span><span id="_CPPv226WBP_PopMenuProc_WaveToLoadP13WMPopupAction"></span><span id="WBP_PopMenuProc_WaveToLoad__WMPopupActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a7b14cb2ed516855d9c3af4bce89cb05e"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_PopMenuProc_WaveToLoad</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426WBP_PopMenuProc_WaveToLoadP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419WBP_AssembleSetName6string">
+<span id="_CPPv319WBP_AssembleSetName6string"></span><span id="_CPPv219WBP_AssembleSetName6string"></span><span id="WBP_AssembleSetName__string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a83d1e76dcede171b4835a4198ea9148b"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_AssembleSetName</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">modName</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419WBP_AssembleSetName6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>This function creates a string that is used to name the 2d output wave of the wavebuilder panel. </p>
+<p>The naming is based on userinput to the wavebuilder panel </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416WBP_SplitSetName6stringP6stringP8variableP8variable">
+<span id="_CPPv316WBP_SplitSetName6stringP6stringP8variableP8variable"></span><span id="_CPPv216WBP_SplitSetName6stringP6stringP8variableP8variable"></span><span id="WBP_SplitSetName__string.stringP.variableP.variableP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a649fa4773e89cec3a68e96fb7c6c8dbb"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_SplitSetName</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">setName</span></em>, <span class="pre">string</span> <span class="pre">*</span><em><span class="pre">setPrefix</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">channelType</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">setNumber</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416WBP_SplitSetName6stringP6stringP8variableP8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Split the full setname into its three parts: prefix, outputType and set number. </p>
+<p>Counterpart to <a class="reference internal" href="#_m_i_e_s___wave_builder_panel_8ipf_1a83d1e76dcede171b4835a4198ea9148b"><span class="std std-ref">WBP_AssembleSetName()</span></a> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417WBP_GetOutputTypev">
+<span id="_CPPv317WBP_GetOutputTypev"></span><span id="_CPPv217WBP_GetOutputTypev"></span><span id="WBP_GetOutputType"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aaee48b3f58b2dadee13269d23e874548"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_GetOutputType</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417WBP_GetOutputTypev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the output type, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a5db043eb0dfdd52975062b570af45bc2"><span class="std std-ref">CHANNEL_TYPE_DAC</span></a> or <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a37f4a3363e51e8c9855374bea385c2ff"><span class="std std-ref">CHANNEL_TYPE_TTL</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423WBP_ReturnListSavedSetsv">
+<span id="_CPPv323WBP_ReturnListSavedSetsv"></span><span id="_CPPv223WBP_ReturnListSavedSetsv"></span><span id="WBP_ReturnListSavedSets"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a54d9d44e12164c3c74390a404606a213"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_ReturnListSavedSets</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423WBP_ReturnListSavedSetsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420WBP_IsBuiltinStimset6string">
+<span id="_CPPv320WBP_IsBuiltinStimset6string"></span><span id="_CPPv220WBP_IsBuiltinStimset6string"></span><span id="WBP_IsBuiltinStimset__string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ad411a3175b6af1183a576b29cf73ff24"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_IsBuiltinStimset</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">setName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420WBP_IsBuiltinStimset6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return true if the given stimset is a builtin, false otherwise. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416WBP_SaveSetParam6string">
+<span id="_CPPv316WBP_SaveSetParam6string"></span><span id="_CPPv216WBP_SaveSetParam6string"></span><span id="WBP_SaveSetParam__string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a72e56ff91dd51831a20a4fb37db1dbc2"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_SaveSetParam</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">setName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416WBP_SaveSetParam6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Save the set parameter waves. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv411WBP_LoadSet6string">
+<span id="_CPPv311WBP_LoadSet6string"></span><span id="_CPPv211WBP_LoadSet6string"></span><span id="WBP_LoadSet__string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a9978b5cbd5edb24969be4b9346dfd3b9"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_LoadSet</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">setName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411WBP_LoadSet6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431SetAnalysisFunctionIfFuncExists6string6string6string6string6string">
+<span id="_CPPv331SetAnalysisFunctionIfFuncExists6string6string6string6string6string"></span><span id="_CPPv231SetAnalysisFunctionIfFuncExists6string6string6string6string6string"></span><span id="SetAnalysisFunctionIfFuncExists__string.string.string.string.string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a01292a1c9a135ae33784d479d3951c19"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SetAnalysisFunctionIfFuncExists</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">win</span></em>, <span class="pre">string</span> <em><span class="pre">ctrl</span></em>, <span class="pre">string</span> <em><span class="pre">stimset</span></em>, <span class="pre">string</span> <em><span class="pre">funcList</span></em>, <span class="pre">string</span> <em><span class="pre">func</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431SetAnalysisFunctionIfFuncExists6string6string6string6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv413WBP_DeleteSetv">
+<span id="_CPPv313WBP_DeleteSetv"></span><span id="_CPPv213WBP_DeleteSetv"></span><span id="WBP_DeleteSet"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aa558024625a0ad3c41b522b311580653"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_DeleteSet</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413WBP_DeleteSetv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423WBP_UpdateEpochControlsv">
+<span id="_CPPv323WBP_UpdateEpochControlsv"></span><span id="_CPPv223WBP_UpdateEpochControlsv"></span><span id="WBP_UpdateEpochControls"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ae3a377fb0353cdde4363ef2c50b5484f"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_UpdateEpochControls</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423WBP_UpdateEpochControlsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426WBP_SetVarProc_EpochToEditP19WMSetVariableAction">
+<span id="_CPPv326WBP_SetVarProc_EpochToEditP19WMSetVariableAction"></span><span id="_CPPv226WBP_SetVarProc_EpochToEditP19WMSetVariableAction"></span><span id="WBP_SetVarProc_EpochToEdit__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a4c297913a540db7caf28787140b1c025"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_SetVarProc_EpochToEdit</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426WBP_SetVarProc_EpochToEditP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421WBP_PopupMenu_LoadSetP13WMPopupAction">
+<span id="_CPPv321WBP_PopupMenu_LoadSetP13WMPopupAction"></span><span id="_CPPv221WBP_PopupMenu_LoadSetP13WMPopupAction"></span><span id="WBP_PopupMenu_LoadSet__WMPopupActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ad7e633a07317253e6978b352432594a2"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_PopupMenu_LoadSet</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421WBP_PopupMenu_LoadSetP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419WBP_CutOffCrossOverv">
+<span id="_CPPv319WBP_CutOffCrossOverv"></span><span id="_CPPv219WBP_CutOffCrossOverv"></span><span id="WBP_CutOffCrossOver"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aa93d121c9cd85fc8f8305b40c4449ecd"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_CutOffCrossOver</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419WBP_CutOffCrossOverv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426WBP_ReturnPulseDurationMaxv">
+<span id="_CPPv326WBP_ReturnPulseDurationMaxv"></span><span id="_CPPv226WBP_ReturnPulseDurationMaxv"></span><span id="WBP_ReturnPulseDurationMax"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ae3383f05514103e8b0afb4d127b8d2b4"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ReturnPulseDurationMax</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426WBP_ReturnPulseDurationMaxv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Checks to see if the pulse duration in square pulse stimulus trains is too long. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417WBP_GetFolderPathv">
+<span id="_CPPv317WBP_GetFolderPathv"></span><span id="_CPPv217WBP_GetFolderPathv"></span><span id="WBP_GetFolderPath"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a3a05a2ca5d63d33110a65d63861ff533"></span><span class="pre">dfref</span> <code class="sig-name descname"><span class="pre">WBP_GetFolderPath</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417WBP_GetFolderPathv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421WBP_ReturnFoldersListv">
+<span id="_CPPv321WBP_ReturnFoldersListv"></span><span id="_CPPv221WBP_ReturnFoldersListv"></span><span id="WBP_ReturnFoldersList"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aec68686fa8284323a55e5e46e257aa55"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_ReturnFoldersList</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421WBP_ReturnFoldersListv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428WBP_PopMenuProc_FolderSelectP13WMPopupAction">
+<span id="_CPPv328WBP_PopMenuProc_FolderSelectP13WMPopupAction"></span><span id="_CPPv228WBP_PopMenuProc_FolderSelectP13WMPopupAction"></span><span id="WBP_PopMenuProc_FolderSelect__WMPopupActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a7925fed15b641b629d50be8fd3111d37"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_PopMenuProc_FolderSelect</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428WBP_PopMenuProc_FolderSelectP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv434WBP_UpdateDaEphysStimulusSetPopups6string">
+<span id="_CPPv334WBP_UpdateDaEphysStimulusSetPopups6string"></span><span id="_CPPv234WBP_UpdateDaEphysStimulusSetPopups6string"></span><span id="WBP_UpdateDaEphysStimulusSetPopups__string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aae519e8019a396a8ad50a7cf45a975fe"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_UpdateDaEphysStimulusSetPopups</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv434WBP_UpdateDaEphysStimulusSetPopups6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Update the popup menus and its <code class="docutils literal notranslate"><span class="pre">MenuExp</span></code> user data after stim set changes. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: [optional, defaults to all locked devices] device </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425WBP_PopupMenuWaveNameList6string8variable8variable">
+<span id="_CPPv325WBP_PopupMenuWaveNameList6string8variable8variable"></span><span id="_CPPv225WBP_PopupMenuWaveNameList6string8variable8variable"></span><span id="WBP_PopupMenuWaveNameList__string.variable.variable"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aaadcea2fdf84fcfeb01c86943f3ee5d9"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_PopupMenuWaveNameList</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">channelType</span></em>, <span class="pre">variable</span> <em><span class="pre">controlType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425WBP_PopupMenuWaveNameList6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the names of the items in the popmenu controls in a list. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429WBP_RestorePopupMenuSelection6string8variable8variable6string">
+<span id="_CPPv329WBP_RestorePopupMenuSelection6string8variable8variable6string"></span><span id="_CPPv229WBP_RestorePopupMenuSelection6string8variable8variable6string"></span><span id="WBP_RestorePopupMenuSelection__string.variable.variable.string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a096f55ee53ce878ebdfad5efc09bc9ae"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_RestorePopupMenuSelection</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">channelType</span></em>, <span class="pre">variable</span> <em><span class="pre">controlType</span></em>, <span class="pre">string</span> <em><span class="pre">list</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429WBP_RestorePopupMenuSelection6string8variable8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427WBP_CheckProc_PreventUpdateP16WMCheckboxAction">
+<span id="_CPPv327WBP_CheckProc_PreventUpdateP16WMCheckboxAction"></span><span id="_CPPv227WBP_CheckProc_PreventUpdateP16WMCheckboxAction"></span><span id="WBP_CheckProc_PreventUpdate__WMCheckboxActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a0cd39fc4f36ddb20d373cdc248962bb6"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_CheckProc_PreventUpdate</span></code><span class="sig-paren">(</span><span class="pre">WMCheckboxAction</span> <span class="pre">*</span><em><span class="pre">cba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427WBP_CheckProc_PreventUpdateP16WMCheckboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv413WBP_PopupMenuP13WMPopupAction">
+<span id="_CPPv313WBP_PopupMenuP13WMPopupAction"></span><span id="_CPPv213WBP_PopupMenuP13WMPopupAction"></span><span id="WBP_PopupMenu__WMPopupActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ab9c6e449988c7133bba639755c8cfa8b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_PopupMenu</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413WBP_PopupMenuP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430WBP_ConvertDeltaLblToCtrlNames6string6string">
+<span id="_CPPv330WBP_ConvertDeltaLblToCtrlNames6string6string"></span><span id="_CPPv230WBP_ConvertDeltaLblToCtrlNames6string6string"></span><span id="WBP_ConvertDeltaLblToCtrlNames__string.string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a45259be0fa7e918f95120a2a42d141f0"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_ConvertDeltaLblToCtrlNames</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">allControls</span></em>, <span class="pre">string</span> <em><span class="pre">dimLabel</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430WBP_ConvertDeltaLblToCtrlNames6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Convert from the row index of a delta related control to a list of control names. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423WBP_AdjustDeltaControls6string">
+<span id="_CPPv323WBP_AdjustDeltaControls6string"></span><span id="_CPPv223WBP_AdjustDeltaControls6string"></span><span id="WBP_AdjustDeltaControls__string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a4014c38ea82f27ae118826b6b4a861a1"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_AdjustDeltaControls</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">control</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423WBP_AdjustDeltaControls6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Depending on the delta operation the visibility of related controls is adjusted. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">control</span></code>: delta operation control name </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422WBP_ButtonProc_NewSeedP14WMButtonAction">
+<span id="_CPPv322WBP_ButtonProc_NewSeedP14WMButtonAction"></span><span id="_CPPv222WBP_ButtonProc_NewSeedP14WMButtonAction"></span><span id="WBP_ButtonProc_NewSeed__WMButtonActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a3f71078a0b95a6dc6ac9e1c1e59c0b5f"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ButtonProc_NewSeed</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422WBP_ButtonProc_NewSeedP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431WBP_PopupMenu_AnalysisFunctionsP13WMPopupAction">
+<span id="_CPPv331WBP_PopupMenu_AnalysisFunctionsP13WMPopupAction"></span><span id="_CPPv231WBP_PopupMenu_AnalysisFunctionsP13WMPopupAction"></span><span id="WBP_PopupMenu_AnalysisFunctions__WMPopupActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ad1a29a7bb590f3d98f2719d681571c0a"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_PopupMenu_AnalysisFunctions</span></code><span class="sig-paren">(</span><span class="pre">WMPopupAction</span> <span class="pre">*</span><em><span class="pre">pa</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431WBP_PopupMenu_AnalysisFunctionsP13WMPopupAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417WBP_AnaFuncsToWPTv">
+<span id="_CPPv317WBP_AnaFuncsToWPTv"></span><span id="_CPPv217WBP_AnaFuncsToWPTv"></span><span id="WBP_AnaFuncsToWPT"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a27a59cb06c9d320fb33eb8297a411ac5"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_AnaFuncsToWPT</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417WBP_AnaFuncsToWPTv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424WBP_GetAnalysisFunctions8variable">
+<span id="_CPPv324WBP_GetAnalysisFunctions8variable"></span><span id="_CPPv224WBP_GetAnalysisFunctions8variable"></span><span id="WBP_GetAnalysisFunctions__variable"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a2c7f73b2f3f89880a4bdc29afdb98023"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_GetAnalysisFunctions</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">versionBitMask</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424WBP_GetAnalysisFunctions8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a list of analysis functions including NONE, usable for popup menues. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p>AFM_GetAnalysisFunctions </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417WBP_GetNoiseTypesv">
+<span id="_CPPv317WBP_GetNoiseTypesv"></span><span id="_CPPv217WBP_GetNoiseTypesv"></span><span id="WBP_GetNoiseTypes"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a2d77a9a7931694d7e9bc8c065dfae52a"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_GetNoiseTypes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417WBP_GetNoiseTypesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a list of noise types, usable for popup menues. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427WBP_GetNoiseBuildResolutionv">
+<span id="_CPPv327WBP_GetNoiseBuildResolutionv"></span><span id="_CPPv227WBP_GetNoiseBuildResolutionv"></span><span id="WBP_GetNoiseBuildResolution"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a668f72b87e291f8e1be50dc472530986"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_GetNoiseBuildResolution</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427WBP_GetNoiseBuildResolutionv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a list of build resolutions , usable for popup menues. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427WBP_ButtonProc_OpenAnaFuncsP14WMButtonAction">
+<span id="_CPPv327WBP_ButtonProc_OpenAnaFuncsP14WMButtonAction"></span><span id="_CPPv227WBP_ButtonProc_OpenAnaFuncsP14WMButtonAction"></span><span id="WBP_ButtonProc_OpenAnaFuncs__WMButtonActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1abc9d0ae67fe6475a0052cf163744b589"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ButtonProc_OpenAnaFuncs</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427WBP_ButtonProc_OpenAnaFuncsP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429WBP_SetVarCombineEpochFormulaP19WMSetVariableAction">
+<span id="_CPPv329WBP_SetVarCombineEpochFormulaP19WMSetVariableAction"></span><span id="_CPPv229WBP_SetVarCombineEpochFormulaP19WMSetVariableAction"></span><span id="WBP_SetVarCombineEpochFormula__WMSetVariableActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aeb7ca582dbe37a0635b859de7efacb64"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_SetVarCombineEpochFormula</span></code><span class="sig-paren">(</span><span class="pre">WMSetVariableAction</span> <span class="pre">*</span><em><span class="pre">sva</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429WBP_SetVarCombineEpochFormulaP19WMSetVariableAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428WBP_TranslateControlContents6string8variable6string">
+<span id="_CPPv328WBP_TranslateControlContents6string8variable6string"></span><span id="_CPPv228WBP_TranslateControlContents6string8variable6string"></span><span id="WBP_TranslateControlContents__string.variable.string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a76298e7b0d0fe207427427c26af499a0"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_TranslateControlContents</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">control</span></em>, <span class="pre">variable</span> <em><span class="pre">direction</span></em>, <span class="pre">string</span> <em><span class="pre">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv428WBP_TranslateControlContents6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Convert a control entry for the panel or the wave. </p>
+<p>Useful if the visualization is different from the stored data.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">control</span></code>: name of WaveBuilder GUI control </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">direction</span></code>: one of <a class="reference internal" href="#_m_i_e_s___wave_builder_panel_8ipf_1a470237a3fbe313488cb1efb7d68d4606"><span class="std std-ref">FROM_PANEL_TO_WAVE</span></a> or <a class="reference internal" href="#_m_i_e_s___wave_builder_panel_8ipf_1a98a824eda4170cec18e9d655f34c2d35"><span class="std std-ref">FROM_WAVE_TO_PANEL</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code>: string to convert </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418WBP_MainWindowHookP15WMWinHookStruct">
+<span id="_CPPv318WBP_MainWindowHookP15WMWinHookStruct"></span><span id="_CPPv218WBP_MainWindowHookP15WMWinHookStruct"></span><span id="WBP_MainWindowHook__WMWinHookStructP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aad6a0ee69107a08976b8d6759604993c"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_MainWindowHook</span></code><span class="sig-paren">(</span><span class="pre">WMWinHookStruct</span> <span class="pre">*</span><em><span class="pre">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418WBP_MainWindowHookP15WMWinHookStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Wavebuilder panel window hook. </p>
+<p>The epoch selection is done on the mouseup event if there exists no marquee. This allows to still use the zooming capability. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423WBP_GetFFTSpectrumPanelv">
+<span id="_CPPv323WBP_GetFFTSpectrumPanelv"></span><span id="_CPPv223WBP_GetFFTSpectrumPanelv"></span><span id="WBP_GetFFTSpectrumPanel"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a5543eab54f72c327f34739f236208931"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_GetFFTSpectrumPanel</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423WBP_GetFFTSpectrumPanelv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424WBP_ShowFFTSpectrumIfReq4wave8variable">
+<span id="_CPPv324WBP_ShowFFTSpectrumIfReq4wave8variable"></span><span id="_CPPv224WBP_ShowFFTSpectrumIfReq4wave8variable"></span><span id="WBP_ShowFFTSpectrumIfReq__wave.variable"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1af42187859222dee168e886b0173eec6a"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ShowFFTSpectrumIfReq</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">segmentWave</span></em>, <span class="pre">variable</span> <em><span class="pre">sweep</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424WBP_ShowFFTSpectrumIfReq4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417WBP_GetSweepColor8variable">
+<span id="_CPPv317WBP_GetSweepColor8variable"></span><span id="_CPPv217WBP_GetSweepColor8variable"></span><span id="WBP_GetSweepColor__variable"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a403a59499f66940d9ade43a499d8d682"></span><em class="property"><span class="pre">static</span></em> <span class="pre">std</span><span class="pre">::</span><span class="pre">tuple</span><span class="pre">&lt;</span><span class="pre">RGBColor</span><span class="pre">&gt;</span> <code class="sig-name descname"><span class="pre">WBP_GetSweepColor</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">sweep</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417WBP_GetSweepColor8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return distinct colors the sweeps of the wavebuilder. </p>
+<p>These are backwards compared to the trace colors </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424WBP_AddAnalysisParameter6string6string8variable6string4wave">
+<span id="_CPPv324WBP_AddAnalysisParameter6string6string8variable6string4wave"></span><span id="_CPPv224WBP_AddAnalysisParameter6string6string8variable6string4wave"></span><span id="WBP_AddAnalysisParameter__string.string.variable.string.wave"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a5a0327893653a360082625cf2b26fd7a"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_AddAnalysisParameter</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">stimset</span></em>, <span class="pre">string</span> <em><span class="pre">name</span></em>, <span class="pre">variable</span> <em><span class="pre">var</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">string</span> <em><span class="pre">str</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">wave</span> <em><span class="pre">wv</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424WBP_AddAnalysisParameter6string6string8variable6string4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Add an analysis function parameter to the given stimset. </p>
+<p>This function adds the parameter to the <code class="docutils literal notranslate"><span class="pre">WPT</span></code> wave and checks that it is valid.</p>
+<p>Exactly one of <code class="docutils literal notranslate"><span class="pre">var</span></code>/<code class="docutils literal notranslate"><span class="pre">str</span></code>/<code class="docutils literal notranslate"><span class="pre">wv</span></code> must be given.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stimset</span></code>: stimset name </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: name of the parameter </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">var</span></code>: [optional] numeric parameter </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">str</span></code>: [optional] string parameter </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wv</span></code>: [optional] wave parameter can be numeric or text </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431WBP_AddAnalysisParameterIntoWPT8WaveText6string8variable6string4wave">
+<span id="_CPPv331WBP_AddAnalysisParameterIntoWPT8WaveText6string8variable6string4wave"></span><span id="_CPPv231WBP_AddAnalysisParameterIntoWPT8WaveText6string8variable6string4wave"></span><span id="WBP_AddAnalysisParameterIntoWPT__WaveText.string.variable.string.wave"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1afbc0ec7b8835cd23b61b021db2737783"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_AddAnalysisParameterIntoWPT</span></code><span class="sig-paren">(</span><span class="pre">WaveText</span> <em><span class="pre">WPT</span></em>, <span class="pre">string</span> <em><span class="pre">name</span></em>, <span class="pre">variable</span> <em><span class="pre">var</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">string</span> <em><span class="pre">str</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">wave</span> <em><span class="pre">wv</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431WBP_AddAnalysisParameterIntoWPT8WaveText6string8variable6string4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Internal use only. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427WBP_DeleteAnalysisParameter6string">
+<span id="_CPPv327WBP_DeleteAnalysisParameter6string"></span><span id="_CPPv227WBP_DeleteAnalysisParameter6string"></span><span id="WBP_DeleteAnalysisParameter__string"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a40420374c3a6dffd6fac657cffb3a497"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_DeleteAnalysisParameter</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427WBP_DeleteAnalysisParameter6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Delete the given analysis parameter. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: name of the parameter </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421WBP_GetParameterTypesv">
+<span id="_CPPv321WBP_GetParameterTypesv"></span><span id="_CPPv221WBP_GetParameterTypesv"></span><span id="WBP_GetParameterTypes"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a7ab00c824867a405ba8d948d71e5e532"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_GetParameterTypes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421WBP_GetParameterTypesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a list of all possible analysis parameter types. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425WBP_GetAnalysisParametersv">
+<span id="_CPPv325WBP_GetAnalysisParametersv"></span><span id="_CPPv225WBP_GetAnalysisParametersv"></span><span id="WBP_GetAnalysisParameters"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1adb170fcb4e5731848051cc8787b7d15c"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_GetAnalysisParameters</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425WBP_GetAnalysisParametersv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the analysis parameters. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430WBP_GetAnalysisGenericFunctionv">
+<span id="_CPPv330WBP_GetAnalysisGenericFunctionv"></span><span id="_CPPv230WBP_GetAnalysisGenericFunctionv"></span><span id="WBP_GetAnalysisGenericFunction"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1afe5bef147d57b3db79cf7bd0e5cf0a28"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_GetAnalysisGenericFunction</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430WBP_GetAnalysisGenericFunctionv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429WBP_GetAnalysisParameterNamesv">
+<span id="_CPPv329WBP_GetAnalysisParameterNamesv"></span><span id="_CPPv229WBP_GetAnalysisParameterNamesv"></span><span id="WBP_GetAnalysisParameterNames"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a5c76bf1a8c26396418556e1f2b973d0c"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">WBP_GetAnalysisParameterNames</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429WBP_GetAnalysisParameterNamesv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the analysis parameter names for the currently selected stimset. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423WBP_UpdateParameterWavev">
+<span id="_CPPv323WBP_UpdateParameterWavev"></span><span id="_CPPv223WBP_UpdateParameterWavev"></span><span id="WBP_UpdateParameterWave"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aebe3b2d98063730899edce2c36c68e14"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_UpdateParameterWave</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423WBP_UpdateParameterWavev" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fill the listwave from the stimset analysis parameters extracted from its WPT. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426WBP_ToggleAnalysisParamGUIv">
+<span id="_CPPv326WBP_ToggleAnalysisParamGUIv"></span><span id="_CPPv226WBP_ToggleAnalysisParamGUIv"></span><span id="WBP_ToggleAnalysisParamGUI"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a27aad5b1a0c6955ad38bc057bca20ed6"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ToggleAnalysisParamGUI</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426WBP_ToggleAnalysisParamGUIv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Toggle the analysis parameter GUI. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>one if the panel was killed, zero if it was created </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426WBP_ButtonProc_DeleteParamP14WMButtonAction">
+<span id="_CPPv326WBP_ButtonProc_DeleteParamP14WMButtonAction"></span><span id="_CPPv226WBP_ButtonProc_DeleteParamP14WMButtonAction"></span><span id="WBP_ButtonProc_DeleteParam__WMButtonActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a1c374e5486c78b6b1346d6552d3e01ac"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ButtonProc_DeleteParam</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426WBP_ButtonProc_DeleteParamP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423WBP_ButtonProc_AddParamP14WMButtonAction">
+<span id="_CPPv323WBP_ButtonProc_AddParamP14WMButtonAction"></span><span id="_CPPv223WBP_ButtonProc_AddParamP14WMButtonAction"></span><span id="WBP_ButtonProc_AddParam__WMButtonActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a95439f3f24dea29f20f669321c8e9141"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ButtonProc_AddParam</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423WBP_ButtonProc_AddParamP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430WBP_ButtonProc_OpenAnaParamGUIP14WMButtonAction">
+<span id="_CPPv330WBP_ButtonProc_OpenAnaParamGUIP14WMButtonAction"></span><span id="_CPPv230WBP_ButtonProc_OpenAnaParamGUIP14WMButtonAction"></span><span id="WBP_ButtonProc_OpenAnaParamGUI__WMButtonActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1adedc8f815be7ae8b38eac92170f1afa0"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ButtonProc_OpenAnaParamGUI</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430WBP_ButtonProc_OpenAnaParamGUIP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430WBP_ListBoxProc_AnalysisParamsP15WMListboxAction">
+<span id="_CPPv330WBP_ListBoxProc_AnalysisParamsP15WMListboxAction"></span><span id="_CPPv230WBP_ListBoxProc_AnalysisParamsP15WMListboxAction"></span><span id="WBP_ListBoxProc_AnalysisParams__WMListboxActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1acf88f9e2460ccc3f7c2f77f52731b1bd"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ListBoxProc_AnalysisParams</span></code><span class="sig-paren">(</span><span class="pre">WMListboxAction</span> <span class="pre">*</span><em><span class="pre">lba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430WBP_ListBoxProc_AnalysisParamsP15WMListboxAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422WBP_ButtonProc_LoadSetP14WMButtonAction">
+<span id="_CPPv322WBP_ButtonProc_LoadSetP14WMButtonAction"></span><span id="_CPPv222WBP_ButtonProc_LoadSetP14WMButtonAction"></span><span id="WBP_ButtonProc_LoadSet__WMButtonActionP"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a8968184b9b9fe44d703238a5834b9dda"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">WBP_ButtonProc_LoadSet</span></code><span class="sig-paren">(</span><span class="pre">WMButtonAction</span> <span class="pre">*</span><em><span class="pre">ba</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422WBP_ButtonProc_LoadSetP14WMButtonAction" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Variables</p>
+<dl class="cpp var">
+<dt id="_CPPv45panel">
+<span id="_CPPv35panel"></span><span id="_CPPv25panel"></span><span id="panel__stringC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a846b84604b197f993226a0c310d67062"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">panel</span></code> <span class="pre">=</span> <span class="pre">&quot;WaveBuilder&quot;</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv416WaveBuilderGraph">
+<span id="_CPPv316WaveBuilderGraph"></span><span id="_CPPv216WaveBuilderGraph"></span><span id="WaveBuilderGraph__stringC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1abc2153c80b27b42d3362588d39634b5e"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">WaveBuilderGraph</span></code> <span class="pre">=</span> <span class="pre">&quot;WaveBuilder#WaveBuilderGraph&quot;</span><a class="headerlink" href="#_CPPv416WaveBuilderGraph" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv416AnalysisParamGUI">
+<span id="_CPPv316AnalysisParamGUI"></span><span id="_CPPv216AnalysisParamGUI"></span><span id="AnalysisParamGUI__stringC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1afa0f76251a390facce33bfe2114724c2"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">AnalysisParamGUI</span></code> <span class="pre">=</span> <span class="pre">&quot;WaveBuilder#AnalysisParamGUI&quot;</span><a class="headerlink" href="#_CPPv416AnalysisParamGUI" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv418DEFAULT_SET_PREFIX">
+<span id="_CPPv318DEFAULT_SET_PREFIX"></span><span id="_CPPv218DEFAULT_SET_PREFIX"></span><span id="DEFAULT_SET_PREFIX__stringC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a390ce317dfa29647fe4eeb3ea5d11076"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">DEFAULT_SET_PREFIX</span></code> <span class="pre">=</span> <span class="pre">&quot;StimulusSetA&quot;</span><a class="headerlink" href="#_CPPv418DEFAULT_SET_PREFIX" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv424SEGWVTYPE_CONTROL_REGEXP">
+<span id="_CPPv324SEGWVTYPE_CONTROL_REGEXP"></span><span id="_CPPv224SEGWVTYPE_CONTROL_REGEXP"></span><span id="SEGWVTYPE_CONTROL_REGEXP__stringC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a608b73a794d5c760676524fd6b9126ed"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">SEGWVTYPE_CONTROL_REGEXP</span></code> <span class="pre">=</span> <span class="pre">&quot;.*_S[[:digit:]]+&quot;</span><a class="headerlink" href="#_CPPv424SEGWVTYPE_CONTROL_REGEXP" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv417WP_CONTROL_REGEXP">
+<span id="_CPPv317WP_CONTROL_REGEXP"></span><span id="_CPPv217WP_CONTROL_REGEXP"></span><span id="WP_CONTROL_REGEXP__stringC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a29b75e83b92780f6597866b47e8d54b5"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">WP_CONTROL_REGEXP</span></code> <span class="pre">=</span> <span class="pre">&quot;.*_P[[:digit:]]+&quot;</span><a class="headerlink" href="#_CPPv417WP_CONTROL_REGEXP" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv418WPT_CONTROL_REGEXP">
+<span id="_CPPv318WPT_CONTROL_REGEXP"></span><span id="_CPPv218WPT_CONTROL_REGEXP"></span><span id="WPT_CONTROL_REGEXP__stringC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a76480034ae3a45c995ebed3e64dd745c"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">WPT_CONTROL_REGEXP</span></code> <span class="pre">=</span> <span class="pre">&quot;.*_T[[:digit:]]+&quot;</span><a class="headerlink" href="#_CPPv418WPT_CONTROL_REGEXP" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv415WBP_WAVETYPE_WP">
+<span id="_CPPv315WBP_WAVETYPE_WP"></span><span id="_CPPv215WBP_WAVETYPE_WP"></span><span id="WBP_WAVETYPE_WP__doubleC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aa4735e913d482320fc5676a492ac5311"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">WBP_WAVETYPE_WP</span></code> <span class="pre">=</span> <span class="pre">0x1</span><a class="headerlink" href="#_CPPv415WBP_WAVETYPE_WP" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv416WBP_WAVETYPE_WPT">
+<span id="_CPPv316WBP_WAVETYPE_WPT"></span><span id="_CPPv216WBP_WAVETYPE_WPT"></span><span id="WBP_WAVETYPE_WPT__doubleC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ade3a1145740d94257ccc6a21ba31f515"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">WBP_WAVETYPE_WPT</span></code> <span class="pre">=</span> <span class="pre">0x2</span><a class="headerlink" href="#_CPPv416WBP_WAVETYPE_WPT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv422WBP_WAVETYPE_SEGWVTYPE">
+<span id="_CPPv322WBP_WAVETYPE_SEGWVTYPE"></span><span id="_CPPv222WBP_WAVETYPE_SEGWVTYPE"></span><span id="WBP_WAVETYPE_SEGWVTYPE__doubleC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a9a2b2d65b728fd3e7c27181cd8f2a216"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">WBP_WAVETYPE_SEGWVTYPE</span></code> <span class="pre">=</span> <span class="pre">0x4</span><a class="headerlink" href="#_CPPv422WBP_WAVETYPE_SEGWVTYPE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv416STIMULUS_TYPE_DA">
+<span id="_CPPv316STIMULUS_TYPE_DA"></span><span id="_CPPv216STIMULUS_TYPE_DA"></span><span id="STIMULUS_TYPE_DA__doubleC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1ae8219da5fecf70fb27fd14e9386eac3c"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">STIMULUS_TYPE_DA</span></code> <span class="pre">=</span> <span class="pre">1</span><a class="headerlink" href="#_CPPv416STIMULUS_TYPE_DA" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv417STIMULUS_TYPE_TLL">
+<span id="_CPPv317STIMULUS_TYPE_TLL"></span><span id="_CPPv217STIMULUS_TYPE_TLL"></span><span id="STIMULUS_TYPE_TLL__doubleC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a498a0e8c50b3dbc672980030ea59ab45"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">STIMULUS_TYPE_TLL</span></code> <span class="pre">=</span> <span class="pre">2</span><a class="headerlink" href="#_CPPv417STIMULUS_TYPE_TLL" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv418EPOCH_HL_TYPE_LEFT">
+<span id="_CPPv318EPOCH_HL_TYPE_LEFT"></span><span id="_CPPv218EPOCH_HL_TYPE_LEFT"></span><span id="EPOCH_HL_TYPE_LEFT__doubleC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1a47d490ffbbdeeeaef1d9eb2d32229206"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">EPOCH_HL_TYPE_LEFT</span></code> <span class="pre">=</span> <span class="pre">0x01</span><a class="headerlink" href="#_CPPv418EPOCH_HL_TYPE_LEFT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv419EPOCH_HL_TYPE_RIGHT">
+<span id="_CPPv319EPOCH_HL_TYPE_RIGHT"></span><span id="_CPPv219EPOCH_HL_TYPE_RIGHT"></span><span id="EPOCH_HL_TYPE_RIGHT__doubleC"></span><span class="target" id="_m_i_e_s___wave_builder_panel_8ipf_1aeefded73fb5b1a56a31944d8b06b8469"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">EPOCH_HL_TYPE_RIGHT</span></code> <span class="pre">=</span> <span class="pre">0x02</span><a class="headerlink" href="#_CPPv419EPOCH_HL_TYPE_RIGHT" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_8ipf.html">File CompilationTester.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_utils_8ipf.html">File CompilationTesterUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___lab_notebook_t_p_storage_browser_8ipf.html">File MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html">File MIES_MiesUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___regenerate-_screenshots_8ipf.html">File MIES_Regenerate-Screenshots.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities_8ipf.html">File MIES_Utilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_8h.html">File interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="_m_i_e_s___wave_builder___macro_8ipf.html"
+                        title="previous chapter">File MIES_WaveBuilder_Macro.ipf</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="_m_i_e_s___wave_data_folder_getters_8ipf.html"
+                        title="next chapter">File MIES_WaveDataFolderGetters.ipf</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___wave_data_folder_getters_8ipf.html" title="File MIES_WaveDataFolderGetters.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___wave_builder___macro_8ipf.html" title="File MIES_WaveBuilder_Macro.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_WaveBuilderPanel.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,546 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File MIES_NeuroDataWithoutBorders.ipf &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_OptimzedOverlapDistributedAcquisition.ipf" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html" />
+    <link rel="prev" title="File MIES_MiesUtilities.ipf" href="_m_i_e_s___mies_utilities_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html" title="File MIES_OptimzedOverlapDistributedAcquisition.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___mies_utilities_8ipf.html" title="File MIES_MiesUtilities.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_NeuroDataWithoutBorders.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="file-mies-neurodatawithoutborders-ipf">
+<span id="id1"></span><h1>File MIES_NeuroDataWithoutBorders.ipf<a class="headerlink" href="#file-mies-neurodatawithoutborders-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>NWB</strong> Functions related to MIES data export into the NeuroDataWithoutBorders format </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv423NWB_GetStartTimeOfSweep6string8variable4wave">
+<span id="_CPPv323NWB_GetStartTimeOfSweep6string8variable4wave"></span><span id="_CPPv223NWB_GetStartTimeOfSweep6string8variable4wave"></span><span id="NWB_GetStartTimeOfSweep__string.variable.wave"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a7c929da04077eb61cd666f56c72e9bae"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_GetStartTimeOfSweep</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">sweepNo</span></em>, <span class="pre">wave</span> <em><span class="pre">sweepWave</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423NWB_GetStartTimeOfSweep6string8variable4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the starting time, in fractional seconds since Igor Pro epoch in UTC, of the given sweep. </p>
+<p>For existing sweeps with <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1aeed453287321d794a0204533a1326dc7"><span class="std std-ref">HIGH_PREC_SWEEP_START_KEY</span></a> labnotebook entries we use the sweep wave’s modification time. The sweep wave can be either an <code class="docutils literal notranslate"><span class="pre">DAQDataWave</span></code> or a <code class="docutils literal notranslate"><span class="pre">Sweep_$num</span></code> wave. Passing the <code class="docutils literal notranslate"><span class="pre">DAQDataWave</span></code> is more accurate. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429NWB_FirstStartTimeOfAllSweepsv">
+<span id="_CPPv329NWB_FirstStartTimeOfAllSweepsv"></span><span id="_CPPv229NWB_FirstStartTimeOfAllSweepsv"></span><span id="NWB_FirstStartTimeOfAllSweeps"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ade86a8a45b483c9edd9500a7b37b0eed"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_FirstStartTimeOfAllSweeps</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429NWB_FirstStartTimeOfAllSweepsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the creation time, in seconds since Igor Pro epoch in UTC, of the oldest sweep wave for all devices. </p>
+<p>Return NaN if no sweeps could be found </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420NWB_GetFileForExport8variable6stringP8variable">
+<span id="_CPPv320NWB_GetFileForExport8variable6stringP8variable"></span><span id="_CPPv220NWB_GetFileForExport8variable6stringP8variable"></span><span id="NWB_GetFileForExport__variable.string.variableP"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a8e44a02e3f423dc86d6dfe0df46038c3"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_GetFileForExport</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <span class="pre">string</span> <em><span class="pre">overrideFilePath</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">createdNewNWBFile</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420NWB_GetFileForExport8variable6stringP8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the HDF5 file identifier referring to an open NWB file for export. </p>
+<p>Open one if it does not exist yet.</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">nwbVersion</span></code>: Set NWB version if new file is created. default: latest version </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">overrideFilePath</span></code>: [optional] file path for new files to override the internal generation algorithm </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">createdNewNWBFile</span></code>: [optional] a new NWB file was created (1) or an existing opened (0) </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422NWB_AddGeneratorString8variable8variable">
+<span id="_CPPv322NWB_AddGeneratorString8variable8variable"></span><span id="_CPPv222NWB_AddGeneratorString8variable8variable"></span><span id="NWB_AddGeneratorString__variable.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a489ce7bdbdf140ec75238bbe6d77358c"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_AddGeneratorString</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">fileID</span></em>, <span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422NWB_AddGeneratorString8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421NWB_AddSpecifications8variable8variable">
+<span id="_CPPv321NWB_AddSpecifications8variable8variable"></span><span id="_CPPv221NWB_AddSpecifications8variable8variable"></span><span id="NWB_AddSpecifications__variable.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1aa30c9a15c5a6c4fb8f77977172e98abe"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_AddSpecifications</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">fileID</span></em>, <span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421NWB_AddSpecifications8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424NWB_ReadSessionStartTime8variable">
+<span id="_CPPv324NWB_ReadSessionStartTime8variable"></span><span id="_CPPv224NWB_ReadSessionStartTime8variable"></span><span id="NWB_ReadSessionStartTime__variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1aa4077e37d33eab0ebecbd37f6d0a93fd"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_ReadSessionStartTime</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">fileID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424NWB_ReadSessionStartTime8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429NWB_GenerateDeviceDescription6string">
+<span id="_CPPv329NWB_GenerateDeviceDescription6string"></span><span id="_CPPv229NWB_GenerateDeviceDescription6string"></span><span id="NWB_GenerateDeviceDescription__string"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a10e71533066e5ab82ea157ee054ab8d0"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">NWB_GenerateDeviceDescription</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429NWB_GenerateDeviceDescription6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425NWB_AddDeviceSpecificData8variable6string8variable8variable8variable">
+<span id="_CPPv325NWB_AddDeviceSpecificData8variable6string8variable8variable8variable"></span><span id="_CPPv225NWB_AddDeviceSpecificData8variable6string8variable8variable8variable"></span><span id="NWB_AddDeviceSpecificData__variable.string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1af0cb52e924c3df51f0993f7d467ab570"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_AddDeviceSpecificData</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">locationID</span></em>, <span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <span class="pre">variable</span> <em><span class="pre">compressionMode</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">writeStoredTestPulses</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425NWB_AddDeviceSpecificData8variable6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417NWB_ExportAllData8variable6string8variable8variable8variable">
+<span id="_CPPv317NWB_ExportAllData8variable6string8variable8variable8variable"></span><span id="_CPPv217NWB_ExportAllData8variable6string8variable8variable8variable"></span><span id="NWB_ExportAllData__variable.string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a88d0c75e223fdcddc76889cbc8996de1"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_ExportAllData</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <span class="pre">string</span> <em><span class="pre">overrideFilePath</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">writeStoredTestPulses</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">writeIgorHistory</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">compressionMode</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417NWB_ExportAllData8variable6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421NWB_ExportAllStimsets8variable6string">
+<span id="_CPPv321NWB_ExportAllStimsets8variable6string"></span><span id="_CPPv221NWB_ExportAllStimsets8variable6string"></span><span id="NWB_ExportAllStimsets__variable.string"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1afe39d03919cbc67bd7f0073e6b59e3f5"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_ExportAllStimsets</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <span class="pre">string</span> <em><span class="pre">overrideFilePath</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421NWB_ExportAllStimsets8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420NWB_ExportWithDialog8variable8variable">
+<span id="_CPPv320NWB_ExportWithDialog8variable8variable"></span><span id="_CPPv220NWB_ExportWithDialog8variable8variable"></span><span id="NWB_ExportWithDialog__variable.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a97b5395b0929ecddf4a7378d98f13066"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_ExportWithDialog</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">exportType</span></em>, <span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420NWB_ExportWithDialog8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Export all data into NWB using compression. </p>
+<p>Ask the file location from the user</p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">exportType</span></code>: Export all data and referenced stimsets (<a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a3addbcc71b83bf994872880aae17466b"><span class="std std-ref">NWB_EXPORT_DATA</span></a>) or all stimsets (<a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1af983c6e8ca2810293634814eec624d65"><span class="std std-ref">NWB_EXPORT_STIMSETS</span></a>) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nwbVersion</span></code>: [optional, defaults to latest version] major NWB version </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426NWB_AppendStoredTestPulses6string8variable8variable8variable">
+<span id="_CPPv326NWB_AppendStoredTestPulses6string8variable8variable8variable"></span><span id="_CPPv226NWB_AppendStoredTestPulses6string8variable8variable8variable"></span><span id="NWB_AppendStoredTestPulses__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ade466f2a8cb41945922fe180da31857b"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_AppendStoredTestPulses</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <span class="pre">variable</span> <em><span class="pre">locationID</span></em>, <span class="pre">variable</span> <em><span class="pre">compressionMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426NWB_AppendStoredTestPulses6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Write the stored test pulses to the NWB file. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417NWB_AppendStimset8variable8variable6string8variable">
+<span id="_CPPv317NWB_AppendStimset8variable8variable6string8variable"></span><span id="_CPPv217NWB_AppendStimset8variable8variable6string8variable"></span><span id="NWB_AppendStimset__variable.variable.string.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a672480199efab8f7eb78ea00aa5073e8"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_AppendStimset</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <span class="pre">variable</span> <em><span class="pre">locationID</span></em>, <span class="pre">string</span> <em><span class="pre">stimsets</span></em>, <span class="pre">variable</span> <em><span class="pre">compressionMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417NWB_AppendStimset8variable8variable6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Export given stimsets to NWB file. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nwbVersion</span></code>: major NWB version </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">locationID</span></code>: Identifier of open hdf5 group or file </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stimsets</span></code>: Single stimset as string or list of stimsets sparated by ; </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compressionMode</span></code>: Type of compression to use, one of <a class="reference internal" href="../namespace/namespace_i_p_n_w_b.html#namespace_i_p_n_w_b_1CompressionMode"><span class="std std-ref">CompressionMode</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417NWB_PrepareExport8variableP8variable">
+<span id="_CPPv317NWB_PrepareExport8variableP8variable"></span><span id="_CPPv217NWB_PrepareExport8variableP8variable"></span><span id="NWB_PrepareExport__variable.variableP"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ad2d681671c57f7fc864238101df7da50"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_PrepareExport</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">createdNewNWBFile</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417NWB_PrepareExport8variableP8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Prepare everything for sweep-by-sweep NWB export. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv415NWB_AppendSweep6string4wave4wave8variable8variable">
+<span id="_CPPv315NWB_AppendSweep6string4wave4wave8variable8variable"></span><span id="_CPPv215NWB_AppendSweep6string4wave4wave8variable8variable"></span><span id="NWB_AppendSweep__string.wave.wave.variable.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1aadbc2136a1876e521ca15ddc629e8a9f"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_AppendSweep</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">wave</span> <em><span class="pre">DAQDataWave</span></em>, <span class="pre">wave</span> <em><span class="pre">DAQConfigWave</span></em>, <span class="pre">variable</span> <em><span class="pre">sweep</span></em>, <span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415NWB_AppendSweep6string4wave4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423NWB_GetStimsetFromPanel6string8variable">
+<span id="_CPPv323NWB_GetStimsetFromPanel6string8variable"></span><span id="_CPPv223NWB_GetStimsetFromPanel6string8variable"></span><span id="NWB_GetStimsetFromPanel__string.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a5bce2876e6883b7cbfa5f5b5f9c231f0"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">NWB_GetStimsetFromPanel</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">sweep</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423NWB_GetStimsetFromPanel6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get stimsets by analysing currently loaded sweep. </p>
+<p>numericalValues and textualValues are generated from panelTitle</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>list of stimsets </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431NWB_GetStimsetFromSpecificSweep6string6string8variable">
+<span id="_CPPv331NWB_GetStimsetFromSpecificSweep6string6string8variable"></span><span id="_CPPv231NWB_GetStimsetFromSpecificSweep6string6string8variable"></span><span id="NWB_GetStimsetFromSpecificSweep__string.string.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a5273661d599fa8ebd41037f5de711000"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">NWB_GetStimsetFromSpecificSweep</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">dataFolder</span></em>, <span class="pre">string</span> <em><span class="pre">device</span></em>, <span class="pre">variable</span> <em><span class="pre">sweep</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431NWB_GetStimsetFromSpecificSweep6string6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get stimsets by analysing dataFolder of loaded sweep. </p>
+<p>numericalValues and textualValues are generated from previously loaded data. used in the context of loading from a stored experiment file. on load a sweep is stored in a device/dataFolder hierarchy.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>list of stimsets </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430NWB_GetStimsetFromSweepGeneric8variable4wave8WaveText">
+<span id="_CPPv330NWB_GetStimsetFromSweepGeneric8variable4wave8WaveText"></span><span id="_CPPv230NWB_GetStimsetFromSweepGeneric8variable4wave8WaveText"></span><span id="NWB_GetStimsetFromSweepGeneric__variable.wave.WaveText"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ae677c7873191ad09c092c491aa795384"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">NWB_GetStimsetFromSweepGeneric</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">sweep</span></em>, <span class="pre">wave</span> <em><span class="pre">numericalValues</span></em>, <span class="pre">WaveText</span> <em><span class="pre">textualValues</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430NWB_GetStimsetFromSweepGeneric8variable4wave8WaveText" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Get related Stimsets by corresponding sweep. </p>
+<p>input numerical and textual values storage waves for current sweep</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>list of stimsets </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv423NWB_AppendSweepLowLevel8variable8variable6string4wave4wave8variable8variable">
+<span id="_CPPv323NWB_AppendSweepLowLevel8variable8variable6string4wave4wave8variable8variable"></span><span id="_CPPv223NWB_AppendSweepLowLevel8variable8variable6string4wave4wave8variable8variable"></span><span id="NWB_AppendSweepLowLevel__variable.variable.string.wave.wave.variable.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a498ea537df2a2109559306a4e614310c"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_AppendSweepLowLevel</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">locationID</span></em>, <span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">wave</span> <em><span class="pre">DAQDataWave</span></em>, <span class="pre">wave</span> <em><span class="pre">DAQConfigWave</span></em>, <span class="pre">variable</span> <em><span class="pre">sweep</span></em>, <span class="pre">variable</span> <em><span class="pre">compressionMode</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423NWB_AppendSweepLowLevel8variable8variable6string4wave4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427NWB_ClearWriteChannelParamsPN5IPNWB18WriteChannelParamsE">
+<span id="_CPPv327NWB_ClearWriteChannelParamsPN5IPNWB18WriteChannelParamsE"></span><span id="_CPPv227NWB_ClearWriteChannelParamsPN5IPNWB18WriteChannelParamsE"></span><span id="NWB_ClearWriteChannelParams__IPNWB::WriteChannelParamsP"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ad38afcb650654a8ab1ecc4e905649b52"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_ClearWriteChannelParams</span></code><span class="sig-paren">(</span><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html#_CPPv45IPNWB" title="IPNWB"><span class="pre">IPNWB</span></a><span class="pre">::</span><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv4N5IPNWB18WriteChannelParamsE" title="IPNWB::WriteChannelParams"><span class="pre">WriteChannelParams</span></a> <span class="pre">*</span><em><span class="pre">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427NWB_ClearWriteChannelParamsPN5IPNWB18WriteChannelParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Clear all entries which are channel specific. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426NWB_WriteStimsetCustomWave8variable8variable4wave8variable">
+<span id="_CPPv326NWB_WriteStimsetCustomWave8variable8variable4wave8variable"></span><span id="_CPPv226NWB_WriteStimsetCustomWave8variable8variable4wave8variable"></span><span id="NWB_WriteStimsetCustomWave__variable.variable.wave.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1aa7099539bda02c65545f18c1aec2f73a"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_WriteStimsetCustomWave</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <span class="pre">variable</span> <em><span class="pre">locationID</span></em>, <span class="pre">wave</span> <em><span class="pre">custom_wave</span></em>, <span class="pre">variable</span> <em><span class="pre">compressionMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426NWB_WriteStimsetCustomWave8variable8variable4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Save Custom Wave (from stimset) in NWB file. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">nwbVersion</span></code>: major NWB version </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">locationID</span></code>: Open HDF5 group or file identifier </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">custom_wave</span></code>: Wave reference to the wave that is to be saved </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compressionMode</span></code>: [optional, defaults to NO_COMPRESSION] Type of compression to use, one of <a class="reference internal" href="../namespace/namespace_i_p_n_w_b.html#namespace_i_p_n_w_b_1CompressionMode"><span class="std std-ref">CompressionMode</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429NWB_WriteStimsetTemplateWaves8variable8variable6string8variable">
+<span id="_CPPv329NWB_WriteStimsetTemplateWaves8variable8variable6string8variable"></span><span id="_CPPv229NWB_WriteStimsetTemplateWaves8variable8variable6string8variable"></span><span id="NWB_WriteStimsetTemplateWaves__variable.variable.string.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a5b947036534c5317677c8539758697c8"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_WriteStimsetTemplateWaves</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <span class="pre">variable</span> <em><span class="pre">locationID</span></em>, <span class="pre">string</span> <em><span class="pre">stimSet</span></em>, <span class="pre">variable</span> <em><span class="pre">compressionMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429NWB_WriteStimsetTemplateWaves8variable8variable6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv415NWB_LoadStimset8variable6string8variable8variable">
+<span id="_CPPv315NWB_LoadStimset8variable6string8variable8variable"></span><span id="_CPPv215NWB_LoadStimset8variable6string8variable8variable"></span><span id="NWB_LoadStimset__variable.string.variable.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ad5836121b526cef4771baf9811f337f7"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_LoadStimset</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">locationID</span></em>, <span class="pre">string</span> <em><span class="pre">stimset</span></em>, <span class="pre">variable</span> <em><span class="pre">overwrite</span></em>, <span class="pre">variable</span> <em><span class="pre">verbose</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415NWB_LoadStimset8variable6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load specified stimset from Stimset Group. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>1 on error </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">locationID</span></code>: id of an open hdf5 group containing the stimsets </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stimset</span></code>: string of stimset </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: [optional] set to get more output to the command line </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">overwrite</span></code>: indicate whether the stored stimsets should be deleted if they exist</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418NWB_LoadCustomWave8variable6string8variable">
+<span id="_CPPv318NWB_LoadCustomWave8variable6string8variable"></span><span id="_CPPv218NWB_LoadCustomWave8variable6string8variable"></span><span id="NWB_LoadCustomWave__variable.string.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a386fed70b1737f2bcf22f420cf2bf5fe"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_LoadCustomWave</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">locationID</span></em>, <span class="pre">string</span> <em><span class="pre">fullPath</span></em>, <span class="pre">variable</span> <em><span class="pre">overwrite</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418NWB_LoadCustomWave8variable6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load a custom wave from NWB file. </p>
+<p>loads waves that were saved by NWB_WriteStimsetCustomWave</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>1 on error and 0 on success </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">locationID</span></code>: open file or group from nwb file </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fullPath</span></code>: full Path in igor notation to custom wave </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">overwrite</span></code>: indicate whether the stored custom wave should be deleted if it exists</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419NWB_LoadAllStimsets8variable6string8variable">
+<span id="_CPPv319NWB_LoadAllStimsets8variable6string8variable"></span><span id="_CPPv219NWB_LoadAllStimsets8variable6string8variable"></span><span id="NWB_LoadAllStimsets__variable.string.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a28890855d3db4facb55ef725ce4a6341"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_LoadAllStimsets</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">overwrite</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">string</span> <em><span class="pre">fileName</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">loadOnlyBuiltins</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419NWB_LoadAllStimsets8variable6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load all stimsets from specified HDF5 file. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>1 on error and 0 on success </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fileName</span></code>: [optional, shows a dialog on default] provide full file name/path for loading stimset </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">overwrite</span></code>: [optional, defaults to false] indicate if the stored stimset should be deleted before the load. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">loadOnlyBuiltins</span></code>: [optional, defaults to false] load only builtin stimsets </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416NWB_LoadStimsets8variable6string8variable6string">
+<span id="_CPPv316NWB_LoadStimsets8variable6string8variable6string"></span><span id="_CPPv216NWB_LoadStimsets8variable6string8variable6string"></span><span id="NWB_LoadStimsets__variable.string.variable.string"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a79112af23d0f288e0c5e1df0d18cc8fe"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_LoadStimsets</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">groupID</span></em>, <span class="pre">string</span> <em><span class="pre">stimsets</span></em>, <span class="pre">variable</span> <em><span class="pre">overwrite</span></em>, <span class="pre">string</span> <em><span class="pre">processedStimsets</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416NWB_LoadStimsets8variable6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load specified stimsets and their dependencies from NWB file. </p>
+<p>see <a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html#_m_i_e_s___analysis_browser_8ipf_1a7747398a68545383fab9850a84b364ce"><span class="std std-ref">AB_LoadStimsets()</span></a> for similar structure</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>1 on error and 0 on success </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">groupID</span></code>: Open Stimset Group of HDF5 File. See <a class="reference internal" href="../namespace/namespace_i_p_n_w_b.html#namespace_i_p_n_w_b_1a0b2a8d71fd9e40ec64251c812a83a6fe"><span class="std std-ref">IPNWB::OpenStimset()</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stimsets</span></code>: “;” separated list of all stimsets of the current sweep. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">processedStimsets</span></code>: [optional] the list indicates which stimsets were already loaded. on recursion this parameter avoids duplicate circle references. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">overwrite</span></code>: indicate whether the stored stimsets should be deleted if they exist</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419NWB_LoadCustomWaves8variable6string8variable">
+<span id="_CPPv319NWB_LoadCustomWaves8variable6string8variable"></span><span id="_CPPv219NWB_LoadCustomWaves8variable6string8variable"></span><span id="NWB_LoadCustomWaves__variable.string.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a97d14cc8181ef75c44a361f0ffdec54b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_LoadCustomWaves</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">groupID</span></em>, <span class="pre">string</span> <em><span class="pre">stimsets</span></em>, <span class="pre">variable</span> <em><span class="pre">overwrite</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419NWB_LoadCustomWaves8variable6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load custom waves for specified stimset from Igor experiment file. </p>
+<p>see <a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html#_m_i_e_s___analysis_browser_8ipf_1a6edc7cc7fd3b09b213848dc2893ae590"><span class="std std-ref">AB_LoadCustomWaves()</span></a> for similar structure</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>1 on error and 0 on success </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427NWB_GetTimeSeriesProperties8variablePN5IPNWB18WriteChannelParamsEPN5IPNWB20TimeSeriesPropertiesE">
+<span id="_CPPv327NWB_GetTimeSeriesProperties8variablePN5IPNWB18WriteChannelParamsEPN5IPNWB20TimeSeriesPropertiesE"></span><span id="_CPPv227NWB_GetTimeSeriesProperties8variablePN5IPNWB18WriteChannelParamsEPN5IPNWB20TimeSeriesPropertiesE"></span><span id="NWB_GetTimeSeriesProperties__variable.IPNWB::WriteChannelParamsP.IPNWB::TimeSeriesPropertiesP"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a6486089e5fbbdded05c7ace8cb39f720"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_GetTimeSeriesProperties</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html#_CPPv45IPNWB" title="IPNWB"><span class="pre">IPNWB</span></a><span class="pre">::</span><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv4N5IPNWB18WriteChannelParamsE" title="IPNWB::WriteChannelParams"><span class="pre">WriteChannelParams</span></a> <span class="pre">*</span><em><span class="pre">p</span></em>, <a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html#_CPPv45IPNWB" title="IPNWB"><span class="pre">IPNWB</span></a><span class="pre">::</span><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv4N5IPNWB20TimeSeriesPropertiesE" title="IPNWB::TimeSeriesProperties"><span class="pre">TimeSeriesProperties</span></a> <span class="pre">*</span><em><span class="pre">tsp</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427NWB_GetTimeSeriesProperties8variablePN5IPNWB18WriteChannelParamsEPN5IPNWB20TimeSeriesPropertiesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420NWB_AddSweepDataSets8WaveText4wave8variable6string6string8variablePN5IPNWB20TimeSeriesPropertiesE8variable6string">
+<span id="_CPPv320NWB_AddSweepDataSets8WaveText4wave8variable6string6string8variablePN5IPNWB20TimeSeriesPropertiesE8variable6string"></span><span id="_CPPv220NWB_AddSweepDataSets8WaveText4wave8variable6string6string8variablePN5IPNWB20TimeSeriesPropertiesE8variable6string"></span><span id="NWB_AddSweepDataSets__WaveText.wave.variable.string.string.variable.IPNWB::TimeSeriesPropertiesP.variable.string"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a3984515282041ed5d3742f15aff29458"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_AddSweepDataSets</span></code><span class="sig-paren">(</span><span class="pre">WaveText</span> <em><span class="pre">numericalKeys</span></em>, <span class="pre">wave</span> <em><span class="pre">numericalValues</span></em>, <span class="pre">variable</span> <em><span class="pre">sweep</span></em>, <span class="pre">string</span> <em><span class="pre">settingsProp</span></em>, <span class="pre">string</span> <em><span class="pre">nwbProp</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em>, <a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html#_CPPv45IPNWB" title="IPNWB"><span class="pre">IPNWB</span></a><span class="pre">::</span><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html#_CPPv4N5IPNWB20TimeSeriesPropertiesE" title="IPNWB::TimeSeriesProperties"><span class="pre">TimeSeriesProperties</span></a> <span class="pre">*</span><em><span class="pre">tsp</span></em>, <span class="pre">variable</span> <em><span class="pre">factor</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">string</span> <em><span class="pre">enabledProp</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420NWB_AddSweepDataSets8WaveText4wave8variable6string6string8variablePN5IPNWB20TimeSeriesPropertiesE8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419NWB_LoadLabNoteBook8variable6string5dfref">
+<span id="_CPPv319NWB_LoadLabNoteBook8variable6string5dfref"></span><span id="_CPPv219NWB_LoadLabNoteBook8variable6string5dfref"></span><span id="NWB_LoadLabNoteBook__variable.string.dfref"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a0d55be94ca06f1660ae854fc6a7e859c"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_LoadLabNoteBook</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">locationID</span></em>, <span class="pre">string</span> <em><span class="pre">notebook</span></em>, <span class="pre">dfref</span> <em><span class="pre">dfr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419NWB_LoadLabNoteBook8variable6string5dfref" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>function saves contents of specified notebook to data folder </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">locationID</span></code>: id of nwb file or notebooks folder </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">notebook</span></code>: name of notebook to be loaded </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dfr</span></code>: igor data folder where data should be loaded into </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv49NWB_Flushv">
+<span id="_CPPv39NWB_Flushv"></span><span id="_CPPv29NWB_Flushv"></span><span id="NWB_Flush"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ac57461c0e94b6d020243c28c77a8f709"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_Flush</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49NWB_Flushv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Flushes the contents of the NWB file to disc. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421NWB_AppendIgorHistory8variable8variable">
+<span id="_CPPv321NWB_AppendIgorHistory8variable8variable"></span><span id="_CPPv221NWB_AppendIgorHistory8variable8variable"></span><span id="NWB_AppendIgorHistory__variable.variable"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1a703ae644bafcf9b9a505cc5604b7f4e3"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_AppendIgorHistory</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">nwbVersion</span></em>, <span class="pre">variable</span> <em><span class="pre">locationID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421NWB_AppendIgorHistory8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420NWB_StartThreadGroupv">
+<span id="_CPPv320NWB_StartThreadGroupv"></span><span id="_CPPv220NWB_StartThreadGroupv"></span><span id="NWB_StartThreadGroup"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1abb28329ec655e75f0dbc340a6173901f"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_StartThreadGroup</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420NWB_StartThreadGroupv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Start the thread group responsible for interacting with the NWB file. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv413NWB_SendFlushv">
+<span id="_CPPv313NWB_SendFlushv"></span><span id="_CPPv213NWB_SendFlushv"></span><span id="NWB_SendFlush"></span><span class="target" id="_m_i_e_s___neuro_data_without_borders_8ipf_1ab0eef65cc34672c42841fea59bdd04d5"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">NWB_SendFlush</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413NWB_SendFlushv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Worker function for the NWB thread group. </p>
+<p>Actions for variables in the input queue:<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">abort</span></code>: worker function will quit</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flushID</span></code>: HDF5FlushFile will be called and the contents of the variable treated as HDF5 fileID </p></li>
+</ul>
+</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_8ipf.html">File CompilationTester.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_utils_8ipf.html">File CompilationTesterUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___lab_notebook_t_p_storage_browser_8ipf.html">File MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html">File MIES_MiesUtilities.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___regenerate-_screenshots_8ipf.html">File MIES_Regenerate-Screenshots.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities_8ipf.html">File MIES_Utilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_8h.html">File interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="_m_i_e_s___mies_utilities_8ipf.html"
+                        title="previous chapter">File MIES_MiesUtilities.ipf</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html"
+                        title="next chapter">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html" title="File MIES_OptimzedOverlapDistributedAcquisition.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___mies_utilities_8ipf.html" title="File MIES_MiesUtilities.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_NeuroDataWithoutBorders.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

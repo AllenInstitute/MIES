@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Group AnalysisFunctionParameterHelpers &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Group BackgroundFunctions" href="group___background_functions.html" />
+    <link rel="prev" title="Group list" href="../grouplist.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="group___background_functions.html" title="Group BackgroundFunctions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../grouplist.html" title="Group list"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../grouplist.html" accesskey="U">Group list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Group AnalysisFunctionParameterHelpers</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="group-analysisfunctionparameterhelpers">
+<span id="id1"></span><h1>Group AnalysisFunctionParameterHelpers<a class="headerlink" href="#group-analysisfunctionparameterhelpers" title="Permalink to this headline">¶</a></h1>
+<dl class="group">
+<dt>
+<span class="target" id="group___analysis_function_parameter_helpers"></span><em><span class="pre">group</span></em> <code class="sig-name descname"><span class="pre">AnalysisFunctionParameterHelpers</span></code></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv431AFH_GetListOfAnalysisParamNames6string">
+<span id="_CPPv331AFH_GetListOfAnalysisParamNames6string"></span><span id="_CPPv231AFH_GetListOfAnalysisParamNames6string"></span><span id="AFH_GetListOfAnalysisParamNames__string"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga9645ceb81449387aba05fe9a87090555"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">AFH_GetListOfAnalysisParamNames</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">params</span></em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return a semicolon separated list of user parameters. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: serialized parameters, usually just <a class="reference internal" href="../struct/struct_analysis_function___v3.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424AFH_GetAnalysisParamType6string6string8variable6string">
+<span id="_CPPv324AFH_GetAnalysisParamType6string6string8variable6string"></span><span id="_CPPv224AFH_GetAnalysisParamType6string6string8variable6string"></span><span id="AFH_GetAnalysisParamType__string.string.variable.string"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga9d81ca028147529468feda03316f9677"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">AFH_GetAnalysisParamType</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">name</span></em>, <span class="pre">string</span> <em><span class="pre">params</span></em>, <span class="pre">variable</span> <em><span class="pre">typeCheck</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">string</span> <em><span class="pre">expectedType</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return the type of the user parameter. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>one of <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AnalysisFunctionParameterTypes"><span class="std std-ref">AnalysisFunctionParameterTypes</span></a> or an empty string </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: parameter name </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: serialized parameters, usually just <a class="reference internal" href="../struct/struct_analysis_function___v3.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">typeCheck</span></code>: [optional, defaults to true] Check with an assertion that the readout type is one of <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693"><span class="std std-ref">ANALYSIS_FUNCTION_PARAMS_TYPES</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expectedType</span></code>: [optional, defaults to nothing] Expected type, one of <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693"><span class="std std-ref">ANALYSIS_FUNCTION_PARAMS_TYPES</span></a>, aborts if the type does not match. Implies <code class="docutils literal notranslate"><span class="pre">typeCheck</span> <span class="pre">=</span> <span class="pre">true</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv429AFH_GetAnalysisParamNumerical6string6string8variable">
+<span id="_CPPv329AFH_GetAnalysisParamNumerical6string6string8variable"></span><span id="_CPPv229AFH_GetAnalysisParamNumerical6string6string8variable"></span><span id="AFH_GetAnalysisParamNumerical__string.string.variable"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga103b55b9df15b04b15e63104a0932a5f"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AFH_GetAnalysisParamNumerical</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">name</span></em>, <span class="pre">string</span> <em><span class="pre">params</span></em>, <span class="pre">variable</span> <em><span class="pre">defValue</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return a numerical user parameter. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: parameter name </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: serialized parameters, usually just <a class="reference internal" href="../struct/struct_analysis_function___v3.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">defValue</span></code>: [optional, defaults to <code class="docutils literal notranslate"><span class="pre">NaN</span></code>] return this value if the parameter could not be found </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427AFH_GetAnalysisParamTextual6string6string6string8variable">
+<span id="_CPPv327AFH_GetAnalysisParamTextual6string6string6string8variable"></span><span id="_CPPv227AFH_GetAnalysisParamTextual6string6string6string8variable"></span><span id="AFH_GetAnalysisParamTextual__string.string.string.variable"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga4dd3afecb84b6c93d2805e909d010d6a"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">AFH_GetAnalysisParamTextual</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">name</span></em>, <span class="pre">string</span> <em><span class="pre">params</span></em>, <span class="pre">string</span> <em><span class="pre">defValue</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">percentDecoded</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return a textual user parameter. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: parameter name </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: serialized parameters, usually just <a class="reference internal" href="../struct/struct_analysis_function___v3.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">defValue</span></code>: [optional, defaults to an empty string] return this value if the parameter could not be found </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">percentDecoded</span></code>: [optional, defaults to true] if the return value should be percent decoded or not. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424AFH_GetAnalysisParamWave6string6string4wave">
+<span id="_CPPv324AFH_GetAnalysisParamWave6string6string4wave"></span><span id="_CPPv224AFH_GetAnalysisParamWave6string6string4wave"></span><span id="AFH_GetAnalysisParamWave__string.string.wave"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga994c57650465ca7b91f335da572ead3c"></span><span class="pre">wave</span> <code class="sig-name descname"><span class="pre">AFH_GetAnalysisParamWave</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">name</span></em>, <span class="pre">string</span> <em><span class="pre">params</span></em>, <span class="pre">wave</span> <em><span class="pre">defValue</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return a numerical wave user parameter. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>wave reference to free numeric wave, or invalid wave ref in case the parameter could not be found. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: parameter name </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: serialized parameters, usually just <a class="reference internal" href="../struct/struct_analysis_function___v3.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">defValue</span></code>: [optional, defaults to an invalid wave ref] return this value if the parameter could not be found</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428AFH_GetAnalysisParamTextWave6string6string8WaveText8variable">
+<span id="_CPPv328AFH_GetAnalysisParamTextWave6string6string8WaveText8variable"></span><span id="_CPPv228AFH_GetAnalysisParamTextWave6string6string8WaveText8variable"></span><span id="AFH_GetAnalysisParamTextWave__string.string.WaveText.variable"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga9c2c14f997e3dff554795d31b4d99279"></span><span class="pre">wave</span> <code class="sig-name descname"><span class="pre">AFH_GetAnalysisParamTextWave</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">name</span></em>, <span class="pre">string</span> <em><span class="pre">params</span></em>, <span class="pre">WaveText</span> <em><span class="pre">defValue</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">percentDecoded</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return a textual wave user parameter. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>wave reference to free text wave, or invalid wave ref in case the parameter could not be found. </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: parameter name </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: serialized parameters, usually just <a class="reference internal" href="../struct/struct_analysis_function___v3.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">defValue</span></code>: [optional, defaults to an invalid wave ref] return this value if the parameter could not be found </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">percentDecoded</span></code>: [optional, defaults to true] if the return value should be percent decoded or not.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428AFH_IsValidAnalysisParameter6string">
+<span id="_CPPv328AFH_IsValidAnalysisParameter6string"></span><span id="_CPPv228AFH_IsValidAnalysisParameter6string"></span><span id="AFH_IsValidAnalysisParameter__string"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga381c6b24b86e3d9c0a07e15b212ca4a0"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AFH_IsValidAnalysisParameter</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">name</span></em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Check if the given name is a valid user parameter name. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv428AFH_IsValidAnalysisParamType6string">
+<span id="_CPPv328AFH_IsValidAnalysisParamType6string"></span><span id="_CPPv228AFH_IsValidAnalysisParamType6string"></span><span id="AFH_IsValidAnalysisParamType__string"></span><span class="target" id="group___analysis_function_parameter_helpers_1gabf106e2fc04288afbd02155c75706e22"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AFH_IsValidAnalysisParamType</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">type</span></em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Check if the given type is a valid user parameter type. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424AFH_GetAnalysisParameter6string6string6string">
+<span id="_CPPv324AFH_GetAnalysisParameter6string6string6string"></span><span id="_CPPv224AFH_GetAnalysisParameter6string6string6string"></span><span id="AFH_GetAnalysisParameter__string.string.string"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga5efb1c31abf1f6a315982c61e4c7ae35"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">AFH_GetAnalysisParameter</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">name</span></em>, <span class="pre">string</span> <em><span class="pre">params</span></em>, <span class="pre">string</span> <em><span class="pre">expectedType</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Return an user parameter’s value as string. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: parameter name </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: serialized parameters, usually just <a class="reference internal" href="../struct/struct_analysis_function___v3.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expectedType</span></code>: [optional, defaults to nothing] Expected type, one of <a class="reference internal" href="../file/_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a20205925aea4ef8dc60c6abd7854e693"><span class="std std-ref">ANALYSIS_FUNCTION_PARAMS_TYPES</span></a>, aborts if the type does not match. </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427AFH_RemoveAnalysisParameter6string6string">
+<span id="_CPPv327AFH_RemoveAnalysisParameter6string6string"></span><span id="_CPPv227AFH_RemoveAnalysisParameter6string6string"></span><span id="AFH_RemoveAnalysisParameter__string.string"></span><span class="target" id="group___analysis_function_parameter_helpers_1ga97364b5855c3e95be4bd98a383ab7f72"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">AFH_RemoveAnalysisParameter</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">name</span></em>, <span class="pre">string</span> <em><span class="pre">params</span></em><span class="sig-paren">)</span><br /></dt>
+<dd><p>Delete the given user parameter name. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>serialized parameters with <code class="docutils literal notranslate"><span class="pre">name</span></code> removed </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: parameter name </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">params</span></code>: serialized parameters, usually just <a class="reference internal" href="../struct/struct_analysis_function___v3.html#struct_analysis_function___v3_1a0fc46d4a2669a3d601c070ba209d1574"><span class="std std-ref">AnalysisFunction_V3.params</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../grouplist.html">Group list</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Group AnalysisFunctionParameterHelpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group___background_functions.html">Group BackgroundFunctions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group___labnotebook_query_functions.html">Group LabnotebookQueryFunctions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="group___wave_versioning_support.html">Group WaveVersioningSupport</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../grouplist.html"
+                        title="previous chapter">Group list</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="group___background_functions.html"
+                        title="next chapter">Group BackgroundFunctions</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="group___background_functions.html" title="Group BackgroundFunctions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../grouplist.html" title="Group list"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../grouplist.html" >Group list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Group AnalysisFunctionParameterHelpers</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

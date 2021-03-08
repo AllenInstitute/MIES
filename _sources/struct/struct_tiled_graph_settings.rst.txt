@@ -1,0 +1,4 @@
+Struct TiledGraphSettings
+=========================
+
+.. doxygenstruct:: TiledGraphSettings

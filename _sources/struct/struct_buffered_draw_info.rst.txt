@@ -1,0 +1,4 @@
+Struct BufferedDrawInfo
+=======================
+
+.. doxygenstruct:: BufferedDrawInfo

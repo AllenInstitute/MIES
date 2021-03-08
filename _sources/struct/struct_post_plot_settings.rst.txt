@@ -1,0 +1,4 @@
+Struct PostPlotSettings
+=======================
+
+.. doxygenstruct:: PostPlotSettings

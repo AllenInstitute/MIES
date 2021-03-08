@@ -1,0 +1,651 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File MIES_AmplifierInteraction.ipf &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_AnalysisBrowser.ipf" href="_m_i_e_s___analysis_browser_8ipf.html" />
+    <link rel="prev" title="File IPNWB_Writer.ipf" href="_i_p_n_w_b___writer_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_browser_8ipf.html" title="File MIES_AnalysisBrowser.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___writer_8ipf.html" title="File IPNWB_Writer.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_AmplifierInteraction.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="file-mies-amplifierinteraction-ipf">
+<span id="id1"></span><h1>File MIES_AmplifierInteraction.ipf<a class="headerlink" href="#file-mies-amplifierinteraction-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>AI</strong> Interface with the Axon/MCC amplifiers </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv426AI_InitAxonTelegraphStructP24AxonTelegraph_DataStruct">
+<span id="_CPPv326AI_InitAxonTelegraphStructP24AxonTelegraph_DataStruct"></span><span id="_CPPv226AI_InitAxonTelegraphStructP24AxonTelegraph_DataStruct"></span><span id="AI_InitAxonTelegraphStruct__AxonTelegraph_DataStructP"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a1d588a28ea5c33a5f4c04ca69a8bbc34"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_InitAxonTelegraphStruct</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv424AxonTelegraph_DataStruct" title="AxonTelegraph_DataStruct"><span class="pre">AxonTelegraph_DataStruct</span></a> <span class="pre">*</span><em><span class="pre">tds</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AI_InitAxonTelegraphStructP24AxonTelegraph_DataStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419AI_GetAmpAxonSerial6string8variable">
+<span id="_CPPv319AI_GetAmpAxonSerial6string8variable"></span><span id="_CPPv219AI_GetAmpAxonSerial6string8variable"></span><span id="AI_GetAmpAxonSerial__string.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1afba4fd94f932fceebc52a095f5804c7c"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_GetAmpAxonSerial</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419AI_GetAmpAxonSerial6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the serial number of the headstage compatible with Axon* functions,. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1ae8e86ffd2248ac3ae82bb9e71eb9a794"><span class="std std-ref">GetChanAmpAssign</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418AI_GetAmpMCCSerial6string8variable">
+<span id="_CPPv318AI_GetAmpMCCSerial6string8variable"></span><span id="_CPPv218AI_GetAmpMCCSerial6string8variable"></span><span id="AI_GetAmpMCCSerial__string.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1ac58702c559a90c8b478bcd75910fada5"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">AI_GetAmpMCCSerial</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418AI_GetAmpMCCSerial6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Returns the serial number of the headstage compatible with MCC* functions,. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html#_m_i_e_s___wave_data_folder_getters_8ipf_1ae8e86ffd2248ac3ae82bb9e71eb9a794"><span class="std std-ref">GetChanAmpAssign</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416AI_GetAmpChannel6string8variable">
+<span id="_CPPv316AI_GetAmpChannel6string8variable"></span><span id="_CPPv216AI_GetAmpChannel6string8variable"></span><span id="AI_GetAmpChannel__string.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a2fa19c4bd87d02f500343468470d2228"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_GetAmpChannel</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416AI_GetAmpChannel6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the channel of the currently selected head stage. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426AI_IsValidSerialAndChannel6string8variable8variable">
+<span id="_CPPv326AI_IsValidSerialAndChannel6string8variable8variable"></span><span id="_CPPv226AI_IsValidSerialAndChannel6string8variable8variable"></span><span id="AI_IsValidSerialAndChannel__string.variable.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a3db904f0b5e55d2782393d0d25cc01af"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_IsValidSerialAndChannel</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">mccSerial</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">axonSerial</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">channel</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426AI_IsValidSerialAndChannel6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv414AI_GetMCCScale8variable8variable">
+<span id="_CPPv314AI_GetMCCScale8variable8variable"></span><span id="_CPPv214AI_GetMCCScale8variable8variable"></span><span id="AI_GetMCCScale__variable.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1aabd82a91ce2838c781cf420aeaf8709e"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_GetMCCScale</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">clampMode</span></em>, <span class="pre">variable</span> <em><span class="pre">func</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414AI_GetMCCScale8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the unit prefixes used by MIES in comparison to the MCC app. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">clampMode</span></code>: clamp mode (pass <code class="docutils literal notranslate"><span class="pre">NaN</span></code> for doesn’t matter) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">func</span></code>: MCC function, one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1AI_SendToAmpConstants"><span class="std std-ref">AI_SendToAmpConstants</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417AI_UpdateAmpModel6string6string8variable8variable8variable8variable8variable">
+<span id="_CPPv317AI_UpdateAmpModel6string6string8variable8variable8variable8variable8variable"></span><span id="_CPPv217AI_UpdateAmpModel6string6string8variable8variable8variable8variable8variable"></span><span id="AI_UpdateAmpModel__string.string.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a67c64729079e99385018a424f937da39"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_UpdateAmpModel</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">string</span> <em><span class="pre">ctrl</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">variable</span> <em><span class="pre">value</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">sendToAll</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">checkBeforeWrite</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">selectAmp</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417AI_UpdateAmpModel6string6string8variable8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Update the AmpStorageWave entry and send the value to the amplifier. </p>
+<p>Additionally setting the GUI value if the given headstage is the selected one and a value has been passed.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>0 on success, 1 otherwise </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ctrl</span></code>: name of the amplifier control </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headStage</span></code>: MIES headstage number, must be in the range [0, NUM_HEADSTAGES] </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: [optional: defaults to the controls value] value to set. values is in MIES units, see <a class="reference internal" href="#_m_i_e_s___amplifier_interaction_8ipf_1ae2daea1fd8131656ffc156a208193c93"><span class="std std-ref">AI_SendToAmp()</span></a> and there the description of <code class="docutils literal notranslate"><span class="pre">usePrefixes</span></code>. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sendToAll</span></code>: [optional: defaults to the state of the checkbox] should the value be send to all active headstages (true) or just to the given one (false) </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">checkBeforeWrite</span></code>: [optional, defaults to false] (ignored for getter functions) check the current value and do nothing if it is equal within some tolerance to the one written </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">selectAmp</span></code>: [optional, defaults to true] Select the amplifier before use, some callers might save time in doing that once themselves.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422AI_SyncAmpStorageToGUI6string8variable">
+<span id="_CPPv322AI_SyncAmpStorageToGUI6string8variable"></span><span id="_CPPv222AI_SyncAmpStorageToGUI6string8variable"></span><span id="AI_SyncAmpStorageToGUI__string.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1ab72d26630c2aedaa320602bee6f4e659"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_SyncAmpStorageToGUI</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422AI_SyncAmpStorageToGUI6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Convenience wrapper for <a class="reference internal" href="#_m_i_e_s___amplifier_interaction_8ipf_1a0cc75e05ac63a2990f8b0ba70c31a688"><span class="std std-ref">AI_UpdateAmpView</span></a>. </p>
+<p>Disallows setting single controls for outside callers as <a class="reference internal" href="#_m_i_e_s___amplifier_interaction_8ipf_1a67c64729079e99385018a424f937da39"><span class="std std-ref">AI_UpdateAmpModel</span></a> should be used for that. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431AI_SyncGUIToAmpStorageAndMCCApp6string8variable8variable">
+<span id="_CPPv331AI_SyncGUIToAmpStorageAndMCCApp6string8variable8variable"></span><span id="_CPPv231AI_SyncGUIToAmpStorageAndMCCApp6string8variable8variable"></span><span id="AI_SyncGUIToAmpStorageAndMCCApp__string.variable.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1ab3aefcedadcce02f7971579dd83aa3ce"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_SyncGUIToAmpStorageAndMCCApp</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431AI_SyncGUIToAmpStorageAndMCCApp6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sync the settings from the GUI to the amp storage wave and the MCC application. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416AI_UpdateAmpView6string8variable6string">
+<span id="_CPPv316AI_UpdateAmpView6string8variable6string"></span><span id="_CPPv216AI_UpdateAmpView6string8variable6string"></span><span id="AI_UpdateAmpView__string.variable.string"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a0cc75e05ac63a2990f8b0ba70c31a688"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_UpdateAmpView</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">string</span> <em><span class="pre">ctrl</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416AI_UpdateAmpView6string8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Synchronizes the AmpStorageWave to the amplifier GUI control. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headStage</span></code>: MIES headstage number, must be in the range [0, NUM_HEADSTAGES] </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ctrl</span></code>: [optional, defaults to all controls] name of the control being updated </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430AI_AmpStorageControlToRowLabel6string">
+<span id="_CPPv330AI_AmpStorageControlToRowLabel6string"></span><span id="_CPPv230AI_AmpStorageControlToRowLabel6string"></span><span id="AI_AmpStorageControlToRowLabel__string"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a0a3275b07469e72377963428d5f5776d"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">AI_AmpStorageControlToRowLabel</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">ctrl</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430AI_AmpStorageControlToRowLabel6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Convert amplifier controls to row labels for <code class="docutils literal notranslate"><span class="pre">AmpStorageWave</span></code> </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419AI_SetMIESHeadstage6string8variable8variable">
+<span id="_CPPv319AI_SetMIESHeadstage6string8variable8variable"></span><span id="_CPPv219AI_SetMIESHeadstage6string8variable8variable"></span><span id="AI_SetMIESHeadstage__string.variable.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1adb1f6e7ed2f90a9e838474257e5e65dd"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_SetMIESHeadstage</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">increment</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419AI_SetMIESHeadstage6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv411AI_ZeroAmps6string8variable">
+<span id="_CPPv311AI_ZeroAmps6string8variable"></span><span id="_CPPv211AI_ZeroAmps6string8variable"></span><span id="AI_ZeroAmps__string.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1aa990e1256923eaabd53a7c8bb2ae3108"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_ZeroAmps</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411AI_ZeroAmps6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Executes MCC auto zero command if the baseline current exceeds <a class="reference internal" href="#_m_i_e_s___amplifier_interaction_8ipf_1a20b0c9b0682d3f63648ca9b296c414d6"><span class="std std-ref">ZERO_TOLERANCE</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headStage</span></code>: [optional: defaults to all active headstages] </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424AI_MIESAutoPipetteOffset6string8variable">
+<span id="_CPPv324AI_MIESAutoPipetteOffset6string8variable"></span><span id="_CPPv224AI_MIESAutoPipetteOffset6string8variable"></span><span id="AI_MIESAutoPipetteOffset__string.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1af9b91a5020fb27d063478449d59ac57e"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_MIESAutoPipetteOffset</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424AI_MIESAutoPipetteOffset6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Auto pipette zeroing Quicker than MCC auto pipette offset. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headStage</span></code>: MIES headstage number, must be in the range [0, NUM_HEADSTAGES] </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430AI_QueryGainsUnitsForClampMode6string8variable8variableP8variableP8variableP6stringP6string">
+<span id="_CPPv330AI_QueryGainsUnitsForClampMode6string8variable8variableP8variableP8variableP6stringP6string"></span><span id="_CPPv230AI_QueryGainsUnitsForClampMode6string8variable8variableP8variableP8variableP6stringP6string"></span><span id="AI_QueryGainsUnitsForClampMode__string.variable.variable.variableP.variableP.stringP.stringP"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a03d5bb8f2b099cc49e4cc8988ae6d6b3"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_QueryGainsUnitsForClampMode</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">DAGain</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">ADGain</span></em>, <span class="pre">string</span> <span class="pre">*</span><em><span class="pre">DAUnit</span></em>, <span class="pre">string</span> <span class="pre">*</span><em><span class="pre">ADUnit</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430AI_QueryGainsUnitsForClampMode6string8variable8variableP8variableP8variableP6stringP6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Query the MCC application for the gains and units of the given clamp mode. </p>
+<p>Assumes that the correct amplifier is already selected! </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422AI_UpdateChanAmpAssign6string8variable8variable8variable8variable6string6string">
+<span id="_CPPv322AI_UpdateChanAmpAssign6string8variable8variable8variable8variable6string6string"></span><span id="_CPPv222AI_UpdateChanAmpAssign6string8variable8variable8variable8variable6string6string"></span><span id="AI_UpdateChanAmpAssign__string.variable.variable.variable.variable.string.string"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1aecd3540d81f66329366f03653e00685b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_UpdateChanAmpAssign</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em>, <span class="pre">variable</span> <em><span class="pre">DAGain</span></em>, <span class="pre">variable</span> <em><span class="pre">ADGain</span></em>, <span class="pre">string</span> <em><span class="pre">DAUnit</span></em>, <span class="pre">string</span> <em><span class="pre">ADUnit</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422AI_UpdateChanAmpAssign6string8variable8variable8variable8variable6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Update the <code class="docutils literal notranslate"><span class="pre">ChanAmpAssign</span></code> and <code class="docutils literal notranslate"><span class="pre">ChanAmpAssignUnit</span></code> waves according to the passed clamp mode with the gains and units. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427AI_AssertOnInvalidClampMode8variable">
+<span id="_CPPv327AI_AssertOnInvalidClampMode8variable"></span><span id="_CPPv227AI_AssertOnInvalidClampMode8variable"></span><span id="AI_AssertOnInvalidClampMode__variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a847ba2c06ca9afd41d65956d336e59d7"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_AssertOnInvalidClampMode</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">clampMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427AI_AssertOnInvalidClampMode8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Assert on invalid clamp modes, does nothing otherwise. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419AI_IsValidClampMode8variable">
+<span id="_CPPv319AI_IsValidClampMode8variable"></span><span id="_CPPv219AI_IsValidClampMode8variable"></span><span id="AI_IsValidClampMode__variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a63db4af38c39eb171a045023e6869e2e"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_IsValidClampMode</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">clampMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419AI_IsValidClampMode8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return true if the given clamp mode is valid. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv411AI_OpenMCCs6string6string">
+<span id="_CPPv311AI_OpenMCCs6string6string"></span><span id="_CPPv211AI_OpenMCCs6string6string"></span><span id="AI_OpenMCCs__string.string"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a3f710ef1a81bebcba9598b7308f39daa"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_OpenMCCs</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">ampSerialNumList</span></em>, <span class="pre">string</span> <em><span class="pre">ampTitleList</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411AI_OpenMCCs6string6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Opens Multi-clamp commander software. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>1 if all unique MCCs specified in ampSerialNumList were opened, 0 if one or more MCCs specified in ampSerialNumList were not able to be opened </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ampSerialNumList</span></code>: A text list of amplifier serial numbers without leading zeroes Ex. “834001;435003;836059”, “0;” starts the MCC in Demo mode Duplicate serial numbers are ignored as well as amplifier titles for the duplicates. For each unique serial number one MCC is opened. </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ampTitleList</span></code>: [optional, defaults to blank] MCC gui window title </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv422AI_GetMCCSerialNumbersv">
+<span id="_CPPv322AI_GetMCCSerialNumbersv"></span><span id="_CPPv222AI_GetMCCSerialNumbersv"></span><span id="AI_GetMCCSerialNumbers"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a3af0ad87eec81963385f8fb6d617b28e"></span><em class="property"><span class="pre">static</span></em> <span class="pre">wave</span> <code class="sig-name descname"><span class="pre">AI_GetMCCSerialNumbers</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422AI_GetMCCSerialNumbersv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Gets the serial numbers of all open MCCs. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>a 1D FREE wave containing amplifier serial numbers without leading zeroes </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420AI_GetMCCWinFilePathv">
+<span id="_CPPv320AI_GetMCCWinFilePathv"></span><span id="_CPPv220AI_GetMCCWinFilePathv"></span><span id="AI_GetMCCWinFilePath"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a4ced37e8376af8d3a96e5e17a9bda5d5"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">AI_GetMCCWinFilePath</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AI_GetMCCWinFilePathv" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a path to the MCC. </p>
+<p>Hardcoded as Igor does not allow to query that information.</p>
+<p>Distinguishes between i386 and x64 Igor versions </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420AI_GetHoldingCommand6string8variable">
+<span id="_CPPv320AI_GetHoldingCommand6string8variable"></span><span id="_CPPv220AI_GetHoldingCommand6string8variable"></span><span id="AI_GetHoldingCommand__string.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a2a1cea9933819bf7d3ff9f65a3512a1a"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_GetHoldingCommand</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AI_GetHoldingCommand6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv410AI_GetMode6string8variable">
+<span id="_CPPv310AI_GetMode6string8variable"></span><span id="_CPPv210AI_GetMode6string8variable"></span><span id="AI_GetMode__string.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a809f72e0f3604de6bf6a5cd414f95757"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_GetMode</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410AI_GetMode6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416AI_RetrieveGains6string8variable8variableP8variableP8variable">
+<span id="_CPPv316AI_RetrieveGains6string8variable8variableP8variableP8variable"></span><span id="_CPPv216AI_RetrieveGains6string8variable8variableP8variableP8variable"></span><span id="AI_RetrieveGains__string.variable.variable.variableP.variableP"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a646d00ef011a6aca085a14763d68257e"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_RetrieveGains</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headstage</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">ADGain</span></em>, <span class="pre">variable</span> <span class="pre">*</span><em><span class="pre">DAGain</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416AI_RetrieveGains6string8variable8variableP8variableP8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420AI_SwitchAxonAmpModev">
+<span id="_CPPv320AI_SwitchAxonAmpModev"></span><span id="_CPPv220AI_SwitchAxonAmpModev"></span><span id="AI_SwitchAxonAmpMode"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a57dc1178ffd75ea3850db877d9d203e4"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_SwitchAxonAmpMode</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AI_SwitchAxonAmpModev" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419AI_SelectMultiClamp6string8variable">
+<span id="_CPPv319AI_SelectMultiClamp6string8variable"></span><span id="_CPPv219AI_SelectMultiClamp6string8variable"></span><span id="AI_SelectMultiClamp__string.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a4974d715451df97e9dbb516484b9f95b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_SelectMultiClamp</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419AI_SelectMultiClamp6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv415AI_SetClampMode6string8variable8variable8variable">
+<span id="_CPPv315AI_SetClampMode6string8variable8variable8variable"></span><span id="_CPPv215AI_SetClampMode6string8variable8variable8variable"></span><span id="AI_SetClampMode__string.variable.variable.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1adb038a35b11f76317fdb7d20e112d99a"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_SetClampMode</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">variable</span> <em><span class="pre">mode</span></em>, <span class="pre">variable</span> <em><span class="pre">zeroStep</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415AI_SetClampMode6string8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv412AI_SendToAmp6string8variable8variable8variable8variable8variable8variable8variable">
+<span id="_CPPv312AI_SendToAmp6string8variable8variable8variable8variable8variable8variable8variable"></span><span id="_CPPv212AI_SendToAmp6string8variable8variable8variable8variable8variable8variable8variable"></span><span id="AI_SendToAmp__string.variable.variable.variable.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1ae2daea1fd8131656ffc156a208193c93"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_SendToAmp</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">variable</span> <em><span class="pre">mode</span></em>, <span class="pre">variable</span> <em><span class="pre">func</span></em>, <span class="pre">variable</span> <em><span class="pre">value</span></em>, <span class="pre">variable</span> <em><span class="pre">checkBeforeWrite</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">usePrefixes</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span>, <span class="pre">variable</span> <em><span class="pre">selectAmp</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412AI_SendToAmp6string8variable8variable8variable8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420AI_EnsureCorrectMode6string8variable8variable">
+<span id="_CPPv320AI_EnsureCorrectMode6string8variable8variable"></span><span id="_CPPv220AI_EnsureCorrectMode6string8variable8variable"></span><span id="AI_EnsureCorrectMode__string.variable.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a94a3fff62b69daaec309918f010cb5d8"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_EnsureCorrectMode</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">headStage</span></em>, <span class="pre">variable</span> <em><span class="pre">selectAmp</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AI_EnsureCorrectMode6string8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430AI_FillAndSendAmpliferSettings6string8variable">
+<span id="_CPPv330AI_FillAndSendAmpliferSettings6string8variable"></span><span id="_CPPv230AI_FillAndSendAmpliferSettings6string8variable"></span><span id="AI_FillAndSendAmpliferSettings__string.variable"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a37e031a104a6b6ddfdaf4e1f263142ec"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_FillAndSendAmpliferSettings</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">sweepNo</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430AI_FillAndSendAmpliferSettings6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420AI_QueryGainsFromMCC6string">
+<span id="_CPPv320AI_QueryGainsFromMCC6string"></span><span id="_CPPv220AI_QueryGainsFromMCC6string"></span><span id="AI_QueryGainsFromMCC__string"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a72f52fa8746813fe75dbd03b0aa2b26c"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_QueryGainsFromMCC</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AI_QueryGainsFromMCC6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420AI_FindConnectedAmpsv">
+<span id="_CPPv320AI_FindConnectedAmpsv"></span><span id="_CPPv220AI_FindConnectedAmpsv"></span><span id="AI_FindConnectedAmps"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a998ef792f249288a6eacc762cb20e680"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">AI_FindConnectedAmps</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420AI_FindConnectedAmpsv" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Variables</p>
+<dl class="cpp var">
+<dt id="_CPPv414ZERO_TOLERANCE">
+<span id="_CPPv314ZERO_TOLERANCE"></span><span id="_CPPv214ZERO_TOLERANCE"></span><span id="ZERO_TOLERANCE__doubleC"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a20b0c9b0682d3f63648ca9b296c414d6"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">ZERO_TOLERANCE</span></code> <span class="pre">=</span> <span class="pre">100</span><a class="headerlink" href="#_CPPv414ZERO_TOLERANCE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv421AMPLIFIER_CONTROLS_VC">
+<span id="_CPPv321AMPLIFIER_CONTROLS_VC"></span><span id="_CPPv221AMPLIFIER_CONTROLS_VC"></span><span id="AMPLIFIER_CONTROLS_VC__stringC"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a39d2afc2f560edf1a190a53879a404fa"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">AMPLIFIER_CONTROLS_VC</span></code> <span class="pre">=</span> <span class="pre">&quot;setvar_DataAcq_Hold_VC;check_DataAcq_Amp_Chain;check_DatAcq_HoldEnableVC;setvar_DataAcq_WCC;setvar_DataAcq_WCR;check_DatAcq_WholeCellEnable;setvar_DataAcq_RsCorr;setvar_DataAcq_RsPred;check_DataAcq_Amp_Chain;check_DatAcq_RsCompEnable;setvar_DataAcq_PipetteOffset_VC;button_DataAcq_FastComp_VC;button_DataAcq_SlowComp_VC;button_DataAcq_AutoPipOffset_VC&quot;</span><a class="headerlink" href="#_CPPv421AMPLIFIER_CONTROLS_VC" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv421AMPLIFIER_CONTROLS_IC">
+<span id="_CPPv321AMPLIFIER_CONTROLS_IC"></span><span id="_CPPv221AMPLIFIER_CONTROLS_IC"></span><span id="AMPLIFIER_CONTROLS_IC__stringC"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a94929a598e1576f47f2e24ab0f470ad7"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">AMPLIFIER_CONTROLS_IC</span></code> <span class="pre">=</span> <span class="pre">&quot;setvar_DataAcq_Hold_IC;check_DatAcq_HoldEnable;setvar_DataAcq_BB;check_DatAcq_BBEnable;setvar_DataAcq_CN;check_DatAcq_CNEnable;setvar_DataAcq_AutoBiasV;setvar_DataAcq_AutoBiasVrange;setvar_DataAcq_IbiasMax;check_DataAcq_AutoBias;setvar_DataAcq_PipetteOffset_IC;button_DataAcq_AutoBridgeBal_IC&quot;</span><a class="headerlink" href="#_CPPv421AMPLIFIER_CONTROLS_IC" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv417MAX_PIPETTEOFFSET">
+<span id="_CPPv317MAX_PIPETTEOFFSET"></span><span id="_CPPv217MAX_PIPETTEOFFSET"></span><span id="MAX_PIPETTEOFFSET__doubleC"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1afda808714a7c7d6cd9284c4139af26e4"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">MAX_PIPETTEOFFSET</span></code> <span class="pre">=</span> <span class="pre">150</span><a class="headerlink" href="#_CPPv417MAX_PIPETTEOFFSET" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv417MIN_PIPETTEOFFSET">
+<span id="_CPPv317MIN_PIPETTEOFFSET"></span><span id="_CPPv217MIN_PIPETTEOFFSET"></span><span id="MIN_PIPETTEOFFSET__doubleC"></span><span class="target" id="_m_i_e_s___amplifier_interaction_8ipf_1a03f0a854ebf94e36e6f674d2c883a246"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">MIN_PIPETTEOFFSET</span></code> <span class="pre">=</span> <span class="pre">-</span><span class="pre">150</span><a class="headerlink" href="#_CPPv417MIN_PIPETTEOFFSET" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt id="_CPPv424AxonTelegraph_DataStruct">
+<span id="_CPPv324AxonTelegraph_DataStruct"></span><span id="_CPPv224AxonTelegraph_DataStruct"></span><span id="AxonTelegraph_DataStruct"></span><span class="target" id="struct_axon_telegraph___data_struct"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">AxonTelegraph_DataStruct</span></code><a class="headerlink" href="#_CPPv424AxonTelegraph_DataStruct" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct7VersionE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct7VersionE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct7VersionE"></span><span id="AxonTelegraph_DataStruct::Version__uint32"></span><span class="target" id="struct_axon_telegraph___data_struct_1a2a5d59c1f0b906cc4d8ac48f15dfd822"></span><span class="pre">uint32</span> <code class="sig-name descname"><span class="pre">Version</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct7VersionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Structure version. Value should always be 13. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct9SerialNumE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct9SerialNumE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct9SerialNumE"></span><span id="AxonTelegraph_DataStruct::SerialNum__uint32"></span><span class="target" id="struct_axon_telegraph___data_struct_1a863287cc4cccb472f325d40c8965bddc"></span><span class="pre">uint32</span> <code class="sig-name descname"><span class="pre">SerialNum</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct9SerialNumE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct9ChannelIDE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct9ChannelIDE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct9ChannelIDE"></span><span id="AxonTelegraph_DataStruct::ChannelID__uint32"></span><span class="target" id="struct_axon_telegraph___data_struct_1a134500a62cc2d68a12cb73bf966ef521"></span><span class="pre">uint32</span> <code class="sig-name descname"><span class="pre">ChannelID</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct9ChannelIDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct9ComPortIDE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct9ComPortIDE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct9ComPortIDE"></span><span id="AxonTelegraph_DataStruct::ComPortID__uint32"></span><span class="target" id="struct_axon_telegraph___data_struct_1a3cc0a2ed353a2c17f3071c51d3ef705f"></span><span class="pre">uint32</span> <code class="sig-name descname"><span class="pre">ComPortID</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct9ComPortIDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct8AxoBusIDE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct8AxoBusIDE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct8AxoBusIDE"></span><span id="AxonTelegraph_DataStruct::AxoBusID__uint32"></span><span class="target" id="struct_axon_telegraph___data_struct_1ab02009c76a49abb1c39fa911ed972fce"></span><span class="pre">uint32</span> <code class="sig-name descname"><span class="pre">AxoBusID</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct8AxoBusIDE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct13OperatingModeE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct13OperatingModeE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct13OperatingModeE"></span><span id="AxonTelegraph_DataStruct::OperatingMode__uint32"></span><span class="target" id="struct_axon_telegraph___data_struct_1a62c46b42d3e469507c02536ec0fd78eb"></span><span class="pre">uint32</span> <code class="sig-name descname"><span class="pre">OperatingMode</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct13OperatingModeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct19OperatingModeStringE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct19OperatingModeStringE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct19OperatingModeStringE"></span><span id="AxonTelegraph_DataStruct::OperatingModeString__String"></span><span class="target" id="struct_axon_telegraph___data_struct_1a0d8dfb20da50655a8af40fa424ca37f9"></span><span class="pre">String</span> <code class="sig-name descname"><span class="pre">OperatingModeString</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct19OperatingModeStringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct15ScaledOutSignalE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct15ScaledOutSignalE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct15ScaledOutSignalE"></span><span id="AxonTelegraph_DataStruct::ScaledOutSignal__uint32"></span><span class="target" id="struct_axon_telegraph___data_struct_1a964d993ce7bacebe83e6e47f0cde2c3c"></span><span class="pre">uint32</span> <code class="sig-name descname"><span class="pre">ScaledOutSignal</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct15ScaledOutSignalE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct21ScaledOutSignalStringE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct21ScaledOutSignalStringE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct21ScaledOutSignalStringE"></span><span id="AxonTelegraph_DataStruct::ScaledOutSignalString__String"></span><span class="target" id="struct_axon_telegraph___data_struct_1a405171192191f6726d67b7c3d7cbfb90"></span><span class="pre">String</span> <code class="sig-name descname"><span class="pre">ScaledOutSignalString</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct21ScaledOutSignalStringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct5AlphaE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct5AlphaE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct5AlphaE"></span><span id="AxonTelegraph_DataStruct::Alpha__double"></span><span class="target" id="struct_axon_telegraph___data_struct_1a92f7c0436320db4c53eb174faa19f07c"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">Alpha</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct5AlphaE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct11ScaleFactorE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct11ScaleFactorE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct11ScaleFactorE"></span><span id="AxonTelegraph_DataStruct::ScaleFactor__double"></span><span class="target" id="struct_axon_telegraph___data_struct_1aa6b664da6f5456395114bee273128139"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">ScaleFactor</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct11ScaleFactorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct16ScaleFactorUnitsE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct16ScaleFactorUnitsE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct16ScaleFactorUnitsE"></span><span id="AxonTelegraph_DataStruct::ScaleFactorUnits__uint32"></span><span class="target" id="struct_axon_telegraph___data_struct_1a6f40e265bb5b53c9c2377f33d52ec06e"></span><span class="pre">uint32</span> <code class="sig-name descname"><span class="pre">ScaleFactorUnits</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct16ScaleFactorUnitsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct22ScaleFactorUnitsStringE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct22ScaleFactorUnitsStringE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct22ScaleFactorUnitsStringE"></span><span id="AxonTelegraph_DataStruct::ScaleFactorUnitsString__String"></span><span class="target" id="struct_axon_telegraph___data_struct_1ab2d6025dbd0cba21dc97b59e288d2dc8"></span><span class="pre">String</span> <code class="sig-name descname"><span class="pre">ScaleFactorUnitsString</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct22ScaleFactorUnitsStringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct9LPFCutoffE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct9LPFCutoffE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct9LPFCutoffE"></span><span id="AxonTelegraph_DataStruct::LPFCutoff__double"></span><span class="target" id="struct_axon_telegraph___data_struct_1a05661a1d69d16bb569e614579ab89f95"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">LPFCutoff</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct9LPFCutoffE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct11MembraneCapE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct11MembraneCapE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct11MembraneCapE"></span><span id="AxonTelegraph_DataStruct::MembraneCap__double"></span><span class="target" id="struct_axon_telegraph___data_struct_1ad7653b7544bcdba1719afb000bc5aa89"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">MembraneCap</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct11MembraneCapE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct10ExtCmdSensE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct10ExtCmdSensE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct10ExtCmdSensE"></span><span id="AxonTelegraph_DataStruct::ExtCmdSens__double"></span><span class="target" id="struct_axon_telegraph___data_struct_1a7dd2caa048ee912f630a66d0200a8c2d"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">ExtCmdSens</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct10ExtCmdSensE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct12RawOutSignalE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct12RawOutSignalE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct12RawOutSignalE"></span><span id="AxonTelegraph_DataStruct::RawOutSignal__uint32"></span><span class="target" id="struct_axon_telegraph___data_struct_1ad31d8147275582065e7b11094911a64c"></span><span class="pre">uint32</span> <code class="sig-name descname"><span class="pre">RawOutSignal</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct12RawOutSignalE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct18RawOutSignalStringE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct18RawOutSignalStringE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct18RawOutSignalStringE"></span><span id="AxonTelegraph_DataStruct::RawOutSignalString__String"></span><span class="target" id="struct_axon_telegraph___data_struct_1aa2465acb5a5a24cd6f31b0498dd0663f"></span><span class="pre">String</span> <code class="sig-name descname"><span class="pre">RawOutSignalString</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct18RawOutSignalStringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct14RawScaleFactorE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct14RawScaleFactorE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct14RawScaleFactorE"></span><span id="AxonTelegraph_DataStruct::RawScaleFactor__double"></span><span class="target" id="struct_axon_telegraph___data_struct_1a8d973440c847251da0b5cf8b06db5bc4"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">RawScaleFactor</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct14RawScaleFactorE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct19RawScaleFactorUnitsE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct19RawScaleFactorUnitsE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct19RawScaleFactorUnitsE"></span><span id="AxonTelegraph_DataStruct::RawScaleFactorUnits__uint32"></span><span class="target" id="struct_axon_telegraph___data_struct_1ae1c2c5e962c3e1c396b26d28574b73cc"></span><span class="pre">uint32</span> <code class="sig-name descname"><span class="pre">RawScaleFactorUnits</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct19RawScaleFactorUnitsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct25RawScaleFactorUnitsStringE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct25RawScaleFactorUnitsStringE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct25RawScaleFactorUnitsStringE"></span><span id="AxonTelegraph_DataStruct::RawScaleFactorUnitsString__String"></span><span class="target" id="struct_axon_telegraph___data_struct_1a59a21bc42f99f41254d13ffd79538d93"></span><span class="pre">String</span> <code class="sig-name descname"><span class="pre">RawScaleFactorUnitsString</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct25RawScaleFactorUnitsStringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct12HardwareTypeE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct12HardwareTypeE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct12HardwareTypeE"></span><span id="AxonTelegraph_DataStruct::HardwareType__uint32"></span><span class="target" id="struct_axon_telegraph___data_struct_1a563f16bd44e3027894313f29fd2cbc4c"></span><span class="pre">uint32</span> <code class="sig-name descname"><span class="pre">HardwareType</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct12HardwareTypeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct18HardwareTypeStringE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct18HardwareTypeStringE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct18HardwareTypeStringE"></span><span id="AxonTelegraph_DataStruct::HardwareTypeString__String"></span><span class="target" id="struct_axon_telegraph___data_struct_1a1aac315e42fbb3e21dfd4b09b58d7648"></span><span class="pre">String</span> <code class="sig-name descname"><span class="pre">HardwareTypeString</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct18HardwareTypeStringE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct14SecondaryAlphaE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct14SecondaryAlphaE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct14SecondaryAlphaE"></span><span id="AxonTelegraph_DataStruct::SecondaryAlpha__double"></span><span class="target" id="struct_axon_telegraph___data_struct_1a8ebbb25515fb03ead4aecf6fefdbc2da"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">SecondaryAlpha</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct14SecondaryAlphaE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct18SecondaryLPFCutoffE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct18SecondaryLPFCutoffE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct18SecondaryLPFCutoffE"></span><span id="AxonTelegraph_DataStruct::SecondaryLPFCutoff__double"></span><span class="target" id="struct_axon_telegraph___data_struct_1a8adb250a3582323498fa6eef1994c73f"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">SecondaryLPFCutoff</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct18SecondaryLPFCutoffE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N24AxonTelegraph_DataStruct16SeriesResistanceE">
+<span id="_CPPv3N24AxonTelegraph_DataStruct16SeriesResistanceE"></span><span id="_CPPv2N24AxonTelegraph_DataStruct16SeriesResistanceE"></span><span id="AxonTelegraph_DataStruct::SeriesResistance__double"></span><span class="target" id="struct_axon_telegraph___data_struct_1a3f2f24d137c707bdfde960c9d96a0e71"></span><span class="pre">double</span> <code class="sig-name descname"><span class="pre">SeriesResistance</span></code><a class="headerlink" href="#_CPPv4N24AxonTelegraph_DataStruct16SeriesResistanceE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_8ipf.html">File CompilationTester.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_utils_8ipf.html">File CompilationTesterUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___lab_notebook_t_p_storage_browser_8ipf.html">File MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html">File MIES_MiesUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___regenerate-_screenshots_8ipf.html">File MIES_Regenerate-Screenshots.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities_8ipf.html">File MIES_Utilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_8h.html">File interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="_i_p_n_w_b___writer_8ipf.html"
+                        title="previous chapter">File IPNWB_Writer.ipf</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="_m_i_e_s___analysis_browser_8ipf.html"
+                        title="next chapter">File MIES_AnalysisBrowser.ipf</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___analysis_browser_8ipf.html" title="File MIES_AnalysisBrowser.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___writer_8ipf.html" title="File IPNWB_Writer.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_AmplifierInteraction.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,687 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ZeroMQ XOP &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Labnotebook documentation for developers" href="labnotebook-docs.html" />
+    <link rel="prev" title="Async Framework" href="asyncframework.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="labnotebook-docs.html" title="Labnotebook documentation for developers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="asyncframework.html" title="Async Framework"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ZeroMQ XOP</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="zeromq-xop">
+<h1>ZeroMQ XOP<a class="headerlink" href="#zeromq-xop" title="Permalink to this headline">¶</a></h1>
+<p>The ZeroMQ XOP allows to interface with Igor Pro over the network using <a class="reference external" href="http://www.zeromq.org">ZeroMQ</a> as messaging layer and <a class="reference external" href="http://www.json.org">JSON</a> as message format.</p>
+<p>The XOP provides the following functions:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="file/interface_8h.html#_CPPv421zeromq_client_connect6string" title="zeromq_client_connect"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">zeromq_client_connect()</span></code></a></p></li>
+<li><p><a class="reference internal" href="file/interface_8h.html#_CPPv418zeromq_client_recvv" title="zeromq_client_recv"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">zeromq_client_recv()</span></code></a></p></li>
+<li><p><a class="reference internal" href="file/interface_8h.html#_CPPv418zeromq_client_send6string" title="zeromq_client_send"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">zeromq_client_send()</span></code></a></p></li>
+<li><p><a class="reference internal" href="file/interface_8h.html#_CPPv418zeromq_server_bind6string" title="zeromq_server_bind"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">zeromq_server_bind()</span></code></a></p></li>
+<li><p><a class="reference internal" href="file/interface_8h.html#_CPPv418zeromq_server_recvP6string" title="zeromq_server_recv"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">zeromq_server_recv()</span></code></a></p></li>
+<li><p><a class="reference internal" href="file/interface_8h.html#_CPPv418zeromq_server_send6string6string" title="zeromq_server_send"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">zeromq_server_send()</span></code></a></p></li>
+<li><p><a class="reference internal" href="file/interface_8h.html#_CPPv420zeromq_handler_startv" title="zeromq_handler_start"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">zeromq_handler_start()</span></code></a></p></li>
+<li><p><a class="reference internal" href="file/interface_8h.html#_CPPv419zeromq_handler_stopv" title="zeromq_handler_stop"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">zeromq_handler_stop()</span></code></a></p></li>
+<li><p><a class="reference internal" href="file/interface_8h.html#_CPPv411zeromq_stopv" title="zeromq_stop"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">zeromq_stop()</span></code></a></p></li>
+<li><p><a class="reference internal" href="file/interface_8h.html#_CPPv410zeromq_set8variable" title="zeromq_set"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">zeromq_set()</span></code></a></p></li>
+</ul>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="windows">
+<h3>Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Quit Igor Pro</p></li>
+<li><p>Install the vcredist packages in “output/win”</p></li>
+<li><p>Create the following shortcuts in “$HOME\Documents\WaveMetrics\Igor Pro 7 User Files”</p>
+<ul>
+<li><p>In “Igor Procedures” a shortcut pointing to “procedures”</p></li>
+<li><p>In “Igor Help Files” a shortcut pointing to “help”</p></li>
+<li><p>In “Igor Extensions” a shortcut pointing to “output/win/x86”</p></li>
+<li><p>In “Igor Extensions (64-bit)” a shortcut pointing to “output/win/x64”</p></li>
+</ul>
+</li>
+<li><p>Start Igor Pro</p></li>
+</ul>
+</div>
+<div class="section" id="macosx">
+<h3>MacOSX<a class="headerlink" href="#macosx" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Quit Igor Pro</p></li>
+<li><p>Unzip the files in “output/mac”</p></li>
+<li><p>Create the following symbolic links (symlinks) in “$HOME/Documents/WaveMetrics/Igor Pro 7 User Files”</p>
+<ul>
+<li><p>In “Igor Procedures” a symlink pointing to “procedures”</p></li>
+<li><p>In “Igor Help Files” a symlink pointing to “help”</p></li>
+<li><p>In “Igor Extensions” a symlink pointing to “output/mac/ZeroMQ”</p></li>
+<li><p>In “Igor Extensions (64-bit)” a symlink pointing to “output/mac/ZeroMQ-64”</p></li>
+</ul>
+</li>
+<li><p>Start Igor Pro</p></li>
+</ul>
+<p>In the following the JSON message format is discussed.</p>
+</div>
+</div>
+<div class="section" id="direction-world-igor-pro">
+<h2>Direction: World -&gt; Igor Pro<a class="headerlink" href="#direction-world-igor-pro" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="call-igor-pro-functions-and-return-the-result">
+<h3>Call Igor Pro functions and return the result<a class="headerlink" href="#call-igor-pro-functions-and-return-the-result" title="Permalink to this headline">¶</a></h3>
+<p>Supported parameter types:</p>
+<ul class="simple">
+<li><p>string (including pass-by-reference)</p></li>
+<li><p>variable (including pass-by-reference)</p></li>
+<li><p>datafolder reference</p></li>
+</ul>
+<p>Supported return types:</p>
+<ul class="simple">
+<li><p>string</p></li>
+<li><p>variable</p></li>
+<li><p>wave (without wave reference waves or datafolder reference waves)</p></li>
+<li><p>datafolder reference</p></li>
+</ul>
+<p>Current <code class="docutils literal notranslate"><span class="pre">CallFunction</span></code> limitations:</p>
+<ul class="simple">
+<li><p>Filling in optional parameters is not supported.</p></li>
+<li><p>Passing wave/structure parameters is not supported.</p></li>
+</ul>
+<p>The Igor Pro function <code class="docutils literal notranslate"><span class="pre">FooBar(string</span> <span class="pre">panelTitle,</span> <span class="pre">variable</span> <span class="pre">index)</span></code> can
+be called by sending the following string</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span>   <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+  <span class="nt">&quot;messageID&quot;</span> <span class="p">:</span> <span class="s2">&quot;my first message&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;CallFunction&quot;</span> <span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;name&quot;</span> <span class="p">:</span> <span class="s2">&quot;FooBar&quot;</span><span class="p">,</span>
+     <span class="nt">&quot;params&quot;</span> <span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;ITC18USB_DEV_0&quot;</span><span class="p">,</span>
+        <span class="mi">1</span>
+     <span class="p">]</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Calling a function without parameters:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;version&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+   <span class="nt">&quot;CallFunction&quot;</span> <span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;name&quot;</span> <span class="p">:</span> <span class="s2">&quot;FooBarWithoutArgs&quot;</span>
+   <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Possible responses:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;errorCode&quot;</span> <span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="mi">0</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;result&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;type&quot;</span> <span class="p">:</span> <span class="s2">&quot;variable&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="mi">4711</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;errorCode&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="nt">&quot;msg&quot;</span> <span class="p">:</span> <span class="s2">&quot;Function does not exist&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If the function has pass-by-reference parameters their results are
+returned as</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;errorCode&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">0</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;passByReference&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;4711&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;hi there&quot;</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;result&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;variable&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;value&quot;</span><span class="p">:</span> <span class="mi">42</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Functions can also return datafolder references</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;errorCode&quot;</span> <span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="mi">0</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;result&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;type&quot;</span>  <span class="p">:</span> <span class="s2">&quot;dfref&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="s2">&quot;root:MIES&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">result.value</span></code> can also be <code class="docutils literal notranslate"><span class="pre">free</span></code> or <code class="docutils literal notranslate"><span class="pre">null</span></code>.</p>
+<div class="section" id="functions-returning-waves">
+<h4>Functions returning waves<a class="headerlink" href="#functions-returning-waves" title="Permalink to this headline">¶</a></h4>
+<p>Example wave contents (rows are vertical, colums are horizontal)</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>8</p></td>
+</tr>
+<tr class="row-even"><td><p>6</p></td>
+<td><p>-inf</p></td>
+</tr>
+<tr class="row-odd"><td><p>7</p></td>
+<td><p>10</p></td>
+</tr>
+</tbody>
+</table>
+<p>Waves with standard settings only:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;errorCode&quot;</span> <span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="mi">0</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;result&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;type&quot;</span>  <span class="p">:</span> <span class="s2">&quot;wave&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span>     <span class="p">:</span> <span class="s2">&quot;NT_FP64&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;dimSize&quot;</span>  <span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+      <span class="nt">&quot;date&quot;</span>     <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;modification&quot;</span> <span class="p">:</span> <span class="mi">10221232</span>
+        <span class="p">},</span>
+      <span class="nt">&quot;data&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;raw&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;-inf&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In case the function returned an invalid wave reference <code class="docutils literal notranslate"><span class="pre">$&quot;&quot;</span></code>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;errorCode&quot;</span> <span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="mi">0</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;result&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;type&quot;</span>  <span class="p">:</span> <span class="s2">&quot;wave&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="kc">null</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The following is an example where all additional settings are present
+because they differ from their default values:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;errorCode&quot;</span> <span class="p">:</span> <span class="p">{</span>
+   <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="mi">0</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;result&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;type&quot;</span>  <span class="p">:</span> <span class="s2">&quot;wave&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;value&quot;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;type&quot;</span>     <span class="p">:</span> <span class="s2">&quot;NT_FP64&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;date&quot;</span>     <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;modification&quot;</span> <span class="p">:</span> <span class="mi">10221232</span>
+        <span class="p">},</span>
+      <span class="nt">&quot;data&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;raw&quot;</span>       <span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;-inf&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+         <span class="nt">&quot;unit&quot;</span>      <span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
+         <span class="nt">&quot;fullScale&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+        <span class="p">},</span>
+      <span class="nt">&quot;dimension&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;size&quot;</span>  <span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+         <span class="nt">&quot;delta&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">],</span>
+         <span class="nt">&quot;offset&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e5</span><span class="p">,</span> <span class="mf">3e7</span><span class="p">],</span>
+         <span class="nt">&quot;unit&quot;</span>  <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;kHz&quot;</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">],</span>
+         <span class="nt">&quot;label&quot;</span> <span class="p">:</span> <span class="p">{</span>
+           <span class="nt">&quot;full&quot;</span>  <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;some name&quot;</span><span class="p">,</span> <span class="s2">&quot;blah&quot;</span> <span class="p">],</span>
+           <span class="nt">&quot;each&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;...&quot;</span> <span class="p">]</span>
+          <span class="p">}</span>
+      <span class="p">},</span>
+       <span class="nt">&quot;note&quot;</span> <span class="p">:</span> <span class="s2">&quot;Hi there I&#39;m a nice wave note and are encoded in \&quot;UTF8\&quot;. With fancy things like ï or ß.&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="direction-igor-pro-world">
+<h2>Direction: Igor Pro -&gt; World<a class="headerlink" href="#direction-igor-pro-world" title="Permalink to this headline">¶</a></h2>
+<p>not yet implemented</p>
+</div>
+<div class="section" id="specification">
+<h2>Specification<a class="headerlink" href="#specification" title="Permalink to this headline">¶</a></h2>
+<p>Messages consist of JSON <a class="reference external" href="https://tools.ietf.org/html/rfc7158">RFC7158</a>
+encoded strings with one speciality.  <code class="docutils literal notranslate"><span class="pre">NaN</span></code>, <code class="docutils literal notranslate"><span class="pre">Inf</span></code> and <code class="docutils literal notranslate"><span class="pre">-Inf</span></code> are not
+supported by JSON, so we encode these non-normal numbers as strings, e.g.
+<code class="docutils literal notranslate"><span class="pre">&quot;NaN&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Inf&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;+Inf&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;-Inf&quot;</span></code> (case insensitive).</p>
+<div class="section" id="sent-json-message">
+<h3>Sent JSON message<a class="headerlink" href="#sent-json-message" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 19%" />
+<col style="width: 17%" />
+<col style="width: 41%" />
+<col style="width: 7%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>JSON type</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Required</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>version</p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">v1</span></code></p></td>
+<td><p>global for the complete interface</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>operation</p></td>
+<td><p>object</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CallFunction</span></code></p></td>
+<td><p>operation which should be performed</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p>CallFunction.name</p></td>
+<td><p>string</p></td>
+<td><p>non-empty</p></td>
+<td><p>ProcGlobal function without module and or independent
+module specification, i.e. without <code class="docutils literal notranslate"><span class="pre">#</span></code>.</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p>CallFunction.params</p></td>
+<td><p>array of strings/numbers</p></td>
+<td><p>holds strings/numbers</p></td>
+<td><p>function parameters, conversion will be done eagerly.</p></td>
+<td><p>No</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="received-json-message-for-operation-callfunction">
+<h3>Received JSON message for operation <code class="docutils literal notranslate"><span class="pre">CallFunction</span></code><a class="headerlink" href="#received-json-message-for-operation-callfunction" title="Permalink to this headline">¶</a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 16%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>JSON type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>errorCode.value</p></td>
+<td><p>number</p></td>
+<td><p>indicates the success/error of the operation, see <a class="reference internal" href="file/_zero_m_q___interop_8ipf.html#_CPPv411REQ_SUCCESS" title="REQ_SUCCESS"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">REQ_SUCCESS</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>errorCode.msg</p></td>
+<td><p>string</p></td>
+<td><p>human readable error message, only set if errorCode.value != 0</p></td>
+</tr>
+<tr class="row-even"><td><p>return.type</p></td>
+<td><p>string</p></td>
+<td><p>type of the function result, one of <code class="docutils literal notranslate"><span class="pre">string</span></code>, <code class="docutils literal notranslate"><span class="pre">variable</span></code>, <code class="docutils literal notranslate"><span class="pre">wave</span></code> or <code class="docutils literal notranslate"><span class="pre">dfref</span></code>, only for errorCode.value</p></td>
+</tr>
+<tr class="row-odd"><td><p>return.value</p></td>
+<td><p>number, string or object</p></td>
+<td><p>function result, only for errorCode.value == 0</p></td>
+</tr>
+<tr class="row-even"><td><p>return.passByReference</p></td>
+<td><p>array of strings</p></td>
+<td><p>Changed parameter values for pass-by-reference parameters.
+The fact that <code class="docutils literal notranslate"><span class="pre">passByReference</span></code> is an array of strings is an implementation detail and subject to change.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Functions returning waves:</p>
+<ul class="simple">
+<li><p>For now the wave data is always returned in a stringified version in
+the reply message itself. Possible enhancement later: Return the
+wave’s raw data in binary format in a follow-up message (using zmq’s
+multipart message feature).</p></li>
+<li><p>Data of text waves and the wave note are encoded in UTF-8.</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 13%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>JSON type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>result.value.type</p></td>
+<td><p>string</p></td>
+<td><p>wave type; one of NT_FP32, NT_FP64, NT_I8, NT_I16, NT_I32, NT_I64, TEXT_WAVE_TYPE; or’ed with NT_UNSIGNED or NT_CMPLX if needed</p></td>
+</tr>
+<tr class="row-odd"><td><p>result.value.dimension.size</p></td>
+<td><p>array of 1 to 4 numbers</p></td>
+<td><p>either “32-bit unsigned int” or “64-bit unsigned int” depending on Igor bitness. An empty wave has <code class="docutils literal notranslate"><span class="pre">[0]</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>result.value.dimension.delta</p></td>
+<td><p>array of 1 to 4 numbers</p></td>
+<td><p>delta values for each dimension</p></td>
+</tr>
+<tr class="row-odd"><td><p>result.value.dimension.offset</p></td>
+<td><p>array of 1 to 4 numbers</p></td>
+<td><p>offset values for each dimension</p></td>
+</tr>
+<tr class="row-even"><td><p>result.value.dimension.label.full</p></td>
+<td><p>array of strings</p></td>
+<td><p>dimension labels for the full dimension</p></td>
+</tr>
+<tr class="row-odd"><td><p>result.value.dimension.label.each</p></td>
+<td><p>array of strings</p></td>
+<td><p>dimension labels for each row/column/layer/chunk, colum-major format as <code class="docutils literal notranslate"><span class="pre">result.value.data.raw</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>result.value.dimension.unit</p></td>
+<td><p>string</p></td>
+<td><p>arbitrary string  denoting the unit. The contents are most likely SI with prefix, but this is not guaranteed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>result.value.date.modification</p></td>
+<td><p>number</p></td>
+<td><p>time of last modification in seconds since unix epoch in UTC. 0 for free waves.</p></td>
+</tr>
+<tr class="row-even"><td><p>result.value.data.raw</p></td>
+<td><p>array of numbers/strings</p></td>
+<td><p>column-major format, read it with <code class="docutils literal notranslate"><span class="pre">np.array([5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">&quot;-inf&quot;,</span> <span class="pre">10]).reshape(3,</span> <span class="pre">2,</span> <span class="pre">order='F')</span></code> using Python.
+For complex waves <code class="docutils literal notranslate"><span class="pre">raw</span></code> has two properties <code class="docutils literal notranslate"><span class="pre">real</span></code> and <code class="docutils literal notranslate"><span class="pre">imag</span></code> both holding arrays.</p></td>
+</tr>
+<tr class="row-odd"><td><p>result.value.data.unit</p></td>
+<td><p>string</p></td>
+<td><p>arbitrary strings denoting the unit. The contents are most likely SI with prefix, but this is not guaranteed.</p></td>
+</tr>
+<tr class="row-even"><td><p>result.value.data.fullScale</p></td>
+<td><p>array of numbers/strings</p></td>
+<td><p>min and max of the data (non-authorative)</p></td>
+</tr>
+<tr class="row-odd"><td><p>result.value.note</p></td>
+<td><p>string</p></td>
+<td><p>wave note</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="compilation-instructions">
+<h3>Compilation instructions<a class="headerlink" href="#compilation-instructions" title="Permalink to this headline">¶</a></h3>
+<p>Required additional software:</p>
+<ul class="simple">
+<li><p>(Windows only) Visual Studio 2015</p></li>
+<li><p>(MacOSX only) Xcode</p></li>
+<li><p><a class="reference external" href="https://cmake.org">CMake</a> version 3.8 or later</p></li>
+<li><p><a class="reference external" href="https://www.wavemetrics.com/products/xoptoolkit/xoptoolkit.htm">XOPSupport Toolkit 7</a></p></li>
+<li><p><a class="reference external" href="https://github.com/byte-physics/igor-unit-testing-framework">Igor Unit Testing Framework</a></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="building-libzmq">
+<h2>Building libzmq<a class="headerlink" href="#building-libzmq" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> libzmq
+mkdir build build-64
+
+<span class="c1"># WINDOWS</span>
+<span class="c1"># {</span>
+<span class="c1"># 32bit</span>
+<span class="nb">cd</span> build
+cmake -G <span class="s2">&quot;Visual Studio 14 2015&quot;</span> ..
+cmake --build . --config Release
+ctest -C Release
+<span class="c1"># Import/static libs are in lib/release, dll in bin/release</span>
+
+<span class="c1"># 64bit</span>
+<span class="nb">cd</span> build-64
+cmake -G <span class="s2">&quot;Visual Studio 14 2015 Win64&quot;</span> ..
+cmake --build . --config Release
+ctest -C Release
+<span class="c1"># Import/static libs are in lib/release, dll in bin/release</span>
+<span class="c1"># }</span>
+
+<span class="c1"># MACOSX</span>
+<span class="c1"># {</span>
+<span class="c1"># 32bit</span>
+<span class="nb">cd</span> build
+cmake -DCMAKE_OSX_ARCHITECTURES<span class="o">=</span>i386 -DCMAKE_OSX_DEPLOYMENT_TARGET<span class="o">=</span><span class="m">10</span>.9 ..
+cmake --build . --config Release
+ctest -C Release
+<span class="c1"># static libs are in lib</span>
+
+<span class="c1"># 64bit</span>
+mkdir build-64
+<span class="nb">cd</span> build-64
+cmake -DCMAKE_OSX_ARCHITECTURES<span class="o">=</span>x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET<span class="o">=</span><span class="m">10</span>.9 ..
+cmake --build . --config Release
+ctest -C Release
+<span class="c1"># static libs are in lib</span>
+<span class="c1"># }</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="building-and-installing-the-zeromq-xop">
+<h2>Building and installing the ZeroMQ.xop<a class="headerlink" href="#building-and-installing-the-zeromq-xop" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># Windows</span>
+<span class="c1"># {</span>
+<span class="c1"># Install cmake from www.cmake.org</span>
+<span class="c1"># Install Visual Studio 2015 Community</span>
+<span class="c1"># Open a Visual Studio 2015 command prompt</span>
+<span class="nb">cd</span> Packages/ZeroMQ/src
+mkdir build build-64
+cmake -G <span class="s2">&quot;Visual Studio 14 2015&quot;</span> ..
+cmake --build . --config Release --target install
+<span class="nb">cd</span> ..
+cmake -G <span class="s2">&quot;Visual Studio 14 2015 Win64&quot;</span> ..
+cmake --build . --config Release --target install
+<span class="c1"># }</span>
+
+<span class="c1"># MacOSX</span>
+<span class="c1"># {</span>
+cmake -DCMAKE_OSX_ARCHITECTURES<span class="o">=</span>i386 -DCMAKE_OSX_DEPLOYMENT_TARGET<span class="o">=</span><span class="m">10</span>.9 -G Xcode ..
+cmake --build . --config Release --target install
+<span class="nb">cd</span> ..
+cmake -DCMAKE_OSX_ARCHITECTURES<span class="o">=</span>x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET<span class="o">=</span><span class="m">10</span>.9 -G Xcode ..
+cmake --build . --config Release --target install
+<span class="c1"># }</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="running-the-test-suite">
+<h2>Running the test suite<a class="headerlink" href="#running-the-test-suite" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Create in “Igor Procedures” a shortcut pointing to
+<code class="docutils literal notranslate"><span class="pre">Packages\unit-testing</span></code></p></li>
+<li><p>Open Packages/ZeroMQ/tests/RunTests.pxp</p></li>
+<li><p>Execute in Igor <code class="docutils literal notranslate"><span class="pre">run()</span></code></p></li>
+<li><p>The test suite always passes <em>without</em> errors</p></li>
+</ul>
+</div>
+<div class="section" id="running-clang-tidy-on-macosx">
+<h2>Running clang-tidy on MacOSX<a class="headerlink" href="#running-clang-tidy-on-macosx" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Install <a class="reference external" href="https://brew.sh">Homebrew</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">brew</span> <span class="pre">install</span> <span class="pre">llvm</span></code></p></li>
+<li><p>Create compilation database</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">clang-tidy;</span> <span class="pre">cd</span> <span class="pre">clang-tidy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">-DCMAKE_OSX_ARCHITECTURES=x86_64</span> <span class="pre">-DCMAKE_OSX_DEPLOYMENT_TARGET=10.9</span> <span class="pre">-DCMAKE_EXPORT_COMPILE_COMMANDS=ON</span> <span class="pre">..</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cmake</span> <span class="pre">--build</span> <span class="pre">.</span> <span class="pre">--target</span> <span class="pre">clang-tidy</span></code></p></li>
+</ul>
+</li>
+</ul>
+<div class="section" id="zeromq-xop-implementation-details">
+<h3>ZeroMQ XOP implementation details<a class="headerlink" href="#zeromq-xop-implementation-details" title="Permalink to this headline">¶</a></h3>
+<p>The XOP uses the <code class="docutils literal notranslate"><span class="pre">Dealer</span></code> (called Client in the XOP interface) and <code class="docutils literal notranslate"><span class="pre">Router</span></code> (called Server in the XOP interface) socket types.</p>
+<p>The default socket options are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ZMQ_LINGER</span></code>           = <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZMQ_SNDTIMEO</span></code>         = <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZMQ_RCVTIMEO</span></code>         = <code class="docutils literal notranslate"><span class="pre">0</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZMQ_ROUTER_MANDATORY</span></code> = <code class="docutils literal notranslate"><span class="pre">1</span></code> (<code class="docutils literal notranslate"><span class="pre">Router</span></code> only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZMQ_MAXMSGSIZE</span></code>       = <code class="docutils literal notranslate"><span class="pre">1024</span></code> (in bytes, <code class="docutils literal notranslate"><span class="pre">Router</span></code> only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ZMQ_IDENTITY</span></code>         = <code class="docutils literal notranslate"><span class="pre">zeromq</span> <span class="pre">xop:</span> <span class="pre">dealer</span></code> (<code class="docutils literal notranslate"><span class="pre">Dealer</span></code> only)</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">Router</span></code>/Server expects three frames (identity, empty, payload) and the
+<code class="docutils literal notranslate"><span class="pre">Dealer</span></code>/Client expects two frames (empty, payload) when sending/receiving
+messages. This format is used to be compatible with REP/REQ sockets.</p>
+<p>The passed function in the JSON message is currently always executed in the
+main thread during <code class="docutils literal notranslate"><span class="pre">IDLE</span></code> events. <code class="docutils literal notranslate"><span class="pre">IDLE</span></code> events are generated by Igor Pro
+only when no functions are running. In case you want to execute a function
+during the time when functions are running the operation <code class="docutils literal notranslate"><span class="pre">DoXOPIdle</span></code> allows
+to force an <code class="docutils literal notranslate"><span class="pre">IDLE</span></code> event.</p>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ZeroMQ XOP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#windows">Windows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#macosx">MacOSX</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#direction-world-igor-pro">Direction: World -&gt; Igor Pro</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#call-igor-pro-functions-and-return-the-result">Call Igor Pro functions and return the result</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#functions-returning-waves">Functions returning waves</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#direction-igor-pro-world">Direction: Igor Pro -&gt; World</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#specification">Specification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sent-json-message">Sent JSON message</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#received-json-message-for-operation-callfunction">Received JSON message for operation <code class="docutils literal notranslate"><span class="pre">CallFunction</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compilation-instructions">Compilation instructions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#building-libzmq">Building libzmq</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-and-installing-the-zeromq-xop">Building and installing the ZeroMQ.xop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-test-suite">Running the test suite</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-clang-tidy-on-macosx">Running clang-tidy on MacOSX</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#zeromq-xop-implementation-details">ZeroMQ XOP implementation details</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="asyncframework.html"
+                        title="previous chapter">Async Framework</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="labnotebook-docs.html"
+                        title="next chapter">Labnotebook documentation for developers</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="labnotebook-docs.html" title="Labnotebook documentation for developers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="asyncframework.html" title="Async Framework"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">ZeroMQ XOP</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

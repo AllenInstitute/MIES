@@ -1,0 +1,2611 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Release notes &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Group list" href="grouplist.html" />
+    <link rel="prev" title="Bug reporting" href="reportingbugs.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grouplist.html" title="Group list"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="reportingbugs.html" title="Bug reporting"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Release notes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="release-notes">
+<h1>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<div class="section" id="release-2-1">
+<h2>Release 2.1<a class="headerlink" href="#release-2-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="sweep-formula">
+<h3>Sweep Formula<a class="headerlink" href="#sweep-formula" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add an easy to use scripting language to evaluate acquired data termed <a class="reference external" href="https://alleninstitute.github.io/MIES/SweepFormula.html#the-sweep-formula-module">Sweep Formula</a></p></li>
+</ul>
+</div>
+<div class="section" id="analysisbrowser">
+<h3>AnalysisBrowser<a class="headerlink" href="#analysisbrowser" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Load user comments from NWB files</p></li>
+<li><p>Store the starting directory in the package settings</p></li>
+</ul>
+</div>
+<div class="section" id="databrowser">
+<h3>DataBrowser<a class="headerlink" href="#databrowser" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Use a per-instance folder. Now users can have multiple databrowsers open with
+different settings as each databrowser graph has its own folder.</p></li>
+<li><p>Enable resizing for BrowserHistorySettings Panel</p></li>
+<li><p>Properly select NONE with multiple devices with data</p></li>
+<li><p>Make all axes scaling options available from SweepBrowser</p></li>
+</ul>
+</div>
+<div class="section" id="databrowser-sweepbrowser">
+<h3>DataBrowser/SweepBrowser<a class="headerlink" href="#databrowser-sweepbrowser" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Fix loading and displaying of old experiments</p></li>
+<li><p>Make it much faster by custom trace user data handling, incremental sweep
+updates and avoiding full updates when they are not necessary.</p></li>
+<li><p>The graph is now always plotted correctly even when using overlay sweeps with
+headstage removal and special sweeps.</p></li>
+<li><p>Make the highlightning for overlay sweeps much more responsive.</p></li>
+<li><p>Allow to only overlay the sweeps from the current RAC/SCI</p></li>
+<li><p>Adapt tick labels for splitted TTL axis</p></li>
+<li><p>Pulse Average:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Fetch the pulse times for each sweep</p></li>
+<li><p>Make it much faster</p></li>
+<li><p>Never grey out controls, this allows tweaking the settings while it is disabled</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Restore always all cursors</p></li>
+<li><p>Show the headstage number in the graph as well</p></li>
+<li><p>Replace Labnotebook popup menus with our own cascaded solution which avoids
+long menues.</p></li>
+<li><p>Add all channel checkboxes</p></li>
+<li><p>Default “Display last sweep acquired” to ON</p></li>
+<li><p>Ignore invalid headstages in removal list of overlay sweeps</p></li>
+</ul>
+</div>
+<div class="section" id="da-ephys">
+<h3>DA_Ephys<a class="headerlink" href="#da-ephys" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fix oodDAQ offset bug introduced in 88323d8d (Replacement of oodDAQ offset
+calculation routines, 2019-06-13) with more than two stimsets.</p></li>
+<li><p>Cache the HardwareDataWave for the Testpulse</p></li>
+<li><p>Initialize all channel data to NaN</p></li>
+<li><p>Fix AD unit querying bug for ADs above 8</p></li>
+<li><p>Allow TP during DAQ for Indexing</p></li>
+<li><p>Fix an off-by-one error for the fifo position</p></li>
+<li><p>Rework device selection logic: This is now more intuitive.</p></li>
+<li><p>Add a button for rescanning the list of changed hardware devices. This is
+required as that list is now cached.</p></li>
+<li><p>Add support for decimated oscilloscope wave which greatly speeds up the display</p></li>
+<li><p>Handle stopped DAQ properly and avoid “Uninitialized raCycleID detected” assertions</p></li>
+<li><p>Fix that with TP during DAQ all test pulse channels are stored</p></li>
+<li><p>Apply search string for all controls as well</p></li>
+<li><p>Rework oodDAQ algorithm: The new algorithm is much faster and does not require a resolution parameter anymore</p></li>
+<li><p>Make I=0 clamp mode work again</p></li>
+<li><p>Reset the session start time on “Save and Clear Experiment”</p></li>
+<li><p>Perform analysis parameter checks very early (even before “PRE DAQ” event)</p></li>
+<li><p>Add increment selection to “DA Scale” and manual pressure set variables via context menu</p></li>
+<li><p>Avoid using async channels for DAQ as well</p></li>
+<li><p>Make it usable with lots of sweeps much better</p></li>
+<li><p>Handle changing power spectrum checkbox during TP</p></li>
+<li><p>Parallelize curve fits on TPStorage data</p></li>
+</ul>
+</div>
+<div class="section" id="experimentconfig">
+<h3>ExperimentConfig<a class="headerlink" href="#experimentconfig" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Introduce <a class="reference external" href="https://alleninstitute.github.io/MIES/file/_m_i_e_s___configuration_8ipf.html?highlight=json#file-mies-configuration-ipf">new configuration management</a>:</p>
+<ul>
+<li><p>Support all panels and controls</p></li>
+<li><p>Support setting all amplifier entries per headstage</p></li>
+<li><p>Configuration files are in standard JSON format</p></li>
+<li><p>Support for global and rig specific config files which complement each other</p></li>
+</ul>
+</li>
+<li><p>Fix MCC opening bug in demo mode</p></li>
+<li><p>Add configuration field Amplifier Channel to specify channel explicitly</p></li>
+<li><p>Support multiple locations for the json settings files</p></li>
+</ul>
+</div>
+<div class="section" id="downsample">
+<h3>Downsample<a class="headerlink" href="#downsample" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="analysis-functions">
+<h3>Analysis Functions<a class="headerlink" href="#analysis-functions" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Parameters now have no restrictions anymore on the type of content.
+Previously some characters were not allowed.</p></li>
+<li><p>Explicitly ignore TP during DAQ channels</p></li>
+<li><p>Fix an off-by-one issue as we use the lastKnownRowIndex/lastValidRowIndex as
+zero-based indizes and not as length. We now also pass these values as NaN
+if they do not make sense for the current event.</p></li>
+<li><p>AnalysisFunctions_V3: Introduce scaledDataWave member</p></li>
+<li><p>Add an analysis function for measuring the mid sweep event timings</p></li>
+<li><p>Fix level calculation for NI hardware in <code class="docutils literal notranslate"><span class="pre">PSQ_Ramp</span></code></p></li>
+<li><dl class="simple">
+<dt>Adapt Supra mode for <code class="docutils literal notranslate"><span class="pre">PSQ_DAScale</span></code>:</dt><dd><ul>
+<li><p>Plot the spike frequency vs DAScale</p></li>
+<li><p>Add new LBN entry of the slope of that plot</p></li>
+<li><p>Support new FinalSlopePercent parameter as additional set passing
+criteria</p></li>
+<li><p>Add new LBN entry which denotes if the FinalSlopePercent was reached
+or not</p></li>
+<li><p>Store pulse duration in LBN</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>SetControlInEvent: Add support setting notebook contents</p></li>
+<li><p>Add support for check and help functions. Port the existing analysis
+functions to use that new feature.</p></li>
+<li><p>Fixed the analysis function parameter check routine</p></li>
+</ul>
+</div>
+<div class="section" id="foreign-function-interface">
+<h3>Foreign Function interface<a class="headerlink" href="#foreign-function-interface" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="general">
+<h3>General<a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Drop support for Igor Pro 7</p></li>
+<li><p>Enhance the first time usage ITC error message</p></li>
+<li><p>Added <code class="docutils literal notranslate"><span class="pre">MIES_MassExperimentProcessing.ipf</span></code> for batch converting Igor experiment files to NWBv2.</p></li>
+<li><p>Upload Igor Pro crash dumps every day</p></li>
+<li><p>Nicify About MIES dialog</p></li>
+<li><p>Add MIES settings which are persistent across restarts</p></li>
+<li><p>Add menu option to open the diagnostics directory</p></li>
+<li><p>Switch the default branch to <code class="docutils literal notranslate"><span class="pre">main</span></code> from <code class="docutils literal notranslate"><span class="pre">master</span></code> to foster inclusive
+terminology. For existing clones execute <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">remote</span> <span class="pre">set-head</span> <span class="pre">origin</span> <span class="pre">main</span></code>
+to switch the remote HEAD to <code class="docutils literal notranslate"><span class="pre">main</span></code> as well.</p></li>
+</ul>
+</div>
+<div class="section" id="itc-xop-2">
+<h3>ITC XOP 2<a class="headerlink" href="#itc-xop-2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Remove unnecessary ITCMM DLLs</p></li>
+<li><p>Add powershell scripts for disabling ASLR</p></li>
+</ul>
+</div>
+<div class="section" id="zeromq-xop">
+<h3>ZeroMQ XOP<a class="headerlink" href="#zeromq-xop" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Don’t restart the message handler if not required. This makes it possible to
+create a new experiment via ZeroMQ.</p></li>
+</ul>
+</div>
+<div class="section" id="mcc-xop">
+<h3>MCC XOP<a class="headerlink" href="#mcc-xop" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="miesutils-xop">
+<h3>MIESUtils XOP<a class="headerlink" href="#miesutils-xop" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="labnotebook">
+<h3>Labnotebook<a class="headerlink" href="#labnotebook" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Add functions for querying labnotebook data via channel number and type</p></li>
+<li><p>Change naming scheme of unassociated channels:</p>
+<blockquote>
+<div><p>We support two types of unassociated keys. Old style, prior to 403c8ec2
+(Merge pull request #370 from AllenInstitute/feature/sweepformula_enable,
+2019-11-13) but after its introduction in ad8dc8ec (Allow AD/DA channels
+not associated with a headstage again, 2015-10-22) are written as <code class="docutils literal notranslate"><span class="pre">$Name</span> <span class="pre">UNASSOC_$ChannelNumber</span></code>.
+New style has the format <code class="docutils literal notranslate"><span class="pre">$Name</span> <span class="pre">u_(AD|DA)$ChannelNumber</span></code>, this includes
+the channel type to make them more self explaining.</p>
+</div></blockquote>
+</li>
+<li><p>Remove “Pulse Train Pulses” and “Pulse to Pulse Length” labnotebook entries due severe bugs in the calculation</p></li>
+<li><p>Fix too short dimension labels</p></li>
+<li><p>Some units and tolerances were fixed for the numerical labnotebook</p></li>
+</ul>
+<div class="section" id="new-numerical-keys">
+<h4>New numerical keys<a class="headerlink" href="#new-numerical-keys" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PSQ_FMT_LBN_DA_fI_SLOPE</span></code> for fitted slope in the f-I plot for <code class="docutils literal notranslate"><span class="pre">PSQ_DAScale</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PSQ_FMT_LBN_DA_fI_SLOPE_REACHED</span></code> for fitted slope in the f-I plot exceeds target value for <code class="docutils literal notranslate"><span class="pre">PSQ_DAScale</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PSQ_FMT_LBN_PULSE_DUR</span></code> for <code class="docutils literal notranslate"><span class="pre">PSQ_DAScale</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PSQ_FMT_LBN_SPIKE_DETECT</span></code> for <code class="docutils literal notranslate"><span class="pre">PSQ_DAScale</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="new-textual-keys">
+<h4>New textual keys<a class="headerlink" href="#new-textual-keys" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">JSON</span> <span class="pre">config</span> <span class="pre">file:</span> <span class="pre">path</span></code>: List of absolute paths to the JSON configuration files</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">JSON</span> <span class="pre">config</span> <span class="pre">file:</span> <span class="pre">SHA-256</span> <span class="pre">hash</span></code>: List of hash values</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Epochs</span></code>: , <a class="reference external" href="https://alleninstitute.github.io/MIES/epoch_information.html#epoch-information">Add epoch information from the stimulus set into the labnotebook</a>.</p></li>
+</ul>
+</div>
+<div class="section" id="changed-numerical-entries">
+<h4>Changed numerical entries<a class="headerlink" href="#changed-numerical-entries" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">oodDAQ</span> <span class="pre">regions</span></code>: Now uses floating point numbers instead of intergers</p></li>
+</ul>
+</div>
+<div class="section" id="changed-textual-entries">
+<h4>Changed textual entries<a class="headerlink" href="#changed-textual-entries" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Function</span> <span class="pre">params</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">Function</span> <span class="pre">params</span> <span class="pre">(encoded)</span></code>: This entry now holds the serialized analysis function
+parameter strings where the values are <a class="reference external" href="https://en.wikipedia.org/wiki/Percent-encoding">percent encoded</a>.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="nwb-ipnwb">
+<h3>NWB/IPNWB<a class="headerlink" href="#nwb-ipnwb" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Write the Igor Pro history by default</p></li>
+<li><p>Add support for exporting into NWBv2 (2.2.4 to be exact). Additional MIES
+data and metadata is tagged using <a class="reference external" href="https://github.com/t-b/ndx-MIES">ndx-MIES</a>.
+Export support into NWBv1 is unchanged.</p></li>
+<li><p>Various bugfixes for exporting really old or buggy MIES data into NWB.</p></li>
+<li><p>Support export of I=0 data better</p></li>
+<li><p>Don’t delete third party stimsets after exporting into NWB.</p></li>
+<li><p>Mark <code class="docutils literal notranslate"><span class="pre">/general/stimsets</span></code> as custom for NWBv1</p></li>
+</ul>
+<div class="section" id="file-format">
+<h4>File format<a class="headerlink" href="#file-format" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+</div>
+<div class="section" id="pressure-control">
+<h3>Pressure Control<a class="headerlink" href="#pressure-control" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Allow adjusting the pressure with the mouse wheel</p></li>
+</ul>
+</div>
+<div class="section" id="wavebuilder">
+<h3>WaveBuilder<a class="headerlink" href="#wavebuilder" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Raise the stimset wave note version</p></li>
+<li><p>Make the analysis function paramter panel nicer and resizable</p></li>
+<li><p>Changed encoding of the analysis function parameters to use percent-encoding</p></li>
+<li><p>Add duration entry for combined stimset</p></li>
+<li><p>Add a search string for the wavebuilder stimsets for loading</p></li>
+<li><p>Add wave note entry for mixed frequency shuffle</p></li>
+<li><p>Force stimset rebuilding on too old wave note version</p></li>
+<li><p>Fix forgotten delta mode for pulse duration for pulse train pulse</p></li>
+</ul>
+</div>
+<div class="section" id="work-sequencing-engine">
+<h3>Work Sequencing Engine<a class="headerlink" href="#work-sequencing-engine" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Remove AnalyaisMaster panel and HDF5 operations</p></li>
+</ul>
+</div>
+<div class="section" id="internal">
+<h3>Internal<a class="headerlink" href="#internal" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Packages/doc/developers.rst: Update CI section</p></li>
+<li><p>Add JSON-XOP</p></li>
+<li><p>Add preliminary support for Igor Pro 9</p></li>
+<li><p>Use mathjax instead of images for the documentation</p></li>
+<li><p>Fix version generation with latest tag</p></li>
+<li><p>CreateMiesVersion: Support more git install locations</p></li>
+<li><p>Started cleanup of DC_PlaceDataInHardwareDataWave</p></li>
+<li><p>Check that ASLR is turned off on Windows 10 64-bit. This is required for ITC hardware to work, see <a class="reference external" href="https://github.com/AllenInstitute/ITCXOP2/#windows-10">https://github.com/AllenInstitute/ITCXOP2/#windows-10</a>.</p></li>
+<li><p>Add generic wave cache accessor <code class="docutils literal notranslate"><span class="pre">CA_TemporaryWaveKey</span></code> for using the returned wave in multihread statements as target junk wave</p></li>
+<li><p>Add ROVar/ROStr for mapping global variables and strings to a read-only version</p></li>
+<li><p>Update our documentation toolchain to sphinx 3</p></li>
+<li><p>Remove Tango procedure files</p></li>
+<li><p>Fixed some minor memory leaks</p></li>
+</ul>
+</div>
+<div class="section" id="tango">
+<h3>Tango<a class="headerlink" href="#tango" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Remove it completely</p></li>
+<li><p>Add empty <code class="docutils literal notranslate"><span class="pre">MIES_TangoInteract.ipf</span></code> to avoid compile errors on old experiments</p></li>
+</ul>
+</div>
+<div class="section" id="tests">
+<h3>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Lots of additions and fixes</p></li>
+<li><p>TTL channels are now much more checked on ITC1600</p></li>
+<li><p>Switch to Windows 10 on CI server and greatly cleanup the test scripts</p></li>
+<li><p>Perform compile testing on 32bit and 64bit Igor Pro</p></li>
+<li><p>Added test and pynwb validation tests for NWBV2</p></li>
+<li><p>Port tests to use rtFunctionErrors=1</p></li>
+</ul>
+</div>
+<div class="section" id="async-framework">
+<h3>Async Framework<a class="headerlink" href="#async-framework" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Make <code class="docutils literal notranslate"><span class="pre">ASYNC_Start</span></code> and <code class="docutils literal notranslate"><span class="pre">ASYNC_Stop</span></code> idempotent</p></li>
+<li><p>Start and Stop of ASYNC framework is now globally done by CompileHooks</p></li>
+</ul>
+</div>
+<div class="section" id="installer">
+<h3>Installer<a class="headerlink" href="#installer" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add more documentation for admins how it works</p></li>
+<li><p>Added support for <code class="docutils literal notranslate"><span class="pre">/ALLUSER</span></code> parameter to installer</p></li>
+<li><p>Switch installer to support Igor Pro 8 and 9</p></li>
+<li><p>Add special installation mode for CI server via <code class="docutils literal notranslate"><span class="pre">/CIS</span></code> and <code class="docutils literal notranslate"><span class="pre">/SKIPHWXOP</span></code> flags</p></li>
+<li><p>Fix edge case of user vs admin installations due to NSIS ShellLink plugin</p></li>
+<li><p>Enhance deinstallation logic to catch more edge cases</p></li>
+<li><p>Make ITC hardware work out of the box on new Windowses. Requires that
+unsigned powershell scripts can be executed.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="release-2-0">
+<h2>Release 2.0<a class="headerlink" href="#release-2-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3>AnalysisBrowser<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Labnotebook browser: Fixes for new TPStorage wave layout</p></li>
+<li><p>Add support for loading TPStorage waves from NWB</p></li>
+<li><p>Make it possible to load version 2 PXP files, i.e. PXP files with NI hardware
+acquired data can now be loaded</p></li>
+<li><p>Allow loading TTL channel data from NI hardware</p></li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h3>DataBrowser<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id4">
+<h3>DataBrowser/SweepBrowser<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Pulse Average:</p>
+<ul>
+<li><p>Use inf as default range for the PA deconvolution</p></li>
+<li><p>Use full resolution for diagonal traces only, show the other traces with
+reduced resolution for speedup reasons</p></li>
+<li><p>Don’t change the x axis range for deconvolution</p></li>
+<li><p>Automatic Time Alignment for Pulse Averaging</p></li>
+<li><p>Adapt individual traces’ opacity and line size</p></li>
+<li><p>Speedup plot creation and resize behaviour</p></li>
+<li><p>Allow zeroing individual traces</p></li>
+<li><p>Add deconvolution support</p></li>
+</ul>
+</li>
+<li><p>Move TTL channel display to the bottom</p></li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h3>DA_Ephys<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Allow TP stopping/restarting to be much faster for special cases</p></li>
+<li><p>Make “Pipette Offset” faster, especially for a large number of active headstages</p></li>
+<li><p>Add “TP during DAQ” feature which allows to have a testpulse on some
+headstages and DAQ on other headstages</p></li>
+<li><p>TestPulseMarker is now saved in TPStorage as well as in the stored TPWaves</p></li>
+<li><p>TestPulse: Implemented handling of Oscilloscope scaling depending of GUI setting</p></li>
+<li><p>Minimize the number of amplifier select calls</p></li>
+<li><p>Allow but delay clamp mode changes during DAQ</p></li>
+<li><p>Add entries to DA_Ephys to record User Pressure during TP</p></li>
+<li><p>GetTPStorage: Raise version to hold user pressure value and type as well</p></li>
+<li><p>Use the correct order for testpulse stopping and calling DAP_CheckSettings
+which fires the PRE_DAQ analysis event</p></li>
+<li><p>SCOPE_CreateGraph replaced Tag approach for TP Resistance values</p></li>
+<li><p>Testpulse analysis is now done in a separate thread</p></li>
+<li><p>Add possibility to acquire data with fixed frequency</p></li>
+<li><p>Fix inserted TP length with active TTL channels</p></li>
+<li><p>When synchronizing MIES to the MCC we now ignore sendToAll state</p></li>
+<li><p>Use one GUI control procedure for TP and DAQ</p></li>
+<li><p>SWS_SweepSaving: Call SCOPE_UpdateOscilloscopeData with correct fifo position</p></li>
+<li><p>Optimization: PowerSpectrum uses fast line draw on Igor Pro 8</p></li>
+<li><p>oodDAQ: Make the optimizing code faster and cache everything possible and
+nicify interface for callers</p></li>
+<li><p>Enabled live view for peak+steadystate resistance graph in IP8</p></li>
+<li><p>Ensure that the ITI is always reached for manual sweep starts as well</p></li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h3>ExperimentConfig<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add user pressure settings</p></li>
+<li><p>Add “Respect ITI for manual initialization”</p></li>
+</ul>
+</div>
+<div class="section" id="id7">
+<h3>Downsample<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Nothing</p></li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h3>Analysis Functions<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>PSQ_Ramp: Added support for NI hardware</p></li>
+<li><p>PSQ_Rheobase:</p>
+<ul>
+<li><p>Handle DaScale of zero better</p></li>
+<li><p>Search again with small DAScale values</p></li>
+</ul>
+</li>
+<li><p>PSQ_DAScale:</p>
+<ul>
+<li><p>Add optional analysis parameter to choose operator for Supra</p></li>
+<li><p>Fix average calculation for NI hardware</p></li>
+<li><p>Enable “TP inserting”</p></li>
+<li><p>Add optional support adjusting DAScale when out of band</p></li>
+</ul>
+</li>
+<li><p>PSQ_SquarePulse:</p>
+<ul>
+<li><p>Catch spiking with DAScale of zero</p></li>
+<li><p>Handle known case better in Dashboard</p></li>
+</ul>
+</li>
+<li><p>Add support for optional parameters in <cite>_GetParams</cite></p></li>
+<li><p>Add MSQ_DA_SCALE analysis function</p></li>
+<li><p>Add SetControlInEvent analysis function</p></li>
+<li><p>Add PSQ_FastRheoEstimate</p></li>
+<li><p>Better checks for analysis parameters before DAQ</p></li>
+<li><p>PSQ_EvaluateBaselineProperties: Fix incorrect fifo time usage</p></li>
+<li><p>Dashboard: Fix querying the scale exceeded value for Rheobase</p></li>
+</ul>
+</div>
+<div class="section" id="id9">
+<h3>Foreign Function interface<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Nothing</p></li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h3>General<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Make the repository <a class="reference external" href="https://github.com/AllenInstitute/MIES">publically</a>
+available. Due to restrictions on github’s side we have compressed the NWB
+and PXP files. See the README.md for instructions when checking out the
+repository.</p></li>
+<li><p>Making stopping the async framework more robust</p></li>
+<li><p>ExtractOneDimDataFromSweep:</p>
+<ul>
+<li><p>Create a copy for NI hardware as well</p></li>
+<li><p>Make it compatible with mid-sweep NI layout</p></li>
+</ul>
+</li>
+<li><p>AFH_GetAnalysisParam*: Tighten logic and add tests</p></li>
+<li><p>AFH_GetAnalysisParamType: Add support for requesting a specific type</p></li>
+<li><p>GetListOfObjects: Return never empty list elements</p></li>
+<li><p>Add support for NI PXI-6259 devices</p></li>
+<li><p>Restore IP7 style responsive behaviour in IP8</p></li>
+<li><p>ASSERT: Enhance diagnostic output</p></li>
+<li><p>Use zero as TP amplitude for unassociated DACs</p></li>
+<li><p>GetChannelClampMode: Extend to also hold headstage information</p></li>
+<li><p>DAP_CheckHeadStage: Check AD/DA headstages more thorough</p></li>
+<li><p>DQ_ApplyAutoBias: Modernize code</p></li>
+<li><p>Query the values for the labnotebook earlier before starting the sweep</p></li>
+<li><p>ToggleCheckBoxes/EqualizeCheckBoxes: Update GUI state wave as well</p></li>
+<li><p>Documentation: Make all graphs zoomable</p></li>
+<li><p>Change of InstResistance, SSResistance, BaseLineAverage to be double precision</p></li>
+<li><p>Fixed a bug which resulted in a RTE for long stimsets with NI hardware</p></li>
+<li><p>Enhance fWaveAveraging with MatrixOP</p></li>
+<li><p>SCOPE_UpdateGraph: Use more accurate relative time axis update</p></li>
+<li><p>Bugfix: Sweep SkipAhead resets to -1 in GUI on DAQ, following DAQ fails</p></li>
+<li><p>DAP_CheckStimset: Check all reachable stimsets</p></li>
+<li><p>Only stop the TP if we can start DAQ</p></li>
+<li><p>DAP_CheckHeadStage: Check for empty waves in analysis parameters as well</p></li>
+<li><p>Device Map: Drop internal device name</p></li>
+<li><p>TP_RecordTP: Avoid erroring out on low memory condition</p></li>
+<li><p>EnsureLargeEnoughWave: Add support for checking free memory before increasing the size of the wave</p></li>
+<li><p>Rework TPStorage completly: Holds now NUM_HEADSTAGES columns and also holds
+every Testpulse result. We now also always append to the current TPStorage
+wave so there is only one now.</p></li>
+<li><p>Acquisition support for NI DAC devices in multi device mode</p></li>
+<li><p>DC_PlaceDataInITCDataWave: Don’t use interpolation for gathering data from TTL stimsets</p></li>
+<li><p>CheckInstallation: More thorough checks for NIDAQ XOP version</p></li>
+<li><p>SI_CalculateMinSampInterval: Fix minimum sampling interval for ITC hardware with PCI cards</p></li>
+<li><p>HW_ITC_MoreData/HW_ITC_MoreData_TS: Fix return value for offset usage</p></li>
+<li><p>CalculateTPLikePropsFromSweep: Fix some edge cases found during evaluation</p></li>
+<li><p>Add documentation for how the testpulse properties are calculated</p></li>
+<li><p>Fix RTE at end of blowout protocol</p></li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h3>ITC XOP 2<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Update help file</p></li>
+</ul>
+</div>
+<div class="section" id="id12">
+<h3>ZeroMQ XOP<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Nothing</p></li>
+</ul>
+</div>
+<div class="section" id="id13">
+<h3>MCC XOP<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Nothing</p></li>
+</ul>
+</div>
+<div class="section" id="id14">
+<h3>MIESUtils XOP<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Update help file</p></li>
+</ul>
+</div>
+<div class="section" id="id15">
+<h3>Labnotebook<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id16">
+<h4>New numerical keys<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>“oodDAQ member”: This entry is a true/false entry denoting if a
+headstage takes part in oodDAQ or not.</p></li>
+<li><p>“DA ChannelType” and “AD ChannelType”: Denotes if the channel was used
+for TP or DAQ.</p></li>
+<li><p>“Fixed Frequency acquisition”</p></li>
+<li><p>“Igor Pro bitness”</p></li>
+</ul>
+</div>
+<div class="section" id="id17">
+<h4>New textual keys<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>“TTL rack zero set sweep counts”</p></li>
+<li><p>“TTL rack one set sweep counts”</p></li>
+<li><p>“TTL set sweep counts (NI hardware)”</p></li>
+<li><p>“TTL stim sets (NI hardware)”</p></li>
+<li><p>“TTL channels (NI hardware)”</p></li>
+<li><p>“Digitizer Hardware Name”</p></li>
+<li><p>“Digitizer Serial Numbers”</p></li>
+</ul>
+</div>
+<div class="section" id="id18">
+<h4>Changed numerical entries<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Change “Minimum Sampling Interval” to “Sampling Interval”</p></li>
+<li><p>Document the correct TTL bits for RACK_ONE</p></li>
+</ul>
+</div>
+<div class="section" id="id19">
+<h4>Changed textual entries<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Nothing</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id20">
+<h3>NWB/IPNWB<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Write the correct stimulus set for TTL channels for ITC hardware</p></li>
+<li><p>Add more functions for reading NWB file information</p></li>
+<li><p>Rename chunkedLayout parameter and add single chunk compression option</p></li>
+<li><p>Clarify group naming in Readme.rst</p></li>
+<li><p>Add an error message when loading NWB v2 files</p></li>
+<li><p>NWB_ExportAllData: Make compression mode configurable</p></li>
+<li><p>Set correct electrode number for associated DA/AD:
+Bug introduced in 7c37bf08 (NWB: Use Labnotebook property electrodeName
+if available, 2016-08-06).</p>
+<p>With default electrode names, which are just strings with the electrode
+numbers, the buggy source attributes are</p>
+<p>ITC1600_Dev_0;Sweep=0;AD=10;ElectrodeNumber=0;ElectrodeName=6</p>
+<p>(note the difference between the ElectrodeName and the ElectrodeNumber)</p>
+<p>where as it should be</p>
+<p>ITC1600_Dev_0;Sweep=0;AD=10;ElectrodeNumber=6;ElectrodeName=6</p>
+<p>One side effect of that bug is also that all TimeSeries attributes
+written by NWB_GetTimeSeriesProperties are fetched for the first
+headstage and not for the correct ones.</p>
+</li>
+<li><p>Handle deleted stimsets gracefully when exporting the experiment</p></li>
+<li><p>Flush file after every sweep in a separate thread</p></li>
+<li><p>Compress stored testpulses using “single chunk compression” to make the NWB
+files smaller</p></li>
+</ul>
+<div class="section" id="id21">
+<h4>File format<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Fix NWB group for unassociated DA channels. We need to store them
+in /stimulus/presentation and not in /acquisition/timeseries as ADC data.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id22">
+<h3>Pressure Control<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Make manual mode respect user access (during TP)</p></li>
+<li><p>P_UpdateSSRSlopeAndSSR: Extract correct layer from TPStorage</p></li>
+<li><p>Only call P_PressureControl every 90ms during TP</p></li>
+</ul>
+</div>
+<div class="section" id="id23">
+<h3>WaveBuilder<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add required column to the analysis parameter panel</p></li>
+<li><p>Add the required setting for all analysis parameters and don’t loose it on
+user changes.</p></li>
+<li><p>Add wave note entry for empty epoch as well</p></li>
+<li><p>Fix wave recreation logic for multiple modifications done in under a second</p></li>
+<li><p>Invert log chirp setting written to wave note</p></li>
+<li><p>Call WBP_UpdateITCPanelPopUps from all stimset loading functions</p></li>
+<li><p>Update DAQ GUI controls on sampling interval change</p></li>
+</ul>
+</div>
+<div class="section" id="id24">
+<h3>Work Sequencing Engine<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Nothing</p></li>
+</ul>
+</div>
+<div class="section" id="id25">
+<h3>Internal<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Allow using NI USB 6001 devices in evil mode</p></li>
+<li><p>Documentation: Make sphinx build pass without unexpected errors</p></li>
+</ul>
+</div>
+<div class="section" id="id26">
+<h3>Tests<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Hardware Tests:</p>
+<ul>
+<li><p>Make the test suite pass with NI hardware and ITC-1600</p></li>
+<li><p>Use multi data test case feature to run the tests for each device
+see also <a class="reference external" href="https://docs.byte-physics.de/igor-unit-testing-framework/advanced.html#multi-data-test-cases">here</a></p></li>
+<li><p>Check the created NWB file thoroughly</p></li>
+<li><p>Use the new UTF reentry functionality, thus making the tests much easier
+to understand, adapt and run for debugging.</p></li>
+<li><p>Add a test to ensure that TP is stopped before PRE_DAQ_EVENT</p></li>
+<li><p>Check that the sweep numbers are ascending in TEST_CASE_END_OVERRIDE</p></li>
+<li><p>Perform common checks after every test case</p></li>
+<li><p>Add tests which check the sampling interval for various combinations</p></li>
+</ul>
+</li>
+<li><p>Compilation Testing: Test evil mode as well</p></li>
+<li><p>AI_QueryGainsFromMCC: Override safety check for holding potential during automated testing</p></li>
+<li><p>BUG: Assert out during automated testing</p></li>
+</ul>
+</div>
+<div class="section" id="id27">
+<h3>Async Framework<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Added a generic framework for executing code in a separate thread</p></li>
+</ul>
+</div>
+<div class="section" id="id28">
+<h3>Installer<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>vc_redist package was not installed by the installer</p></li>
+</ul>
+</div>
+<div class="section" id="id29">
+<h3>Tango<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Nothing</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="release-1-7">
+<h2>Release 1.7<a class="headerlink" href="#release-1-7" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id30">
+<h3>DA_Ephys<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Support stimsets with per-sweep ITI. This also changes how the ITI is
+calculated for a set of sweeps, as now only the active sets are taken into
+account and not all sets in range anymore.</p></li>
+<li><p>Complain if the calculated number of sweeps in the set is zero</p></li>
+<li><p>Check free disc space before acquisition</p></li>
+<li><p>Add minimum sampling interval table for ITC16/ITC16USB</p></li>
+<li><p>Complain better on known ITC issues for first time users</p></li>
+<li><p>Fix acquisition order when changing tabs during DAQ with indexing turned on</p></li>
+<li><p>Avoid indexing errors when changing Repeat Sets/Lists during DAQ</p></li>
+<li><p>Apply on mode switch: Fix cases where the headstage and the DA/AD
+numerical values don’t match</p></li>
+<li><p>Apply on mode switch: Fix some edge cases with indexing</p></li>
+<li><p>Make TPStorage resizing faster</p></li>
+<li><p>Testpulse Multi Device: Try selecting the device first
+This handles some edge case experiments better which have the TP stored as
+running and are then reopened.</p></li>
+</ul>
+</div>
+<div class="section" id="id31">
+<h3>ExperimentConfig<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Changed I-Clamp primary gain to 5 from 1</p></li>
+<li><p>Recursively create the folders to save the experiment</p></li>
+</ul>
+</div>
+<div class="section" id="id32">
+<h3>General<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Support stopping Igor Pro via <cite>Quit/N</cite> while the testpulse is running. We
+now don’t crash anymore.</p></li>
+<li><p>Save and clear: Delete Databrowser, Cache and reset history capturing</p></li>
+</ul>
+</div>
+<div class="section" id="id33">
+<h3>ITC XOP 2<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Use current version of ITCXOP2 for IP8 as well</p></li>
+</ul>
+</div>
+<div class="section" id="id34">
+<h3>MCC XOP<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The XOP now works on a real 32bit Windows</p></li>
+</ul>
+</div>
+<div class="section" id="id35">
+<h3>MIESUtils XOP<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>New function MU_GetFreeDiskSpace</p></li>
+</ul>
+</div>
+<div class="section" id="id36">
+<h3>Labnotebook<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id37">
+<h4>New numerical keys<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Digitizer Hardware Type</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id38">
+<h3>Pressure Control<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Make breakin work again with NI hardware</p></li>
+<li><p>P_SetAndGetPressure now returns the real psi and not the calibrated one</p></li>
+</ul>
+</div>
+<div class="section" id="id39">
+<h3>WaveBuilder<a class="headerlink" href="#id39" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Reorganize controls and add per sweep ITI controls</p></li>
+<li><p>Due to the new per-sweep ITI the version of the stimset wave note has changed as well</p></li>
+<li><p>Create a newly saved stimset in the stimset folder so that it can be used
+immediately without the need to recreate it.</p></li>
+<li><p>Speedup delta calculation</p></li>
+</ul>
+</div>
+<div class="section" id="id40">
+<h3>Internal<a class="headerlink" href="#id40" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fix the bitrotted sampling interval calculation code</p></li>
+<li><p>Documentation: Don’t syntax highlight verbatim blocks</p></li>
+<li><p>Enhance the debug panel</p></li>
+<li><p>DEBUGPRINT/DEBUGPRINTw: Add support for outputting waves</p></li>
+<li><p>Updated BackgroundWatchdog: New Panel Design, works with any background task
+shows up to 15 tasks</p></li>
+</ul>
+</div>
+<div class="section" id="id41">
+<h3>Tango<a class="headerlink" href="#id41" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Changed the delimiter character from ; to | for the cmdID passing</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="release-1-6">
+<h2>Release 1.6<a class="headerlink" href="#release-1-6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id42">
+<h3>AnalysisBrowser<a class="headerlink" href="#id42" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Use try/catch for opening the HDF5 file. This allows us to continue on
+corrupt HDF5 files.</p></li>
+<li><p>Properly update all sweep controls on sweep loading</p></li>
+</ul>
+</div>
+<div class="section" id="id43">
+<h3>DataBrowser<a class="headerlink" href="#id43" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Auto assign locked devices as well on panel creation</p></li>
+<li><p>Add dashboard for inspecting analysis function results</p></li>
+</ul>
+</div>
+<div class="section" id="id44">
+<h3>DataBrowser/SweepBrowser<a class="headerlink" href="#id44" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Enhance vertical axis ticks for on/off entries</p></li>
+<li><p>Don’t plot anything if no sweeps are selected with OVS</p></li>
+<li><p>Nicify visualization of textual entries</p></li>
+</ul>
+</div>
+<div class="section" id="id45">
+<h3>DA_Ephys<a class="headerlink" href="#id45" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Update the calculated onset delay during DAQ</p></li>
+<li><p>Allow only one of dDAQ/oodDAQ being checked at a time</p></li>
+<li><p>Fix the stimset search controls for single channel controls</p></li>
+<li><p>Load builtin stimsets on first device locking</p></li>
+<li><p>Implement “Repeat sweep on async alarm” checkbox</p></li>
+<li><p>Allow stopping DAQ with ESC</p></li>
+<li><p>Allow stopping the testpulse always with ESC</p></li>
+<li><p>Fix DAQ restart logic when changing the stimset and TP after DAQ is enabled</p></li>
+<li><p>Fix forgotten update of stimsets in GUI with unlocked indexing</p></li>
+<li><p>Fix indexing with reversed stimset order</p></li>
+<li><p>Fix locked indexing bug. When the first stimset is not the one with the most
+sweeps we fail to produce the correct acquisition order.</p></li>
+<li><p>Document the really used ITI when it is changed mid sweep</p></li>
+<li><p>Fix TP settings change if TP is running, no more bugging out</p></li>
+</ul>
+</div>
+<div class="section" id="id46">
+<h3>ExperimentConfig<a class="headerlink" href="#id46" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add Testpulse amplitude in current clamp (IC) to configuration</p></li>
+<li><p>Close the user config notebook immediately if it is not used anymore</p></li>
+</ul>
+</div>
+<div class="section" id="id47">
+<h3>Downsample<a class="headerlink" href="#id47" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id48">
+<h3>Analysis Functions<a class="headerlink" href="#id48" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Patch Seq:</p>
+<ul>
+<li><p>Skip only to the end of the currently active set</p></li>
+<li><p>PSQ_Rheobase: Add labnotebook entry if the DAScale range was exceeded</p></li>
+<li><p>Make the sampling multiplier a required analysis parameter</p></li>
+<li><p>PSQ_SquarePulse: Add sweep/set pass/fail entries</p></li>
+<li><p>Shorten overlong keys</p></li>
+<li><p>PSQ_SPIKE_LEVEL: Change to 0.01mV</p></li>
+<li><p>PSQ_DeterminePulseDuration: Handle pulses with negative amplitude properly</p></li>
+<li><p>Disallow TTL channels</p></li>
+<li><p>Force RA to true</p></li>
+<li><p>PSQ_DAScale: Only calculate/store/display resistance in sub threshold mode</p></li>
+<li><p>PSQ_DAScale: Enforce I-Clamp mode</p></li>
+<li><p>PSQ_DAScale: Add test for supra mode</p></li>
+<li><p>PSQ_DAScale: Check also the DAScale values</p></li>
+<li><p>PSQ_DaScale: Add new operation mode</p></li>
+<li><p>Force dDAQ/oodDAQ to off</p></li>
+<li><p>Force settings instead of complaining if possible</p></li>
+<li><p>Rename SubThreshold to DAScale</p></li>
+<li><p>Enfore minimum stimset length in PRE_DAQ_EVENT</p></li>
+<li><p>PSQ_Rheobase: Stop the sweep early if baseline QC passed</p></li>
+<li><p>PSQ_Rheobase: Handle failing baseline QC properly</p></li>
+<li><p>Add <a class="reference external" href="http://10.128.24.29/master/file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html?highlight=psq_ramp#_CPPv28PSQ_Ramp6stringP19AnalysisFunction_V3">PSQ_Ramp</a> with tests, documentation and flow chart</p></li>
+<li><p>Port to V3 API</p></li>
+<li><p>Fix spike detection logic</p></li>
+<li><p>Support indexing</p></li>
+<li><p>PSQ_SearchForSpikes: Fix searching for multiple spikes and finding none</p></li>
+<li><p>Patch Seq Rheobase: Increase post pulse baseline chunk size to 500ms</p></li>
+<li><p>PSQ_Rheobase: Fix stimset length check</p></li>
+</ul>
+</li>
+<li><p>Introduce Analysis functions V3. All new analysis functions should use this format.</p></li>
+<li><p>Add support for analysis parameters which can be attached to stimsets and are passed into the analysis function.</p></li>
+<li><p>Set realDataLength to NaN for PRE_DAQ_EVENT</p></li>
+<li><p>Explain behaviour on early aborting</p></li>
+<li><p>Allow switching multi device/single device in PRE_DAQ_EVENT</p></li>
+<li><p>Don’t start DAQ if Abort happened during PRE_DAQ_EVENT</p></li>
+<li><p>Ensure that MID_SWEEP_EVENT is always reached</p></li>
+<li><p>Analysis parameters: Add method to request the types as well
+A breaking change is that the names now must be separated with commas
+(,) as that is more in line how we store the entries in the stimset.</p></li>
+<li><p>Add PRE_SET_EVENT and fix POST_SET_EVENT for indexing</p></li>
+</ul>
+</div>
+<div class="section" id="id49">
+<h3>Foreign Function interface<a class="headerlink" href="#id49" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id50">
+<h3>General<a class="headerlink" href="#id50" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Readd 32-bit support. Users should <em>always</em> prefer 64-bit as we <em>will</em> phase out 32-bit support.</p></li>
+<li><p>Add support for Igor Pro 8</p></li>
+<li><p>PGC_SetAndActivateControl: Do nothing if the checkbox is already in the desired state</p></li>
+<li><p>Stimset wave note: Store sweep and epoch count as well</p></li>
+<li><p>Add document explaining some MIES coding concepts for new developers</p></li>
+<li><p>IgorBeforeNewHook: Save experiment after cleaning up</p></li>
+<li><p>AFH_ExtractOneDimDataFromSweep: More documentation and add support for TTL channels</p></li>
+<li><p>All hardware dependent XOPs are now not a compilation requirement anymore</p></li>
+<li><p>Reorganize menu</p></li>
+<li><p>Add a cache for the labnotebook queries, this speeds up reading out the
+labnotebook by around two orders of magnitude</p></li>
+<li><p>Add shortcuts to most common MIES panels</p></li>
+<li><p>Use fast line drawing for oscilloscope traces (Igor Pro 8 only)</p></li>
+<li><p>Make Multi Device DAQ the default</p></li>
+<li><p>Let NWB_ExportAllData use the given NWB via overrideFilePath and not use the
+standard NWB file derived from the experiment name</p></li>
+</ul>
+</div>
+<div class="section" id="id51">
+<h3>Installer<a class="headerlink" href="#id51" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add 32bit support, auto uninstall, add support for installing without hardware XOPs instead of modules</p></li>
+<li><p>Remove module support</p></li>
+</ul>
+</div>
+<div class="section" id="id52">
+<h3>ITC XOP 2<a class="headerlink" href="#id52" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Modularize the repository and use submodules</p></li>
+<li><p>ITCConfigAllChannels2/ITCConfigChannel2: Add possibility to offset into data
+wave. This changes the ITCChanConfigWave format.</p></li>
+<li><p>Add matching PDBs</p></li>
+</ul>
+</div>
+<div class="section" id="id53">
+<h3>ZeroMQ XOP<a class="headerlink" href="#id53" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Modularize the repository and use submodules</p></li>
+<li><p>Fix a crash with long function names from Igor Pro 8 (XOP is still compiled
+without long name support)</p></li>
+</ul>
+</div>
+<div class="section" id="id54">
+<h3>MCC XOP<a class="headerlink" href="#id54" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The XOP now searches the AxMultiClampMsg.dll in the default installation
+folder. So we don’t need to ship it.</p></li>
+</ul>
+</div>
+<div class="section" id="id55">
+<h3>Labnotebook<a class="headerlink" href="#id55" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>GetLastSetting*: Return an invalid wave reference if nothing could be found</p></li>
+<li><p>Fix labnotebook getter for text entries using RAC logic</p></li>
+<li><p>Enhance documentation of the labnotebook querying functions</p></li>
+<li><p>Add documentation for developers on how to use the labnotebook</p></li>
+<li><p>DC_DocumentChannelProperty: Initialize sweep settings wave properly for
+unassociated channels The labnotebook entries for in these cases does not
+follow our standard scheme as zeros where used as placeholders instead of
+NaNs.</p>
+<p>Detecting invalid data entries:</p>
+<ul class="simple">
+<li><p>Only labnotebook entries with UNASSOC in the name are concerned.</p></li>
+<li><p>These labnotebook entries never have entries in the headstage
+dependent layers so these layers can alywas be ignored.</p></li>
+<li><p>The only valid entry is in the INDEP_HEADSTAGE (9th) layer.</p></li>
+<li><p>Write only valid analysis functions into the labnotebook</p></li>
+</ul>
+</li>
+</ul>
+<div class="section" id="id56">
+<h4>New numerical keys<a class="headerlink" href="#id56" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>“Sweep Rollback”: Documents the sweep where the user used sweep rollback</p></li>
+<li><p>“Multi Device mode”: On/Off</p></li>
+<li><p>“Background Testpulse”: On/Off</p></li>
+<li><p>“Background DAQ”: On/Off</p></li>
+<li><p>“Sampling interval multiplier”: (Integer value) Factor used for reducing the sampling rate</p></li>
+<li><p>“TP buffer size”: (Integer value) Size of the TP buffer used for averaging</p></li>
+<li><p>“TP during ITI”: On/Off</p></li>
+<li><p>“Amplifier change via I=0”: On/Off</p></li>
+<li><p>“Skip analysis functions”: On/Off</p></li>
+<li><p>“Repeat sweep on async alarm”: On/Off</p></li>
+<li><p>“Autobias Vcom”: Voltage [mV]</p></li>
+<li><p>“Autobias Vcom variance”: Voltage variance [mV]</p></li>
+<li><p>“Autobias Ibias max”: Maximum current [pA]</p></li>
+<li><p>“Autobias”: On/Off</p></li>
+<li><p>“Set Cycle count”: Number of times a stimset was completely acquired in a row</p></li>
+<li><p>“Stimset acquisition cycle ID”: Unique identifier which is constant for all
+sweeps of an RAC with the same stimset and set cycle count.</p></li>
+</ul>
+</div>
+<div class="section" id="id57">
+<h4>New textual keys<a class="headerlink" href="#id57" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>“Stim Wave Note”: The stimset wave note, useful for querying epoch specific settings</p></li>
+</ul>
+</div>
+<div class="section" id="id58">
+<h4>Changed numerical entries<a class="headerlink" href="#id58" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Fix casing of “Stim Wave Checksum”</p></li>
+<li><p>Nearly all patch seq entries were fine tuned.</p></li>
+</ul>
+</div>
+<div class="section" id="id59">
+<h4>Changed textual entries<a class="headerlink" href="#id59" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Nearly all patch seq entries were fine tuned.</p></li>
+<li><p>The analysis function entries now have consistent casing:</p>
+<ul>
+<li><p>“Pre DAQ function”</p></li>
+<li><p>“Mid Sweep function”</p></li>
+<li><p>“Post Sweep function”</p></li>
+<li><p>“Post Set function”</p></li>
+<li><p>“Post DAQ function”</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="id60">
+<h3>NWB/IPNWB<a class="headerlink" href="#id60" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Store the Igor Pro history in NWB on interactive export</p></li>
+</ul>
+<div class="section" id="id61">
+<h4>File format<a class="headerlink" href="#id61" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+</div>
+<div class="section" id="id62">
+<h3>Pressure Control<a class="headerlink" href="#id62" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>MAX/MIN_REGULATOR_PRESSURE: Unify constants</p></li>
+</ul>
+</div>
+<div class="section" id="id63">
+<h3>WaveBuilder<a class="headerlink" href="#id63" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Remove deprecated analysis functions if possible on stimset saving</p></li>
+<li><p>Delete intermediate waves on panel close</p></li>
+<li><p>Support stimsets with more than 20 sweeps</p></li>
+<li><p>Add GUI for handling analysis parameters</p></li>
+<li><p>Sort the list of shown stimsets across channel types</p></li>
+<li><p>Add stimset checksum to the stimset wavenote</p></li>
+<li><p>Fail with a good error message on unknown delta modes on stimset creation</p></li>
+<li><p>Upgrade WP/WPT waves to hold per entry delta operations and multipliers</p></li>
+<li><p>WPT now gained layers for epoch type specific data</p></li>
+<li><p>Add a new delta operation named “Explicit delta values” which allows to set
+the delta value for each sweep</p></li>
+<li><p>Don’t error out on the combine epoch tab with no stimsets available</p></li>
+</ul>
+</div>
+<div class="section" id="id64">
+<h3>Work Sequencing Engine<a class="headerlink" href="#id64" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Added support for WSE to interact with patchSeq Wave Set</p></li>
+</ul>
+</div>
+<div class="section" id="id65">
+<h3>Internal<a class="headerlink" href="#id65" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add cache statistics</p></li>
+<li><p>FindIndizes: Support input waves with layers</p></li>
+<li><p>AFH_GetChannelUnit/AFH_GetChannelUnits: Add functions for querying the channel units from the ITCChanConfigWave</p></li>
+<li><p>DAP_CheckSettings: Add checks for asynchronous acquisition</p></li>
+<li><p>Mies Version: Add date and time of last commit</p></li>
+<li><p>Remove stale wrapper functions</p></li>
+<li><p>Removed stock XOPs/Procedures/HelpFiles with shortcuts to their original location</p></li>
+<li><p>Add MIESUtils XOP with MU_WaveModCount, WaveModCount is available in IP8</p></li>
+<li><p>Unify GetLastSetting and GetLastSettingText</p></li>
+<li><p>Wave cache: Allow to operate on a non-duplicated wave</p></li>
+<li><p>Enhance indexing documentation, add a human readable description how indexing should work</p></li>
+</ul>
+</div>
+<div class="section" id="id66">
+<h3>Tango<a class="headerlink" href="#id66" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add upstream license file</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="release-1-5">
+<h2>Release 1.5<a class="headerlink" href="#release-1-5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id67">
+<h3>AnalysisBrowser<a class="headerlink" href="#id67" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Accept dropped NWB files</p></li>
+<li><p>Make initial scanning of NWB files much faster</p></li>
+</ul>
+</div>
+<div class="section" id="id68">
+<h3>DataBrowser<a class="headerlink" href="#id68" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Default to sweeps axis type for labnotebook browsing</p></li>
+<li><p>Make “Export Traces” work</p></li>
+</ul>
+</div>
+<div class="section" id="id69">
+<h3>DataBrowser/SweepBrowser<a class="headerlink" href="#id69" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Artefact removal: Handle no AD channels in graph gracefully</p></li>
+<li><p>Rework and unify UI</p></li>
+<li><p>Use correct trace color for unassociated channels</p></li>
+</ul>
+</div>
+<div class="section" id="id70">
+<h3>DA_Ephys<a class="headerlink" href="#id70" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Don’t stop and restart TP if DAQ is ongoing</p></li>
+<li><p>Oscilloscope resistance values: Use sub MOhm for &lt; 10MOhm</p></li>
+<li><p>Fix error on stopping single device DAQ during repeated acquisition</p></li>
+<li><p>Stop single device DAQ properly if aborted during ITI</p></li>
+<li><p>Zero ITC channels if DAQ is stopped during ITI</p></li>
+<li><p>Enable analysis functions by default</p></li>
+<li><p>Properly support “TP after DAQ” when aborting currently running DAQ</p></li>
+<li><p>Unify stopping for single/multi device</p></li>
+<li><p>Make DAQ faster for short stimsets (100ms) with less overhead</p></li>
+<li><p>Store only the AD data when storing the full testpulses</p></li>
+<li><p>Store nearly all GUI controls value in a numerical/textual GUI state
+immediately on change. This allows much faster querying and makes RA faster by around 100ms.</p></li>
+<li><p>Fix skipping sweeps when called during ITI</p></li>
+<li><p>Implement foreground single device RA. This gives a more accurate ITI for short (&lt; 100ms) stimsets.</p></li>
+<li><p>Add automated blowout feature</p></li>
+<li><p>Amplifier: Set stored clamp mode instead of complaining only if the stored and the one active in the MCC panel differ</p></li>
+<li><p>Avoid endless loop in case the monitoring thread dies for multi device testpulse</p></li>
+<li><p>Cache used waves for multi device test pulse</p></li>
+<li><p>Open Arduino panel and initialize it for yoked DAQ automatically</p></li>
+</ul>
+</div>
+<div class="section" id="id71">
+<h3>ExperimentConfig<a class="headerlink" href="#id71" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id72">
+<h3>Downsample<a class="headerlink" href="#id72" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id73">
+<h3>Analysis Functions<a class="headerlink" href="#id73" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add central storage wave to make calling them faster</p></li>
+<li><p>Add <a class="reference external" href="http://10.128.24.29/master/file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html?highlight=rheobase#_CPPv212PSQ_Rheobase6string8variable4wave8variable8variable">PSQ_Rheobase</a> with tests, documentation and flow chart</p></li>
+<li><p>Add <a class="reference external" href="http://10.128.24.29/master/file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html?highlight=square%20pulse#_CPPv215PSQ_SquarePulse6string8variable4wave8variable8variable">PSQ_SquarePulse</a> with tests, documentation and flow chart</p></li>
+</ul>
+</div>
+<div class="section" id="id74">
+<h3>Foreign Function interface<a class="headerlink" href="#id74" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id75">
+<h3>General<a class="headerlink" href="#id75" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Reorganize the MIES menu entries</p></li>
+<li><p>Enhance the mies version information to include submodule information as well</p></li>
+<li><p>Add many more labnotebook querying functions which respects RA cycle ID</p></li>
+<li><p>PGC_SetAndActivateControl: Send the limited val for SetVariable controls</p></li>
+<li><p>TPStorageWave: Store the validity of the entries</p></li>
+<li><p>Add windows installer based on NSIS</p></li>
+<li><p>Adapt sweep wave note layout</p></li>
+<li><p>Add manual tests for yoked DAQ</p></li>
+<li><p>Disable Indexing and “TP after DAQ” for yoked DAQ as it is currently broken</p></li>
+</ul>
+</div>
+<div class="section" id="id76">
+<h3>ITC XOP 2<a class="headerlink" href="#id76" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id77">
+<h3>ZeroMQ XOP<a class="headerlink" href="#id77" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id78">
+<h3>Labnotebook<a class="headerlink" href="#id78" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Textual Labnotebook: Normalize EOLs in entries to <cite>n</cite></p></li>
+<li><p>The new analysis functions write some labnotebook entries. See their documentation for details.</p></li>
+</ul>
+<div class="section" id="id79">
+<h4>New numerical keys<a class="headerlink" href="#id79" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+<div class="section" id="id80">
+<h4>New textual keys<a class="headerlink" href="#id80" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>“Igor Pro version”: Igor Pro version</p></li>
+<li><p>“High precision sweep start”: ISO8601 timestamp of the sweep start with sub-second precision</p></li>
+</ul>
+</div>
+<div class="section" id="id81">
+<h4>Changed numerical entries<a class="headerlink" href="#id81" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+<div class="section" id="id82">
+<h4>Changed textual entries<a class="headerlink" href="#id82" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>“Async Unit”: The textual entry for the “Async Unit” should be the plain unit
+instead of “Async AD *: *”. Same for the unit of the async entry itself.</p></li>
+<li><p>“Timestamp”: Store sub-second precision in Timestamp columns</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id83">
+<h3>NWB/IPNWB<a class="headerlink" href="#id83" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add option to export all stimsets into NWB on interactive export</p></li>
+<li><p>Use labnotebook high precision timestamp for starting_time calculation</p></li>
+<li><p>Fix NWB export naming and metadata for unassociated channels and TTL channels</p></li>
+<li><p>Export full testpulses into NWB on interactive export</p></li>
+</ul>
+<div class="section" id="id84">
+<h4>File format<a class="headerlink" href="#id84" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Unassociatetd channels now neither have a channel suffix (<cite>_$num</cite>) for the
+group name if TTL channels are present.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id85">
+<h3>Pressure Control<a class="headerlink" href="#id85" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id86">
+<h3>WaveBuilder<a class="headerlink" href="#id86" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Introduce builtin stimset concepts: All stimsets starting with <cite>MIES_</cite> are
+considered to be builtin and should not be created by users.</p></li>
+<li><p>Fix epoch selection by mouse for really short epochs</p></li>
+</ul>
+</div>
+<div class="section" id="id87">
+<h3>Work Sequencing Engine<a class="headerlink" href="#id87" title="Permalink to this headline">¶</a></h3>
+<p>More general check for test pulse running in QC functions</p>
+</div>
+<div class="section" id="id88">
+<h3>Internal<a class="headerlink" href="#id88" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Reorganize repository: Move all separate projects into their own repository
+and include them via git submodules.</p></li>
+<li><p>Add automated testing with hardware on windows</p></li>
+<li><p>Enhance wording of failed assertions. It now also includes a backtrace and the MIES version.</p></li>
+<li><p>Reorganized procedure files to enhance function grouping and naming</p></li>
+<li><p>Make PGC_SetAndActivateControl faster</p></li>
+<li><p>PGC_SetAndActivateControl: Allow to switch tabs</p></li>
+<li><p>PGC_SetAndActivateControl: Allow setting popup menues by string</p></li>
+<li><p>HW ITC: Support interactive mode</p></li>
+<li><p>Upgrade documentation generation toolchain to latest versions</p></li>
+</ul>
+</div>
+<div class="section" id="id89">
+<h3>Tango<a class="headerlink" href="#id89" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+</div>
+<div class="section" id="release-1-4">
+<h2>Release 1.4<a class="headerlink" href="#release-1-4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id90">
+<h3>AnalysisBrowser<a class="headerlink" href="#id90" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>SweepBrowser Export:</dt><dd><ul>
+<li><p>Fix x range determination by number of pulses</p></li>
+<li><p>Use correct region for pulse range calculation</p></li>
+<li><p>Fix operation on zoomed in graphs</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>SweepBrowser: Remove both unused sub panels on the right</p></li>
+</ul>
+</div>
+<div class="section" id="id91">
+<h3>DataBrowser<a class="headerlink" href="#id91" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Rework UI to use much less horizontal space and make it more compact</p></li>
+<li><p>Fix overlay sweeps for experiments with non-standard sweep ordering</p></li>
+</ul>
+</div>
+<div class="section" id="id92">
+<h3>DataBrowser/SweepBrowser<a class="headerlink" href="#id92" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Pulse Average:</dt><dd><ul>
+<li><p>Make individual traces more transparent</p></li>
+<li><p>Enhance display of poisson distributed pulses</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Overlay Sweeps: Add mode for overlaying sweeps in a non-commulative way</p></li>
+</ul>
+</div>
+<div class="section" id="id93">
+<h3>DA_Ephys<a class="headerlink" href="#id93" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Avoid complaining into the history if the ITI is too short</p></li>
+<li><p>Speedup repeated acqusition in case no ITI is left for the background function</p></li>
+<li><p>Testpulse Multidevice: Extract the first chunk only after it is finished</p></li>
+<li><p>Disable more GUI controls during DAQ</p></li>
+<li><p>Set DA channels to zero on normal stop as well (required if analysis function aborts early)</p></li>
+<li><dl class="simple">
+<dt>TP_Delta:</dt><dd><ul>
+<li><p>Prefer a fixed time period for the instantaneous calculation</p></li>
+<li><p>Fix Steady state resistance calculation for non-default baselines</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Avoid inifite loop in DAQ Multidevice (hard to trigger though)</p></li>
+<li><p>New User settings for All V-clamp or I-clamp settings</p></li>
+<li><p>Add jump ahead feature which allows the user to skip future sweeps</p></li>
+<li><p>Make the autobias percentage and the interval configurable</p></li>
+</ul>
+</div>
+<div class="section" id="id94">
+<h3>Analysis Functions<a class="headerlink" href="#id94" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Added <a class="reference external" href="http://10.128.24.29/master/file/_m_i_e_s___analysis_functions_8ipf.html#_CPPv213AdjustDAScale6string8variable4wave8variable8variable">AdjustDAScale</a>, <a class="reference external" href="http://10.128.24.29/master/file/_m_i_e_s___analysis_functions_8ipf.html#_CPPv218ReachTargetVoltage6string8variable4wave8variable8variable">ReachTargetVoltage</a> and <a class="reference external" href="http://10.128.24.29/master/file/_m_i_e_s___analysis_functions_8ipf.html#_CPPv220PatchSeqSubThreshold6string8variable4wave8variable8variable">PatchSeqSubThreshold</a></p></li>
+<li><p>Add “early abort without repurposing time” return value for Mid Sweep Event</p></li>
+</ul>
+</div>
+<div class="section" id="id95">
+<h3>ExperimentConfig<a class="headerlink" href="#id95" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Added some more config fields</p></li>
+</ul>
+</div>
+<div class="section" id="id96">
+<h3>Downsample<a class="headerlink" href="#id96" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id97">
+<h3>Foreign Function interface<a class="headerlink" href="#id97" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id98">
+<h3>General<a class="headerlink" href="#id98" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Avoid calling analysis functions twice on mid sweep event</p></li>
+<li><p>Allow skipping the last sweep with repeated acquisition on</p></li>
+</ul>
+</div>
+<div class="section" id="id99">
+<h3>ITC XOP 2<a class="headerlink" href="#id99" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id100">
+<h3>ZeroMQ XOP<a class="headerlink" href="#id100" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id101">
+<h3>Labnotebook<a class="headerlink" href="#id101" title="Permalink to this headline">¶</a></h3>
+<p>None. The new analysis functions write some labnotebook entries. See their
+documentation for details.</p>
+<div class="section" id="id102">
+<h4>New numerical keys<a class="headerlink" href="#id102" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+<div class="section" id="id103">
+<h4>New textual keys<a class="headerlink" href="#id103" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+<div class="section" id="id104">
+<h4>Changed numerical entries<a class="headerlink" href="#id104" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+<div class="section" id="id105">
+<h4>Changed textual entries<a class="headerlink" href="#id105" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+</div>
+<div class="section" id="id106">
+<h3>NWB/IPNWB<a class="headerlink" href="#id106" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+<div class="section" id="id107">
+<h4>File format<a class="headerlink" href="#id107" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+</div>
+<div class="section" id="id108">
+<h3>Pressure Control<a class="headerlink" href="#id108" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id109">
+<h3>WaveBuilder<a class="headerlink" href="#id109" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fix combine stimset creation without Wavebuilder panel open</p></li>
+<li><dl class="simple">
+<dt>Pulse Train epoch:</dt><dd><ul>
+<li><p>Adjust pulse positions relative to the begin of the stimset</p></li>
+<li><p>Fix number of pulses control updating with multiple pulse train epochs in one stimset</p></li>
+<li><p>Add mixed frequency mode</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Noise epoch:</dt><dd><ul>
+<li><p>Fix high/low filter values and document them properly</p></li>
+<li><p>Add the possibility to create multiple epochs using the exact same RNG seed</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Avoid runtime error on custom wave epoch on empty folder selection</p></li>
+<li><p>Add automated regression tests</p></li>
+</ul>
+</div>
+<div class="section" id="id110">
+<h3>Work Sequencing Engine<a class="headerlink" href="#id110" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id111">
+<h3>Internal<a class="headerlink" href="#id111" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Convert Abort with message to DoAbortNow to facilitate automated testing with hardware in future versions.</p></li>
+<li><p>Fix skipped documentation for DAP_EphysPanelStartUpSettings() due to buggy code conversion script.</p></li>
+<li><p>ED_AddEntryToLabnotebook: Add optional overrideSweepNo parameter</p></li>
+<li><p>Get rid of some ITC hardware related waves</p></li>
+</ul>
+</div>
+<div class="section" id="id112">
+<h3>Tango<a class="headerlink" href="#id112" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+</div>
+<div class="section" id="release-1-3">
+<h2>Release 1.3<a class="headerlink" href="#release-1-3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id113">
+<h3>AnalysisBrowser<a class="headerlink" href="#id113" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Make the NWB menu entries available when only this module is loaded</p></li>
+</ul>
+</div>
+<div class="section" id="id114">
+<h3>DataBrowser<a class="headerlink" href="#id114" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Reset overlay sweep folder on device locking</p></li>
+<li><p>Labnotebook entry graph: Make the vertical axis scale to the visible data by default</p></li>
+</ul>
+</div>
+<div class="section" id="id115">
+<h3>DataBrowser/SweepBrowser<a class="headerlink" href="#id115" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Pulse averaging: Fix work preventing logic again</p></li>
+<li><p>PulseAveraging: Handle invalid pulse coordinates more gracefully</p></li>
+<li><p>Fix Display of TTL waves</p></li>
+</ul>
+</div>
+<div class="section" id="id116">
+<h3>DA_Ephys<a class="headerlink" href="#id116" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Testpulse Multidevice:
+- Use the correct testpulse length for the cutoff at the end (minor)
+- Fix invalid extracted chunks for special baseline values
+- Push stopCollection point further to the end
+- Rewrite fifo handling logic to always extract the last chunk
+- Remove device restarting logic</p></li>
+<li><p>Fix the total number of sweeps calculation for locked indexing. Broken since 0.9.</p></li>
+<li><p>Prevent locking a ITC device which is not present</p></li>
+<li><p>Repeated Acquisition: Don’t try starting TP during ITI if there is no time left</p></li>
+<li><p>Oscilloscope: Prevent sub MOhm values for Rss and Rpeak</p></li>
+<li><p>Oscilloscope: Don’t use autoscaling in DAQ mode.</p></li>
+<li><p>Background functions: Unify DAQ/TP bkg functions period to 5 ticks (12/60s = 83ms)</p></li>
+<li><p>Speedup DAQ via optimizing the way we write into the oscilloscope wave</p></li>
+<li><p>Experiment Documentation: Rework and speedup the sweep wave note creation with changed entries</p></li>
+<li><p>Turn off analysis functions by default</p></li>
+<li><p>Analysis Functions: Implement support for new mid sweep return type</p></li>
+<li><p>Add support for skipping forward and back some sweeps during data acquisition</p></li>
+<li><p>Repeated Acquisition: Immediately finish if we have only one trial</p></li>
+<li><p>Analysis Functions: Prevent Post Sweep/Set/DAQ event execution on forced DAQ stopping</p></li>
+<li><p>Experiment Documentation: Avoid bugging out on very long text entries</p></li>
+<li><p>Pulse averaging: Fix fallback logic for non existing pulse lengths</p></li>
+<li><p>Correct the default channels and other settings for device 1 to 9 of the type ITC1600</p></li>
+<li><p>Handle non-active headstage gracefully if the user presses Approach (pressure mode)</p></li>
+<li><p>Try out all possible MultiClampCommander paths</p></li>
+<li><p>Add possibility to store each testpulse</p></li>
+</ul>
+</div>
+<div class="section" id="id117">
+<h3>ExperimentConfig<a class="headerlink" href="#id117" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Remove workaround for buggy MultiClampCommander 64-bit App (Requires latest beta version of MCC App)</p></li>
+<li><p>Fixed incorrect <cite>GetPanelControl</cite> constants to set the Min/Max Temp alarm. Fixed now</p></li>
+<li><p>Add User Config field to save each TP sweep</p></li>
+<li><p>Added new fields to User Configuration:
+- Enable/Disable Autobias current
+- Enable/Disable Cap Neutralization
+- Set User onset and termination delay
+- Select initial stim set and amplitude to begin data acquisition</p></li>
+</ul>
+</div>
+<div class="section" id="id118">
+<h3>Downsample<a class="headerlink" href="#id118" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Avoid erroring out on invalid target rate</p></li>
+</ul>
+</div>
+<div class="section" id="id119">
+<h3>Foreign Function interface<a class="headerlink" href="#id119" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id120">
+<h3>General<a class="headerlink" href="#id120" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Remove 32bit, Manipulator and RemoteControl support</p></li>
+<li><p>Avoid gossiping (aka printing messages) too much during operation instead use ControlWindowToFront when it is really important</p></li>
+<li><p>Prevent erroneous save dialog when quitting MIES when nothing has changed</p></li>
+<li><p>Readme.md: Unify full installation instructions for 32/64 bit</p></li>
+<li><p>Readme.md: Enhance installation instructions without hardware</p></li>
+<li><p>Raise required Igor Pro version to 7.04</p></li>
+</ul>
+</div>
+<div class="section" id="id121">
+<h3>Labnotebook<a class="headerlink" href="#id121" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fix adding the basic entries to all layers. Broken since the switch to Igor Pro 7.</p></li>
+</ul>
+</div>
+<div class="section" id="id122">
+<h3>ITC XOP 2<a class="headerlink" href="#id122" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fix some erroneous tests</p></li>
+<li><p>Add BSD-3-Clause License</p></li>
+</ul>
+</div>
+<div class="section" id="id123">
+<h3>ZeroMQ XOP<a class="headerlink" href="#id123" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add help file in Igor Pro Help format</p></li>
+<li><p>Nicify documentation and enhance compilation instructions</p></li>
+<li><p>Add example C++ client</p></li>
+<li><p>Add MacOSX XOPs</p></li>
+<li><p>Upgrade to new XOPSupport 7.01</p></li>
+<li><p>Recompile XOP support libraries with runtime DLL setting</p></li>
+<li><p>Fix some compilation warnings found by clang on MacOSX</p></li>
+<li><p>Remove dependency of the tests on MIES</p></li>
+<li><p>Add BSD-3-Clause License</p></li>
+</ul>
+<div class="section" id="id124">
+<h4>New numerical keys<a class="headerlink" href="#id124" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>“Stim Wave Checksum”, 32bit CRC of the stimset and its parameter waves (if present)</p></li>
+<li><p>“Repeated Acq Cycle ID” holds an integer value which is unique for every
+repeated acquisition cycle. This allows to determine if two sweeps belong to
+the same repeaqted acquisition. Before this was only possible via an
+heuristic which could not be correct all the time.</p></li>
+</ul>
+</div>
+<div class="section" id="id125">
+<h4>New textual keys<a class="headerlink" href="#id125" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+<div class="section" id="id126">
+<h4>Changed numerical entries<a class="headerlink" href="#id126" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Write “TTL rack zero/one channel” only in the headstage independent layer</p></li>
+<li><p>Write asyn entries also in the headstage independent layer (For backwards compatibility we keep it in the zeroth layer)</p></li>
+</ul>
+</div>
+<div class="section" id="id127">
+<h4>Changed textual entries<a class="headerlink" href="#id127" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Write asyn entries also in the headstage independent layer (For backwards compatibility we keep it in the zeroth layer)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id128">
+<h3>NWB/IPNWB<a class="headerlink" href="#id128" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Link to the specification we implement</p></li>
+<li><p>Nicify documentation</p></li>
+<li><p>Add BSD-3-Clause License</p></li>
+<li><p>Add example code for reading as well</p></li>
+<li><p>H5_LoadDataset: Use HDF5 Error and dump routine in case of error</p></li>
+<li><p>CreateCommonGroups: Write required datasets always</p></li>
+<li><p>GeneralInfo: Include all other root folder elements as well</p></li>
+</ul>
+</div>
+<div class="section" id="id129">
+<h3>Pressure Control<a class="headerlink" href="#id129" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id130">
+<h3>WaveBuilder<a class="headerlink" href="#id130" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fix loading default stimset values for DA type</p></li>
+<li><p>Fix loading of TTL stimsets</p></li>
+<li><p>Update the stimset related DA_EPHYS panel controls if only the number of sweeps of stimset changed</p></li>
+<li><p>Prevent keeping non-existing analysis functions attached to a stimset during load and save cycle</p></li>
+<li><p>Warn the user if the stimset references a non existing analysis function on loading</p></li>
+</ul>
+</div>
+<div class="section" id="id131">
+<h3>Work Sequencing Engine<a class="headerlink" href="#id131" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+<div class="section" id="id132">
+<h4>File format<a class="headerlink" href="#id132" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+</div>
+<div class="section" id="id133">
+<h3>Internal<a class="headerlink" href="#id133" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Switch continuous integration server to use Igor Pro 64-bit for unit and compilation testing</p></li>
+<li><p>GetLastSetting: Return a double precision wave</p></li>
+<li><p>EnsureLargeEnoughWave: Avoid enlarging minimum sized waves immediately</p></li>
+<li><p>DA_EPHYS: Introduce a RNG seed value for each locked device</p></li>
+<li><p>ExtractOneDimDataFromSweep: Add assertion for catching sweep &lt;-&gt; config mixups</p></li>
+<li><p>ED_AddEntriesToLabnotebook: Add convenience function for easy addition of user labnotebook entries</p></li>
+<li><p>FindIndizes: Simplify interface</p></li>
+<li><p>Count global initializes at zero instead of NaN</p></li>
+<li><p>FindRange: Make it possible to search for NaNs</p></li>
+<li><p>DeepCopyWaveRefWave: Avoid claiming to support multi dimensional src waves</p></li>
+<li><p>ParseISO8601TimeStamp: Accept more format variations written by the api-python code</p></li>
+</ul>
+</div>
+<div class="section" id="id134">
+<h3>Tango<a class="headerlink" href="#id134" title="Permalink to this headline">¶</a></h3>
+<p>None. But be aware that now the 64-bit version of the Tango XOP always is used.</p>
+</div>
+</div>
+<div class="section" id="release-1-2">
+<h2>Release 1.2<a class="headerlink" href="#release-1-2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id135">
+<h3>General<a class="headerlink" href="#id135" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add menu entry for loading stimsets from an NWB file</p></li>
+<li><p>Entry type heuristic: Handle old labnotebooks without entry source type and no TP data properly</p></li>
+<li><p>Rework TPStorage contents</p></li>
+<li><p>Don’t allow aborting SaveExperimentWrapper in SAVE_AND_SPLIT mode</p></li>
+<li><p>Keep the NWB file open on SAVE_AND_SPLIT</p></li>
+<li><p>Averaging: Fix rounding error due to single precision intermediate wave</p></li>
+<li><p>Upgrade to NIDAQ XOPs version 1.10 final</p></li>
+</ul>
+</div>
+<div class="section" id="id136">
+<h3>DA_Ephys<a class="headerlink" href="#id136" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>oodDAQ:</p>
+<ul>
+<li><p>Fix some edge cases (works around a FindLevel limitation in older Igor 7 versions)</p></li>
+<li><p>Allow to use analysis functions in this mode as well</p></li>
+<li><p>Inform the user if the pre/post oodDAQ delays are out of range</p></li>
+</ul>
+</li>
+<li><p>Make clamp mode changing faster and add controls for changing the clamp mode once for all active headstages</p></li>
+<li><p>Change inital onset user delay to 0ms</p></li>
+<li><p>Added checkbox control to de/activate all headstages simultaneously</p></li>
+<li><p>Complain and abort DAQ/TP if the requested settings would exceed the signed 16bit range of the ITCDataWave</p></li>
+<li><p>Remove backup waves as well on sweep rollback</p></li>
+<li><p>Move the free memory check into DC_ConfigureDataForITC and make it
+non-skippable. This should make it less likely that Igor crashes due to out
+of memory during DAQ.</p></li>
+<li><p>Move the FIFO checking to a separate thread for DAQ MD in order to prevent a
+crash on heavy load on the Igor main thread</p></li>
+<li><p>Disable active headstage checkboxes during DAQ</p></li>
+<li><p>Disable background/multi device checkboxes during DAQ/TP</p></li>
+<li><p>Add support for stopping and restarting DAQ on stimset change</p></li>
+<li><p>Prevent foreground DAQ with RA</p></li>
+<li><p>Stop DAQ/TP before unlocking the device</p></li>
+</ul>
+</div>
+<div class="section" id="id137">
+<h3>AnalysisBrowser<a class="headerlink" href="#id137" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Better code for deriving the initial filesystem folder</p></li>
+<li><p>Allow loading stimsets, including dependent stimsets and custom waves, from NWB/PXP</p></li>
+</ul>
+</div>
+<div class="section" id="id138">
+<h3>DataBrowser/SweepBrowser<a class="headerlink" href="#id138" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fix oodDAQ display with only TTL data shown</p></li>
+<li><p>Unify oodDAQ and dDAQ display. The region slider can now be used to select
+oodDAQ regions or dDAQ headstage regions.</p></li>
+<li><p>Add new overlay sweeps functionality with the following features:</p>
+<ul>
+<li><p>Select sweeps by popup menu (stimset and stimset plus clamp mode), checkbox
+clicking or “prev”/”next” buttons</p></li>
+<li><p>The user can choose the offset and the stepping for all popupmenu
+selections except “none”.</p></li>
+<li><p>Allow to ignore headstages per sweep by context menu selection or
+listbox entries</p></li>
+<li><p>Regenerate the graph of overlayed sweeps on every change, this also
+makes it possible to allow all other settings to be available while
+overlay sweeps is active</p></li>
+</ul>
+</li>
+<li><p>Make averaging work in dDAQ mode</p></li>
+<li><p>Speedup displaying lots of sweeps a lot (by more than one magnitude for averaging turned on)</p></li>
+<li><p>ArtefactRemoval:
+- Make range highlightning optional
+- Speed it up and fix some edge cases
+- Replace range with first value instead of NaN</p></li>
+<li><p>Zero traces: Skip superfluous invocations</p></li>
+<li><p>Add pulse averaging</p>
+<ul>
+<li><p>Allow the user to average pulses from a pulse train stimset.</p></li>
+<li><p>New graphs are created for each region and active channel to the right
+hand side of the databrowser/sweep browser.</p></li>
+</ul>
+</li>
+<li><p>Adjust waves for onset delay for oodDAQ view</p></li>
+<li><p>Enhance axis positioning in dDAQ mode</p></li>
+<li><p>Time alignment: Make it usable again</p></li>
+<li><p>Add checkbox for hiding normal sweeps:</p>
+<ul>
+<li><p>Use our headstage colors if normal sweeps are hidden</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="sweepbrowser">
+<h3>SweepBrowser<a class="headerlink" href="#sweepbrowser" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>SweepBrowser: Enhance export functionality</p>
+<ul>
+<li><p>Use a real panel for querying user input instead of DoPrompt</p></li>
+<li><p>Add new options:</p>
+<ul>
+<li><p>Source graph</p></li>
+<li><p>Target graph</p></li>
+<li><p>Target left/bottom axis</p></li>
+<li><p>Target left/bottom axis name</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id139">
+<h3>DataBrowser<a class="headerlink" href="#id139" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add panel versioning</p></li>
+<li><p>Lock to device on panel opening if we only have data from one.</p></li>
+<li><p>Unify all settings to use checkboxes</p></li>
+</ul>
+</div>
+<div class="section" id="id140">
+<h3>Labnotebook<a class="headerlink" href="#id140" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Document the train pulse starting times and pulse lengths</p></li>
+<li><p>GetLastSetting/GetLastSettingText/… learned to treat edge cases including
+DAQ/TP and sweep number rollback properly. This is a change in the
+labnotebook reading routines only.</p></li>
+</ul>
+<div class="section" id="id141">
+<h4>New numerical keys<a class="headerlink" href="#id141" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Pulse</span> <span class="pre">To</span> <span class="pre">Pulse</span> <span class="pre">Length</span></code>: Distance in ms of two pulses in pulse train stimsets</p></li>
+</ul>
+</div>
+<div class="section" id="id142">
+<h4>New textual keys<a class="headerlink" href="#id142" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Pulse</span> <span class="pre">Train</span> <span class="pre">Pulses</span></code>: List of pulse train starting times in ms (relative to the stimset start)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id143">
+<h3>NWB/IPNWB<a class="headerlink" href="#id143" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Raise version to 0.16</p></li>
+<li><p>Truncate the written wave notes to avoid triggering the “64k” limit on attribute sizes.</p></li>
+<li><p>Add rtFunctionErrors pragma</p></li>
+<li><p>ReadLabNoteBooks: Don’t assert out if we could not find the labnotebook</p></li>
+<li><p>Require Igor Pro 7</p></li>
+<li><p>Allow exporting unassociated channel data of all channel types</p></li>
+<li><p>Add generic routines for loading datasets into free waves</p></li>
+<li><p>Flush the NWB file to disc on Igor experiment save</p></li>
+</ul>
+<div class="section" id="id144">
+<h4>File format<a class="headerlink" href="#id144" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Allow creating NWB files with only TPStorage waves or stimsets</p></li>
+<li><p>Store dependent stimsets, due to formula epochs, and referenced custom waves
+in NWB as well when storing the stimset of a sweep.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id145">
+<h3>Pressure Control<a class="headerlink" href="#id145" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fix NI device resetting code on device close</p></li>
+</ul>
+</div>
+<div class="section" id="user-config">
+<h3>User Config<a class="headerlink" href="#user-config" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add a config file and code to allow setting the required MIES settings in an
+automated way.</p></li>
+</ul>
+</div>
+<div class="section" id="id146">
+<h3>WaveBuilder<a class="headerlink" href="#id146" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Square Pulse Train:</p>
+<ul class="simple">
+<li><p>Rename Square Pulse Train to Pulse Train</p></li>
+<li><p>The pulse type can now be either square (as before) or triangle.</p></li>
+<li><p>Add amplitude related entries to wave note</p></li>
+<li><p>Make poisson distributed pulses reproducible. This also adds “New Seed” and
+a “Seed / Sweep” controls.</p></li>
+<li><p>Add the pulse starting times to the stimset wave notes</p></li>
+</ul>
+</li>
+<li><p>Fix flipping with multi sweep stimsets</p></li>
+<li><p>Speedup sawtooth on Igor Pro 7.02 and later</p></li>
+<li><p>CustomWave: Use the same offset than all other epoch types. This also fixes
+the problem that the wrong “offset”/”delta offset” was added to the
+segment wave note.</p></li>
+<li><p>More use of the magical speedup keywords</p></li>
+<li><p>Use differnt colors for sweeps in the wavebuilder</p></li>
+<li><p>Show the delta mode also for the custom wave</p></li>
+<li><p>Show user analysis functions from UserAnalysisFunctions.ipf as well in the popup menues</p></li>
+<li><p>Prevent RTE due to non existing bottom axis on empty graph</p></li>
+<li><p>Improved detection of the need to regenerate the stimset from the parameter
+waves. Recreate the stimsets if one of the following elements changed:</p>
+<ul class="simple">
+<li><p>any custom wave has changed</p></li>
+<li><p>any stimsets within a formula have changed</p></li>
+</ul>
+</li>
+<li><p>Rework stimset wave note generation:
+We now document the settings of each sweep (aka step) and not only of the first
+including delta. This also changes the format of the sweep wave note.</p>
+<p>Example of the new stimset wave note format:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Sweep = 0;Epoch = 0;Type = Square pulse;Duration = 1000;Amplitude = 0;
+Sweep = 0;Epoch = 1;Type = Pulse Train;Duration = 1840.01;Amplitude = 1;Offset = 0;Pulse Type = Square;Frequency = 5;Pulse duration = 40;Number of pulses = 10;Poisson distribution = False;Random seed = 0.943029;Definition mode = Duration;
+Stimset;ITI = 0;Pre DAQ = ;Mid Sweep = ;Post Sweep = ;Post Set = ;Post DAQ = ;Flip = 0;
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="id147">
+<h3>Work Sequencing Engine<a class="headerlink" href="#id147" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id148">
+<h3>Downsample<a class="headerlink" href="#id148" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+</div>
+<div class="section" id="id149">
+<h3>Foreign Function interface<a class="headerlink" href="#id149" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>FFI_ReturnTPValues: Return a null wave if the testpulse has not yet been running</p></li>
+</ul>
+</div>
+<div class="section" id="id150">
+<h3>ITC XOP 2<a class="headerlink" href="#id150" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Change /V flag handling of ITCSetDAC2 to match the documentation</p></li>
+<li><p>Fix a potential crash in ITCInitialize2/U (we don’t use this flag)</p></li>
+<li><p>Add PDB files</p></li>
+</ul>
+</div>
+<div class="section" id="id151">
+<h3>ZeroMQ XOP<a class="headerlink" href="#id151" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Return a newly added and more specific error message on catching <code class="docutils literal notranslate"><span class="pre">std::bad_alloc</span></code> exceptions.</p></li>
+<li><p>Try handling out of memory cases more gracefully, in some cases caller are even responed to with a specific error message.</p></li>
+<li><p>Update to latest libzmq version (84d94b4f)</p></li>
+<li><p>Add PDB files</p></li>
+</ul>
+</div>
+<div class="section" id="id152">
+<h3>Internal<a class="headerlink" href="#id152" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>GetTPStorage: Fix wave note formatting on upgrade</p></li>
+<li><p>Replace GetClampModeString by a more versatile solution, namely the GetActiveHSProperties wave</p></li>
+<li><p>Fix sweep splitting for changed sweep waves</p></li>
+<li><p>PGC_SetAndActivateControl: Set popStr for PopupMenues if not supplied</p></li>
+<li><p>Prevent storing sweep data with differing channel number in <code class="docutils literal notranslate"><span class="pre">config</span></code> and <code class="docutils literal notranslate"><span class="pre">sweep</span></code></p></li>
+<li><p>PGC_SetAndActivateControl: Respect the valid data range for <code class="docutils literal notranslate"><span class="pre">SetVariable</span></code> controls</p></li>
+<li><p>Add rtFunctionErrors pragma which should catch more programming errors</p></li>
+<li><p>Finalize transition to always existing count variable</p></li>
+<li><p>Add infrastructure and bamboo jobs for automated unit testing</p></li>
+<li><p>Update to latest version of the igor unit testing framework and enable JUNIT output for the tests</p></li>
+<li><p>Use the parent experiment name for deriving the NWB filename. The result is
+that sibling experiments now use the same NWB file as the parent
+experiment.</p></li>
+</ul>
+</div>
+<div class="section" id="id153">
+<h3>Tango<a class="headerlink" href="#id153" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>TI_ConfigureMCCforIVSCC: Use correct clamp mode</p></li>
+<li><p>TI_saveNWBFile: Take the full path</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="release-1-1">
+<h2>Release 1.1<a class="headerlink" href="#release-1-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id154">
+<h3>General<a class="headerlink" href="#id154" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add more user analysis functions</p></li>
+</ul>
+</div>
+<div class="section" id="id155">
+<h3>DA_Ephys<a class="headerlink" href="#id155" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>DA Tab: Add controls for changing all channels in a given clamp mode</p></li>
+<li><p>Bugfix: Use existing GUI procedures for DA1-7 search controls</p></li>
+</ul>
+</div>
+<div class="section" id="id156">
+<h3>WaveBuilder<a class="headerlink" href="#id156" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Add panel versioning</p></li>
+<li><p>WP/WPT waves received a wave version upgrade and changed dimensions labels</p></li>
+<li><p>Custom epoch: Enhance GUI usability for wave selection</p></li>
+<li><p>Bugfix: Use existing GUI procedure for delta type controls</p></li>
+<li><p>Avoid useless stimset recreation on epoch selection by mouse</p></li>
+<li><p>Fix minor GUI layout issues</p></li>
+<li><p>GPB-Noise: Complete rewrite epoch generation
+The old approach had the user-visible drawback that it was very very slow
+for durations larger than 1000ms.</p>
+<p>The new approach has the following properties:</p>
+<ul class="simple">
+<li><p>Fast creation, at least a magnitude faster, by using IFFT and FilterIIR</p></li>
+<li><p>Unified approach for white, pink and brown noise</p></li>
+<li><p>Fix interchanged definitions for pink and brown noise</p></li>
+<li><p>Only one filter coefficient, ranging from 1 to 100, with delta remains</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1/f</span> <span class="pre">increment</span></code> was replaced by the experimental build resolution option</p></li>
+<li><p>The amplitude is now peak-to-peak and not standard deviation</p></li>
+<li><p>The phase is now uniform distributed between [-pi, pi) using the
+Mersenne-Twister as pseudo random number generator</p></li>
+<li><p>epoch noise tab cleanup</p></li>
+<li><p>FFT phase and spectrum is displayed for each sweep</p></li>
+</ul>
+<p>Keeping the old method for compatibility with existing parameter stimset waves was deemed
+not worth the effort.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="id157">
+<h3>DataBrowser<a class="headerlink" href="#id157" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Bugfix: Use correct location for channel selection wave</p></li>
+</ul>
+</div>
+<div class="section" id="id158">
+<h3>DataBrowser/SweepBrowser<a class="headerlink" href="#id158" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add Artefact removal panel</p></li>
+</ul>
+</div>
+<div class="section" id="id159">
+<h3>Pressure Control<a class="headerlink" href="#id159" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Set pressure to atmosphere on disabling the headstage</p></li>
+<li><p>Bugfix: Avoid spurious control on unrelated windows</p></li>
+</ul>
+</div>
+<div class="section" id="id160">
+<h3>Labnotebook<a class="headerlink" href="#id160" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Enhance <code class="docutils literal notranslate"><span class="pre">EntrySourceType</span></code> heuristics for very old labnotebooks</p></li>
+</ul>
+<div class="section" id="id161">
+<h4>New numerical keys<a class="headerlink" href="#id161" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+<div class="section" id="id162">
+<h4>New textual keys<a class="headerlink" href="#id162" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+</div>
+<div class="section" id="id163">
+<h3>NWB/IPNWB<a class="headerlink" href="#id163" title="Permalink to this headline">¶</a></h3>
+<p>None</p>
+<div class="section" id="id164">
+<h4>File format<a class="headerlink" href="#id164" title="Permalink to this headline">¶</a></h4>
+<p>None</p>
+</div>
+</div>
+<div class="section" id="id165">
+<h3>Internal<a class="headerlink" href="#id165" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add script to build documentation on Linux using docker</p></li>
+<li><p>Bugfix: Add missing files to the release package</p></li>
+<li><p>Add panel for tuning debug mode on a per-file level</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="release-1-0">
+<h2>Release 1.0<a class="headerlink" href="#release-1-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id166">
+<h3>General<a class="headerlink" href="#id166" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Require Igor Pro 7.01</p></li>
+<li><p>Switch to completely rewritten ITC XOP</p></li>
+<li><p>Ignore errors on closing the experiment</p></li>
+<li><p>Status message displays saved file name after saving config</p></li>
+<li><p>Avoid runtime error after DAQ in edge cases</p></li>
+<li><p>Avoid RTE on DAQ with RA</p></li>
+<li><p>Fix indexing with stimsets with multiple steps</p></li>
+<li><p>Yoking: Sync dDAQ settings properly</p></li>
+<li><p>Make TP MD testpulse creation faster</p></li>
+<li><p>Enhance data saving speed</p></li>
+<li><p>Add new data acquisition mode: Optimized overlap distributed
+acquisition</p></li>
+<li><p>CheckInstallation: Look for a valid MIES version too</p></li>
+<li><p>Testpulse MD: Streamline ITC XOP calling sequence</p></li>
+<li><p>Stop device before closing</p></li>
+<li><p>TP MD: Rework and fix crashes with 64bit XOP</p></li>
+</ul>
+</div>
+<div class="section" id="id167">
+<h3>DA_Ephys<a class="headerlink" href="#id167" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Generalize controls for setting multiple channel values</p></li>
+<li><p>Propagate amplifier settings before DAQ/TP</p></li>
+<li><p>Add checks for DA/AD gain and unit in pre DAQ/TP checks</p></li>
+<li><p>Read the pressure settings from the waves on device locking</p></li>
+<li><p>Prevent impossible clamp mode switch</p></li>
+<li><p>Fixes bug where positive going fast capacitative artifact could lead
+to incorrect peak R calculation</p></li>
+<li><p>Increase performance on oscilloscope update</p></li>
+<li><p>Fix MIES auto pipette offset for overload edge case</p></li>
+<li><p>Delete data waves before TP if requested</p></li>
+<li><p>Allow to increase the sweep counter again on rollback</p></li>
+<li><p>Remove the “Overwrite data waves” checkbox</p></li>
+<li><p>Fix graph updating logic in corner case for TP MD</p></li>
+<li><p>Fix restarting the test pulse for multiple headstage on settings
+change</p></li>
+<li><p>Allow to display the power spectrum of the TP as an option</p></li>
+<li><p>Fail locking on device open error</p></li>
+<li><p>Fix auto pipette offset buttons for unsychronized clamp mode</p></li>
+<li><p>Try to regenerate root:mies:version more eagerly</p></li>
+<li><p>Autobias: Initialize actualCurrent properly</p></li>
+<li><p>Autobias: Correct indexing of TP result waves</p></li>
+<li><p>Fix Autopipette offset with MIES-&gt;MCC syncing</p></li>
+<li><p>Use double precision for TPStorage</p></li>
+<li><p>Create the Acqusition TPSTorage wave with double precision as well</p></li>
+<li><p>Check for mismatched clamp mode early enough that we can complain
+properly to the user</p></li>
+<li><p>Prevent Random Acq together with Indexing</p></li>
+<li><p>Increased <code class="docutils literal notranslate"><span class="pre">MINIMUM_ITCDATAWAVE_EXPONENT</span></code> from 17 to 20. This means
+the acquired data will now always be at least 2^20 points long</p></li>
+<li><p>Bring command window to front on most common setup verification
+errors</p></li>
+</ul>
+</div>
+<div class="section" id="id168">
+<h3>NWB/IPNWB<a class="headerlink" href="#id168" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Honour overrideFilePath for export in all cases</p></li>
+<li><p>Prevent duplicated datasets on export</p></li>
+<li><p>Allow to export older experiments</p></li>
+<li><p>Raise IPNWB version to 0.15</p></li>
+<li><p>Support writing unassociated AD channels</p></li>
+<li><p>Add support for reading NWB files we created ourselves</p></li>
+</ul>
+<div class="section" id="id169">
+<h4>File format<a class="headerlink" href="#id169" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>Raise version to 1.0.5</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">/general/generated_by</span></code></p></li>
+<li><p>Add mandatory tags attribute to <code class="docutils literal notranslate"><span class="pre">/epochs</span></code></p></li>
+<li><p>Change source attributes from TimeSeries</p></li>
+<li><p>Document the channel suffix as TTLBit using source attribute</p></li>
+<li><p>Skip writing <code class="docutils literal notranslate"><span class="pre">/general/version</span></code></p></li>
+<li><p>Add device to <code class="docutils literal notranslate"><span class="pre">/general/intracellular_ephys/electrode_X</span></code></p></li>
+<li><p>Fix type of <code class="docutils literal notranslate"><span class="pre">/general/intracellular_ephys/electrode_x</span></code></p></li>
+<li><p>Use Labnotebook property <code class="docutils literal notranslate"><span class="pre">electrodeName</span></code> if available for the
+<code class="docutils literal notranslate"><span class="pre">electrode_name</span></code></p></li>
+<li><p>Change stimset writing logic (skips writing the raw stimset waves for
+most cases)</p></li>
+<li><p>Use plain TimeSeries for unknown clamp modes</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id170">
+<h3>Wavebuilder<a class="headerlink" href="#id170" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Combined epoch: Fix accessing third party stim sets</p></li>
+<li><p>Combined epoch: Fix wrong formula generation in edge case</p></li>
+<li><p>Custom epoch: Update epoch controls</p></li>
+<li><p>Custom epoch: Enhance upgrade path</p></li>
+<li><p>Custom epoch: Highlight them in the preview</p></li>
+<li><p>Fix window hook for epoch selection</p></li>
+<li><p>Make stimset handling logic more robust</p></li>
+</ul>
+</div>
+<div class="section" id="id171">
+<h3>AnalysisBrowser<a class="headerlink" href="#id171" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fix reading experiments without “Set Sweep Count” entries</p></li>
+<li><p>Ignore LoadData errors</p></li>
+<li><p>Handle experiments with no data gracefully</p></li>
+<li><p>Don’t add duplicated experiment names</p></li>
+<li><p>Handle multiple experiments with the same name properly</p></li>
+<li><p>Don’t error out on non-existing datafolders</p></li>
+<li><p>Fix “Scan folder” cleanup logic</p></li>
+</ul>
+</div>
+<div class="section" id="id172">
+<h3>Databrowser/Sweepbrowser<a class="headerlink" href="#id172" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add dedicated support for viewing dDAQ/oodDAQ data</p></li>
+<li><p>Speedup wave averaging a bit</p></li>
+<li><p>Add support displaying textual labnotebook data</p></li>
+</ul>
+</div>
+<div class="section" id="id173">
+<h3>Databrowser<a class="headerlink" href="#id173" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Remove the lock button</p></li>
+<li><p>Add channel/headstage selection dialog</p></li>
+</ul>
+</div>
+<div class="section" id="id174">
+<h3>SweepBrowser<a class="headerlink" href="#id174" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add headstage controls in selection dialog</p></li>
+</ul>
+</div>
+<div class="section" id="id175">
+<h3>Work Sequencing Engine<a class="headerlink" href="#id175" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Various fixes</p></li>
+<li><p>Support pulling of TP values out of the TP storage wave</p></li>
+</ul>
+</div>
+<div class="section" id="id176">
+<h3>Downsample<a class="headerlink" href="#id176" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Fix not finding any device data</p></li>
+</ul>
+</div>
+<div class="section" id="id177">
+<h3>Labnotebook<a class="headerlink" href="#id177" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Raise version to 6</p></li>
+<li><p>Write forgotten async text settings to the labnotebook</p></li>
+<li><p>Streamline labnotebook naming with the new names being:</p>
+<ul>
+<li><p>numericalValues</p></li>
+<li><p>numericalKeys</p></li>
+<li><p>textualValues</p></li>
+<li><p>textualKeys</p></li>
+</ul>
+</li>
+<li><p>Avoid wasted memory in textual labnotebook</p></li>
+<li><p>Fix units and tolerance of “Repeat Sets” for new entries</p></li>
+<li><p>Upgrade labnotebook to correct “Repeat Sets” units and tolerance</p></li>
+<li><p>Upgrade labnotebook to hold a “EntrySourceType” column</p></li>
+</ul>
+<div class="section" id="id178">
+<h4>New numerical keys<a class="headerlink" href="#id178" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>“Sampling interval multiplier”</p></li>
+<li><p>“Minimum sampling interval”</p></li>
+<li><p>“Stim set length”</p></li>
+<li><p>“oodDAQ Pre Feature”</p></li>
+<li><p>“oodDAQ Post Feature”</p></li>
+<li><p>“oodDAQ Resolution”</p></li>
+<li><p>“Optimized Overlap dDAQ”</p></li>
+<li><p>“Delay onset oodDAQ”</p></li>
+<li><p>“EntrySourceType”</p></li>
+</ul>
+</div>
+<div class="section" id="id179">
+<h4>New textual keys<a class="headerlink" href="#id179" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>“Electrode” (defaults to headstage number)</p></li>
+<li><p>“oodDAQ regions”</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="id180">
+<h3>Pressure control<a class="headerlink" href="#id180" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Set the initial seal pressure to -0.2</p></li>
+<li><p>P_LoadPressureButtonState: Use headstage value from wave instead of
+GUI query</p></li>
+<li><p>Allow the user to offset the applied pressure</p></li>
+<li><p>Update to seal and break method</p></li>
+<li><p>Fix “all” usage for Manual pressure</p></li>
+<li><p>Initialize pressure waves with correct defaults</p></li>
+<li><p>Don’t overwrite pressure wave data on upgrade</p></li>
+<li><p>Create P_SetPressureMode to allow external processes to use pressure
+controls in MIES/Igor.</p></li>
+<li><p>Set pressure to 0 psi at disable</p></li>
+<li><p>Add user pressure</p></li>
+<li><p>Use DAP_AbortIfUnlocked for pressure related controls</p></li>
+<li><p>Fixed bug where displayed pressure included the calibration constant</p></li>
+</ul>
+</div>
+<div class="section" id="id181">
+<h3>Internal<a class="headerlink" href="#id181" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Upgrade HDF5 XOP to a version which allows to force the dimension
+space to SIMPLE for attributes</p></li>
+<li><p>Remove unnecessary files from Release package</p></li>
+<li><p>DAP_EphysPanelStartUpSettings: Make it more usable</p></li>
+<li><p>Update Packages/unit-testing to 26f3f77f9</p></li>
+<li><p>AI_SendToAmp: Add option for setting/getting values in MIES units</p></li>
+<li><p>Rework follower/leader check functions</p></li>
+<li><p>Remove doNotCreateSVAR hack for ListOfFollowerITC1600s</p></li>
+<li><p>Add HDF5 Browser ipf from IP7</p></li>
+<li><p>Update Helpfiles from IP7 final</p></li>
+<li><p>Add EVIL<em>KITTEN</em>EATING_MODE for turning off all safety checks</p></li>
+<li><p>Add script for generating a changelog (which the author of these lines
+forgot about)</p></li>
+<li><p>Add wave caching framework</p></li>
+<li><p>doxygen-filter-ipf: Make output sphinx compatible</p></li>
+<li><p>Switch to doxygen/breathe/sphinx for developer documentation</p></li>
+<li><p>ED_createTextNotes: Accept incoming waves with only one layer</p></li>
+<li><p>Disambiguate labnotebook entry search for TP/DAQ keys</p></li>
+<li><p>Add ZeroMQ.XOP</p></li>
+<li><p>Autostart ZeroMQ Message Handler on Igor Start</p></li>
+<li><p>Foreground DAQ/TP: Do Idle Processing in loop</p></li>
+<li><p>Convert procedures to UTF8-encoding</p></li>
+</ul>
+</div>
+<div class="section" id="id182">
+<h3>Tango<a class="headerlink" href="#id182" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Avoid using “MS Shell Dlg” font</p></li>
+</ul>
+<p>For older releases use <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">log</span></code>!</p>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Release notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#release-2-1">Release 2.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sweep-formula">Sweep Formula</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysisbrowser">AnalysisBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#databrowser">DataBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#databrowser-sweepbrowser">DataBrowser/SweepBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#da-ephys">DA_Ephys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#experimentconfig">ExperimentConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#downsample">Downsample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analysis-functions">Analysis Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#foreign-function-interface">Foreign Function interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#general">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#itc-xop-2">ITC XOP 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#zeromq-xop">ZeroMQ XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mcc-xop">MCC XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#miesutils-xop">MIESUtils XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#labnotebook">Labnotebook</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#new-numerical-keys">New numerical keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#new-textual-keys">New textual keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#changed-numerical-entries">Changed numerical entries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#changed-textual-entries">Changed textual entries</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#nwb-ipnwb">NWB/IPNWB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#file-format">File format</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pressure-control">Pressure Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wavebuilder">WaveBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#work-sequencing-engine">Work Sequencing Engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#internal">Internal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tango">Tango</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tests">Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#async-framework">Async Framework</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installer">Installer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#release-2-0">Release 2.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">AnalysisBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">DataBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">DataBrowser/SweepBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">DA_Ephys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">ExperimentConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Downsample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Analysis Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Foreign Function interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">ITC XOP 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">ZeroMQ XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id13">MCC XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">MIESUtils XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">Labnotebook</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id16">New numerical keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id17">New textual keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id18">Changed numerical entries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id19">Changed textual entries</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">NWB/IPNWB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id21">File format</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id22">Pressure Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id23">WaveBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id24">Work Sequencing Engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id25">Internal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id26">Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id27">Async Framework</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id28">Installer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id29">Tango</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#release-1-7">Release 1.7</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id30">DA_Ephys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id31">ExperimentConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id32">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id33">ITC XOP 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id34">MCC XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id35">MIESUtils XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id36">Labnotebook</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id37">New numerical keys</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id38">Pressure Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id39">WaveBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id40">Internal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id41">Tango</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#release-1-6">Release 1.6</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id42">AnalysisBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id43">DataBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id44">DataBrowser/SweepBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id45">DA_Ephys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id46">ExperimentConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id47">Downsample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id48">Analysis Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id49">Foreign Function interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id50">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id51">Installer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id52">ITC XOP 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id53">ZeroMQ XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id54">MCC XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id55">Labnotebook</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id56">New numerical keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id57">New textual keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id58">Changed numerical entries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id59">Changed textual entries</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id60">NWB/IPNWB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id61">File format</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id62">Pressure Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id63">WaveBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id64">Work Sequencing Engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id65">Internal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id66">Tango</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#release-1-5">Release 1.5</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id67">AnalysisBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id68">DataBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id69">DataBrowser/SweepBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id70">DA_Ephys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id71">ExperimentConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id72">Downsample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id73">Analysis Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id74">Foreign Function interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id75">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id76">ITC XOP 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id77">ZeroMQ XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id78">Labnotebook</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id79">New numerical keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id80">New textual keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id81">Changed numerical entries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id82">Changed textual entries</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id83">NWB/IPNWB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id84">File format</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id85">Pressure Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id86">WaveBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id87">Work Sequencing Engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id88">Internal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id89">Tango</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#release-1-4">Release 1.4</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id90">AnalysisBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id91">DataBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id92">DataBrowser/SweepBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id93">DA_Ephys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id94">Analysis Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id95">ExperimentConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id96">Downsample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id97">Foreign Function interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id98">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id99">ITC XOP 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id100">ZeroMQ XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id101">Labnotebook</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id102">New numerical keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id103">New textual keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id104">Changed numerical entries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id105">Changed textual entries</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id106">NWB/IPNWB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id107">File format</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id108">Pressure Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id109">WaveBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id110">Work Sequencing Engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id111">Internal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id112">Tango</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#release-1-3">Release 1.3</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id113">AnalysisBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id114">DataBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id115">DataBrowser/SweepBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id116">DA_Ephys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id117">ExperimentConfig</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id118">Downsample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id119">Foreign Function interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id120">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id121">Labnotebook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id122">ITC XOP 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id123">ZeroMQ XOP</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id124">New numerical keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id125">New textual keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id126">Changed numerical entries</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id127">Changed textual entries</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id128">NWB/IPNWB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id129">Pressure Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id130">WaveBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id131">Work Sequencing Engine</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id132">File format</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id133">Internal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id134">Tango</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#release-1-2">Release 1.2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id135">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id136">DA_Ephys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id137">AnalysisBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id138">DataBrowser/SweepBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sweepbrowser">SweepBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id139">DataBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id140">Labnotebook</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id141">New numerical keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id142">New textual keys</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id143">NWB/IPNWB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id144">File format</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id145">Pressure Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#user-config">User Config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id146">WaveBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id147">Work Sequencing Engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id148">Downsample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id149">Foreign Function interface</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id150">ITC XOP 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id151">ZeroMQ XOP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id152">Internal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id153">Tango</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#release-1-1">Release 1.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id154">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id155">DA_Ephys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id156">WaveBuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id157">DataBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id158">DataBrowser/SweepBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id159">Pressure Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id160">Labnotebook</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id161">New numerical keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id162">New textual keys</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id163">NWB/IPNWB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id164">File format</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id165">Internal</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#release-1-0">Release 1.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id166">General</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id167">DA_Ephys</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id168">NWB/IPNWB</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id169">File format</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id170">Wavebuilder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id171">AnalysisBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id172">Databrowser/Sweepbrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id173">Databrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id174">SweepBrowser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id175">Work Sequencing Engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id176">Downsample</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id177">Labnotebook</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id178">New numerical keys</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id179">New textual keys</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id180">Pressure control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id181">Internal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id182">Tango</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="reportingbugs.html"
+                        title="previous chapter">Bug reporting</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grouplist.html"
+                        title="next chapter">Group list</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grouplist.html" title="Group list"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="reportingbugs.html" title="Bug reporting"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Release notes</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

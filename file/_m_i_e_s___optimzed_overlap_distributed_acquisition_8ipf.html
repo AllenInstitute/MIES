@@ -1,0 +1,440 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File MIES_OptimzedOverlapDistributedAcquisition.ipf &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Oscilloscope.ipf" href="_m_i_e_s___oscilloscope_8ipf.html" />
+    <link rel="prev" title="File MIES_NeuroDataWithoutBorders.ipf" href="_m_i_e_s___neuro_data_without_borders_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___oscilloscope_8ipf.html" title="File MIES_Oscilloscope.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___neuro_data_without_borders_8ipf.html" title="File MIES_NeuroDataWithoutBorders.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="file-mies-optimzedoverlapdistributedacquisition-ipf">
+<span id="id1"></span><h1>File MIES_OptimzedOverlapDistributedAcquisition.ipf<a class="headerlink" href="#file-mies-optimzedoverlapdistributedacquisition-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>OOD</strong> This file holds functions related to oodDAQ. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv421OOD_GetThresholdLevel4wave">
+<span id="_CPPv321OOD_GetThresholdLevel4wave"></span><span id="_CPPv221OOD_GetThresholdLevel4wave"></span><span id="OOD_GetThresholdLevel__wave"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a19edbad681301104a72ff4508bc1a5c3"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">OOD_GetThresholdLevel</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">stimset</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421OOD_GetThresholdLevel4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>returns the threshold level for ood region detection from a single column stimset </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>threshold level defining signal above baseline </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">stimset</span></code>: 1d wave containing stimset data </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425OOD_GetRegionsFromStimset4wave8variable8variable">
+<span id="_CPPv325OOD_GetRegionsFromStimset4wave8variable8variable"></span><span id="_CPPv225OOD_GetRegionsFromStimset4wave8variable8variable"></span><span id="OOD_GetRegionsFromStimset__wave.variable.variable"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a0457e1ea87dd050e2d131cdfbcf72550"></span><em class="property"><span class="pre">static</span></em> <span class="pre">wave</span> <code class="sig-name descname"><span class="pre">OOD_GetRegionsFromStimset</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">stimset</span></em>, <span class="pre">variable</span> <em><span class="pre">prePoints</span></em>, <span class="pre">variable</span> <em><span class="pre">postPoints</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425OOD_GetRegionsFromStimset4wave8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>retrieves regions with signal from a 1D data wave, used for stimsets </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>2D wave with region information </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">stimset</span></code>: 1D wave containing stimset data </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">prePoints</span></code>: oodDAQ pre delay in points the regions get expanded at the rising edge </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">postPoints</span></code>: oodDAQ post delay in points the regions get expanded at the falling edge </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418OOD_CompactRegions4wave">
+<span id="_CPPv318OOD_CompactRegions4wave"></span><span id="_CPPv218OOD_CompactRegions4wave"></span><span id="OOD_CompactRegions__wave"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a4f58d99aa1a1ff5f529612444de30e67"></span><em class="property"><span class="pre">static</span></em> <span class="pre">wave</span> <code class="sig-name descname"><span class="pre">OOD_CompactRegions</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">regions</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418OOD_CompactRegions4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Reduces a 2D region wave by joining overlapping regions to one. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>2D wave with compacted regions </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">regions</span></code>: 2D wave containing region data </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv426OOD_GetRegionsFromStimsetsP12OOdDAQParams">
+<span id="_CPPv326OOD_GetRegionsFromStimsetsP12OOdDAQParams"></span><span id="_CPPv226OOD_GetRegionsFromStimsetsP12OOdDAQParams"></span><span id="OOD_GetRegionsFromStimsets__OOdDAQParamsP"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a53ce1308121e4378fb0d071b29a360aa"></span><em class="property"><span class="pre">static</span></em> <span class="pre">wave</span> <code class="sig-name descname"><span class="pre">OOD_GetRegionsFromStimsets</span></code><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv412OOdDAQParams" title="OOdDAQParams"><span class="pre">OOdDAQParams</span></a> <span class="pre">*</span><em><span class="pre">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426OOD_GetRegionsFromStimsetsP12OOdDAQParams" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>generates regions data waves from stimsets taking the pre and post delay into account </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>wave reference wave holding the 2D region waves for each stimset </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">params</span></code>: <a class="reference internal" href="../struct/struct_o_od_d_a_q_params.html#struct_o_od_d_a_q_params"><span class="std std-ref">OOdDAQParams</span></a> structure </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv421OOD_GetFeatureRegions11WaveRefWave4wave">
+<span id="_CPPv321OOD_GetFeatureRegions11WaveRefWave4wave"></span><span id="_CPPv221OOD_GetFeatureRegions11WaveRefWave4wave"></span><span id="OOD_GetFeatureRegions__WaveRefWave.wave"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1abb695aad7da2491c072ae3917e3dbe2b"></span><em class="property"><span class="pre">static</span></em> <span class="pre">wave</span> <code class="sig-name descname"><span class="pre">OOD_GetFeatureRegions</span></code><span class="sig-paren">(</span><span class="pre">WaveRefWave</span> <em><span class="pre">setRegions</span></em>, <span class="pre">wave</span> <em><span class="pre">offsets</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421OOD_GetFeatureRegions11WaveRefWave4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>returns a 1D wave with regions as lists from the input regions waves, is used for the LNB </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>1D text wave with lists of regions </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">setRegions</span></code>: wave reference wave of 2D region waves </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">offsets</span></code>: offset wave storing the offsets per stimset </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420OOD_CalculateOffsets11WaveRefWaveP4wave8variable">
+<span id="_CPPv320OOD_CalculateOffsets11WaveRefWaveP4wave8variable"></span><span id="_CPPv220OOD_CalculateOffsets11WaveRefWaveP4wave8variable"></span><span id="OOD_CalculateOffsets__WaveRefWave.waveP.variable"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1ac86730e2387e7f6b76bcee7b000d9240"></span><em class="property"><span class="pre">static</span></em> <span class="pre">wave</span> <code class="sig-name descname"><span class="pre">OOD_CalculateOffsets</span></code><span class="sig-paren">(</span><span class="pre">WaveRefWave</span> <em><span class="pre">setRegions</span></em>, <span class="pre">wave</span> <span class="pre">*</span><em><span class="pre">baseRegions</span></em>, <span class="pre">variable</span> <em><span class="pre">yoked</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420OOD_CalculateOffsets11WaveRefWaveP4wave8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calculates offsets for each stimset for OOD. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>1D wave with offsets for each stimset in points </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">setRegions</span></code>: wave reference wave of 2D region waves for each stimset </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[inout]</span> <span class="pre">baseRegions</span></code>: 2D region wave that contains initial reserved regions, e.g. when using with yoking the caller function can preload from the previous device For the lead device where no previous regions are reserved, the wave can be 1D but must have zero rows </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">yoked</span></code>: 1 if yoked operation, 0 if not</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425OOD_CalculateOffsetsYoked6stringP12OOdDAQParams">
+<span id="_CPPv325OOD_CalculateOffsetsYoked6stringP12OOdDAQParams"></span><span id="_CPPv225OOD_CalculateOffsetsYoked6stringP12OOdDAQParams"></span><span id="OOD_CalculateOffsetsYoked__string.OOdDAQParamsP"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1ad358650c8e4218595cb6d24b81334177"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">OOD_CalculateOffsetsYoked</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv412OOdDAQParams" title="OOdDAQParams"><span class="pre">OOdDAQParams</span></a> <span class="pre">*</span><em><span class="pre">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425OOD_CalculateOffsetsYoked6stringP12OOdDAQParams" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calculated the offsets for normal acquisition and yoked mode. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">panelTitle</span></code>: title of the device panel </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">params</span></code>: <a class="reference internal" href="../struct/struct_o_od_d_a_q_params.html#struct_o_od_d_a_q_params"><span class="std std-ref">OOdDAQParams</span></a> structure with oodDAQ setup data </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv415OOD_LoadPreload6stringP12OOdDAQParams">
+<span id="_CPPv315OOD_LoadPreload6stringP12OOdDAQParams"></span><span id="_CPPv215OOD_LoadPreload6stringP12OOdDAQParams"></span><span id="OOD_LoadPreload__string.OOdDAQParamsP"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a12437648c47a3091c3d01fc29567b5bc"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">OOD_LoadPreload</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv412OOdDAQParams" title="OOdDAQParams"><span class="pre">OOdDAQParams</span></a> <span class="pre">*</span><em><span class="pre">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415OOD_LoadPreload6stringP12OOdDAQParams" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Load the preload data into <code class="docutils literal notranslate"><span class="pre">params.preload</span></code> </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">panelTitle</span></code>: title of the device panel </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">params</span></code>: <a class="reference internal" href="../struct/struct_o_od_d_a_q_params.html#struct_o_od_d_a_q_params"><span class="std std-ref">OOdDAQParams</span></a> structure where the data is preloaded into </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv416OOD_StorePreload6string4wave">
+<span id="_CPPv316OOD_StorePreload6string4wave"></span><span id="_CPPv216OOD_StorePreload6string4wave"></span><span id="OOD_StorePreload__string.wave"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1aadbb09fcc8934a2cf6448e073c1baed0"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">OOD_StorePreload</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">wave</span> <em><span class="pre">preload</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416OOD_StorePreload6string4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Store the preload data so that the next device can use it. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">panelTitle</span></code>: title of the device panel </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">preload</span></code>: wave that is stored containing the preload data </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419OOD_AddToRegionList8variable8variable6string">
+<span id="_CPPv319OOD_AddToRegionList8variable8variable6string"></span><span id="_CPPv219OOD_AddToRegionList8variable8variable6string"></span><span id="OOD_AddToRegionList__variable.variable.string"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a2baf61c071a9ea20edfd5ee7207b536b"></span><em class="property"><span class="pre">static</span></em> <span class="pre">string</span> <code class="sig-name descname"><span class="pre">OOD_AddToRegionList</span></code><span class="sig-paren">(</span><span class="pre">variable</span> <em><span class="pre">first</span></em>, <span class="pre">variable</span> <em><span class="pre">last</span></em>, <span class="pre">string</span> <em><span class="pre">list</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419OOD_AddToRegionList8variable8variable6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a list with <code class="docutils literal notranslate"><span class="pre">$first-$last</span></code> added at the end with <code class="docutils literal notranslate"><span class="pre">;</span></code> as separator. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>list string with added element </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">first</span></code>: sample point number in wavebuilder scale with start of region </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">last</span></code>: sample point number in wavebuilder scale with end of region </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">list</span></code>: list string where the element is added </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv413OOD_DebuggingP12OOdDAQParams">
+<span id="_CPPv313OOD_DebuggingP12OOdDAQParams"></span><span id="_CPPv213OOD_DebuggingP12OOdDAQParams"></span><span id="OOD_Debugging__OOdDAQParamsP"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1ab177716e6e4431eefcf91e3a88cb780e"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">OOD_Debugging</span></code><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv412OOdDAQParams" title="OOdDAQParams"><span class="pre">OOdDAQParams</span></a> <span class="pre">*</span><em><span class="pre">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413OOD_DebuggingP12OOdDAQParams" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Prints various internals useful for oodDAQ debugging, called when DEBUGGING_ENABLED is set. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">params</span></code>: <a class="reference internal" href="../struct/struct_o_od_d_a_q_params.html#struct_o_od_d_a_q_params"><span class="std std-ref">OOdDAQParams</span></a> structure with oodDAQ internals </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv418OOD_GetResultWaves6stringP12OOdDAQParams">
+<span id="_CPPv318OOD_GetResultWaves6stringP12OOdDAQParams"></span><span id="_CPPv218OOD_GetResultWaves6stringP12OOdDAQParams"></span><span id="OOD_GetResultWaves__string.OOdDAQParamsP"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1aa8c7dfa2df11886734162b59f5272a93"></span><span class="pre">wave</span> <code class="sig-name descname"><span class="pre">OOD_GetResultWaves</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv412OOdDAQParams" title="OOdDAQParams"><span class="pre">OOdDAQParams</span></a> <span class="pre">*</span><em><span class="pre">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418OOD_GetResultWaves6stringP12OOdDAQParams" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return the oodDAQ optimized stimsets. </p>
+<p>The offsets and the regions are returned in <code class="docutils literal notranslate"><span class="pre">params</span></code> and all results are cached.</p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>one dimensional numberic wave with the offsets in points for each stimset </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">panelTitle</span></code>: title of the device panel </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">params</span></code>: <a class="reference internal" href="../struct/struct_o_od_d_a_q_params.html#struct_o_od_d_a_q_params"><span class="std std-ref">OOdDAQParams</span></a> structure with the initial settings </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv417OOD_CreateStimSetP12OOdDAQParams">
+<span id="_CPPv317OOD_CreateStimSetP12OOdDAQParams"></span><span id="_CPPv217OOD_CreateStimSetP12OOdDAQParams"></span><span id="OOD_CreateStimSet__OOdDAQParamsP"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a573dbe9b1c0cbebef788ceb61f16652e"></span><em class="property"><span class="pre">static</span></em> <span class="pre">wave</span> <code class="sig-name descname"><span class="pre">OOD_CreateStimSet</span></code><span class="sig-paren">(</span><a class="reference internal" href="_m_i_e_s___structures_8ipf.html#_CPPv412OOdDAQParams" title="OOdDAQParams"><span class="pre">OOdDAQParams</span></a> <span class="pre">*</span><em><span class="pre">params</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417OOD_CreateStimSetP12OOdDAQParams" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Generate a stimset for “overlapped dDAQ” from the calculated offsets by <a class="reference internal" href="#_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1ac86730e2387e7f6b76bcee7b000d9240"><span class="std std-ref">OOD_CalculateOffsets()</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>stimsets with offsets, one wave per offset </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">params</span></code>: <a class="reference internal" href="../struct/struct_o_od_d_a_q_params.html#struct_o_od_d_a_q_params"><span class="std std-ref">OOdDAQParams</span></a> structure with the stimsets and offset information</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Variables</p>
+<dl class="cpp var">
+<dt id="_CPPv420OOD_SIGNAL_THRESHOLD">
+<span id="_CPPv320OOD_SIGNAL_THRESHOLD"></span><span id="_CPPv220OOD_SIGNAL_THRESHOLD"></span><span id="OOD_SIGNAL_THRESHOLD__doubleC"></span><span class="target" id="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a9e35efedf073c93a62664bfd48a1e347"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">OOD_SIGNAL_THRESHOLD</span></code> <span class="pre">=</span> <span class="pre">0.1</span><a class="headerlink" href="#_CPPv420OOD_SIGNAL_THRESHOLD" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Signal threshold level in parts of dynamic range above minimum <dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf_1a19edbad681301104a72ff4508bc1a5c3"><span class="std std-ref">OOD_GetThresholdLevel()</span></a> </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_8ipf.html">File CompilationTester.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_utils_8ipf.html">File CompilationTesterUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___lab_notebook_t_p_storage_browser_8ipf.html">File MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html">File MIES_MiesUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___regenerate-_screenshots_8ipf.html">File MIES_Regenerate-Screenshots.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities_8ipf.html">File MIES_Utilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_8h.html">File interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="_m_i_e_s___neuro_data_without_borders_8ipf.html"
+                        title="previous chapter">File MIES_NeuroDataWithoutBorders.ipf</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="_m_i_e_s___oscilloscope_8ipf.html"
+                        title="next chapter">File MIES_Oscilloscope.ipf</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___oscilloscope_8ipf.html" title="File MIES_Oscilloscope.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___neuro_data_without_borders_8ipf.html" title="File MIES_NeuroDataWithoutBorders.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

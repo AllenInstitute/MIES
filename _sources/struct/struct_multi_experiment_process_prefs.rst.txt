@@ -1,0 +1,4 @@
+Struct MultiExperimentProcessPrefs
+==================================
+
+.. doxygenstruct:: MultiExperimentProcessPrefs

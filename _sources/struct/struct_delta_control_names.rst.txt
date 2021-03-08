@@ -1,0 +1,4 @@
+Struct DeltaControlNames
+========================
+
+.. doxygenstruct:: DeltaControlNames

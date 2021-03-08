@@ -1,0 +1,4 @@
+Deprecations
+============
+
+.. doxygenpage:: deprecated

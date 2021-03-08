@@ -1,0 +1,604 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Sweep Formula Module &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script src="_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Igor Pro module for reading and writing NeurodataWithoutBorder files" href="IPNWB/index.html" />
+    <link rel="prev" title="CalculateTPLikePropsFromSweep Algorithm" href="CalculateTPLikePropsFromSweep.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="IPNWB/index.html" title="Igor Pro module for reading and writing NeurodataWithoutBorder files"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="CalculateTPLikePropsFromSweep.html" title="CalculateTPLikePropsFromSweep Algorithm"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Sweep Formula Module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-sweep-formula-module">
+<span id="sweepformula"></span><h1>The Sweep Formula Module<a class="headerlink" href="#the-sweep-formula-module" title="Permalink to this headline">¶</a></h1>
+<p>The Sweep Formula Module in <cite>MIES_Sweepformula.ipf</cite> is intended to be used from
+the SF tab in the BrowserSettingsPanel (BSP). It is useful for analyzing a
+range of sweeps using pre-defined functions. The backend parses a formula into
+a <a class="reference external" href="http://jsonlogic.com/">JSON logic</a> like pattern which in turn is analyzed
+to return a wave for plotting.</p>
+<div class="section" id="formula-parser">
+<h2>Formula Parser<a class="headerlink" href="#formula-parser" title="Permalink to this headline">¶</a></h2>
+<p>In order for a formula to get executed, it has to be analyzed. This assures
+that the correct order of calculations is used. The approach for solving this
+is using a token based state machine. We virtually insert one character at a
+time from left to right into the state machine. Usually, a character is
+collected into a buffer. At some special characters like a <cite>+</cite> sign, the state
+changes from collect to addition. If a state changes, a new evaluation group is
+created which is represented with a JSON object who’s (single) member is the
+operation. The member name is the operation and the value is an ordered array
+of the operands. To ensure that multiplication is executed before addition to
+get <cite>1+2*3=7</cite> and not <cite>1+2*3=9</cite> the states have a priority. Higher order states
+cause the operation order to switch. The old operation becomes part of the new
+operation. In this context, also the array or function argument separators <cite>,</cite>
+are treated as higher order operations.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;+&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="mi">1</span><span class="p">,</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;*&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">2</span><span class="p">,</span>
+        <span class="mi">3</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Arrays start with a square bracket <cite>[</cite> and end with a <cite>]</cite>. They are special as
+also function arguments contain array elements. Therefore, an array can also
+simply be created by omitting the array brackets and only using element
+separators similar as in functions. The function <cite>max(1,2)</cite> is therefore
+treated the same as <cite>max([1,2])</cite>. Arrays can represent data and functions
+evaluate to arrays. Arrays can be of arbitrary size and can also be
+concatenated as in <cite>max(0,min(1,2),1)</cite>.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;max&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="mi">0</span><span class="p">,</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;min&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">1</span><span class="p">,</span>
+        <span class="mi">2</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="mi">1</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A number can be entered as <cite>1000</cite>, <cite>1e3</cite>, or <cite>10.0e2</cite>. It is always stored as a
+numeric value and not as string. The formula parser treats everything that is
+not parsable but matches alphanumeric characters (excluding operations) to a
+string as in <cite>a_string</cite>. White spaces are ignored throughout the
+formula which means that strings do <em>not</em> need to get enclosed by <cite>“</cite>. In fact,
+a <cite>“</cite> is an unallowed character.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+  <span class="mi">1000</span><span class="p">,</span>
+  <span class="s2">&quot;a_string&quot;</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>A function is defined as a string that is directly followed by an opening
+parenthesis. The parenthesis token causes to force a collect state until all
+parentheses are closed. A similar approach is used for comments. A comment
+character <cite>#</cite> causes the skip state which does not write to the buffer until a
+line ending character is encountered.</p>
+<p>Everything that is collected in a buffer is sent back to the function via
+recursive execution. The formula parser only handles elements inside one
+recursion call that are linearly combinable like <cite>1*2+3*4</cite>. If same operations
+follow each other, they are concatenated into the same array level as for
+<cite>1+2+3+4</cite>.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;+&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="mi">1</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">,</span>
+    <span class="mi">4</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;+&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;*&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">1</span><span class="p">,</span>
+        <span class="mi">2</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;*&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">3</span><span class="p">,</span>
+        <span class="mi">4</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The formula can be optionally sent to a preparser that checks for the correct
+amount of brackets and converts multi-character operations to their multi-character
+UTF-8 representations like <cite>…</cite> to <cite>…</cite>. It should be noted that an
+operation consists of one UTF-8 character. Functions on the other hand can
+consist of an arbitrary length of alphanumeric characters. The corresponding
+function for the above operation is <cite>range()</cite>.</p>
+</div>
+<div class="section" id="formula-executor">
+<h2>Formula Executor<a class="headerlink" href="#formula-executor" title="Permalink to this headline">¶</a></h2>
+<p>The formula executor receives a JSON id. It can only evaluate a specific
+structure of a formula which means for usual cases that it should start with an
+object that conatains <em>one</em> operation. Operations are evaluated via recursive
+calls to the formula executor at different paths. This ensures that the formula
+is evaluated from the last element to the first element. The formula in the
+above example <cite>1*2+3*4</cite> is therefore treated as</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;+&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;*&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">1</span><span class="p">,</span>
+        <span class="mi">2</span>
+      <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">&quot;*&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="mi">3</span><span class="p">,</span>
+        <span class="mi">4</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>which evaluates to</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;+&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="mi">2</span><span class="p">,</span>
+    <span class="mi">12</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>and finally to <cite>[24]</cite>. The concept of representing everything as an array also
+leaves our final result as an one element array or in Igor Pro context, a one
+elemented wave. At the time of an evaluation, the maximum depth of an array is
+3 dimensions as Igor Pro supports only 4 dimensions and one dimension is used
+for data alignment.</p>
+<p>Note that text waves currently do not accept object evaluation. They are fixed
+1-dimensional arrays. This also means that the JSON special chars <cite>“NaN”</cite> and
+<cite>“Inf”</cite> representations are not supported as they require mixed-type array
+inputs.</p>
+<p>In the context of the formula executor, different operations and functions are
+defined. Some of them are <em>MIES</em> specific, some of them are wrappers to Igor
+Pro operations or functions, some borrowed from other languages and there are
+also the simple, trivial operations. This section should give a list of the
+available operations and give a look into how they are meant to be used</p>
+</div>
+<div class="section" id="operations">
+<h2>Operations<a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h2>
+<p>The trivial operations are <cite>+</cite>, <cite>-</cite>, <cite>*</cite>, <cite>/</cite>. They are defined for all
+available dimensions and evaluate column based.</p>
+<p>They can be used for evaluating</p>
+<ul class="simple">
+<li><p>scalars with 1d waves as in <cite>1 + [1,2] = [2,3]</cite></p></li>
+<li><p>1d waves with 1d waves as in <cite>[1,2]+[3,4] = [4,6]</cite></p></li>
+<li><p>1d waves with 2d waves as in <cite>[1,2]+[[3,4],[5,6]] = [[1+3,2+5],[null+4,null+6]] = [[4,7],[null,null]]</cite></p></li>
+<li><p>2d waves with 2d waves as in <cite>[[1,2],[3,4]]+[[5,6],[7,8]] = [[6,10],[8,12]]</cite></p></li>
+</ul>
+<p>After evaluation of the operation, the wave is reduced to have the same amount
+of dimensions as the input array. The size in each dimension is expanded to
+match the maximum array. The expansion is filled with null to avoid undefined
+behavior. In the special case of adding a numeric value to an array, the
+numeric value is expanded to the full size and dimensions of the largest array.
+This means that in our first example, 1 is internally expanded to a size of 2
+similar like executing <cite>1 + [1,2] == [1,1] + [1,2]</cite>.</p>
+</div>
+<div class="section" id="statistical-functions">
+<h2>Statistical Functions<a class="headerlink" href="#statistical-functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="min-and-max">
+<h3>min and max<a class="headerlink" href="#min-and-max" title="Permalink to this headline">¶</a></h3>
+<p><cite>min</cite> and <cite>max</cite> return the minimum and maximum of an array. For one dimension
+the result is trivial. In two dimensions they evaluate column based and return
+a row based array.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>min<span class="o">([[</span><span class="m">1</span>,2<span class="o">]</span>,<span class="o">[</span><span class="m">3</span>,4<span class="o">]])</span> <span class="o">=</span> <span class="o">[</span><span class="m">1</span>,2<span class="o">]</span>
+
+max<span class="o">(</span>min<span class="o">([[</span><span class="m">1</span>,2<span class="o">]</span>,<span class="o">[</span><span class="m">3</span>,4<span class="o">]]))</span> <span class="o">=</span> <span class="o">[</span><span class="m">2</span><span class="o">]</span>
+
+min<span class="o">(</span><span class="m">2</span><span class="o">)</span> <span class="o">==</span> <span class="o">[</span><span class="m">2</span><span class="o">]</span>
+
+min<span class="o">()</span> <span class="o">==</span> <span class="o">[</span>null<span class="o">]</span>
+</pre></div>
+</div>
+<p>The functions accept an arbitrary amount of elements. They are defined only for
+one and two dimensions.</p>
+</div>
+<div class="section" id="avg-and-mean">
+<h3>avg and mean<a class="headerlink" href="#avg-and-mean" title="Permalink to this headline">¶</a></h3>
+<p><cite>avg</cite> and <cite>mean</cite> calculate the average <span class="math notranslate nohighlight">\(\frac{1}{n}\sum_i{x_i}\)</span> of a row
+if the wave is 1-dimensional.  They evaluate column-based
+<span class="math notranslate nohighlight">\(\frac{1}{n_i}\sum_i{x_{ij}}\)</span> if the wave has 2 dimensions.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>avg<span class="o">(</span><span class="m">1</span>,2,3<span class="o">)</span> <span class="o">==</span> <span class="o">[</span><span class="m">2</span><span class="o">]</span>
+
+avg<span class="o">([</span><span class="m">1</span>,2,3<span class="o">]</span>,<span class="o">[</span><span class="m">4</span>,5,6<span class="o">]</span>,<span class="o">[</span><span class="m">7</span>,8,9<span class="o">])</span> <span class="o">==</span> <span class="o">[</span><span class="m">2</span>,5,8<span class="o">]</span>
+</pre></div>
+</div>
+<p>The function is defined only for one and two dimensions.</p>
+</div>
+<div class="section" id="root-mean-square">
+<h3>root mean square<a class="headerlink" href="#root-mean-square" title="Permalink to this headline">¶</a></h3>
+<p><cite>rms</cite> calculates the root mean square <span class="math notranslate nohighlight">\(\sqrt{\frac{1}{n}\sum_i{x_i^2}}\)</span>
+of a row if the wave is 1-dimensional. It acts column based if the wave is
+2-dimensional.</p>
+</div>
+<div class="section" id="variance-and-stdev">
+<h3>variance and stdev<a class="headerlink" href="#variance-and-stdev" title="Permalink to this headline">¶</a></h3>
+<p><cite>variance</cite> and <cite>stdev</cite> behave similar as above.</p>
+</div>
+</div>
+<div class="section" id="igor-pro-wrappers">
+<h2>Igor Pro Wrappers<a class="headerlink" href="#igor-pro-wrappers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="area">
+<h3>area<a class="headerlink" href="#area" title="Permalink to this headline">¶</a></h3>
+<p>Use <cite>area</cite> to calculate the area below a 1D array using trapezoidal integration.
+Does work on a per column-basis for 2D arrays. Does zeroing by default, pass
+<cite>0</cite> as second argument to turn zeroing off.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>area<span class="o">([</span><span class="m">0</span>, <span class="m">1</span>, <span class="m">2</span>, <span class="m">3</span>, <span class="m">4</span><span class="o">]</span>, <span class="m">0</span><span class="o">)</span> <span class="o">==</span> <span class="o">[</span><span class="m">8</span><span class="o">]</span>
+
+area<span class="o">([</span><span class="m">0</span>, <span class="m">1</span>, <span class="m">2</span>, <span class="m">3</span>, <span class="m">4</span><span class="o">]</span>, <span class="m">1</span><span class="o">)</span> <span class="o">==</span> <span class="o">[</span><span class="m">4</span><span class="o">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="derivative">
+<h3>derivative<a class="headerlink" href="#derivative" title="Permalink to this headline">¶</a></h3>
+<p>Use <cite>derivative</cite> to differentiate along rows for 1 and 2 data.</p>
+</div>
+<div class="section" id="integrate">
+<h3>integrate<a class="headerlink" href="#integrate" title="Permalink to this headline">¶</a></h3>
+<p>Trapezoid integration similar to the IP <cite>area</cite> function with enabled end-point
+guessing. The function returns the same amount of points as the input waves. It
+is the counterpart to derivative but due to the end point problem it can
+potentially introduce follow-up flaws.</p>
+</div>
+<div class="section" id="butterworth">
+<h3>butterworth<a class="headerlink" href="#butterworth" title="Permalink to this headline">¶</a></h3>
+<p>The butterworth filter uses <cite>FilterIIR</cite> from Igor Pro and acts along rows. It
+strictly accepts 4 parameters as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>butterworth<span class="o">(</span>data, lowPassCutoffInHz, highPassCutoffInHz, order<span class="o">)</span>
+</pre></div>
+</div>
+<p>The first parameter <cite>data</cite> is intended to be used with the <cite>data()</cite> function but
+can be an arbitrary numeric array.</p>
+</div>
+<div class="section" id="xvalues-and-time">
+<h3>xvalues and time<a class="headerlink" href="#xvalues-and-time" title="Permalink to this headline">¶</a></h3>
+<p>The <cite>xvalues</cite> or <cite>time</cite> function returns a wave containing the scaling of the
+input data. It fills the scaling of the rows for all dimensions.</p>
+</div>
+<div class="section" id="setscale">
+<h3>setscale<a class="headerlink" href="#setscale" title="Permalink to this headline">¶</a></h3>
+<p><cite>setscale</cite> can add a wave scaling to an input wave. It accepts 1 to 5
+parameters. The first parameter is always <cite>data</cite>. If no other parameter is
+present, the wave scaling will get cleared for the given dimension.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>setscale<span class="o">(</span>data<span class="o">[</span>, dim<span class="o">[</span>, dimOffset<span class="o">[</span>, dimDelta<span class="o">[</span>, unit<span class="o">]]]])</span>
+</pre></div>
+</div>
+<p><cite>dimOffset</cite> and <cite>dimDelta</cite> default to <cite>0</cite> and <cite>1</cite>, while the <cite>unit</cite> is empty by
+default.</p>
+</div>
+<div class="section" id="channels">
+<h3>channels<a class="headerlink" href="#channels" title="Permalink to this headline">¶</a></h3>
+<p><cite>channels([str name]+)</cite> converts a named channel from string to numbers.</p>
+<p>The function accepts an arbitrary amount of typical channel names like <cite>AD</cite> and
+<cite>DA</cite> with a combination of numbers <cite>AD1</cite> or channel numbers alone like <cite>2</cite>.</p>
+<p>it returns a numeric array of <cite>[[channelName, channelNumber]+]</cite> that has the
+same dimension as the input string array.</p>
+<p>It is inteded to be used with the <cite>data()</cite> function.</p>
+</div>
+<div class="section" id="sweeps">
+<h3>sweeps<a class="headerlink" href="#sweeps" title="Permalink to this headline">¶</a></h3>
+<p><cite>sweeps()</cite></p>
+<p>return an array which holds the sweep numbers of all displayed sweeps.
+<cite>sweeps(all)</cite> return an array of all available sweeps. The not-yet checked sweeps
+from overlay sweeps will be automatically enabled.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Not yet fully implemented.</p>
+</div>
+</div>
+<div class="section" id="cursors">
+<h3>cursors<a class="headerlink" href="#cursors" title="Permalink to this headline">¶</a></h3>
+<p><cite>cursors([A-J]+)</cite> will return the x values of the named cursor in the graph.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cursors<span class="o">(</span>A,B<span class="o">)</span> vs A,B
+</pre></div>
+</div>
+</div>
+<div class="section" id="wave">
+<h3>wave<a class="headerlink" href="#wave" title="Permalink to this headline">¶</a></h3>
+<p>Return the contents of the referenced wave. Useful for debugging and testing
+especially.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wave<span class="o">(</span>root:mywave<span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="text">
+<h3>text<a class="headerlink" href="#text" title="Permalink to this headline">¶</a></h3>
+<p>Convert the given numeric output wave to a text wave. This can be used to
+force, for example, a category plot.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>range<span class="o">(</span><span class="m">5</span><span class="o">)</span> vs text<span class="o">(</span>range<span class="o">(</span><span class="m">5</span><span class="o">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="data">
+<h3>data<a class="headerlink" href="#data" title="Permalink to this headline">¶</a></h3>
+<p>Although being listed near the end, the <cite>data()</cite> function is the core of the
+<cite>SweepFormula</cite> library. It returns <em>MIES</em> specific data from the current graph.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>data<span class="o">(</span>array range, array channels, array sweeps<span class="o">)</span>
+</pre></div>
+</div>
+<p>It returns <cite>[[sweeps][channel]]</cite> for all <cite>[sweeps]</cite> in the array containing the
+sweep numbers. The output is grouped by channels.</p>
+<p>The sweeps that you want to return need to be displayed in the graph. Do this
+in the OVS tab.</p>
+<p>The range can be either supplied explicitly using <cite>[100, 300]</cite> which would
+select <cite>100 ms</cite> to <cite>300 ms</cite> or by using <cite>cursors()</cite>. In case <cite>cursors()</cite> is
+used but there are no cursors on the graph, the full x-range is used.</p>
+<p>The function does not return errors for unmatched entries.</p>
+</div>
+<div class="section" id="labnotebook">
+<h3>labnotebook<a class="headerlink" href="#labnotebook" title="Permalink to this headline">¶</a></h3>
+<p><cite>labnotebook(string key, array channels, array sweeps [, string
+entrySourceType])</cite> returns the (case insensitive) <cite>key</cite> entry from the
+labnotebook for the given channel and sweep combination. The optional
+<cite>entrySourceType</cite> can be one of the constants <cite>DataAcqModes</cite> for data
+acquisition modes as defined in <cite>../MIES/MIES_Constants.ipf</cite>. If the
+<cite>entrySourceType</cite> is omitted it defaults to <cite>DATA_ACQUISITION_MODE</cite>.</p>
+<p>The <cite>labnotebook()</cite> function has the same data layouting as the <cite>data()</cite>
+function. It returns the notebook entry in the rows for all <cite>[sweeps]</cite> with the
+corresponding <cite>[channel]</cite> (<cite>[[sweeps][channel]]</cite>).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>max<span class="o">(</span>
+   data<span class="o">(</span>
+      cursors<span class="o">(</span>AB<span class="o">)</span>
+      channels<span class="o">(</span>AD<span class="o">)</span>,
+      sweeps<span class="o">()</span>
+   <span class="o">)</span>
+<span class="o">)</span>
+vs
+labnotebook<span class="o">(</span>
+   <span class="s2">&quot;set cycle count&quot;</span>,
+   channels<span class="o">(</span>AD<span class="o">)</span>,
+   sweeps<span class="o">()</span>,
+   DATA_ACQUISITION_MODE
+<span class="o">)</span>
+</pre></div>
+</div>
+<p>The function searches for numeric entries in the labnotebook first and then for
+text entries. It returns <cite>NaN</cite> if no match was found. It adds dimension labels
+to the columns to indicate to indicate the channel names.</p>
+</div>
+<div class="section" id="findlevel">
+<h3>findlevel<a class="headerlink" href="#findlevel" title="Permalink to this headline">¶</a></h3>
+<p><cite>findlevel(data, level, [edge])</cite> will return the x position of the found level
+or <cite>NaN</cite> if nothing could be found. The edge type is by default rising
+and falling (<cite>0</cite>), other options are rising (<cite>1</cite>) or falling (<cite>2</cite>).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>findlevel<span class="o">([</span><span class="m">1</span>, <span class="m">2</span>, <span class="m">3</span><span class="o">]</span>, <span class="m">1</span>.5<span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="apfrequency">
+<h3>apfrequency<a class="headerlink" href="#apfrequency" title="Permalink to this headline">¶</a></h3>
+<p><cite>apfrequency(data, [method, level])</cite> will return the action potential frequency
+using the <cite>full</cite> (default or <cite>0</cite>), <cite>instantaneous</cite> (<cite>1</cite>) or
+<cite>apcount</cite> (<cite>2</cite>) method. The default level is <cite>0</cite>.</p>
+<p>The calculation for these methods are done using the below formulas where
+<span class="math notranslate nohighlight">\(l\)</span> denotes the number of found levels, <span class="math notranslate nohighlight">\(t_{i}\)</span> the timepoint in
+seconds of the level and <span class="math notranslate nohighlight">\(T\)</span> the total x range of the data in seconds.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f_{\text{full}}          &amp;= \frac{l}{T}                                                         \\
+f_{\text{instantaneous}} &amp;= \frac{1}{\sum_{i = 0}^{i = l - 1} \left( t_{i + 1} - t_{i} \right)} \\
+f_{\text{apcount}}       &amp;= l                                                                   \\\end{split}\]</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apfrequency<span class="o">([</span><span class="m">10</span>, <span class="m">20</span>, <span class="m">30</span><span class="o">]</span>, <span class="m">1</span>, <span class="m">15</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="various">
+<h2>Various<a class="headerlink" href="#various" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="range">
+<h3>range<a class="headerlink" href="#range" title="Permalink to this headline">¶</a></h3>
+<p>The range function is borrowed from <a class="reference external" href="https://docs.python.org/3/library/functions.html#func-range">python</a>. It expands
+values into a new array.</p>
+<p>This function can also be used as an operation with the “…” operator which is
+the Unicode Character ‘HORIZONTAL ELLIPSIS’ (U+2026).</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>range<span class="o">(</span>start<span class="o">[</span>, stop<span class="o">[</span>, step<span class="o">]])</span>
+
+start…stop
+</pre></div>
+</div>
+<p>The function generally accepts 1 to 3 arguments. The operation is inteded to be
+used with two arguments. Please note that you can use the preparser if you
+keyboard layout does not allow convenient typing of this character.  It is not
+too easy to implement multi-character token inputs at this stage. Use the range
+function if you do not like any of these approaches.</p>
+</div>
+<div class="section" id="merge">
+<h3>merge<a class="headerlink" href="#merge" title="Permalink to this headline">¶</a></h3>
+<p><cite>merge</cite> reduces a 2-dimensional array to a 1-dimensional array similar to
+removing all inner square brackets:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>merge<span class="o">([</span><span class="m">1</span>,<span class="o">[</span><span class="m">2</span>,3<span class="o">]</span>,4<span class="o">])</span> <span class="o">==</span> <span class="o">[</span><span class="m">1</span>,2,3,4<span class="o">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="log">
+<h3>log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h3>
+<p><cite>log</cite> prints the first element of the current array to the command line but
+passes the wave as usual to the next operation. It is usefull for debugging
+inside large formulas.</p>
+<p>Both, <cite>merge</cite> and <cite>log</cite> are defined in <a class="reference external" href="http://jsonlogic.com/">JSON logic</a>.</p>
+</div>
+<div class="section" id="log10">
+<h3>log10<a class="headerlink" href="#log10" title="Permalink to this headline">¶</a></h3>
+<p>Apply the decadic (base 10) logarithm to its input.</p>
+</div>
+</div>
+<div class="section" id="plotting">
+<h2>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h2>
+<p>Two formulas can be plotted against each other by using the vs operator.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">0</span>...10 vs range<span class="o">(</span><span class="m">10</span>, <span class="m">100</span>, <span class="m">10</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>gives</p>
+<div class="figure align-center">
+<img alt="_images/sweepFormulaPlot.svg" src="_images/sweepFormulaPlot.svg" /></div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The Sweep Formula Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#formula-parser">Formula Parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#formula-executor">Formula Executor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#operations">Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#statistical-functions">Statistical Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#min-and-max">min and max</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#avg-and-mean">avg and mean</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#root-mean-square">root mean square</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#variance-and-stdev">variance and stdev</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#igor-pro-wrappers">Igor Pro Wrappers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#area">area</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#derivative">derivative</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#integrate">integrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#butterworth">butterworth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#xvalues-and-time">xvalues and time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setscale">setscale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#channels">channels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sweeps">sweeps</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cursors">cursors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wave">wave</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text">text</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data">data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#labnotebook">labnotebook</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#findlevel">findlevel</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apfrequency">apfrequency</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#various">Various</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#range">range</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#merge">merge</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#log">log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#log10">log10</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#plotting">Plotting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="CalculateTPLikePropsFromSweep.html"
+                        title="previous chapter">CalculateTPLikePropsFromSweep Algorithm</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="IPNWB/index.html"
+                        title="next chapter">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="IPNWB/index.html" title="Igor Pro module for reading and writing NeurodataWithoutBorder files"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="CalculateTPLikePropsFromSweep.html" title="CalculateTPLikePropsFromSweep Algorithm"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">The Sweep Formula Module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

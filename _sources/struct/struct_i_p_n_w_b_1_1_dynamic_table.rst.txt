@@ -1,0 +1,4 @@
+Struct IPNWB::DynamicTable
+==========================
+
+.. doxygenstruct:: IPNWB::DynamicTable

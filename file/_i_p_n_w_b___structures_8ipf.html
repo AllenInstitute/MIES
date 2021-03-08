@@ -1,0 +1,776 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File IPNWB_Structures.ipf &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File IPNWB_Utils.ipf" href="_i_p_n_w_b___utils_8ipf.html" />
+    <link rel="prev" title="File IPNWB_Reader.ipf" href="_i_p_n_w_b___reader_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___utils_8ipf.html" title="File IPNWB_Utils.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___reader_8ipf.html" title="File IPNWB_Reader.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File IPNWB_Structures.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="file-ipnwb-structures-ipf">
+<span id="id1"></span><h1>File IPNWB_Structures.ipf<a class="headerlink" href="#file-ipnwb-structures-ipf" title="Permalink to this headline">¶</a></h1>
+<dl class="cpp type">
+<dt id="_CPPv45IPNWB">
+<span id="_CPPv35IPNWB"></span><span id="_CPPv25IPNWB"></span><span id="IPNWB"></span><span class="target" id="namespace_i_p_n_w_b"></span><em class="property"><span class="pre">namespace</span> </em><code class="sig-name descname"><span class="pre">IPNWB</span></code><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">HDF5 file paths</p>
+<p><span class="target" id="namespace_i_p_n_w_b_1IPNWB_GroupLocations"></span></p>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Constants for FunctionInfo and WaveType</p>
+<p><span class="target" id="namespace_i_p_n_w_b_1IPNWB_IgorTypes"></span></p>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Channel constants (inspired by the ITC XOP)</p>
+<p><span class="target" id="namespace_i_p_n_w_b_1IPNWB_ChannelTypes"></span></p>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Constants for the acquisition modes</p>
+<p><span class="target" id="namespace_i_p_n_w_b_1IPNWB_ClampModes"></span></p>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Constants for the compression modes</p>
+<p><span class="target" id="namespace_i_p_n_w_b_1CompressionMode"></span></p>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Constants for the reference modes</p>
+<p><span class="target" id="namespace_i_p_n_w_b_1ReferenceMode"></span></p>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv4N5IPNWB22InitWriteChannelParamsEP18WriteChannelParams">
+<span id="_CPPv3N5IPNWB22InitWriteChannelParamsEP18WriteChannelParams"></span><span id="_CPPv2N5IPNWB22InitWriteChannelParamsEP18WriteChannelParams"></span><span id="IPNWB::InitWriteChannelParams__WriteChannelParamsP"></span><span class="target" id="namespace_i_p_n_w_b_1ab660cf63d735fe9e1b683945a11ffc69"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">InitWriteChannelParams</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5IPNWB18WriteChannelParamsE" title="IPNWB::WriteChannelParams"><span class="pre">WriteChannelParams</span></a> <span class="pre">*</span><em><span class="pre">p</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5IPNWB22InitWriteChannelParamsEP18WriteChannelParams" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initialize <a class="reference internal" href="../struct/struct_i_p_n_w_b_1_1_write_channel_params.html#struct_i_p_n_w_b_1_1_write_channel_params"><span class="std std-ref">WriteChannelParams</span></a> structure. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5IPNWB21InitReadChannelParamsEP17ReadChannelParams">
+<span id="_CPPv3N5IPNWB21InitReadChannelParamsEP17ReadChannelParams"></span><span id="_CPPv2N5IPNWB21InitReadChannelParamsEP17ReadChannelParams"></span><span id="IPNWB::InitReadChannelParams__ReadChannelParamsP"></span><span class="target" id="namespace_i_p_n_w_b_1abddede5954d3b610573445c9bc17a5e6"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">InitReadChannelParams</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5IPNWB17ReadChannelParamsE" title="IPNWB::ReadChannelParams"><span class="pre">ReadChannelParams</span></a> <span class="pre">*</span><em><span class="pre">p</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5IPNWB21InitReadChannelParamsEP17ReadChannelParams" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initialization routine for InitReadChannelParams. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5IPNWB15InitGeneralInfoEP11GeneralInfo">
+<span id="_CPPv3N5IPNWB15InitGeneralInfoEP11GeneralInfo"></span><span id="_CPPv2N5IPNWB15InitGeneralInfoEP11GeneralInfo"></span><span id="IPNWB::InitGeneralInfo__GeneralInfoP"></span><span class="target" id="namespace_i_p_n_w_b_1a0e4ef2ae8966f09cf22b85968dd10b9b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">InitGeneralInfo</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5IPNWB11GeneralInfoE" title="IPNWB::GeneralInfo"><span class="pre">GeneralInfo</span></a> <span class="pre">*</span><em><span class="pre">gi</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5IPNWB15InitGeneralInfoEP11GeneralInfo" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initialization routine for <a class="reference internal" href="../struct/struct_i_p_n_w_b_1_1_general_info.html#struct_i_p_n_w_b_1_1_general_info"><span class="std std-ref">GeneralInfo</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5IPNWB15InitSubjectInfoEP11SubjectInfo">
+<span id="_CPPv3N5IPNWB15InitSubjectInfoEP11SubjectInfo"></span><span id="_CPPv2N5IPNWB15InitSubjectInfoEP11SubjectInfo"></span><span id="IPNWB::InitSubjectInfo__SubjectInfoP"></span><span class="target" id="namespace_i_p_n_w_b_1a9016690e05cabde48acfa37367c3a5ba"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">InitSubjectInfo</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5IPNWB11SubjectInfoE" title="IPNWB::SubjectInfo"><span class="pre">SubjectInfo</span></a> <span class="pre">*</span><em><span class="pre">si</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5IPNWB15InitSubjectInfoEP11SubjectInfo" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initialization routine for <a class="reference internal" href="../struct/struct_i_p_n_w_b_1_1_subject_info.html#struct_i_p_n_w_b_1_1_subject_info"><span class="std std-ref">SubjectInfo</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5IPNWB16InitToplevelInfoEP12ToplevelInfo8variable">
+<span id="_CPPv3N5IPNWB16InitToplevelInfoEP12ToplevelInfo8variable"></span><span id="_CPPv2N5IPNWB16InitToplevelInfoEP12ToplevelInfo8variable"></span><span id="IPNWB::InitToplevelInfo__ToplevelInfoP.variable"></span><span class="target" id="namespace_i_p_n_w_b_1a2c5243d5fb4c7a817232ac7fbc03515b"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">InitToplevelInfo</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5IPNWB12ToplevelInfoE" title="IPNWB::ToplevelInfo"><span class="pre">ToplevelInfo</span></a> <span class="pre">*</span><em><span class="pre">ti</span></em>, <span class="pre">variable</span> <em><span class="pre">version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5IPNWB16InitToplevelInfoEP12ToplevelInfo8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initialization routine for <a class="reference internal" href="../struct/struct_i_p_n_w_b_1_1_toplevel_info.html#struct_i_p_n_w_b_1_1_toplevel_info"><span class="std std-ref">ToplevelInfo</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ti</span></code>: TopLevelInfo Structure </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">version</span></code>: [optional] defaults to latest version specified in NWB_VERSION_LATEST </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5IPNWB24InitTimeSeriesPropertiesEP20TimeSeriesProperties8variable8variable">
+<span id="_CPPv3N5IPNWB24InitTimeSeriesPropertiesEP20TimeSeriesProperties8variable8variable"></span><span id="_CPPv2N5IPNWB24InitTimeSeriesPropertiesEP20TimeSeriesProperties8variable8variable"></span><span id="IPNWB::InitTimeSeriesProperties__TimeSeriesPropertiesP.variable.variable"></span><span class="target" id="namespace_i_p_n_w_b_1a698840ef478332eeb4485982c0da05cd"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">InitTimeSeriesProperties</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5IPNWB20TimeSeriesPropertiesE" title="IPNWB::TimeSeriesProperties"><span class="pre">TimeSeriesProperties</span></a> <span class="pre">*</span><em><span class="pre">tsp</span></em>, <span class="pre">variable</span> <em><span class="pre">channelType</span></em>, <span class="pre">variable</span> <em><span class="pre">clampMode</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5IPNWB24InitTimeSeriesPropertiesEP20TimeSeriesProperties8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Initialization of <a class="reference internal" href="../struct/struct_i_p_n_w_b_1_1_time_series_properties.html#struct_i_p_n_w_b_1_1_time_series_properties"><span class="std std-ref">TimeSeriesProperties</span></a>. </p>
+<p><dl class="simple">
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">[out]</span> <span class="pre">tsp</span></code>: structure to initialize </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">channelType</span></code>: one of <a class="reference internal" href="../namespace/namespace_i_p_n_w_b.html#namespace_i_p_n_w_b_1IPNWB_ChannelTypes"><span class="std std-ref">IPNWB_ChannelTypes</span></a> </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[in]</span> <span class="pre">clampMode</span></code>: one of <a class="reference internal" href="../namespace/namespace_i_p_n_w_b.html#namespace_i_p_n_w_b_1IPNWB_ClampModes"><span class="std std-ref">IPNWB_ClampModes</span></a> </p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5IPNWB16InitDynamicTableEP12DynamicTable">
+<span id="_CPPv3N5IPNWB16InitDynamicTableEP12DynamicTable"></span><span id="_CPPv2N5IPNWB16InitDynamicTableEP12DynamicTable"></span><span id="IPNWB::InitDynamicTable__DynamicTableP"></span><span class="target" id="namespace_i_p_n_w_b_1a763a27a4864ca93637d40bd15c5b020f"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">InitDynamicTable</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5IPNWB12DynamicTableE" title="IPNWB::DynamicTable"><span class="pre">DynamicTable</span></a> <span class="pre">*</span><em><span class="pre">dt</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5IPNWB16InitDynamicTableEP12DynamicTable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5IPNWB22InitElementIdentifiersEP18ElementIdentifiers">
+<span id="_CPPv3N5IPNWB22InitElementIdentifiersEP18ElementIdentifiers"></span><span id="_CPPv2N5IPNWB22InitElementIdentifiersEP18ElementIdentifiers"></span><span id="IPNWB::InitElementIdentifiers__ElementIdentifiersP"></span><span class="target" id="namespace_i_p_n_w_b_1aa80fc3552fdc202e986cb4c9a9e68368"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">InitElementIdentifiers</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5IPNWB18ElementIdentifiersE" title="IPNWB::ElementIdentifiers"><span class="pre">ElementIdentifiers</span></a> <span class="pre">*</span><em><span class="pre">eli</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5IPNWB22InitElementIdentifiersEP18ElementIdentifiers" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5IPNWB14InitVectorDataEP10VectorData">
+<span id="_CPPv3N5IPNWB14InitVectorDataEP10VectorData"></span><span id="_CPPv2N5IPNWB14InitVectorDataEP10VectorData"></span><span id="IPNWB::InitVectorData__VectorDataP"></span><span class="target" id="namespace_i_p_n_w_b_1acdc7da77dc2893af103f248957b7a36e"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">InitVectorData</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5IPNWB10VectorDataE" title="IPNWB::VectorData"><span class="pre">VectorData</span></a> <span class="pre">*</span><em><span class="pre">vd</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5IPNWB14InitVectorDataEP10VectorData" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv4N5IPNWB15InitVectorIndexEP11VectorIndex">
+<span id="_CPPv3N5IPNWB15InitVectorIndexEP11VectorIndex"></span><span id="_CPPv2N5IPNWB15InitVectorIndexEP11VectorIndex"></span><span id="IPNWB::InitVectorIndex__VectorIndexP"></span><span class="target" id="namespace_i_p_n_w_b_1ac46b7e55db1b6b6cc1d3c72cde09c4ac"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">InitVectorIndex</span></code><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5IPNWB11VectorIndexE" title="IPNWB::VectorIndex"><span class="pre">VectorIndex</span></a> <span class="pre">*</span><em><span class="pre">vi</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5IPNWB15InitVectorIndexEP11VectorIndex" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt id="_CPPv4N5IPNWB12DynamicTableE">
+<span id="_CPPv3N5IPNWB12DynamicTableE"></span><span id="_CPPv2N5IPNWB12DynamicTableE"></span><span id="IPNWB::DynamicTable"></span><span class="target" id="struct_i_p_n_w_b_1_1_dynamic_table"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">DynamicTable</span></code><a class="headerlink" href="#_CPPv4N5IPNWB12DynamicTableE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB12DynamicTable8colnamesE">
+<span id="_CPPv3N5IPNWB12DynamicTable8colnamesE"></span><span id="_CPPv2N5IPNWB12DynamicTable8colnamesE"></span><span id="IPNWB::DynamicTable::colnames__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_dynamic_table_1a59f4b320a1eaab8ba28602be8a8ae7dc"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">colnames</span></code><a class="headerlink" href="#_CPPv4N5IPNWB12DynamicTable8colnamesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB12DynamicTable11descriptionE">
+<span id="_CPPv3N5IPNWB12DynamicTable11descriptionE"></span><span id="_CPPv2N5IPNWB12DynamicTable11descriptionE"></span><span id="IPNWB::DynamicTable::description__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_dynamic_table_1a64e1a34b4c61b0f5dcafc77d7cabc3d2"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">description</span></code><a class="headerlink" href="#_CPPv4N5IPNWB12DynamicTable11descriptionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB12DynamicTable9data_typeE">
+<span id="_CPPv3N5IPNWB12DynamicTable9data_typeE"></span><span id="_CPPv2N5IPNWB12DynamicTable9data_typeE"></span><span id="IPNWB::DynamicTable::data_type__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_dynamic_table_1ad76fbcf157feb1b64919dc59fdc0e5a9"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">data_type</span></code><a class="headerlink" href="#_CPPv4N5IPNWB12DynamicTable9data_typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5IPNWB18ElementIdentifiersE">
+<span id="_CPPv3N5IPNWB18ElementIdentifiersE"></span><span id="_CPPv2N5IPNWB18ElementIdentifiersE"></span><span id="IPNWB::ElementIdentifiers"></span><span class="target" id="struct_i_p_n_w_b_1_1_element_identifiers"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">ElementIdentifiers</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18ElementIdentifiersE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18ElementIdentifiers9data_typeE">
+<span id="_CPPv3N5IPNWB18ElementIdentifiers9data_typeE"></span><span id="_CPPv2N5IPNWB18ElementIdentifiers9data_typeE"></span><span id="IPNWB::ElementIdentifiers::data_type__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_element_identifiers_1a73ef358d94f3f2040baa9194ecfe7d97"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">data_type</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18ElementIdentifiers9data_typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5IPNWB11GeneralInfoE">
+<span id="_CPPv3N5IPNWB11GeneralInfoE"></span><span id="_CPPv2N5IPNWB11GeneralInfoE"></span><span id="IPNWB::GeneralInfo"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">GeneralInfo</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfoE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Structure to hold all properties of the NWB file directly below <code class="docutils literal notranslate"><span class="pre">/general</span></code> </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo10session_idE">
+<span id="_CPPv3N5IPNWB11GeneralInfo10session_idE"></span><span id="_CPPv2N5IPNWB11GeneralInfo10session_idE"></span><span id="IPNWB::GeneralInfo::session_id__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1a3fae3bc9f0b9bd467d925f9c1de7413e"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">session_id</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo10session_idE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo12experimenterE">
+<span id="_CPPv3N5IPNWB11GeneralInfo12experimenterE"></span><span id="_CPPv2N5IPNWB11GeneralInfo12experimenterE"></span><span id="IPNWB::GeneralInfo::experimenter__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1a6b3ac78765a387f4f43455b1579db492"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">experimenter</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo12experimenterE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo11institutionE">
+<span id="_CPPv3N5IPNWB11GeneralInfo11institutionE"></span><span id="_CPPv2N5IPNWB11GeneralInfo11institutionE"></span><span id="IPNWB::GeneralInfo::institution__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1a67e19fc54ad3befc9851e961ebf838cb"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">institution</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo11institutionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo3labE">
+<span id="_CPPv3N5IPNWB11GeneralInfo3labE"></span><span id="_CPPv2N5IPNWB11GeneralInfo3labE"></span><span id="IPNWB::GeneralInfo::lab__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1ab981582e433f12d5e56ece6b8d153d0a"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">lab</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo3labE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo20related_publicationsE">
+<span id="_CPPv3N5IPNWB11GeneralInfo20related_publicationsE"></span><span id="_CPPv2N5IPNWB11GeneralInfo20related_publicationsE"></span><span id="IPNWB::GeneralInfo::related_publications__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1ac35d02fee86a901528ce19baabd32b8a"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">related_publications</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo20related_publicationsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo5notesE">
+<span id="_CPPv3N5IPNWB11GeneralInfo5notesE"></span><span id="_CPPv2N5IPNWB11GeneralInfo5notesE"></span><span id="IPNWB::GeneralInfo::notes__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1ab8df049ef76b1680de2c8531f6bd77eb"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">notes</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo5notesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo22experiment_descriptionE">
+<span id="_CPPv3N5IPNWB11GeneralInfo22experiment_descriptionE"></span><span id="_CPPv2N5IPNWB11GeneralInfo22experiment_descriptionE"></span><span id="IPNWB::GeneralInfo::experiment_description__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1a7265fd34ccd82858c9252d43e1797dee"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">experiment_description</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo22experiment_descriptionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo15data_collectionE">
+<span id="_CPPv3N5IPNWB11GeneralInfo15data_collectionE"></span><span id="_CPPv2N5IPNWB11GeneralInfo15data_collectionE"></span><span id="IPNWB::GeneralInfo::data_collection__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1a3754665e66189feedefea3ad619642cf"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">data_collection</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo15data_collectionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo8stimulusE">
+<span id="_CPPv3N5IPNWB11GeneralInfo8stimulusE"></span><span id="_CPPv2N5IPNWB11GeneralInfo8stimulusE"></span><span id="IPNWB::GeneralInfo::stimulus__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1ab6573cb488b8e883ec2487795d052a7a"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">stimulus</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo8stimulusE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo12pharmacologyE">
+<span id="_CPPv3N5IPNWB11GeneralInfo12pharmacologyE"></span><span id="_CPPv2N5IPNWB11GeneralInfo12pharmacologyE"></span><span id="IPNWB::GeneralInfo::pharmacology__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1aac550b3f12a985b618e0b4b067188a51"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">pharmacology</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo12pharmacologyE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo7surgeryE">
+<span id="_CPPv3N5IPNWB11GeneralInfo7surgeryE"></span><span id="_CPPv2N5IPNWB11GeneralInfo7surgeryE"></span><span id="IPNWB::GeneralInfo::surgery__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1a8bea09839a84dfbec3406dd087353070"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">surgery</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo7surgeryE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo8protocolE">
+<span id="_CPPv3N5IPNWB11GeneralInfo8protocolE"></span><span id="_CPPv2N5IPNWB11GeneralInfo8protocolE"></span><span id="IPNWB::GeneralInfo::protocol__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1a8da4ba8087fe1745148b7b682f48d5c2"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">protocol</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo8protocolE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo5virusE">
+<span id="_CPPv3N5IPNWB11GeneralInfo5virusE"></span><span id="_CPPv2N5IPNWB11GeneralInfo5virusE"></span><span id="IPNWB::GeneralInfo::virus__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1a8fde3455d3afadff8180829d52f1b457"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">virus</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo5virusE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11GeneralInfo6slicesE">
+<span id="_CPPv3N5IPNWB11GeneralInfo6slicesE"></span><span id="_CPPv2N5IPNWB11GeneralInfo6slicesE"></span><span id="IPNWB::GeneralInfo::slices__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_general_info_1a7c73406cbe85c29bedb783ec587bdcd0"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">slices</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11GeneralInfo6slicesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5IPNWB17ReadChannelParamsE">
+<span id="_CPPv3N5IPNWB17ReadChannelParamsE"></span><span id="_CPPv2N5IPNWB17ReadChannelParamsE"></span><span id="IPNWB::ReadChannelParams"></span><span class="target" id="struct_i_p_n_w_b_1_1_read_channel_params"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">ReadChannelParams</span></code><a class="headerlink" href="#_CPPv4N5IPNWB17ReadChannelParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Loader structure analog to <a class="reference internal" href="../struct/struct_i_p_n_w_b_1_1_write_channel_params.html#struct_i_p_n_w_b_1_1_write_channel_params"><span class="std std-ref">IPNWB::WriteChannelParams</span></a>. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB17ReadChannelParams6deviceE">
+<span id="_CPPv3N5IPNWB17ReadChannelParams6deviceE"></span><span id="_CPPv2N5IPNWB17ReadChannelParams6deviceE"></span><span id="IPNWB::ReadChannelParams::device__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_read_channel_params_1ab728173f1ef0437d0f52c3d26ba1c667"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">device</span></code><a class="headerlink" href="#_CPPv4N5IPNWB17ReadChannelParams6deviceE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>name of the measure device, e.g. “ITC18USB_Dev_0” </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB17ReadChannelParams13channelSuffixE">
+<span id="_CPPv3N5IPNWB17ReadChannelParams13channelSuffixE"></span><span id="_CPPv2N5IPNWB17ReadChannelParams13channelSuffixE"></span><span id="IPNWB::ReadChannelParams::channelSuffix__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_read_channel_params_1aa34d7cbf4aaafdb0c08bc27955aa3b7a"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">channelSuffix</span></code><a class="headerlink" href="#_CPPv4N5IPNWB17ReadChannelParams13channelSuffixE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>custom channel suffix, in case the channel number is ambiguous </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB17ReadChannelParams5sweepE">
+<span id="_CPPv3N5IPNWB17ReadChannelParams5sweepE"></span><span id="_CPPv2N5IPNWB17ReadChannelParams5sweepE"></span><span id="IPNWB::ReadChannelParams::sweep__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_read_channel_params_1a3a75204276eb0622c6bd5f9f3ac18169"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">sweep</span></code><a class="headerlink" href="#_CPPv4N5IPNWB17ReadChannelParams5sweepE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>running number for each measurement </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB17ReadChannelParams11channelTypeE">
+<span id="_CPPv3N5IPNWB17ReadChannelParams11channelTypeE"></span><span id="_CPPv2N5IPNWB17ReadChannelParams11channelTypeE"></span><span id="IPNWB::ReadChannelParams::channelType__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_read_channel_params_1afee870e00f2ffe3bb905075e8dcd7502"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">channelType</span></code><a class="headerlink" href="#_CPPv4N5IPNWB17ReadChannelParams11channelTypeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>channel type, one of <a class="reference internal" href="../namespace/namespace_i_p_n_w_b.html#namespace_i_p_n_w_b_1IPNWB_ChannelTypes"><span class="std std-ref">IPNWB_ChannelTypes</span></a> </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB17ReadChannelParams13channelNumberE">
+<span id="_CPPv3N5IPNWB17ReadChannelParams13channelNumberE"></span><span id="_CPPv2N5IPNWB17ReadChannelParams13channelNumberE"></span><span id="IPNWB::ReadChannelParams::channelNumber__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_read_channel_params_1a1ba6a40c90de6194f67260ca0d666177"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">channelNumber</span></code><a class="headerlink" href="#_CPPv4N5IPNWB17ReadChannelParams13channelNumberE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>running number of the channel </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB17ReadChannelParams15electrodeNumberE">
+<span id="_CPPv3N5IPNWB17ReadChannelParams15electrodeNumberE"></span><span id="_CPPv2N5IPNWB17ReadChannelParams15electrodeNumberE"></span><span id="IPNWB::ReadChannelParams::electrodeNumber__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_read_channel_params_1aadb6b0de5b3696a1e9220b75c9c3e671"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">electrodeNumber</span></code><a class="headerlink" href="#_CPPv4N5IPNWB17ReadChannelParams15electrodeNumberE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>electrode identifier the channel was acquired with </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB17ReadChannelParams10groupIndexE">
+<span id="_CPPv3N5IPNWB17ReadChannelParams10groupIndexE"></span><span id="_CPPv2N5IPNWB17ReadChannelParams10groupIndexE"></span><span id="IPNWB::ReadChannelParams::groupIndex__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_read_channel_params_1a4019ca8b00a3cefe67f721c9684bebc1"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">groupIndex</span></code><a class="headerlink" href="#_CPPv4N5IPNWB17ReadChannelParams10groupIndexE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>constant for all channels in this measurement. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB17ReadChannelParams6ttlBitE">
+<span id="_CPPv3N5IPNWB17ReadChannelParams6ttlBitE"></span><span id="_CPPv2N5IPNWB17ReadChannelParams6ttlBitE"></span><span id="IPNWB::ReadChannelParams::ttlBit__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_read_channel_params_1a8e9f5daf63b1be9b1bfed600898ed2dd"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">ttlBit</span></code><a class="headerlink" href="#_CPPv4N5IPNWB17ReadChannelParams6ttlBitE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>unambigous ttl-channel-number </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5IPNWB11SubjectInfoE">
+<span id="_CPPv3N5IPNWB11SubjectInfoE"></span><span id="_CPPv2N5IPNWB11SubjectInfoE"></span><span id="IPNWB::SubjectInfo"></span><span class="target" id="struct_i_p_n_w_b_1_1_subject_info"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">SubjectInfo</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11SubjectInfoE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Structure to hold all properties of the NWB file directly below <code class="docutils literal notranslate"><span class="pre">/general/subject</span></code> </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11SubjectInfo3ageE">
+<span id="_CPPv3N5IPNWB11SubjectInfo3ageE"></span><span id="_CPPv2N5IPNWB11SubjectInfo3ageE"></span><span id="IPNWB::SubjectInfo::age__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_subject_info_1abd7677bbe3e2536a18883ad73cac5188"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">age</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11SubjectInfo3ageE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11SubjectInfo13date_of_birthE">
+<span id="_CPPv3N5IPNWB11SubjectInfo13date_of_birthE"></span><span id="_CPPv2N5IPNWB11SubjectInfo13date_of_birthE"></span><span id="IPNWB::SubjectInfo::date_of_birth__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_subject_info_1abb389f58005753fa474297b3573202d5"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">date_of_birth</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11SubjectInfo13date_of_birthE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11SubjectInfo11descriptionE">
+<span id="_CPPv3N5IPNWB11SubjectInfo11descriptionE"></span><span id="_CPPv2N5IPNWB11SubjectInfo11descriptionE"></span><span id="IPNWB::SubjectInfo::description__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_subject_info_1a3568346325cb16c299676dc15ecf6ecb"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">description</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11SubjectInfo11descriptionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11SubjectInfo8genotypeE">
+<span id="_CPPv3N5IPNWB11SubjectInfo8genotypeE"></span><span id="_CPPv2N5IPNWB11SubjectInfo8genotypeE"></span><span id="IPNWB::SubjectInfo::genotype__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_subject_info_1a630ed9adf93ab21d0ee9a29639f2369c"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">genotype</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11SubjectInfo8genotypeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11SubjectInfo3sexE">
+<span id="_CPPv3N5IPNWB11SubjectInfo3sexE"></span><span id="_CPPv2N5IPNWB11SubjectInfo3sexE"></span><span id="IPNWB::SubjectInfo::sex__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_subject_info_1af117932bc9d5523de711ae6c0697c5d6"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">sex</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11SubjectInfo3sexE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11SubjectInfo7speciesE">
+<span id="_CPPv3N5IPNWB11SubjectInfo7speciesE"></span><span id="_CPPv2N5IPNWB11SubjectInfo7speciesE"></span><span id="IPNWB::SubjectInfo::species__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_subject_info_1a3b28a3c10557e5819faea0fc9e341f45"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">species</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11SubjectInfo7speciesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11SubjectInfo10subject_idE">
+<span id="_CPPv3N5IPNWB11SubjectInfo10subject_idE"></span><span id="_CPPv2N5IPNWB11SubjectInfo10subject_idE"></span><span id="IPNWB::SubjectInfo::subject_id__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_subject_info_1a3e7fba647a7c7cffeb09dcc3c7d71c88"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">subject_id</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11SubjectInfo10subject_idE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11SubjectInfo6weightE">
+<span id="_CPPv3N5IPNWB11SubjectInfo6weightE"></span><span id="_CPPv2N5IPNWB11SubjectInfo6weightE"></span><span id="IPNWB::SubjectInfo::weight__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_subject_info_1a8f2e82b7140c8969d965105a2b4130ba"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">weight</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11SubjectInfo6weightE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5IPNWB20TimeSeriesPropertiesE">
+<span id="_CPPv3N5IPNWB20TimeSeriesPropertiesE"></span><span id="_CPPv2N5IPNWB20TimeSeriesPropertiesE"></span><span id="IPNWB::TimeSeriesProperties"></span><span class="target" id="struct_i_p_n_w_b_1_1_time_series_properties"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">TimeSeriesProperties</span></code><a class="headerlink" href="#_CPPv4N5IPNWB20TimeSeriesPropertiesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Holds class specific entries for TimeSeries objects. </p>
+<p>Usage for writers <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>STRUCT TimeSeriesProperties tsp
+InitTimeSeriesProperties(tsp, channelType, clampMode)
+AddProperty(tsp, &quot;gain&quot;, 1.23456)
+// more calls tp AddProperty()
+WriteSingleChannel(locationID, path, p, tsp)
+</pre></div>
+</div>
+</p>
+<p>and for readers <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>STRUCT TimeSeriesProperties tsp
+InitTimeSeriesProperties(tsp, channelType, clampMode)
+ReadTimeSeriesProperties(groupID, channel, tsp)
+</pre></div>
+</div>
+ </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB20TimeSeriesProperties5namesE">
+<span id="_CPPv3N5IPNWB20TimeSeriesProperties5namesE"></span><span id="_CPPv2N5IPNWB20TimeSeriesProperties5namesE"></span><span id="IPNWB::TimeSeriesProperties::names__WaveText"></span><span class="target" id="struct_i_p_n_w_b_1_1_time_series_properties_1a8202ac29d050a0bb7672e6c698f8f8f5"></span><span class="pre">WaveText</span> <code class="sig-name descname"><span class="pre">names</span></code><a class="headerlink" href="#_CPPv4N5IPNWB20TimeSeriesProperties5namesE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB20TimeSeriesProperties4dataE">
+<span id="_CPPv3N5IPNWB20TimeSeriesProperties4dataE"></span><span id="_CPPv2N5IPNWB20TimeSeriesProperties4dataE"></span><span id="IPNWB::TimeSeriesProperties::data__WAVE"></span><span class="target" id="struct_i_p_n_w_b_1_1_time_series_properties_1aff3132f14a58ba9e47aa7c4d981f03d5"></span><span class="pre">WAVE</span> <code class="sig-name descname"><span class="pre">data</span></code><a class="headerlink" href="#_CPPv4N5IPNWB20TimeSeriesProperties4dataE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB20TimeSeriesProperties4unitE">
+<span id="_CPPv3N5IPNWB20TimeSeriesProperties4unitE"></span><span id="_CPPv2N5IPNWB20TimeSeriesProperties4unitE"></span><span id="IPNWB::TimeSeriesProperties::unit__WaveText"></span><span class="target" id="struct_i_p_n_w_b_1_1_time_series_properties_1a4a97021f0d73efe0f2ab194c7b126f05"></span><span class="pre">WaveText</span> <code class="sig-name descname"><span class="pre">unit</span></code><a class="headerlink" href="#_CPPv4N5IPNWB20TimeSeriesProperties4unitE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB20TimeSeriesProperties8isCustomE">
+<span id="_CPPv3N5IPNWB20TimeSeriesProperties8isCustomE"></span><span id="_CPPv2N5IPNWB20TimeSeriesProperties8isCustomE"></span><span id="IPNWB::TimeSeriesProperties::isCustom__WAVE"></span><span class="target" id="struct_i_p_n_w_b_1_1_time_series_properties_1a2283f585e9c60f38a9c36a37c0781abf"></span><span class="pre">WAVE</span> <code class="sig-name descname"><span class="pre">isCustom</span></code><a class="headerlink" href="#_CPPv4N5IPNWB20TimeSeriesProperties8isCustomE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>NWBv1: 1 if the entry should be marked as NWB custom. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB20TimeSeriesProperties14missing_fieldsE">
+<span id="_CPPv3N5IPNWB20TimeSeriesProperties14missing_fieldsE"></span><span id="_CPPv2N5IPNWB20TimeSeriesProperties14missing_fieldsE"></span><span id="IPNWB::TimeSeriesProperties::missing_fields__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_time_series_properties_1ae8f1e2d28180896dc0e25fa39587db2b"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">missing_fields</span></code><a class="headerlink" href="#_CPPv4N5IPNWB20TimeSeriesProperties14missing_fieldsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>keep track of missing fields while reading </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB20TimeSeriesProperties14neurodata_typeE">
+<span id="_CPPv3N5IPNWB20TimeSeriesProperties14neurodata_typeE"></span><span id="_CPPv2N5IPNWB20TimeSeriesProperties14neurodata_typeE"></span><span id="IPNWB::TimeSeriesProperties::neurodata_type__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_time_series_properties_1a4a6ab744a9e13599bd1cfb0601a88b59"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">neurodata_type</span></code><a class="headerlink" href="#_CPPv4N5IPNWB20TimeSeriesProperties14neurodata_typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5IPNWB12ToplevelInfoE">
+<span id="_CPPv3N5IPNWB12ToplevelInfoE"></span><span id="_CPPv2N5IPNWB12ToplevelInfoE"></span><span id="IPNWB::ToplevelInfo"></span><span class="target" id="struct_i_p_n_w_b_1_1_toplevel_info"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">ToplevelInfo</span></code><a class="headerlink" href="#_CPPv4N5IPNWB12ToplevelInfoE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Structure to hold all properties of the NWB file directly below <code class="docutils literal notranslate"><span class="pre">/</span></code> </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB12ToplevelInfo19session_descriptionE">
+<span id="_CPPv3N5IPNWB12ToplevelInfo19session_descriptionE"></span><span id="_CPPv2N5IPNWB12ToplevelInfo19session_descriptionE"></span><span id="IPNWB::ToplevelInfo::session_description__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_toplevel_info_1a72be86846bb83e3e7ce9672c29549a2c"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">session_description</span></code><a class="headerlink" href="#_CPPv4N5IPNWB12ToplevelInfo19session_descriptionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB12ToplevelInfo18session_start_timeE">
+<span id="_CPPv3N5IPNWB12ToplevelInfo18session_start_timeE"></span><span id="_CPPv2N5IPNWB12ToplevelInfo18session_start_timeE"></span><span id="IPNWB::ToplevelInfo::session_start_time__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_toplevel_info_1a027e516cc042bf6dd47221d67d7bed36"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">session_start_time</span></code><a class="headerlink" href="#_CPPv4N5IPNWB12ToplevelInfo18session_start_timeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>timestamp in seconds since Igor Pro epoch, UTC timezone </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB12ToplevelInfo11nwb_versionE">
+<span id="_CPPv3N5IPNWB12ToplevelInfo11nwb_versionE"></span><span id="_CPPv2N5IPNWB12ToplevelInfo11nwb_versionE"></span><span id="IPNWB::ToplevelInfo::nwb_version__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_toplevel_info_1a0134ef98935ee24b0bf9ee3f0473bb27"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">nwb_version</span></code><a class="headerlink" href="#_CPPv4N5IPNWB12ToplevelInfo11nwb_versionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>NWB specification version. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB12ToplevelInfo10identifierE">
+<span id="_CPPv3N5IPNWB12ToplevelInfo10identifierE"></span><span id="_CPPv2N5IPNWB12ToplevelInfo10identifierE"></span><span id="IPNWB::ToplevelInfo::identifier__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_toplevel_info_1aeac4fe794761382309bcb6238ee39c2c"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">identifier</span></code><a class="headerlink" href="#_CPPv4N5IPNWB12ToplevelInfo10identifierE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB12ToplevelInfo16file_create_dateE">
+<span id="_CPPv3N5IPNWB12ToplevelInfo16file_create_dateE"></span><span id="_CPPv2N5IPNWB12ToplevelInfo16file_create_dateE"></span><span id="IPNWB::ToplevelInfo::file_create_date__WaveText"></span><span class="target" id="struct_i_p_n_w_b_1_1_toplevel_info_1ade6f8b37e404ba29d28b4cfe339f593a"></span><span class="pre">WaveText</span> <code class="sig-name descname"><span class="pre">file_create_date</span></code><a class="headerlink" href="#_CPPv4N5IPNWB12ToplevelInfo16file_create_dateE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5IPNWB10VectorDataE">
+<span id="_CPPv3N5IPNWB10VectorDataE"></span><span id="_CPPv2N5IPNWB10VectorDataE"></span><span id="IPNWB::VectorData"></span><span class="target" id="struct_i_p_n_w_b_1_1_vector_data"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">VectorData</span></code><a class="headerlink" href="#_CPPv4N5IPNWB10VectorDataE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB10VectorData11descriptionE">
+<span id="_CPPv3N5IPNWB10VectorData11descriptionE"></span><span id="_CPPv2N5IPNWB10VectorData11descriptionE"></span><span id="IPNWB::VectorData::description__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_vector_data_1a6774d956bfed9ace68dda0fa08486346"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">description</span></code><a class="headerlink" href="#_CPPv4N5IPNWB10VectorData11descriptionE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB10VectorData9data_typeE">
+<span id="_CPPv3N5IPNWB10VectorData9data_typeE"></span><span id="_CPPv2N5IPNWB10VectorData9data_typeE"></span><span id="IPNWB::VectorData::data_type__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_vector_data_1a632271d0b76337932b778a9c776a7525"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">data_type</span></code><a class="headerlink" href="#_CPPv4N5IPNWB10VectorData9data_typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB10VectorData4pathE">
+<span id="_CPPv3N5IPNWB10VectorData4pathE"></span><span id="_CPPv2N5IPNWB10VectorData4pathE"></span><span id="IPNWB::VectorData::path__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_vector_data_1ae000194d1ad96a576f3fe323bb8a70c0"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">path</span></code><a class="headerlink" href="#_CPPv4N5IPNWB10VectorData4pathE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5IPNWB11VectorIndexE">
+<span id="_CPPv3N5IPNWB11VectorIndexE"></span><span id="_CPPv2N5IPNWB11VectorIndexE"></span><span id="IPNWB::VectorIndex"></span><span class="target" id="struct_i_p_n_w_b_1_1_vector_index"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">VectorIndex</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11VectorIndexE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11VectorIndex9data_typeE">
+<span id="_CPPv3N5IPNWB11VectorIndex9data_typeE"></span><span id="_CPPv2N5IPNWB11VectorIndex9data_typeE"></span><span id="IPNWB::VectorIndex::data_type__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_vector_index_1ae14f6d17b8ba34855095f7a1a2c1987e"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">data_type</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11VectorIndex9data_typeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB11VectorIndex6targetE">
+<span id="_CPPv3N5IPNWB11VectorIndex6targetE"></span><span id="_CPPv2N5IPNWB11VectorIndex6targetE"></span><span id="IPNWB::VectorIndex::target__VectorData"></span><span class="target" id="struct_i_p_n_w_b_1_1_vector_index_1a2935b6635430f11a3b72f463037594a5"></span><a class="reference internal" href="#_CPPv4N5IPNWB10VectorDataE" title="IPNWB::VectorData"><span class="pre">VectorData</span></a> <code class="sig-name descname"><span class="pre">target</span></code><a class="headerlink" href="#_CPPv4N5IPNWB11VectorIndex6targetE" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt id="_CPPv4N5IPNWB18WriteChannelParamsE">
+<span id="_CPPv3N5IPNWB18WriteChannelParamsE"></span><span id="_CPPv2N5IPNWB18WriteChannelParamsE"></span><span id="IPNWB::WriteChannelParams"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params"></span><em class="property"><span class="pre">struct</span> </em><code class="sig-name descname"><span class="pre">WriteChannelParams</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParamsE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Helper structure for <a class="reference internal" href="../namespace/namespace_i_p_n_w_b.html#namespace_i_p_n_w_b_1ae39a95ad27073cd449be9170b10b0969"><span class="std std-ref">WriteSingleChannel()</span></a> </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Public Members</p>
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams6deviceE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams6deviceE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams6deviceE"></span><span id="IPNWB::WriteChannelParams::device__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1abcf44456f905398e9f08693b34230de5"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">device</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams6deviceE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>name of the measure device, e.g. “ITC18USB_Dev_0” </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams7stimSetE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams7stimSetE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams7stimSetE"></span><span id="IPNWB::WriteChannelParams::stimSet__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1af58e5c2ae942c73b08851b8d4e94ec3b"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">stimSet</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams7stimSetE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>name of the template simulus set </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams13channelSuffixE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams13channelSuffixE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams13channelSuffixE"></span><span id="IPNWB::WriteChannelParams::channelSuffix__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1a720151b1a0ad5d288601055cac05aed6"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">channelSuffix</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams13channelSuffixE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>custom channel suffix, in case the channel number is ambiguous </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams17channelSuffixDescE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams17channelSuffixDescE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams17channelSuffixDescE"></span><span id="IPNWB::WriteChannelParams::channelSuffixDesc__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1a1ef4363910aea1733dcc14264009b869"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">channelSuffixDesc</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams17channelSuffixDescE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>description of the channel suffix, will be added to the <code class="docutils literal notranslate"><span class="pre">source</span></code> attribute </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams12samplingRateE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams12samplingRateE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams12samplingRateE"></span><span id="IPNWB::WriteChannelParams::samplingRate__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1a69e040f2c2594d627454982208c4dc45"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">samplingRate</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams12samplingRateE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>sampling rate in Hz </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams12startingTimeE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams12startingTimeE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams12startingTimeE"></span><span id="IPNWB::WriteChannelParams::startingTime__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1a13dde9db5f27493ebf239ded48fd808f"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">startingTime</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams12startingTimeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>timestamp since Igor Pro epoch in UTC of the start of this measurement </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams5sweepE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams5sweepE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams5sweepE"></span><span id="IPNWB::WriteChannelParams::sweep__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1a6f5ae3aa636834dd2d103c2890d42ab8"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">sweep</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams5sweepE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>running number for each measurement </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams11channelTypeE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams11channelTypeE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams11channelTypeE"></span><span id="IPNWB::WriteChannelParams::channelType__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1adc1f64dbe2777755bc1a93ab932ab4c7"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">channelType</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams11channelTypeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>channel type, one of <a class="reference internal" href="../namespace/namespace_i_p_n_w_b.html#namespace_i_p_n_w_b_1IPNWB_ChannelTypes"><span class="std std-ref">IPNWB_ChannelTypes</span></a> </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams13channelNumberE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams13channelNumberE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams13channelNumberE"></span><span id="IPNWB::WriteChannelParams::channelNumber__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1a5039949bd8594bf6d98aa7906b813e35"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">channelNumber</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams13channelNumberE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>running number of the channel </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams15electrodeNumberE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams15electrodeNumberE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams15electrodeNumberE"></span><span id="IPNWB::WriteChannelParams::electrodeNumber__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1ac392f6e0651d558aaaf7a5819aeb1a90"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">electrodeNumber</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams15electrodeNumberE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>electrode identifier the channel was acquired with </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams13electrodeNameE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams13electrodeNameE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams13electrodeNameE"></span><span id="IPNWB::WriteChannelParams::electrodeName__string"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1ac185e8b62209290767c7548233a51f2f"></span><span class="pre">string</span> <code class="sig-name descname"><span class="pre">electrodeName</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams13electrodeNameE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>electrode identifier the channel was acquired with (string version) </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams9clampModeE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams9clampModeE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams9clampModeE"></span><span id="IPNWB::WriteChannelParams::clampMode__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1a1b7e905b6211f5bfbe17c7d4ab595362"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">clampMode</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams9clampModeE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>clamp mode, one of <a class="reference internal" href="../namespace/namespace_i_p_n_w_b.html#namespace_i_p_n_w_b_1IPNWB_ClampModes"><span class="std std-ref">IPNWB_ClampModes</span></a> </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams10groupIndexE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams10groupIndexE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams10groupIndexE"></span><span id="IPNWB::WriteChannelParams::groupIndex__variable"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1a12713ece1e41d415330a61bee47a1065"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">groupIndex</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams10groupIndexE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Should be filled with the result of GetNextFreeGroupIndex(locationID, path) before </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt id="_CPPv4N5IPNWB18WriteChannelParams4dataE">
+<span id="_CPPv3N5IPNWB18WriteChannelParams4dataE"></span><span id="_CPPv2N5IPNWB18WriteChannelParams4dataE"></span><span id="IPNWB::WriteChannelParams::data__WAVE"></span><span class="target" id="struct_i_p_n_w_b_1_1_write_channel_params_1a02c627877a6d863e2104a8426bc263e2"></span><span class="pre">WAVE</span> <code class="sig-name descname"><span class="pre">data</span></code><a class="headerlink" href="#_CPPv4N5IPNWB18WriteChannelParams4dataE" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>channel data </p>
+<p>the first call and must stay constant for all channels for this measurement. If <code class="docutils literal notranslate"><span class="pre">NaN</span></code> an automatic solution is provided. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_8ipf.html">File CompilationTester.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_utils_8ipf.html">File CompilationTesterUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___lab_notebook_t_p_storage_browser_8ipf.html">File MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html">File MIES_MiesUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___regenerate-_screenshots_8ipf.html">File MIES_Regenerate-Screenshots.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sampling_interval_8ipf.html">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities_8ipf.html">File MIES_Utilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_8h.html">File interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="_i_p_n_w_b___reader_8ipf.html"
+                        title="previous chapter">File IPNWB_Reader.ipf</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="_i_p_n_w_b___utils_8ipf.html"
+                        title="next chapter">File IPNWB_Utils.ipf</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___utils_8ipf.html" title="File IPNWB_Utils.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_i_p_n_w_b___reader_8ipf.html" title="File IPNWB_Reader.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File IPNWB_Structures.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

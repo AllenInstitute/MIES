@@ -1,0 +1,6 @@
+.. _File MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf:
+
+File MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf
+=========================================================
+
+.. doxygenfile:: MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf

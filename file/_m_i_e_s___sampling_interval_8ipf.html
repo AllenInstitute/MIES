@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File MIES_SamplingInterval.ipf &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="../_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File MIES_Structures.ipf" href="_m_i_e_s___structures_8ipf.html" />
+    <link rel="prev" title="File MIES_RepeatedAcquisition.ipf" href="_m_i_e_s___repeated_acquisition_8ipf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___structures_8ipf.html" title="File MIES_Structures.ipf"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___repeated_acquisition_8ipf.html" title="File MIES_RepeatedAcquisition.ipf"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" accesskey="U">File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SamplingInterval.ipf</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="file-mies-samplinginterval-ipf">
+<span id="id1"></span><h1>File MIES_SamplingInterval.ipf<a class="headerlink" href="#file-mies-samplinginterval-ipf" title="Permalink to this headline">¶</a></h1>
+<p><strong>SI</strong> Routines for calculating and handling the minimum sampling interval </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Functions</p>
+<dl class="cpp function">
+<dt id="_CPPv416SI_FillITCConfig4wave4wave8variable8variable8variable8variable">
+<span id="_CPPv316SI_FillITCConfig4wave4wave8variable8variable8variable8variable"></span><span id="_CPPv216SI_FillITCConfig4wave4wave8variable8variable8variable8variable"></span><span id="SI_FillITCConfig__wave.wave.variable.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a6a445519d657c159b2988c0d7015f8da"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SI_FillITCConfig</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">wv</span></em>, <span class="pre">wave</span> <em><span class="pre">results</span></em>, <span class="pre">variable</span> <em><span class="pre">idx</span></em>, <span class="pre">variable</span> <em><span class="pre">totalNumDA</span></em>, <span class="pre">variable</span> <em><span class="pre">totalNumAD</span></em>, <span class="pre">variable</span> <em><span class="pre">totalNumTTL</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416SI_FillITCConfig4wave4wave8variable8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fill the passed wave to be used as DAQConfigWave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425SI_FillITCConfigWithPerms4wave8variable8variable8variable">
+<span id="_CPPv325SI_FillITCConfigWithPerms4wave8variable8variable8variable"></span><span id="_CPPv225SI_FillITCConfigWithPerms4wave8variable8variable8variable"></span><span id="SI_FillITCConfigWithPerms__wave.variable.variable.variable"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1acad3a5bf675cd9a0f52a357526064c22"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SI_FillITCConfigWithPerms</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">wv</span></em>, <span class="pre">variable</span> <em><span class="pre">start</span></em>, <span class="pre">variable</span> <em><span class="pre">value</span></em>, <span class="pre">variable</span> <em><span class="pre">channelType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SI_FillITCConfigWithPerms4wave8variable8variable8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Fill the passed wave to be used as DAQConfigWave for the exhaustive search. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv415SI_CompressWave4wave">
+<span id="_CPPv315SI_CompressWave4wave"></span><span id="_CPPv215SI_CompressWave4wave"></span><span id="SI_CompressWave__wave"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a3909150a27e49f9bc396306eb28ce0bd"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SI_CompressWave</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">wv</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415SI_CompressWave4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Removes invalid and duplicated entries from the generated table from <a class="reference internal" href="#_m_i_e_s___sampling_interval_8ipf_1a596724710e6e90adfba062af1fd66466"><span class="std std-ref">SI_CreateLookupWave</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv411SI_SortWave4wave">
+<span id="_CPPv311SI_SortWave4wave"></span><span id="_CPPv211SI_SortWave4wave"></span><span id="SI_SortWave__wave"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a79e2d2b48409328779adfef4a2c83751"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SI_SortWave</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">wv</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411SI_SortWave4wave" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Sort the lookup wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425SI_FindMatchingTableEntry4waveP14ActiveChannels">
+<span id="_CPPv325SI_FindMatchingTableEntry4waveP14ActiveChannels"></span><span id="_CPPv225SI_FindMatchingTableEntry4waveP14ActiveChannels"></span><span id="SI_FindMatchingTableEntry__wave.ActiveChannelsP"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a0b3883185db0beca6e76a869ac0272a5"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SI_FindMatchingTableEntry</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">wv</span></em>, <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_CPPv414ActiveChannels" title="ActiveChannels"><span class="pre">ActiveChannels</span></a> <span class="pre">*</span><em><span class="pre">ac</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SI_FindMatchingTableEntry4waveP14ActiveChannels" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Search the given active channel combination in the lookup wave. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv425SI_LoadMinSampIntFromDisk6string">
+<span id="_CPPv325SI_LoadMinSampIntFromDisk6string"></span><span id="_CPPv225SI_LoadMinSampIntFromDisk6string"></span><span id="SI_LoadMinSampIntFromDisk__string"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a2fbe61947de02cee97d3714292a68148"></span><em class="property"><span class="pre">static</span></em> <span class="pre">wave</span> <code class="sig-name descname"><span class="pre">SI_LoadMinSampIntFromDisk</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">deviceType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425SI_LoadMinSampIntFromDisk6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Try to load the lookup wave for the minimum sampling interval from disk for the given deviceType. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>a lookup wave or an invalid wave ref if it could not be loaded from disk </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv424SI_StoreMinSampIntOnDisk4wave6string">
+<span id="_CPPv324SI_StoreMinSampIntOnDisk4wave6string"></span><span id="_CPPv224SI_StoreMinSampIntOnDisk4wave6string"></span><span id="SI_StoreMinSampIntOnDisk__wave.string"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a6ed8e8dba1034c546186ef07317cc3fc"></span><span class="pre">wave</span> <code class="sig-name descname"><span class="pre">SI_StoreMinSampIntOnDisk</span></code><span class="sig-paren">(</span><span class="pre">wave</span> <em><span class="pre">wv</span></em>, <span class="pre">string</span> <em><span class="pre">deviceType</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424SI_StoreMinSampIntOnDisk4wave6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Store the lookup wave on disc. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427SI_FillActiveChannelsStruct6stringP14ActiveChannels">
+<span id="_CPPv327SI_FillActiveChannelsStruct6stringP14ActiveChannels"></span><span id="_CPPv227SI_FillActiveChannelsStruct6stringP14ActiveChannels"></span><span id="SI_FillActiveChannelsStruct__string.ActiveChannelsP"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1adf41c6e22f8f5e38276ca03c951034a2"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SI_FillActiveChannelsStruct</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_CPPv414ActiveChannels" title="ActiveChannels"><span class="pre">ActiveChannels</span></a> <span class="pre">*</span><em><span class="pre">ac</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SI_FillActiveChannelsStruct6stringP14ActiveChannels" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Query the DA_EPhys panel for the active channels and fill it in the passed structure. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>number of active channels </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv419SI_CreateLookupWave6string8variable">
+<span id="_CPPv319SI_CreateLookupWave6string8variable"></span><span id="_CPPv219SI_CreateLookupWave6string8variable"></span><span id="SI_CreateLookupWave__string.variable"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a596724710e6e90adfba062af1fd66466"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SI_CreateLookupWave</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">ignoreChannelOrder</span></em> <span class="pre">=</span> <span class="pre">defaultValue</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419SI_CreateLookupWave6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv414SI_TestSampInt6string">
+<span id="_CPPv314SI_TestSampInt6string"></span><span id="_CPPv214SI_TestSampInt6string"></span><span id="SI_TestSampInt__string"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a4c4a4798302e99f54dde684eeb118fdf"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SI_TestSampInt</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414SI_TestSampInt6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv427SI_CalculateMinSampInterval6string8variable">
+<span id="_CPPv327SI_CalculateMinSampInterval6string8variable"></span><span id="_CPPv227SI_CalculateMinSampInterval6string8variable"></span><span id="SI_CalculateMinSampInterval__string.variable"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a62dbc0ac485925190de7f95f9aede566"></span><span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SI_CalculateMinSampInterval</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">dataAcqOrTP</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427SI_CalculateMinSampInterval6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calculate the minimum sampling interval. </p>
+<p><dl class="simple">
+<dt><strong>Return</strong></dt><dd><p>sampling interval in microseconds (1e-6) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dataAcqOrTP</span></code>: one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a>, ignores TTL channels for <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv430SI_NI_CalculateMinSampInterval6string">
+<span id="_CPPv330SI_NI_CalculateMinSampInterval6string"></span><span id="_CPPv230SI_NI_CalculateMinSampInterval6string"></span><span id="SI_NI_CalculateMinSampInterval__string"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a4fc7faccf4f321356ce4c1a5a5cf22d6"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SI_NI_CalculateMinSampInterval</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430SI_NI_CalculateMinSampInterval6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calculate the minimum sampling interval for NI hardware. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#_m_i_e_s___sampling_interval_8ipf_1a62dbc0ac485925190de7f95f9aede566"><span class="std std-ref">SI_CalculateMinSampInterval</span></a></p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>sampling interval in microseconds (1e-6) </p>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv431SI_ITC_CalculateMinSampInterval6string8variable">
+<span id="_CPPv331SI_ITC_CalculateMinSampInterval6string8variable"></span><span id="_CPPv231SI_ITC_CalculateMinSampInterval6string8variable"></span><span id="SI_ITC_CalculateMinSampInterval__string.variable"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a30c4ff2f1c875eb06ad4b7a8beaa3437"></span><em class="property"><span class="pre">static</span></em> <span class="pre">variable</span> <code class="sig-name descname"><span class="pre">SI_ITC_CalculateMinSampInterval</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em>, <span class="pre">variable</span> <em><span class="pre">dataAcqOrTP</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv431SI_ITC_CalculateMinSampInterval6string8variable" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Calculate the minimum sampling interval for ITC hardware using the lookup waves on disk. </p>
+<p><dl class="simple">
+<dt><strong>See</strong></dt><dd><p><a class="reference internal" href="#_m_i_e_s___sampling_interval_8ipf_1a62dbc0ac485925190de7f95f9aede566"><span class="std std-ref">SI_CalculateMinSampInterval</span></a></p>
+</dd>
+<dt><strong>Return</strong></dt><dd><p>sampling interval in microseconds (1e-6) </p>
+</dd>
+<dt><strong>Parameters</strong></dt><dd><ul class="breatheparameterlist simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">panelTitle</span></code>: device </p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dataAcqOrTP</span></code>: one of <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1DataAcqModes"><span class="std std-ref">DataAcqModes</span></a>, ignores TTL channels for <a class="reference internal" href="_m_i_e_s___constants_8ipf.html#_m_i_e_s___constants_8ipf_1a4dfcf26896909fd52c0a4f48e7f64151"><span class="std std-ref">TEST_PULSE_MODE</span></a></p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt id="_CPPv420SI_GetMinSampIntWave6string">
+<span id="_CPPv320SI_GetMinSampIntWave6string"></span><span id="_CPPv220SI_GetMinSampIntWave6string"></span><span id="SI_GetMinSampIntWave__string"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1a6410b89d89a89aede16e0d56e98dd9d5"></span><em class="property"><span class="pre">static</span></em> <span class="pre">wave</span> <code class="sig-name descname"><span class="pre">SI_GetMinSampIntWave</span></code><span class="sig-paren">(</span><span class="pre">string</span> <em><span class="pre">panelTitle</span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420SI_GetMinSampIntWave6string" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>Return a wave ref with the lookup wave for the sampling interval. </p>
+<p>This functions tries to load the wave from disk on the first call so this function might take a while to execute. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric">Variables</p>
+<dl class="cpp var">
+<dt id="_CPPv423MIN_CONSECUTIVE_SAMPINT">
+<span id="_CPPv323MIN_CONSECUTIVE_SAMPINT"></span><span id="_CPPv223MIN_CONSECUTIVE_SAMPINT"></span><span id="MIN_CONSECUTIVE_SAMPINT__doubleC"></span><span class="target" id="_m_i_e_s___sampling_interval_8ipf_1ab24bcd5a617af012a88b835c06ddc7ba"></span><em class="property"><span class="pre">static</span></em> <em class="property"><span class="pre">const</span></em> <span class="pre">double</span> <code class="sig-name descname"><span class="pre">MIN_CONSECUTIVE_SAMPINT</span></code> <span class="pre">=</span> <span class="pre">6</span><a class="headerlink" href="#_CPPv423MIN_CONSECUTIVE_SAMPINT" title="Permalink to this definition">¶</a><br /></dt>
+<dd><p>The consecutive check in <a class="reference internal" href="#_m_i_e_s___sampling_interval_8ipf_1a4c4a4798302e99f54dde684eeb118fdf"><span class="std std-ref">SI_TestSampInt</span></a> enforces not only one sucessfull sampling interval but also the multiples 2^x where x ranges from 1 to MIN_CONSECUTIVE_SAMPINT Set to 0 to deactivate </p>
+</dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user.html">User documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grouplist.html">Group list</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../filelist.html">File list</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_8ipf.html">File CompilationTester.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_compilation_tester_utils_8ipf.html">File CompilationTesterUtils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_d_r___m_i_e_s___tango_interact_8ipf.html">File DR_MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___constants_8ipf.html">File IPNWB_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___debugging_8ipf.html">File IPNWB_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___h_d_f5_helpers_8ipf.html">File IPNWB_HDF5Helpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___include_8ipf.html">File IPNWB_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___reader_8ipf.html">File IPNWB_Reader.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___structures_8ipf.html">File IPNWB_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___utils_8ipf.html">File IPNWB_Utils.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_i_p_n_w_b___writer_8ipf.html">File IPNWB_Writer.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___amplifier_interaction_8ipf.html">File MIES_AmplifierInteraction.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser_8ipf.html">File MIES_AnalysisBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___lab_notebook_t_p_storage_browser_8ipf.html">File MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_browser___sweep_browser___export_8ipf.html">File MIES_AnalysisBrowser_SweepBrowser_Export.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_helpers_8ipf.html">File MIES_AnalysisFunctionHelpers.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_management_8ipf.html">File MIES_AnalysisFunctionManagement.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_function_prototypes_8ipf.html">File MIES_AnalysisFunctionPrototypes.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions_8ipf.html">File MIES_AnalysisFunctions.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___dashboard_8ipf.html">File MIES_AnalysisFunctions_Dashboard.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___multi_patch_seq___spike_control_8ipf.html">File MIES_AnalysisFunctions_MultiPatchSeq_SpikeControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___analysis_functions___patch_seq_8ipf.html">File MIES_AnalysisFunctions_PatchSeq.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___artefact_removal_8ipf.html">File MIES_ArtefactRemoval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___async_8ipf.html">File MIES_Async.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___asynchronous_data_8ipf.html">File MIES_AsynchronousData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___background_watchdog_8ipf.html">File MIES_BackgroundWatchdog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___blowout_8ipf.html">File MIES_Blowout.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___browser_settings_panel_8ipf.html">File MIES_BrowserSettingsPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___cache_8ipf.html">File MIES_Cache.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___check_installation_8ipf.html">File MIES_CheckInstallation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___configuration_8ipf.html">File MIES_Configuration.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___constants_8ipf.html">File MIES_Constants.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_c-_hardware_8ipf.html">File MIES_DAC-Hardware.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys_8ipf.html">File MIES_DAEphys.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___gui_state_8ipf.html">File MIES_DAEphys_GuiState.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___d_a_ephys___macro_8ipf.html">File MIES_DAEphys_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition_8ipf.html">File MIES_DataAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___multi_8ipf.html">File MIES_DataAcquisition_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_acquisition___single_8ipf.html">File MIES_DataAcquisition_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser_8ipf.html">File MIES_DataBrowser.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_browser___macro_8ipf.html">File MIES_DataBrowser_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___data_configurator_8ipf.html">File MIES_DataConfigurator.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debug_panel_8ipf.html">File MIES_DebugPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___debugging_8ipf.html">File MIES_Debugging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___downsample_8ipf.html">File MIES_Downsample.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___enhanced_w_m_routines_8ipf.html">File MIES_EnhancedWMRoutines.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___experiment_documentation_8ipf.html">File MIES_ExperimentDocumentation.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___foreign_function_interface_8ipf.html">File MIES_ForeignFunctionInterface.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___global_string_and_variable_access_8ipf.html">File MIES_GlobalStringAndVariableAccess.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_popup_menu_ext_8ipf.html">File MIES_GuiPopupMenuExt.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___gui_utilities_8ipf.html">File MIES_GuiUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___h_d_f5_ops_8ipf.html">File MIES_HDF5Ops.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___i_v_s_c_c_8ipf.html">File MIES_IVSCC.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___igor_hooks_8ipf.html">File MIES_IgorHooks.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___include_8ipf.html">File MIES_Include.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___indexing_8ipf.html">File MIES_Indexing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___input_dialog_8ipf.html">File MIES_InputDialog.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___labnotebook_8ipf.html">File MIES_Labnotebook.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mass_experiment_processing_8ipf.html">File MIES_MassExperimentProcessing.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___menu_8ipf.html">File MIES_Menu.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___mies_utilities_8ipf.html">File MIES_MiesUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___neuro_data_without_borders_8ipf.html">File MIES_NeuroDataWithoutBorders.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___optimzed_overlap_distributed_acquisition_8ipf.html">File MIES_OptimzedOverlapDistributedAcquisition.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___oscilloscope_8ipf.html">File MIES_Oscilloscope.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___overlay_sweeps_8ipf.html">File MIES_OverlaySweeps.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___package_settings_8ipf.html">File MIES_PackageSettings.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pictures_8ipf.html">File MIES_Pictures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pressure_control_8ipf.html">File MIES_PressureControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___programmatic_g_u_i_control_8ipf.html">File MIES_ProgrammaticGUIControl.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___pulse_averaging_8ipf.html">File MIES_PulseAveraging.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___regenerate-_screenshots_8ipf.html">File MIES_Regenerate-Screenshots.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___repeated_acquisition_8ipf.html">File MIES_RepeatedAcquisition.ipf</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">File MIES_SamplingInterval.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___structures_8ipf.html">File MIES_Structures.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_formula_8ipf.html">File MIES_SweepFormula.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___sweep_saving_8ipf.html">File MIES_SweepSaving.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___tango_interact_8ipf.html">File MIES_TangoInteract.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse_8ipf.html">File MIES_TestPulse.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___multi_8ipf.html">File MIES_TestPulse_Multi.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___test_pulse___single_8ipf.html">File MIES_TestPulse_Single.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threaded_f_i_f_o_handling_8ipf.html">File MIES_ThreadedFIFOHandling.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___threadsafe_utilities_8ipf.html">File MIES_ThreadsafeUtilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___trace_user_data_8ipf.html">File MIES_TraceUserData.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___utilities_8ipf.html">File MIES_Utilities.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_8ipf.html">File MIES_WaveBuilder.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder___macro_8ipf.html">File MIES_WaveBuilder_Macro.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_builder_panel_8ipf.html">File MIES_WaveBuilderPanel.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_m_i_e_s___wave_data_folder_getters_8ipf.html">File MIES_WaveDataFolderGetters.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="_zero_m_q___interop_8ipf.html">File ZeroMQ_Interop.ipf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="interface_8h.html">File interface.h</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="_m_i_e_s___repeated_acquisition_8ipf.html"
+                        title="previous chapter">File MIES_RepeatedAcquisition.ipf</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="_m_i_e_s___structures_8ipf.html"
+                        title="next chapter">File MIES_Structures.ipf</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="_m_i_e_s___structures_8ipf.html" title="File MIES_Structures.ipf"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="_m_i_e_s___repeated_acquisition_8ipf.html" title="File MIES_RepeatedAcquisition.ipf"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../filelist.html" >File list</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File MIES_SamplingInterval.ipf</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>

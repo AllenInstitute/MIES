@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Installation instructions &#8212; MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxcontrib-images/LightBox2/lightbox2/css/lightbox.css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/jquery-1.11.0.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2/js/lightbox.min.js"></script>
+    <script src="_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
+    
+    <script src="_static/sidebar.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Developer" href="developers.html" />
+    <link rel="prev" title="Da_Ephys" href="daephys.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="developers.html" title="Developer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="daephys.html" title="Da_Ephys"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Installation instructions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installation-instructions">
+<h1>Installation instructions<a class="headerlink" href="#installation-instructions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installing-igor-pro">
+<h2>Installing Igor Pro<a class="headerlink" href="#installing-igor-pro" title="Permalink to this headline">¶</a></h2>
+<p>Requirements: Windows 10 64bit</p>
+<ul class="simple">
+<li><p>Install <a class="reference external" href="https://www.wavemetrics.com/downloads/current">Igor Pro</a></p></li>
+</ul>
+</div>
+<div class="section" id="igor-pro-update-nightly">
+<h2>Igor Pro Update Nightly<a class="headerlink" href="#igor-pro-update-nightly" title="Permalink to this headline">¶</a></h2>
+<p>We rely on a fixed intermediate Igor Pro version. This is not available as
+installer package but only as zip file.</p>
+<div class="section" id="update-steps">
+<h3>Update steps<a class="headerlink" href="#update-steps" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>When you open a new MIES version you might get the following message in the history:</p>
+<blockquote>
+<div><div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Your Igor Pro version is too old to be usable for MIES.
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<p>and a dialog appears with a button which opens this documentation.</p>
+<p>In that case please perform the following steps:</p>
+<ul class="simple">
+<li><p>Download the zip package for <a class="reference external" href="https://www.byte-physics.de/Downloads/WinIgor8_06MAY2020.zip">Igor Pro 8</a> or <a class="reference external" href="https://www.byte-physics.de/Downloads/WinIgor9_02FEB2021.zip">Igor Pro 9</a>. Either
+from the within Igor Pro or from the browser.</p></li>
+<li><p>Close Igor Pro</p></li>
+<li><p>Replace the folders <code class="docutils literal notranslate"><span class="pre">IgorBinaries_x64</span></code> and
+<code class="docutils literal notranslate"><span class="pre">IgorBinaries_Win32</span></code> in <code class="docutils literal notranslate"><span class="pre">C:\Program</span> <span class="pre">Files\WaveMetrics\Igor</span> <span class="pre">Pro</span> <span class="pre">8/9</span></code> with the
+ones from the downloaded zip package. This requires admin access.</p></li>
+<li><p>Restart Igor Pro</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="installation-using-the-installer-preferred">
+<h2>Installation using the installer (preferred)<a class="headerlink" href="#installation-using-the-installer-preferred" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Install MIES via the installer from <a class="reference external" href="https://github.com/AllenInstitute/MIES/releases/tag/latest">here</a></p></li>
+</ul>
+</div>
+<div class="section" id="manual-installation">
+<h2>Manual Installation<a class="headerlink" href="#manual-installation" title="Permalink to this headline">¶</a></h2>
+<p>The manual installation instructions are here for
+historical/compatibility reasons. Whenever possible users should install
+via the Installer package.</p>
+<p>Install the <a class="reference external" href="https://www.microsoft.com/en-us/download/details.aspx?id=48145">Visual C++ Redistributable for Visual Studio
+2015</a>
+packages both for 32bit(x86) and 64bit(x64) in English.</p>
+<div class="section" id="igor-pro-8">
+<h3>Igor Pro 8<a class="headerlink" href="#igor-pro-8" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Quit Igor Pro</p></li>
+<li><p>Create the following shortcuts in
+<code class="docutils literal notranslate"><span class="pre">C:\Users\$username\Documents\WaveMetrics\Igor</span> <span class="pre">Pro</span> <span class="pre">8</span> <span class="pre">User</span> <span class="pre">Files</span></code></p>
+<ul>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code> a shortcut pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages\Arduino</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages\IPNWB</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages\MIES</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code> a shortcut pointing to
+PackagesMIES_Include.ipf</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Extensions</span> <span class="pre">(64-bit)</span></code> a shortcut pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-IP8-64bit</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Extensions</span></code> a shortcut pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-IP8</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Help</span> <span class="pre">Files</span></code> a shortcut pointing to HelpFiles-IP8</p></li>
+</ul>
+</li>
+<li><p>Start Igor Pro</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="manual-installation-without-hardware-dependencies-xops">
+<h2>Manual Installation without hardware dependencies/XOPs<a class="headerlink" href="#manual-installation-without-hardware-dependencies-xops" title="Permalink to this headline">¶</a></h2>
+<p>In case you don’t have the hardware connected/available a certain XOP
+requires you can also install MIES without any hardware related XOPs
+present.</p>
+<ul class="simple">
+<li><p>Quit Igor Pro</p></li>
+<li><p>Create the following shortcuts in
+<code class="docutils literal notranslate"><span class="pre">C:\Users\$username\Documents\WaveMetrics\Igor</span> <span class="pre">Pro</span> <span class="pre">8</span> <span class="pre">User</span> <span class="pre">Files</span></code></p>
+<ul>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">User</span> <span class="pre">Procedures</span></code> a shortcut pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages\Arduino</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages\IPNWB</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Packages\MIES</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Procedures</span></code> a shortcut pointing to
+<code class="docutils literal notranslate"><span class="pre">Packages\MIES_Include.ipf</span></code></p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Extensions</span> <span class="pre">(64-bit)</span></code> a shortcut pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-IP8-64bit\HDF5-64.xop</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Extensions</span></code> a shortcut pointing to</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">XOPs-IP8\HDF5.xop</span></code></p></li>
+</ul>
+</li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">Igor</span> <span class="pre">Help</span> <span class="pre">Files</span></code> a shortcut pointing to HelpFiles-IP8</p></li>
+</ul>
+</li>
+<li><p>Start Igor Pro</p></li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="user.html">User documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation instructions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-igor-pro">Installing Igor Pro</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#igor-pro-update-nightly">Igor Pro Update Nightly</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#update-steps">Update steps</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-using-the-installer-preferred">Installation using the installer (preferred)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#manual-installation">Manual Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#igor-pro-8">Igor Pro 8</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#manual-installation-without-hardware-dependencies-xops">Manual Installation without hardware dependencies/XOPs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reportingbugs.html">Bug reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasenotes.html">Release notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grouplist.html">Group list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filelist.html">File list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structlist.html">Struct list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="namespacelist.html">Namespace list</a></li>
+<li class="toctree-l1"><a class="reference internal" href="todo.html">Todos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deprecated.html">Deprecations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalculateTPLikePropsFromSweep.html">CalculateTPLikePropsFromSweep Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SweepFormula.html">The Sweep Formula Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IPNWB/index.html">Igor Pro module for reading and writing NeurodataWithoutBorder files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TPAnalysis_algorithm.html">Testpulse Analysis Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="asyncframework.html">Async Framework</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ZeroMQ-XOP-Readme.html">ZeroMQ XOP</a></li>
+<li class="toctree-l1"><a class="reference internal" href="labnotebook-docs.html">Labnotebook documentation for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epoch_information.html">Epoch Information</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mies-concepts.html">Important MIES concepts for developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="daq-details.html">DAQ details</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="daephys.html"
+                        title="previous chapter">Da_Ephys</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="developers.html"
+                        title="next chapter">Developer</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="developers.html" title="Developer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="daephys.html" title="Da_Ephys"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">MIES Igor (main) Release_2.1_20200723-945-g4e27a436 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Installation instructions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright .
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.5.1.
+    </div>
+  </body>
+</html>
