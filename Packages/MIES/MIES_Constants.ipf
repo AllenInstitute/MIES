@@ -1398,3 +1398,5 @@ StrConstant TP_PROPERTIES_HASH = "TestPulsePropertiesHash"
 StrConstant DASHBOARD_PASSING_MESSAGE = "Pass"
 
 Constant MAX_DOUBLE_PRECISION = 15
+
+StrConstant PACKAGE_MIES = "MIES"
