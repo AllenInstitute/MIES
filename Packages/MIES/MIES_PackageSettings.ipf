@@ -55,10 +55,19 @@ Function PS_WriteSettings(package, JSONid)
 End
 
 /// @brief Return the absolute path to the settings folder for `package`
+///        creating it when necessary.
 static Function/S PS_GetSettingsFolder(package)
 	string package
 
-	return SpecialDirPath("Igor Preferences", 0, 0, 1) + "Packages:" + CleanupName(package, 0)
+	string folder
+
+	folder = SpecialDirPath("Igor Preferences", 0, 0, 1) + "Packages:" + CleanupName(package, 0)
+
+	if(!FolderExists(folder))
+		CreateFolderOnDisk(folder)
+	endif
+
+	return folder
 End
 
 /// @brief Return the absolute path to the JSON settings file for `package`
@@ -68,10 +77,6 @@ static Function/S PS_GetSettingsFile(package)
 	string folder
 
 	folder = PS_GetSettingsFolder(package)
-
-	if(!FolderExists(folder))
-		CreateFolderOnDisk(folder)
-	endif
 
 	return folder + ":Settings.json"
 End
