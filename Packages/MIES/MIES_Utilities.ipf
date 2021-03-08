@@ -5596,7 +5596,7 @@ End
 ///
 /// From https://www.wavemetrics.com/code-snippet/binary-search-pre-sorted-text-waves by Jamie Boyd
 /// Completely reworked, fixed and removed unused features
-Function BinarySearchText(WAVE/T theWave, string theText, [variable caseSensitive, variable startPos, variable endPos])
+threadsafe Function BinarySearchText(WAVE/T theWave, string theText, [variable caseSensitive, variable startPos, variable endPos])
 	variable iPos // the point to be compared
 	variable theCmp // the result of the comparison
 	variable firstPt
@@ -5612,6 +5612,12 @@ Function BinarySearchText(WAVE/T theWave, string theText, [variable caseSensitiv
 	if(numRows == 0)
 		// always no match
 		return NaN
+	endif
+
+	if(ParamIsDefault(caseSensitive))
+		caseSensitive = 0
+	else
+		caseSensitive = !!caseSensitive
 	endif
 
 	if(ParamIsDefault(startPos))
@@ -5633,10 +5639,10 @@ Function BinarySearchText(WAVE/T theWave, string theText, [variable caseSensitiv
 
 	for(i = 0; firstPt <= lastPt; i +=1)
 		iPos = trunc((firstPt + lastPt) / 2)
-		theCmp = cmpstr(thetext, theWave[iPos])
+		theCmp = cmpstr(thetext, theWave[iPos], caseSensitive)
 
 		if(theCmp ==0) //thetext is the same as theWave [iPos]
-			if((iPos == startPos) || (cmpstr(theText, theWave[iPos -1]) == 1))
+			if((iPos == startPos) || (cmpstr(theText, theWave[iPos -1], caseSensitive) == 1))
 				// then iPos is the first occurence of thetext in theWave from startPos to endPos
 				return iPos
 			else //  there are more copies of theText in theWave before iPos
