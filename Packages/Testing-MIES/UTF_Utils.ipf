@@ -4803,6 +4803,9 @@ Function BST_Works()
 
 	Make/T/FREE wv = {"a", "b", "c"}
 	CHECK_EQUAL_VAR(BinarySearchText(wv, "c"), 2)
+
+	Make/T/FREE wv = {"B", "a", "b"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "B", caseSensitive = 1), 0)
 End
 
 /// @}
