@@ -4711,3 +4711,98 @@ Function ZN_RemovesNaNs()
 	CHECK_EQUAL_WAVES(reduced, {inf, 1})
 End
 /// @}
+
+// BinarySearchText
+/// @{
+
+Function BST_ErrorChecking()
+
+	try
+		Make/FREE/D wvDouble
+		WAVE/T wv = wvDouble
+		BinarySearchText(wv, "a"); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T/N=(2, 2) wv
+		BinarySearchText(wv, "a"); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a"}
+		BinarySearchText(wv, "a", startPos = -1, endPos = 0); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a"}
+		BinarySearchText(wv, "a", startPos = 0, endPos = -1); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a"}
+		BinarySearchText(wv, "a", startPos = NaN, endPos = 0); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a"}
+		BinarySearchText(wv, "a", startPos = 0, endPos = NaN); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a"}
+		BinarySearchText(wv, "a", startPos = 1, endPos = 2); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a", "a"}
+		BinarySearchText(wv, "a", startPos = 1, endPos = 0); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function BST_Works()
+
+	Make/T/FREE/N=0 wv
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "a"), NaN) // no match by definition
+
+	Make/T/FREE wv = {"a"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "a"), 0)
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "a", startPos = 0, endPos = 0), 0)
+
+	Make/T/FREE wv = {"a", "a", "a"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "a"), 0)
+
+	Make/T/FREE wv = {"a", "a", "a"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "A"), 0) // matches case insensitive
+
+	Make/T/FREE wv = {"a", "a", "a"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "b"), NaN) // no match
+
+	Make/T/FREE wv = {"a", "b", "c"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "c"), 2)
+End
+
+/// @}
