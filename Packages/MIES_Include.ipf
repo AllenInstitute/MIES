@@ -191,6 +191,7 @@ End
 #include "MIES_InputDialog"
 #include "MIES_IVSCC"
 #include "MIES_Labnotebook"
+#include "MIES_Logging"
 #include "MIES_Menu"
 #include "MIES_MiesUtilities"
 #include "MIES_NeuroDataWithoutBorders"
