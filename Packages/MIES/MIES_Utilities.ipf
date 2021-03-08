@@ -3624,6 +3624,7 @@ End
 /// Given {1, 2, 4, 10} and {2, 5, 11} this will return {2}.
 ///
 /// Inspired by http://www.igorexchange.com/node/366 but adapted to modern Igor Pro
+/// It does work with text waves as well, there it performs case sensitive comparions
 ///
 /// @return free wave with the set intersection or an invalid wave reference
 /// if the intersection is an empty set
@@ -3634,6 +3635,10 @@ Function/WAVE GetSetIntersection(wave1, wave2)
 	variable type, wave1Rows, wave2Rows
 	variable longRows, shortRows, entry
 	variable i, j, longWaveRow
+	string strEntry
+
+	ASSERT((IsNumericWave(wave1) && IsNumericWave(wave2))                   \
+	       || (IsTextWave(wave1) && IsTextWave(wave2)), "Invalid wave type")
 
 	type = WaveType(wave1)
 	ASSERT(type == WaveType(wave2), "Wave type mismatch")
@@ -3661,17 +3666,29 @@ Function/WAVE GetSetIntersection(wave1, wave2)
 	endif
 
 	// Sort values in longWave
-	Sort longWave, longWave
+	Sort/C longWave, longWave
 	Make/FREE/N=(shortRows)/Y=(type) resultWave
 
-	for(i = 0; i < shortRows; i += 1)
-		entry = shortWave[i]
-		longWaveRow = BinarySearch(longWave, entry)
-		if(longWaveRow >= 0 && longWave[longWaveRow] == entry)
-			resultWave[j] = entry
-			j += 1
-		endif
-	endfor
+	if(type == 0)
+		WAVE/T shortWaveText = shortWave
+		WAVE/T longWaveText  = longWave
+		WAVE/T resultWaveText = resultWave
+		for(i = 0; i < shortRows; i += 1)
+			strEntry = shortWaveText[i]
+			longWaveRow = BinarySearchText(longWave, strEntry, caseSensitive = 1)
+			if(longWaveRow >= 0 && !cmpstr(longWaveText[longWaveRow], strEntry))
+				resultWaveText[j++] = strEntry
+			endif
+		endfor
+	else
+		for(i = 0; i < shortRows; i += 1)
+			entry = shortWave[i]
+			longWaveRow = BinarySearch(longWave, entry)
+			if(longWaveRow >= 0 && longWave[longWaveRow] == entry)
+				resultWave[j++] = entry
+			endif
+		endfor
+	endif
 
 	if(j == 0)
 		return $""
