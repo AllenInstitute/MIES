@@ -4759,6 +4759,8 @@ Function DAP_LockDevice(string win)
 		// of columns when we have no rows
 		// we kill the wave here so that it is recreated properly
 		KillOrMoveToTrash(wv = GetDQMActiveDeviceList())
+
+		LOG_AddEntry(PACKAGE_MIES, "locking", keys = {"version"}, values = {StringFromList(0, miesVersion, "\r")})
 	endif
 
 	WAVE deviceInfo = GetDeviceInfoWave(panelTitleLocked)
