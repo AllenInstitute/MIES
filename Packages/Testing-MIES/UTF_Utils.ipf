@@ -420,7 +420,7 @@ End
 
 /// GetSetIntersection
 /// @{
-Function ExpectsSameWaveType()
+Function GSI_ExpectsSameWaveType()
 
 	Make/Free/D data1
 	Make/Free/R data2
@@ -433,7 +433,7 @@ Function ExpectsSameWaveType()
 	endtry
 End
 
-Function Works1()
+Function GSI_Works()
 
 	Make/Free data1 = {1, 2, 3, 4}
 	Make/Free data2 = {4, 5, 6}
@@ -442,7 +442,7 @@ Function Works1()
 	CHECK_EQUAL_WAVES(matches, {4})
 End
 
-Function ReturnsCorrectType()
+Function GSI_ReturnsCorrectType()
 
 	Make/Free/D data1
 	Make/Free/D data2
@@ -451,7 +451,7 @@ Function ReturnsCorrectType()
 	CHECK_EQUAL_WAVES(data1, matches)
 End
 
-Function WorksWithTheSameWaves()
+Function GSI_WorksWithTheSameWaves()
 
 	Make/Free/D data = p
 
@@ -460,7 +460,7 @@ Function WorksWithTheSameWaves()
 	CHECK(!WaveRefsEqual(data, matches))
 End
 
-Function ReturnsInvalidWaveRefWOMatches1()
+Function GSI_ReturnsInvalidWaveRefWOMatches1()
 
 	Make/Free/D/N=0 data1
 	Make/Free/D data2
@@ -469,7 +469,7 @@ Function ReturnsInvalidWaveRefWOMatches1()
 	CHECK_WAVE(matches, NULL_WAVE)
 End
 
-Function ReturnsInvalidWaveRefWOMatches2()
+Function GSI_ReturnsInvalidWaveRefWOMatches2()
 
 	Make/Free/D data1
 	Make/Free/D/N=0 data2
@@ -478,7 +478,7 @@ Function ReturnsInvalidWaveRefWOMatches2()
 	CHECK_WAVE(matches, NULL_WAVE)
 End
 
-Function ReturnsInvalidWaveRefWOMatches3()
+Function GSI_ReturnsInvalidWaveRefWOMatches3()
 
 	Make/Free/D data1 = p
 	Make/Free/D data2 = -1
