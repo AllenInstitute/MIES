@@ -5591,3 +5591,63 @@ Function/WAVE ZapNaNs(WAVE data)
 
 	return dup
 End
+
+/// @brief Finds the first occurrence of a text within a range of points in a SORTED text wave
+///
+/// From https://www.wavemetrics.com/code-snippet/binary-search-pre-sorted-text-waves by Jamie Boyd
+/// Completely reworked, fixed and removed unused features
+Function BinarySearchText(WAVE/T theWave, string theText, [variable caseSensitive, variable startPos, variable endPos])
+	variable iPos // the point to be compared
+	variable theCmp // the result of the comparison
+	variable firstPt
+	variable lastPt
+	variable i
+	variable numRows
+
+	numRows = DimSize(theWave, ROWS)
+
+	ASSERT_TS(DimSize(theWave, COLS) <= 1, "Only works with 1D waves")
+	ASSERT_TS(IsTextWave(theWave), "Only works with text waves")
+
+	if(numRows == 0)
+		// always no match
+		return NaN
+	endif
+
+	if(ParamIsDefault(startPos))
+		startPos = 0
+	else
+		ASSERT_TS(startPos >= 0 && startPos < numRows, "Invalid startPos")
+	endif
+
+	if(ParamIsDefault(endPos))
+		endPos = numRows - 1
+	else
+		ASSERT_TS(endPos >= 0 && endPos < numRows, "Invalid endPos")
+	endif
+
+	ASSERT_TS(startPos <= endPos, "startPos is larger than endPos")
+
+	firstPt = startPos
+	lastPt  = endPos
+
+	for(i = 0; firstPt <= lastPt; i +=1)
+		iPos = trunc((firstPt + lastPt) / 2)
+		theCmp = cmpstr(thetext, theWave[iPos])
+
+		if(theCmp ==0) //thetext is the same as theWave [iPos]
+			if((iPos == startPos) || (cmpstr(theText, theWave[iPos -1]) == 1))
+				// then iPos is the first occurence of thetext in theWave from startPos to endPos
+				return iPos
+			else //  there are more copies of theText in theWave before iPos
+				lastPt = iPos-1
+			endif
+		elseif (theCmp == 1) //thetext is alphabetically after theWave [iPos]
+			firstPt = iPos +1
+		else // thetext is alphabetically before theWave [iPos]
+			lastPt = iPos -1
+		endif
+	endfor
+
+	return NaN
+end
