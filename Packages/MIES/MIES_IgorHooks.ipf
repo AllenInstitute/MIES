@@ -74,7 +74,7 @@ End
 static Function IH_SerializeSettings()
 	NVAR JSONid = $GetSettingsJSONid()
 
-	PS_SerializeSettings("MIES", JSONid)
+	PS_SerializeSettings(PACKAGE_MIES, JSONid)
 
 	JSONid = NaN
 End

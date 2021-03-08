@@ -200,12 +200,12 @@ Function MEN_ClearPackageSettings()
 	JSON_Release(JSONId)
 
 	JSONid = GenerateSettingsDefaults()
-	PS_WriteSettings("MIES", JSONid)
+	PS_WriteSettings(PACKAGE_MIES, JSONid)
 	JSON_Release(JSONId)
 End
 
 Function MEN_OpenPackageSettingsAsNotebook()
 	NVAR JSONid = $GetSettingsJSONid()
-	PS_OpenNotebook("MIES", JSONid)
+	PS_OpenNotebook(PACKAGE_MIES, JSONid)
 	JSONid = NaN
 End
