@@ -148,7 +148,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		ChangeWaveLock(DAQDataWave, 0)
 		ChangeWaveLock(scaledDataWave, 0)
 
-		sprintf msg, "Calling analysis function \"%s\" for event \"%s\" on headstage %d returned ret %d", func, StringFromList(eventType, EVENT_NAME_LIST), i, ret
+		sprintf msg, "Calling analysis function \"%s\" for event \"%s\" on headstage %d returned ret %g", func, StringFromList(eventType, EVENT_NAME_LIST), i, ret
 		DEBUGPRINT(msg)
 
 		if((eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT) && ret == 1)
