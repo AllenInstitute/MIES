@@ -442,6 +442,15 @@ Function GSI_Works()
 	CHECK_EQUAL_WAVES(matches, {4})
 End
 
+Function GSI_WorksText()
+
+	Make/Free/T data1 = {"a", "b", "c", "D"}
+	Make/Free/T data2 = {"c", "d", "e"}
+
+	WAVE/T/Z matches = GetSetIntersection(data1, data2)
+	CHECK_EQUAL_TEXTWAVES(matches, {"c"})
+End
+
 Function GSI_ReturnsCorrectType()
 
 	Make/Free/D data1
