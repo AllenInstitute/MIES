@@ -25,7 +25,6 @@ Menu "Mies Panels"
 		"Load Standard Configuration/1"        , /Q, CONF_AutoLoader()
 		"Load Window Configuration"            , /Q, CONF_RestoreWindow("", usePanelTypeFromFile = 1)
 		"Save Window Configuration"            , /Q, CONF_SaveWindow("")
-		"Open Configuration Files"             , /Q, CONF_OpenConfigInNotebook()
 		"Blowout/8"                            , /Q, BWO_SelectDevice()
 		"Save and Clear Experiment"            , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
 		"Close Mies"                           , /Q, MEN_CloseMies()
@@ -40,27 +39,32 @@ Menu "Mies Panels"
 		"Export all stimsets into NWB"         , /Q, NWB_ExportWithDialog(NWB_EXPORT_STIMSETS)
 		"Load Stimsets from NWB"               , /Q, NWB_LoadAllStimsets()
 	End
+	SubMenu "View Files"
+		"Configuration"                        , /Q, CONF_OpenConfigInNotebook()
+		"Package settings"                     , /Q, MEN_OpenPackageSettingsAsNotebook()
+	End
 	"-"
+	"Check Installation"                       , /Q, CHI_CheckInstallation()
 	"Report an issue"                          , /Q, MEN_CreateIssueOnGithub()
 	"About MIES"                               , /Q, MEN_OpenAboutDialog()
 	"-"
 	SubMenu "Advanced"
 		"Restart ZeroMQ Message Handler"           , /Q, StartZeroMQMessageHandler()
-		"Open package settings"                    , /Q, OpenPackageSettingsAsNotebook()
 		"Turn off ASLR (requires UAC elevation)"   , /Q, TurnOffASLR()
-		"Open debug panel"                         , /Q, DP_OpenDebugPanel()
-		"Check Installation"                       , /Q, CHI_CheckInstallation()
-		"Start Background Task watcher panel"      , /Q, MEN_OpenBackgroundWatcherPanel()
 		"Enable Independent Module editing"        , /Q, SetIgorOption IndependentModuleDev=1
-		"Reset and store current DA_EPHYS panel"   , /Q, DAP_EphysPanelStartUpSettings()
-		"Reset and store current DataBrowser panel", /Q, DB_ResetAndStoreCurrentDBPanel()
-		"Reset and store current Wavebuilder panel", /Q, WBP_StartupSettings()
-		"Check GUI control procedures of top panel", /Q, SearchForInvalidControlProcs(GetCurrentWindow())
 		"Flush Cache"                              , /Q, CA_FlushCache()
 		"Output Cache statistics"                  , /Q, CA_OutputCacheStatistics()
 		"Show Diagnostics (crash dumps) directory" , /Q, ShowDiagnosticsDirectory()
 		"Upload crash dumps"                       , /Q, UploadCrashDumps()
 		"Clear package settings"                   , /Q, MEN_ClearPackageSettings()
+		SubMenu "Panels"
+			"Reset and store DA_EPHYS"                  , /Q, DAP_EphysPanelStartUpSettings()
+			"Reset and store DataBrowser"               , /Q, DB_ResetAndStoreCurrentDBPanel()
+			"Reset and store Wavebuilder"               , /Q, WBP_StartupSettings()
+			"Check GUI control procedures of top panel" , /Q, SearchForInvalidControlProcs(GetCurrentWindow())
+			"Open debug panel"                          , /Q, DP_OpenDebugPanel()
+			"Start Background Task watcher panel"       , /Q, MEN_OpenBackgroundWatcherPanel()
+		End
 	End
 End
 
