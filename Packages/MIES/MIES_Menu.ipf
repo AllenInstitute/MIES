@@ -138,7 +138,7 @@ Function OpenAboutDialog()
 	NotebookAction/W=$nb name=Action5, title="", showmode=3, linkStyle=0, scaling={40.0 * sfactor, 40.0 * sfactor}, procPICTName=SynPhys, ignoreErrors=1, padding={0,0,0,0,5}, commands="BrowseURL(\"https://portal.brain-map.org/explore/connectivity/synaptic-physiology\")"
 	NotebookAction/W=$nb name=Action6, title="", showmode=3, linkStyle=0, scaling={40.0 * sfactor, 40.0 * sfactor}, procPICTName=CellTypes, ignoreErrors=1, padding={0,0,0,0,0}, commands="BrowseURL(\"http://celltypes.brain-map.org/\")"
 	SetActiveSubwindow ##
-EndMacro
+End
 
 Function ButtonProc_AboutMIESClose(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
