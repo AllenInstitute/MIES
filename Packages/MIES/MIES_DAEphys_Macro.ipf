@@ -11,7 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(1364,196,1867,1072)
+	NewPanel /K=1 /W=(81,486,584,1362)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,297.00},size={84.00,27.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -1241,15 +1241,6 @@ Window DA_Ephys() : Panel
 	SetVariable Unit_AsyncAD_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Unit_AsyncAD_07,userdata(ControlArray)=  "Unit_AsyncAD"
 	SetVariable Unit_AsyncAD_07,userdata(ControlArrayIndex)=  "7",value= _STR:""
-	CheckBox Check_Settings_Append,pos={33.00,466.00},size={145.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
-	CheckBox Check_Settings_Append,title="Enable async acquisition"
-	CheckBox Check_Settings_Append,help={"Enable querying and storing the asynchronous parameters in the labnotebook."}
-	CheckBox Check_Settings_Append,userdata(tabnum)=  "5"
-	CheckBox Check_Settings_Append,userdata(tabcontrol)=  "ADC"
-	CheckBox Check_Settings_Append,userdata(ResizeControlsInfo)= A"!!,Cl!!#CG!!#B-!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox Check_Settings_Append,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox Check_Settings_Append,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_Settings_Append,value= 0
 	CheckBox Check_Settings_BkgTP,pos={27.00,84.00},size={96.00,15.00},disable=3,proc=DAP_CheckProc_UpdateGuiState
 	CheckBox Check_Settings_BkgTP,title="Background TP"
 	CheckBox Check_Settings_BkgTP,help={"Perform testpulse in the background, keeping the GUI responsive."}
@@ -3327,7 +3318,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_AutoGainAndUnit,userdata(ResizeControlsInfo)= A"!!,I-J,hs\\J,hnY!!#>Jz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_Hardware_AutoGainAndUnit,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_Hardware_AutoGainAndUnit,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox Check_Settings_AlarmPauseAcq,pos={33.00,488.00},size={182.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
+	CheckBox Check_Settings_AlarmPauseAcq,pos={33.00,475.00},size={182.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
 	CheckBox Check_Settings_AlarmPauseAcq,title="\\JCPause acquisition in alarm state"
 	CheckBox Check_Settings_AlarmPauseAcq,help={"Pauses acquisition until user continues or cancels acquisition"}
 	CheckBox Check_Settings_AlarmPauseAcq,userdata(tabnum)=  "5"
@@ -3336,7 +3327,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_AlarmPauseAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_Settings_AlarmPauseAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_AlarmPauseAcq,fColor=(65280,43520,0),value= 0
-	CheckBox Check_Settings_AlarmAutoRepeat,pos={33.00,511.00},size={275.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
+	CheckBox Check_Settings_AlarmAutoRepeat,pos={33.00,498.00},size={275.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
 	CheckBox Check_Settings_AlarmAutoRepeat,title="Auto repeat last sweep until alarm state is cleared"
 	CheckBox Check_Settings_AlarmAutoRepeat,help={"Repeat the last sweep if one of the asynchronous channels is in alarm state"}
 	CheckBox Check_Settings_AlarmAutoRepeat,userdata(tabnum)=  "5"

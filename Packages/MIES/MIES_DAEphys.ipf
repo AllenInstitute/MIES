@@ -344,7 +344,6 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Unit_AsyncAD_06 WIN = $panelTitle,value= _STR:""
 	SetVariable Unit_AsyncAD_07 WIN = $panelTitle,value= _STR:""
 
-	CheckBox Check_Settings_Append WIN = $panelTitle,value= 0
 	CheckBox Radio_ClampMode_0 WIN = $panelTitle,value= 1,mode=1
 
 	// Sets MIES headstage to V-Clamp
