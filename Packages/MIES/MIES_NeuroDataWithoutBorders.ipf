@@ -480,6 +480,20 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	endif
 End
 
+/// @brief Return the file size in MiB of the currently written into NWB file
+///
+/// This is only approximately correct as the file is open in HDF5 and thus
+/// not everything is flushed.
+static Function NWB_GetExportedFileSize()
+	string filePathExport = ROStr(GetNWBFilePathExport())
+
+	if(IsEmpty(filePathExport))
+		return NaN
+	endif
+
+	return GetFileSize(filePathExport) / 1024 / 1024
+End
+
 Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 	variable nwbVersion
 	string overrideFilePath
