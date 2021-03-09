@@ -524,9 +524,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 		// AI_createDummySettingsWave(panelTitle, SweepNo)
 	endif
 
-	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_Append"))
-		ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
-	endif
+	ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 
 	// TP settings, especially useful if "global TP insertion" is active
 	ED_TPSettingsDocumentation(panelTitle, sweepCount, DATA_ACQUISITION_MODE)
@@ -564,6 +562,14 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	variable minSettingValue, maxSettingValue, step, i, scaledValue
 	variable redoLastSweep
 
+	ctrlTitle = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+	ctrlUnit  = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
+	WAVE statusAsync = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ASYNC)
+
+	if(IsConstant(statusAsync, 0))
+		return NaN
+	endif
+
 	Wave asyncSettingsWave = GetAsyncSettingsWave()
 	Wave/T asyncSettingsKey = GetAsyncSettingsKeyWave()
 
@@ -575,10 +581,6 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 
 	step = LABNOTEBOOK_LAYER_COUNT - 1
 	ASSERT(step > 0, "Unexpected step size")
-
-	ctrlTitle = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
-	ctrlUnit  = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
-	WAVE statusAsync = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ASYNC)
 
 	for(i = 0; i < NUM_ASYNC_CHANNELS ; i += 1)
 
