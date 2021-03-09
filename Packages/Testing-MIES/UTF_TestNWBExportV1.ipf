@@ -16,6 +16,9 @@ static Function TestHistory(fileID)
 	WAVE/Z/T history = IPNWB#H5_LoadDataSet(fileID, "/general/history")
 	CHECK_WAVE(history, TEXT_WAVE)
 	CHECK(DimSize(history, ROWS) > 0)
+
+	WAVE/Z/T matches = GrepTextWave(history, LOGFILE_NWB_MARKER)
+	CHECK_WAVE(history, TEXT_WAVE)
 end
 
 static Function TestLabnotebooks(fileID, device)

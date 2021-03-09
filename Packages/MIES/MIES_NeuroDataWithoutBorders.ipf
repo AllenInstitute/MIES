@@ -484,7 +484,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	NWB_AppendStimset(nwbVersion, locationID, stimsetList, compressionMode)
 
 	if(writeIgorHistory)
-		NWB_AppendIgorHistory(nwbVersion, locationID)
+		NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
@@ -1668,11 +1668,11 @@ Function NWB_Flush()
 	fileIDExport = IPNWB#H5_FlushFile(fileIDExport, filePathExport, write = 1)
 End
 
-static Function NWB_AppendIgorHistory(nwbVersion, locationID)
+static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	variable nwbVersion, locationID
 
 	variable groupID
-	string history, name
+	string history, name, logfile, fname, data, entry
 
 	IPNWB#EnsureValidNWBVersion(nwbVersion)
 	ASSERT(IPNWB#GetNWBMajorVersion(IPNWB#ReadNWBVersion(locationID)) == nwbVersion, "NWB version of the selected file differs.")
@@ -1687,8 +1687,18 @@ static Function NWB_AppendIgorHistory(nwbVersion, locationID)
 
 	groupID = IPNWB#H5_OpenGroup(locationID, "/general")
 	ASSERT(!IsNaN(groupID), "IPNWB#CreateCommonGroups() needs to be called prior to this call")
-	history = NormalizeToEOL(history, "\n")
-	IPNWB#H5_WriteTextDataset(groupID, name, str=history, compressionMode = IPNWB#GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
+	entry = NormalizeToEOL(history, "\n")
+
+	logfile = LOG_GetFile(PACKAGE_MIES)
+	if(FileExists(logfile))
+		[data, fname] = LoadTextFile(logfile)
+
+		// normalizing EOLs is only necessary because
+		// someone might have edited the log file by hand
+		entry += "\n" + LOGFILE_NWB_MARKER + "\n" + NormalizeToEOL(data, "\n")
+	endif
+
+	IPNWB#H5_WriteTextDataset(groupID, name, str=entry, compressionMode = IPNWB#GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
 
 	if(nwbVersion == 1)
 		IPNWB#MarkAsCustomEntry(groupID, name)
