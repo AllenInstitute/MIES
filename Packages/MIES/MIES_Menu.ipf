@@ -140,32 +140,6 @@ Function OpenAboutDialog()
 	SetActiveSubwindow ##
 End
 
-Function ButtonProc_AboutMIESClose(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			KillWindow $ba.win
-			break
-	endswitch
-
-	return 0
-End
-
-Function ButtonProc_AboutMIESCopy(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			SVAR miesVersion = $GetMiesVersion()
-			PutScrapText miesVersion
-			break
-	endswitch
-
-	return 0
-End
-
 Function OpenBackgroundWatcherPanel()
 
 	if(!QuerySetIgorOption("BACKGROUND_TASK_DEBUGGING", globalSymbol = 1))
