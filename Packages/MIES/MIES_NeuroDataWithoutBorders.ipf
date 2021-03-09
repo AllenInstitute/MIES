@@ -400,14 +400,6 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	variable i, j, numEntries, locationID, sweep, numWaves, firstCall, deviceID
 	string stimsetList = ""
 
-	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
-
-	if(IsEmpty(devicesWithContent))
-		print "No devices with acquired content found for NWB export"
-		ControlWindowToFront()
-		return NaN
-	endif
-
 	if(ParamIsDefault(writeStoredTestPulses))
 		writeStoredTestPulses = 0
 	else
@@ -420,14 +412,24 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		writeIgorHistory = !!writeIgorHistory
 	endif
 
+	if(ParamIsDefault(compressionMode))
+		compressionMode = IPNWB#GetChunkedCompression()
+	endif
+
+	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
+
+	if(IsEmpty(devicesWithContent))
+		print "No devices with acquired content found for NWB export"
+		ControlWindowToFront()
+
+		LOG_AddEntry(PACKAGE_MIES, "end")
+		return NaN
+	endif
+
 	if(!ParamIsDefault(overrideFilePath))
 		locationID = NWB_GetFileForExport(nwbVersion, overrideFilePath=overrideFilePath)
 	else
 		locationID = NWB_GetFileForExport(nwbVersion)
-	endif
-
-	if(ParamIsDefault(compressionMode))
-		compressionMode = IPNWB#GetChunkedCompression()
 	endif
 
 	if(!IsFinite(locationID))
