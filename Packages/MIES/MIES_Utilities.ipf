@@ -4836,6 +4836,20 @@ Function/S GetFileVersion(filepath)
 	return S_FileVersion
 End
 
+/// @brief Return the file size in bytes
+Function GetFileSize(string filepath)
+
+	filepath = ResolveAlias(filepath)
+
+	GetFileFolderInfo/Q/Z filepath
+
+	if(V_flag || !V_isFile)
+		return NaN
+	endif
+
+	return V_logEOF
+End
+
 /// @brief wrapper to `ScaleToIndex`
 ///
 /// `ScaleToIndex` treats input `inf` to @p scale always as the last point in a
