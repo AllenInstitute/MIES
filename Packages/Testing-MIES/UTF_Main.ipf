@@ -23,7 +23,7 @@
 
 // Entry point for UTF
 Function run()
-	return RunWithOpts()
+	return RunWithOpts(testsuite="UTF_Utils.ipf")
 End
 
 // Examples:

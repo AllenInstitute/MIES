@@ -4711,3 +4711,13 @@ Function ZN_RemovesNaNs()
 	CHECK_EQUAL_WAVES(reduced, {inf, 1})
 End
 /// @}
+
+Function FailsOnPurposeShort()
+	CHECK(0)
+	CHECK_EQUAL_VAR(1, 0)
+End
+
+Function FailsOnPurpose()
+	CHECK_EQUAL_WAVES({1}, {2})
+	CHECK_EQUAL_TEXTWAVES({"1"}, {"2"})
+End
