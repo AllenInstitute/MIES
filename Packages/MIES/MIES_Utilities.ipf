@@ -3628,7 +3628,7 @@ End
 ///
 /// @return free wave with the set intersection or an invalid wave reference
 /// if the intersection is an empty set
-Function/WAVE GetSetIntersection(wave1, wave2)
+threadsafe Function/WAVE GetSetIntersection(wave1, wave2)
 	WAVE wave1
 	WAVE wave2
 
@@ -3637,11 +3637,11 @@ Function/WAVE GetSetIntersection(wave1, wave2)
 	variable i, j, longWaveRow
 	string strEntry
 
-	ASSERT((IsNumericWave(wave1) && IsNumericWave(wave2))                   \
+	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                   \
 	       || (IsTextWave(wave1) && IsTextWave(wave2)), "Invalid wave type")
 
 	type = WaveType(wave1)
-	ASSERT(type == WaveType(wave2), "Wave type mismatch")
+	ASSERT_TS(type == WaveType(wave2), "Wave type mismatch")
 
 	wave1Rows = DimSize(wave1, ROWS)
 	wave2Rows = DimSize(wave2, ROWS)
