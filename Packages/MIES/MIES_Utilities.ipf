@@ -159,6 +159,10 @@ Function ASSERT(var, errorMsg)
 		print miesVersionStr
 		print "################################"
 
+#if exists("LOG_AddEntry")
+		LOG_AddEntry(PACKAGE_MIES, "assert", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
+#endif
+
 		ControlWindowToFront()
 		Debugger
 #endif // AUTOMATED_TESTING
@@ -238,6 +242,10 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 		print "################################"
 
 		printf "Assertion FAILED with message %s\r", errorMsg
+
+#if exists("LOG_AddEntry_TS")
+		LOG_AddEntry_TS(PACKAGE_MIES, "assert", "ASSERT_TS", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
+#endif
 
 #endif // AUTOMATED_TESTING
 
