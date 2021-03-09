@@ -416,6 +416,10 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		compressionMode = IPNWB#GetChunkedCompression()
 	endif
 
+	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"nwbVersion", "writeStoredTP", "writeIgorHistory", "compression"},            \
+	                                    values = {num2str(nwbVersion), num2str(writeStoredTestPulses),                        \
+	                                              num2str(writeIgorHistory), IPNWB#CompressionModeToString(compressionMode)})
+
 	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
 
 	if(IsEmpty(devicesWithContent))
@@ -433,6 +437,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	endif
 
 	if(!IsFinite(locationID))
+		LOG_AddEntry(PACKAGE_MIES, "end")
 		return NaN
 	endif
 
@@ -450,6 +455,9 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		DFREF dfr = GetDeviceDataPath(panelTitle)
 		list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
 		numWaves = ItemsInList(list)
+
+		LOG_AddEntry(PACKAGE_MIES, "export", keys = {"device", "#sweeps"}, values = {panelTitle, num2str(numWaves)})
+
 		for(j = 0; j < numWaves; j += 1)
 			if(firstCall)
 				IPNWB#CreateIntraCellularEphys(locationID)
@@ -478,6 +486,8 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	if(writeIgorHistory)
 		NWB_AppendIgorHistory(nwbVersion, locationID)
 	endif
+
+	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
 End
 
 /// @brief Return the file size in MiB of the currently written into NWB file
@@ -501,11 +511,15 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 	variable locationID
 	string stimsets
 
+	LOG_AddEntry(PACKAGE_MIES, "start")
+
 	stimsets = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING) + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
 
 	if(IsEmpty(stimsets))
 		print "No stimsets found for NWB export"
 		ControlWindowToFront()
+
+		LOG_AddEntry(PACKAGE_MIES, "end")
 		return NaN
 	endif
 
@@ -516,6 +530,7 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 	endif
 
 	if(!IsFinite(locationID))
+		LOG_AddEntry(PACKAGE_MIES, "end")
 		return NaN
 	endif
 
@@ -526,6 +541,8 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 
 	NWB_AppendStimset(nwbVersion, locationID, stimsets, IPNWB#GetChunkedCompression())
 	CloseNWBFile()
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 End
 
 /// @brief Export all data into NWB using compression
@@ -1387,6 +1404,8 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 		fullPath = fileName
 	endif
 
+	LOG_AddEntry(PACKAGE_MIES, "start")
+
 	fileID = IPNWB#H5_OpenFile(fullPath)
 
 	if(!IPNWB#StimsetPathExists(fileID))
@@ -1433,6 +1452,8 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 	IPNWB#H5_CloseFile(fileID)
 
 	WBP_UpdateDaEphysStimulusSetPopups()
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 
 	return error
 End
