@@ -7,7 +7,7 @@
 #endif
 
 /// @file MIES_PackageSettings.ipf
-/// @brief Routines for dealing with JSON settings
+/// @brief __PS__ Routines for dealing with JSON settings
 
 static StrConstant PS_STORE_COORDINATES = "JSONSettings_StoreCoordinates"
 static StrConstant PS_WINDOW_NAME = "JSONSettings_WindowName"
