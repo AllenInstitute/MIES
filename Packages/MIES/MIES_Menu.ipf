@@ -7,7 +7,7 @@
 #endif
 
 /// @file MIES_Menu.ipf
-/// @brief Definition of the menu items
+/// @brief __MEN__ Definition of the menu items
 
 Menu "Mies Panels"
 	"Generate stimulus sets (WB)/2"            , /Q, WBP_CreateWaveBuilderPanel()
@@ -28,7 +28,7 @@ Menu "Mies Panels"
 		"Open Configuration Files"             , /Q, CONF_OpenConfigInNotebook()
 		"Blowout/8"                            , /Q, BWO_SelectDevice()
 		"Save and Clear Experiment"            , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
-		"Close Mies"                           , /Q, CloseMies()
+		"Close Mies"                           , /Q, MEN_CloseMies()
 		"IVSCC control panel"                  , /Q, IVS_CreatePanel()
 	End
 	"-"
@@ -41,8 +41,8 @@ Menu "Mies Panels"
 		"Load Stimsets from NWB"               , /Q, NWB_LoadAllStimsets()
 	End
 	"-"
-	"Report an issue"                          , /Q, CreateIssueOnGithub()
-	"About MIES"                               , /Q, OpenAboutDialog()
+	"Report an issue"                          , /Q, MEN_CreateIssueOnGithub()
+	"About MIES"                               , /Q, MEN_OpenAboutDialog()
 	"-"
 	SubMenu "Advanced"
 		"Restart ZeroMQ Message Handler"           , /Q, StartZeroMQMessageHandler()
@@ -50,7 +50,7 @@ Menu "Mies Panels"
 		"Turn off ASLR (requires UAC elevation)"   , /Q, TurnOffASLR()
 		"Open debug panel"                         , /Q, DP_OpenDebugPanel()
 		"Check Installation"                       , /Q, CHI_CheckInstallation()
-		"Start Background Task watcher panel"      , /Q, OpenBackgroundWatcherPanel()
+		"Start Background Task watcher panel"      , /Q, MEN_OpenBackgroundWatcherPanel()
 		"Enable Independent Module editing"        , /Q, SetIgorOption IndependentModuleDev=1
 		"Reset and store current DA_EPHYS panel"   , /Q, DAP_EphysPanelStartUpSettings()
 		"Reset and store current DataBrowser panel", /Q, DB_ResetAndStoreCurrentDBPanel()
@@ -60,11 +60,11 @@ Menu "Mies Panels"
 		"Output Cache statistics"                  , /Q, CA_OutputCacheStatistics()
 		"Show Diagnostics (crash dumps) directory" , /Q, ShowDiagnosticsDirectory()
 		"Upload crash dumps"                       , /Q, UploadCrashDumps()
-		"Clear package settings"                   , /Q, ClearPackageSettings()
+		"Clear package settings"                   , /Q, MEN_ClearPackageSettings()
 	End
 End
 
-Function CloseMies()
+Function MEN_CloseMies()
 
 	DAP_UnlockAllDevices()
 
@@ -85,7 +85,7 @@ Function CloseMies()
 	endfor
 End
 
-Function OpenAboutDialog()
+Function MEN_OpenAboutDialog()
 
 	string version, nb
 	variable sfactor
@@ -140,7 +140,7 @@ Function OpenAboutDialog()
 	SetActiveSubwindow ##
 End
 
-Function OpenBackgroundWatcherPanel()
+Function MEN_OpenBackgroundWatcherPanel()
 
 	if(!QuerySetIgorOption("BACKGROUND_TASK_DEBUGGING", globalSymbol = 1))
 		Execute/P/Q "SetIgorOption poundDefine=BACKGROUND_TASK_DEBUGGING"
@@ -153,7 +153,7 @@ End
 /// @brief Custom notebook action for the "About MIES" dialog
 ///
 /// Opens a prefilled new issue on github.
-Function CreateIssueOnGithub()
+Function MEN_CreateIssueOnGithub()
 	string url, body, title, version, str
 	variable ref
 
@@ -191,7 +191,7 @@ Function CreateIssueOnGithub()
 	BrowseURL(url)
 End
 
-Function ClearPackageSettings()
+Function MEN_ClearPackageSettings()
 	NVAR JSONid = $GetSettingsJSONid()
 	JSON_Release(JSONId)
 
@@ -200,7 +200,7 @@ Function ClearPackageSettings()
 	JSON_Release(JSONId)
 End
 
-Function OpenPackageSettingsAsNotebook()
+Function MEN_OpenPackageSettingsAsNotebook()
 	NVAR JSONid = $GetSettingsJSONid()
 	PS_OpenNotebook("MIES", JSONid)
 	JSONid = NaN
