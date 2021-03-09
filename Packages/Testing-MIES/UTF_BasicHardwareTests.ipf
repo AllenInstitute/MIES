@@ -4172,8 +4172,6 @@ Function AsyncAcquisitionLBN_IGNORE(string device)
 	string ctrl
 	variable channel = 2
 
-	PGC_SetAndActivateControl(device, "Check_Settings_Append", val = CHECKBOX_SELECTED)
-
 	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
 	PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
 
