@@ -75,6 +75,7 @@ Function ASSERT(var, errorMsg)
 	string errorMsg
 
 	string stracktrace, miesVersionStr, lockedDevicesStr, device
+	string stacktrace = ""
 	variable i, numLockedDevices
 
 	try
@@ -141,7 +142,8 @@ Function ASSERT(var, errorMsg)
 #endif // AUTOMATED_TESTING
 
 #if !defined(AUTOMATED_TESTING) || defined(AUTOMATED_TESTING_DEBUGGING)
-		print GetStackTrace()
+		stacktrace = GetStackTrace()
+		print stacktrace
 #endif
 
 #ifndef AUTOMATED_TESTING
@@ -191,6 +193,8 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 	variable var
 	string errorMsg
 
+	string stacktrace
+
 	try
 		AbortOnValue var==0, 1
 	catch
@@ -217,10 +221,11 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 #if !defined(AUTOMATED_TESTING) || defined(AUTOMATED_TESTING_DEBUGGING)
 
 #if IgorVersion() >= 9.0
-		print GetStackTrace()
+		stacktrace = GetStackTrace()
 #else
-		print "stacktrace not available"
+		stacktrace = "stacktrace not available"
 #endif
+		print stacktrace
 
 #endif // !AUTOMATED_TESTING || AUTOMATED_TESTING_DEBUGGING
 
