@@ -775,6 +775,7 @@ StrConstant NOTE_KEY_IMG_PMAX               = "PulsesMaximum"
 StrConstant NOTE_KEY_PULSE_IS_DIAGONAL      = "IsDiagonal"
 StrConstant NOTE_KEY_PULSE_START            = "PulseStart"
 StrConstant NOTE_KEY_PULSE_END              = "PulseEnd"
+StrConstant NOTE_KEY_CLAMP_MODE             = "ClampMode"
 
 /// Only present for diagonal pulses
 /// @{

@@ -523,11 +523,12 @@ End
 /// - `$PA_SOURCE_WAVE_TIMESTAMP`: Last modification time of the pulse wave before creation.
 /// - `$NOTE_KEY_PULSE_START`: ms coordinates where the pulse starts
 /// - `$NOTE_KEY_PULSE_END`: ms coordinates where the pulse ends
+/// - `$NOTE_KEY_PULSE_CLAMPMODE`: Clamp mode of the pulse data, one of @ref AmplifierClampModes
 ///
 /// Diagonal pulses only with failed pulse search enabled:
 /// - `$NOTE_KEY_PULSE_HAS_FAILED`: Pulse has failed
 /// - `$NOTE_KEY_PULSE_SPIKE_POSITIONS`: Comma separated list of spike positions in ms. `0` is the start of the pulse.
-static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(WAVE/Z wv, DFREF singleSweepFolder, variable channelType, variable channelNumber, variable region, variable pulseIndex, variable first, variable length, WAVE pulseInfos)
+static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(WAVE/Z wv, DFREF singleSweepFolder, variable channelType, variable channelNumber, variable clampMode, variable region, variable pulseIndex, variable first, variable length, WAVE pulseInfos)
 
 	variable existingLength
 
@@ -564,6 +565,7 @@ static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(W
 	PA_UpdateMinAndMax(singlePulseWave, singlePulseWaveNote)
 
 	SetNumberInWaveNote(singlePulseWaveNote, NOTE_KEY_PULSE_LENGTH, length)
+	SetNumberInWaveNote(singlePulseWaveNote, NOTE_KEY_CLAMP_MODE, clampMode)
 
 	SetNumberInWaveNote(singlePulseWaveNote, PA_SOURCE_WAVE_TIMESTAMP, ModDate(wv))
 
@@ -857,7 +859,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 				WAVE/Z pulseWave, pulseWaveNote
 				[pulseWave, pulseWaveNote] = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, \
-							                                                region, k, first, length, pulseInfos)
+				                                                            clampMode, region, k, first, length, pulseInfos)
 
 				if(!WaveExists(pulseWave))
 					continue

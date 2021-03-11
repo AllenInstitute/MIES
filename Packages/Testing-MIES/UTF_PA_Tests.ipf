@@ -917,6 +917,9 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 	last  = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_END)
 	CHECK(first < last)
 
+	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_CLAMP_MODE)
+	CHECK(IsFinite(setting) && (setting == V_CLAMP_MODE || setting == I_CLAMP_MODE || setting == I_EQUAL_ZERO_MODE))
+
 	// no zeros inside the pulse
 	// this requires that the DA and AD channels on the hardware are connected directly when acquiring this data
 	// ditch the first and last 0.1 ms to avoid any decimation issues

@@ -21,7 +21,7 @@ static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 static Constant WAVE_TYPE_NUMERICAL = 0x1
 static Constant WAVE_TYPE_TEXTUAL   = 0x2
 
-static Constant PULSE_WAVE_VERSION = 3
+static Constant PULSE_WAVE_VERSION = 4
 
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
