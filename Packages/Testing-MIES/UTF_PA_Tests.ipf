@@ -440,6 +440,10 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	miesPath = GetMiesPathAsString()
 	DuplicateDataFolder/O=1 root:MIES_backup, $miesPath
 
+	// monkey patch the labnotebook to claim it holds IC data instead of VC
+	WAVE numericalValues = root:MIES:LabNoteBook:Dev1:numericalValues
+	MultiThread numericalValues[][%$"Clamp Mode"][] = (numericalValues[p][%$"Clamp Mode"][r] == V_CLAMP_MODE ? I_CLAMP_MODE : numericalValues[p][%$"Clamp Mode"][r])
+
 	CA_FlushCache()
 End
 
