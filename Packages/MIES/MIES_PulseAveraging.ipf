@@ -2467,30 +2467,15 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 	SetDrawEnv/W=$graph pop
 End
 
- threadsafe static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRUCT PulseAverageSettings &s)
+/// @brief Calculate the number of spikes in a single pulse for IC and I=0 data
+threadsafe static Function/WAVE PA_SpikePositionsForNonVC(WAVE pulseWave, variable failedPulsesLevel)
 
-	variable level, hasFailed, failedNumberOfSpikes, numLevels, maxNumLevels, numSpikes
+	variable numLevels, maxNumLevels, numSpikes
 	variable first, last, i, err, idx
-
-	if(!s.searchFailedPulses)
-		return 0
-	endif
-
-	level                = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
-	failedNumberOfSpikes = GetNumberFromWaveNote(noteWave, NOTE_KEY_NUMBER_OF_SPIKES)
-
-	hasFailed = GetNumberFromWaveNote(noteWave, NOTE_KEY_PULSE_HAS_FAILED)
-
-	if(level == s.failedPulsesLevel && EqualValuesOrBothNaN(failedNumberOfSpikes, s.failedNumberOfSpikes) && IsFinite(hasFailed))
-		// already investigated
-		return hasFailed
-	endif
-
-	ASSERT_TS(GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED) != 1, "Single pulse wave must not be zeroed here")
 
 	// allow at most 1 pulse per ms, but at least 1
 	maxNumLevels = max(1, round(DimSize(pulseWave, ROWS) * DimDelta(pulseWave, ROWS)) * 2)
-	WAVE/Z levels = FindLevelWrapper(pulseWave, s.failedPulsesLevel, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_MULTI, \
+	WAVE/Z levels = FindLevelWrapper(pulseWave, failedPulsesLevel, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_MULTI, \
 	                                 maxNumLevels = maxNumLevels)
 
 	ASSERT_TS(WaveExists(levels), "FindLevelWrapper returned a non-existing wave")
@@ -2519,7 +2504,7 @@ End
 		endif
 
 		err = 0
-		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(s.failedPulsesLevel)/R=(first, last) pulseWave; err = GetRTError(1)
+		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(failedPulsesLevel)/R=(first, last) pulseWave; err = GetRTError(1)
 
 		if(!err)
 			ASSERT_TS(!V_Flag, "Could not find peak but FindLevelWrapper was successfull, this is unexpected.")
@@ -2530,10 +2515,51 @@ End
 	numSpikes = idx
 	Redimension/N=(numSpikes) spikePositions
 
+	return spikePositions
+End
+
+threadsafe static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRUCT PulseAverageSettings &s)
+
+	variable level, hasFailed, numSpikes, failedNumberOfSpikes, clampMode
+
+	if(!s.searchFailedPulses)
+		return 0
+	endif
+
+	level                = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
+	failedNumberOfSpikes = GetNumberFromWaveNote(noteWave, NOTE_KEY_NUMBER_OF_SPIKES)
+
+	hasFailed = GetNumberFromWaveNote(noteWave, NOTE_KEY_PULSE_HAS_FAILED)
+
+	if(level == s.failedPulsesLevel && EqualValuesOrBothNaN(failedNumberOfSpikes, s.failedNumberOfSpikes) && IsFinite(hasFailed))
+		// already investigated
+		return hasFailed
+	endif
+
+	ASSERT_TS(GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED) != 1, "Single pulse wave must not be zeroed here")
+
+	clampMode = GetNumberFromWaveNote(noteWave, NOTE_KEY_CLAMP_MODE)
+
+	switch(clampMode)
+		case V_CLAMP_MODE:
+		case I_EQUAL_ZERO_MODE:
+			numSpikes = 0
+			Make/D/FREE/N=(numSpikes) spikePositions
+
+			hasFailed = 0 // always passes
+			break
+		case I_CLAMP_MODE:
+			WAVE spikePositions = PA_SpikePositionsForNonVC(pulseWave, s.failedPulsesLevel)
+			numSpikes = DimSize(spikePositions, ROWS)
+
+			hasFailed = !((numSpikes == s.failedNumberOfSpikes) || (numSpikes > 0 && IsNaN(s.failedNumberOfSpikes)))
+			break
+		default:
+			ASSERT_TS(0, "Invalid clamp mode:" + num2str(clampMode))
+	endswitch
+
 	SetStringInWaveNote(noteWave, NOTE_KEY_PULSE_SPIKE_POSITIONS, NumericWaveToList(spikePositions, ","))
 	SetNumberInWaveNote(noteWave, NOTE_KEY_PULSE_FOUND_SPIKES, numSpikes)
-
-	hasFailed = !((numSpikes == s.failedNumberOfSpikes) || (numSpikes > 0 && IsNaN(s.failedNumberOfSpikes)))
 	SetNumberInWaveNote(noteWave, NOTE_KEY_PULSE_HAS_FAILED, hasFailed)
 
 	// NOTE_KEY_FAILED_PULSE_LEVEL and NOTE_KEY_NUMBER_OF_SPIKES is written in PA_MarkFailedPulses for all pulses

@@ -1825,6 +1825,61 @@ static Function PAT_FailedPulseCheck1()
 	endfor
 End
 
+Function PAT_FailedPulseCheckVC()
+	string bspName, graph
+	STRUCT PA_Test patest0
+	STRUCT PA_Test patest4
+	STRUCT PA_Test patest
+
+	string traceListAll, traceList, traceNames, traceName, spikePositions
+	variable traceNum, i, j, k, size, numSpikes, pulseHasFailed
+
+	PA_InitSweep0(patest0)
+	PA_InitSweep4(patest4)
+
+	// now with VC data again
+	WAVE numericalValues = root:MIES:LabNoteBook:Dev1:numericalValues
+	MultiThread numericalValues[][%$"Clamp Mode"][] = (numericalValues[p][%$"Clamp Mode"][r] == I_CLAMP_MODE ? V_CLAMP_MODE : numericalValues[p][%$"Clamp Mode"][r])
+
+	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
+	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)
+	OVS_ChangeSweepSelectionState(bspName, 1, sweepNo = 4)
+
+	PGC_SetAndActivateControl(bspName, "setvar_pulseAver_failedPulses_level", val = 5)
+	PGC_SetAndActivateControl(bspName, "check_pulseAver_searchFailedPulses", val = 1)
+
+	traceListAll = PAT_GetTraces(graph, 2 * patest0.layoutSize)
+
+	size = sqrt(patest0.layoutSize)
+	for(i = 0; i < size; i += 1)
+		for(j = 0; j < size; j += 1)
+			traceNames = PAT_FindTraceNames(traceListAll, patest0.channels[i], patest0.regions[j], 0)
+			traceNum = ItemsInList(traceNames)
+			CHECK_EQUAL_VAR(traceNum, 2)
+			for(k = 0; k < traceNum; k += 1)
+				if(k == 1)
+					patest = patest4
+				else
+					patest = patest0
+				endif
+
+				pulseHasFailed = 0
+				numSpikes = 0
+
+				traceName = StringFromList(k, traceNames)
+
+				// layout note: channel is Y, region is X, low channels start on top at yPos to 100%
+				PAT_VerifyTraceAxes(graph, traceName, i + 1, j + 1, patest)
+				PAT_VerifyTraceAxesRange(graph, traceName, patest)
+				WAVE pData = TraceNameToWaveRef(graph, traceName)
+				CHECK_EQUAL_WAVES(patest.refData, pData, mode = WAVE_DATA, tol = patest.eqWaveTol)
+				PAT_CheckPulseWaveNote(bspName, pData)
+				PAT_CheckFailedPulse(bspName, pData, i == j, pulseHasFailed, numSpikes)
+			endfor
+		endfor
+	endfor
+End
+
 static Function PAT_FailedPulseCheck2()
 
 	string bspName, graph
