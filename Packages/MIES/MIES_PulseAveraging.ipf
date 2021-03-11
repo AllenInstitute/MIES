@@ -638,12 +638,12 @@ End
 /// - In case the layout changed compared to the old regions/channels it is calculated again.
 static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, variable mode, WAVE/Z additionalData)
 
-	variable startingPulseSett, endingPulseSett, pulseHasFailed, numActive
+	variable startingPulseSett, endingPulseSett, pulseHasFailed, numActive, clampMode
 	variable i, j, k, region, sweepNo, idx, numPulsesTotal, endingPulse
 	variable headstage, pulseToPulseLength, totalOnsetDelay, numChannelTypeTraces, totalPulseCounter, jsonID, lastSweep
 	variable activeChanCount, channelNumber, first, length, channelType, numChannels, numRegions
 	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep, incrementalMode, layoutChanged
-	variable lblIndex
+	variable lblIndex, lblClampMode
 	variable lblTraceHeadstage, lblTraceExperiment, lblTraceSweepNumber, lblTraceChannelNumber, lblTracenumericalValues, lblTraceFullpath
 	variable lblACTIVEREGION, lblACTIVECHANNEL
 	string channelTypeStr, channelList, regionChannelList, channelNumberStr, key, regionList, sweepList, sweepNoStr, experiment
@@ -757,6 +757,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	lblTracenumericalValues = FindDimLabel(traceData, COLS, "numericalValues")
 	lblTraceExperiment = FindDimLabel(traceData, COLS, "Experiment")
 	lblTraceFullpath = FindDimLabel(traceData, COLS, "fullpath")
+	lblClampMode = FindDimLabel(traceData, COLS, "ClampMode")
 
 	lblACTIVEREGION = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVEREGION")
 	lblACTIVECHANNEL = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVECHANNEL")
@@ -844,6 +845,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				EnsureLargeEnoughWave(propertiesWaves, minimumSize = numPulseCreate)
 			endif
 
+			clampMode = str2num(traceData[idx][lblClampMode])
 			headstage = str2num(traceData[idx][lblTraceHeadstage])
 			prevTotalPulseCounter = totalPulseCounter
 			for(k = startingPulseSett; k <= endingPulse; k += 1)
@@ -867,6 +869,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_HEADSTAGE] = headstage
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_PULSE] = k
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_LASTSWEEP] = lastSweep
+				properties[totalPulseCounter][PA_PROPERTIES_INDEX_CLAMPMODE] = clampMode
 
 				propertiesWaves[totalPulseCounter][PA_PROPERTIESWAVES_INDEX_PULSE] = pulseWave
 				propertiesWaves[totalPulseCounter][PA_PROPERTIESWAVES_INDEX_PULSENOTE] = pulseWaveNote
