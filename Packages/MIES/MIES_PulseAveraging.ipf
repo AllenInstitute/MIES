@@ -523,11 +523,12 @@ End
 /// - `$PA_SOURCE_WAVE_TIMESTAMP`: Last modification time of the pulse wave before creation.
 /// - `$NOTE_KEY_PULSE_START`: ms coordinates where the pulse starts
 /// - `$NOTE_KEY_PULSE_END`: ms coordinates where the pulse ends
+/// - `$NOTE_KEY_PULSE_CLAMPMODE`: Clamp mode of the pulse data, one of @ref AmplifierClampModes
 ///
 /// Diagonal pulses only with failed pulse search enabled:
 /// - `$NOTE_KEY_PULSE_HAS_FAILED`: Pulse has failed
 /// - `$NOTE_KEY_PULSE_SPIKE_POSITIONS`: Comma separated list of spike positions in ms. `0` is the start of the pulse.
-static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(WAVE/Z wv, DFREF singleSweepFolder, variable channelType, variable channelNumber, variable region, variable pulseIndex, variable first, variable length, WAVE pulseInfos)
+static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(WAVE/Z wv, DFREF singleSweepFolder, variable channelType, variable channelNumber, variable clampMode, variable region, variable pulseIndex, variable first, variable length, WAVE pulseInfos)
 
 	variable existingLength
 
@@ -564,6 +565,7 @@ static Function [WAVE pulseWave, WAVE noteWave] PA_CreateAndFillPulseWaveIfReq(W
 	PA_UpdateMinAndMax(singlePulseWave, singlePulseWaveNote)
 
 	SetNumberInWaveNote(singlePulseWaveNote, NOTE_KEY_PULSE_LENGTH, length)
+	SetNumberInWaveNote(singlePulseWaveNote, NOTE_KEY_CLAMP_MODE, clampMode)
 
 	SetNumberInWaveNote(singlePulseWaveNote, PA_SOURCE_WAVE_TIMESTAMP, ModDate(wv))
 
@@ -638,12 +640,12 @@ End
 /// - In case the layout changed compared to the old regions/channels it is calculated again.
 static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, variable mode, WAVE/Z additionalData)
 
-	variable startingPulseSett, endingPulseSett, pulseHasFailed, numActive
+	variable startingPulseSett, endingPulseSett, pulseHasFailed, numActive, clampMode
 	variable i, j, k, region, sweepNo, idx, numPulsesTotal, endingPulse
 	variable headstage, pulseToPulseLength, totalOnsetDelay, numChannelTypeTraces, totalPulseCounter, jsonID, lastSweep
 	variable activeChanCount, channelNumber, first, length, channelType, numChannels, numRegions
 	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep, incrementalMode, layoutChanged
-	variable lblIndex
+	variable lblIndex, lblClampMode
 	variable lblTraceHeadstage, lblTraceExperiment, lblTraceSweepNumber, lblTraceChannelNumber, lblTracenumericalValues, lblTraceFullpath
 	variable lblACTIVEREGION, lblACTIVECHANNEL
 	string channelTypeStr, channelList, regionChannelList, channelNumberStr, key, regionList, sweepList, sweepNoStr, experiment
@@ -757,6 +759,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 	lblTracenumericalValues = FindDimLabel(traceData, COLS, "numericalValues")
 	lblTraceExperiment = FindDimLabel(traceData, COLS, "Experiment")
 	lblTraceFullpath = FindDimLabel(traceData, COLS, "fullpath")
+	lblClampMode = FindDimLabel(traceData, COLS, "ClampMode")
 
 	lblACTIVEREGION = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVEREGION")
 	lblACTIVECHANNEL = FindDimLabel(prevDisplayMapping, LAYERS, "ACTIVECHANNEL")
@@ -844,6 +847,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				EnsureLargeEnoughWave(propertiesWaves, minimumSize = numPulseCreate)
 			endif
 
+			clampMode = str2num(traceData[idx][lblClampMode])
 			headstage = str2num(traceData[idx][lblTraceHeadstage])
 			prevTotalPulseCounter = totalPulseCounter
 			for(k = startingPulseSett; k <= endingPulse; k += 1)
@@ -855,7 +859,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 
 				WAVE/Z pulseWave, pulseWaveNote
 				[pulseWave, pulseWaveNote] = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, \
-							                                                region, k, first, length, pulseInfos)
+				                                                            clampMode, region, k, first, length, pulseInfos)
 
 				if(!WaveExists(pulseWave))
 					continue
@@ -867,6 +871,7 @@ static Function [STRUCT PulseAverageSetIndices pasi] PA_GenerateAllPulseWaves(st
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_HEADSTAGE] = headstage
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_PULSE] = k
 				properties[totalPulseCounter][PA_PROPERTIES_INDEX_LASTSWEEP] = lastSweep
+				properties[totalPulseCounter][PA_PROPERTIES_INDEX_CLAMPMODE] = clampMode
 
 				propertiesWaves[totalPulseCounter][PA_PROPERTIESWAVES_INDEX_PULSE] = pulseWave
 				propertiesWaves[totalPulseCounter][PA_PROPERTIESWAVES_INDEX_PULSENOTE] = pulseWaveNote
@@ -2462,30 +2467,15 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 	SetDrawEnv/W=$graph pop
 End
 
- threadsafe static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRUCT PulseAverageSettings &s)
+/// @brief Calculate the number of spikes in a single pulse for IC and I=0 data
+threadsafe static Function/WAVE PA_SpikePositionsForNonVC(WAVE pulseWave, variable failedPulsesLevel)
 
-	variable level, hasFailed, failedNumberOfSpikes, numLevels, maxNumLevels, numSpikes
+	variable numLevels, maxNumLevels, numSpikes
 	variable first, last, i, err, idx
-
-	if(!s.searchFailedPulses)
-		return 0
-	endif
-
-	level                = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
-	failedNumberOfSpikes = GetNumberFromWaveNote(noteWave, NOTE_KEY_NUMBER_OF_SPIKES)
-
-	hasFailed = GetNumberFromWaveNote(noteWave, NOTE_KEY_PULSE_HAS_FAILED)
-
-	if(level == s.failedPulsesLevel && EqualValuesOrBothNaN(failedNumberOfSpikes, s.failedNumberOfSpikes) && IsFinite(hasFailed))
-		// already investigated
-		return hasFailed
-	endif
-
-	ASSERT_TS(GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED) != 1, "Single pulse wave must not be zeroed here")
 
 	// allow at most 1 pulse per ms, but at least 1
 	maxNumLevels = max(1, round(DimSize(pulseWave, ROWS) * DimDelta(pulseWave, ROWS)) * 2)
-	WAVE/Z levels = FindLevelWrapper(pulseWave, s.failedPulsesLevel, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_MULTI, \
+	WAVE/Z levels = FindLevelWrapper(pulseWave, failedPulsesLevel, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_MULTI, \
 	                                 maxNumLevels = maxNumLevels)
 
 	ASSERT_TS(WaveExists(levels), "FindLevelWrapper returned a non-existing wave")
@@ -2514,7 +2504,7 @@ End
 		endif
 
 		err = 0
-		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(s.failedPulsesLevel)/R=(first, last) pulseWave; err = GetRTError(1)
+		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(failedPulsesLevel)/R=(first, last) pulseWave; err = GetRTError(1)
 
 		if(!err)
 			ASSERT_TS(!V_Flag, "Could not find peak but FindLevelWrapper was successfull, this is unexpected.")
@@ -2525,10 +2515,51 @@ End
 	numSpikes = idx
 	Redimension/N=(numSpikes) spikePositions
 
+	return spikePositions
+End
+
+threadsafe static Function PA_PulseHasFailed(WAVE pulseWave, WAVE noteWave, STRUCT PulseAverageSettings &s)
+
+	variable level, hasFailed, numSpikes, failedNumberOfSpikes, clampMode
+
+	if(!s.searchFailedPulses)
+		return 0
+	endif
+
+	level                = GetNumberFromWaveNote(noteWave, NOTE_KEY_FAILED_PULSE_LEVEL)
+	failedNumberOfSpikes = GetNumberFromWaveNote(noteWave, NOTE_KEY_NUMBER_OF_SPIKES)
+
+	hasFailed = GetNumberFromWaveNote(noteWave, NOTE_KEY_PULSE_HAS_FAILED)
+
+	if(level == s.failedPulsesLevel && EqualValuesOrBothNaN(failedNumberOfSpikes, s.failedNumberOfSpikes) && IsFinite(hasFailed))
+		// already investigated
+		return hasFailed
+	endif
+
+	ASSERT_TS(GetNumberFromWaveNote(noteWave, NOTE_KEY_ZEROED) != 1, "Single pulse wave must not be zeroed here")
+
+	clampMode = GetNumberFromWaveNote(noteWave, NOTE_KEY_CLAMP_MODE)
+
+	switch(clampMode)
+		case V_CLAMP_MODE:
+		case I_EQUAL_ZERO_MODE:
+			numSpikes = 0
+			Make/D/FREE/N=(numSpikes) spikePositions
+
+			hasFailed = 0 // always passes
+			break
+		case I_CLAMP_MODE:
+			WAVE spikePositions = PA_SpikePositionsForNonVC(pulseWave, s.failedPulsesLevel)
+			numSpikes = DimSize(spikePositions, ROWS)
+
+			hasFailed = !((numSpikes == s.failedNumberOfSpikes) || (numSpikes > 0 && IsNaN(s.failedNumberOfSpikes)))
+			break
+		default:
+			ASSERT_TS(0, "Invalid clamp mode:" + num2str(clampMode))
+	endswitch
+
 	SetStringInWaveNote(noteWave, NOTE_KEY_PULSE_SPIKE_POSITIONS, NumericWaveToList(spikePositions, ","))
 	SetNumberInWaveNote(noteWave, NOTE_KEY_PULSE_FOUND_SPIKES, numSpikes)
-
-	hasFailed = !((numSpikes == s.failedNumberOfSpikes) || (numSpikes > 0 && IsNaN(s.failedNumberOfSpikes)))
 	SetNumberInWaveNote(noteWave, NOTE_KEY_PULSE_HAS_FAILED, hasFailed)
 
 	// NOTE_KEY_FAILED_PULSE_LEVEL and NOTE_KEY_NUMBER_OF_SPIKES is written in PA_MarkFailedPulses for all pulses

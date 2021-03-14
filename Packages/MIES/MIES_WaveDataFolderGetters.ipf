@@ -21,7 +21,7 @@ static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 static Constant WAVE_TYPE_NUMERICAL = 0x1
 static Constant WAVE_TYPE_TEXTUAL   = 0x2
 
-static Constant PULSE_WAVE_VERSION = 3
+static Constant PULSE_WAVE_VERSION = 4
 
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
@@ -5769,7 +5769,7 @@ End
 /// It is filled by PA_GenerateAllPulseWaves() and consumed by others.
 Function/WAVE GetPulseAverageProperties(DFREF dfr)
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/Z/SDFR=dfr wv = properties
@@ -5777,9 +5777,9 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 9) wv
+		Redimension/N=(-1, 8) wv
 	else
-		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 9) dfr:properties/Wave=wv
+		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 8) dfr:properties/Wave=wv
 	endif
 
 	Multithread wv[] = NaN
@@ -5791,6 +5791,7 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_PULSE, $"Pulse", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_PULSEHASFAILED, $"PulseHasFailed", wv
 	SetDimLabel COLS, PA_PROPERTIES_INDEX_LASTSWEEP, $"LastSweep", wv
+	SetDimLabel COLS, PA_PROPERTIES_INDEX_CLAMPMODE, $"ClampMode", wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
