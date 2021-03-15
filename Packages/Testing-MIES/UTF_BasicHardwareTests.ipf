@@ -3531,6 +3531,73 @@ Function CheckThatTPsCanBeFound_REENTRY([str])
 	CHECK_EQUAL_VAR(DimSize(dups, ROWS), 0)
 End
 
+Function TPDuringDAQWithTTL_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val = 0)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val = 1)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), str = "StimulusSetA_TTL_0")
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function TPDuringDAQWithTTL([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc=TPDuringDAQWithTTL_IGNORE)
+End
+
+Function TPDuringDAQWithTTL_REENTRY([str])
+	string str
+
+	variable sweepNo, col, tpAmplitude, daGain, i
+	string ctrl
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/Z sweepWave = GetSweepWave(str, 0)
+	CHECK_WAVE(sweepWave, NORMAL_WAVE)
+
+	// correct test pulse lengths calculated for both modes
+#if defined(TESTS_WITH_ITC18USB_HARDWARE)
+	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, DATA_ACQUISITION_MODE)), 1000)
+	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, TEST_PULSE_MODE)), 2000)
+#elif defined(TESTS_WITH_ITC1600_HARDWARE)
+	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, DATA_ACQUISITION_MODE)), 1000)
+	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, TEST_PULSE_MODE)), 2000)
+#elif defined(TESTS_WITH_NI_HARDWARE)
+	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, DATA_ACQUISITION_MODE)), 5000)
+	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, TEST_PULSE_MODE)), 5000)
+#endif
+
+	for(i = 0; i < 2; i += 1)
+		WAVE/Z DA = AFH_ExtractOneDimDataFromSweep(str, sweepWAVE, i, XOP_CHANNEL_TYPE_DAC)
+		CHECK_WAVE(DA, NUMERIC_WAVE)
+
+		// check that we start with the baseline
+		WAVEStats/M=1/Q/RMD=[0, 100] DA
+		CHECK_EQUAL_VAR(V_min, 0)
+		CHECK_EQUAL_VAR(V_max, 0)
+		CHECK_EQUAL_VAR(V_numNaNs, 0)
+		CHECK_EQUAL_VAR(V_numinfs, 0)
+
+		// testpulse/ inserted TP itself has the correct length
+		FindLevels/Q/N=(2) DA, 5
+		WAVE W_FindLevels
+		CHECK(!V_flag)
+
+		// hardcode values for 10ms pulse and 25% baseline
+		CHECK_CLOSE_VAR(W_FindLevels[0], 5, tol = 0.1)
+		CHECK_CLOSE_VAR(W_FindLevels[1], 15, tol = 0.1)
+	endfor
+End
+
 Function CheckIZeroClampMode_IGNORE(device)
 	string device
 

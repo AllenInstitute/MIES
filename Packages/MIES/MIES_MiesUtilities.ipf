@@ -2641,13 +2641,15 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 
 			// ignore TP during DAQ channels
 			if(WaveExists(status) && IsFinite(headstage))
-				if(channelTypes[i] == XOP_CHANNEL_TYPE_DAC          \
+				if(channelTypes[i] == XOP_CHANNEL_TYPE_DAC              \
 				   && WaveExists(daChannelType)                         \
 				   && daChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
+						activeChanCount[i] += 1
 						continue
-				elseif(channelTypes[i] == XOP_CHANNEL_TYPE_ADC          \
+				elseif(channelTypes[i] == XOP_CHANNEL_TYPE_ADC              \
 				       && WaveExists(adChannelType)                         \
 				       && adChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
+						activeChanCount[i] += 1
 						continue
 				endif
 			endif

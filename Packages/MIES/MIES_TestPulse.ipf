@@ -852,14 +852,15 @@ Function TP_UpdateHoldCmdInTPStorage(panelTitle, headStage)
 End
 
 /// @brief Create the testpulse wave with the current settings
-Function TP_CreateTestPulseWave(panelTitle)
+Function TP_CreateTestPulseWave(panelTitle, dataAcqOrTP)
 	string panelTitle
+	variable dataAcqOrTP
 
 	variable length
 
 	WAVE TestPulse = GetTestPulse()
 
-	length = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
+	length = ROVAR(GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP))
 
 	Redimension/N=(length) TestPulse
 	FastOp TestPulse = 0
