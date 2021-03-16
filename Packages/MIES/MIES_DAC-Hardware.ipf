@@ -1899,6 +1899,34 @@ Function HW_NI_IsValidDeviceName(deviceName)
 	return !isEmpty(deviceName)
 End
 
+/// @brief Return the analog input configuration bits as string
+///
+/// @param config Bit combination of @ref NIAnalogInputConfigs
+Function/S HW_NI_AnalogInputToString(variable config)
+
+	string str = ""
+
+	if(config & HW_NI_CONFIG_RSE)
+		str += "RSE, "
+	endif
+
+	if(config & HW_NI_CONFIG_NRSE)
+		str += "NRSE, "
+	endif
+
+	if(config & HW_NI_CONFIG_DIFFERENTIAL)
+		str += "Differential, "
+	endif
+
+	if(config & HW_NI_CONFIG_PSEUDO_DIFFERENTIAL)
+		str += "Pseudo Differential, "
+	endif
+
+	ASSERT(!IsEmpty(str), "Invalid config")
+
+	return RemoveEnding(str, ", ")
+End
+
 #if exists("fDAQmx_DeviceNames")
 
 /// @name Minimum voltages for the analog inputs/outputs
@@ -2427,6 +2455,32 @@ Function HW_NI_ReadAnalogSingleAndSlow(device, channel, [flags])
 	return value
 End
 
+/// @brief Returns a bit combination of the allowed configurations for the given analog input channel
+///
+/// @return Bit combination of @ref NIAnalogInputConfigs
+Function HW_NI_GetAnalogInputConfig(string device, variable channel, [variable flags])
+
+	variable value
+
+	DEBUGPRINTSTACKINFO()
+
+#if exists("fDAQmx_AI_ChannelConfigs")
+	value = fDAQmx_AI_ChannelConfigs(device, channel)
+#else
+	ASSERT(0, "Your NIDAQmx XOP is too old to be usable as it is missing fDAQmx_AI_ChannelConfigs. Please contact the manufacturer for an updated version.")
+#endif
+
+	if(!IsFinite(value))
+		if(flags & HARDWARE_ABORT_ON_ERROR)
+			ASSERT(0, "Error " + fDAQmx_ErrorString())
+		else
+			DEBUGPRINT("Error: ", str=fDAQmx_ErrorString())
+		endif
+	endif
+
+	return value
+End
+
 /// @brief Return a list of all NI devices which can be opened
 ///
 /// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
@@ -2808,6 +2862,11 @@ End
 Function HW_NI_ReadAnalogSingleAndSlow(device, channel, [flags])
 	string device
 	variable channel, flags
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
+Function HW_NI_GetAnalogInputConfig(string device, variable channel, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End

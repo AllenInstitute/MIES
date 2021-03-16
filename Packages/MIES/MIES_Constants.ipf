@@ -1403,3 +1403,12 @@ Constant MAX_DOUBLE_PRECISION = 15
 StrConstant PACKAGE_MIES = "MIES"
 
 StrConstant LOGFILE_NWB_MARKER = "### LOGFILE:JSONL ###"
+
+/// @name National Instruments input configuration
+/// @anchor NIAnalogInputConfigs
+/// @{
+Constant HW_NI_CONFIG_RSE                 = 1 //< RSE terminal configuration
+Constant HW_NI_CONFIG_NRSE                = 2 //< NRSE terminal configuration
+Constant HW_NI_CONFIG_DIFFERENTIAL        = 4 //< Differential terminal configuration
+Constant HW_NI_CONFIG_PSEUDO_DIFFERENTIAL = 8 //< Pseudodifferential terminal configuration
+/// @}
