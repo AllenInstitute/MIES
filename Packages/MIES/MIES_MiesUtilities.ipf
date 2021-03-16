@@ -7150,3 +7150,21 @@ Function UploadCrashDumps()
 
 	return 1
 End
+
+Function UploadLogFile()
+	string file, ticket
+	variable jsonID
+
+	file = LOG_GetFile(PACKAGE_MIES)
+	jsonID = GenerateJSONTemplateForUpload()
+
+	AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = 1)
+
+	ticket = GenerateRFC4122UUID()
+	AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = 1)
+
+	UploadJSONPayload(jsonID)
+	JSON_Release(jsonID)
+
+	printf "Successfully uploaded the MIES logfile. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+End
