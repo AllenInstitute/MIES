@@ -4166,3 +4166,81 @@ Function TestAcquiringNewDataOnOldData_REENTRY_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 5)
 End
+
+Function AsyncAcquisitionLBN_IGNORE(string device)
+
+	string ctrl
+	variable channel = 2
+
+	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
+	PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
+
+	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+	PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_UNSELECTED)
+
+	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+	PGC_SetAndActivateControl(device, ctrl, val = 5)
+
+	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+	PGC_SetAndActivateControl(device, ctrl, val = 0.1)
+
+	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+	PGC_SetAndActivateControl(device, ctrl, val = 0.5)
+
+	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+	PGC_SetAndActivateControl(device, ctrl, str = "myTitle")
+
+	ctrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
+	PGC_SetAndActivateControl(device, ctrl, str = "myUnit")
+End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function AsyncAcquisitionLBN([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc = AsyncAcquisitionLBN_IGNORE)
+End
+
+Function AsyncAcquisitionLBN_REENTRY([str])
+	string str
+
+	variable sweepNo, var
+	string refStr, readStr
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE textualValues = GetLBTextualValues(str)
+
+	var = GetLastSettingIndep(numericalValues, 0, "Async 2 On/Off", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(var, CHECKBOX_SELECTED)
+
+	var = GetLastSettingIndep(numericalValues, 0, "Async 2 Gain", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(var, 5)
+
+	var = GetLastSettingIndep(numericalValues, 0, "Async Alarm 2 On/Off", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(var, CHECKBOX_UNSELECTED)
+
+	var = GetLastSettingIndep(numericalValues, 0, "Async Alarm 2 Min", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(var, 0.1)
+
+	var = GetLastSettingIndep(numericalValues, 0, "Async Alarm  2 Max", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(var, 0.5)
+
+	var = GetLastSettingIndep(numericalValues, 0, "Async AD 2: myTitle", DATA_ACQUISITION_MODE)
+	CHECK(var >= 0)
+
+	readStr = GetLastSettingTextIndep(textualValues, 0, "Async AD2 Title", DATA_ACQUISITION_MODE)
+	refStr = "myTitle"
+	CHECK_EQUAL_STR(refStr, readStr)
+
+	readStr = GetLastSettingTextIndep(textualValues, 0, "Async AD2 Unit", DATA_ACQUISITION_MODE)
+	refStr = "myUnit"
+	CHECK_EQUAL_STR(refStr, readStr)
+End

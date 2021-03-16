@@ -3773,106 +3773,6 @@ End
 /// @name Asynchronous Measurements
 /// @{
 
-/// @brief Return a *free* wave for the async settings, data wave
-///
-/// asyncMeasurementWave is used to save the actual async measurement data
-/// for each data sweep
-///
-/// Rows:
-/// - One row
-///
-/// Columns:
-/// - 0: Async Measurement 0
-/// - 1: Async Measurement 1
-/// - 2: Async Measurement 2
-/// - 3: Async Measurement 3
-/// - 4: Async Measurement 4
-/// - 5: Async Measurement 5
-/// - 6: Async Measurement 6
-/// - 7: Async Measurement 7
-///
-/// Layers:
-///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
-Function/Wave GetAsyncMeasurementWave()
-
-	Make/D/FREE/N=(1,8, LABNOTEBOOK_LAYER_COUNT) wv
-	wv = NaN
-
-	SetDimLabel 1, 0, MeasVal0, wv
-	SetDimLabel 1, 1, MeasVal1, wv
-	SetDimLabel 1, 2, MeasVal2, wv
-	SetDimLabel 1, 3, MeasVal3, wv
-	SetDimLabel 1, 4, MeasVal4, wv
-	SetDimLabel 1, 5, MeasVal5, wv
-	SetDimLabel 1, 6, MeasVal6, wv
-	SetDimLabel 1, 7, MeasVal7, wv
-
-	return wv
-End
-
-/// @brief Return a *free* wave for the async settings, key wave
-///
-/// asyncMeasurementKeyWave is used to index async measurements for
-/// each data sweep and create waveNotes for tagging data sweeps
-///
-/// Rows:
-/// - 0: Parameter
-/// - 1: Units
-/// - 2: Tolerance Factor
-///
-/// Columns:
-/// - 0: Async Measurement 0
-/// - 1: Async Measurement 1
-/// - 2: Async Measurement 2
-/// - 3: Async Measurement 3
-/// - 4: Async Measurement 4
-/// - 5: Async Measurement 5
-/// - 6: Async Measurement 6
-/// - 7: Async Measurement 7
-Function/Wave GetAsyncMeasurementKeyWave()
-
-	Make/FREE/T/N=(3,8) wv
-	wv = ""
-
-	SetDimLabel 0, 0, Parameter, wv
-	SetDimLabel 0, 1, Units, wv
-	SetDimLabel 0, 2, Tolerance, wv
-
-	wv[%Parameter][0] = "Async AD 0"
-	wv[%Units][0]     = ""
-	wv[%Tolerance][0] = ".0001"
-
-	wv[%Parameter][1] = "Async AD 1"
-	wv[%Units][1]     = ""
-	wv[%Tolerance][1] = ".0001"
-
-	wv[%Parameter][2] = "Async AD 2"
-	wv[%Units][2]     = ""
-	wv[%Tolerance][2] = ".0001"
-
-	wv[%Parameter][3] = "Async AD 3"
-	wv[%Units][3]     = ""
-	wv[%Tolerance][3] = ".0001"
-
-	wv[%Parameter][4] = "Async AD 4"
-	wv[%Units][4]     = ""
-	wv[%Tolerance][4] = ".0001"
-
-	wv[%Parameter][5] = "Async AD 5"
-	wv[%Units][5]     = ""
-	wv[%Tolerance][5] = ".0001"
-
-	wv[%Parameter][6] = "Async AD 6"
-	wv[%Units][6]     = ""
-	wv[%Tolerance][6] = ".0001"
-
-	wv[%Parameter][7] = "Async AD 7"
-	wv[%Units][7]     = ""
-	wv[%Tolerance][7] = ".0001"
-
-	return wv
-End
-
 /// @brief Return a *free* wave for the asyncSettingsWave, data wave
 ///
 /// asyncSettingsWave is used to save async settings for each
@@ -3882,94 +3782,21 @@ End
 ///  - One row
 ///
 /// Columns:
-/// - 0: Async AD 0 OnOff
-/// - 1: Async AD 1 OnOff
-/// - 2: Async AD 2 OnOff
-/// - 3: Async AD 3 OnOff
-/// - 4: Async AD 4 OnOff
-/// - 5: Async AD 5 OnOff
-/// - 6: Async AD 6 OnOff
-/// - 7: Async AD 7 OnOff
-/// - 8: Async AD 0 Gain
-/// - 9: Async AD 1 Gain
-/// - 10: Async AD 2 Gain
-/// - 11: Async AD 3 Gain
-/// - 12: Async AD 4 Gain
-/// - 13: Async AD 5 Gain
-/// - 14: Async AD 6 Gain
-/// - 15: Async AD 7 Gain
-/// - 16: Async Alarm 0 OnOff
-/// - 17: Async Alarm 1 OnOff
-/// - 18: Async Alarm 2 OnOff
-/// - 19: Async Alarm 3 OnOff
-/// - 20: Async Alarm 4 OnOff
-/// - 21: Async Alarm 5 OnOff
-/// - 22: Async Alarm 6 OnOff
-/// - 23: Async Alarm 7 OnOff
-/// - 24: Async Alarm 0 Min
-/// - 25: Async Alarm 1 Min
-/// - 26: Async Alarm 2 Min
-/// - 27: Async Alarm 3 Min
-/// - 28: Async Alarm 4 Min
-/// - 29: Async Alarm 5 Min
-/// - 30: Async Alarm 6 Min
-/// - 31: Async Alarm 7 Min
-/// - 32: Async Alarm 0 Max
-/// - 33: Async Alarm 1 Max
-/// - 34: Async Alarm 2 Max
-/// - 35: Async Alarm 3 Max
-/// - 36: Async Alarm 4 Max
-/// - 37: Async Alarm 5 Max
-/// - 38: Async Alarm 6 Max
-/// - 39: Async Alarm 7 Max
+/// - Same as GetAsyncSettingsWave
 ///
 /// Layers:
 ///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncSettingsWave()
 
-	Make/D/N=(1, 40, LABNOTEBOOK_LAYER_COUNT)/FREE wv
+	Make/D/N=(1, 6, LABNOTEBOOK_LAYER_COUNT)/FREE wv
 	wv = Nan
 
-	SetDimLabel 1, 0, ADOnOff0, wv
-	SetDimLabel 1, 1, ADOnOff1, wv
-	SetDimLabel 1, 2, ADOnOff2, wv
-	SetDimLabel 1, 3, ADOnOff3, wv
-	SetDimLabel 1, 4, ADOnOff4, wv
-	SetDimLabel 1, 5, ADOnOff5, wv
-	SetDimLabel 1, 6, ADOnOff6, wv
-	SetDimLabel 1, 7, ADOnOff7, wv
-	SetDimLabel 1, 8, ADGain0, wv
-	SetDimLabel 1, 9, ADGain1, wv
-	SetDimLabel 1, 10, ADGain2, wv
-	SetDimLabel 1, 11, ADGain3, wv
-	SetDimLabel 1, 12, ADGain4, wv
-	SetDimLabel 1, 13, ADGain5, wv
-	SetDimLabel 1, 14, ADGain6, wv
-	SetDimLabel 1, 15, ADGain7, wv
-	SetDimLabel 1, 16, AlarmOnOff0, wv
-	SetDimLabel 1, 17, AlarmOnOff1, wv
-	SetDimLabel 1, 18, AlarmOnOff2, wv
-	SetDimLabel 1, 19, AlarmOnOff3, wv
-	SetDimLabel 1, 20, AlarmOnOff4, wv
-	SetDimLabel 1, 21, AlarmOnOff5, wv
-	SetDimLabel 1, 22, AlarmOnOff6, wv
-	SetDimLabel 1, 23, AlarmOnOff7, wv
-	SetDimLabel 1, 24, AlarmMin0, wv
-	SetDimLabel 1, 25, AlarmMin1, wv
-	SetDimLabel 1, 26, AlarmMin2, wv
-	SetDimLabel 1, 27, AlarmMin3, wv
-	SetDimLabel 1, 28, AlarmMin4, wv
-	SetDimLabel 1, 29, AlarmMin5, wv
-	SetDimLabel 1, 30, AlarmMin6, wv
-	SetDimLabel 1, 31, AlarmMin7, wv
-	SetDimLabel 1, 32, AlarmMax0, wv
-	SetDimLabel 1, 33, AlarmMax1, wv
-	SetDimLabel 1, 34, AlarmMax2, wv
-	SetDimLabel 1, 35, AlarmMax3, wv
-	SetDimLabel 1, 36, AlarmMax4, wv
-	SetDimLabel 1, 37, AlarmMax5, wv
-	SetDimLabel 1, 38, AlarmMax6, wv
-	SetDimLabel 1, 39, AlarmMax7, wv
+	SetDimLabel COLS, 0, ADOnOff, wv
+	SetDimLabel COLS, 1, ADGain, wv
+	SetDimLabel COLS, 2, AlarmOnOff, wv
+	SetDimLabel COLS, 3, AlarmMin, wv
+	SetDimLabel COLS, 4, AlarmMax, wv
+	SetDimLabel COLS, 5, MeasuredValue, wv
 
 	return wv
 End
@@ -3985,214 +3812,56 @@ End
 /// - 2: Tolerance Factor
 ///
 /// Columns:
-/// - 0: Async AD 0 OnOff
-/// - 1: Async AD 1 OnOff
-/// - 2: Async AD 2 OnOff
-/// - 3: Async AD 3 OnOff
-/// - 4: Async AD 4 OnOff
-/// - 5: Async AD 5 OnOff
-/// - 6: Async AD 6 OnOff
-/// - 7: Async AD 7 OnOff
-/// - 8: Async AD 0 Gain
-/// - 9: Async AD 1 Gain
-/// - 10: Async AD 2 Gain
-/// - 11: Async AD 3 Gain
-/// - 12: Async AD 4 Gain
-/// - 13: Async AD 5 Gain
-/// - 14: Async AD 6 Gain
-/// - 15: Async AD 7 Gain
-/// - 16: Async Alarm 0 OnOff
-/// - 17: Async Alarm 1 OnOff
-/// - 18: Async Alarm 2 OnOff
-/// - 19: Async Alarm 3 OnOff
-/// - 20: Async Alarm 4 OnOff
-/// - 21: Async Alarm 5 OnOff
-/// - 22: Async Alarm 6 OnOff
-/// - 23: Async Alarm 7 OnOff
-/// - 24: Async Alarm 0 Min
-/// - 25: Async Alarm 1 Min
-/// - 26: Async Alarm 2 Min
-/// - 27: Async Alarm 3 Min
-/// - 28: Async Alarm 4 Min
-/// - 29: Async Alarm 5 Min
-/// - 30: Async Alarm 6 Min
-/// - 31: Async Alarm 7 Min
-/// - 32: Async Alarm 0 Max
-/// - 33: Async Alarm 1 Max
-/// - 34: Async Alarm 2 Max
-/// - 35: Async Alarm 3 Max
-/// - 36: Async Alarm 4 Max
-/// - 37: Async Alarm 5 Max
-/// - 38: Async Alarm 6 Max
-/// - 39: Async Alarm 7 Max
-Function/Wave GetAsyncSettingsKeyWave()
+/// - 0: Async AD $Channel OnOff
+/// - 1: Async AD $Channel Gain
+/// - 2: Async Alarm $Channel OnOff
+/// - 3: Async Alarm $Channel Min
+/// - 4: Async Alarm  $Channel Max
+/// - 5: Async AD $Channel
+Function/Wave GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, string title, string unit)
+	string prefix
 
-	Make/T/N=(3,40)/FREE wv
+	sprintf prefix, "Async %d", channel
+
+	Make/T/N=(3,6)/FREE wv
 	wv = ""
 
-	SetDimLabel 0, 0, Parameter, wv
-	SetDimLabel 0, 1, Units, wv
-	SetDimLabel 0, 2, Tolerance, wv
+	CopyDimLabels settingsWave, wv
 
-	wv[%Parameter][0] = "Async 0 On/Off"
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units, wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	wv[%Parameter][0] = prefix + " On/Off"
 	wv[%Units][0]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][0] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][1] = "Async 1 On/Off"
-	wv[%Units][1]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][1] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][1] = prefix + " Gain"
+	wv[%Units][1]     = ""
+	wv[%Tolerance][1] = ".001"
 
-	wv[%Parameter][2] = "Async 2 On/Off"
+	sprintf prefix, "Async Alarm %d", channel
+
+	wv[%Parameter][2] = prefix + " On/Off"
 	wv[%Units][2]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][2] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][3] = "Async 3 On/Off"
-	wv[%Units][3]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][3] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][3] = prefix + " Min"
+	wv[%Units][3]     = ""
+	wv[%Tolerance][3] = ".001"
 
-	wv[%Parameter][4] = "Async 4 On/Off"
-	wv[%Units][4]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][4] = LABNOTEBOOK_NO_TOLERANCE
+	// two spaces before number, use the same name for compatibility reasons
+	sprintf prefix, "Async Alarm  %d", channel
 
-	wv[%Parameter][5] = "Async 5 On/Off"
-	wv[%Units][5]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][5] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][4] = prefix + " Max"
+	wv[%Units][4]     = ""
+	wv[%Tolerance][4] = ".001"
 
-	wv[%Parameter][6] = "Async 6 On/Off"
-	wv[%Units][6]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][6] = LABNOTEBOOK_NO_TOLERANCE
+	sprintf prefix, "Async AD %d: %s", channel, title
 
-	wv[%Parameter][7] = "Async 7 On/Off"
-	wv[%Units][7]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][7] = LABNOTEBOOK_NO_TOLERANCE
-
-	wv[%Parameter][8] = "Async 0 Gain"
-	wv[%Units][8]     = ""
-	wv[%Tolerance][8] = ".001"
-
-	wv[%Parameter][9] = "Async 1 Gain"
-	wv[%Units][9]     = ""
-	wv[%Tolerance][9] = ".001"
-
-	wv[%Parameter][10] = "Async 2 Gain"
-	wv[%Units][10]     = ""
-	wv[%Tolerance][10] = ".001"
-
-	wv[%Parameter][11] = "Async 3 Gain"
-	wv[%Units][11]     = ""
-	wv[%Tolerance][11] = ".001"
-
-	wv[%Parameter][12] = "Async 4 Gain"
-	wv[%Units][12]     = ""
-	wv[%Tolerance][12] = ".001"
-
-	wv[%Parameter][13] = "Async 5 Gain"
-	wv[%Units][13]     = ""
-	wv[%Tolerance][13] = ".001"
-
-	wv[%Parameter][14] = "Async 6 Gain"
-	wv[%Units][14]     = ""
-	wv[%Tolerance][14] = ".001"
-
-	wv[%Parameter][15] = "Async 7 Gain"
-	wv[%Units][15]     = ""
-	wv[%Tolerance][15] = ".001"
-
-	wv[%Parameter][16] = "Async Alarm 0 On/Off"
-	wv[%Units][16]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][16] = LABNOTEBOOK_NO_TOLERANCE
-
-	wv[%Parameter][17] = "Async Alarm 1 On/Off"
-	wv[%Units][17]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][17] = LABNOTEBOOK_NO_TOLERANCE
-
-	wv[%Parameter][18] = "Async Alarm 2 On/Off"
-	wv[%Units][18]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][18] = LABNOTEBOOK_NO_TOLERANCE
-
-	wv[%Parameter][19] = "Async Alarm 3 On/Off"
-	wv[%Units][19]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][19] = LABNOTEBOOK_NO_TOLERANCE
-
-	wv[%Parameter][20] = "Async Alarm 4 On/Off"
-	wv[%Units][20]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][20] = LABNOTEBOOK_NO_TOLERANCE
-
-	wv[%Parameter][21] = "Async Alarm 5 On/Off"
-	wv[%Units][21]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][21] = LABNOTEBOOK_NO_TOLERANCE
-
-	wv[%Parameter][22] = "Async Alarm 6 On/Off"
-	wv[%Units][22]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][22] = LABNOTEBOOK_NO_TOLERANCE
-
-	wv[%Parameter][23] = "Async Alarm 7 On/Off"
-	wv[%Units][23]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][23] = LABNOTEBOOK_NO_TOLERANCE
-
-	wv[%Parameter][24] = "Async Alarm 0 Min"
-	wv[%Units][24]     = ""
-	wv[%Tolerance][24] = ".001"
-
-	wv[%Parameter][25] = "Async Alarm 1 Min"
-	wv[%Units][25]     = ""
-	wv[%Tolerance][25] = ".001"
-
-	wv[%Parameter][26] = "Async Alarm 2 Min"
-	wv[%Units][26]     = ""
-	wv[%Tolerance][26] = ".001"
-
-	wv[%Parameter][27] = "Async Alarm 3 Min"
-	wv[%Units][27]     = ""
-	wv[%Tolerance][27] = ".001"
-
-	wv[%Parameter][28] = "Async Alarm 4 Min"
-	wv[%Units][28]     = ""
-	wv[%Tolerance][28] = ".001"
-
-	wv[%Parameter][29] = "Async Alarm 5 Min"
-	wv[%Units][29]     = ""
-	wv[%Tolerance][29] = ".001"
-
-	wv[%Parameter][30] = "Async Alarm 6 Min"
-	wv[%Units][30]     = ""
-	wv[%Tolerance][30] = ".001"
-
-	wv[%Parameter][31] = "Async Alarm 7 Min"
-	wv[%Units][31]     = ""
-	wv[%Tolerance][31] = ".001"
-
-	wv[%Parameter][32] = "Async Alarm  0 Max"
-	wv[%Units][32]     = ""
-	wv[%Tolerance][32] = ".001"
-
-	wv[%Parameter][33] = "Async Alarm  1 Max"
-	wv[%Units][33]     = ""
-	wv[%Tolerance][33] = ".001"
-
-	wv[%Parameter][34] = "Async Alarm  2 Max"
-	wv[%Units][34]     = ""
-	wv[%Tolerance][34] = ".001"
-
-	wv[%Parameter][35] = "Async Alarm  3 Max"
-	wv[%Units][35]     = ""
-	wv[%Tolerance][35] = ".001"
-
-	wv[%Parameter][36] = "Async Alarm  4 Max"
-	wv[%Units][36]     = ""
-	wv[%Tolerance][36] = ".001"
-
-	wv[%Parameter][37] = "Async Alarm  5 Max"
-	wv[%Units][37]     = ""
-	wv[%Tolerance][37] = ".001"
-
-	wv[%Parameter][38] = "Async Alarm  6 Max"
-	wv[%Units][38]     = ""
-	wv[%Tolerance][38] = ".001"
-
-	wv[%Parameter][39] = "Async Alarm  7 Max"
-	wv[%Units][39]     = ""
-	wv[%Tolerance][39] = ".001"
+	wv[%Parameter][5] = prefix
+	wv[%Units][5]     = unit
+	wv[%Tolerance][5] = ".0001"
 
 	return wv
 End
@@ -4206,29 +3875,17 @@ End
 /// - Only one
 ///
 /// Columns:
-/// - 0: Async 0 Title
-/// - 1: Async 1 Title
-/// - 2: Async 2 Title
-/// - 3: Async 3 Title
-/// - 4: Async 4 Title
-/// - 5: Async 5 Title
-/// - 6: Async 6 Title
-/// - 7: Async 7 Title
-/// - 8: Async 0 Units
-/// - 9: Async 1 Units
-/// - 10: Async 2 Units
-/// - 11: Async 3 Units
-/// - 12: Async 4 Units
-/// - 13: Async 5 Units
-/// - 14: Async 6 Units
-/// - 15: Async 7 Units
+/// - Same as GetAsyncSettingsTextKeyWave
 ///
 /// Layers:
-///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
+/// - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncSettingsTextWave()
 
-	Make/T/N=(1,16, LABNOTEBOOK_LAYER_COUNT)/FREE wv
+	Make/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT)/FREE wv
 	wv = ""
+
+	SetDimLabel COLS, 0, Title, wv
+	SetDimLabel COLS, 1, Unit, wv
 
 	return wv
 End
@@ -4241,43 +3898,20 @@ End
 /// - Just one
 ///
 /// Columns:
-/// - 0: Async 0 Title
-/// - 1: Async 1 Title
-/// - 2: Async 2 Title
-/// - 3: Async 3 Title
-/// - 4: Async 4 Title
-/// - 5: Async 5 Title
-/// - 6: Async 6 Title
-/// - 7: Async 7 Title
-/// - 8: Async 0 Unit
-/// - 9: Async 1 Unit
-/// - 10: Async 2 Unit
-/// - 11: Async 3 Unit
-/// - 12: Async 4 Unit
-/// - 13: Async 5 Unit
-/// - 14: Async 6 Unit
-/// - 15: Async 7 Unit
-Function/Wave GetAsyncSettingsTextKeyWave()
+/// - 0: Async $Channel Title
+/// - 1: Async $Channel Unit
+Function/Wave GetAsyncSettingsTextKeyWave(WAVE/T settingsWave, variable channel)
+	string prefix
 
-	Make/T/N=(1,16)/FREE wv
+	Make/T/N=(1, 2)/FREE wv
 	wv = ""
 
-	wv[0][0] = "Async AD0 Title"
-	wv[0][1] = "Async AD1 Title"
-	wv[0][2] = "Async AD2 Title"
-	wv[0][3] = "Async AD3 Title"
-	wv[0][4] = "Async AD4 Title"
-	wv[0][5] = "Async AD5 Title"
-	wv[0][6] = "Async AD6 Title"
-	wv[0][7] = "Async AD7 Title"
-	wv[0][8] = "Async AD0 Unit"
-	wv[0][9] = "Async AD1 Unit"
-	wv[0][10] = "Async AD2 Unit"
-	wv[0][11] = "Async AD3 Unit"
-	wv[0][12] = "Async AD4 Unit"
-	wv[0][13] = "Async AD5 Unit"
-	wv[0][14] = "Async AD6 Unit"
-	wv[0][15] = "Async AD7 Unit"
+	CopyDimLabels settingsWave, wv
+
+	sprintf prefix, "Async AD%d", channel
+
+	wv[0][0] = prefix + " Title"
+	wv[0][1] = prefix + " Unit"
 
 	return wv
 End

@@ -524,9 +524,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 		// AI_createDummySettingsWave(panelTitle, SweepNo)
 	endif
 
-	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_Append"))
-		ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
-	endif
+	ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 
 	// TP settings, especially useful if "global TP insertion" is active
 	ED_TPSettingsDocumentation(panelTitle, sweepCount, DATA_ACQUISITION_MODE)
@@ -560,25 +558,15 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	string panelTitle
 	Variable sweepCount
 
-	string ctrlCheck, ctrlTitle, ctrlUnit, title, unit, str
-	variable minSettingValue, maxSettingValue, step, i, scaledValue
+	string title, unit, str, ctrl
+	variable minSettingValue, maxSettingValue, i, scaledValue
 	variable redoLastSweep
 
-	Wave asyncSettingsWave = GetAsyncSettingsWave()
-	Wave/T asyncSettingsKey = GetAsyncSettingsKeyWave()
-
-	Wave/T asyncSettingsTxtWave = GetAsyncSettingsTextWave()
-	Wave/T asyncSettingsTxtKey = GetAsyncSettingsTextKeyWave()
-
-	Wave asyncMeasurementWave = GetAsyncMeasurementWave()
-	Wave/T asyncMeasurementKey = GetAsyncMeasurementKeyWave()
-
-	step = LABNOTEBOOK_LAYER_COUNT - 1
-	ASSERT(step > 0, "Unexpected step size")
-
-	ctrlTitle = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
-	ctrlUnit  = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
 	WAVE statusAsync = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ASYNC)
+
+	if(IsConstant(statusAsync, 0))
+		return NaN
+	endif
 
 	for(i = 0; i < NUM_ASYNC_CHANNELS ; i += 1)
 
@@ -586,36 +574,45 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 			continue
 		endif
 
-		asyncSettingsWave[0][i][,;step] = CHECKBOX_SELECTED
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+		title = DAG_GetTextualValue(panelTitle, ctrl, index = i)
 
-		asyncSettingsWave[0][i + 8][,;step]  = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN), index = i)
-		asyncSettingsWave[0][i + 16][,;step] = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), index = i)
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
+		unit = DAG_GetTextualValue(panelTitle, ctrl, index = i)
 
-		minSettingValue = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN), index = i)
-		asyncSettingsWave[0][i + 24][,;step] = minSettingValue
+		WAVE asyncSettingsWave = GetAsyncSettingsWave()
+		WAVE/T asyncSettingsKey = GetAsyncSettingsKeyWave(asyncSettingsWave, i, title, unit)
 
-		maxSettingValue = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX), index = i)
-		asyncSettingsWave[0][i + 32][,;step] = maxSettingValue
+		WAVE/T asyncSettingsTxtWave = GetAsyncSettingsTextWave()
+		WAVE/T asyncSettingsTxtKey = GetAsyncSettingsTextKeyWave(asyncSettingsTxtWave, i)
+
+		asyncSettingsWave[0][%ADOnOff][INDEP_HEADSTAGE] = CHECKBOX_SELECTED
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+		asyncSettingsWave[0][%ADGain][INDEP_HEADSTAGE] = DAG_GetNumericalValue(panelTitle, ctrl, index = i)
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+		asyncSettingsWave[0][%AlarmOnOff][INDEP_HEADSTAGE] = DAG_GetNumericalValue(panelTitle, ctrl, index = i)
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+		minSettingValue = DAG_GetNumericalValue(panelTitle, ctrl, index = i)
+		asyncSettingsWave[0][%AlarmMin] = minSettingValue
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+		maxSettingValue = DAG_GetNumericalValue(panelTitle, ctrl, index = i)
+		asyncSettingsWave[0][%AlarmMax] = maxSettingValue
 
 		// Take the Min and Max values and use them for setting the tolerance value in the measurement key wave
-		asyncMeasurementKey[%Tolerance][i][,;step] = num2str(abs((maxSettingValue - minSettingValue)/2))
+		asyncSettingsKey[%Tolerance][%MeasuredValue] = num2str(abs((maxSettingValue - minSettingValue)/2))
 
-		title = DAG_GetTextualValue(panelTitle, ctrlTitle, index = i)
-		asyncSettingsTxtWave[0][i][,;step] = title
+		asyncSettingsTxtWave[0][%Title][INDEP_HEADSTAGE] = title
 
-		sprintf str, "Async AD %d: %s" i, title
-		asyncMeasurementKey[%Parameter][i][,;step] = str
-
-		unit = DAG_GetTextualValue(panelTitle, ctrlUnit, index = i)
-		asyncSettingsTxtWave[0][i + 8][,;step] = unit
-
-		// add the unit value into numericalKeys
-		asyncMeasurementKey[%Units][i][,;step] = unit
+		asyncSettingsTxtWave[0][%Unit][INDEP_HEADSTAGE] = unit
 
 		scaledValue = ASD_ReadChannel(panelTitle, i)
 
 		// put the measurement value into the async settings wave for creation of wave notes
-		asyncMeasurementWave[0][i][,;LABNOTEBOOK_LAYER_COUNT - 1] = scaledValue
+		asyncSettingsWave[0][%MeasuredValue][INDEP_HEADSTAGE] = scaledValue
 
 		if(ASD_CheckAsynAlarmState(panelTitle, i, scaledValue))
 			beep
@@ -624,11 +621,10 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 			beep
 			redoLastSweep = 1
 		endif
-	endfor
 
-	ED_AddEntriesToLabnotebook(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
-	ED_AddEntriesToLabnotebook(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
-	ED_AddEntriesToLabnotebook(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
+		ED_AddEntriesToLabnotebook(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
+		ED_AddEntriesToLabnotebook(asyncSettingsWave, asyncSettingsKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
+	endfor
 
 	if(redoLastSweep && DAG_GetNumericalValue(panelTitle, "Check_Settings_AlarmAutoRepeat"))
 		RA_SkipSweeps(panelTitle, -1)
