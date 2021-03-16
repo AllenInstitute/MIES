@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HardwareMain
 
-#include "MIES_Include"
+#include "MIES_Include", optional
 #include "unit-testing"
 
 // If the next line fails, you are including the MIES created

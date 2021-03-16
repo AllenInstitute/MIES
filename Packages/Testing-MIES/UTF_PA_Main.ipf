@@ -2,7 +2,7 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
-#include "MIES_Include"
+#include "MIES_Include", optional
 #include "unit-testing"
 
 #include "UTF_HelperFunctions"
