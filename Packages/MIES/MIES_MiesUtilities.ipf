@@ -7077,6 +7077,23 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 	endif
 End
 
+/// @brief Return JSON text with default entries for upload
+///
+/// Caller is responsible for releasing JSON text.
+Function GenerateJSONTemplateForUpload()
+
+	variable jsonID
+
+	jsonID = JSON_New()
+
+	JSON_AddString(jsonID, "/computer", GetEnvironmentVariable("COMPUTERNAME"))
+	JSON_AddString(jsonID, "/user", IgorInfo(7))
+	JSON_AddString(jsonID, "/timestamp", GetISO8601TimeStamp())
+	AddPayloadEntries(jsonID, {"version.txt"}, {ROStr(GetMiesVersion())}, isBinary = 1)
+
+	return jsonID
+End
+
 /// @brief Convert the Igor Pro crash dumps and the report file to JSON and upload them
 ///
 /// Does nothing if none of these files exists.
@@ -7107,15 +7124,10 @@ Function UploadCrashDumps()
 	printf "Please wait while we upload %d crash dumps. This might take a while.\r", numFiles + numLogs
 	ControlWindowToFront()
 
-	jsonID = JSON_New()
-
-	JSON_AddString(jsonID, "/computer", GetEnvironmentVariable("COMPUTERNAME"))
-	JSON_AddString(jsonID, "/user", IgorInfo(7))
-	JSON_AddString(jsonID, "/timestamp", GetISO8601TimeStamp())
+	jsonID = GenerateJSONTemplateForUpload()
 
 	AddPayloadEntriesFromFiles(jsonID, files, isBinary = 1)
 	AddPayloadEntriesFromFiles(jsonID, logs, isBinary = 1)
-	AddPayloadEntries(jsonID, {"version.txt"}, {ROStr(GetMiesVersion())}, isBinary = 1)
 
 	PathInfo $diagSymbPath
 	diagPath = S_path
