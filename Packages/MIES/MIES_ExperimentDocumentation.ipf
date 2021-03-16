@@ -589,7 +589,7 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 		asyncSettingsWave[0][i][,;step] = CHECKBOX_SELECTED
 
 		asyncSettingsWave[0][i + 8][,;step]  = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN), index = i)
-		asyncSettingsWave[0][i + 16][,;step] = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), index = i)
+		asyncSettingsWave[0][i + 16][,;step] = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK), index = i)
 
 		minSettingValue = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN), index = i)
 		asyncSettingsWave[0][i + 24][,;step] = minSettingValue
