@@ -563,7 +563,7 @@ Function/S LBN_GetAllExperiments()
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
 
 	for(i = 0; i < index; i += 1)
-		list = AddListItem(map[i][%FileName], list, ";", Inf)
+		list = AddListItem(map[i][%DataFolder], list, ";", Inf)
 	endfor
 
 	return list
