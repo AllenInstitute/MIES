@@ -939,8 +939,6 @@ Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 	deviceID = V_Value
 
-	printf "ITC Device opened, returned deviceID is %d.\r", deviceID
-
 	return deviceID
 End
 
