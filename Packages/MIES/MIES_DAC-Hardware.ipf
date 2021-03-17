@@ -442,6 +442,35 @@ Function/WAVE HW_GetDeviceInfo(hardwareType, deviceID, [flags])
 	endswitch
 End
 
+/// @brief Return hardware specific information from the device
+///
+/// This function does not require the device to be registered compared to HW_GetDeviceInfo().
+///
+/// @param device name of the device
+/// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function/WAVE HW_GetDeviceInfoUnregistered(string device, [variable flags])
+
+	variable hardwareType, deviceID
+
+	deviceID = HW_OpenDevice(device, hardwareType, flags = flags)
+
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			WAVE devInfo = HW_ITC_GetDeviceInfo(deviceID, flags = flags)
+			HW_CloseDevice(hardwareType, deviceID)
+			break
+		case HARDWARE_NI_DAC:
+			HW_NI_AssertOnInvalid(device)
+			WAVE devInfo = HW_NI_GetDeviceInfo(device, flags = flags)
+			// nothing to do for NI
+			break
+		default:
+			ASSERT(0, "Unsupported hardware")
+	endswitch
+
+	return devInfo
+End
+
 /// @brief Update the device info wave
 ///
 /// Query the data via GetDeviceInfoWave().
