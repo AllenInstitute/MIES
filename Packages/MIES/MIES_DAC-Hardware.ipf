@@ -458,8 +458,8 @@ Function HW_WriteDeviceInfo(hardwareType, deviceID, deviceInfo)
 		case HARDWARE_ITC_DAC:
 			deviceInfo[%AD]   = devInfoHW[%ADCCount]
 			deviceInfo[%DA]   = devInfoHW[%DACCount]
-			deviceInfo[%TTL]  = min(devInfoHW[%DOCount], devInfoHW[%DICount])
-			deviceInfo[%Rack] = ceil(deviceInfo[%TTL] / 3)
+			deviceInfo[%TTL]  = devInfoHW[%DOCount] * 8
+			deviceInfo[%Rack] = ceil(min(devInfoHW[%DOCount], devInfoHW[%DICount]) / 3)
 			break
 		case HARDWARE_NI_DAC:
 			WAVE/T devInfoHWText = devInfoHW
