@@ -512,7 +512,7 @@ static Function P_PrepareITCWaves(mainDevice, pressureDevice, deviceID)
 
 		WAVE deviceInfo = GetDeviceInfoWave(pressureDevice)
 		ASSERT(deviceInfo[%Rack] == 2, "Pressure with ITC1600 requires two racks")
-		ITCConfig[3][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
+		ITCConfig[3][1] = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
 	else // one rack
 		Redimension/N=(-1, 3) ITCData
 		Redimension/N=(3, -1) ITCConfig
