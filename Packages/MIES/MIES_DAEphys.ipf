@@ -4833,8 +4833,108 @@ Function DAP_LockDevice(string win)
 	endif
 
 	DAP_UpdateSweepLimitsAndDisplay(panelTitleLocked, initial = 1)
+	DAP_AdaptPanelForDeviceSpecifics(panelTitleLocked)
 
 	LOG_AddEntry(PACKAGE_MIES, "locking", keys = {"device"}, values = {panelTitleLocked})
+End
+
+static Function DAP_AdaptPanelForDeviceSpecifics(string panelTitle)
+
+	variable i
+	string controls
+
+	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_DAC)
+
+		if(i < deviceInfo[%DA])
+			EnableControls(panelTitle, controls)
+		else
+#ifndef EVIL_KITTEN_EATING_MODE
+			DisableControls(panelTitle, controls)
+#endif
+		endif
+	endfor
+
+	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
+
+		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ADC)
+
+		if(i < deviceInfo[%AD])
+			EnableControls(panelTitle, controls)
+		else
+#ifndef EVIL_KITTEN_EATING_MODE
+			DisableControls(panelTitle, controls)
+#endif
+		endif
+	endfor
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_TTL)
+
+		if(i < deviceInfo[%TTL])
+			EnableControls(panelTitle, controls)
+		else
+#ifndef EVIL_KITTEN_EATING_MODE
+			DisableControls(panelTitle, controls)
+#endif
+		endif
+	endfor
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ASYNC)
+
+		if(i < deviceInfo[%TTL])
+			EnableControls(panelTitle, controls)
+		else
+#ifndef EVIL_KITTEN_EATING_MODE
+			DisableControls(panelTitle, controls)
+#endif
+		endif
+	endfor
+End
+
+static Function/S DAP_GetControlsForChannelIndex(variable channelIndex, variable channelType)
+
+	string controls = ""
+
+	switch(channelType)
+		case CHANNEL_TYPE_DAC:
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_GAIN), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_UNIT), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_WAVE), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_SEARCH), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_SCALE), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_INDEX_END), controls, ";", Inf)
+			break
+		case CHANNEL_TYPE_ADC:
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_GAIN), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_UNIT), controls, ";", Inf)
+			break
+		case CHANNEL_TYPE_TTL:
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_WAVE), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_SEARCH), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_INDEX_END), controls, ";", Inf)
+			break
+		case CHANNEL_TYPE_ASYNC:
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_TITLE), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_GAIN), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_UNIT), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_ALARM_MIN), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_ALARM_MAX), controls, ";", Inf)
+			break
+	endswitch
+
+	return controls
 End
 
 static Function DAP_LoadBuiltinStimsets()
