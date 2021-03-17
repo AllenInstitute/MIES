@@ -1615,6 +1615,9 @@ End
 /// @brief Create the amplifier connection waves
 Function AI_FindConnectedAmps()
 
+	variable numRows, i
+	string str, list = ""
+
 	IH_RemoveAmplifierConnWaves()
 
 	DFREF saveDFR = GetDataFolderDFR()
@@ -1627,6 +1630,14 @@ Function AI_FindConnectedAmps()
 	MCC_FindServers/Z=1
 
 	SetDataFolder saveDFR
+
+	numRows = DimSize(telegraphServers, ROWS)
+	for(i=0; i < numRows; i+=1)
+		str  = DAP_GetAmplifierDef(telegraphServers[i][0], telegraphServers[i][1])
+		list = AddListItem(str, list, ";", inf)
+	endfor
+
+	LOG_AddEntry(PACKAGE_MIES, "amplifiers", keys = {"list"}, values = {list})
 End
 
 #else // AMPLIFIER_XOPS_PRESENT

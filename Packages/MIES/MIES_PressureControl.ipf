@@ -1983,6 +1983,11 @@ static Function P_Enable()
 		else
 			printf "No devices are presently assigned for pressure regulation on: %s\r" LockedDevice
 		endif
+
+		LOG_AddEntry(PACKAGE_MIES, "pressure",                           \
+		                           keys = {"device", "pressure device"}, \
+		                           values = {lockedDevice,               \
+		                                     listOfPressureCtrlDevices})
 	endfor
 End
 
@@ -2373,6 +2378,10 @@ Function P_ButtonProc_UserPressure(ba) : ButtonControl
 
 				DisableControls(panelTitle, "popup_Settings_UserPressure;Popup_Settings_UserPressure_ADC;button_Hardware_PUser_Enable")
 				EnableControls(panelTitle, "button_Hardware_PUser_Disable")
+
+				LOG_AddEntry(PACKAGE_MIES, "user pressure",                           \
+				                           keys = {"device", "user pressure"},        \
+				                           values = {panelTitle, userPressureDevice})
 
 			elseif(!cmpstr(ba.ctrlName, "button_Hardware_PUser_Disable"))
 
