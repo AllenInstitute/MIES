@@ -31,7 +31,7 @@ static Function/S LBN_GetExpFolderFromPopup(graph)
 	panel = LBN_GetLeftPanel(graph)
 	index = GetPopupMenuIndex(panel, "popup_select_experiment")
 
-	ASSERT(index >= 0 && index < DimSize(map, ROWS), "Invalid index")
+	ASSERT(index >= 0 && index < GetNumberFromWaveNote(map, NOTE_INDEX), "Invalid index")
 
 	return map[index][%DataFolder]
 End
