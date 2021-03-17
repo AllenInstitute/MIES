@@ -96,6 +96,11 @@ Function/S DAP_GetNIDeviceList()
 
 	globalNIDevList = devList
 
+	// we want to have device infos for all NI devices
+	// devList holds only the ones suitable for DAQ but
+	// skips the ones used for pressure
+	DAP_UpdateDeviceInfoWaves(HW_NI_ListDevices())
+
 	return devList
 End
 
@@ -112,6 +117,8 @@ Function/S DAP_GetITCDeviceList()
 	endif
 
 	globalITCDevList = HW_ITC_ListDevices()
+
+	DAP_UpdateDeviceInfoWaves(globalITCDevList)
 
 	return globalITCDevList
 End
@@ -4825,9 +4832,6 @@ Function DAP_LockDevice(string win)
 		KillOrMoveToTrash(wv = GetDQMActiveDeviceList())
 	endif
 
-	WAVE deviceInfo = GetDeviceInfoWave(panelTitleLocked)
-	HW_WriteDeviceInfo(hardwareType, deviceID, deviceInfo)
-
 	DAP_UpdateSweepLimitsAndDisplay(panelTitleLocked, initial = 1)
 
 	LOG_AddEntry(PACKAGE_MIES, "locking", keys = {"device"}, values = {panelTitleLocked})
@@ -5443,6 +5447,25 @@ Function ButtonProc_Hardware_rescan(ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+/// @brief Update the device info waves for all passed devices
+///
+/// Usually only called once during startup
+///
+/// @param deviceList list of devices usable for DAQ and pressure
+Function DAP_UpdateDeviceInfoWaves(string deviceList)
+	string device
+	variable numEntries, i, hardwareType
+
+	numEntries = ItemsInList(deviceList)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, deviceList)
+		WAVE deviceInfo = GetDeviceInfoWave(device)
+		WAVE devInfoHW = HW_GetDeviceInfoUnregistered(device)
+		hardwareType = GetHardwareType(device)
+		HW_WriteDeviceInfo(hardwareType, deviceInfo, devInfoHW)
+	endfor
 End
 
 Function DAP_CheckProc_PowerSpectrum(cba) : CheckBoxControl

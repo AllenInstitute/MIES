@@ -510,10 +510,7 @@ static Function P_PrepareITCWaves(mainDevice, pressureDevice, deviceID)
 
 		ITCConfig[3][0]  = XOP_CHANNEL_TYPE_TTL
 
-		Duplicate GetDeviceInfoWave(mainDevice), deviceInfo
-		deviceInfo[] = NaN
-
-		HW_WriteDeviceInfo(HARDWARE_ITC_DAC, deviceID, deviceInfo)
+		WAVE deviceInfo = GetDeviceInfoWave(pressureDevice)
 		ASSERT(deviceInfo[%Rack] == 2, "Pressure with ITC1600 requires two racks")
 		ITCConfig[3][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
 	else // one rack

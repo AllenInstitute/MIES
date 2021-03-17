@@ -474,13 +474,8 @@ End
 /// @brief Update the device info wave
 ///
 /// Query the data via GetDeviceInfoWave().
-Function HW_WriteDeviceInfo(hardwareType, deviceID, deviceInfo)
-	variable hardwareType, deviceID
-	WAVE deviceInfo
+Function HW_WriteDeviceInfo(variable hardwareType, WAVE deviceInfo, WAVE devInfoHW)
 
-	HW_AssertOnInvalid(hardwareType, deviceID)
-
-	WAVE devInfoHW = HW_GetDeviceInfo(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 	deviceInfo[%HardwareType] = hardwareType
 
 	switch(hardwareType)

@@ -604,6 +604,18 @@ threadsafe Function/DF GetDevicePath(panelTitle)
 	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
 End
 
+/// @brief Return the path to the device info folder, e.g. root:mies:HardwareDevices:DeviceInfo
+threadsafe Function/S GetDeviceInfoPathAsString()
+
+	return GetDAQDevicesFolderAsString() + ":DeviceInfo"
+End
+
+/// @brief Return a datafolder reference to the device info folder
+threadsafe Function/DF GetDeviceInfoPath()
+
+	return createDFWithAllParents(GetDeviceInfoPathAsString())
+End
+
 /// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0
 threadsafe Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
@@ -6288,15 +6300,15 @@ Function/WAVE GetDeviceInfoWave(panelTitle)
 
 	variable versionOfNewWave = 1
 
-	DFREF dfr = GetDevicePath(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = deviceInfo
+	DFREF dfr = GetDeviceInfoPath()
+	WAVE/D/Z/SDFR=dfr wv = $panelTitle
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/D/N=(5) dfr:deviceInfo/Wave=wv
+		Make/D/N=(5) dfr:$panelTitle/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, AD, wv
