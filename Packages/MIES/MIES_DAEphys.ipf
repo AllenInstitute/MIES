@@ -2515,9 +2515,56 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 	endfor
 
+	if(DAP_CheckPressureSettings(panelTitle))
+		return 1
+	endif
+
 	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_NwbExport"))
 		NWB_PrepareExport(DAG_GetNumericalValue(panelTitle, "Popup_Settings_NwbVersion"))
 	endif
+
+	return 0
+End
+
+static Function DAP_CheckPressureSettings(string panelTitle)
+	variable ADConfig, ADC
+	string pressureDevice, userPressureDevice
+
+#ifndef EVIL_KITTEN_EATING_MODE
+	pressureDevice = GetPopupMenuString(panelTitle, "popup_Settings_Pressure_dev")
+
+	if(cmpstr(pressureDevice, NONE))
+		if(GetHardwareType(pressureDevice) == HARDWARE_NI_DAC)
+
+			ADC = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_AD"))
+			ADConfig = HW_NI_GetAnalogInputConfig(pressureDevice, ADC)
+
+			if((ADConfig & HW_NI_CONFIG_DIFFERENTIAL) != HW_NI_CONFIG_DIFFERENTIAL)
+				printf "(%s) The AD channel %d of the pressure device %s can not be used in differential mode.\r", panelTitle, ADC, pressureDevice
+				printf "Available modes are: %s\r", HW_NI_AnalogInputToString(ADConfig)
+				ControlWindowToFront()
+				return 1
+			endif
+		endif
+	endif
+
+	userPressureDevice = GetPopupMenuString(panelTitle, "popup_Settings_UserPressure")
+
+	if(cmpstr(userPressureDevice, NONE))
+		if(GetHardwareType(userPressureDevice) == HARDWARE_NI_DAC)
+
+			ADC = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_UserPressure_ADC"))
+			ADConfig = HW_NI_GetAnalogInputConfig(userPressureDevice, ADC)
+
+			if((ADConfig & HW_NI_CONFIG_DIFFERENTIAL) != HW_NI_CONFIG_DIFFERENTIAL)
+				printf "(%s) The AD channel %d of the user pressure device %s can not be used in differential mode.\r", panelTitle, ADC, userPressureDevice
+				printf "Available modes are: %s\r", HW_NI_AnalogInputToString(ADConfig)
+				ControlWindowToFront()
+				return 1
+			endif
+		endif
+	endif
+#endif // EVIL_KITTEN_EATING_MODE
 
 	return 0
 End
@@ -2529,7 +2576,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	string unit, ADUnit, DAUnit
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, DAGain, ADGain, realMode
-	variable gain, scale, clampMode, i, j, ampConnState, needResetting
+	variable gain, scale, clampMode, i, j, ampConnState, needResetting, ADConfig
 	variable DAGainMCC, ADGainMCC, numEntries
 	string DAUnitMCC, ADUnitMCC
 
@@ -2725,6 +2772,18 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		printf " and ensure that the \"Multiclamp 700B Commander\" application is open.\r"
 		ControlWindowToFront()
 		return 1
+	endif
+#endif
+
+#ifndef EVIL_KITTEN_EATING_MODE
+	if(GetHardwareType(panelTitle) == HARDWARE_NI_DAC)
+		ADConfig = HW_NI_GetAnalogInputConfig(panelTitle, ADCchannel)
+		if((ADConfig & HW_NI_CONFIG_DIFFERENTIAL) != HW_NI_CONFIG_DIFFERENTIAL)
+			printf "(%s) The AD channel %d from headstage %d can not be used in differential mode.\r", panelTitle, ADCchannel, headstage
+			printf "Available modes are: %s\r", HW_NI_AnalogInputToString(ADConfig)
+			ControlWindowToFront()
+			return 1
+		endif
 	endif
 #endif
 
