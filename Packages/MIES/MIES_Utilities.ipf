@@ -861,22 +861,22 @@ End
 /// @param dfr data folder reference to kill
 /// @returns 	1 in case the folder was removed and 0 in all other cases
 Function RemoveEmptyDataFolder(dfr)
-    dfref dfr
+	dfref dfr
 
-    variable objectsInFolder
+	variable objectsInFolder
 
-    if(!DataFolderExistsDFR(dfr))
-        return 0
-    endif
+	if(!DataFolderExistsDFR(dfr))
+		return 0
+	endif
 
-    objectsInFolder = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES) + CountObjectsDFR(dfr, COUNTOBJECTS_VAR) + CountObjectsDFR(dfr, COUNTOBJECTS_STR) + CountObjectsDFR(dfr, COUNTOBJECTS_DATAFOLDER)
+	objectsInFolder = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES) + CountObjectsDFR(dfr, COUNTOBJECTS_VAR) + CountObjectsDFR(dfr, COUNTOBJECTS_STR) + CountObjectsDFR(dfr, COUNTOBJECTS_DATAFOLDER)
 
-    if(objectsInFolder == 0)
-        KillDataFolder dfr
-        return 1
-    endif
+	if(objectsInFolder == 0)
+		KillDataFolder dfr
+		return 1
+	endif
 
-    return 0
+	return 0
 end
 
 /// @brief Removes all empty datafolders in the passed datafolder reference
