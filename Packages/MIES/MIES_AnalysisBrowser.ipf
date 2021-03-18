@@ -2601,3 +2601,10 @@ static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 
 	return 1
 End
+
+Function/S AB_GetAllDevicesForExperiment(string experiment)
+
+	DFREF expFolder = GetAnalysisExpFolder(experiment)
+
+	return GetListOfDataFolders(expFolder)
+End

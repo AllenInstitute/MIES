@@ -546,12 +546,9 @@ Function LBN_CheckProc_SyncSweepBrowser(cba) : CheckBoxControl
 	return 0
 End
 
-Function/S LBN_GetAllDevicesForExperiment(graph)
-	string graph
+Function/S LBN_GetAllDevicesForExperiment(string graph)
 
-	DFREF expFolder = GetAnalysisExpFolder(LBN_GetExpFolderFromPopup(graph))
-
-	return GetListOfDataFolders(expFolder)
+	return AB_GetAllDevicesForExperiment(LBN_GetExpFolderFromPopup(graph))
 End
 
 Function/S LBN_GetAllExperiments()
