@@ -1399,11 +1399,13 @@ End
 /// @param headstage  headstage
 /// @paran selectAmp  [optional, defaults to false] selects the amplifier
 ///                   before using, some callers might be able to skip it.
+///
+/// @return 0 on success, 1 when the headstage does not have an amplifier connected or it could not be selected
 Function AI_EnsureCorrectMode(panelTitle, headStage, [selectAmp])
 	string panelTitle
 	variable headStage, selectAmp
 
-	variable serial, channel, storedMode, setMode
+	variable serial, channel, storedMode, setMode, ampConnectionState
 
 	if(ParamIsDefault(selectAmp))
 		selectAmp = 0
@@ -1415,11 +1417,14 @@ Function AI_EnsureCorrectMode(panelTitle, headStage, [selectAmp])
 	channel = AI_GetAmpChannel(panelTitle, headStage)
 
 	if(!AI_IsValidSerialAndChannel(channel=channel, axonSerial=serial))
-		return NaN
+		return 1
 	endif
 
 	if(selectAmp)
-		AI_SelectMultiClamp(panelTitle, headstage)
+		ampConnectionState = AI_SelectMultiClamp(panelTitle, headstage)
+		if(ampConnectionState != AMPLIFIER_CONNECTION_SUCCESS)
+			return 1
+		endif
 	endif
 
 	STRUCT AxonTelegraph_DataStruct tds
@@ -1432,6 +1437,8 @@ Function AI_EnsureCorrectMode(panelTitle, headStage, [selectAmp])
 		print "There was a mismatch in clamp mode between MIES and the MCC. The MCC mode was switched to match the mode specified by MIES."
 		AI_SetClampMode(panelTitle, headStage, storedMode)
 	endif
+
+	return 0
 End
 
 /// @brief Fill the amplifier settings wave by querying the MC700B and send the data to ED_AddEntriesToLabnotebook
