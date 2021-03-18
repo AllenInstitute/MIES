@@ -165,6 +165,8 @@ Function IVS_ConfigureMCC()
 	if(oldTab != 0)
 		PGC_SetAndActivateControl(panelTitle, "ADC", val=oldTab)
 	endif
+
+	return numErrors
 End
 
 /// @brief Run the baseline QC check
@@ -222,7 +224,7 @@ Function IVS_FinishBaselineQCCheck(s)
 	printf "baseline Average: %g\r", baselineAverage
 
 	// See if we pass the baseline QC
-	if (abs(baselineAverage) < 100.0)
+	if (abs(baselineAverage) < 5.0)
 		PGC_SetAndActivateControl(panelTitle, "DataAcquireButton")
 		qcResult = baselineAverage
 	endif
