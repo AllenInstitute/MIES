@@ -35,7 +35,7 @@ threadsafe static Function LOG_HasRequiredKeys(variable JSONid)
 		return 0
 	endif
 
-	Make/FREE/T requiredKeys = {"ts", "source", "exp"}
+	Make/FREE/T requiredKeys = {"ts", "source", "exp", "id"}
 
 	WAVE/Z intersection = GetSetIntersection(keys, requiredKeys)
 
@@ -52,6 +52,7 @@ threadsafe static Function LOG_GenerateEntryTemplate(string source)
 	JSON_AddString(JSONid, "/ts", GetISO8601TimeStamp(numFracSecondsDigits = 3, localTimeZone = 1))
 	JSON_AddString(JSONid, "/source", source)
 	JSON_AddString(JSONid, "/exp", GetExperimentName())
+	JSON_AddString(JSONid, "/id", GetIgorInstanceID()[0, 6])
 	return JSONid
 End
 

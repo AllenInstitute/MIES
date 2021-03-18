@@ -5701,3 +5701,10 @@ threadsafe Function BinarySearchText(WAVE/T theWave, string theText, [variable c
 
 	return NaN
 end
+
+/// @brief Returns a hex string which is unique for the given Igor Pro session
+///
+/// It allows to distinguish multiple Igor instances, but is not globally unique.
+threadsafe Function/S GetIgorInstanceID()
+	return Hash(IgorInfo(-102), 1)
+End
