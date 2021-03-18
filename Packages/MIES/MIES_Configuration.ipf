@@ -737,19 +737,6 @@ static Function CONF_GetVariableFromSettings(jsonID, keyName)
 	return JSON_GetVariable(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + keyName)
 End
 
-/// @brief Retrieves a boolean value from a saved control
-///        note: boolean control property values are also saved in the EXPCONFIG_FIELD_CTRLVVALUE field
-///
-/// @param jsonID  ID of existing json
-/// @param keyName key name of setting
-/// @returns value of the EXPCONFIG_FIELD_CTRLVVALUE field of the control
-static Function CONF_GetBooleanFromSettings(jsonID, keyName)
-	variable jsonID
-	string keyName
-
-	return CONF_GetVariableFromSettings(jsonID, keyName)
-End
-
 /// @brief Returns the path to the first control named nicename found in the json in all saved windows
 ///        This might as well be a ControlArray.
 ///
