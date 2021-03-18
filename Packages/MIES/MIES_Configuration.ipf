@@ -724,17 +724,35 @@ static Function/S CONF_GetStringFromSettings(jsonID, keyName)
 	return JSON_GetString(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + keyName)
 End
 
-/// @brief Retrieves a variable value from a setting
+/// @brief Retrieves a variable/boolean/null value from a saved control
+///        note: boolean control property values are also saved in the EXPCONFIG_FIELD_CTRLVVALUE field
 ///
-/// @param jsonID  ID of existing json
-/// @param keyName key name of setting
-/// @returns value of member with keyname in the EXPCONFIG_RESERVED_DATABLOCK
-static Function CONF_GetVariableFromSettings(jsonID, keyName)
+/// @param jsonID       ID of existing json
+/// @param keyName      key name of setting
+/// @param defaultValue [optional, defaults to off] allows to query optional entries, if the value could not be found
+///                     this is returned instead
+///
+/// @returns value of the EXPCONFIG_FIELD_CTRLVVALUE field of the control
+static Function CONF_GetVariableFromSettings(jsonID, keyName, [defaultValue])
 	variable jsonID
 	string keyName
+	variable defaultValue
+
+	variable val
 
 	CONF_RequireConfigBlockExists(jsonID)
-	return JSON_GetVariable(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + keyName)
+
+	if(ParamIsDefault(defaultValue))
+		return JSON_GetVariable(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + keyName)
+	endif
+
+	val = JSON_GetVariable(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + keyName, ignoreErr = 1)
+
+	if(!IsNaN(val))
+		return val
+	endif
+
+	return defaultValue
 End
 
 /// @brief Returns the path to the first control named nicename found in the json in all saved windows
