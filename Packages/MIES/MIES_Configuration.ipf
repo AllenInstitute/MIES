@@ -1437,8 +1437,9 @@ Function CONF_WindowToJSON(wName, saveMask[, excCtrlTypes])
 
 		Make/FREE/T/N=(numCtrl) arrayNames
 		arrayNames[] = GetUserData(wName, ctrlNames[p][%CTRLNAME], EXPCONFIG_UDATA_CTRLARRAY)
+
 		if(numCtrl > 1)
-			FindDuplicates/FREE/RT=arrayNamesRedux arrayNames
+			WAVE/T arrayNamesRedux = GetUniqueEntries(arrayNames)
 			arrayNamesRedux[] = LowerStr(arrayNamesRedux[p])
 			FindValue/TXOP=4/TEXT="" arrayNamesRedux
 			if(V_Value >= 0)
@@ -1456,11 +1457,9 @@ Function CONF_WindowToJSON(wName, saveMask[, excCtrlTypes])
 			duplicateCheck[numCtrl, numCtrl + numUniqueCtrlArray - 1] = arrayNamesRedux[p - numCtrl]
 		endif
 
+		ASSERT(!SearchForDuplicates(duplicateCheck), "Human readable control names combined with internal control names have duplicates: " + TextWaveToList(duplicateCheck, ";"))
+
 		numDupCheck = DimSize(duplicateCheck, ROWS)
-		if(numDupCheck > 1)
-			FindDuplicates/FREE/DT=duplicates duplicateCheck
-			ASSERT(!DimSize(duplicates, ROWS), "Human readable control names combined with internal control names have duplicates: " + TextWaveToList(duplicates, ";"))
-		endif
 		Make/FREE/I/N=(numDupCheck) groupEndingCheck
 		groupEndingCheck[] = StringEndsWith(duplicateCheck[p], LowerStr(EXPCONFIG_CTRLGROUP_SUFFIX))
 		FindValue/I=1 groupEndingCheck
