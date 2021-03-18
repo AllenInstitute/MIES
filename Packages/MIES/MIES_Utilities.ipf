@@ -869,15 +869,25 @@ Function RemoveEmptyDataFolder(dfr)
 		return 0
 	endif
 
-	objectsInFolder = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES) + CountObjectsDFR(dfr, COUNTOBJECTS_VAR) + CountObjectsDFR(dfr, COUNTOBJECTS_STR) + CountObjectsDFR(dfr, COUNTOBJECTS_DATAFOLDER)
-
-	if(objectsInFolder == 0)
+	if(IsDataFolderEmpty(dfr))
 		KillDataFolder dfr
 		return 1
 	endif
 
 	return 0
 end
+
+/// @brief Return 1 if the datafolder is empty, zero if not
+Function IsDataFolderEmpty(DFREF dfr)
+
+	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
+
+	return (CountObjectsDFR(dfr, COUNTOBJECTS_WAVES)        \
+	        + CountObjectsDFR(dfr, COUNTOBJECTS_VAR)        \
+	        + CountObjectsDFR(dfr, COUNTOBJECTS_STR)        \
+	        + CountObjectsDFR(dfr, COUNTOBJECTS_DATAFOLDER) \
+	       ) == 0
+End
 
 /// @brief Removes all empty datafolders in the passed datafolder reference
 Function RemoveAllEmptyDataFolders(sourceDFR)
