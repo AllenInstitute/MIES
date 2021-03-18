@@ -75,6 +75,7 @@ Function ASSERT(var, errorMsg)
 	string errorMsg
 
 	string stracktrace, miesVersionStr, lockedDevicesStr, device
+	string stacktrace = ""
 	variable i, numLockedDevices
 
 	try
@@ -141,7 +142,8 @@ Function ASSERT(var, errorMsg)
 #endif // AUTOMATED_TESTING
 
 #if !defined(AUTOMATED_TESTING) || defined(AUTOMATED_TESTING_DEBUGGING)
-		print GetStackTrace()
+		stacktrace = GetStackTrace()
+		print stacktrace
 #endif
 
 #ifndef AUTOMATED_TESTING
@@ -156,6 +158,10 @@ Function ASSERT(var, errorMsg)
 		print "MIES version:"
 		print miesVersionStr
 		print "################################"
+
+#if exists("LOG_AddEntry")
+		LOG_AddEntry(PACKAGE_MIES, "assert", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
+#endif
 
 		ControlWindowToFront()
 		Debugger
@@ -191,6 +197,8 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 	variable var
 	string errorMsg
 
+	string stacktrace
+
 	try
 		AbortOnValue var==0, 1
 	catch
@@ -217,10 +225,11 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 #if !defined(AUTOMATED_TESTING) || defined(AUTOMATED_TESTING_DEBUGGING)
 
 #if IgorVersion() >= 9.0
-		print GetStackTrace()
+		stacktrace = GetStackTrace()
 #else
-		print "stacktrace not available"
+		stacktrace = "stacktrace not available"
 #endif
+		print stacktrace
 
 #endif // !AUTOMATED_TESTING || AUTOMATED_TESTING_DEBUGGING
 
@@ -233,6 +242,10 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 		print "################################"
 
 		printf "Assertion FAILED with message %s\r", errorMsg
+
+#if exists("LOG_AddEntry_TS")
+		LOG_AddEntry_TS(PACKAGE_MIES, "assert", "ASSERT_TS", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
+#endif
 
 #endif // AUTOMATED_TESTING
 
@@ -3624,19 +3637,24 @@ End
 /// Given {1, 2, 4, 10} and {2, 5, 11} this will return {2}.
 ///
 /// Inspired by http://www.igorexchange.com/node/366 but adapted to modern Igor Pro
+/// It does work with text waves as well, there it performs case sensitive comparions
 ///
 /// @return free wave with the set intersection or an invalid wave reference
 /// if the intersection is an empty set
-Function/WAVE GetSetIntersection(wave1, wave2)
+threadsafe Function/WAVE GetSetIntersection(wave1, wave2)
 	WAVE wave1
 	WAVE wave2
 
 	variable type, wave1Rows, wave2Rows
 	variable longRows, shortRows, entry
 	variable i, j, longWaveRow
+	string strEntry
+
+	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                   \
+	       || (IsTextWave(wave1) && IsTextWave(wave2)), "Invalid wave type")
 
 	type = WaveType(wave1)
-	ASSERT(type == WaveType(wave2), "Wave type mismatch")
+	ASSERT_TS(type == WaveType(wave2), "Wave type mismatch")
 
 	wave1Rows = DimSize(wave1, ROWS)
 	wave2Rows = DimSize(wave2, ROWS)
@@ -3661,17 +3679,29 @@ Function/WAVE GetSetIntersection(wave1, wave2)
 	endif
 
 	// Sort values in longWave
-	Sort longWave, longWave
+	Sort/C longWave, longWave
 	Make/FREE/N=(shortRows)/Y=(type) resultWave
 
-	for(i = 0; i < shortRows; i += 1)
-		entry = shortWave[i]
-		longWaveRow = BinarySearch(longWave, entry)
-		if(longWaveRow >= 0 && longWave[longWaveRow] == entry)
-			resultWave[j] = entry
-			j += 1
-		endif
-	endfor
+	if(type == 0)
+		WAVE/T shortWaveText = shortWave
+		WAVE/T longWaveText  = longWave
+		WAVE/T resultWaveText = resultWave
+		for(i = 0; i < shortRows; i += 1)
+			strEntry = shortWaveText[i]
+			longWaveRow = BinarySearchText(longWave, strEntry, caseSensitive = 1)
+			if(longWaveRow >= 0 && !cmpstr(longWaveText[longWaveRow], strEntry))
+				resultWaveText[j++] = strEntry
+			endif
+		endfor
+	else
+		for(i = 0; i < shortRows; i += 1)
+			entry = shortWave[i]
+			longWaveRow = BinarySearch(longWave, entry)
+			if(longWaveRow >= 0 && longWave[longWaveRow] == entry)
+				resultWave[j++] = entry
+			endif
+		endfor
+	endif
 
 	if(j == 0)
 		return $""
@@ -4819,6 +4849,20 @@ Function/S GetFileVersion(filepath)
 	return S_FileVersion
 End
 
+/// @brief Return the file size in bytes
+Function GetFileSize(string filepath)
+
+	filepath = ResolveAlias(filepath)
+
+	GetFileFolderInfo/Q/Z filepath
+
+	if(V_flag || !V_isFile)
+		return NaN
+	endif
+
+	return V_logEOF
+End
+
 /// @brief wrapper to `ScaleToIndex`
 ///
 /// `ScaleToIndex` treats input `inf` to @p scale always as the last point in a
@@ -5590,4 +5634,77 @@ Function/WAVE ZapNaNs(WAVE data)
 	endif
 
 	return dup
+End
+
+/// @brief Finds the first occurrence of a text within a range of points in a SORTED text wave
+///
+/// From https://www.wavemetrics.com/code-snippet/binary-search-pre-sorted-text-waves by Jamie Boyd
+/// Completely reworked, fixed and removed unused features
+threadsafe Function BinarySearchText(WAVE/T theWave, string theText, [variable caseSensitive, variable startPos, variable endPos])
+	variable iPos // the point to be compared
+	variable theCmp // the result of the comparison
+	variable firstPt
+	variable lastPt
+	variable i
+	variable numRows
+
+	numRows = DimSize(theWave, ROWS)
+
+	ASSERT_TS(DimSize(theWave, COLS) <= 1, "Only works with 1D waves")
+	ASSERT_TS(IsTextWave(theWave), "Only works with text waves")
+
+	if(numRows == 0)
+		// always no match
+		return NaN
+	endif
+
+	if(ParamIsDefault(caseSensitive))
+		caseSensitive = 0
+	else
+		caseSensitive = !!caseSensitive
+	endif
+
+	if(ParamIsDefault(startPos))
+		startPos = 0
+	else
+		ASSERT_TS(startPos >= 0 && startPos < numRows, "Invalid startPos")
+	endif
+
+	if(ParamIsDefault(endPos))
+		endPos = numRows - 1
+	else
+		ASSERT_TS(endPos >= 0 && endPos < numRows, "Invalid endPos")
+	endif
+
+	ASSERT_TS(startPos <= endPos, "startPos is larger than endPos")
+
+	firstPt = startPos
+	lastPt  = endPos
+
+	for(i = 0; firstPt <= lastPt; i +=1)
+		iPos = trunc((firstPt + lastPt) / 2)
+		theCmp = cmpstr(thetext, theWave[iPos], caseSensitive)
+
+		if(theCmp ==0) //thetext is the same as theWave [iPos]
+			if((iPos == startPos) || (cmpstr(theText, theWave[iPos -1], caseSensitive) == 1))
+				// then iPos is the first occurence of thetext in theWave from startPos to endPos
+				return iPos
+			else //  there are more copies of theText in theWave before iPos
+				lastPt = iPos-1
+			endif
+		elseif (theCmp == 1) //thetext is alphabetically after theWave [iPos]
+			firstPt = iPos +1
+		else // thetext is alphabetically before theWave [iPos]
+			lastPt = iPos -1
+		endif
+	endfor
+
+	return NaN
+end
+
+/// @brief Returns a hex string which is unique for the given Igor Pro session
+///
+/// It allows to distinguish multiple Igor instances, but is not globally unique.
+threadsafe Function/S GetIgorInstanceID()
+	return Hash(IgorInfo(-102), 1)
 End

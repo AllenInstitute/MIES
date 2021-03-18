@@ -2560,10 +2560,13 @@ static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 	variable refNum, kind
 	string file, pathName, type, creator
 
+	LOG_AddEntry(PACKAGE_MIES, "start")
+
 	string baseFolder, fileSuffix
 
 	fileSuffix = GetFileSuffix(file)
 	if(cmpstr(fileSuffix, "nwb"))
+		LOG_AddEntry(PACKAGE_MIES, "end")
 		return 0
 	endif
 
@@ -2577,6 +2580,7 @@ static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 
 	if(AB_AddFile(basefolder, basefolder + file))
 		// already loaded or error
+		LOG_AddEntry(PACKAGE_MIES, "end")
 		return 1
 	endif
 
@@ -2592,6 +2596,8 @@ static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 	// backup initial state
 	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
 	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 
 	return 1
 End

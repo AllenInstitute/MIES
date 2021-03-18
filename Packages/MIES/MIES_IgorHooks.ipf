@@ -74,7 +74,7 @@ End
 static Function IH_SerializeSettings()
 	NVAR JSONid = $GetSettingsJSONid()
 
-	PS_SerializeSettings("MIES", JSONid)
+	PS_SerializeSettings(PACKAGE_MIES, JSONid)
 
 	JSONid = NaN
 End
@@ -128,6 +128,8 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 		return NaN
 	endif
 
+	LOG_AddEntry(PACKAGE_MIES, "start")
+
 	DAP_SerializeAllCommentNBs()
 	IH_SerializeSettings()
 
@@ -136,6 +138,8 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 	IH_KillStimSets()
 #endif
 	NWB_Flush()
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 End
 
 /// @brief Cleanup before closing or starting a new experiment
@@ -150,6 +154,8 @@ static Function IH_Cleanup()
 	if(!DataFolderExists(GetMiesPathAsString()))
 		return NaN
 	endif
+
+	LOG_AddEntry(PACKAGE_MIES, "start")
 
 	debuggerState = DisableDebugger()
 
@@ -170,17 +176,25 @@ static Function IH_Cleanup()
 	endtry
 
 	ResetDebuggerState(debuggerState)
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 End
 
 static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedures)
 	variable unsavedExp, unsavedNotebooks, unsavedProcedures
 
+	LOG_AddEntry(PACKAGE_MIES, "start")
+
 	IH_Cleanup()
 
 	// save the experiment silently if it was saved before
 	if(unsavedExp == 0 && cmpstr(UNTITLED_EXPERIMENT, GetExperimentName()))
+		LOG_AddEntry(PACKAGE_MIES, "before save")
 		SaveExperiment
+		LOG_AddEntry(PACKAGE_MIES, "after save")
 	endif
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 
 	return 0
 End
@@ -188,7 +202,11 @@ End
 static Function IgorQuitHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
+	LOG_AddEntry(PACKAGE_MIES, "start")
+
 	IH_Cleanup()
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 End
 
 /// Called before a new experiment is opened, in response to the New Experiment,
@@ -197,6 +215,8 @@ static Function IgorBeforeNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
 	variable modifiedBefore, modifiedAfter
+
+	LOG_AddEntry(PACKAGE_MIES, "start")
 
 	ExperimentModified
 	modifiedBefore = V_flag
@@ -207,10 +227,14 @@ static Function IgorBeforeNewHook(igorApplicationNameStr)
 	modifiedAfter = V_flag
 
 	if(!modifiedBefore && modifiedAfter && cmpstr(UNTITLED_EXPERIMENT, GetExperimentName()))
+		LOG_AddEntry(PACKAGE_MIES, "before save")
 		SaveExperiment
+		LOG_AddEntry(PACKAGE_MIES, "after save")
 	endif
 
 	StartZeroMQMessageHandler()
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 
 	return 0
 End
@@ -219,7 +243,20 @@ End
 static Function IgorStartOrNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
+	string miesVersion
+
+	LOG_MarkSessionStart(PACKAGE_MIES)
+
+	miesVersion = ROStr(GetMiesVersion())
+	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"version", "computername", "username", "igorinfo"}, \
+	                                    values = {StringFromList(0, miesVersion, "\r"),             \
+	                                              GetEnvironmentVariable("COMPUTERNAME"),           \
+	                                              IgorInfo(7),                                      \
+	                                              IgorInfo(0)})
+
 	StartZeroMQMessageHandler()
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 
 	return 0
 End
@@ -229,14 +266,20 @@ static Function BeforeUncompiledHook(changeCode, procedureWindowTitleStr, textCh
 	string procedureWindowTitleStr
 	string textChangeStr
 
+	LOG_AddEntry(PACKAGE_MIES, "start")
+
 	DQ_StopOngoingDAQAllLocked()
 
 	ASYNC_Stop(timeout=5)
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 End
 
 static Function AfterCompiledHook()
 
 	variable modifiedBefore
+
+	LOG_AddEntry(PACKAGE_MIES, "start")
 
 	ExperimentModified
 	modifiedBefore = V_flag
@@ -246,6 +289,8 @@ static Function AfterCompiledHook()
 	if(!modifiedBefore)
 		ExperimentModified 0
 	endif
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 End
 
 #endif

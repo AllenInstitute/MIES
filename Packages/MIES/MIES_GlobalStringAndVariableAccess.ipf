@@ -675,7 +675,7 @@ Function/S GetSettingsJSONid()
 
 	// missing or stale JSON document
 	if(IsNaN(JSONid) || !JSON_Exists(JSONid, ""))
-		JSONid = PS_ReadSettings("MIES", GenerateSettingsDefaults)
+		JSONid = PS_ReadSettings(PACKAGE_MIES, GenerateSettingsDefaults)
 	endif
 
 	UpgradeSettings(JSONid)

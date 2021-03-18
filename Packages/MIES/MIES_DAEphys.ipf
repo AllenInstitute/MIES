@@ -4764,6 +4764,8 @@ Function DAP_LockDevice(string win)
 	HW_WriteDeviceInfo(hardwareType, deviceID, deviceInfo)
 
 	DAP_UpdateSweepLimitsAndDisplay(panelTitleLocked, initial = 1)
+
+	LOG_AddEntry(PACKAGE_MIES, "locking", keys = {"device"}, values = {panelTitleLocked})
 End
 
 static Function DAP_LoadBuiltinStimsets()

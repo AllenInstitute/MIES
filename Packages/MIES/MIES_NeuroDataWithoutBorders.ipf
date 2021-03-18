@@ -400,14 +400,6 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	variable i, j, numEntries, locationID, sweep, numWaves, firstCall, deviceID
 	string stimsetList = ""
 
-	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
-
-	if(IsEmpty(devicesWithContent))
-		print "No devices with acquired content found for NWB export"
-		ControlWindowToFront()
-		return NaN
-	endif
-
 	if(ParamIsDefault(writeStoredTestPulses))
 		writeStoredTestPulses = 0
 	else
@@ -420,17 +412,32 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		writeIgorHistory = !!writeIgorHistory
 	endif
 
+	if(ParamIsDefault(compressionMode))
+		compressionMode = IPNWB#GetChunkedCompression()
+	endif
+
+	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"nwbVersion", "writeStoredTP", "writeIgorHistory", "compression"},            \
+	                                    values = {num2str(nwbVersion), num2str(writeStoredTestPulses),                        \
+	                                              num2str(writeIgorHistory), IPNWB#CompressionModeToString(compressionMode)})
+
+	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
+
+	if(IsEmpty(devicesWithContent))
+		print "No devices with acquired content found for NWB export"
+		ControlWindowToFront()
+
+		LOG_AddEntry(PACKAGE_MIES, "end")
+		return NaN
+	endif
+
 	if(!ParamIsDefault(overrideFilePath))
 		locationID = NWB_GetFileForExport(nwbVersion, overrideFilePath=overrideFilePath)
 	else
 		locationID = NWB_GetFileForExport(nwbVersion)
 	endif
 
-	if(ParamIsDefault(compressionMode))
-		compressionMode = IPNWB#GetChunkedCompression()
-	endif
-
 	if(!IsFinite(locationID))
+		LOG_AddEntry(PACKAGE_MIES, "end")
 		return NaN
 	endif
 
@@ -448,6 +455,9 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		DFREF dfr = GetDeviceDataPath(panelTitle)
 		list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
 		numWaves = ItemsInList(list)
+
+		LOG_AddEntry(PACKAGE_MIES, "export", keys = {"device", "#sweeps"}, values = {panelTitle, num2str(numWaves)})
+
 		for(j = 0; j < numWaves; j += 1)
 			if(firstCall)
 				IPNWB#CreateIntraCellularEphys(locationID)
@@ -474,8 +484,24 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	NWB_AppendStimset(nwbVersion, locationID, stimsetList, compressionMode)
 
 	if(writeIgorHistory)
-		NWB_AppendIgorHistory(nwbVersion, locationID)
+		NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	endif
+
+	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
+End
+
+/// @brief Return the file size in MiB of the currently written into NWB file
+///
+/// This is only approximately correct as the file is open in HDF5 and thus
+/// not everything is flushed.
+static Function NWB_GetExportedFileSize()
+	string filePathExport = ROStr(GetNWBFilePathExport())
+
+	if(IsEmpty(filePathExport))
+		return NaN
+	endif
+
+	return GetFileSize(filePathExport) / 1024 / 1024
 End
 
 Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
@@ -485,11 +511,15 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 	variable locationID
 	string stimsets
 
+	LOG_AddEntry(PACKAGE_MIES, "start")
+
 	stimsets = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING) + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
 
 	if(IsEmpty(stimsets))
 		print "No stimsets found for NWB export"
 		ControlWindowToFront()
+
+		LOG_AddEntry(PACKAGE_MIES, "end")
 		return NaN
 	endif
 
@@ -500,6 +530,7 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 	endif
 
 	if(!IsFinite(locationID))
+		LOG_AddEntry(PACKAGE_MIES, "end")
 		return NaN
 	endif
 
@@ -510,6 +541,8 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 
 	NWB_AppendStimset(nwbVersion, locationID, stimsets, IPNWB#GetChunkedCompression())
 	CloseNWBFile()
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 End
 
 /// @brief Export all data into NWB using compression
@@ -1371,6 +1404,8 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 		fullPath = fileName
 	endif
 
+	LOG_AddEntry(PACKAGE_MIES, "start")
+
 	fileID = IPNWB#H5_OpenFile(fullPath)
 
 	if(!IPNWB#StimsetPathExists(fileID))
@@ -1417,6 +1452,8 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 	IPNWB#H5_CloseFile(fileID)
 
 	WBP_UpdateDaEphysStimulusSetPopups()
+
+	LOG_AddEntry(PACKAGE_MIES, "end")
 
 	return error
 End
@@ -1631,11 +1668,11 @@ Function NWB_Flush()
 	fileIDExport = IPNWB#H5_FlushFile(fileIDExport, filePathExport, write = 1)
 End
 
-static Function NWB_AppendIgorHistory(nwbVersion, locationID)
+static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	variable nwbVersion, locationID
 
 	variable groupID
-	string history, name
+	string history, name, logfile, fname, data, entry
 
 	IPNWB#EnsureValidNWBVersion(nwbVersion)
 	ASSERT(IPNWB#GetNWBMajorVersion(IPNWB#ReadNWBVersion(locationID)) == nwbVersion, "NWB version of the selected file differs.")
@@ -1650,8 +1687,18 @@ static Function NWB_AppendIgorHistory(nwbVersion, locationID)
 
 	groupID = IPNWB#H5_OpenGroup(locationID, "/general")
 	ASSERT(!IsNaN(groupID), "IPNWB#CreateCommonGroups() needs to be called prior to this call")
-	history = NormalizeToEOL(history, "\n")
-	IPNWB#H5_WriteTextDataset(groupID, name, str=history, compressionMode = IPNWB#GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
+	entry = NormalizeToEOL(history, "\n")
+
+	logfile = LOG_GetFile(PACKAGE_MIES)
+	if(FileExists(logfile))
+		[data, fname] = LoadTextFile(logfile)
+
+		// normalizing EOLs is only necessary because
+		// someone might have edited the log file by hand
+		entry += "\n" + LOGFILE_NWB_MARKER + "\n" + NormalizeToEOL(data, "\n")
+	endif
+
+	IPNWB#H5_WriteTextDataset(groupID, name, str=entry, compressionMode = IPNWB#GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
 
 	if(nwbVersion == 1)
 		IPNWB#MarkAsCustomEntry(groupID, name)

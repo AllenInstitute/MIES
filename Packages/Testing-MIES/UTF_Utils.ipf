@@ -420,7 +420,7 @@ End
 
 /// GetSetIntersection
 /// @{
-Function ExpectsSameWaveType()
+Function GSI_ExpectsSameWaveType()
 
 	Make/Free/D data1
 	Make/Free/R data2
@@ -433,7 +433,7 @@ Function ExpectsSameWaveType()
 	endtry
 End
 
-Function Works1()
+Function GSI_Works()
 
 	Make/Free data1 = {1, 2, 3, 4}
 	Make/Free data2 = {4, 5, 6}
@@ -442,7 +442,16 @@ Function Works1()
 	CHECK_EQUAL_WAVES(matches, {4})
 End
 
-Function ReturnsCorrectType()
+Function GSI_WorksText()
+
+	Make/Free/T data1 = {"a", "b", "c", "D"}
+	Make/Free/T data2 = {"c", "d", "e"}
+
+	WAVE/T/Z matches = GetSetIntersection(data1, data2)
+	CHECK_EQUAL_TEXTWAVES(matches, {"c"})
+End
+
+Function GSI_ReturnsCorrectType()
 
 	Make/Free/D data1
 	Make/Free/D data2
@@ -451,7 +460,7 @@ Function ReturnsCorrectType()
 	CHECK_EQUAL_WAVES(data1, matches)
 End
 
-Function WorksWithTheSameWaves()
+Function GSI_WorksWithTheSameWaves()
 
 	Make/Free/D data = p
 
@@ -460,7 +469,7 @@ Function WorksWithTheSameWaves()
 	CHECK(!WaveRefsEqual(data, matches))
 End
 
-Function ReturnsInvalidWaveRefWOMatches1()
+Function GSI_ReturnsInvalidWaveRefWOMatches1()
 
 	Make/Free/D/N=0 data1
 	Make/Free/D data2
@@ -469,7 +478,7 @@ Function ReturnsInvalidWaveRefWOMatches1()
 	CHECK_WAVE(matches, NULL_WAVE)
 End
 
-Function ReturnsInvalidWaveRefWOMatches2()
+Function GSI_ReturnsInvalidWaveRefWOMatches2()
 
 	Make/Free/D data1
 	Make/Free/D/N=0 data2
@@ -478,7 +487,7 @@ Function ReturnsInvalidWaveRefWOMatches2()
 	CHECK_WAVE(matches, NULL_WAVE)
 End
 
-Function ReturnsInvalidWaveRefWOMatches3()
+Function GSI_ReturnsInvalidWaveRefWOMatches3()
 
 	Make/Free/D data1 = p
 	Make/Free/D data2 = -1
@@ -4710,4 +4719,102 @@ Function ZN_RemovesNaNs()
 	WAVE/Z reduced = ZapNaNs(wv)
 	CHECK_EQUAL_WAVES(reduced, {inf, 1})
 End
+/// @}
+
+// BinarySearchText
+/// @{
+
+Function BST_ErrorChecking()
+
+	try
+		Make/FREE/D wvDouble
+		WAVE/T wv = wvDouble
+		BinarySearchText(wv, "a"); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T/N=(2, 2) wv
+		BinarySearchText(wv, "a"); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a"}
+		BinarySearchText(wv, "a", startPos = -1, endPos = 0); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a"}
+		BinarySearchText(wv, "a", startPos = 0, endPos = -1); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a"}
+		BinarySearchText(wv, "a", startPos = NaN, endPos = 0); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a"}
+		BinarySearchText(wv, "a", startPos = 0, endPos = NaN); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a"}
+		BinarySearchText(wv, "a", startPos = 1, endPos = 2); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/T wv = {"a", "a"}
+		BinarySearchText(wv, "a", startPos = 1, endPos = 0); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function BST_Works()
+
+	Make/T/FREE/N=0 wv
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "a"), NaN) // no match by definition
+
+	Make/T/FREE wv = {"a"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "a"), 0)
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "a", startPos = 0, endPos = 0), 0)
+
+	Make/T/FREE wv = {"a", "a", "a"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "a"), 0)
+
+	Make/T/FREE wv = {"a", "a", "a"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "A"), 0) // matches case insensitive
+
+	Make/T/FREE wv = {"a", "a", "a"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "b"), NaN) // no match
+
+	Make/T/FREE wv = {"a", "b", "c"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "c"), 2)
+
+	Make/T/FREE wv = {"B", "a", "b"}
+	CHECK_EQUAL_VAR(BinarySearchText(wv, "B", caseSensitive = 1), 0)
+End
+
 /// @}

@@ -7,10 +7,21 @@
 #endif
 
 /// @file MIES_PackageSettings.ipf
-/// @brief Routines for dealing with JSON settings
+/// @brief __PS__ Routines for dealing with JSON settings
 
 static StrConstant PS_STORE_COORDINATES = "JSONSettings_StoreCoordinates"
 static StrConstant PS_WINDOW_NAME = "JSONSettings_WindowName"
+
+/// @brief Initialize the `PackageFolder` symbolic path
+Function PS_Initialize(string package)
+	string folder = SpecialDirPath("Igor Preferences", 0, 0, 1) + "Packages:" + CleanupName(package, 0)
+
+	if(!FolderExists(folder))
+		CreateFolderOnDisk(folder)
+	endif
+
+	NewPath/Q/O/Z PackageFolder, folder
+End
 
 /// @brief This functions should return a JSON ID with the default settings
 Function PS_GenerateSettingsDefaults()
@@ -55,10 +66,33 @@ Function PS_WriteSettings(package, JSONid)
 End
 
 /// @brief Return the absolute path to the settings folder for `package`
-static Function/S PS_GetSettingsFolder(package)
+///
+///        Threadsafe variant which requires the symbolic path `PackageFolder` created by
+///        PS_Initialize() to exist.
+threadsafe Function/S PS_GetSettingsFolder_TS(package)
 	string package
 
-	return SpecialDirPath("Igor Preferences", 0, 0, 1) + "Packages:" + CleanupName(package, 0)
+	PathInfo PackageFolder
+	ASSERT_TS(V_flag, "Missing initialization")
+
+	return S_path
+End
+
+/// @brief Return the absolute path to the settings folder for `package`
+///        creating it when necessary.
+Function/S PS_GetSettingsFolder(package)
+	string package
+
+	PathInfo PackageFolder
+	if(V_flag)
+		return S_path
+	endif
+
+	PS_Initialize(package)
+	PathInfo PackageFolder
+	ASSERT(V_flag, "Broken initialization")
+
+	return S_path
 End
 
 /// @brief Return the absolute path to the JSON settings file for `package`
@@ -68,10 +102,6 @@ static Function/S PS_GetSettingsFile(package)
 	string folder
 
 	folder = PS_GetSettingsFolder(package)
-
-	if(!FolderExists(folder))
-		CreateFolderOnDisk(folder)
-	endif
 
 	return folder + ":Settings.json"
 End
