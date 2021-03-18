@@ -1018,7 +1018,7 @@ Function AI_SelectMultiClamp(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	variable channel, axonSerial, debugOnError
+	variable channel, axonSerial, err
 	string mccSerial
 
 	// checking axonSerial is done as a service to the caller
@@ -1030,18 +1030,13 @@ Function AI_SelectMultiClamp(panelTitle, headStage)
 		return AMPLIFIER_CONNECTION_INVAL_SER
 	endif
 
-	debugOnError = DisableDebugOnError()
+	ClearRTError()
+	MCC_SelectMultiClamp700B(mccSerial, channel); err = GetRTError(1)
 
-	try
-		ClearRTError()
-		MCC_SelectMultiClamp700B(mccSerial, channel); AbortOnRTE
-	catch
-		ClearRTError()
-		ResetDebugOnError(debugOnError)
+	if(err)
 		return AMPLIFIER_CONNECTION_MCC_FAILED
-	endtry
+	endif
 
-	ResetDebugOnError(debugOnError)
 	return AMPLIFIER_CONNECTION_SUCCESS
 end
 
