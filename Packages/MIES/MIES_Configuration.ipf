@@ -990,13 +990,10 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 			CONF_GatherControlsFromJSON(ctrlData, jsonID, srcWinNames[winNum])
 
 			colNiceName = FindDimLabel(ctrlData, COLS, "NICENAME")
-			numCtrl = DimSize(ctrlData, ROWS)
-			if(numCtrl > 1)
-				Duplicate/FREE/RMD=[][colNiceName] ctrlData ctrlNiceNames
-				Redimension/N=(numCtrl) ctrlNiceNames
-				FindDuplicates/DT=dupWave ctrlNiceNames
-				ASSERT(DimSize(dupWave, ROWS) == 0, "Found duplicates in control names in configuration file for window " + subWinTarget)
-			endif
+			Duplicate/FREE/RMD=[][colNiceName] ctrlData ctrlNiceNames
+			Redimension/N=(DimSize(ctrlNiceNames, ROWS)) ctrlNiceNames
+
+			ASSERT(!SearchForDuplicates(ctrlNiceNames), "Found duplicates in control names in configuration file for window " + subWinTarget)
 
 			WAVE/T ctrlArrays = CONF_GetControlArrayList(subWinTarget)
 			Make/FREE/B/U/N=(DimSize(ctrlArrays, ROWS)) ctrlArrayAdded
