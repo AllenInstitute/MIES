@@ -2203,7 +2203,7 @@ Function Abort_ITI_TP_A_PressAcq_SD([str])
 	PGC_SetAndActivateControl(str, "check_Settings_TPAfterDAQ", val = 1)
 End
 
-Function Abort_ITI_TP_A_Acq_SD_REENTRY([str])
+Function Abort_ITI_TP_A_PressAcq_SD_REENTRY([str])
 	string str
 
 	NVAR runModeDAQ = $GetDataAcqRunMode(str)
