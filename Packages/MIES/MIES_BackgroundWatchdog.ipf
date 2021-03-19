@@ -6,18 +6,6 @@
 /// @file MIES_BackgroundWatchdog.ipf
 /// @brief __BW__ Panel for inspecting the state of the MIES DAQ/TP background functions
 
-/// @cond DOXYGEN_IGNORES_THIS
-
-#include ":MIES_Constants"
-#include ":MIES_Debugging"
-#include ":MIES_GuiUtilities"
-#include ":MIES_Structures"
-#include ":MIES_Utilities"
-// JSON XOP
-#include "json_functions"
-
-/// @endcond
-
 static StrConstant PANEL            = "BW_MiesBackgroundWatchPanel"
 static StrConstant TASK             = "BW_BackgroundWatchdog"
 static StrConstant CONTROL_PREFIX   = "bckrdw"
@@ -25,6 +13,70 @@ static Constant    INVALIDATE_STATE = -1
 static Constant    XGRID = 20
 static Constant    XOFFS = 240
 static Constant    YGRID = 20
+
+static Constant CONTROL_TYPE_VALDISPLAY = 4
+
+static Function ASSERT(var, errorMsg)
+	variable var
+	string errorMsg
+
+	string stracktrace, miesVersionStr, lockedDevicesStr, device
+	string stacktrace = ""
+	variable i, numLockedDevices
+
+	try
+		AbortOnValue var==0, 1
+	catch
+		Abort
+	endtry
+End
+
+static Function SetValDisplay(win, control, [var, str, format])
+	string win, control
+	variable var
+	string str, format
+
+	string formattedString
+
+	if(!ParamIsDefault(format))
+		ASSERT(ParamIsDefault(str), "Unexpected parameter combination")
+		ASSERT(!ParamIsDefault(var), "Unexpected parameter combination")
+		sprintf formattedString, format, var
+	elseif(!ParamIsDefault(var))
+		ASSERT(ParamIsDefault(str), "Unexpected parameter combination")
+		ASSERT(ParamIsDefault(format), "Unexpected parameter combination")
+		sprintf formattedString, "%g", var
+	elseif(!ParamIsDefault(str))
+		ASSERT(ParamIsDefault(var), "Unexpected parameter combination")
+		ASSERT(ParamIsDefault(format), "Unexpected parameter combination")
+		formattedString = str
+	else
+		ASSERT(0, "Unexpected parameter combination")
+	endif
+
+	// Don't update if the content does not change, prevents flickering
+	if(CmpStr(GetValDisplayAsString(win, control), formattedString) == 0)
+		return NaN
+	endif
+
+	ValDisplay $control win=$win, value=#formattedString
+End
+
+static Function/S GetValDisplayAsString(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_VALDISPLAY, "Control is not a val display")
+	return S_value
+End
+
+static Function IsBackgroundTaskRunning(task)
+	string task
+
+	CtrlNamedBackground $task, status
+	return NumberByKey("RUN", s_info)
+End
 
 Function BW_StartPanel()
 
