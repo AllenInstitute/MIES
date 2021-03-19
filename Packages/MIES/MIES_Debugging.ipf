@@ -495,6 +495,10 @@ Function Bug(msg)
 		printf "BUG: %s\r", msg
 	endif
 
+	LOG_AddEntry(PACKAGE_MIES, "report",                 \
+	             keys = {"msg", "func", "line", "file"}, \
+	             values = {msg, func, line, file})
+
 	ControlWindowToFront()
 
 #ifdef AUTOMATED_TESTING
