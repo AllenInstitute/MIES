@@ -4244,3 +4244,38 @@ Function AsyncAcquisitionLBN_REENTRY([str])
 	refStr = "myUnit"
 	CHECK_EQUAL_STR(refStr, readStr)
 End
+
+Function CheckSettingsFails_IGNORE(string device)
+
+	string ctrl
+
+	ctrl = GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+	PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_UNSELECTED)
+
+	ctrl = GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+	PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_UNSELECTED)
+End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckSettingsFails([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	try
+		AcquireData(s, str, preAcquireFunc = CheckSettingsFails_IGNORE)
+	catch
+		// do nothing
+	endtry
+End
+
+Function CheckSettingsFails_REENTRY([str])
+	string str
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+End
