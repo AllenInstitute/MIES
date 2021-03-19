@@ -741,7 +741,13 @@ Function DAP_WindowHook(s)
 			NVAR JSONid = $GetSettingsJSONid()
 			PS_StoreWindowCoordinate(JSONid, panelTitle)
 
-			DAP_UnlockDevice(panelTitle)
+			try
+				ClearRTError()
+				DAP_UnlockDevice(panelTitle); AbortOnRTE
+			catch
+				// do nothing
+			endtry
+
 			// return zero so that other hooks are called as well
 			break
 		case 22: // mouse wheel
