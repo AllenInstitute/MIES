@@ -194,7 +194,7 @@ End
 Function SWS_DeleteDataWaves(panelTitle)
 	string panelTitle
 
-	string list, path, name, absolutePath, msg
+	string list, path, name, absolutePath
 	variable i, numItems, waveSweepNo, sweepNo, refTime
 
 	refTime = DEBUG_TIMER_START()
@@ -230,14 +230,26 @@ Function SWS_DeleteDataWaves(panelTitle)
 
 	path = GetDeviceDataPathAsString(panelTitle)
 
+	DFREF deletedFolder = UniqueDataFolder($GetDevicePathAsString(panelTitle), "Data_deleted")
+	ASSERT(IsDataFolderEmpty(deletedFolder), "Invalid target datafolder")
+
 	numItems = DimSize(matches, ROWS)
 	for(i = 0; i < numItems; i += 1)
 		absolutePath = path + ":" + StringFromList(matches[i], list)
 
-		sprintf msg, "Will delete %s\r", absolutePath
-		DEBUGPRINT(msg)
+		WAVE/Z wv = $absolutePath
+		if(WaveExists(wv))
+			MoveWave wv, deletedFolder
+			continue
+		endif
 
-		KillOrMoveToTrashPath(absolutePath)
+		DFREF folder = $absolutePath
+		if(DataFolderExistsDFR(folder))
+			MoveDataFolder folder, deletedFolder
+			continue
+		endif
+
+		ASSERT(0, "Invalid state when deleting data: " + absolutePath)
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)

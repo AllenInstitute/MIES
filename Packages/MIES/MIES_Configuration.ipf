@@ -167,6 +167,8 @@ static StrConstant EXPCONFIG_JSON_PRESSCONSTPOS = "Constant Positive"
 static StrConstant EXPCONFIG_JSON_SAVE_PATH = "Save data to"
 static StrConstant EXPCONFIG_JSON_STIMSET_NAME = "Stim set file name"
 static StrConstant EXPCONFIG_JSON_POSITION_MCC = "Position MCCs"
+static StrConstant EXPCONFIG_JSON_SWEEP_ROLLBACK = "Sweep Rollback allowed"
+static Constant EXPCONFIG_SWEEPROLLBACK_DEFAULT = 0
 
 static StrConstant EXPCONFIG_JSON_USERPRESSBLOCK = "User Pressure Devices"
 static StrConstant EXPCONFIG_JSON_USERPRESSDEV = "DAC Device"
@@ -227,6 +229,7 @@ static Function CONF_DefaultSettings()
 	JSON_AddString(jsonID, EXPCONFIG_JSON_POSITION_MCC, NONE)
 	JSON_AddString(jsonID, EXPCONFIG_JSON_STIMSET_NAME, "")
 	JSON_AddString(jsonID, EXPCONFIG_JSON_SAVE_PATH, "C:MiesSave")
+	JSON_AddBoolean(jsonID, EXPCONFIG_JSON_SWEEP_ROLLBACK, EXPCONFIG_SWEEPROLLBACK_DEFAULT)
 
 	return jsonID
 End
@@ -536,7 +539,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 	string fullFilePath
 	variable middleOfExperiment, forceNewPanel
 
-	variable i, fnum, restoreMask, numPotentialUnlocked, err, winConfigChanged, isTagged
+	variable i, fnum, restoreMask, numPotentialUnlocked, err, winConfigChanged, isTagged, sweepRollback
 	string panelTitle, getWName, jsonPath, potentialUnlockedList, winHandle, errMsg
 	string AmpSerialLocal, AmpTitleLocal, device, StimSetPath, path, filename, rStateSync
 	string input = ""
@@ -632,6 +635,11 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 
 		KillPath/Z SavePath
 
+		sweepRollback = CONF_GetVariableFromSettings(jsonID, EXPCONFIG_JSON_SWEEP_ROLLBACK, defaultValue = EXPCONFIG_SWEEPROLLBACK_DEFAULT)
+		if(!sweepRollback)
+			SetVariable SetVar_Sweep win=$panelTitle, noedit=1, limits={0,0,0}, help={"Sweep rollback is disabled by the configuration."}
+		endif
+
 		PGC_SetAndActivateControl(panelTitle, "StartTestPulseButton", switchTab = 1)
 
 		print "Start Sciencing"
@@ -724,30 +732,35 @@ static Function/S CONF_GetStringFromSettings(jsonID, keyName)
 	return JSON_GetString(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + keyName)
 End
 
-/// @brief Retrieves a variable value from a setting
-///
-/// @param jsonID  ID of existing json
-/// @param keyName key name of setting
-/// @returns value of member with keyname in the EXPCONFIG_RESERVED_DATABLOCK
-static Function CONF_GetVariableFromSettings(jsonID, keyName)
-	variable jsonID
-	string keyName
-
-	CONF_RequireConfigBlockExists(jsonID)
-	return JSON_GetVariable(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + keyName)
-End
-
-/// @brief Retrieves a boolean value from a saved control
+/// @brief Retrieves a variable/boolean/null value from a saved control
 ///        note: boolean control property values are also saved in the EXPCONFIG_FIELD_CTRLVVALUE field
 ///
-/// @param jsonID  ID of existing json
-/// @param keyName key name of setting
+/// @param jsonID       ID of existing json
+/// @param keyName      key name of setting
+/// @param defaultValue [optional, defaults to off] allows to query optional entries, if the value could not be found
+///                     this is returned instead
+///
 /// @returns value of the EXPCONFIG_FIELD_CTRLVVALUE field of the control
-static Function CONF_GetBooleanFromSettings(jsonID, keyName)
+static Function CONF_GetVariableFromSettings(jsonID, keyName, [defaultValue])
 	variable jsonID
 	string keyName
+	variable defaultValue
 
-	return CONF_GetVariableFromSettings(jsonID, keyName)
+	variable val
+
+	CONF_RequireConfigBlockExists(jsonID)
+
+	if(ParamIsDefault(defaultValue))
+		return JSON_GetVariable(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + keyName)
+	endif
+
+	val = JSON_GetVariable(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + keyName, ignoreErr = 1)
+
+	if(!IsNaN(val))
+		return val
+	endif
+
+	return defaultValue
 End
 
 /// @brief Returns the path to the first control named nicename found in the json in all saved windows
