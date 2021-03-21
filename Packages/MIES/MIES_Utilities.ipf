@@ -121,7 +121,6 @@ Function ASSERT(var, errorMsg)
 
 			numLockedDevices = ItemsInList(lockedDevicesStr)
 
-#if exists("AFH_GetLastSweepAcquired")
 			Redimension/N=(numLockedDevices) sweeps, daqStates, tpStates
 
 			for(i = 0; i < numLockedDevices; i += 1)
@@ -133,7 +132,6 @@ Function ASSERT(var, errorMsg)
 				tpStates[i]  = TestPulseRunModeToString(testpulseMode)
 				daqStates[i] = DAQRunModeToString(runMode)
 			endfor
-#endif
 		endif
 
 		print "Please provide the following information if you contact the MIES developers:"
@@ -159,9 +157,7 @@ Function ASSERT(var, errorMsg)
 		print miesVersionStr
 		print "################################"
 
-#if exists("LOG_AddEntry")
 		LOG_AddEntry(PACKAGE_MIES, "assert", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
-#endif
 
 		ControlWindowToFront()
 		Debugger
@@ -243,9 +239,7 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 
 		printf "Assertion FAILED with message %s\r", errorMsg
 
-#if exists("LOG_AddEntry_TS")
 		LOG_AddEntry_TS(PACKAGE_MIES, "assert", "ASSERT_TS", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
-#endif
 
 #endif // AUTOMATED_TESTING
 
@@ -3901,19 +3895,6 @@ Function ExecuteListOfFunctions(funcList)
 	endfor
 End
 
-Function/S GetInteractiveMode_PROTO()
-
-	return ""
-End
-
-/// @brief Wrapper function for GetInteractiveMode in case it is not available
-Function/S GetInteractiveModeWrapper()
-
-	FUNCREF GetInteractiveMode_PROTO f = $"GetInteractiveMode"
-
-	return f()
-End
-
 /// @brief Wrapper function for `Abort` which honours our interactive mode setting
 Function DoAbortNow(msg)
 	string msg
@@ -3924,7 +3905,7 @@ Function DoAbortNow(msg)
 		Abort
 	endif
 
-	NVAR/Z interactiveMode = $GetInteractiveModeWrapper()
+	NVAR/Z interactiveMode = $GetInteractiveMode()
 
 	if(NVAR_Exists(interactiveMode) && interactiveMode)
 		Abort msg
@@ -4441,17 +4422,6 @@ Function IsWindows10()
 	return GrepString(os, "^Windows 10 ")
 End
 
-Function/WAVE WaveGetterPrototype()
-	ASSERT(0, "Prototype called")
-End
-
-Function/WAVE GetElapsedTimeWaveWrapper()
-
-	FUNCREF WaveGetterPrototype f = $"GetElapsedTimeWave"
-
-	return f()
-End
-
 /// @brief Start a timer for performance measurements
 ///
 /// Usage:
@@ -4483,7 +4453,7 @@ Function StoreElapsedTime(referenceTime)
 
 	variable count, elapsed
 
-	WAVE/D elapsedTime = GetElapsedTimeWaveWrapper()
+	WAVE/D elapsedTime = GetElapsedTimeWave()
 
 	count = GetNumberFromWaveNote(elapsedTime, NOTE_INDEX)
 	EnsureLargeEnoughWave(elapsedTime, minimumSize=count, initialValue = NaN)

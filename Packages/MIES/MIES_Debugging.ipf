@@ -200,7 +200,7 @@ Function DEBUGPRINT(msg, [var, str, wv, format])
 
 	FindFirstOutsideCaller(func, line, file)
 
-	if(!IsEmpty(file) && !DebuggingEnabledForFileWrapper(file))
+	if(!IsEmpty(file) && !DP_DebuggingEnabledForFile(file))
 		return NaN
 	endif
 
@@ -309,7 +309,7 @@ Function DEBUGPRINTSTACKINFO()
 
 	FindFirstOutsideCaller(func, line, file)
 
-	if(!IsEmpty(file) && !DebuggingEnabledForFileWrapper(file))
+	if(!IsEmpty(file) && !DP_DebuggingEnabledForFile(file))
 		return NaN
 	endif
 
@@ -480,22 +480,6 @@ Function DisableEvilMode()
 	Execute/P/Q "COMPILEPROCEDURES "
 End
 
-/// @brief Prototype for DebuggingEnabledForFileWrapper()
-Function DebuggingEnabledForFileSimple(file)
-	string file
-
-	return 1
-End
-
-/// @brief Wrapper for DP_DebuggingEnabledForFile()
-Function DebuggingEnabledForFileWrapper(file)
-	string file
-
-	FUNCREF DebuggingEnabledForFileSimple f = $"DP_DebuggingEnabledForFile"
-
-	return f(file)
-End
-
 /// @brief Complain and ask the user to report the error
 ///
 /// In nearly all cases ASSERT() is the more appropriate method to use.
@@ -510,6 +494,10 @@ Function Bug(msg)
 	else
 		printf "BUG: %s\r", msg
 	endif
+
+	LOG_AddEntry(PACKAGE_MIES, "report",                 \
+	             keys = {"msg", "func", "line", "file"}, \
+	             values = {msg, func, line, file})
 
 	ControlWindowToFront()
 
