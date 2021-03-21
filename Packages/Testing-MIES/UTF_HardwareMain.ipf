@@ -826,3 +826,25 @@ Function CheckDashboard(string device, WAVE headstageQC)
 		CHECK_EQUAL_VAR(state, headstageQC[i])
 	endfor
 End
+
+Function AddLabnotebookEntries_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
+
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		// add entry for AS_ITI
+		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values     = NaN
+		Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = ""
+		values[0] = AS_ITI
+		ED_AddEntryToLabnotebook(device, "AcqStateTrackingValue_AS_ITI", values)
+		valuesText[0] = AS_StateToString(AS_ITI)
+		ED_AddEntryToLabnotebook(device, "AcqStateTrackingValue_AS_ITI", valuesText)
+		return 1
+	endif
+
+	return 0
+End

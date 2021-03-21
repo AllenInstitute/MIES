@@ -4283,3 +4283,156 @@ Function CheckSettingsFails_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
 End
+
+static Function CheckAcquisitionStates_IGNORE(device)
+	string device
+
+	string ctrl
+
+	ctrl = GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+	PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_UNSELECTED)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetC*")
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetC_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "AcquisitionStateTrackingFunc"
+
+	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=AddLabnotebookEntries_IGNORE
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckAcquisitionStates_MD([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc=CheckAcquisitionStates_IGNORE)
+End
+
+Function CheckAcquisitionStates_MD_REENTRY([string str])
+	CheckAcquisitionStates(str)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
+Function CheckAcquisitionStates_SD([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc=CheckAcquisitionStates_IGNORE)
+End
+
+Function CheckAcquisitionStates_SD_REENTRY([string str])
+	CheckAcquisitionStates(str)
+End
+
+static Function CheckLBNEntries_IGNORE(string device, variable sweepNo, variable acqState, [variable missing])
+
+	string name
+	variable i, numEntries
+
+	name = "USER_AcqStateTrackingValue_" + AS_StateToString(acqState)
+
+	WAVE/T textualValues = GetLBTextualValues(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	WAVE/Z entry = GetLastSetting(numericalValues, sweepNo, name, UNKNOWN_MODE)
+	WAVE/Z entryText = GetLastSetting(textualValues, sweepNo, name, UNKNOWN_MODE)
+
+	if(!ParamIsDefault(missing) && missing == 1)
+		CHECK_WAVE(entry, NULL_WAVE)
+		CHECK_WAVE(entryText, NULL_WAVE)
+		return NaN
+	endif
+
+	CHECK_WAVE(entry, NUMERIC_WAVE)
+	CHECK_WAVE(entryText, TEXT_WAVE)
+
+	CHECK_EQUAL_WAVES(entry, {acqState, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(entryText, {AS_StateToString(acqState), "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
+
+	// check that the written entries have the correct acquisition state in the new AcquisitionState column
+	Make/FREE/WAVE waves = {numericalValues, textualValues}
+
+	numEntries = DimSize(waves, ROWS)
+	for(i = 0; i < 2; i += 1)
+		WAVE wv = waves[i]
+
+		WAVE/Z indizesSweeps = FindIndizes(wv, colLabel = "SweepNum", var = sweepNo)
+		CHECK_WAVE(indizesSweeps, FREE_WAVE)
+
+		if(IsNumericWave(wv))
+			WAVE/Z indizesEntry = FindIndizes(wv, colLabel = name, var = acqState)
+		else
+			WAVE/Z indizesEntry = FindIndizes(wv, colLabel = name, str = AS_StateToString(acqState))
+		endif
+
+		CHECK_WAVE(indizesEntry, FREE_WAVE)
+		WAVE indizesEntryOneSweep = GetSetIntersection(indizesSweeps, indizesEntry)
+		CHECK(DimSize(indizesEntryOneSweep, ROWS) > 0)
+
+		// all entries in indizesEntryOneSweep must be in indizesAcqState
+		WAVE/Z indizesAcqState = FindIndizes(wv, colLabel = "AcquisitionState", var = acqState)
+
+		CHECK_WAVE(indizesAcqState, FREE_WAVE)
+		WAVE/Z matches = GetSetIntersection(indizesEntryOneSweep, indizesAcqState)
+
+		CHECK_EQUAL_WAVES(indizesEntryOneSweep, matches)
+	endfor
+End
+
+Function CheckAcquisitionStates(string str)
+	variable sweepNo, i
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 1)
+
+	// add entry for AS_INACTIVE
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values     = NaN
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = ""
+	values[0] = AS_INACTIVE
+	ED_AddEntryToLabnotebook(str, "AcqStateTrackingValue_AS_INACTIVE", values)
+	valuesText[0] = AS_StateToString(AS_INACTIVE)
+	ED_AddEntryToLabnotebook(str, "AcqStateTrackingValue_AS_INACTIVE", valuesText)
+
+	for(i = 0; i < AS_NUM_STATES; i += 1)
+		switch(i)
+			case AS_INACTIVE:
+				CheckLBNEntries_IGNORE(str, 0, i, missing = 1)
+				CheckLBNEntries_IGNORE(str, 1, i)
+				break
+			case AS_EARLY_CHECK:
+				// no check possible for AS_EARLY_CHECK
+				break
+			case AS_PRE_DAQ:
+				CheckLBNEntries_IGNORE(str, 0, i)
+				CheckLBNEntries_IGNORE(str, 1, i, missing = 1)
+				break
+			case AS_PRE_SWEEP:
+				CheckLBNEntries_IGNORE(str, 0, i)
+				CheckLBNEntries_IGNORE(str, 1, i)
+				break
+			case AS_MID_SWEEP:
+				CheckLBNEntries_IGNORE(str, 0, i)
+				CheckLBNEntries_IGNORE(str, 1, i)
+				break
+			case AS_POST_SWEEP:
+				CheckLBNEntries_IGNORE(str, 0, i)
+				CheckLBNEntries_IGNORE(str, 1, i)
+				break
+			case AS_ITI:
+				CheckLBNEntries_IGNORE(str, 0, i)
+				CheckLBNEntries_IGNORE(str, 1, i, missing = 1)
+				break
+			case AS_POST_DAQ:
+				CheckLBNEntries_IGNORE(str, 0, i, missing = 1)
+				CheckLBNEntries_IGNORE(str, 1, i)
+				break
+			default:
+				FAIL()
+		endswitch
+	endfor
+End

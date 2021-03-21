@@ -726,3 +726,56 @@ Function SweepRollbackChecker(panelTitle, s)
 
 	return 0
 End
+
+Function AcquisitionStateTrackingFunc(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	variable acqState, expectedAcqState
+	string name
+
+	acqState = ROVAR(GetAcquisitionState(panelTitle))
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values     = NaN
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = ""
+
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			expectedAcqState = AS_PRE_DAQ
+			break
+		case PRE_SET_EVENT:
+			// AS_POST_SET does not yet exist
+			if(s.sweepNo > 0)
+				expectedAcqState = AS_ITI
+			else
+				expectedAcqState = AS_PRE_DAQ
+			endif
+			break
+		case PRE_SWEEP_EVENT:
+			expectedAcqState = AS_PRE_SWEEP
+			break
+		case MID_SWEEP_EVENT:
+			expectedAcqState = AS_MID_SWEEP
+			break
+		case POST_SWEEP_EVENT:
+		case POST_SET_EVENT:
+			// AS_POST_SET does not yet exist
+			expectedAcqState = AS_POST_SWEEP
+			break
+		case POST_DAQ_EVENT:
+			expectedAcqState = AS_POST_DAQ
+			break
+		default:
+			ASSERT(0, "Invalid event")
+	endswitch
+
+	name = "AcqStateTrackingValue_" + AS_StateToString(acqState)
+
+	CHECK_EQUAL_VAR(acqState, expectedAcqState)
+	values[s.headstage] = expectedAcqState
+	ED_AddEntryToLabnotebook(panelTitle, name, values, overrideSweepNo = s.sweepNo)
+	valuesText[s.headstage] = AS_StateToString(expectedAcqState)
+	ED_AddEntryToLabnotebook(panelTitle, name, valuesText, overrideSweepNo = s.sweepNo)
+
+	return 0
+End
