@@ -1003,13 +1003,10 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 			CONF_GatherControlsFromJSON(ctrlData, jsonID, srcWinNames[winNum])
 
 			colNiceName = FindDimLabel(ctrlData, COLS, "NICENAME")
-			numCtrl = DimSize(ctrlData, ROWS)
-			if(numCtrl > 1)
-				Duplicate/FREE/RMD=[][colNiceName] ctrlData ctrlNiceNames
-				Redimension/N=(numCtrl) ctrlNiceNames
-				FindDuplicates/DT=dupWave ctrlNiceNames
-				ASSERT(DimSize(dupWave, ROWS) == 0, "Found duplicates in control names in configuration file for window " + subWinTarget)
-			endif
+			Duplicate/FREE/RMD=[][colNiceName] ctrlData ctrlNiceNames
+			Redimension/N=(DimSize(ctrlNiceNames, ROWS)) ctrlNiceNames
+
+			ASSERT(!SearchForDuplicates(ctrlNiceNames), "Found duplicates in control names in configuration file for window " + subWinTarget)
 
 			WAVE/T ctrlArrays = CONF_GetControlArrayList(subWinTarget)
 			Make/FREE/B/U/N=(DimSize(ctrlArrays, ROWS)) ctrlArrayAdded
@@ -1453,8 +1450,9 @@ Function CONF_WindowToJSON(wName, saveMask[, excCtrlTypes])
 
 		Make/FREE/T/N=(numCtrl) arrayNames
 		arrayNames[] = GetUserData(wName, ctrlNames[p][%CTRLNAME], EXPCONFIG_UDATA_CTRLARRAY)
+
 		if(numCtrl > 1)
-			FindDuplicates/FREE/RT=arrayNamesRedux arrayNames
+			WAVE/T arrayNamesRedux = GetUniqueEntries(arrayNames)
 			arrayNamesRedux[] = LowerStr(arrayNamesRedux[p])
 			FindValue/TXOP=4/TEXT="" arrayNamesRedux
 			if(V_Value >= 0)
@@ -1472,11 +1470,9 @@ Function CONF_WindowToJSON(wName, saveMask[, excCtrlTypes])
 			duplicateCheck[numCtrl, numCtrl + numUniqueCtrlArray - 1] = arrayNamesRedux[p - numCtrl]
 		endif
 
+		ASSERT(!SearchForDuplicates(duplicateCheck), "Human readable control names combined with internal control names have duplicates: " + TextWaveToList(duplicateCheck, ";"))
+
 		numDupCheck = DimSize(duplicateCheck, ROWS)
-		if(numDupCheck > 1)
-			FindDuplicates/FREE/DT=duplicates duplicateCheck
-			ASSERT(!DimSize(duplicates, ROWS), "Human readable control names combined with internal control names have duplicates: " + TextWaveToList(duplicates, ";"))
-		endif
 		Make/FREE/I/N=(numDupCheck) groupEndingCheck
 		groupEndingCheck[] = StringEndsWith(duplicateCheck[p], LowerStr(EXPCONFIG_CTRLGROUP_SUFFIX))
 		FindValue/I=1 groupEndingCheck
@@ -1819,7 +1815,7 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 	string panelTitle
 	variable jsonID, midExp
 
-	variable i, type, numRows, ampSerial, ampChannel, index, value
+	variable i, type, numRows, ampSerial, ampChannel, index, value, warnMissingMCCSync
 	string jsonPath, jsonBasePath
 	string ampSerialList = ""
 	string ampTitleList = ""
@@ -1860,6 +1856,8 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 
 	PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateAmpStatus")
 	PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateDACList")
+
+	warnMissingMCCSync = !GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC")
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		PGC_SetAndActivateControl(panelTitle, "Popup_Settings_HeadStage", val = i)
@@ -1916,6 +1914,11 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 
 			if(IsFinite(ampSerial))
 				if(!midExp)
+					if(warnMissingMCCSync)
+						printf "The sync MIES to MCC settings checkbox is not checked.\rRestored amplifier settings will not be applied to Multiclamp commander."
+						warnMissingMCCSync = 0
+					endif
+
 					CONF_RestoreAmplifierSettings(panelTitle, i, jsonID, jsonBasePath)
 				else
 					CONF_MCC_MidExp(panelTitle, i, jsonID)
