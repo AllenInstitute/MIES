@@ -1058,3 +1058,101 @@ static Function SC_Test8_REENTRY([str])
 
 	CheckDashboard(str, {1, 1})
 End
+
+static Function SC_Test9_IGNORE(device)
+	string device
+
+	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
+	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
+	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
+	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=3)
+	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="*")
+	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
+	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
+	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
+	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+End
+
+static Function SC_Test9_Pre_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val=1)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function SC_Test9([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, str, postInitializeFunc=SC_Test9_IGNORE, preAcquireFunc=SC_Test9_Pre_IGNORE)
+
+	WAVE/T wv = MSQ_CreateOverrideResults(str, 0, SC_SPIKE_CONTROL)
+
+	// one spike each for each pulse (1 requested)
+	// spike position fails with * as spike position operator
+	// second headstage is VC
+	//
+	// [sweep][headstage][pulse][region]
+	wv[][0][0, 9][0, 1] += "SpikePosition_ms:3;"
+	wv[][0][][]      += "SpontaneousSpikeMax:0.5"
+End
+
+static Function SC_Test9_REENTRY([str])
+	string str
+
+	variable sweepNo, autobiasV
+	string lbl, failedPulses, spikeCounts, spikePos
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 1)
+
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%idealSpikeCounts], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%failedPulseLevel], {1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%headstagePass_HS0], {1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%headstagePass_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS0], {0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setSweepCount_HS1], {0, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrials_HS0], {0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%rerunTrials_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%rerunTrialsExceeded_HS0], {0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%rerunTrialsExceeded_HS1], NULL_WAVE)
+
+	spikeCounts = "P0_R0:1,;P1_R0:1,;P2_R0:1,;P3_R0:1,;P4_R0:1,;P5_R0:1,;P6_R0:1,;P7_R0:1,;P8_R0:1,;P9_R0:1,;"
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCounts_HS0], {spikeCounts, spikeCounts}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikeCounts_HS1], NULL_WAVE)
+
+	spikePos = "P0_R0:30,;P1_R0:30,;P2_R0:30,;P3_R0:30,;P4_R0:30,;P5_R0:30,;P6_R0:30,;P7_R0:30,;P8_R0:30,;P9_R0:30,;"
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikePositions_HS0], {spikePos, spikePos}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePositions_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%spikeCountsState_HS0], {SC_SPIKE_COUNT_STATE_STR_GOOD, SC_SPIKE_COUNT_STATE_STR_GOOD}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikeCountsState_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%spikePositionQC_HS0], {0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePositionQC_HS1], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%spontSpikeQC_HS0], {1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spontSpikeQC_HS1], NULL_WAVE)
+
+	// spike position modifier kicks in
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1,3}, mode = WAVE_DATA)
+	// but not here as this HS is in VC
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1,1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%autoBiasV_HS1], NULL_WAVE)
+
+	CheckDashboard(str, {1, 1})
+End
