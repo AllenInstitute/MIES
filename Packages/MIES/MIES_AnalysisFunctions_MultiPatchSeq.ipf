@@ -775,8 +775,9 @@ static Function/WAVE MSQ_GetActiveHeadstages(panelTitle, clampMode)
 	AI_AssertOnInvalidClampMode(clampMode)
 
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 
-	Make/FREE/N=(NUM_HEADSTAGES) status = statusHS[p] && DAG_GetHeadstageMode(panelTitle, p) == clampMode
+	Make/FREE/N=(NUM_HEADSTAGES) status = statusHS[p] && (GUIState[p][%HSMode] == clampMode)
 
 	return status
 End
