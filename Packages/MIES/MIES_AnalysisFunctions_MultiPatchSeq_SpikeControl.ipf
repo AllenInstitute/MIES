@@ -450,11 +450,11 @@ static Function/WAVE SC_SpikeCountsQC(string panelTitle, WAVE/T spikeNumbersLBN,
 				continue
 			endif
 
-			sprintf msg, "HS%d: \"%s\", ", i, NumericWaveToList(spikeNumbers[i], ";")
+			sprintf msg, "HS%d: \"%s\", \r", i, NumericWaveToList(spikeNumbers[i], ";")
 			str += msg
 		endfor
 
-		DebugPrint(RemoveEnding(str, ", "))
+		DebugPrint(RemoveEnding(str, ", \r"))
 	endif
 #endif
 
