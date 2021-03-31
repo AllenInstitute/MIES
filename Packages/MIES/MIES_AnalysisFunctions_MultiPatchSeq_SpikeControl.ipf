@@ -13,7 +13,7 @@
 /// prefix in order to remove it with RemovePrefix.
 static StrConstant SC_PULSE_PREFIX_RE = "^[^:]+:"
 
-/// @brief Store the newly calcualted rerun trials in the labnotebook and return the minimum and maximum of it
+/// @brief Store the newly calculated rerun trials in the labnotebook and return the minimum and maximum of it
 static Function [variable minTrials, variable maxTrials] SC_GetTrials(string panelTitle, variable sweepNo, variable headstage)
 
 	string key, msg
