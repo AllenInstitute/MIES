@@ -22,7 +22,7 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string pan
 	WAVE textualValues = GetLBTextualValues(panelTitle)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL, query = 1)
-	WAVE/Z trialsInSCI = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	WAVE trialsInSCI = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	// check that we have at least 2 sweeps in the current SCI
 	if(DimSize(trialsInSCI, ROWS) == 1)
@@ -30,7 +30,7 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string pan
 	endif
 
 	// use the trials from the previous which is from the *same* SCI
-	WAVE/Z trialsLBN = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
+	WAVE trialsLBN = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
 
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
