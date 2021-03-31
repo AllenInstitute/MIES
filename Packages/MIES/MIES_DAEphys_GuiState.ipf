@@ -310,6 +310,19 @@ Function/Wave DAG_GetChannelState(panelTitle, type)
 	return wv
 End
 
+/// @brief Return a wave with `NUM_HEADSTAGES` rows with `1` where
+///        the given headstages is active and in the given clamp mode.
+Function/WAVE DAG_GetActiveHeadstages(string panelTitle, variable clampMode)
+	AI_AssertOnInvalidClampMode(clampMode)
+
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+
+	Make/FREE/N=(NUM_HEADSTAGES) status = statusHS[p] && (GUIState[p][%HSMode] == clampMode)
+
+	return status
+End
+
 /// @brief Return a free wave of the popup menu strings specified by
 ///        channelType, uses GetDA_EphysGuiStateTxT() instead of GUI queries.
 ///
