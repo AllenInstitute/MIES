@@ -649,7 +649,7 @@ digraph "G" {
 	"n78" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Read \"Ideal number of spikes\" from labotebook"
+		label = "Read \"Ideal number of spikes\" from labnotebook"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -671,7 +671,7 @@ digraph "G" {
 	"n91" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Set \"Spike position QC\"\n as failed in labnotebok"
+		label = "Set \"Spike position QC\"\n as failed in labnotebook"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -704,7 +704,7 @@ digraph "G" {
 	"n98" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Set \"Spike position QC\"\n as passed in labnotebok"
+		label = "Set \"Spike position QC\"\n as passed in labnotebook"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
