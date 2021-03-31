@@ -1350,11 +1350,17 @@ static Function MSQ_ForceSetEvent(panelTitle, headstage)
 End
 
 /// @brief Common pre DAQ calls for all multipatch analysis functions
-Function MSQ_CommonPreDAQ(string panelTitle, variable headstage)
+Function MSQ_CommonPreDAQ(string panelTitle, variable headstage, [variable clampMode])
 
+if(ParamIsDefault(clampMode))
 	if(headstage != DAP_GetHighestActiveHeadstage(panelTitle))
 		return NaN
 	endif
+else
+	if(headstage != DAP_GetHighestActiveHeadstage(panelTitle, clampMode = clampMode))
+		return NaN
+	endif
+endif
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")            \
 	   && !DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
