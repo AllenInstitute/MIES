@@ -689,3 +689,10 @@ End
 Function/S GetAcquisitionState(string panelTitle)
 	return GetNVARAsString(GetDevicePath(panelTitle), "acquisitionState", initialValue = AS_INACTIVE)
 End
+
+/// @brief Return the global bug count, incremented by Bug()
+///
+/// Mostly used for testing.
+Function/S GetBugCount()
+	return GetNVARAsString(GetMiesPath(), "bugCount", initialValue = 0)
+End

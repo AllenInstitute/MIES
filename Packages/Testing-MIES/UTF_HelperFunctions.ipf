@@ -49,4 +49,7 @@ Function AdditionalExperimentCleanup()
 
 	NVAR interactiveMode = $GetInteractiveMode()
 	interactiveMode = 0
+
+	NVAR bugCount = $GetBugCount()
+	KillVariables bugCount
 End

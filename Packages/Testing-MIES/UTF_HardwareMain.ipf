@@ -302,6 +302,9 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 	StopAllBackgroundTasks()
 
+	NVAR bugCount = $GetBugCount()
+	CHECK_EQUAL_VAR(bugCount, 0)
+
 #ifdef AUTOMATED_TESTING_DEBUGGING
 
 	// accessing UTF internals, don't do that at home

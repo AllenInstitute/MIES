@@ -502,6 +502,8 @@ Function Bug(msg)
 	ControlWindowToFront()
 
 #ifdef AUTOMATED_TESTING
+	NVAR bugCount = $GetBugCount()
+	bugCount += 1
 	ASSERT(0, "BUG: Should never be called during automated testing.")
 #endif
 End
