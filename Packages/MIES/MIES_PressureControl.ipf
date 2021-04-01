@@ -142,7 +142,7 @@ static Function P_RecordUserPressure(panelTitle)
 			continue
 		endif
 
-		TPStorage[count][i][%UserPressure]             = HW_ReadADC(hwType, deviceID, ADC)
+		TPStorage[count][i][%UserPressure]             = HW_ReadADC(hwType, deviceID, ADC, flags = HARDWARE_ABORT_ON_ERROR)
 		TPStorage[count][i][%UserPressureTimeStampUTC] = DateTimeInUTC()
 	endfor
 End
@@ -510,12 +510,9 @@ static Function P_PrepareITCWaves(mainDevice, pressureDevice, deviceID)
 
 		ITCConfig[3][0]  = XOP_CHANNEL_TYPE_TTL
 
-		Duplicate GetDeviceInfoWave(mainDevice), deviceInfo
-		deviceInfo[] = NaN
-
-		HW_WriteDeviceInfo(HARDWARE_ITC_DAC, deviceID, deviceInfo)
+		WAVE deviceInfo = GetDeviceInfoWave(pressureDevice)
 		ASSERT(deviceInfo[%Rack] == 2, "Pressure with ITC1600 requires two racks")
-		ITCConfig[3][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
+		ITCConfig[3][1] = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
 	else // one rack
 		Redimension/N=(-1, 3) ITCData
 		Redimension/N=(3, -1) ITCConfig
@@ -1950,6 +1947,58 @@ Function P_PressureDisplayHighlite(panelTitle, hilite)
 	//ValDisplay $controlNamevalueColor=(65535,65535,65535)
 End
 
+static Function [variable result, string msg] P_CheckDeviceAndChannelSelection(string panelTitle)
+	string pressureDevice, userPressureDevice
+	variable DAC, ADC, TTLA, TTLB
+
+	pressureDevice = GetPopupMenuString(panelTitle, "popup_Settings_Pressure_dev")
+
+	if(cmpstr(pressureDevice, NONE))
+
+		WAVE deviceInfo = GetDeviceInfoWave(pressureDevice)
+
+		ADC  = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_AD"))
+		DAC  = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_DA"))
+		TTLA = str2numSafe(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_TTLA"))
+		TTLB = str2numSafe(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_TTLB"))
+
+		if(ADC >= deviceInfo[%AD])
+			sprintf msg, "The AD channel %d is not available on the pressure device %s.", ADC, pressureDevice
+			return [1, msg]
+		endif
+
+		if(DAC >= deviceInfo[%DA])
+			sprintf msg, "The DA channel %d is not available on the pressure device %s.", DAC, pressureDevice
+			return [1, msg]
+		endif
+
+		if(IsFinite(TTLA) && TTLA >= deviceInfo[%TTL])
+			sprintf msg, "The TTL channel %d is not available on the pressure device %s.", TTLA, pressureDevice
+			return [1, msg]
+		endif
+
+		if(IsFinite(TTLB) && TTLB >= deviceInfo[%TTL])
+			sprintf msg, "The TTL channel %d is not available on the pressure device %s.", TTLB, pressureDevice
+			return [1, msg]
+		endif
+	endif
+
+	userPressureDevice = GetPopupMenuString(panelTitle, "popup_Settings_UserPressure")
+
+	if(cmpstr(userPressureDevice, NONE))
+		WAVE deviceInfo = GetDeviceInfoWave(userPressureDevice)
+
+		ADC = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_UserPressure_ADC"))
+
+		if(ADC >= deviceInfo[%AD])
+			sprintf msg, "The AD channel %d is not available on the user pressure device %s.", ADC, userPressureDevice
+			return [1, msg]
+		endif
+	endif
+
+	return [0, ""]
+End
+
 /// @brief Enables devices for all locked DA_Ephys panels. Sets the correct pressure button state for all locked DA_Ephys panels.
 static Function P_Enable()
 	variable i, j, headstage, numPressureDevices
@@ -2263,12 +2312,23 @@ End
 Function P_ButtonProc_Enable(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string panelTitle
+	string panelTitle, msg
+	variable result
 
 	switch(ba.eventCode)
 		case 2: // mouse up
 			panelTitle = ba.win
 			DAP_AbortIfUnlocked(panelTitle)
+
+			[result, msg] = P_CheckDeviceAndChannelSelection(panelTitle)
+
+			if(result)
+				print "Can not enable the pressure device due to:"
+				print msg
+				ControlWindowToFront()
+				break
+			endif
+
 			P_Enable()
 			P_UpdatePressureDataStorageWv(panelTitle)
 			break
@@ -2349,8 +2409,8 @@ End
 Function P_ButtonProc_UserPressure(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string userPressureDevice, panelTitle
-	variable hardwareType, deviceID, ADC, flags
+	string userPressureDevice, panelTitle, msg
+	variable hardwareType, deviceID, ADC, flags, result
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -2364,6 +2424,15 @@ Function P_ButtonProc_UserPressure(ba) : ButtonControl
 			if(!cmpstr(ba.ctrlName, "button_Hardware_PUser_Enable"))
 
 				if(!cmpstr(userPressureDevice, NONE))
+					break
+				endif
+
+				[result, msg] = P_CheckDeviceAndChannelSelection(panelTitle)
+
+				if(result)
+					print "Can not enable the user pressure device due to:"
+					print msg
+					ControlWindowToFront()
 					break
 				endif
 

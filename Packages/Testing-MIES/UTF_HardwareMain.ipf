@@ -190,6 +190,12 @@ Function TEST_BEGIN_OVERRIDE(name)
 	string/G root:ITCDeviceList = DAP_GetITCDeviceList()
 	string/G root:NIDeviceList = DAP_GetNIDeviceList()
 
+	// cache device info waves
+	DFREF dfr = GetDeviceInfoPath()
+	DFREF dest = root:
+	DuplicateDataFolder/Z/O=1 dfr, dest
+	CHECK_EQUAL_VAR(V_flag, 0)
+
 	NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
 	KillDataFolder/Z root:WaveBuilder
 	DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
@@ -226,6 +232,11 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	SVAR NIDeviceList = root:NIDeviceList
 	string/G $(GetDAQDevicesFolderAsString() + ":NIDeviceList") = NIDeviceList
+
+	DFREF dest = GetDAQDevicesFolder()
+	DFREF source = root:DeviceInfo
+	DuplicateDataFolder/O=1/Z source, dest
+	CHECK_EQUAL_VAR(V_flag, 0)
 
 #ifndef TESTS_WITH_NI_HARDWARE
 	HW_ITC_CloseAllDevices()

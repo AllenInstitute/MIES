@@ -442,24 +442,48 @@ Function/WAVE HW_GetDeviceInfo(hardwareType, deviceID, [flags])
 	endswitch
 End
 
+/// @brief Return hardware specific information from the device
+///
+/// This function does not require the device to be registered compared to HW_GetDeviceInfo().
+///
+/// @param device name of the device
+/// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function/WAVE HW_GetDeviceInfoUnregistered(string device, [variable flags])
+
+	variable hardwareType, deviceID
+
+	deviceID = HW_OpenDevice(device, hardwareType, flags = flags)
+
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			WAVE devInfo = HW_ITC_GetDeviceInfo(deviceID, flags = flags)
+			HW_CloseDevice(hardwareType, deviceID)
+			break
+		case HARDWARE_NI_DAC:
+			HW_NI_AssertOnInvalid(device)
+			WAVE devInfo = HW_NI_GetDeviceInfo(device, flags = flags)
+			// nothing to do for NI
+			break
+		default:
+			ASSERT(0, "Unsupported hardware")
+	endswitch
+
+	return devInfo
+End
+
 /// @brief Update the device info wave
 ///
 /// Query the data via GetDeviceInfoWave().
-Function HW_WriteDeviceInfo(hardwareType, deviceID, deviceInfo)
-	variable hardwareType, deviceID
-	WAVE deviceInfo
+Function HW_WriteDeviceInfo(variable hardwareType, WAVE deviceInfo, WAVE devInfoHW)
 
-	HW_AssertOnInvalid(hardwareType, deviceID)
-
-	WAVE devInfoHW = HW_GetDeviceInfo(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
 	deviceInfo[%HardwareType] = hardwareType
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			deviceInfo[%AD]   = devInfoHW[%ADCCount]
 			deviceInfo[%DA]   = devInfoHW[%DACCount]
-			deviceInfo[%TTL]  = min(devInfoHW[%DOCount], devInfoHW[%DICount])
-			deviceInfo[%Rack] = ceil(deviceInfo[%TTL] / 3)
+			deviceInfo[%TTL]  = devInfoHW[%DOCount] * 8
+			deviceInfo[%Rack] = ceil(min(devInfoHW[%DOCount], devInfoHW[%DICount]) / 3)
 			break
 		case HARDWARE_NI_DAC:
 			WAVE/T devInfoHWText = devInfoHW
@@ -938,8 +962,6 @@ Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 	deviceID = V_Value
-
-	printf "ITC Device opened, returned deviceID is %d.\r", deviceID
 
 	return deviceID
 End
@@ -1899,6 +1921,34 @@ Function HW_NI_IsValidDeviceName(deviceName)
 	return !isEmpty(deviceName)
 End
 
+/// @brief Return the analog input configuration bits as string
+///
+/// @param config Bit combination of @ref NIAnalogInputConfigs
+Function/S HW_NI_AnalogInputToString(variable config)
+
+	string str = ""
+
+	if(config & HW_NI_CONFIG_RSE)
+		str += "RSE, "
+	endif
+
+	if(config & HW_NI_CONFIG_NRSE)
+		str += "NRSE, "
+	endif
+
+	if(config & HW_NI_CONFIG_DIFFERENTIAL)
+		str += "Differential, "
+	endif
+
+	if(config & HW_NI_CONFIG_PSEUDO_DIFFERENTIAL)
+		str += "Pseudo Differential, "
+	endif
+
+	ASSERT(!IsEmpty(str), "Invalid config")
+
+	return RemoveEnding(str, ", ")
+End
+
 #if exists("fDAQmx_DeviceNames")
 
 /// @name Minimum voltages for the analog inputs/outputs
@@ -2427,6 +2477,32 @@ Function HW_NI_ReadAnalogSingleAndSlow(device, channel, [flags])
 	return value
 End
 
+/// @brief Returns a bit combination of the allowed configurations for the given analog input channel
+///
+/// @return Bit combination of @ref NIAnalogInputConfigs
+Function HW_NI_GetAnalogInputConfig(string device, variable channel, [variable flags])
+
+	variable value
+
+	DEBUGPRINTSTACKINFO()
+
+#if exists("fDAQmx_AI_ChannelConfigs")
+	value = fDAQmx_AI_ChannelConfigs(device, channel)
+#else
+	ASSERT(0, "Your NIDAQmx XOP is too old to be usable as it is missing fDAQmx_AI_ChannelConfigs. Please contact the manufacturer for an updated version.")
+#endif
+
+	if(!IsFinite(value))
+		if(flags & HARDWARE_ABORT_ON_ERROR)
+			ASSERT(0, "Error " + fDAQmx_ErrorString())
+		else
+			DEBUGPRINT("Error: ", str=fDAQmx_ErrorString())
+		endif
+	endif
+
+	return value
+End
+
 /// @brief Return a list of all NI devices which can be opened
 ///
 /// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
@@ -2808,6 +2884,11 @@ End
 Function HW_NI_ReadAnalogSingleAndSlow(device, channel, [flags])
 	string device
 	variable channel, flags
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
+Function HW_NI_GetAnalogInputConfig(string device, variable channel, [variable flags])
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End

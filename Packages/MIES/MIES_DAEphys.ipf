@@ -96,6 +96,11 @@ Function/S DAP_GetNIDeviceList()
 
 	globalNIDevList = devList
 
+	// we want to have device infos for all NI devices
+	// devList holds only the ones suitable for DAQ but
+	// skips the ones used for pressure
+	DAP_UpdateDeviceInfoWaves(HW_NI_ListDevices())
+
 	return devList
 End
 
@@ -112,6 +117,8 @@ Function/S DAP_GetITCDeviceList()
 	endif
 
 	globalITCDevList = HW_ITC_ListDevices()
+
+	DAP_UpdateDeviceInfoWaves(globalITCDevList)
 
 	return globalITCDevList
 End
@@ -2515,9 +2522,56 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 	endfor
 
+	if(DAP_CheckPressureSettings(panelTitle))
+		return 1
+	endif
+
 	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_NwbExport"))
 		NWB_PrepareExport(DAG_GetNumericalValue(panelTitle, "Popup_Settings_NwbVersion"))
 	endif
+
+	return 0
+End
+
+static Function DAP_CheckPressureSettings(string panelTitle)
+	variable ADConfig, ADC
+	string pressureDevice, userPressureDevice
+
+#ifndef EVIL_KITTEN_EATING_MODE
+	pressureDevice = GetPopupMenuString(panelTitle, "popup_Settings_Pressure_dev")
+
+	if(cmpstr(pressureDevice, NONE))
+		if(GetHardwareType(pressureDevice) == HARDWARE_NI_DAC)
+
+			ADC = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_AD"))
+			ADConfig = HW_NI_GetAnalogInputConfig(pressureDevice, ADC)
+
+			if((ADConfig & HW_NI_CONFIG_DIFFERENTIAL) != HW_NI_CONFIG_DIFFERENTIAL)
+				printf "(%s) The AD channel %d of the pressure device %s can not be used in differential mode.\r", panelTitle, ADC, pressureDevice
+				printf "Available modes are: %s\r", HW_NI_AnalogInputToString(ADConfig)
+				ControlWindowToFront()
+				return 1
+			endif
+		endif
+	endif
+
+	userPressureDevice = GetPopupMenuString(panelTitle, "popup_Settings_UserPressure")
+
+	if(cmpstr(userPressureDevice, NONE))
+		if(GetHardwareType(userPressureDevice) == HARDWARE_NI_DAC)
+
+			ADC = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_UserPressure_ADC"))
+			ADConfig = HW_NI_GetAnalogInputConfig(userPressureDevice, ADC)
+
+			if((ADConfig & HW_NI_CONFIG_DIFFERENTIAL) != HW_NI_CONFIG_DIFFERENTIAL)
+				printf "(%s) The AD channel %d of the user pressure device %s can not be used in differential mode.\r", panelTitle, ADC, userPressureDevice
+				printf "Available modes are: %s\r", HW_NI_AnalogInputToString(ADConfig)
+				ControlWindowToFront()
+				return 1
+			endif
+		endif
+	endif
+#endif // EVIL_KITTEN_EATING_MODE
 
 	return 0
 End
@@ -2529,7 +2583,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	string unit, ADUnit, DAUnit
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, DAGain, ADGain, realMode
-	variable gain, scale, clampMode, i, j, ampConnState, needResetting
+	variable gain, scale, clampMode, i, j, ampConnState, needResetting, ADConfig
 	variable DAGainMCC, ADGainMCC, numEntries
 	string DAUnitMCC, ADUnitMCC
 
@@ -2725,6 +2779,18 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		printf " and ensure that the \"Multiclamp 700B Commander\" application is open.\r"
 		ControlWindowToFront()
 		return 1
+	endif
+#endif
+
+#ifndef EVIL_KITTEN_EATING_MODE
+	if(GetHardwareType(panelTitle) == HARDWARE_NI_DAC)
+		ADConfig = HW_NI_GetAnalogInputConfig(panelTitle, ADCchannel)
+		if((ADConfig & HW_NI_CONFIG_DIFFERENTIAL) != HW_NI_CONFIG_DIFFERENTIAL)
+			printf "(%s) The AD channel %d from headstage %d can not be used in differential mode.\r", panelTitle, ADCchannel, headstage
+			printf "Available modes are: %s\r", HW_NI_AnalogInputToString(ADConfig)
+			ControlWindowToFront()
+			return 1
+		endif
 	endif
 #endif
 
@@ -4766,12 +4832,109 @@ Function DAP_LockDevice(string win)
 		KillOrMoveToTrash(wv = GetDQMActiveDeviceList())
 	endif
 
-	WAVE deviceInfo = GetDeviceInfoWave(panelTitleLocked)
-	HW_WriteDeviceInfo(hardwareType, deviceID, deviceInfo)
-
 	DAP_UpdateSweepLimitsAndDisplay(panelTitleLocked, initial = 1)
+	DAP_AdaptPanelForDeviceSpecifics(panelTitleLocked)
 
 	LOG_AddEntry(PACKAGE_MIES, "locking", keys = {"device"}, values = {panelTitleLocked})
+End
+
+static Function DAP_AdaptPanelForDeviceSpecifics(string panelTitle)
+
+	variable i
+	string controls
+
+	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_DAC)
+
+		if(i < deviceInfo[%DA])
+			EnableControls(panelTitle, controls)
+		else
+#ifndef EVIL_KITTEN_EATING_MODE
+			DisableControls(panelTitle, controls)
+#endif
+		endif
+	endfor
+
+	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
+
+		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ADC)
+
+		if(i < deviceInfo[%AD])
+			EnableControls(panelTitle, controls)
+		else
+#ifndef EVIL_KITTEN_EATING_MODE
+			DisableControls(panelTitle, controls)
+#endif
+		endif
+	endfor
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_TTL)
+
+		if(i < deviceInfo[%TTL])
+			EnableControls(panelTitle, controls)
+		else
+#ifndef EVIL_KITTEN_EATING_MODE
+			DisableControls(panelTitle, controls)
+#endif
+		endif
+	endfor
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ASYNC)
+
+		if(i < deviceInfo[%TTL])
+			EnableControls(panelTitle, controls)
+		else
+#ifndef EVIL_KITTEN_EATING_MODE
+			DisableControls(panelTitle, controls)
+#endif
+		endif
+	endfor
+End
+
+static Function/S DAP_GetControlsForChannelIndex(variable channelIndex, variable channelType)
+
+	string controls = ""
+
+	switch(channelType)
+		case CHANNEL_TYPE_DAC:
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_GAIN), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_UNIT), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_WAVE), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_SEARCH), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_SCALE), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_INDEX_END), controls, ";", Inf)
+			break
+		case CHANNEL_TYPE_ADC:
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_GAIN), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_UNIT), controls, ";", Inf)
+			break
+		case CHANNEL_TYPE_TTL:
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_WAVE), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_SEARCH), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_INDEX_END), controls, ";", Inf)
+			break
+		case CHANNEL_TYPE_ASYNC:
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_TITLE), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_GAIN), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_UNIT), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_ALARM_MIN), controls, ";", Inf)
+			controls = AddListItem(GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_ALARM_MAX), controls, ";", Inf)
+			break
+	endswitch
+
+	return controls
 End
 
 static Function DAP_LoadBuiltinStimsets()
@@ -5384,6 +5547,25 @@ Function ButtonProc_Hardware_rescan(ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+/// @brief Update the device info waves for all passed devices
+///
+/// Usually only called once during startup
+///
+/// @param deviceList list of devices usable for DAQ and pressure
+Function DAP_UpdateDeviceInfoWaves(string deviceList)
+	string device
+	variable numEntries, i, hardwareType
+
+	numEntries = ItemsInList(deviceList)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, deviceList)
+		WAVE deviceInfo = GetDeviceInfoWave(device)
+		WAVE devInfoHW = HW_GetDeviceInfoUnregistered(device)
+		hardwareType = GetHardwareType(device)
+		HW_WriteDeviceInfo(hardwareType, deviceInfo, devInfoHW)
+	endfor
 End
 
 Function DAP_CheckProc_PowerSpectrum(cba) : CheckBoxControl
