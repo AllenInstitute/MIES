@@ -31,7 +31,7 @@ static Function/S LBN_GetExpFolderFromPopup(graph)
 	panel = LBN_GetLeftPanel(graph)
 	index = GetPopupMenuIndex(panel, "popup_select_experiment")
 
-	ASSERT(index >= 0 && index < DimSize(map, ROWS), "Invalid index")
+	ASSERT(index >= 0 && index < GetNumberFromWaveNote(map, NOTE_INDEX), "Invalid index")
 
 	return map[index][%DataFolder]
 End
@@ -429,6 +429,7 @@ Function LBN_PopMenuProc_ExpDevSelector(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
 	string graph, panel, expFolder, device, traceList, trace, key
+	string allDevices
 	string keyList = ""
 	variable pos, numTraces, numKeys, i
 
@@ -439,6 +440,19 @@ Function LBN_PopMenuProc_ExpDevSelector(pa) : PopupMenuControl
 
 			expFolder = LBN_GetExpFolderFromPopup(graph)
 			device = GetPopupMenuString(panel, "popup_select_device")
+
+			if(!LBN_ExperimentHasDevice(expFolder, device))
+				allDevices = AB_GetAllDevicesForExperiment(expFolder)
+				if(ItemsInList(allDevices) == 1)
+					device = StringFromList(0, allDevices)
+					PGC_SetAndActivateControl(panel, "popup_select_device", str = device)
+					return NaN
+				endif
+
+				printf "The selected experiment/device combination does not exist.\r"
+				ControlWindowToFront()
+				break
+			endif
 
 			WAVE/T numericalKeys = GetAnalysLBNumericalKeys(expFolder, device)
 			WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
@@ -546,12 +560,16 @@ Function LBN_CheckProc_SyncSweepBrowser(cba) : CheckBoxControl
 	return 0
 End
 
-Function/S LBN_GetAllDevicesForExperiment(graph)
-	string graph
+Function/S LBN_GetAllDevicesForExperiment(string graph)
 
-	DFREF expFolder = GetAnalysisExpFolder(LBN_GetExpFolderFromPopup(graph))
+	return AB_GetAllDevicesForExperiment(LBN_GetExpFolderFromPopup(graph))
+End
 
-	return GetListOfDataFolders(expFolder)
+Function LBN_ExperimentHasDevice(string expFolder, string device)
+	string allDevices
+
+	allDevices = AB_GetAllDevicesForExperiment(expFolder)
+	return WhichListItem(device, allDevices, ";", 0, 0) >= 0
 End
 
 Function/S LBN_GetAllExperiments()
@@ -563,7 +581,7 @@ Function/S LBN_GetAllExperiments()
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
 
 	for(i = 0; i < index; i += 1)
-		list = AddListItem(map[i][%FileName], list, ";", Inf)
+		list = AddListItem(map[i][%DataFolder], list, ";", Inf)
 	endfor
 
 	return list
@@ -584,7 +602,7 @@ Function/S LBN_GetLBTextualKeys(graph)
 	device    = GetPopupMenuString(panel, control)
 	expFolder = LBN_GetExpFolderFromPopup(graph)
 
-	if(isEmpty(device) || isEmpty(expFolder))
+	if(isEmpty(device) || isEmpty(expFolder) || !LBN_ExperimentHasDevice(expFolder, device))
 		return NONE
 	endif
 
@@ -608,7 +626,7 @@ Function/S LBN_GetLBNumericalKeys(graph)
 	device    = GetPopupMenuString(panel, control)
 	expFolder = LBN_GetExpFolderFromPopup(graph)
 
-	if(isEmpty(device) || isEmpty(expFolder))
+	if(isEmpty(device) || isEmpty(expFolder) || !LBN_ExperimentHasDevice(expFolder, device))
 		return NONE
 	endif
 

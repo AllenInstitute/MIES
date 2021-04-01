@@ -121,7 +121,7 @@ Function MEN_OpenAboutDialog()
 	Notebook $nb text="Version: " + version  + "\r"
 	Notebook $nb text="\r"
 	NotebookAction/W=$nb name=Action1, title="Report an Issue/Enhancement proposal", ignoreErrors=1
-	NotebookAction/W=$nb name=Action1, commands="CreateIssueOnGithub()"
+	NotebookAction/W=$nb name=Action1, commands="MEN_CreateIssueOnGithub()"
 	Notebook $nb text="\r"
 	Notebook $nb text="\r"
 	Notebook $nb text="Location: "
