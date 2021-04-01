@@ -19,7 +19,7 @@ threadsafe Function/S LOG_GetFile(string package)
 
 	folder = PS_GetSettingsFolder_TS(package)
 
-	return folder + ":Log.jsonl"
+	return folder + "Log.jsonl"
 End
 
 /// @brief Check that the given JSON document has the required top level keys

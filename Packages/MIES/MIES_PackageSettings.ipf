@@ -69,6 +69,8 @@ End
 ///
 ///        Threadsafe variant which requires the symbolic path `PackageFolder` created by
 ///        PS_Initialize() to exist.
+///
+///        The returned folder location includes a trailing colon (":")
 threadsafe Function/S PS_GetSettingsFolder_TS(package)
 	string package
 
@@ -80,6 +82,8 @@ End
 
 /// @brief Return the absolute path to the settings folder for `package`
 ///        creating it when necessary.
+///
+///        The returned folder location includes a trailing colon (":")
 Function/S PS_GetSettingsFolder(package)
 	string package
 
@@ -103,7 +107,7 @@ static Function/S PS_GetSettingsFile(package)
 
 	folder = PS_GetSettingsFolder(package)
 
-	return folder + ":Settings.json"
+	return folder + "Settings.json"
 End
 
 /// @brief Move the window to the stored location
