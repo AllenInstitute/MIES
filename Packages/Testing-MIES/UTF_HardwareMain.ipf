@@ -201,10 +201,12 @@ Function TEST_BEGIN_OVERRIDE(name)
 	DuplicateDataFolder/Z/O=1 dfr, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
 
-	NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
-	KillDataFolder/Z root:WaveBuilder
-	DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
-	KillDataFolder/Z root:WaveBuilder:SavedStimulusSets
+	// speedup executing the tests locally
+	if(!DataFolderExists("root:WaveBuilder"))
+		NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
+		DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
+		KillDataFolder/Z root:WaveBuilder:SavedStimulusSets
+	endif
 End
 
 Function TEST_CASE_BEGIN_OVERRIDE(name)
