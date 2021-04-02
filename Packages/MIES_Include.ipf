@@ -38,7 +38,7 @@
 #include "IPNWB_Include"
 
 // ZeroMQ procedures
-#include ":ZeroMQ:procedures:ZeroMQ_Interop"
+#include "ZeroMQ_Interop"
 
 // our includes
 #include "MIES_AmplifierInteraction"
