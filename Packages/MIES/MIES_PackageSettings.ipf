@@ -107,7 +107,7 @@ static Function/S PS_GetSettingsFile(package)
 
 	folder = PS_GetSettingsFolder(package)
 
-	return folder + "Settings.json"
+	return folder + PACKAGE_SETTINGS_JSON
 End
 
 /// @brief Move the window to the stored location
