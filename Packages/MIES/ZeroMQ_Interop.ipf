@@ -21,17 +21,21 @@ Constant ZeroMQ_SET_FLAGS_LOGGING = 0x10
 
 /// @}
 
+StrConstant ZeroMQ_HEARTBEAT = "heartbeat"
+
 /// @name Error codes
 /// @anchor ZeroMQErrorCodes
 /// @{
-Constant ZeroMQ_UNKNOWN_SET_FLAG        = 10003
-Constant ZeroMQ_INTERNAL_ERROR          = 10004
-Constant ZeroMQ_INVALID_ARG             = 10005
-Constant ZeroMQ_HANDLER_ALREADY_RUNNING = 10006
-Constant ZeroMQ_HANDLER_NO_CONNECTION   = 10007
-Constant ZeroMQ_MISSING_PROCEDURE_FILES = 10008
-Constant ZeroMQ_INVALID_MESSAGE_FORMAT  = 10009
-Constant ZeroMQ_INVALID_LOGGING_TEMPLATE= 10010
+Constant ZeroMQ_UNKNOWN_SET_FLAG          = 10003
+Constant ZeroMQ_INTERNAL_ERROR            = 10004
+Constant ZeroMQ_INVALID_ARG               = 10005
+Constant ZeroMQ_HANDLER_ALREADY_RUNNING   = 10006
+Constant ZeroMQ_HANDLER_NO_CONNECTION     = 10007
+Constant ZeroMQ_MISSING_PROCEDURE_FILES   = 10008
+Constant ZeroMQ_INVALID_MESSAGE_FORMAT    = 10009
+Constant ZeroMQ_INVALID_LOGGING_TEMPLATE  = 10010
+Constant ZeroMQ_MESSAGE_FILTER_DUPLICATED = 10011
+Constant ZeroMQ_MESSAGE_FILTER_MISSING    = 10012
 /// @}
 
 Constant REQ_SUCCESS                         =   0
