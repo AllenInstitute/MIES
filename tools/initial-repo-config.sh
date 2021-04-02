@@ -25,9 +25,6 @@ git submodule update --checkout
 # git remote set-url origin git@github.com:AllenInstitute/IPNWB
 
 # ignore git attributes on foreign submodules
-mkdir -p .git/modules/Packages/ZeroMQ-XOP/modules/src/libzmq/info
-echo '**/* !whitespace !eol' > .git/modules/Packages/ZeroMQ-XOP/modules/src/libzmq/info/attributes
-
 mkdir -p .git/modules/Packages/ITCXOP2/modules/src/SafeInt/info
 echo '**/* !whitespace !eol' > .git/modules/Packages/ITCXOP2/modules/src/SafeInt/info/attributes
 
