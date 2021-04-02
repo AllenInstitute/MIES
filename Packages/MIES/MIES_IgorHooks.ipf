@@ -245,6 +245,8 @@ static Function IgorStartOrNewHook(igorApplicationNameStr)
 
 	string miesVersion
 
+	PS_FixPackageLocation(PACKAGE_MIES)
+
 	LOG_MarkSessionStart(PACKAGE_MIES)
 
 	miesVersion = ROStr(GetMiesVersion())
