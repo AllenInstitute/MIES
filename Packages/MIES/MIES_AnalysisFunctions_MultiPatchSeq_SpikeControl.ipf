@@ -13,7 +13,7 @@
 /// prefix in order to remove it with RemovePrefix.
 static StrConstant SC_PULSE_PREFIX_RE = "^[^:]+:"
 
-/// @brief Store the newly calcualted rerun trials in the labnotebook and return the minimum and maximum of it
+/// @brief Store the newly calculated rerun trials in the labnotebook and return the minimum and maximum of it
 static Function [variable minTrials, variable maxTrials] SC_GetTrials(string panelTitle, variable sweepNo, variable headstage)
 
 	string key, msg
@@ -22,7 +22,7 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string pan
 	WAVE textualValues = GetLBTextualValues(panelTitle)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL, query = 1)
-	WAVE/Z trialsInSCI = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	WAVE trialsInSCI = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	// check that we have at least 2 sweeps in the current SCI
 	if(DimSize(trialsInSCI, ROWS) == 1)
@@ -30,9 +30,9 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string pan
 	endif
 
 	// use the trials from the previous which is from the *same* SCI
-	WAVE/Z trialsLBN = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
+	WAVE trialsLBN = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 	// check if we are still repeating the same sweep or have started a new one
 
@@ -81,7 +81,7 @@ static Function/WAVE SC_GetHeadstageQCForSetCount(string panelTitle, variable sw
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
 	// use the first active headstage
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 	headstage = GetRowIndex(statusHS, val = 1)
 
 	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
@@ -291,6 +291,10 @@ static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNu
 	for(i = 0; i < numPulses; i += 1)
 		idx = indizesAllPulses[i]
 
+		if(properties[idx][%ClampMode] != I_CLAMP_MODE)
+			continue
+		endif
+
 		sweepNoProp = properties[idx][%Sweep]
 		headstageProp = properties[idx][%Headstage]
 		pulseIndex = properties[idx][%Pulse]
@@ -335,7 +339,7 @@ End
 static Function SC_ProcessPulses(string panelTitle, variable sweepNo, variable minimumSpikePosition, variable idealNumberOfSpikes)
 	string key
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 	WAVE/T/Z spikeNumbersLBN, spikePositionsLBN
 	[spikeNumbersLBN, spikePositionsLBN] = SC_GetSpikeNumbersAndPositions(panelTitle, sweepNo)
@@ -410,7 +414,7 @@ static Function/WAVE SC_SpikeCountsCalc(string panelTitle, WAVE minimum, WAVE ma
 	string msg
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) state = NaN
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!statusHS[i])
@@ -440,7 +444,7 @@ static Function/WAVE SC_SpikeCountsQC(string panelTitle, WAVE/T spikeNumbersLBN,
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
 
-		WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+		WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 		str = ""
 
@@ -450,11 +454,11 @@ static Function/WAVE SC_SpikeCountsQC(string panelTitle, WAVE/T spikeNumbersLBN,
 				continue
 			endif
 
-			sprintf msg, "HS%d: \"%s\", ", i, NumericWaveToList(spikeNumbers[i], ";")
+			sprintf msg, "HS%d: \"%s\", \r", i, NumericWaveToList(spikeNumbers[i], ";")
 			str += msg
 		endfor
 
-		DebugPrint(RemoveEnding(str, ", "))
+		DebugPrint(RemoveEnding(str, ", \r"))
 	endif
 #endif
 
@@ -499,7 +503,7 @@ static Function/WAVE SC_SpikePositionQC(string panelTitle, WAVE/T/Z spikePositio
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikePositionsQCLBN = NaN
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 	spikePositionsQCLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 0 : NaN
 
 	if(!WaveExists(spikePositionsLBN))
@@ -571,7 +575,7 @@ static Function/WAVE SC_SpontaneousSpikingCheckQC(string panelTitle, variable sw
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
 	// use the first active headstage
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 	headstage = GetRowIndex(statusHS, val = 1)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_FAILED_PULSE_LEVEL, query = 1)
@@ -582,7 +586,7 @@ static Function/WAVE SC_SpontaneousSpikingCheckQC(string panelTitle, variable sw
 
 	WAVE sweepWave = GetSweepWave(paneltitle, sweepNo)
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spontaneousSpikingCheckLBN = NaN
 	spontaneousSpikingCheckLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 0 : NaN
 
@@ -629,7 +633,7 @@ static Function/WAVE SC_HeadstageQC(string panelTitle, WAVE/T spikeCountStateLBN
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) headstageQCLBN = NaN
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 	// spike positions QC does not influence headstage QC
 	headstageQCLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? (spontaneousSpikingCheckLBN[p] == 1 && !cmpstr(spikeCountStateLBN[p], SC_SPIKE_COUNT_STATE_STR_GOOD)) : NaN
@@ -720,7 +724,7 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	WAVE textualValues = GetLBTextualValues(panelTitle)
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, query = 1)
 	WAVE/T spikeCountStateLBN = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
@@ -958,7 +962,7 @@ Function SC_SpikeControl(panelTitle, s)
 			break
 		case PRE_SET_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage, clampMode = I_CLAMP_MODE))
 				return NaN
 			endif
 
@@ -1013,7 +1017,7 @@ Function SC_SpikeControl(panelTitle, s)
 				return 1
 			endif
 
-			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1056,7 +1060,7 @@ Function SC_SpikeControl(panelTitle, s)
 			break
 		case POST_SWEEP_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage, clampMode = I_CLAMP_MODE))
 				return NaN
 			endif
 
@@ -1089,7 +1093,7 @@ Function SC_SpikeControl(panelTitle, s)
 				endif
 			endif
 
-			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) rerunExceeded = NaN
 			rerunExceeded[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? rerunExceededResult : NaN
@@ -1131,7 +1135,7 @@ Function SC_SpikeControl(panelTitle, s)
 			break
 		case POST_DAQ_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage, clampMode = I_CLAMP_MODE))
 				return NaN
 			endif
 

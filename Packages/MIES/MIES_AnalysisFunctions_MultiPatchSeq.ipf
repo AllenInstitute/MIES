@@ -598,7 +598,7 @@ Function/WAVE MSQ_CreateOverrideResults(panelTitle, headstage, type)
 	switch(type)
 		case MSQ_FAST_RHEO_EST:
 			numRows = IDX_NumberOfSweepsInSet(stimset)
-			numCols = Sum(MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE))
+			numCols = Sum(DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE))
 			numLayers = 0
 			numChunks = 0
 			typeOfWave = IGOR_TYPE_64BIT_FLOAT
@@ -764,21 +764,6 @@ Function MSQ_TestOverrideActive()
 	endif
 
 	return 0
-End
-
-/// @brief Return a wave with `NUM_HEADSTAGES` rows with `1` where
-///        the given headstages is active and in the given clamp mode.
-static Function/WAVE MSQ_GetActiveHeadstages(panelTitle, clampMode)
-	string panelTitle
-	variable clampMode
-
-	AI_AssertOnInvalidClampMode(clampMode)
-
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	Make/FREE/N=(NUM_HEADSTAGES) status = statusHS[p] && DAG_GetHeadstageMode(panelTitle, p) == clampMode
-
-	return status
 End
 
 /// @brief Return true if one of the entries is true for the given headstage. False otherwise.
@@ -954,7 +939,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			break
 		case PRE_SET_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				break
 			endif
 
@@ -965,7 +950,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 				return 1
 			endif
 
-			if(Sum(MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)) == 0)
+			if(Sum(DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)) == 0)
 				printf "(%s) At least one active headstage must have IC clamp mode.\r", panelTitle
 				ControlWindowToFront()
 				return 1
@@ -977,7 +962,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
-			WAVE statusHSIC = MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+			WAVE statusHSIC = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -998,7 +983,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 
 			minRheoOffset = AFH_GetAnalysisParamNumerical("PostDAQDAScaleMinOffset", s.params)
 
-			WAVE statusHSIC = MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+			WAVE statusHSIC = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1044,7 +1029,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			break
 		case POST_SWEEP_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				break
 			endif
 
@@ -1066,7 +1051,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			DAScale[] *= 1e-12
 
 			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, s.sweepNo)
-			WAVE statusHSIC = MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+			WAVE statusHSIC = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1189,7 +1174,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			break
 		case POST_SET_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				break
 			endif
 
@@ -1216,7 +1201,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 				minRheoOffset = AFH_GetAnalysisParamNumerical("PostDAQDAScaleMinOffset", s.params)
 
 				key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_FINAL_SCALE, query = 1)
-				WAVE statusHSIC = MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+				WAVE statusHSIC = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 				for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1258,7 +1243,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			break
 		case POST_DAQ_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				break
 			endif
 
@@ -1365,10 +1350,16 @@ static Function MSQ_ForceSetEvent(panelTitle, headstage)
 End
 
 /// @brief Common pre DAQ calls for all multipatch analysis functions
-Function MSQ_CommonPreDAQ(string panelTitle, variable headstage)
+Function MSQ_CommonPreDAQ(string panelTitle, variable headstage, [variable clampMode])
 
-	if(headstage != DAP_GetHighestActiveHeadstage(panelTitle))
-		return NaN
+	if(ParamIsDefault(clampMode))
+		if(!DAG_HeadstageIsHighestActive(panelTitle, headstage))
+			return NaN
+		endif
+	else
+		if(!DAG_HeadstageIsHighestActive(panelTitle, headstage, clampMode = clampMode))
+			return NaN
+		endif
 	endif
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")            \
@@ -1442,7 +1433,7 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 		case PRE_SET_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN
 			endif
 
@@ -1456,7 +1447,7 @@ Function MSQ_DAScale(panelTitle, s)
 			endif
 
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-			WAVE statusHSIC = MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+			WAVE statusHSIC = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
 			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_ACTIVE_HS)
 			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
@@ -1479,7 +1470,7 @@ Function MSQ_DAScale(panelTitle, s)
 				endif
 			endfor
 
-			if(Sum(MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)) == 0)
+			if(Sum(DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)) == 0)
 				printf "(%s) At least one active headstage must have IC clamp mode.\r", panelTitle
 				ControlWindowToFront()
 				return 1
@@ -1515,12 +1506,12 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 		case POST_SWEEP_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN
 			endif
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
-			WAVE statusHSIC = MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+			WAVE statusHSIC = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 			values[0, NUM_HEADSTAGES - 1] = statusHSIC[p] ? 1 : NaN
 			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_HEADSTAGE_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -1533,7 +1524,7 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 		case POST_SET_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN
 			endif
 
@@ -1545,7 +1536,7 @@ Function MSQ_DAScale(panelTitle, s)
 			AD_UpdateAllDatabrowser()
 			break
 		case POST_DAQ_EVENT:
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN
 			endif
 
@@ -1572,7 +1563,7 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 	endswitch
 
-	if((s.eventType == PRE_SET_EVENT || s.eventType == POST_SWEEP_EVENT) && s.headstage == DAP_GetHighestActiveHeadstage(panelTitle))
+	if((s.eventType == PRE_SET_EVENT || s.eventType == POST_SWEEP_EVENT) && DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 
 		WAVE DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
 		WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)

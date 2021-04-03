@@ -736,7 +736,7 @@ Function AdjustDAScale(panelTitle, eventType, DAQDataWave, headStage, realDataLe
 	endif
 
 	// only do something if we are called for the very last headstage
-	if(DAP_GetHighestActiveHeadstage(panelTitle) != headstage)
+	if(!DAG_HeadstageIsHighestActive(panelTitle, headstage))
 		return NaN
 	endif
 
@@ -1010,7 +1010,7 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 
 			targetVoltagesIndex[s.headstage] = -1
 
-			if(DAP_GetHighestActiveHeadstage(panelTitle) != s.headstage)
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN
 			endif
 
@@ -1110,7 +1110,7 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 			targetVoltagesIndex[s.headstage] += 1
 
 			// only do something if we are called for the very last headstage
-			if(DAP_GetHighestActiveHeadstage(panelTitle) != s.headstage)
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN
 			endif
 
@@ -1173,7 +1173,7 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 			endfor
 			break
 		case POST_SET_EVENT:
-			if(DAP_GetHighestActiveHeadstage(panelTitle) != s.headstage)
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN
 			endif
 
@@ -1245,7 +1245,7 @@ Function SetControlInEvent(panelTitle, s)
 		return NaN
 	endif
 
-	if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+	if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 		return NaN
 	endif
 

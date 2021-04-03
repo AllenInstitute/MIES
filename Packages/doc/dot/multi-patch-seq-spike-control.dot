@@ -165,7 +165,7 @@ digraph "G" {
 	"n39" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Check if all headstages\n have the same stimset"
+		label = "Check if all IC headstages\n have the same stimset"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -231,7 +231,7 @@ digraph "G" {
 	"n51" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Check if all headstages passed\n with the current set sweep count."
+		label = "Check if all IC headstages passed\n with the current set sweep count."
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -341,7 +341,7 @@ digraph "G" {
 	"n63" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Mark set as passed if all headstages\n passed with all set sweep counts."
+		label = "Mark set as passed if all IC headstages\n passed with all set sweep counts."
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -363,7 +363,7 @@ digraph "G" {
 	"n66" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Was it reached on all headstages?"
+		label = "Was it reached on all IC headstages?"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -484,7 +484,7 @@ digraph "G" {
 	"n73" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Iterate over all active headstages"
+		label = "Iterate over all active IC headstages"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -572,7 +572,7 @@ digraph "G" {
 	"n80" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Gather all pulses from each active headstage"
+		label = "Gather all pulses from each active IC headstage"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -649,7 +649,7 @@ digraph "G" {
 	"n78" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Read \"Ideal number of spikes\" from labotebook"
+		label = "Read \"Ideal number of spikes\" from labnotebook"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -671,7 +671,7 @@ digraph "G" {
 	"n91" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Set \"Spike position QC\"\n as failed in labnotebok"
+		label = "Set \"Spike position QC\"\n as failed in labnotebook"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -704,7 +704,7 @@ digraph "G" {
 	"n98" [
 		colorscheme = "blues4"
 		color = "2"
-		label = "Set \"Spike position QC\"\n as passed in labnotebok"
+		label = "Set \"Spike position QC\"\n as passed in labnotebook"
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
