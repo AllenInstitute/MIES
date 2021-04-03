@@ -143,9 +143,6 @@ do
   cp -r  "$base_folder"/Packages/Settings  "$user_proc"
   cp -r  "$base_folder"/Packages/Stimsets  "$user_proc"
 
-  mkdir -p "$user_proc/ZeroMQ"
-  cp -r  "$base_folder"/Packages/ZeroMQ/procedures  "$user_proc/ZeroMQ"
-
   mkdir -p "$user_proc/ITCXOP2"
   cp -r  "$base_folder"/Packages/ITCXOP2/tools "$user_proc/ITCXOP2"
 
