@@ -6,7 +6,7 @@
 static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
 
-	AdditionalExperimentCleanupAfterTest()
+	AdditionalExperimentCleanup()
 
 	CA_FlushCache()
 

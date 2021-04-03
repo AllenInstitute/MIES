@@ -16,7 +16,7 @@ Function/S PrependExperimentFolder_IGNORE(filename)
 End
 
 /// Kill all left-over windows and remove the trash
-Function AdditionalExperimentCleanupAfterTest()
+Function AdditionalExperimentCleanup()
 
 	string win, list, name
 	variable i, numWindows

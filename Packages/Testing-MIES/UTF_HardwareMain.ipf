@@ -213,7 +213,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	RegisterReentryFunction(name)
 
-	AdditionalExperimentCleanupAfterTest()
+	AdditionalExperimentCleanup()
 
 	GetMiesPath()
 	DuplicateDataFolder	root:WaveBuilder, root:MIES:WaveBuilder

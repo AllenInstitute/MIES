@@ -6,7 +6,7 @@
 static Function TEST_SUITE_BEGIN_OVERRIDE(testSuite)
 	string testSuite
 
-	AdditionalExperimentCleanupAfterTest()
+	AdditionalExperimentCleanup()
 
 	KillDataFolder/Z GetWBSvdStimSetDAPath()
 
