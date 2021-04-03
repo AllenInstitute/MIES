@@ -77,3 +77,9 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase)
 	endif
 End
+
+Function TEST_CASE_BEGIN_OVERRIDE(name)
+	string name
+
+	AdditionalExperimentCleanup()
+End

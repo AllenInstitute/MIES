@@ -6,14 +6,14 @@
 static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
 
+	AdditionalExperimentCleanup()
+
 	NewDataFolder destf
 	NewDataFolder srcf
 
 	DFREF dfr = srcf
 
 	Make/N=1 dfr:srcw = 12345
-
-	CA_FlushCache()
 End
 
 Function asserts_on_invalid_1()

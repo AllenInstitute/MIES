@@ -8,18 +8,12 @@ static StrConstant device = "ITC18USB_Dev_0"
 static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	string testCase
 
-	KillDataFolder/Z root:MIES
-
-	if(DataFolderExists("root:MIES"))
-		Abort "Cleanup did not work"
-	endif
+	AdditionalExperimentCleanup()
 
 	// fake one existing sweep
 	DFREF dfr = GetDeviceDataPath(device)
 	Make/N=(2, 2) dfr:Sweep_0
 	Make/N=(2, 2) dfr:Config_0
-
-	CA_FlushCache()
 End
 
 /// BEGIN ED_AddEntryToLabnotebook

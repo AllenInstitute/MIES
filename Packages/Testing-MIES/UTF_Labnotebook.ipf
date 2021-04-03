@@ -3,12 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=LBNEntrySourceTypeHandling
 
-static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
-	string testCase
-
-	CA_FlushCache()
-End
-
 /// GetLastSetting with numeric wave
 /// @{
 Function GetLastSettingEntrySourceTypes()

@@ -3,14 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UtilsTest
 
-static Function TEST_CASE_BEGIN_OVERRIDE(name)
-	string name
-
-	AdditionalExperimentCleanupAfterTest()
-
-	CA_FlushCache()
-End
-
 Function AssertionWorksWithPassingOne()
 
 	PASS()

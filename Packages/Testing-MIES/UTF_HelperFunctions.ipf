@@ -42,4 +42,8 @@ Function AdditionalExperimentCleanup()
 
 	NewDataFolder root:MIES
 	MoveDataFolder root:$name, root:MIES
+
+	// currently superfluous as we remove root:MIES above
+	// but might be needed in the future and helps in understanding the code
+	CA_FlushCache()
 End

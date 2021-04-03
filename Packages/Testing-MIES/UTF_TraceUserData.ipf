@@ -8,8 +8,6 @@ static Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	AdditionalExperimentCleanup()
 
-	CA_FlushCache()
-
 	JSONXOP_Release/A
 
 	Display

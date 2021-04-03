@@ -6,6 +6,8 @@
 static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
 
+	AdditionalExperimentCleanup()
+
 	KillDataFolder/Z root:A1
 	KillDataFolder/Z root:B1
 	KillDataFolder/Z root:C1
@@ -16,8 +18,6 @@ static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	NewDataFolder/O root:B1:B2
 	NewDataFolder/O root:A1:A2:A3
 	NewDataFolder/O root:B1:B2:B3
-
-	CA_FlushCache()
 End
 
 static Function TEST_CASE_END_OVERRIDE(name)
