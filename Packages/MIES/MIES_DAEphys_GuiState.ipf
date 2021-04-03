@@ -323,6 +323,29 @@ Function/WAVE DAG_GetActiveHeadstages(string panelTitle, variable clampMode)
 	return status
 End
 
+/// @brief Return true/false if the given headstage is the highest active
+///
+/// @param panelTitle device
+/// @param headstage  headstage to check
+/// @param clampMode  [optional, defaults to all clamp modes] Restrict to the given clamp mode
+Function DAG_HeadstageIsHighestActive(string panelTitle, variable headstage, [variable clampMode])
+
+	if(ParamIsDefault(clampMode))
+		WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	else
+		WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, clampMode)
+	endif
+
+	// no headstage active
+	if(Sum(statusHS) == 0)
+		return 0
+	endif
+
+	Make/FREE/N=(NUM_HEADSTAGES) activeHS = statusHS[p] * p
+
+	return WaveMax(activeHS) == headstage
+End
+
 /// @brief Return a free wave of the popup menu strings specified by
 ///        channelType, uses GetDA_EphysGuiStateTxT() instead of GUI queries.
 ///

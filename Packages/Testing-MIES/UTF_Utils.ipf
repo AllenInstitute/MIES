@@ -1690,15 +1690,22 @@ End
 
 /// @}
 
-/// @name CheckActiveHeadstages
+/// @name DAG_HeadstageIsHighestActive
+///
+/// These tests use the override functions DAG_GetChannelState and GetDA_EphysGuiStateNum
+/// in the builtin procedure window.
+///
 /// @{
-Function HAH_ReturnsNaN()
+Function HAH_ReturnsZero()
 
 	string panelTitle = "IGNORE"
 	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
-	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle), NaN)
+	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
+
+	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p)
+	CHECK_EQUAL_WAVES(isHighestActive, {0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 End
 
 Function HAH_Works1()
@@ -1709,7 +1716,10 @@ Function HAH_Works1()
 
 	statusHS[0] = 1
 
-	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle), 0)
+	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
+
+	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p)
+	CHECK_EQUAL_WAVES(isHighestActive, {1, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 End
 
 Function HAH_Works2()
@@ -1720,7 +1730,10 @@ Function HAH_Works2()
 
 	statusHS[6] = 1
 
-	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle), 6)
+	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
+
+	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p)
+	CHECK_EQUAL_WAVES(isHighestActive, {0, 0, 0, 0, 0, 0, 1, 0}, mode = WAVE_DATA)
 End
 
 Function HAH_ChecksClampMode()
@@ -1730,20 +1743,23 @@ Function HAH_ChecksClampMode()
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	try
-		DAP_GetHighestActiveHeadstage(panelTitle, clampMode = NaN); AbortOnRTE
+		DAG_HeadstageIsHighestActive(panelTitle, 0, clampMode = NaN); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
 	endtry
 End
 
-Function HAH_ReturnsNaNWithClampMode()
+Function HAH_ReturnsZeroWithClampMode()
 
 	string panelTitle = "IGNORE"
 	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
-	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle, clampMode = I_CLAMP_MODE), NaN)
+	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
+
+	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p)
+	CHECK_EQUAL_WAVES(isHighestActive, {0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 End
 
 Function HAH_WorksWithClampMode1()
@@ -1754,7 +1770,11 @@ Function HAH_WorksWithClampMode1()
 
 	statusHS[1, 2] = 1
 	clampModes[1] = I_CLAMP_MODE
-	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle, clampMode = I_CLAMP_MODE), 1)
+
+	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
+
+	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p, clampMode = I_CLAMP_MODE)
+	CHECK_EQUAL_WAVES(isHighestActive, {0, 1, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 End
 
 Function HAH_WorksWithClampMode2()
@@ -1767,7 +1787,10 @@ Function HAH_WorksWithClampMode2()
 	clampModes[] = I_CLAMP_MODE
 	clampModes[6] = V_CLAMP_MODE
 
-	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle, clampMode = V_CLAMP_MODE), 6)
+	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
+
+	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p, clampMode = V_CLAMP_MODE)
+	CHECK_EQUAL_WAVES(isHighestActive, {0, 0, 0, 0, 0, 0, 1, 0}, mode = WAVE_DATA)
 End
 /// @}
 

@@ -962,7 +962,7 @@ Function SC_SpikeControl(panelTitle, s)
 			break
 		case PRE_SET_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle, clampMode = I_CLAMP_MODE))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage, clampMode = I_CLAMP_MODE))
 				return NaN
 			endif
 
@@ -1060,7 +1060,7 @@ Function SC_SpikeControl(panelTitle, s)
 			break
 		case POST_SWEEP_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle, clampMode = I_CLAMP_MODE))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage, clampMode = I_CLAMP_MODE))
 				return NaN
 			endif
 
@@ -1135,7 +1135,7 @@ Function SC_SpikeControl(panelTitle, s)
 			break
 		case POST_DAQ_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle, clampMode = I_CLAMP_MODE))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage, clampMode = I_CLAMP_MODE))
 				return NaN
 			endif
 

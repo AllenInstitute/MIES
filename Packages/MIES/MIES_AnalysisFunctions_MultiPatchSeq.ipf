@@ -939,7 +939,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			break
 		case PRE_SET_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				break
 			endif
 
@@ -1029,7 +1029,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			break
 		case POST_SWEEP_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				break
 			endif
 
@@ -1174,7 +1174,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			break
 		case POST_SET_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				break
 			endif
 
@@ -1243,7 +1243,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			break
 		case POST_DAQ_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				break
 			endif
 
@@ -1352,15 +1352,15 @@ End
 /// @brief Common pre DAQ calls for all multipatch analysis functions
 Function MSQ_CommonPreDAQ(string panelTitle, variable headstage, [variable clampMode])
 
-if(ParamIsDefault(clampMode))
-	if(headstage != DAP_GetHighestActiveHeadstage(panelTitle))
-		return NaN
+	if(ParamIsDefault(clampMode))
+		if(!DAG_HeadstageIsHighestActive(panelTitle, headstage))
+			return NaN
+		endif
+	else
+		if(!DAG_HeadstageIsHighestActive(panelTitle, headstage, clampMode = clampMode))
+			return NaN
+		endif
 	endif
-else
-	if(headstage != DAP_GetHighestActiveHeadstage(panelTitle, clampMode = clampMode))
-		return NaN
-	endif
-endif
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")            \
 	   && !DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
@@ -1433,7 +1433,7 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 		case PRE_SET_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN
 			endif
 
@@ -1506,7 +1506,7 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 		case POST_SWEEP_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN
 			endif
 
@@ -1524,7 +1524,7 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 		case POST_SET_EVENT:
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN
 			endif
 
@@ -1536,7 +1536,7 @@ Function MSQ_DAScale(panelTitle, s)
 			AD_UpdateAllDatabrowser()
 			break
 		case POST_DAQ_EVENT:
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN
 			endif
 
@@ -1563,7 +1563,7 @@ Function MSQ_DAScale(panelTitle, s)
 			break
 	endswitch
 
-	if((s.eventType == PRE_SET_EVENT || s.eventType == POST_SWEEP_EVENT) && s.headstage == DAP_GetHighestActiveHeadstage(panelTitle))
+	if((s.eventType == PRE_SET_EVENT || s.eventType == POST_SWEEP_EVENT) && DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 
 		WAVE DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
 		WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
