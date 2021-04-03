@@ -46,4 +46,7 @@ Function AdditionalExperimentCleanup()
 	// currently superfluous as we remove root:MIES above
 	// but might be needed in the future and helps in understanding the code
 	CA_FlushCache()
+
+	NVAR interactiveMode = $GetInteractiveMode()
+	interactiveMode = 0
 End

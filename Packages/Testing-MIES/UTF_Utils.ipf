@@ -722,6 +722,9 @@ End
 Function DON_WorksWithDefault()
 
 	NVAR interactiveMode = $GetInteractiveMode()
+	KillVariables/Z interactiveMode
+
+	NVAR interactiveMode = $GetInteractiveMode()
 	CHECK_EQUAL_VAR(interactiveMode, 1)
 
 	try
