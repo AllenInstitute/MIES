@@ -12,7 +12,6 @@ structlist.rst
 namespace
 namespacelist.rst
 IPNWB.rst
-ZeroMQ-XOP-Readme.rst
 backup_*.dot
 *.zip
 *.dot.svg

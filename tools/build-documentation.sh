@@ -76,8 +76,6 @@ trap "rm -rf ${top_level}/Packages/doc/IPNWB" EXIT
 # bash "${top_level}/Packages/IPNWB/update_doc.sh"
 # cd "${top_level}/Packages/doc" # submodule rev-parse
 
-cp "$top_level/Packages/ZeroMQ/Readme.rst" "$top_level/Packages/doc/ZeroMQ-XOP-Readme.rst"
-
 if hash breathe-apidoc 2>/dev/null; then
   echo "Start breathe-apidoc"
 
