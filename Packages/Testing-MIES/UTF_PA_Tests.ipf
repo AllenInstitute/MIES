@@ -424,18 +424,12 @@ static Constant PA_TEST_FP_EPSILON = 1E-6
 Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
 
-	variable i, winNum
-	string graphList, miesPath
+	variable err
+	string miesPath
 
-	ModifyBrowser close; i = GetRTError(1)
-	graphList = WinList("*", ";", "WIN:1")
-	winNum = ItemsInList(graphList)
-	for(i = 0; i < winNum; i += 1)
-		KillWindow $StringFromList(i, graphList)
-	endfor
+	ModifyBrowser close; err = GetRTError(1)
 
-	DFREF dfr = GetMIESPath()
-	KillOrMoveToTrash(dfr = dfr)
+	AdditionalExperimentCleanup()
 
 	miesPath = GetMiesPathAsString()
 	DuplicateDataFolder/O=1 root:MIES_backup, $miesPath
@@ -443,8 +437,6 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	// monkey patch the labnotebook to claim it holds IC data instead of VC
 	WAVE numericalValues = root:MIES:LabNoteBook:Dev1:numericalValues
 	MultiThread numericalValues[][%$"Clamp Mode"][] = (numericalValues[p][%$"Clamp Mode"][r] == V_CLAMP_MODE ? I_CLAMP_MODE : numericalValues[p][%$"Clamp Mode"][r])
-
-	CA_FlushCache()
 End
 
 static Function [string bspName, string graph] PAT_StartDataBrowser_IGNORE()

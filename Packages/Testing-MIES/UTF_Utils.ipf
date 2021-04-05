@@ -3,14 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UtilsTest
 
-static Function TEST_CASE_BEGIN_OVERRIDE(name)
-	string name
-
-	AdditionalExperimentCleanupAfterTest()
-
-	CA_FlushCache()
-End
-
 Function AssertionWorksWithPassingOne()
 
 	PASS()
@@ -728,6 +720,9 @@ End
 /// @{
 
 Function DON_WorksWithDefault()
+
+	NVAR interactiveMode = $GetInteractiveMode()
+	KillVariables/Z interactiveMode
 
 	NVAR interactiveMode = $GetInteractiveMode()
 	CHECK_EQUAL_VAR(interactiveMode, 1)

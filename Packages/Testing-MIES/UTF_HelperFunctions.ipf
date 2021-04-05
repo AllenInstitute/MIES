@@ -16,7 +16,7 @@ Function/S PrependExperimentFolder_IGNORE(filename)
 End
 
 /// Kill all left-over windows and remove the trash
-Function AdditionalExperimentCleanupAfterTest()
+Function AdditionalExperimentCleanup()
 
 	string win, list, name
 	variable i, numWindows
@@ -42,4 +42,11 @@ Function AdditionalExperimentCleanupAfterTest()
 
 	NewDataFolder root:MIES
 	MoveDataFolder root:$name, root:MIES
+
+	// currently superfluous as we remove root:MIES above
+	// but might be needed in the future and helps in understanding the code
+	CA_FlushCache()
+
+	NVAR interactiveMode = $GetInteractiveMode()
+	interactiveMode = 0
 End
