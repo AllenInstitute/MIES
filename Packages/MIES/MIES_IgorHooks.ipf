@@ -232,7 +232,7 @@ static Function IgorBeforeNewHook(igorApplicationNameStr)
 		LOG_AddEntry(PACKAGE_MIES, "after save")
 	endif
 
-	StartZeroMQMessageHandler()
+	StartZeroMQSockets()
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 
@@ -256,7 +256,7 @@ static Function IgorStartOrNewHook(igorApplicationNameStr)
 	                                              IgorInfo(7),                                      \
 	                                              IgorInfo(0)})
 
-	StartZeroMQMessageHandler()
+	StartZeroMQSockets()
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 

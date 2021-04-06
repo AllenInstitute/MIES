@@ -50,7 +50,7 @@ Menu "Mies Panels"
 	"About MIES"                               , /Q, MEN_OpenAboutDialog()
 	"-"
 	SubMenu "Advanced"
-		"Restart ZeroMQ Message Handler"           , /Q, StartZeroMQMessageHandler()
+		"Restart ZeroMQ Sockets and Message Handler", /Q, StartZeroMQSockets(forceRestart = 1)
 		"Turn off ASLR (requires UAC elevation)"   , /Q, TurnOffASLR()
 		"Enable Independent Module editing"        , /Q, SetIgorOption IndependentModuleDev=1
 		"Flush Cache"                              , /Q, CA_FlushCache()
