@@ -5289,22 +5289,30 @@ Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
 	return key
 End
 
-/// @brief Start the ZeroMQ message handler
+/// @brief Start the ZeroMQ sockets and the message handler
 ///
 /// Debug note: Tracking the connection state can be done via
 /// `netstat | grep $port`. The binded port only shows up *after* a
 /// successfull connection with zeromq_client_connect() is established.
-Function StartZeroMQMessageHandler()
+Function StartZeroMQSockets([variable forceRestart])
 
 	variable i, port, err
 
 #if exists("zeromq_stop")
 
-	// do nothing if we are already running
-	zeromq_handler_start(); err = GetRTError(1)
-	if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
-		DEBUGPRINT("Already running, nothing to do.")
-		return NaN
+	if(ParamIsDefault(forceRestart))
+		forceRestart = 0
+	else
+		forceRestart = !!forceRestart
+	endif
+
+	if(!forceRestart)
+		// do nothing if we are already running
+		zeromq_handler_start(); err = GetRTError(1)
+		if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
+			DEBUGPRINT("Already running, nothing to do.")
+			return NaN
+		endif
 	endif
 
 	zeromq_stop()

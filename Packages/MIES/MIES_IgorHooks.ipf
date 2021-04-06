@@ -215,7 +215,7 @@ static Function IgorBeforeNewHook(igorApplicationNameStr)
 		SaveExperiment
 	endif
 
-	StartZeroMQMessageHandler()
+	StartZeroMQSockets()
 
 	return 0
 End
@@ -224,7 +224,7 @@ End
 static Function IgorStartOrNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
-	StartZeroMQMessageHandler()
+	StartZeroMQSockets()
 
 	return 0
 End
