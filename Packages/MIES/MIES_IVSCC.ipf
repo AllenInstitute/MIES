@@ -8,6 +8,16 @@
 
 /// @file MIES_IVSCC.ipf
 /// @brief __IVS__ Routines for IVSCC/PatchSeq automation
+///
+/// ZeroMQ Infos:
+/// - Listening port for the REP/ROUTER socket starts at #ZEROMQ_BIND_REP_PORT.
+/// - Listening port for the PUBLISHER socket starts at #ZEROMQ_BIND_PUB_PORT
+/// - If one of those ports is already in use, the next larger port is tried.
+/// - The publisher socket does include an automatic heartbeat message every 5 seconds. Subscribe to #ZeroMQ_HEARTBEAT if
+///   you want to receive that.
+/// - All available message filters can be queried via FFI_GetAvailableMessageFilters().
+/// - More information regarding the ZeroMQ-XOP is located [here](https://github.com/AllenInstitute/ZeroMQ-XOP/#readme)
+/// - See IVS_PublishQCState() for more infos about the published messages
 
 static Constant    IVS_DEFAULT_NWBVERSION = 2
 static Constant    IVS_DEFAULT_HEADSTAGE  = 0
@@ -213,6 +223,7 @@ Function IVS_FinishBaselineQCCheck(s)
 	if(TP_TestPulseHasCycled(panelTitle, cycles))
 		print "Enough Cycles passed..."
 	else
+		IVS_PublishQCState(0, "Too few TP cycles")
 		return 0
 	endif
 
@@ -227,11 +238,11 @@ Function IVS_FinishBaselineQCCheck(s)
 	if (abs(baselineAverage) < 100.0)
 		PGC_SetAndActivateControl(panelTitle, "DataAcquireButton")
 		qcResult = baselineAverage
+		IVS_PublishQCState(qcResult, "Baseline average")
 	endif
 
-	/// @todo do we need to store the result somewhere?
+	IVS_PublishQCState(qcResult, "Result before finishing")
 
-	printf "qcResult: %g\r", qcResult
 	return 1
 End
 
@@ -294,6 +305,7 @@ Function IVS_finishInitAccessQCCheck(s)
 	if(TP_TestPulseHasCycled(panelTitle, cycles))
 		print "Enough Cycles passed..."
 	else
+		IVS_PublishQCState(qcResult, "Too few TP cycles")
 		return 0
 	endif
 
@@ -310,12 +322,13 @@ Function IVS_finishInitAccessQCCheck(s)
 	// See if we pass the baseline QC
 	if ((instResistanceVal < 20.0) && (instResistanceVal < (0.15 * ssResistanceVal)))
 		qcResult = instResistanceVal
+		IVS_PublishQCState(qcResult, "Resistance check")
 	endif
 
 	// and now run the EXTPBREAKN wave so that things are saved into the data record
 	PGC_SetAndActivateControl(panelTitle, "DataAcquireButton")
 
-	printf "qcResult: %g\r", qcResult
+	IVS_PublishQCState(qcResult, "Result before finishing")
 
 	// set the test pulse buffer back to 1
 	PGC_SetAndActivateControl(panelTitle, "setvar_Settings_TPBuffer", val = tpBufferSetting)
@@ -356,6 +369,50 @@ Function IVS_Load_StimSet(stim_filename)
 	NWB_LoadAllStimSets(overwrite = 1, fileName = stim_filename)
 End
 
+/// @brief Push QC results onto ZeroMQ Publisher socket
+///
+/// Filter: #IVS_PUB_FILTER
+///
+/// Payload: JSON-encoded string with three elements in the top-level object
+///
+/// Example:
+///
+/// \rst
+/// .. code-block: json
+///
+///    {
+///      "Description": "some text",
+///      "Issuer": "My QC Function",
+///      "Value": 123
+///    }
+///
+/// \endrst
+static Function IVS_PublishQCState(variable result, string description)
+	variable jsonID, err
+	string payload
+
+	jsonID = JSON_New()
+	JSON_AddTreeObject(jsonID, "")
+	JSON_AddString(jsonID, "Issuer", GetRTStackInfo(2))
+	JSON_AddVariable(jsonID, "Value", result)
+	JSON_AddString(jsonID, "Description", description)
+
+	payload = JSON_Dump(jsonID)
+	JSON_Release(jsonID)
+
+	try
+		ClearRTError()
+#if exists("zeromq_pub_send")
+		zeromq_pub_send(IVS_PUB_FILTER, payload); AbortOnRTE
+#else
+		ASSERT(0, "ZeroMQ XOP not present")
+#endif
+	catch
+		err = ClearRTError()
+		BUG("Could not publish QC results due to error " + num2str(err))
+	endtry
+End
+
 /// @brief finish the Gig Ohm Seal QC in the background
 ///
 /// @ingroup BackgroundFunctions
@@ -373,6 +430,7 @@ Function IVS_finishGigOhmSealQCCheck(s)
 	if(TP_TestPulseHasCycled(panelTitle, cycles))
 		print "Enough Cycles passed..."
 	else
+		IVS_PublishQCState(0, "Too few TP cycles")
 		return 0
 	endif
 
@@ -389,8 +447,10 @@ Function IVS_finishGigOhmSealQCCheck(s)
 			// and now run the EXTPCIIATT wave so that things are saved into the data record
 			PGC_SetAndActivateControl(panelTitle, "DataAcquireButton")
 			qcResult = ssResistanceVal
+			IVS_PublishQCState(qcResult, "Steady state resistance")
 		else
 			print "Below QC threshold...will repeat QC test..."
+			IVS_PublishQCState(0, "Below QC threshold")
 			Abort
 		endif
 	catch
@@ -400,13 +460,14 @@ Function IVS_finishGigOhmSealQCCheck(s)
 
 		if(ssResistanceVal > 1000) // ssResistance value is in MOhms
 			qcResult = ssResistanceVal
+			IVS_PublishQCState(qcResult, "Second pass: Steady state resistance")
 		endif
 
 		// Run the EXTPCIIATT wave so that things are saved into the data record
 		PGC_SetAndActivateControl(panelTitle, "DataAcquireButton")
 	endtry
 
-	printf "qcResult: %g\r", qcResult
+	IVS_PublishQCState(qcResult, "Result before finishing")
 
 	return 1
 End

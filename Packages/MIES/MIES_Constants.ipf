@@ -1440,3 +1440,5 @@ Constant HW_NI_CONFIG_PSEUDO_DIFFERENTIAL = 8 //< Pseudodifferential terminal co
 StrConstant PACKAGE_SETTINGS_JSON = "Settings.json"
 
 StrConstant LOGFILE_NAME = "Log.jsonl"
+
+StrConstant IVS_PUB_FILTER = "ivscc"
