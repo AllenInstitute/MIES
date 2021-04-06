@@ -4317,25 +4317,23 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 End
 /// @}
 
-/// @brief Returns a wave reference to the QC Wave
-///
-/// Used for completing QC functions background tasks.
+/// @brief Returns a wave reference to the temporary wave for IVSCC
 ///
 /// Rows:
 /// - 0: tpBuffer, used to hold previous tp settings.
 ///      Setting will be restored upon completion of qc function.
-Function/Wave GetQCWaveRef(panelTitle)
+Function/Wave GetIVSCCTemporaryWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevSpecLabNBTempFolder(panelTitle)
 
-	WAVE/Z/T/SDFR=dfr wv = QCWave
+	WAVE/D/Z/SDFR=dfr wv = IVSCCTemporary
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/T/N=(1) dfr:QCWave/Wave=wv
+	Make/D/N=(1) dfr:IVSCCTemporary/Wave=wv
 	SetDimLabel 0, 0, tpBuffer, wv
 
 	return wv
