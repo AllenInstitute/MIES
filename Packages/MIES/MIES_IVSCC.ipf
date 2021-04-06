@@ -289,8 +289,8 @@ Function IVS_runInitAccessResisQC()
 	endif
 
 	// Set up the QC Wave so the background task can get the information it needs
-	Wave/T QCWave = GetQCWaveRef(panelTitle)
-	QCWave[%tpBuffer] = num2str(tpBufferSetting)
+	Wave tempWave = GetIVSCCTemporaryWave(panelTitle)
+	tempWave[%tpBuffer] = tpBufferSetting
 
 	CtrlNamedBackground IVS_finishInitAccessQCCheck, period=2, proc=IVS_finishInitAccessQCCheck
 	CtrlNamedBackground IVS_finishInitAccessQCCheck, start
@@ -310,8 +310,8 @@ Function IVS_finishInitAccessQCCheck(s)
 	panelTitle = IVS_DEFAULT_PANELTITLE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
-	Wave/T QCWave = GetQCWaveRef(panelTitle)
-	tpBufferSetting = str2num(QCWave[%tpBuffer])
+	Wave tempWave = GetIVSCCTemporaryWave(panelTitle)
+	tpBufferSetting = tempWave[%tpBuffer]
 
 	cycles = 5 //define how many cycles the test pulse must run
 	if(TP_TestPulseHasCycled(panelTitle, cycles))
