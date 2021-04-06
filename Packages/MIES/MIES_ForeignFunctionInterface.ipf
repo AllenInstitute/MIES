@@ -53,3 +53,13 @@ Function/WAVE FFI_ReturnTPValues()
 
 	return acqStorageWave
 End
+
+/// @brief Return a text wave with all available message filters for Publisher/Subscriber ZeroMQ sockets
+Function/WAVE FFI_GetAvailableMessageFilters()
+
+	Make/FREE/T wv = {ZeroMQ_HEARTBEAT, IVS_PUB_FILTER}
+
+	Note/K wv "Heartbeat is sent every 5 seconds."
+
+	return wv
+End
