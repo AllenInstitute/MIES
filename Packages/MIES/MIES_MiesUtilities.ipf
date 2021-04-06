@@ -5709,9 +5709,9 @@ Function StartZeroMQSockets([variable forceRestart])
 	zeromq_stop()
 
 #if defined(DEBUGGING_ENABLED)
-	zeromq_set(ZeroMQ_SET_FLAGS_DEBUG | ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING)
+	zeromq_set(ZeroMQ_SET_FLAGS_DEBUG | ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV)
 #else
-	zeromq_set(ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING)
+	zeromq_set(ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV)
 #endif
 
 	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
