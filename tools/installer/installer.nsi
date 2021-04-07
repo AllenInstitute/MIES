@@ -943,11 +943,14 @@ RegistryToHKCU:
   WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "EstimatedSize" ${INSTALLSIZE}
 AfterRegistrySetup:
 
-  ExecWait '"$INSTDIR\vc_redist.x86.exe" /quiet'
-  ExecWait '"$INSTDIR\vc_redist.x64.exe" /quiet'
-  Sleep 1000
-  Delete "$INSTDIR\vc_redist.x86.exe"
-  Delete "$INSTDIR\vc_redist.x64.exe"
+  IntCmp $ISADMIN 0 SkipVCRedistInstallation
+    ExecWait '"$INSTDIR\vc_redist.x86.exe" /quiet'
+    ExecWait '"$INSTDIR\vc_redist.x64.exe" /quiet'
+SkipVCRedistInstallation:
+
+    Sleep 1000
+    Delete "$INSTDIR\vc_redist.x86.exe"
+    Delete "$INSTDIR\vc_redist.x64.exe"
 
   IntCmp $ISADMIN 0 SkipASLRSetup
     IntCmp $XOPINST 0  SkipASLRSetup

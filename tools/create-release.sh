@@ -79,11 +79,9 @@ version_file=$top_level/version.txt
 # everything else is handled in .gitattributes using export-ignore
 "$zip_exe" -qd $output_file "Packages/ITCXOP2/*" > /dev/null
 "$zip_exe" -qd $output_file "Packages/unit-testing/*" > /dev/null
-"$zip_exe" -qd $output_file "Packages/ZeroMQ/*" > /dev/null
 "$zip_exe" -qd $output_file "Packages/doc/*" > /dev/null
 
 # readd files we want to have
 "$zip_exe" -qru $output_file "Packages/ITCXOP2/tools" > /dev/null
-"$zip_exe" -qru $output_file "Packages/ZeroMQ/procedures" > /dev/null
 
 exit 0

@@ -20,10 +20,10 @@ Table of Contents
   IPNWB/index
   TPAnalysis_algorithm
   asyncframework
-  ZeroMQ-XOP-Readme
   labnotebook-docs
   epoch_information
   mies-concepts
   daq-details
 
-The user documentation can be reached at :ref:`user documentation`, developer documentation is everything else.
+The user documentation can be reached at :ref:`user documentation`, developer documentation is everything e The
+documentation for the ZeroMQ-XOP is located `here <https://github.com/AllenInstitute/ZeroMQ-XOP/#readme>`__.

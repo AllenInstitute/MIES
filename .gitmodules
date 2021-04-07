@@ -4,9 +4,6 @@
 [submodule "Packages/IPNWB"]
 	path = Packages/IPNWB
 	url = https://github.com/AllenInstitute/IPNWB
-[submodule "Packages/ZeroMQ-XOP"]
-	path = Packages/ZeroMQ
-	url = https://github.com/AllenInstitute/ZeroMQ-XOP
 [submodule "Packages/ITCXOP2"]
 	path = Packages/ITCXOP2
 	url = https://github.com/AllenInstitute/ITCXOP2
