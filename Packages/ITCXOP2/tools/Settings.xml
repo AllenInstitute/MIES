@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MitigationPolicy>
+  <AppConfig Executable="C:\Program Files\WaveMetrics\Igor Pro 9 Folder\IgorBinaries_Win32\Igor.exe">
+    <ASLR BottomUp="false" HighEntropy="false" />
+  </AppConfig>
+  <AppConfig Executable="C:\Program Files\WaveMetrics\Igor Pro 9 Folder\IgorBinaries_x64\Igor64.exe">
+    <ASLR BottomUp="false" HighEntropy="false" />
+  </AppConfig>
+  <AppConfig Executable="C:\Program Files\WaveMetrics\Igor Pro 8 Folder\IgorBinaries_Win32\Igor.exe">
+    <ASLR BottomUp="false" HighEntropy="false" />
+  </AppConfig>
+  <AppConfig Executable="C:\Program Files\WaveMetrics\Igor Pro 8 Folder\IgorBinaries_x64\Igor64.exe">
+    <ASLR BottomUp="false" HighEntropy="false" />
+  </AppConfig>
+  <AppConfig Executable="C:\Program Files\WaveMetrics\Igor Pro 7 Folder\IgorBinaries_Win32\Igor.exe">
+    <ASLR BottomUp="false" HighEntropy="false" />
+  </AppConfig>
+  <AppConfig Executable="C:\Program Files\WaveMetrics\Igor Pro 7 Folder\IgorBinaries_x64\Igor64.exe">
+    <ASLR BottomUp="false" HighEntropy="false" />
+  </AppConfig>
+</MitigationPolicy>
