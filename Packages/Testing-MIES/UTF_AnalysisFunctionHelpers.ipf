@@ -355,7 +355,7 @@ Function AE_NumericHasCorrectTimeStamps()
 	col = floor(V_Value / DimSize(numericalKeys, ROWS))
 	row = V_Value - col * DimSize(numericalKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	ts = numericalValues[0][1][0]
 	// entry has timestamp with full resolution
@@ -589,7 +589,7 @@ Function AE_TextHasCorrectTimeStamps()
 	col = floor(V_Value / DimSize(textualKeys, ROWS))
 	row = V_Value - col * DimSize(textualKeys, ROWS)
 	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, 4)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
 	ts = str2num(textualValues[0][1][0])
 	// entry has timestamp with full resolution
