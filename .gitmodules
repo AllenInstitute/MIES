@@ -8,9 +8,6 @@
 	path = Packages/IPNWB
 	shallow = true
 	url = https://github.com/AllenInstitute/IPNWB
-[submodule "Packages/ITCXOP2"]
-	path = Packages/ITCXOP2
-	url = https://github.com/AllenInstitute/ITCXOP2
 [submodule "Packages/doc/doxygen-filter-ipf"]
 	fetchRecurseSubmodules = false
 	path = Packages/doc/doxygen-filter-ipf
