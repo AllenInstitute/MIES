@@ -140,6 +140,7 @@ End
 #include "ZeroMQ_Interop"
 
 // our includes
+#include "MIES_AcquisitionStateHandling"
 #include "MIES_AmplifierInteraction"
 #include "MIES_AnalysisBrowser"
 #include "MIES_AnalysisBrowser_LabNotebookTPStorageBrowser"

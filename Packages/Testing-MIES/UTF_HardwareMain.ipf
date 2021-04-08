@@ -28,6 +28,7 @@
 #include "UTF_TestNWBExportV2"
 #include "UTF_Epochs"
 #include "UTF_HelperFunctions"
+#include "UTF_VeryLastTestSuite"
 
 StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
 
@@ -76,6 +77,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
+	list = AddListItem("UTF_VeryLastTestSuite.ipf", list, ";", inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list
@@ -179,6 +181,9 @@ Function TEST_BEGIN_OVERRIDE(name)
 	interactiveMode = 0
 	variable/G root:interactiveMode = interactiveMode
 
+	WAVE wv = GetAcqStateTracking()
+	KillWaves wv; AbortOnRTE
+
 //	DisableDebugOutput()
 //	EnableDebugoutput()
 
@@ -196,10 +201,12 @@ Function TEST_BEGIN_OVERRIDE(name)
 	DuplicateDataFolder/Z/O=1 dfr, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
 
-	NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
-	KillDataFolder/Z root:WaveBuilder
-	DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
-	KillDataFolder/Z root:WaveBuilder:SavedStimulusSets
+	// speedup executing the tests locally
+	if(!DataFolderExists("root:WaveBuilder"))
+		NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
+		DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
+		KillDataFolder/Z root:WaveBuilder:SavedStimulusSets
+	endif
 End
 
 Function TEST_CASE_BEGIN_OVERRIDE(name)
@@ -262,6 +269,10 @@ Function TEST_CASE_END_OVERRIDE(name)
 		NVAR errorCounter = $GetAnalysisFuncErrorCounter(dev)
 		CHECK_EQUAL_VAR(errorCounter, 0)
 
+		// correct acquisition state
+		NVAR acqState = $GetAcquisitionState(dev)
+		CHECK_EQUAL_VAR(acqState, AS_INACTIVE)
+
 		if(WhichListItem(name, LIST_OF_TESTS_WITH_SWEEP_ROLLBACK) == -1)
 			// ascending sweep numbers in both labnotebooks
 			WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
@@ -292,6 +303,9 @@ Function TEST_CASE_END_OVERRIDE(name)
 	endfor
 
 	StopAllBackgroundTasks()
+
+	NVAR bugCount = $GetBugCount()
+	CHECK_EQUAL_VAR(bugCount, 0)
 
 #ifdef AUTOMATED_TESTING_DEBUGGING
 
@@ -816,4 +830,26 @@ Function CheckDashboard(string device, WAVE headstageQC)
 		state = !cmpstr(listWave[i][%Result], DASHBOARD_PASSING_MESSAGE)
 		CHECK_EQUAL_VAR(state, headstageQC[i])
 	endfor
+End
+
+Function AddLabnotebookEntries_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
+
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		// add entry for AS_ITI
+		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values     = NaN
+		Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesText = ""
+		values[0] = AS_ITI
+		ED_AddEntryToLabnotebook(device, "AcqStateTrackingValue_AS_ITI", values)
+		valuesText[0] = AS_StateToString(AS_ITI)
+		ED_AddEntryToLabnotebook(device, "AcqStateTrackingValue_AS_ITI", valuesText)
+		return 1
+	endif
+
+	return 0
 End

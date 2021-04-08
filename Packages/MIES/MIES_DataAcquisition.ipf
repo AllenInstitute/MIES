@@ -243,12 +243,18 @@ Function DQ_RestartDAQ(panelTitle, dataAcqRunMode)
 			// nothing to do
 			break
 		case DAQ_FG_SINGLE_DEVICE:
+			AS_HandlePossibleTransition(panelTitle, AS_EARLY_CHECK, call = 0)
+			AS_HandlePossibleTransition(panelTitle, AS_PRE_DAQ, call = 0)
 			DQS_StartDAQSingleDevice(panelTitle, useBackground=0)
 			break
 		case DAQ_BG_SINGLE_DEVICE:
+			AS_HandlePossibleTransition(panelTitle, AS_EARLY_CHECK, call = 0)
+			AS_HandlePossibleTransition(panelTitle, AS_PRE_DAQ, call = 0)
 			DQS_StartDAQSingleDevice(panelTitle, useBackground=1)
 			break
 		case DAQ_BG_MULTI_DEVICE:
+			AS_HandlePossibleTransition(panelTitle, AS_EARLY_CHECK, call = 0)
+			AS_HandlePossibleTransition(panelTitle, AS_PRE_DAQ, call = 0)
 			DQM_StartDAQMultiDevice(panelTitle)
 			break
 		default:

@@ -76,6 +76,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			continue
 		endif
 
+		// @todo Use AS_GetSweepNumber once acquisition state handling supports PRE/POST SET_EVENTS
 		switch(eventType)
 			case PRE_DAQ_EVENT:
 			case PRE_SWEEP_EVENT:

@@ -236,7 +236,7 @@ Constant LISTBOX_TREEVIEW_EXPANDED     = 0x10 ///< Convenience definition, equal
 Constant LISTBOX_TREEVIEW              = 0x40
 /// @}
 
-Constant INITIAL_KEY_WAVE_COL_COUNT = 4
+Constant INITIAL_KEY_WAVE_COL_COUNT = 5
 
 /// @name Constants for the note of the wave returned by GetTPStorage
 /// @{
@@ -505,6 +505,25 @@ Constant SET_VARIABLE_GLOBAL      = 0x04
 Constant DISABLE_CONTROL_BIT = 2
 Constant HIDDEN_CONTROL_BIT  = 1
 
+/// @name Acquisition states
+/// @anchor AcquisitionStates
+///
+/// @todo extend these with PRE_SET_EVENT and POST_SET_EVENT once this is
+/// reworked, see https://github.com/AllenInstitute/MIES/issues/658 and
+/// https://github.com/AllenInstitute/MIES/issues/39.
+///
+/// @{
+Constant AS_INACTIVE    = 0
+Constant AS_EARLY_CHECK = 1
+Constant AS_PRE_DAQ     = 2
+Constant AS_PRE_SWEEP   = 3
+Constant AS_MID_SWEEP   = 4
+Constant AS_POST_SWEEP  = 5
+Constant AS_ITI         = 6
+Constant AS_POST_DAQ    = 7
+Constant AS_NUM_STATES  = 8
+/// @}
+
 /// @name Event types for analysis functions
 /// @anchor EVENT_TYPE_ANALYSIS_FUNCTIONS
 /// @{
@@ -601,7 +620,7 @@ Constant WAVEBUILDER_PANEL_VERSION         = 9
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 40
+Constant LABNOTEBOOK_VERSION = 42
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
@@ -863,6 +882,7 @@ StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"
 StrConstant RA_ACQ_CYCLE_ID_KEY      = "Repeated Acq Cycle ID"
 StrConstant STIMSET_ACQ_CYCLE_ID_KEY = "Stimset Acq Cycle ID"
 StrConstant SWEEP_ROLLBACK_KEY       = "Sweep Rollback"
+StrConstant SKIP_SWEEPS_KEY          = "Skip Sweeps"
 
 /// @name Update flags for DAP_UpdateDAQControls()
 ///

@@ -1327,6 +1327,42 @@ static Function UpgradeLabNotebook(panelTitle)
 		SetNumberInWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 		SetNumberInWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 	endif
+
+	// BEGIN acquisition state
+	if(cmpstr(numericalKeys[0][4], "AcquisitionState"))
+
+		numCols = DimSize(numericalKeys, COLS)
+
+		Redimension/N=(-1, numCols + 1, -1) numericalKeys, numericalValues
+
+		numericalKeys[][numCols]     = numericalKeys[p][4]
+		numericalValues[][numCols][] = numericalValues[p][4][r]
+
+		numericalValues[][4][] = NaN
+		numericalKeys[][4]     = ""
+		numericalKeys[0][4]    = "AcquisitionState"
+		LBN_SetDimensionLabels(numericalKeys, numericalValues)
+
+		DEBUGPRINT("Upgraded numerical labnotebook to hold acquisition state column")
+	endif
+
+	if(cmpstr(textualKeys[0][4], "AcquisitionState"))
+
+		numCols = DimSize(textualKeys, COLS)
+
+		Redimension/N=(-1, numCols + 1, -1) textualKeys, textualValues
+
+		textualKeys[][numCols]     = textualKeys[p][4]
+		textualValues[][numCols][] = textualValues[p][4][r]
+
+		textualValues[][4][] = ""
+		textualKeys[][4]     = ""
+		textualKeys[0][4]    = "AcquisitionState"
+		LBN_SetDimensionLabels(textualKeys, textualValues)
+
+		DEBUGPRINT("Upgraded textual labnotebook to hold acquisition state column")
+	endif
+	// END acquisition state
 End
 
 /// @brief Return a wave reference to the text labnotebook keys
@@ -1341,6 +1377,7 @@ End
 /// - 1: Time Stamp in local time zone
 /// - 2: Time Stamp in UTC
 /// - 3: Source entry type, one of @ref DataAcqModes
+/// - 4: Acquisition state, one of @ref AcquisitionStates
 /// - other columns are filled at runtime
 Function/Wave GetLBTextualKeys(panelTitle)
 	string panelTitle
@@ -1373,6 +1410,7 @@ Function/Wave GetLBTextualKeys(panelTitle)
 	wv[0][1] = "TimeStamp"
 	wv[0][2] = "TimeStampSinceIgorEpochUTC"
 	wv[0][3] = "EntrySourceType"
+	wv[0][4] = "AcquisitionState"
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units,     wv
@@ -1395,6 +1433,7 @@ End
 /// - 1: Time Stamp in local time zone
 /// - 2: Time Stamp in UTC
 /// - 3: Source entry type, one of @ref DataAcqModes
+/// - 4: Acquisition state, one of @ref AcquisitionStates
 /// - other columns are filled at runtime
 Function/Wave GetLBNumericalKeys(panelTitle)
 	string panelTitle
@@ -1428,6 +1467,7 @@ Function/Wave GetLBNumericalKeys(panelTitle)
 	wv[0][1] = "TimeStamp"
 	wv[0][2] = "TimeStampSinceIgorEpochUTC"
 	wv[0][3] = "EntrySourceType"
+	wv[0][4] = "AcquisitionState"
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units,     wv
@@ -6512,4 +6552,87 @@ Function/WAVE GetOverrideResults()
 	WAVE/Z/SDFR=root: overrideResults
 
 	return overrideResults
+End
+
+/// @brief Return the wave used for storing acquisition state transitions during testing
+///
+Function/WAVE GetAcqStateTracking()
+
+	variable versionOfNewWave = 1
+	DFREF dfr = root:
+
+	string name = "acquisitionStateTracking"
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, 2) dfr:$name/WAVE=wv
+	endif
+
+	wv = NaN
+
+	SetDimLabel COLS, 0, OLD, wv
+	SetDimLabel COLS, 1, NEW, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return a wave with all valid acquisition state transitions
+///
+/// It is AS_NUM_STATES x AS_NUM_STATES matrix were the old states are in the rows
+/// and the new states in the columns. Every valid transition has a 1 in it.
+Function/WAVE GetValidAcqStateTransitions()
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetMiesPath()
+
+	string name = "validAcqStateTransitions"
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/R/N=(AS_NUM_STATES, AS_NUM_STATES) dfr:$name/WAVE=wv
+	endif
+
+	wv = 0
+
+	Make/FREE/N=(AS_NUM_STATES) indexHelper
+
+	SetDimLabel ROWS, -1, OLD, wv
+	SetDimLabel COLS, -1, NEW, wv
+	indexHelper[] = SetDimensionLabels(wv, AS_StateToString(p), ROWS, startPos = p)
+	indexHelper[] = SetDimensionLabels(wv, AS_StateToString(p), COLS, startPos = p)
+
+	wv[%AS_INACTIVE][%AS_EARLY_CHECK] = 1
+
+	wv[%AS_EARLY_CHECK][%AS_PRE_DAQ] = 1
+	wv[%AS_EARLY_CHECK][%AS_INACTIVE] = 1
+
+	wv[%AS_PRE_DAQ][%AS_PRE_SWEEP] = 1
+	wv[%AS_PRE_DAQ][%AS_INACTIVE] = 1
+	wv[%AS_PRE_DAQ][%AS_POST_DAQ] = 1
+
+	wv[%AS_PRE_SWEEP][%AS_MID_SWEEP] = 1
+
+	wv[%AS_MID_SWEEP][%AS_MID_SWEEP] = 1
+	wv[%AS_MID_SWEEP][%AS_POST_SWEEP] = 1
+
+	wv[%AS_POST_SWEEP][%AS_ITI] = 1
+	wv[%AS_POST_SWEEP][%AS_POST_DAQ] = 1
+
+	wv[%AS_ITI][%AS_PRE_SWEEP] = 1
+	wv[%AS_ITI][%AS_POST_DAQ] = 1
+
+	wv[%AS_POST_DAQ][%AS_INACTIVE] = 1
+
+	return wv
 End
