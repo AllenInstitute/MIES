@@ -24,9 +24,5 @@ git submodule update --checkout
 # set remote URL of submodules to ssh for push/pull
 # git remote set-url origin git@github.com:AllenInstitute/IPNWB
 
-# ignore git attributes on foreign submodules
-mkdir -p .git/modules/Packages/ITCXOP2/modules/src/SafeInt/info
-echo '**/* !whitespace !eol' > .git/modules/Packages/ITCXOP2/modules/src/SafeInt/info/attributes
-
 # set revision file to ignore for git blame
 git config blame.ignoreRevsFile .git-blame-ignore-revs
