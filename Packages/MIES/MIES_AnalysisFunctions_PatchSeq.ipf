@@ -1588,7 +1588,8 @@ Function PSQ_DAScale(panelTitle, s)
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
-	baselineQCPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
+	WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+	baselineQCPassed = WaveExists(baselineQCPassedLBN) ? baselineQCPassedLBN[s.headstage] : 0
 
 	if(baselineQCPassed) // already done
 		return NaN
@@ -2266,7 +2267,8 @@ Function PSQ_Rheobase(panelTitle, s)
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
-	baselineQCPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
+	WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+	baselineQCPassed = WaveExists(baselineQCPassedLBN) ? baselineQCPassedLBN[s.headstage] : 0
 
 	if(baselineQCPassed)
 		return NaN
@@ -2574,7 +2576,8 @@ Function PSQ_Ramp(panelTitle, s)
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
-	baselineQCPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
+	WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+	baselineQCPassed = WaveExists(baselineQCPassedLBN) ? baselineQCPassedLBN[s.headstage] : 0
 
 	enoughSpikesFound = PSQ_FoundAtLeastOneSpike(panelTitle, s.sweepNo)
 
