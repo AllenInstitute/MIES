@@ -1,4 +1,4 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=PatchSeqTestChirp
 
@@ -64,11 +64,42 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	DB_OpenDatabrowser()
 End
 
-static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name)
+static Function/WAVE GetLBNEntriesWave_IGNORE()
+
+	string list = "sweepPass;setPass;insideBounds;baselinePass;"                  \
+                  + "boundsState;boundsAction;initialDAScale;DAScale;resistance"
+
+	Make/FREE/WAVE/N=(ItemsInList(list)) wv
+	SetDimensionLabels(wv, list, ROWS)
+
+	return wv
+End
+
+static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	WAVE/WAVE wv = GetLBNEntriesWave_IGNORE()
+
+	wv[%sweepPass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	wv[%setPass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
+	wv[%insideBounds] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
+	wv[%baselinePass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
+	wv[%boundsState] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
+	wv[%boundsAction] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
+	wv[%initialDAScale] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
+	wv[%DAScale] = GetResults_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
+	wv[%resistance] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
+
+	return wv
+End
+
+static Function/WAVE GetResults_IGNORE(device, sweepNo, name)
 	string device
 	variable sweepNo
 	string name
 
+	variable val
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -76,26 +107,26 @@ static Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name)
 
 	strswitch(name)
 		case PSQ_FMT_LBN_SWEEP_PASS:
-		case PSQ_FMT_LBN_SET_PASS:
 		case PSQ_FMT_LBN_CR_INSIDE_BOUNDS:
 		case PSQ_FMT_LBN_CR_BOUNDS_ACTION:
-		case PSQ_FMT_LBN_INITIAL_SCALE:
-		case PSQ_FMT_LBN_CR_RESISTANCE:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
-			break
 		case PSQ_FMT_LBN_CR_BOUNDS_STATE:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, HEADSTAGE, key, UNKNOWN_MODE)
-			break
 		case PSQ_FMT_LBN_BL_QC_PASS:
 		case PSQ_FMT_LBN_PULSE_DUR:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
-			break
 		case STIMSET_SCALE_FACTOR_KEY:
 			return GetLastSettingEachSCI(numericalValues, sweepNo, name, HEADSTAGE, DATA_ACQUISITION_MODE)
-			break
+		case PSQ_FMT_LBN_SET_PASS:
+		case PSQ_FMT_LBN_INITIAL_SCALE:
+		case PSQ_FMT_LBN_CR_RESISTANCE:
+			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
+			val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+			Make/D/FREE wv = {val}
+			return wv
 		default:
 			FAIL()
 	endswitch
@@ -124,7 +155,7 @@ static Function PS_CR1([str])
 	// layer 0: BL
 	// layer 1: Maximum of AD (0 triggers PSQ_CR_RERUN)
 	// layer 2: Minimum of AD (0 triggers PSQ_CR_RERUN)
-	// layer 3: Spikes check during chirp
+	// layer 3: Spikes check during chirp (not done)
 	wv = 0
 End
 
@@ -139,35 +170,19 @@ static Function PS_CR1_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 2)
 
-	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 0)
+	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%boundsState], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%boundsAction], NULL_WAVE)
 
-	WAVE/Z insideBounds = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	CHECK_WAVE(insideBounds, NULL_WAVE)
-
-	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	CHECK_EQUAL_WAVES(baselineQCPassed, {0, 0, 0}, mode = WAVE_DATA)
-
-	WAVE/T/Z boundsState = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	CHECK_WAVE(boundsState, NULL_WAVE)
-
-	WAVE/Z boundsAction = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	CHECK_WAVE(boundsAction, NULL_WAVE)
-
-	WAVE/Z initialDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	CHECK_EQUAL_WAVES(initialDAScale, {30e-12, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	CHECK_EQUAL_WAVES(DAScale, {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 End
 
 static Function PS_CR2_IGNORE(string device)
@@ -191,6 +206,7 @@ static Function PS_CR2([str])
 	// layer 0: BL
 	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
 	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
+	// layer 3: Spikes check during chirp (not done)
 	wv[][][0] = 1
 	wv[][][1] = 35
 	wv[][][2] = -25
@@ -207,35 +223,19 @@ static Function PS_CR2_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 2)
 
-	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BABA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
 
-	WAVE/Z insideBounds = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	CHECK_EQUAL_WAVES(insideBounds, {1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	CHECK_EQUAL_WAVES(baselineQCPassed, {1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/T/Z boundsState = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	CHECK_EQUAL_TEXTWAVES(boundsState, {"BABA", "BABA", "BABA"})
-
-	WAVE/Z boundsAction = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	CHECK_EQUAL_WAVES(boundsAction, {PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
-
-	WAVE/Z initialDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	CHECK_EQUAL_WAVES(initialDAScale, {30e-12, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	CHECK_EQUAL_WAVES(DAScale, {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 End
 
 static Function PS_CR3_IGNORE(string device)
@@ -259,6 +259,7 @@ static Function PS_CR3([str])
 	// layer 0: BL
 	// layer 1: Maximum of AD (35 would be PSQ_CR_PASS but we abort early due to baseline not passing)
 	// layer 2: Minimum of AD (-25 would be PSQ_CR_PASS but we abort early due to baseline not passing)
+	// layer 3: Spikes check during chirp (not done)
 	wv[][][0] = 0
 	wv[][][1] = 35
 	wv[][][2] = -25
@@ -275,35 +276,19 @@ static Function PS_CR3_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 2)
 
-	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 0)
+	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%boundsState], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%boundsAction], NULL_WAVE)
 
-	WAVE/Z insideBounds = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	CHECK_WAVE(insideBounds, NULL_WAVE)
-
-	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	CHECK_EQUAL_WAVES(baselineQCPassed, {0, 0, 0}, mode = WAVE_DATA)
-
-	WAVE/Z/T boundsState = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	CHECK_WAVE(boundsState, NULL_WAVE)
-
-	WAVE/Z boundsAction = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	CHECK_WAVE(boundsAction, NULL_WAVE)
-
-	WAVE/Z initialDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	CHECK_EQUAL_WAVES(initialDAScale, {30e-12, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	CHECK_EQUAL_WAVES(DAScale, {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 End
 
 static Function PS_CR4_IGNORE(string device)
@@ -331,6 +316,7 @@ static Function PS_CR4([str])
 	// layer 0: BL
 	// layer 1: Minimum of AD
 	// layer 2: Maximum of AD
+	// layer 3: Spikes check during chirp
 
 	// INCREASE (BAAA)
 	wv[][0][1] = 35
@@ -368,36 +354,19 @@ static Function PS_CR4_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 5)
 
-	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BAAA", "BABA", "AABA", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {PSQ_CR_INCREASE, PSQ_CR_PASS, PSQ_CR_DECREASE, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
 
-	WAVE/Z insideBounds = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	CHECK_EQUAL_WAVES(insideBounds, {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	CHECK_EQUAL_WAVES(baselineQCPassed, {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/T/Z boundsState = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	CHECK_EQUAL_TEXTWAVES(boundsState, {"BAAA", "BABA", "AABA", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
-
-	WAVE/Z boundsAction = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	CHECK_EQUAL_WAVES(boundsAction, {PSQ_CR_INCREASE, PSQ_CR_PASS, PSQ_CR_DECREASE, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
-
-	WAVE/Z initialDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	CHECK_EQUAL_WAVES(initialDAScale, {30e-12, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	CHECK_EQUAL_WAVES(DAScale, {30, 41, 41, 42, 42, 42}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 41, 41, 42, 42, 42}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 End
 
 static Function PS_CR5_IGNORE(string device)
@@ -462,36 +431,19 @@ static Function PS_CR5_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 5)
 
-	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BBBA", "BABA", "BABB", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {PSQ_CR_INCREASE, PSQ_CR_PASS, PSQ_CR_DECREASE, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
 
-	WAVE/Z insideBounds = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	CHECK_EQUAL_WAVES(insideBounds, {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	CHECK_EQUAL_WAVES(baselineQCPassed, {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/T/Z boundsState = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	CHECK_EQUAL_TEXTWAVES(boundsState, {"BBBA", "BABA", "BABB", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
-
-	WAVE/Z boundsAction = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	CHECK_EQUAL_WAVES(boundsAction, {PSQ_CR_INCREASE, PSQ_CR_PASS, PSQ_CR_DECREASE, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
-
-	WAVE/Z initialDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	CHECK_EQUAL_WAVES(initialDAScale, {30e-12, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	CHECK_EQUAL_WAVES(DAScale, {30, 49, 49, 38, 38, 38}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 49, 49, 38, 38, 38}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 End
 
 static Function PS_CR6_IGNORE(string device)
@@ -556,36 +508,19 @@ static Function PS_CR6_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 5)
 
-	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BBAA", "BABA", "AABB", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {PSQ_CR_INCREASE, PSQ_CR_PASS, PSQ_CR_DECREASE, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
 
-	WAVE/Z insideBounds = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	CHECK_EQUAL_WAVES(insideBounds, {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	CHECK_EQUAL_WAVES(baselineQCPassed, {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/T/Z boundsState = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	CHECK_EQUAL_TEXTWAVES(boundsState, {"BBAA", "BABA", "AABB", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
-
-	WAVE/Z boundsAction = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	CHECK_EQUAL_WAVES(boundsAction, {PSQ_CR_INCREASE, PSQ_CR_PASS, PSQ_CR_DECREASE, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
-
-	WAVE/Z initialDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	CHECK_EQUAL_WAVES(initialDAScale, {30e-12, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	CHECK_EQUAL_WAVES(DAScale, {30, 60, 60, 40, 40, 40}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 60, 60, 40, 40, 40}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 End
 
 static Function PS_CR7_IGNORE(string device)
@@ -613,6 +548,7 @@ static Function PS_CR7([str])
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
+	// layer 3: Spikes check during chirp (not done)
 
 	// RERUN (AAAA)
 	wv[][0][1] = 45
@@ -646,36 +582,19 @@ static Function PS_CR7_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 4)
 
-	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"AAAA", "AAAA", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {PSQ_CR_RERUN, PSQ_CR_RERUN, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
 
-	WAVE/Z insideBounds = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	CHECK_EQUAL_WAVES(insideBounds, {0, 0, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	CHECK_EQUAL_WAVES(baselineQCPassed, {NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/T/Z boundsState = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	CHECK_EQUAL_TEXTWAVES(boundsState, {"AAAA", "AAAA", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
-
-	WAVE/Z boundsAction = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	CHECK_EQUAL_WAVES(boundsAction, {PSQ_CR_RERUN, PSQ_CR_RERUN, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
-
-	WAVE/Z initialDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	CHECK_EQUAL_WAVES(initialDAScale, {30e-12, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	CHECK_EQUAL_WAVES(DAScale, {30, 30, 30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 End
 
 static Function PS_CR8_IGNORE(string device)
@@ -703,6 +622,7 @@ static Function PS_CR8([str])
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
+	// layer 3: Spikes check during chirp (not done)
 
 	// RERUN (BBBB)
 	wv[][0][1] = 15
@@ -736,36 +656,19 @@ static Function PS_CR8_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 4)
 
-	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BBBB", "BBBB", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {PSQ_CR_RERUN, PSQ_CR_RERUN, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
 
-	WAVE/Z insideBounds = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	CHECK_EQUAL_WAVES(insideBounds, {0, 0, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	CHECK_EQUAL_WAVES(baselineQCPassed, {NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/T/Z boundsState = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	CHECK_EQUAL_TEXTWAVES(boundsState, {"BBBB", "BBBB", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
-
-	WAVE/Z boundsAction = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	CHECK_EQUAL_WAVES(boundsAction, {PSQ_CR_RERUN, PSQ_CR_RERUN, PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
-
-	WAVE/Z initialDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	CHECK_EQUAL_WAVES(initialDAScale, {30e-12, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	CHECK_EQUAL_WAVES(DAScale, {30, 30, 30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 End
 
 static Function PS_CR9_IGNORE(string device)
@@ -795,6 +698,7 @@ static Function PS_CR9([str])
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
+	// layer 3: Spikes check during chirp (not done)
 
 	// PASS
 	wv[][0][1] = 38
@@ -832,36 +736,19 @@ static Function PS_CR9_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 5)
 
-	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 0, 0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1, 0, 0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, NaN, NaN, 1, 1}, mode = WAVE_DATA)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 0)
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 0, 0, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BABA", "BABA", "AABB", "BAAA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_DECREASE, PSQ_CR_INCREASE, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
 
-	WAVE/Z insideBounds = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	CHECK_EQUAL_WAVES(insideBounds, {1, 1, 0, 0, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	CHECK_EQUAL_WAVES(baselineQCPassed, {1, 1, NaN, NaN, 1, 1}, mode = WAVE_DATA)
-
-	WAVE/T/Z boundsState = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	CHECK_EQUAL_TEXTWAVES(boundsState, {"BABA", "BABA", "AABB", "BAAA", "BABA", "BABA"}, mode = WAVE_DATA)
-
-	WAVE/Z boundsAction = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	CHECK_EQUAL_WAVES(boundsAction, {PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_DECREASE, PSQ_CR_INCREASE, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
-
-	WAVE/Z initialDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	CHECK_EQUAL_WAVES(initialDAScale, {30e-12, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	CHECK_EQUAL_WAVES(DAScale, {30, 30, 30, 17, 23, 23}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30, 17, 23, 23}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 End
 
 static Function PS_CR10_IGNORE(string device)
@@ -891,6 +778,7 @@ static Function PS_CR10([str])
 	// layer 0: BL
 	// layer 1: Maximum of AD
 	// layer 2: Minimum of AD
+	// layer 3: Spikes check during chirp (not done)
 
 	// PASS
 	wv[][0][1] = 38
@@ -924,36 +812,19 @@ static Function PS_CR10_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 4)
 
-	WAVE numericalValues = GetLBNumericalValues(str)
-	WAVE textualValues = GetLBTextualValues(str)
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
-	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 0, 1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 0, 1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, NaN, 1, NaN, 1}, mode = WAVE_DATA)
 
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS, query = 1)
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 0)
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 0, 1, 0, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BABA", "AABB", "BABA", "BAAA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {PSQ_CR_PASS, PSQ_CR_DECREASE, PSQ_CR_PASS, PSQ_CR_INCREASE, PSQ_CR_PASS}, mode = WAVE_DATA)
 
-	WAVE/Z insideBounds = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	CHECK_EQUAL_WAVES(insideBounds, {1, 0, 1, 0, 1}, mode = WAVE_DATA)
-
-	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	CHECK_EQUAL_WAVES(baselineQCPassed, {1, NaN, 1, NaN, 1}, mode = WAVE_DATA)
-
-	WAVE/T/Z boundsState = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	CHECK_EQUAL_TEXTWAVES(boundsState, {"BABA", "AABB", "BABA", "BAAA", "BABA"}, mode = WAVE_DATA)
-
-	WAVE/Z boundsAction = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	CHECK_EQUAL_WAVES(boundsAction, {PSQ_CR_PASS, PSQ_CR_DECREASE, PSQ_CR_PASS, PSQ_CR_INCREASE, PSQ_CR_PASS}, mode = WAVE_DATA)
-
-	WAVE/Z initialDAScale = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	CHECK_EQUAL_WAVES(initialDAScale, {30e-12, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	CHECK_EQUAL_WAVES(DAScale, {30, 30, 17, 17, 23}, mode = WAVE_DATA, tol = 1e-14)
-
-	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 17, 17, 23}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 End
 
 static Function PS_CR11_IGNORE(string device)
