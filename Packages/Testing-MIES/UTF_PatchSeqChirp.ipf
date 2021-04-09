@@ -66,8 +66,8 @@ End
 
 static Function/WAVE GetLBNEntriesWave_IGNORE()
 
-	string list = "sweepPass;setPass;insideBounds;baselinePass;"                  \
-                  + "boundsState;boundsAction;initialDAScale;DAScale;resistance"
+	string list = "sweepPass;setPass;insideBounds;baselinePass;spikePass;"                  \
+                  + "boundsState;boundsAction;initialDAScale;DAScale;resistance;spikeCheck"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -85,11 +85,13 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 	wv[%setPass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
 	wv[%insideBounds] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
 	wv[%baselinePass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
+	wv[%spikePass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_SPIKE_PASS)
 	wv[%boundsState] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
 	wv[%boundsAction] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
 	wv[%initialDAScale] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
 	wv[%DAScale] = GetResults_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 	wv[%resistance] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
+	wv[%spikeCheck] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_SPIKE_CHECK)
 
 	return wv
 End
@@ -115,12 +117,14 @@ static Function/WAVE GetResults_IGNORE(device, sweepNo, name)
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, HEADSTAGE, key, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_BL_QC_PASS:
+		case PSQ_FMT_LBN_CR_SPIKE_PASS:
 		case PSQ_FMT_LBN_PULSE_DUR:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
 		case STIMSET_SCALE_FACTOR_KEY:
 			return GetLastSettingEachSCI(numericalValues, sweepNo, name, HEADSTAGE, DATA_ACQUISITION_MODE)
 		case PSQ_FMT_LBN_SET_PASS:
+		case PSQ_FMT_LBN_CR_SPIKE_CHECK:
 		case PSQ_FMT_LBN_INITIAL_SCALE:
 		case PSQ_FMT_LBN_CR_RESISTANCE:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
@@ -175,6 +179,7 @@ static Function PS_CR1_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
 	CHECK_WAVE(lbnEntries[%boundsState], NULL_WAVE)
@@ -183,6 +188,7 @@ static Function PS_CR1_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {0}, mode = WAVE_DATA)
 End
 
 static Function PS_CR2_IGNORE(string device)
@@ -228,6 +234,7 @@ static Function PS_CR2_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BABA", "BABA", "BABA"}, mode = WAVE_DATA)
@@ -281,6 +288,7 @@ static Function PS_CR3_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
 	CHECK_WAVE(lbnEntries[%boundsState], NULL_WAVE)
@@ -359,6 +367,7 @@ static Function PS_CR4_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BAAA", "BABA", "AABA", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
@@ -436,6 +445,7 @@ static Function PS_CR5_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BBBA", "BABA", "BABB", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
@@ -513,6 +523,7 @@ static Function PS_CR6_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BBAA", "BABA", "AABB", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
@@ -587,6 +598,7 @@ static Function PS_CR7_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"AAAA", "AAAA", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
@@ -661,6 +673,7 @@ static Function PS_CR8_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BBBB", "BBBB", "BABA", "BABA", "BABA"}, mode = WAVE_DATA)
@@ -741,6 +754,7 @@ static Function PS_CR9_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1, 0, 0, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, NaN, NaN, 1, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 0, 0, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BABA", "BABA", "AABB", "BAAA", "BABA", "BABA"}, mode = WAVE_DATA)
@@ -817,6 +831,7 @@ static Function PS_CR10_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 0, 1, 0, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, NaN, 1, NaN, 1}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 0, 1, 0, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BABA", "AABB", "BABA", "BAAA", "BABA"}, mode = WAVE_DATA)
