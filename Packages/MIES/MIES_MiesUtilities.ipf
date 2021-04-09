@@ -3366,7 +3366,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 
 	string unit, lbl, axis, trace, text, tagString, tmp
 	string traceList = ""
-	variable i, j, row, col, numRows, sweepCol
+	variable i, j, row, col, numRows, sweepCol, marker
 	variable isTimeAxis, isTextData, xPos
 	STRUCT RGBColor s
 
@@ -3414,7 +3414,8 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 		ModifyGraph/W=$graph userData($trace)={IsTextData, USERDATA_MODIFYGRAPH_REPLACE, num2str(isTextData)}
 
 		[s] = GetHeadstageColor(i)
-		ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue, IsTextData ? 0 : inf), marker($trace)=i
+		marker = i == 0 ? 39 : i
+		ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue, IsTextData ? 0 : inf), marker($trace)=marker
 		SetAxis/W=$graph/A=2 $axis
 
 		// we only need one trace, all the info is in the tag
