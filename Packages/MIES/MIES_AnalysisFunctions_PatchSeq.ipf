@@ -808,31 +808,34 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	sprintf msg, "Type %d, headstage %d, offset %g, numberOfSpikesReq %d", type, headstage, offset, numberOfSpikesReq
 	DEBUGPRINT(msg)
 
-	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
-	minVal = WaveMin(singleDA, offset, inf)
-	maxVal = WaveMax(singleDA, offset, inf)
-
-	if(minVal == 0 && maxVal == 0)
-		if(type == PSQ_SQUARE_PULSE)
-			first = 0
-			last = searchEnd
-		else
-			return spikeDetection
-		endif
+	if(type == PSQ_CHIRP)
+		first = offset
+		last  = searchEnd
 	else
+		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
+		minVal = WaveMin(singleDA, offset, inf)
+		maxVal = WaveMax(singleDA, offset, inf)
 
-
-		rangeSearchLevel = minVal + GetMachineEpsilon(WaveType(singleDA))
-
-		Make/FREE/D levels
-		FindLevels/R=(offset, inf)/Q/N=2/DEST=levels singleDA, rangeSearchLevel
-		ASSERT(V_LevelsFound == 2, "Could not find two levels")
-		first = levels[0]
-
-		if(type == PSQ_DA_SCALE)
-			last = levels[1]
+		if(minVal == 0 && maxVal == 0)
+			if(type == PSQ_SQUARE_PULSE)
+				first = 0
+				last  = searchEnd
+			else
+				return spikeDetection
+			endif
 		else
-			last = searchEnd
+			rangeSearchLevel = minVal + GetMachineEpsilon(WaveType(singleDA))
+
+			Make/FREE/D levels
+			FindLevels/R=(offset, inf)/Q/N=2/DEST=levels singleDA, rangeSearchLevel
+			ASSERT(V_LevelsFound == 2, "Could not find two levels")
+			first = levels[0]
+
+			if(type == PSQ_DA_SCALE)
+				last = levels[1]
+			else
+				last = searchEnd
+			endif
 		endif
 	endif
 
@@ -841,6 +844,10 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		NVAR count = $GetCount(panelTitle)
 
 		switch(type)
+			case PSQ_CHIRP:
+				overrideValue = !overrideResults[0][count][3]
+				numSpikesFoundOverride = overrideValue > 0
+				break
 			case PSQ_RHEOBASE:
 				overrideValue = overrideResults[0][count][1]
 				numSpikesFoundOverride = overrideValue > 0
@@ -881,7 +888,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 			numberOfSpikesFound = numSpikesFoundOverride
 		endif
 	else
-		if(type == PSQ_RAMP) // during midsweep
+		if(type == PSQ_RAMP || type == PSQ_CHIRP) // during midsweep
 			// use the first active AD channel
 			level *= SWS_GetChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)[1]
 		endif
@@ -889,39 +896,53 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
 		ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
-		if(numberOfSpikesReq == 1)
-			// search the spike from the rising edge till the end of the wave
-			FindLevel/Q/R=(first, last)/B=3 singleAD, level
-			spikeDetection[headstage] = !V_flag
+		if(type == PSQ_CHIRP)
+			// use PA plot logic
+			Duplicate/R=(first, last)/FREE singleAD, chirpChunk
 
-			if(!ParamIsDefault(spikePositions))
-				ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
-				Redimension/D/N=(numberOfSpikesReq) spikePositions
-				spikePositions[0] = V_LevelX
-			endif
+			ASSERT(numberOfSpikesReq == inf, "Unexpected value of numberOfSpikesReq")
+			WAVE spikePositionsResult = PA_SpikePositionsForNonVC(chirpChunk, level)
+
+			spikeDetection[headstage] = DimSize(spikePositionsResult, ROWS) > 0
 
 			if(!ParamIsDefault(numberOfSpikesFound))
-				numberOfSpikesFound = spikeDetection[headstage]
-			endif
-		elseif(numberOfSpikesReq > 1)
-			Make/D/FREE/N=0 crossings
-			FindLevels/Q/R=(first, last)/N=(numberOfSpikesReq)/DEST=crossings/EDGE=1/B=3 singleAD, level
-			spikeDetection[headstage] = IsFinite(numberOfSpikesReq) ? (!V_flag) : (V_LevelsFound > 0)
-
-			if(!ParamIsDefault(spikePositions))
-				ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
-				Redimension/D/N=(V_LevelsFound) spikePositions
-
-				if(spikeDetection[headstage])
-					spikePositions[] = crossings[p]
-				endif
-			endif
-
-			if(!ParamIsDefault(numberOfSpikesFound))
-				numberOfSpikesFound = V_LevelsFound
+				numberOfSpikesFound = DimSize(spikePositionsResult, ROWS)
 			endif
 		else
-			ASSERT(0, "Invalid number of spikes value")
+			if(numberOfSpikesReq == 1)
+				// search the spike from the start till the end
+				FindLevel/Q/R=(first, last)/B=3 singleAD, level
+				spikeDetection[headstage] = !V_flag
+
+				if(!ParamIsDefault(spikePositions))
+					ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+					Redimension/D/N=(numberOfSpikesReq) spikePositions
+					spikePositions[0] = V_LevelX
+				endif
+
+				if(!ParamIsDefault(numberOfSpikesFound))
+					numberOfSpikesFound = spikeDetection[headstage]
+				endif
+			elseif(numberOfSpikesReq > 1)
+				Make/D/FREE/N=0 crossings
+				FindLevels/Q/R=(first, last)/N=(numberOfSpikesReq)/DEST=crossings/EDGE=1/B=3 singleAD, level
+				spikeDetection[headstage] = IsFinite(numberOfSpikesReq) ? (!V_flag) : (V_LevelsFound > 0)
+
+				if(!ParamIsDefault(spikePositions))
+					ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+					Redimension/D/N=(V_LevelsFound) spikePositions
+
+					if(spikeDetection[headstage])
+						spikePositions[] = crossings[p]
+					endif
+				endif
+
+				if(!ParamIsDefault(numberOfSpikesFound))
+					numberOfSpikesFound = V_LevelsFound
+				endif
+			else
+				ASSERT(0, "Invalid number of spikes value")
+			endif
 		endif
 	endif
 
