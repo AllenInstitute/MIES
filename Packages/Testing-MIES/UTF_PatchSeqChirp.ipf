@@ -106,6 +106,7 @@ static Function PS_CR1_IGNORE(string device)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // BBAA but with zero value which results in PSQ_CR_RERUN
@@ -123,6 +124,7 @@ static Function PS_CR1([str])
 	// layer 0: BL
 	// layer 1: Maximum of AD (0 triggers PSQ_CR_RERUN)
 	// layer 2: Minimum of AD (0 triggers PSQ_CR_RERUN)
+	// layer 3: Spikes check during chirp
 	wv = 0
 End
 
@@ -173,6 +175,7 @@ static Function PS_CR2_IGNORE(string device)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -240,6 +243,7 @@ static Function PS_CR3_IGNORE(string device)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -307,6 +311,7 @@ static Function PS_CR4_IGNORE(string device)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -400,6 +405,7 @@ static Function PS_CR5_IGNORE(string device)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -493,6 +499,7 @@ static Function PS_CR6_IGNORE(string device)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -586,6 +593,7 @@ static Function PS_CR7_IGNORE(string device)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -675,6 +683,7 @@ static Function PS_CR8_IGNORE(string device)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -764,6 +773,7 @@ static Function PS_CR9_IGNORE(string device)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // Enough passing sweeps but not enough with the same DAScale
@@ -859,6 +869,7 @@ static Function PS_CR10_IGNORE(string device)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
 	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // Early abort as not enough sweeps with the same DASCale value pass
