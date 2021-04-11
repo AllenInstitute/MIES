@@ -944,3 +944,188 @@ static Function PS_CR10_REENTRY([str])
 	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
 	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
+
+static Function PS_CR11_IGNORE(string device)
+
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_CR11([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, postInitializeFunc = PS_CR11_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	// all tests fail
+	// layer 0: BL
+	// layer 1: Maximum of AD (0 triggers PSQ_CR_RERUN)
+	// layer 2: Minimum of AD (0 triggers PSQ_CR_RERUN)
+	// layer 3: Spikes check during chirp fails
+
+	// first BL chunk passes, later ones fail. This is done so that
+	// we reach the chirp region for performing spike checks.
+	wv = 0
+	wv[0][][0]  = 1
+	wv[1,][][0] = 0
+End
+
+static Function PS_CR11_REENTRY([str])
+	string str
+
+	variable sweepNo, setPassed
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%baselinePass], NULL_WAVE)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {0, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%boundsState], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%boundsAction], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 31, 32}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {1}, mode = WAVE_DATA)
+End
+
+static Function PS_CR12_IGNORE(string device)
+
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_CR12([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, postInitializeFunc = PS_CR12_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	// all tests pass
+	// layer 0: BL
+	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
+	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
+	// layer 3: Spikes check during chirp passes
+	wv[][][0] = 1
+	wv[][][1] = 35
+	wv[][][2] = -25
+	wv[][][3] = 1
+End
+
+static Function PS_CR12_REENTRY([str])
+	string str
+
+	variable sweepNo, setPassed
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {1, 1, 1}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"BABA", "BABA", "BABA"}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {PSQ_CR_PASS, PSQ_CR_PASS, PSQ_CR_PASS}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
+End
+
+static Function PS_CR13_IGNORE(string device)
+
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
+	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
+End
+
+// Early abort as not enough sweeps with the same DASCale value pass
+//
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_CR13([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, postInitializeFunc = PS_CR13_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	wv = 0
+
+	// layer 0: BL
+	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
+	// layer 2: Minimum of AD (-25 triggers PSQ_CR_PASS)
+	wv[][][0] = 1
+	wv[][][1] = 35
+	wv[][][2] = -25
+
+	// layer 3: Spikes check during chirp
+	wv[][0][3] = 0
+	wv[][1][3] = 1
+	wv[][2][3] = 1
+	wv[][3][3] = 0
+	wv[][4][3] = 0
+End
+
+static Function PS_CR13_REENTRY([str])
+	string str
+
+	variable sweepNo, setPassed
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 4)
+
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 1, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, 1, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {0, 1, 1, 0, 0}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {NaN, 1, 1, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(lbnEntries[%boundsState], {"", "BABA", "BABA", "", ""}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%boundsAction], {NaN, PSQ_CR_PASS, PSQ_CR_PASS, NaN, NaN}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 31, 31, 31, 32}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
+End
