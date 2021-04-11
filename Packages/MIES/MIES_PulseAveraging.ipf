@@ -2503,7 +2503,6 @@ threadsafe Function/WAVE PA_SpikePositionsForNonVC(WAVE wv, variable failedPulse
 			continue
 		endif
 
-		err = 0
 		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(failedPulsesLevel)/R=(first, last) wv; err = GetRTError(1)
 
 		if(!err)
