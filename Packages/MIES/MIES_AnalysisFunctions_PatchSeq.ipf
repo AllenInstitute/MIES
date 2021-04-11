@@ -55,6 +55,8 @@
 /// PSQ_FMT_LBN_CR_RESISTANCE       Calculated resistance in Ohm from DAScale sub threshold   Numerical                CR                       No                     No
 /// PSQ_FMT_LBN_CR_BOUNDS_ACTION    Action according to min/max positions                     Numerical                CR                       No                     No
 /// PSQ_FMT_LBN_CR_BOUNDS_STATE     Upper and Lower bounds state according to min/max pos.    Textual                  CR                       No                     No
+/// PSQ_FMT_LBN_CR_SPIKE_CHECK      Spike check was enabled/disabled                          Numerical                CR                       No                     No
+/// PSQ_FMT_LBN_CR_SPIKE_PASS       Pass/fail state of the spike search (No spikes → Pass)    Numerical                CR                       No                     Yes
 /// =============================== ========================================================= ======================== ======================== =====================  =====================
 ///
 /// \endrst
@@ -683,6 +685,8 @@ End
 ///      others are ignored], use NaN to use the real values
 /// - 2: minimum of AD data in chirp region [first row only,
 ///      others are ignored], use NaN to use the real values
+/// - 3: passing spike check in chirp region or not [first row only,
+///      others are ignored]
 Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 	string panelTitle
 	variable headstage, type
@@ -712,7 +716,7 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 			numCols = 0
 			break
 		case PSQ_CHIRP:
-			numLayers = 3
+			numLayers = 4
 			numRows = PSQ_GetNumberOfChunks(panelTitle, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
@@ -3247,7 +3251,16 @@ Function/S PSQ_Chirp_GetHelp(string name)
 		case "UpperRelativeBound":
 			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV."
 		case "NumberOfChirpCycles":
-			return "Number of acquired chirp cycles for the bounds evaluation to start."
+			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
+		case "SpikeCheck":
+			return "Toggle spike check during the chirp. Defaults to off."
+		case "FailedLevel":
+			return "Absolute level for spike search, required when SpikeCheck is enabled."
+		case "DAScaleOperator":
+			return "Set the math operator to use for combining the DAScale and the "            \
+			       + "modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
+		case "DAScaleModifier":
+			return "Modifier value to the DA Scale of headstages with spikes during chirp"
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 			break
@@ -3256,6 +3269,7 @@ End
 
 Function/S PSQ_Chirp_CheckParam(string name, string params)
 	variable val
+	string str
 
 	strswitch(name)
 		case "LowerRelativeBound":
@@ -3274,6 +3288,30 @@ Function/S PSQ_Chirp_CheckParam(string name, string params)
 				return "Must be a finite non-zero integer"
 			endif
 			break
+		case "FailedLevel":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val))
+				return "Must be a finite value"
+			endif
+			break
+		case "SpikeCheck":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val))
+				return "Must be a finite value"
+			endif
+			break
+		case "DAScaleOperator":
+			str = AFH_GetAnalysisParamTextual(name, params)
+			if(cmpstr(str, "+") && cmpstr(str, "*"))
+				return "Invalid string " + str
+			endif
+			break
+		case "DAScaleModifier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 			break
@@ -3282,7 +3320,9 @@ End
 
 /// @brief Return a list of required analysis functions for PSQ_Chirp()
 Function/S PSQ_Chirp_GetParams()
-	return "LowerRelativeBound:variable,UpperRelativeBound:variable,[NumberOfChirpCycles:variable]"
+	return "LowerRelativeBound:variable,UpperRelativeBound:variable," +                     \
+           "[NumberOfChirpCycles:variable],[SpikeCheck:variable],[FailedLevel:variable]," + \
+           "[DAScaleOperator:string],[DAScaleModifier:variable]"
 End
 
 /// @brief Analysis function for determining the impedance of the cell using a sine chirp stim set
@@ -3333,8 +3373,9 @@ Function PSQ_Chirp(panelTitle, s)
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
 	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, numBaselineChunks, chirpStart, chirpDuration
-	variable numberOfChirpCycles, cycleEnd, maxOccurences
-	string setName, key, msg, stimset, str
+	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck
+	variable spikeCheckPassed, daScaleModifier, chirpEnd
+	string setName, key, msg, stimset, str, daScaleOperator
 
 	lowerRelativeBound = AFH_GetAnalysisParamNumerical("LowerRelativeBound", s.params)
 	numberOfChirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", s.params, defValue = 1)
@@ -3395,6 +3436,25 @@ Function PSQ_Chirp(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
 
 			if(s.eventType == PRE_SET_EVENT)
+				spikeCheck = !!AFH_GetAnalysisParamNumerical("SpikeCheck", s.params, defValue = PSQ_CR_SPIKE_CHECK_DEFAULT)
+
+				// if spikeCheck is enabled we also need the other analysis parameters
+				// which are now not optional anymore
+				if(spikeCheck)
+					if(!PSQ_CR_FindDependentAnalysisParameter(panelTitle, "FailedLevel", s.params))
+						return 1
+					elseif(!PSQ_CR_FindDependentAnalysisParameter(panelTitle, "DAScaleModifier", s.params))
+						return 1
+					elseif(!PSQ_CR_FindDependentAnalysisParameter(panelTitle, "DAScaleOperator", s.params))
+						return 1
+					endif
+				endif
+
+				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+				values[INDEP_HEADSTAGE] = spikeCheck
+				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_CHECK)
+				ED_AddEntryToLabnotebook(panelTitle, key, values, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
+
 				if(PSQ_TestOverrideActive())
 					resistance = PSQ_CR_RESISTANCE_FAKE * 1e9
 				else
@@ -3455,9 +3515,21 @@ Function PSQ_Chirp(panelTitle, s)
 			baselineQCPassed = WaveExists(baselineQCPassedLBN) ? baselineQCPassedLBN[s.headstage] : 0
 
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INSIDE_BOUNDS, query = 1)
-			insideBounds = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			insideBounds = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
 
-			sweepPassed = (baselineQCPassed == 1 && insideBounds == 1)
+			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_CHECK, query = 1)
+			spikeCheck = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+			ASSERT(IsFinite(spikeCheck), "Invalid spikeCheck value")
+
+			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS, query = 1)
+			WAVE/Z spikeCheckPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			spikeCheckPassed = WaveExists(spikeCheckPassedLBN) ? spikeCheckPassedLBN[s.headstage] : 0
+
+			if(spikeCheck)
+				sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && spikeCheckPassed == 1)
+			else
+				sweepPassed = (baselineQCPassed == 1 && insideBounds == 1)
+			endif
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 			result[INDEP_HEADSTAGE] = sweepPassed
@@ -3492,7 +3564,7 @@ Function PSQ_Chirp(panelTitle, s)
 				endif
 			endif
 
-			sprintf msg, "Sweep %s, Set %s, total sweeps %g, acquired sweeps %g, sweeps passed %g, sweeps passed with same DAScale %g\r", ToPassFail(sweepPassed), ToPassFail(setPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, maxOccurences
+			sprintf msg, "Sweep %s, Set %s, total sweeps %g, acquired sweeps %g, sweeps passed %g, sweeps passed with same DAScale %g, spike check performed %g, spike check %s\r", ToPassFail(sweepPassed), ToPassFail(setPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, maxOccurences, spikeCheck, ToPassFail(spikeCheckPassed)
 			DEBUGPRINT(msg)
 
 			break
@@ -3523,24 +3595,75 @@ Function PSQ_Chirp(panelTitle, s)
 	endif
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
-	baselineQCPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
-
-	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INSIDE_BOUNDS, query = 1)
-	insideBounds = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
-
-	sprintf msg, "Midsweep: insideBounds %g, baselineQCPassed %g", insideBounds, baselineQCPassed
-	DEBUGPRINT(msg)
-
-	if(IsFinite(insideBounds) && IsFinite(baselineQCPassed)) // nothing more to do
-		return NaN
-	endif
 
 	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
 	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
+
+	spikeCheck = !!AFH_GetAnalysisParamNumerical("SpikeCheck", s.params, defValue = PSQ_CR_SPIKE_CHECK_DEFAULT)
+
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS, query = 1)
+	WAVE/Z spikeCheckPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+	spikeCheckPassed = WaveExists(spikeCheckPassedLBN) ? spikeCheckPassedLBN[s.headstage] : NaN
+
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+	WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+	baselineQCPassed = WaveExists(baselineQCPassedLBN) ? baselineQCPassedLBN[s.headstage] : NaN
+
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INSIDE_BOUNDS, query = 1)
+	insideBounds = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+
+	sprintf msg, "Midsweep: insideBounds %g, baselineQCPassed %g, spikeCheck %g, spikeCheckPassed %g", insideBounds, baselineQCPassed, spikeCheck, spikeCheckPassed
+	DEBUGPRINT(msg)
+
+	if(spikeCheck && IsNaN(spikeCheckPassed))
+		WAVE durations = PSQ_GetPulseDurations(panelTitle, PSQ_CHIRP, s.sweepNo, totalOnsetDelay)
+
+		chirpStart = totalOnsetDelay + PSQ_CR_BL_EVAL_RANGE
+		chirpEnd   = chirpStart + durations[s.headstage]
+
+		sprintf msg, "Spike check: chirpStart (relative to zero) %g, chirpEnd %g, fifoInStimsetTime %g", chirpStart, chirpEnd, fifoInStimsetTime
+		DEBUGPRINT(msg)
+
+		if(fifoInStimsetTime > chirpStart)
+			level = AFH_GetAnalysisParamNumerical("FailedLevel", s.params)
+
+			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_CHIRP, s.rawDACWave, s.headstage, chirpStart, level, searchEnd = chirpEnd, \
+			                                          numberOfSpikesFound = numberOfSpikesFound, numberOfSpikesReq = inf)
+			WaveClear spikeDetection
+
+			if(numberOfSpikesFound > 0)
+				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikePass = NaN
+				spikePass[s.headstage] = 0
+			elseif(fifoInStimsetTime > chirpEnd)
+				// beyond chirp and we found nothing, so we passed
+				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikePass = NaN
+				spikePass[s.headstage] = 1
+			endif
+
+			if(WaveExists(spikePass))
+				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_PASS)
+				ED_AddEntryToLabnotebook(panelTitle, key, spikePass, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+				spikeCheckPassed = spikePass[s.headstage]
+
+				if(!spikeCheckPassed)
+					// adapt DAScale and finish
+					daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)
+					daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", s.params)
+					SetDAScaleModOp(panelTitle, s.headstage, daScaleModifier, daScaleOperator, roundTopA = 1)
+
+					return ANALYSIS_FUNC_RET_EARLY_STOP
+				endif
+			endif
+		endif
+	endif
+
+	if(IsFinite(insideBounds) && IsFinite(baselineQCPassed)) // nothing more to do
+		return NaN
+	endif
 
 	if(IsNaN(baselineQCPassed))
 		numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_CHIRP)
@@ -3606,7 +3729,7 @@ Function PSQ_Chirp(panelTitle, s)
 	chirpStart = PSQ_CR_BL_EVAL_RANGE
 	cycleEnd = PSQ_CR_GetXPosFromCycles(numberOfChirpCycles, cycleXValues, totalOnsetDelay)
 
-	sprintf msg, "chirpStart %g, fifoInStimsetTime %g, cycleEnd %g", chirpStart, fifoInStimsetTime, cycleEnd
+	sprintf msg, "chirpStart (relative to stimset start) %g, fifoInStimsetTime %g, cycleEnd %g", chirpStart, fifoInStimsetTime, cycleEnd
 	DEBUGPRINT(msg)
 
 	if((IsNaN(baselineQCPassed) || baselineQCPassed) && IsNaN(insideBounds) && fifoInStimsetTime >= cycleEnd)
@@ -3646,6 +3769,19 @@ Function PSQ_Chirp(panelTitle, s)
 	endif
 
 	return NaN
+End
+
+static Function PSQ_CR_FindDependentAnalysisParameter(string panelTitle, string name, string params)
+
+	string strRep = AFH_GetAnalysisParameter(name, params)
+
+	if(IsEmpty(strRep))
+		printf "(%s): The analysis parameter \"%s\" is missing, but it is not optional when \"SpikeCheck\" is enabled.\r", panelTitle, name
+		ControlWindowToFront()
+		return 0
+	endif
+
+	return 1
 End
 
 /// @brief Manually force the pre/post set events

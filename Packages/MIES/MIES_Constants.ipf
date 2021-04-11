@@ -985,6 +985,8 @@ StrConstant PSQ_FMT_LBN_CR_INSIDE_BOUNDS   = "%s inside bounds"
 StrConstant PSQ_FMT_LBN_CR_BOUNDS_ACTION   = "%s bounds action"
 StrConstant PSQ_FMT_LBN_CR_CYCLES          = "%s cycle x values"
 StrConstant PSQ_FMT_LBN_CR_BOUNDS_STATE    = "%s bounds state"
+StrConstant PSQ_FMT_LBN_CR_SPIKE_CHECK     = "%s spike check"
+StrConstant PSQ_FMT_LBN_CR_SPIKE_PASS      = "%s spike QC"
 /// @}
 
 /// @name PatchSeq and MultiPatchSeq types of analysis functions
@@ -1481,3 +1483,5 @@ StrConstant PACKAGE_SETTINGS_JSON = "Settings.json"
 StrConstant LOGFILE_NAME = "Log.jsonl"
 
 StrConstant IVS_PUB_FILTER = "ivscc"
+
+Constant PSQ_CR_SPIKE_CHECK_DEFAULT = 1
