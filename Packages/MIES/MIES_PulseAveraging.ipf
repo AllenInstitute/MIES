@@ -2467,15 +2467,15 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 	SetDrawEnv/W=$graph pop
 End
 
-/// @brief Calculate the number of spikes in a single pulse for IC and I=0 data
-threadsafe static Function/WAVE PA_SpikePositionsForNonVC(WAVE pulseWave, variable failedPulsesLevel)
+/// @brief Calculate the number of spikes in the given wave for IC and I=0 data
+threadsafe Function/WAVE PA_SpikePositionsForNonVC(WAVE wv, variable failedPulsesLevel)
 
 	variable numLevels, maxNumLevels, numSpikes
 	variable first, last, i, err, idx
 
 	// allow at most 1 pulse per ms, but at least 1
-	maxNumLevels = max(1, round(DimSize(pulseWave, ROWS) * DimDelta(pulseWave, ROWS)) * 2)
-	WAVE/Z levels = FindLevelWrapper(pulseWave, failedPulsesLevel, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_MULTI, \
+	maxNumLevels = max(1, round(DimSize(wv, ROWS) * DimDelta(wv, ROWS)) * 2)
+	WAVE/Z levels = FindLevelWrapper(wv, failedPulsesLevel, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_MULTI, \
 	                                 maxNumLevels = maxNumLevels)
 
 	ASSERT_TS(WaveExists(levels), "FindLevelWrapper returned a non-existing wave")
@@ -2504,7 +2504,7 @@ threadsafe static Function/WAVE PA_SpikePositionsForNonVC(WAVE pulseWave, variab
 		endif
 
 		err = 0
-		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(failedPulsesLevel)/R=(first, last) pulseWave; err = GetRTError(1)
+		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(failedPulsesLevel)/R=(first, last) wv; err = GetRTError(1)
 
 		if(!err)
 			ASSERT_TS(!V_Flag, "Could not find peak but FindLevelWrapper was successfull, this is unexpected.")
