@@ -1,51 +1,38 @@
 digraph G {
-    fontname="Helvetica";
-    compound="true";
-    ratio="0,01";
-    center="true";
-    penwidth="0.1";
-    edge [comment="Wildcard edge",
-          fontname="Helvetica",
-          fontsize=10,
-          colorscheme="blues3",
-          color=2,
-          fontcolor=3];
-    node [fontname="Helvetica",
-          fontsize=13,
-          fillcolor="1",
-          colorscheme="blues4",
-          color="2",
-          fontcolor="4",
-          style="filled"];
-
-    "INACTIVE";
-    "PRE DAQ";
-    "PRE SWEEP";
-    "MID SWEEP";
-    "POST SWEEP";
-    "ITI";
-    "POST DAQ";
-    "EARLY CHECK";
-
-    "INACTIVE" -> "EARLY CHECK";
-
-    "EARLY CHECK" -> "INACTIVE";
-    "EARLY CHECK" -> "PRE DAQ";
-
-    "PRE DAQ" -> "PRE SWEEP";
-    "PRE DAQ" -> "INACTIVE";
-    "PRE DAQ" -> "POST DAQ";
-
-    "PRE SWEEP" -> "MID SWEEP";
-
-    "MID SWEEP" -> "MID SWEEP";
-    "MID SWEEP" -> "POST SWEEP";
-
-    "POST SWEEP" -> "ITI";
-    "POST SWEEP" -> "POST DAQ";
-
-    "ITI" -> "PRE SWEEP";
-    "ITI" -> "POST DAQ";
-
-    "POST DAQ" -> "INACTIVE";
+	graph [center=true,
+		compound=true,
+		fontname=Helvetica,
+		penwidth=0.1,
+		ratio="0,01"
+	];
+	node [color=2,
+		colorscheme=blues4,
+		fillcolor=1,
+		fontcolor=4,
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		style=filled
+	];
+	edge [color=2,
+		colorscheme=blues3,
+		comment="Wildcard edge",
+		fontcolor=3,
+		fontname=Helvetica,
+		fontsize=10
+	];
+	INACTIVE -> "EARLY CHECK";
+	"PRE DAQ" -> INACTIVE;
+	"PRE DAQ" -> "PRE SWEEP";
+	"PRE DAQ" -> "POST DAQ";
+	"PRE SWEEP" -> "MID SWEEP";
+	"MID SWEEP" -> "MID SWEEP";
+	"MID SWEEP" -> "POST SWEEP";
+	"POST SWEEP" -> ITI;
+	"POST SWEEP" -> "POST DAQ";
+	ITI -> "PRE SWEEP";
+	ITI -> "POST DAQ";
+	"POST DAQ" -> INACTIVE;
+	"EARLY CHECK" -> INACTIVE;
+	"EARLY CHECK" -> "PRE DAQ";
 }

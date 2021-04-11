@@ -1,1231 +1,138 @@
-digraph "G" {
-	graph [
-		fontsize = "14"
-		fontname = "Helvetica"
-		fontcolor = "black"
-		penwidth = "0.1"
-		compound = "true"
-	]
-	node [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	edge [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Start DAQ/RA (only call for last active headstage)" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Prepare DAQ/Pre Set Event" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Pre Set Event"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Post Sweep Event" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Post DAQ Event" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Enable \"Multidevice DAQ\"" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Disable \"dDAQ\"/\"oodDAQ\"" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Enable \"Repeated Acquisition\"" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Check if no TTL channels are active" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Set \"TP during ITI\" to disabled" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"All checks passed" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Check if there is at least\none active IC headstage" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"All required analysis parameters present?" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Set \"TP inserting\" to disabled" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Set \"ITI\" to 100ms" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Set DAScale to 100pA\nfor all active IC headstages" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Write initial stepsize of 100pA into\nlabnotebook for all active IC headstages" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Abort" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Check if all active IC\n headstages have the same stimset" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Store active headstages in labnotebook" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Turn off active non-IC headstages" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Read active headstages from labnotebook\nand turn them all on again" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Set \"DAScale exceeded\" labnotebook entry\nto false for all active IC headstages" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Mark sweep as failed" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Iterate over all active headstages" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Active headstages left?" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Have all headstages passed in one sweep\nof their stimset cycle?" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Headstage passed?" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Headstage exceeded DAScale\n according to labnotebook entry?" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Mark sweep as passed" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Step size from labnotebook? (1)" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Store DAScale in labnotebook" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Offset DAScale by -50pA" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Step size from labnotebook? (2)" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Write step size of -50pA to labnotebook" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Write step size of +10pA to labnotebook" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Offset DAScale by +10pA" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Offset DAScale by +100pA" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Mark headstage as passed" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Set DAScale to zero" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Mark headstage as failed" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Skip to end of active set" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"\"MaximumDAScale\" analysis parameter is not NaN?" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"DAScale is larger than \"MaximumDAScale\"?" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Mark headstage as \"DAScale exceeded\"\nin labnotebook" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Have all active headstages an DAScale exceeded\n labnotebook entry?" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Store pulse duration in labnotebook" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Update Dashboard" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Post Set Event" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Mark set as passed if 1 sweep passed,\nas failure otherwise" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Analysis parameter \"PostDAQSetDAScale\" is true" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Set DAScale to the stored LBN value taking into account\nthe analysis parameter \"PostDAQDAScaleFactor\"\nand \"PostDAQDAScaleMinOffset\".\nSet it to \"PostDAQDAScaleForFailedHS\" for failed headstages." [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Set \"TP during ITI\" to enabled" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Set \"TP inserting\" to enabled" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Set \"User onset delay\" to 0ms" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Set \"Termination delay\" to 0 ms" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"n60" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Pre DAQ Event"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n61" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Is \"Unlocked indexing\" active"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Start DAQ/RA (only call for last active headstage)" -> "Prepare DAQ/Pre Set Event" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Start DAQ/RA (only call for last active headstage)" -> "Post Sweep Event" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Start DAQ/RA (only call for last active headstage)" -> "Post DAQ Event" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Set \"TP during ITI\" to disabled" -> "Set \"ITI\" to 100ms" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check if there is at least\none active IC headstage" -> "Check if no TTL channels are active" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check if no TTL channels are active" -> "All required analysis parameters present?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"All checks passed" -> "Set DAScale to 100pA\nfor all active IC headstages" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Set DAScale to 100pA\nfor all active IC headstages" -> "Write initial stepsize of 100pA into\nlabnotebook for all active IC headstages" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"All checks passed" -> "Abort" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check if all active IC\n headstages have the same stimset" -> "All checks passed" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Store active headstages in labnotebook" -> "Turn off active non-IC headstages" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"All required analysis parameters present?" -> "Check if all active IC\n headstages have the same stimset" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Write initial stepsize of 100pA into\nlabnotebook for all active IC headstages" -> "Set \"DAScale exceeded\" labnotebook entry\nto false for all active IC headstages" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Post Sweep Event" -> "Iterate over all active headstages" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Active headstages left?" -> "Have all headstages passed in one sweep\nof their stimset cycle?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Active headstages left?" -> "Headstage passed?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Headstage passed?" -> "Headstage exceeded DAScale\n according to labnotebook entry?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Headstage exceeded DAScale\n according to labnotebook entry?" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Have all headstages passed in one sweep\nof their stimset cycle?" -> "Mark sweep as passed" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Iterate over all active headstages" -> "Active headstages left?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step size from labnotebook? (1)" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Step size from labnotebook? (1)" -> "Store DAScale in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "+10pA"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Step size from labnotebook? (1)" -> "Offset DAScale by -50pA" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "-50pA"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Step size from labnotebook? (1)" -> "Write step size of -50pA to labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "+100pA"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Write step size of -50pA to labnotebook" -> "Offset DAScale by -50pA" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step size from labnotebook? (2)" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Step size from labnotebook? (2)" -> "Offset DAScale by +10pA" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "+10pA"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Step size from labnotebook? (2)" -> "Write step size of +10pA to labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "-50pA"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Step size from labnotebook? (2)" -> "Offset DAScale by +100pA" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "+100pA"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Write step size of +10pA to labnotebook" -> "Offset DAScale by +10pA" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark headstage as passed" -> "Set DAScale to zero" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Store DAScale in labnotebook" -> "Mark headstage as passed" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Offset DAScale by -50pA" -> "Mark headstage as failed" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Offset DAScale by +10pA" -> "Mark headstage as failed" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Offset DAScale by +100pA" -> "Mark headstage as failed" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark sweep as passed" -> "Skip to end of active set" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark headstage as failed" -> "\"MaximumDAScale\" analysis parameter is not NaN?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"\"MaximumDAScale\" analysis parameter is not NaN?" -> "DAScale is larger than \"MaximumDAScale\"?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"DAScale is larger than \"MaximumDAScale\"?" -> "Mark headstage as \"DAScale exceeded\"\nin labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark headstage as \"DAScale exceeded\"\nin labnotebook" -> "Set DAScale to zero" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Have all headstages passed in one sweep\nof their stimset cycle?" -> "Mark sweep as failed" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark sweep as failed" -> "Have all active headstages an DAScale exceeded\n labnotebook entry?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Have all active headstages an DAScale exceeded\n labnotebook entry?" -> "Skip to end of active set" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Post Sweep Event" -> "Store pulse duration in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Post Set Event" -> "Mark set as passed if 1 sweep passed,\nas failure otherwise" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Start DAQ/RA (only call for last active headstage)" -> "Post Set Event" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Analysis parameter \"PostDAQSetDAScale\" is true" -> "Set DAScale to the stored LBN value taking into account\nthe analysis parameter \"PostDAQDAScaleFactor\"\nand \"PostDAQDAScaleMinOffset\".\nSet it to \"PostDAQDAScaleForFailedHS\" for failed headstages." [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Post Set Event" -> "Set \"TP during ITI\" to enabled" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Set \"TP during ITI\" to enabled" -> "Set \"TP inserting\" to enabled" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark set as passed if 1 sweep passed,\nas failure otherwise" -> "Analysis parameter \"PostDAQSetDAScale\" is true" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Set \"DAScale exceeded\" labnotebook entry\nto false for all active IC headstages" -> "Store active headstages in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Enable \"Multidevice DAQ\"" -> "Enable \"Repeated Acquisition\"" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Set \"Termination delay\" to 0 ms" -> "Disable \"dDAQ\"/\"oodDAQ\"" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Set DAScale to the stored LBN value taking into account\nthe analysis parameter \"PostDAQDAScaleFactor\"\nand \"PostDAQDAScaleMinOffset\".\nSet it to \"PostDAQDAScaleForFailedHS\" for failed headstages." -> "Read active headstages from labnotebook\nand turn them all on again" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Post DAQ Event" -> "Update Dashboard" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Start DAQ/RA (only call for last active headstage)" -> "n60" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"n60" -> "Enable \"Multidevice DAQ\"" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Enable \"Repeated Acquisition\"" -> "n61" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"n61" -> "Abort" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Prepare DAQ/Pre Set Event" -> "Check if there is at least\none active IC headstage" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Turn off active non-IC headstages" -> "Set \"User onset delay\" to 0ms" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Set \"TP during ITI\" to disabled" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Set \"ITI\" to 100ms" -> "Set \"TP inserting\" to disabled" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Set \"User onset delay\" to 0ms" -> "Set \"Termination delay\" to 0 ms" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
+digraph G {
+	graph [compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1
+	];
+	node [color=2,
+		colorscheme=blues4,
+		fillcolor=1,
+		fontcolor=4,
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color=2,
+		colorscheme=blues3,
+		comment="Wildcard edge",
+		fontcolor=3,
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
+	"Prepare DAQ/Pre Set Event"	[label="Pre Set Event"];
+	"Start DAQ/RA (only call for last active headstage)" -> "Prepare DAQ/Pre Set Event";
+	"Start DAQ/RA (only call for last active headstage)" -> "Post Sweep Event";
+	"Start DAQ/RA (only call for last active headstage)" -> "Post DAQ Event";
+	"Start DAQ/RA (only call for last active headstage)" -> "Post Set Event";
+	n60	[label="Pre DAQ Event"];
+	"Start DAQ/RA (only call for last active headstage)" -> n60;
+	"Prepare DAQ/Pre Set Event" -> "Check if there is at least\none active IC headstage";
+	"Iterate over all active headstages"	[comment="Wildcard node added automatic in EG."];
+	"Post Sweep Event" -> "Iterate over all active headstages"	[comment="Wildcard node added automatic in EG."];
+	"Store pulse duration in labnotebook"	[comment="Wildcard node added automatic in EG."];
+	"Post Sweep Event" -> "Store pulse duration in labnotebook"	[comment="Wildcard node added automatic in EG."];
+	"Post DAQ Event" -> "Update Dashboard";
+	"Enable \"Multidevice DAQ\"" -> "Enable \"Repeated Acquisition\"";
+	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Set \"TP during ITI\" to disabled";
+	n61	[label="Is \"Unlocked indexing\" active"];
+	"Enable \"Repeated Acquisition\"" -> n61;
+	"Check if no TTL channels are active" -> "All required analysis parameters present?"	[comment="Wildcard node added automatic in EG."];
+	"Set \"TP during ITI\" to disabled" -> "Set \"ITI\" to 100ms"	[comment="Wildcard node added automatic in EG."];
+	"All checks passed" -> "Set DAScale to 100pA\nfor all active IC headstages"	[comment="Wildcard node added automatic in EG.",
+		label=Yes];
+	"All checks passed" -> Abort	[comment="Wildcard node added automatic in EG.",
+		label=No];
+	"Check if there is at least\none active IC headstage" -> "Check if no TTL channels are active"	[comment="Wildcard node added automatic in EG."];
+	"All required analysis parameters present?" -> "Check if all active IC\n headstages have the same stimset"	[comment="Wildcard node added automatic in EG."];
+	"Set \"ITI\" to 100ms" -> "Set \"TP inserting\" to disabled";
+	"Set DAScale to 100pA\nfor all active IC headstages" -> "Write initial stepsize of 100pA into\nlabnotebook for all active IC headstages"	[comment="Wildcard node added automatic in EG."];
+	"Write initial stepsize of 100pA into\nlabnotebook for all active IC headstages" -> "Set \"DAScale exceeded\" labnotebook entry\nto false for all active IC headstages"	[comment="Wildcard node added automatic in EG."];
+	"Check if all active IC\n headstages have the same stimset" -> "All checks passed"	[comment="Wildcard node added automatic in EG."];
+	"Store active headstages in labnotebook" -> "Turn off active non-IC headstages"	[comment="Wildcard node added automatic in EG."];
+	"Turn off active non-IC headstages" -> "Set \"User onset delay\" to 0ms";
+	"Set \"DAScale exceeded\" labnotebook entry\nto false for all active IC headstages" -> "Store active headstages in labnotebook";
+	"Have all active headstages an DAScale exceeded\n labnotebook entry?"	[comment="Wildcard node added automatic in EG."];
+	"Mark sweep as failed" -> "Have all active headstages an DAScale exceeded\n labnotebook entry?"	[comment="Wildcard node added automatic in EG."];
+	"Active headstages left?"	[comment="Wildcard node added automatic in EG."];
+	"Iterate over all active headstages" -> "Active headstages left?"	[comment="Wildcard node added automatic in EG."];
+	"Have all headstages passed in one sweep\nof their stimset cycle?"	[comment="Wildcard node added automatic in EG."];
+	"Active headstages left?" -> "Have all headstages passed in one sweep\nof their stimset cycle?"	[comment="Wildcard node added automatic in EG.",
+		label=No];
+	"Headstage passed?"	[comment="Wildcard node added automatic in EG."];
+	"Active headstages left?" -> "Headstage passed?"	[comment="Wildcard node added automatic in EG.",
+		label=Yes];
+	"Have all headstages passed in one sweep\nof their stimset cycle?" -> "Mark sweep as failed"	[comment="Wildcard node added automatic in EG.",
+		label=No];
+	"Mark sweep as passed"	[comment="Wildcard node added automatic in EG."];
+	"Have all headstages passed in one sweep\nof their stimset cycle?" -> "Mark sweep as passed"	[comment="Wildcard node added automatic in EG.",
+		label=Yes];
+	"Headstage exceeded DAScale\n according to labnotebook entry?"	[comment="Wildcard node added automatic in EG."];
+	"Headstage passed?" -> "Headstage exceeded DAScale\n according to labnotebook entry?"	[comment="Wildcard node added automatic in EG.",
+		label=No];
+	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook"	[comment="Wildcard node added automatic in EG."];
+	"Headstage exceeded DAScale\n according to labnotebook entry?" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook"	[comment="Wildcard node added automatic in EG.",
+		label=No];
+	"Step size from labnotebook? (1)"	[comment="Wildcard node added automatic in EG."];
+	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step size from labnotebook? (1)"	[comment="Wildcard node added automatic in EG.",
+		label=Yes];
+	"Step size from labnotebook? (2)"	[comment="Wildcard node added automatic in EG."];
+	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step size from labnotebook? (2)"	[comment="Wildcard node added automatic in EG.",
+		label=No];
+	"Skip to end of active set"	[comment="Wildcard node added automatic in EG."];
+	"Mark sweep as passed" -> "Skip to end of active set"	[comment="Wildcard node added automatic in EG."];
+	"Store DAScale in labnotebook"	[comment="Wildcard node added automatic in EG."];
+	"Step size from labnotebook? (1)" -> "Store DAScale in labnotebook"	[comment="Wildcard node added automatic in EG.",
+		label="+10pA"];
+	"Offset DAScale by -50pA"	[comment="Wildcard node added automatic in EG."];
+	"Step size from labnotebook? (1)" -> "Offset DAScale by -50pA"	[comment="Wildcard node added automatic in EG.",
+		label="-50pA"];
+	"Write step size of -50pA to labnotebook"	[comment="Wildcard node added automatic in EG."];
+	"Step size from labnotebook? (1)" -> "Write step size of -50pA to labnotebook"	[comment="Wildcard node added automatic in EG.",
+		label="+100pA"];
+	"Mark headstage as passed"	[comment="Wildcard node added automatic in EG."];
+	"Store DAScale in labnotebook" -> "Mark headstage as passed"	[comment="Wildcard node added automatic in EG."];
+	"Mark headstage as failed"	[comment="Wildcard node added automatic in EG."];
+	"Offset DAScale by -50pA" -> "Mark headstage as failed"	[comment="Wildcard node added automatic in EG."];
+	"Write step size of +10pA to labnotebook"	[comment="Wildcard node added automatic in EG."];
+	"Step size from labnotebook? (2)" -> "Write step size of +10pA to labnotebook"	[comment="Wildcard node added automatic in EG.",
+		label="-50pA"];
+	"Offset DAScale by +10pA"	[comment="Wildcard node added automatic in EG."];
+	"Step size from labnotebook? (2)" -> "Offset DAScale by +10pA"	[comment="Wildcard node added automatic in EG.",
+		label="+10pA"];
+	"Offset DAScale by +100pA"	[comment="Wildcard node added automatic in EG."];
+	"Step size from labnotebook? (2)" -> "Offset DAScale by +100pA"	[comment="Wildcard node added automatic in EG.",
+		label="+100pA"];
+	"Write step size of -50pA to labnotebook" -> "Offset DAScale by -50pA"	[comment="Wildcard node added automatic in EG."];
+	"Write step size of +10pA to labnotebook" -> "Offset DAScale by +10pA"	[comment="Wildcard node added automatic in EG."];
+	"Offset DAScale by +10pA" -> "Mark headstage as failed"	[comment="Wildcard node added automatic in EG."];
+	"Offset DAScale by +100pA" -> "Mark headstage as failed"	[comment="Wildcard node added automatic in EG."];
+	"Set DAScale to zero"	[comment="Wildcard node added automatic in EG."];
+	"Mark headstage as passed" -> "Set DAScale to zero"	[comment="Wildcard node added automatic in EG."];
+	"\"MaximumDAScale\" analysis parameter is not NaN?"	[comment="Wildcard node added automatic in EG."];
+	"Mark headstage as failed" -> "\"MaximumDAScale\" analysis parameter is not NaN?"	[comment="Wildcard node added automatic in EG."];
+	"DAScale is larger than \"MaximumDAScale\"?"	[comment="Wildcard node added automatic in EG."];
+	"\"MaximumDAScale\" analysis parameter is not NaN?" -> "DAScale is larger than \"MaximumDAScale\"?"	[comment="Wildcard node added automatic in EG.",
+		label=Yes];
+	"Mark headstage as \"DAScale exceeded\"\nin labnotebook"	[comment="Wildcard node added automatic in EG."];
+	"DAScale is larger than \"MaximumDAScale\"?" -> "Mark headstage as \"DAScale exceeded\"\nin labnotebook"	[comment="Wildcard node added automatic in EG.",
+		label=Yes];
+	"Mark headstage as \"DAScale exceeded\"\nin labnotebook" -> "Set DAScale to zero"	[comment="Wildcard node added automatic in EG."];
+	"Have all active headstages an DAScale exceeded\n labnotebook entry?" -> "Skip to end of active set"	[comment="Wildcard node added automatic in EG.",
+		label=Yes];
+	"Post Set Event" -> "Mark set as passed if 1 sweep passed,\nas failure otherwise";
+	"Post Set Event" -> "Set \"TP during ITI\" to enabled";
+	"Mark set as passed if 1 sweep passed,\nas failure otherwise" -> "Analysis parameter \"PostDAQSetDAScale\" is true";
+	"Analysis parameter \"PostDAQSetDAScale\" is true" -> "Set DAScale to the stored LBN value taking into account\nthe analysis parameter \"PostDAQDAScaleFactor\"\nand \"PostDAQDAScaleMinOffset\"\
+.\nSet it to \"PostDAQDAScaleForFailedHS\" for failed headstages.";
+	"Set DAScale to the stored LBN value taking into account\nthe analysis parameter \"PostDAQDAScaleFactor\"\nand \"PostDAQDAScaleMinOffset\"\
+.\nSet it to \"PostDAQDAScaleForFailedHS\" for failed headstages." -> "Read active headstages from labnotebook\nand turn them all on again";
+	"Set \"TP during ITI\" to enabled" -> "Set \"TP inserting\" to enabled";
+	"Set \"User onset delay\" to 0ms" -> "Set \"Termination delay\" to 0 ms";
+	"Set \"Termination delay\" to 0 ms" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+	n60 -> "Enable \"Multidevice DAQ\"";
+	n61 -> Abort	[label=Yes];
 }
