@@ -759,7 +759,7 @@ End
 /// @param[in] type                  One of @ref PatchSeqAnalysisFunctionTypes
 /// @param[in] sweepWave             sweep wave with acquired data
 /// @param[in] headstage             headstage in the range [0, NUM_HEADSTAGES[
-/// @param[in] totalOnsetDelay       total delay in ms until the stimset data starts
+/// @param[in] offset                offset in ms where the spike search should start, commonly the totalOnsetDelay
 /// @param[in] numberOfSpikesReq     [optional, defaults to one] number of spikes to look for
 ///                                  Positive finite value: Return value is 1 iff at least `numberOfSpikes` were found
 ///                                  Inf: Return value is 1 if at least 1 spike was found
@@ -767,11 +767,11 @@ End
 /// @param[out] numberOfSpikesFound  [optional] returns the number of spikes found
 ///
 /// @return labnotebook value wave suitable for ED_AddEntryToLabnotebook()
-static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage, totalOnsetDelay, [numberOfSpikesReq, spikePositions, numberOfSpikesFound])
+static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage, offset, [numberOfSpikesReq, spikePositions, numberOfSpikesFound])
 	string panelTitle
 	variable type
 	WAVE sweepWave
-	variable headstage, totalOnsetDelay
+	variable headstage, offset
 	variable numberOfSpikesReq
 	WAVE spikePositions
 	variable &numberOfSpikesFound
@@ -799,12 +799,12 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		numberOfSpikesFound = NaN
 	endif
 
-	sprintf msg, "Type %d, headstage %d, totalOnsetDelay %g, numberOfSpikesReq %d", type, headstage, totalOnsetDelay, numberOfSpikesReq
+	sprintf msg, "Type %d, headstage %d, offset %g, numberOfSpikesReq %d", type, headstage, offset, numberOfSpikesReq
 	DEBUGPRINT(msg)
 
 	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
-	minVal = WaveMin(singleDA, totalOnsetDelay, inf)
-	maxVal = WaveMax(singleDA, totalOnsetDelay, inf)
+	minVal = WaveMin(singleDA, offset, inf)
+	maxVal = WaveMax(singleDA, offset, inf)
 
 	if(minVal == 0 && maxVal == 0)
 		if(type == PSQ_SQUARE_PULSE)
@@ -817,7 +817,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		level = minVal + GetMachineEpsilon(WaveType(singleDA))
 
 		Make/FREE/D levels
-		FindLevels/R=(totalOnsetDelay, inf)/Q/N=2/DEST=levels singleDA, level
+		FindLevels/R=(offset, inf)/Q/N=2/DEST=levels singleDA, level
 		ASSERT(V_LevelsFound == 2, "Could not find two levels")
 		first = levels[0]
 
