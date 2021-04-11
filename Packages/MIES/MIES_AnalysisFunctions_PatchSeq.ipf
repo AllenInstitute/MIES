@@ -3479,16 +3479,14 @@ Function PSQ_Chirp(panelTitle, s)
 				PSQ_ForceSetEvent(panelTitle, s.headstage)
 				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 			else
-				// not enough sweeps left to pass the set
-				// we need PSQ_CR_NUM_SWEEPS_PASS with the same
-				// DAScale value
 				if((maxOccurences + leftSweeps) < PSQ_CR_NUM_SWEEPS_PASS)
+					// not enough sweeps left to pass the set
+					// we need PSQ_CR_NUM_SWEEPS_PASS with the same
+					// DAScale value
 					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf)
-				endif
-
-				// failed too many sweeps
-				if(failsInSet >= PSQ_CR_NUM_SWEEPS_FAIL)
+				elseif(failsInSet >= PSQ_CR_NUM_SWEEPS_FAIL)
+					// failed too many sweeps
 					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf)
 				endif
