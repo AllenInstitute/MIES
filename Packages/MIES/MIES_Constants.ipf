@@ -935,6 +935,7 @@ Constant PSQ_RB_POST_BL_EVAL_RANGE = 500
 
 Constant PSQ_DS_BL_EVAL_RANGE_MS = 500
 Constant PSQ_DS_PULSE_DUR        = 1000
+Constant PSQ_DS_SPIKE_LEVEL      = -20 // mV
 
 Constant PSQ_RA_BL_EVAL_RANGE = 500
 

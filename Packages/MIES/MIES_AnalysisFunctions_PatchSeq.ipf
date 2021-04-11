@@ -760,6 +760,7 @@ End
 /// @param[in] sweepWave             sweep wave with acquired data
 /// @param[in] headstage             headstage in the range [0, NUM_HEADSTAGES[
 /// @param[in] offset                offset in ms where the spike search should start, commonly the totalOnsetDelay
+/// @param[in] level                 set the level for the spike search
 /// @param[in] numberOfSpikesReq     [optional, defaults to one] number of spikes to look for
 ///                                  Positive finite value: Return value is 1 iff at least `numberOfSpikes` were found
 ///                                  Inf: Return value is 1 if at least 1 spike was found
@@ -767,16 +768,16 @@ End
 /// @param[out] numberOfSpikesFound  [optional] returns the number of spikes found
 ///
 /// @return labnotebook value wave suitable for ED_AddEntryToLabnotebook()
-static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage, offset, [numberOfSpikesReq, spikePositions, numberOfSpikesFound])
+static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage, offset, level, [searchEnd, numberOfSpikesReq, spikePositions, numberOfSpikesFound])
 	string panelTitle
 	variable type
 	WAVE sweepWave
-	variable headstage, offset
+	variable headstage, offset, level
 	variable numberOfSpikesReq
 	WAVE spikePositions
 	variable &numberOfSpikesFound
 
-	variable level, first, last, overrideValue
+	variable first, last, overrideValue, rangeSearchLevel
 	variable minVal, maxVal, numSpikesFoundOverride
 	string msg
 
@@ -814,10 +815,10 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 			return spikeDetection
 		endif
 	else
-		level = minVal + GetMachineEpsilon(WaveType(singleDA))
+		rangeSearchLevel = minVal + GetMachineEpsilon(WaveType(singleDA))
 
 		Make/FREE/D levels
-		FindLevels/R=(offset, inf)/Q/N=2/DEST=levels singleDA, level
+		FindLevels/R=(offset, inf)/Q/N=2/DEST=levels singleDA, rangeSearchLevel
 		ASSERT(V_LevelsFound == 2, "Could not find two levels")
 		first = levels[0]
 
@@ -875,11 +876,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	else
 		if(type == PSQ_RAMP) // during midsweep
 			// use the first active AD channel
-			level = PSQ_SPIKE_LEVEL * SWS_GetChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)[1]
-		elseif(type == PSQ_DA_SCALE)
-			level = -20
-		else
-			level = PSQ_SPIKE_LEVEL
+			level *= SWS_GetChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)[1]
 		endif
 
 		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
@@ -1448,7 +1445,7 @@ Function PSQ_DAScale(panelTitle, s)
 									  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
 					WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_DA_SCALE, sweep, s.headstage, totalOnsetDelay, \
-								                              numberOfSpikesReq = inf, numberOfSpikesFound = numberOfSpikes)
+					                                          PSQ_DS_SPIKE_LEVEL, numberOfSpikesReq = inf, numberOfSpikesFound = numberOfSpikes)
 					key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SPIKE_DETECT)
 					ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
@@ -1879,7 +1876,8 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, s.sweepNo)
 
-			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_SQUARE_PULSE, sweepWave, s.headstage, totalOnsetDelay)
+			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_SQUARE_PULSE, sweepWave, s.headstage, \
+			                                          totalOnsetDelay, PSQ_SPIKE_LEVEL)
 			key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT)
 
@@ -2190,7 +2188,8 @@ Function PSQ_Rheobase(panelTitle, s)
 
 			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, s.sweepNo)
 
-			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RHEOBASE, sweepWave, s.headstage, totalOnsetDelay)
+			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RHEOBASE, sweepWave, s.headstage, totalOnsetDelay, \
+			                                          PSQ_SPIKE_LEVEL)
 			key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT)
 
@@ -2696,7 +2695,7 @@ Function PSQ_Ramp(panelTitle, s)
 
 		Make/FREE/D spikePos
 		WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RAMP, s.rawDACWave, s.headstage, \
-												  totalOnsetDelay, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes)
+		                                          totalOnsetDelay, PSQ_SPIKE_LEVEL, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes)
 
 		if(spikeDetection[s.headstage] \
 		   && ((PSQ_TestOverrideActive() && (fifoInStimsetTime > WaveMax(spikePos))) || !PSQ_TestOverrideActive()))
