@@ -1,135 +1,1273 @@
-digraph G {
-    fontname="Helvetica";
-    compound="true";
-    ratio="0,01";
-    center="true";
-    penwidth="0.1";
-    edge [comment="Wildcard edge",
-          fontname="Helvetica",
-          fontsize=10,
-          colorscheme="blues3",
-          color=2,
-          fontcolor=3];
-    node [fontname="Helvetica",
-          fontsize=13,
-          fillcolor="1",
-          colorscheme="blues4",
-          color="2",
-          fontcolor="4",
-          style="filled"];
-    "Start DAQ/RA";
-    "Mid Sweep Event";
-    "Post Set Event";
-    "Post Sweep Event";
-    "Prepare DAQ/Pre Set Event";
-    "Post DAQ Event";
-    "Start DAQ/RA" -> "Mid Sweep Event";
-    "Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
-    "Start DAQ/RA" -> "Post Set Event";
-    "Start DAQ/RA" -> "Post Sweep Event";
-    "Start DAQ/RA" -> "Post DAQ Event";
-    subgraph cluster_preDAQ {
-        color="invis";
-        edge [comment="Wildcard node added automatic in EG."];
-        node [comment="Wildcard node added automatic in EG."];
-        "Abort";
-        "Stimset is large enough";
-        "Set \"TP during ITI\"";
-        "Enable \"Autobias\"";
-        "Enable \"Multidevice DAQ\"";
-        "Disable \"dDAQ\"/\"oodDAQ\"";
-        "Enable \"Repeated Acquisition\"";
-        "Valid Autobias voltage (finite and non-zero)";
-        "Check if no TTL channels are active";
-        "Set \"TP during ITI\"";
-        "Search for final DAScale in one of the existing sweeps";
-        "Check if only one headstage is active";
-        "All required analysis parameters present?\nSamplingMultiplier: variable";
-        "Prepare DAQ/Pre Set Event" -> "Set \"Repeat Sets\" to 1";
-        "Set \"Repeat Sets\" to 1" -> "Enable \"Autobias\"";
-        "Enable \"Autobias\"" -> "Set \"TP during ITI\"";
-        "Set \"TP during ITI\"" -> "Enable \"Multidevice DAQ\"";
-        "Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
-        "Disable \"dDAQ\"/\"oodDAQ\"" -> "Enable \"Repeated Acquisition\"";
-        "Enable \"Repeated Acquisition\"" -> "Set \"ITI\" to 4s";
-        "All checks passed";
-        "Prepare DAQ/Pre Set Event" -> "Stimset is large enough";
-        "Stimset is large enough" -> "Check if only one headstage is active";
-        "Check if only one headstage is active" -> "Valid Autobias voltage (finite and non-zero)";
-        "Valid Autobias voltage (finite and non-zero)" -> "Check if no TTL channels are active";
-        "Check if no TTL channels are active" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
-        "All required analysis parameters present?\nSamplingMultiplier: variable" -> "Search for final DAScale in one of the existing sweeps";
-        "Search for final DAScale in one of the existing sweeps" -> "All checks passed";
-        "All checks passed" -> "Abort"  [label="No"];
-    }
-
-    "Post DAQ Event" -> "Update Dashboard";
-    "Mark set as failed if it has not yet passed";
-    "Post Set Event" -> "Mark set as failed if it has not yet passed";
-    "BL QC passed? [2]";
-    "Skip to end of active set";
-    "Skip to end";
-    "BL QC passed? [1]";
-    "Mid Sweep Event" -> "BL QC passed? [1]";
-    "Grab next completely acquired chunk\n (500ms) of stimset baseline";
-    "BL QC passed? [1]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"  [label="No"];
-    "Baseline chunk type";
-    "Chunk already evaluated?";
-    "Grab next completely acquired chunk\n (500ms) of stimset baseline" -> "Chunk already evaluated?"  [label="Have one"];
-    "Grab next completely acquired chunk\n (500ms) of stimset baseline" -> "Last chunk?"  [label="None left"];
-    "Last chunk?" -> "Mark BL QC as failed"  [label="Yes"];
-    "Chunk already evaluated?" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"  [label="Yes"];
-    "Chunk already evaluated?" -> "Baseline chunk type"  [label="No"];
-    "Check RMS short";
-    "Check RMS long";
-    "Check target voltage [1]";
-    "Check target voltage [2]";
-    "Baseline chunk type" -> "Check RMS short"  [label="pre pulse"];
-    "Check RMS short" -> "Check RMS long"  [label="Passed"];
-    "Check RMS short" -> "Mark BL QC as failed"  [label="Failed"];
-    "Check RMS long" -> "Mark BL QC as failed"  [label="Failed"];
-    "Check RMS long" -> "Check target voltage [1]"  [label="Passed"];
-    "Mark chunk as passed/failed [1]";
-    "Check target voltage [1]" -> "Mark chunk as passed/failed [1]";
-    "Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"  [label="Passed"];
-    "Early sweep stop, repurpose ITI and add 10s to ITI";
-    "Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"  [label="Failed"];
-    "Baseline chunk type" -> "Check target voltage [2]"  [label="post pulse"];
-    "Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
-    "Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"  [label="Failed"];
-    "Mark chunk as passed/failed [2]" -> "Mark BL QC as passed"  [label="Passed"];
-    "Set \"ITI\" to 4s";
-    "First Sweep?";
-    "First Sweep?" -> "Store final DAScale of last sweep\n from previous RAC as initial DAScale"  [label="Yes"];
-    "Post Sweep Event" -> "First Sweep?";
-    "BL QC passed? [2]" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook"  [label="Yes"];
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Previous sweep has opposite spike result\nand same step size?";
-    "Previous sweep has opposite spike result\nand same step size?" -> "DAScale larger than 50pA\nor stepsize is 2pA"  [label="Yes"];
-    "DAScale larger than 50pA\nor stepsize is 2pA" -> "Mark set as passed"  [label="Yes"];
-    "DAScale larger than 50pA\nor stepsize is 2pA" -> "Store DAScale stepsize of 2pA in LBN"  [label="No"];
-    "Store DAScale stepsize of 2pA in LBN" -> "Spike detected? (queried from labnotebook)";
-    "Mark set as passed" -> "Skip to end of active set";
-    "Previous sweep has opposite spike result\nand same step size?" -> "Spike detected? (queried from labnotebook)"  [label="No"];
-    "Spike detected? (queried from labnotebook)" -> "Offset DAScale by minus\nstepsize from LBN"  [label="Yes"];
-    "Offset DAScale by minus\nstepsize from LBN" -> "DAScale is zero?";
-    "DAScale is zero?" -> "Stepsize?"  [label="Yes"];
-    "Stepsize?" -> "Set DAScale and stepsize to 2pA"  [label="10pA"];
-    "Stepsize?" -> "Add \"limited resolution\"\nlabnotebook entry"  [label="2pA"];
-    "Add \"limited resolution\"\nlabnotebook entry" -> "Mark set as failed";
-    "Offset DAScale by plus\nstepsize from LBN" -> "DAScale is zero?";
-    "DAScale is zero?" -> "Difference to initial DAScale larger than 60pA?"  [label="No"];
-    "Spike detected? (queried from labnotebook)" -> "Offset DAScale by plus\nstepsize from LBN"  [label="No"];
-    "Mark set as failed" -> "Skip to end";
-    "Store DAScale stepsize of 10pA in LBN";
-    "Store final DAScale of last sweep\n from previous RAC as initial DAScale" -> "Store DAScale stepsize of 10pA in LBN";
-    "Store DAScale stepsize of 10pA in LBN" -> "BL QC passed? [2]";
-    "Set \"Repeat Sets\" to 1";
-    "Early sweep stop";
-    "Mark BL QC as passed" -> "Early sweep stop";
-    "Mark BL QC as failed" -> "Early sweep stop";
-    "Set \"range exceeded\" labnotebook\nentry to true for sweep";
-    "Difference to initial DAScale larger than 60pA?" -> "Set \"range exceeded\" labnotebook\nentry to true for sweep"  [label="Yes"];
-    "Set \"range exceeded\" labnotebook\nentry to true for sweep" -> "Mark set as failed";
-    "Mark set as failed if it has not yet passed" -> "Skip to end"  [label="Failure"];
-    "First Sweep?" -> "BL QC passed? [2]"  [label="No"];
+digraph "G" {
+	graph [
+		fontsize = "14"
+		fontname = "Helvetica"
+		fontcolor = "black"
+		ratio = "0,01"
+		penwidth = "0.1"
+		compound = "true"
+		center = "true"
+	]
+	node [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	edge [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Start DAQ/RA" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mid Sweep Event" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Post Set Event" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Post Sweep Event" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Prepare DAQ/Pre Set Event" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Post DAQ Event" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Abort" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Stimset is large enough" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Set \"TP during ITI\"" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Enable \"Autobias\"" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Enable \"Multidevice DAQ\"" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Disable \"dDAQ\"/\"oodDAQ\"" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Enable \"Repeated Acquisition\"" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Valid Autobias voltage (finite and non-zero)" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Check if no TTL channels are active" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Search for final DAScale in one of the existing sweeps" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Check if only one headstage is active" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"All required analysis parameters present?\nSamplingMultiplier: variable" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Set \"Repeat Sets\" to 1" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Set \"ITI\" to 4s" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"All checks passed" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Update Dashboard" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mark set as failed if it has not yet passed" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"BL QC passed? [2]" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Skip to end of active set" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Skip to end" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"BL QC passed? [1]" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Grab next completely acquired chunk\n (500ms) of stimset baseline" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Baseline chunk type" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Chunk already evaluated?" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Last chunk?" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mark BL QC as failed" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Check RMS short" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Check RMS long" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Check target voltage [1]" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Check target voltage [2]" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mark chunk as passed/failed [1]" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Early sweep stop, repurpose ITI and add 10s to ITI" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mark chunk as passed/failed [2]" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mark BL QC as passed" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"First Sweep?" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Store final DAScale of last sweep\n from previous RAC as initial DAScale" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Previous sweep has opposite spike result\nand same step size?" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"DAScale larger than 50pA\nor stepsize is 2pA" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mark set as passed" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Store DAScale stepsize of 2pA in LBN" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Spike detected? (queried from labnotebook)" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Offset DAScale by minus\nstepsize from LBN" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"DAScale is zero?" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Stepsize?" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Set DAScale and stepsize to 2pA" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Add \"limited resolution\"\nlabnotebook entry" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mark set as failed" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Offset DAScale by plus\nstepsize from LBN" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Difference to initial DAScale larger than 60pA?" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Store DAScale stepsize of 10pA in LBN" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Early sweep stop" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Set \"range exceeded\" labnotebook\nentry to true for sweep" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Start DAQ/RA" -> "Mid Sweep Event" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Start DAQ/RA" -> "Prepare DAQ/Pre Set Event" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Start DAQ/RA" -> "Post Set Event" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Start DAQ/RA" -> "Post Sweep Event" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Start DAQ/RA" -> "Post DAQ Event" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Prepare DAQ/Pre Set Event" -> "Set \"Repeat Sets\" to 1" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Set \"Repeat Sets\" to 1" -> "Enable \"Autobias\"" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Enable \"Autobias\"" -> "Set \"TP during ITI\"" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Set \"TP during ITI\"" -> "Enable \"Multidevice DAQ\"" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Enable \"Repeated Acquisition\"" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Enable \"Repeated Acquisition\"" -> "Set \"ITI\" to 4s" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Prepare DAQ/Pre Set Event" -> "Stimset is large enough" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Stimset is large enough" -> "Check if only one headstage is active" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Check if only one headstage is active" -> "Valid Autobias voltage (finite and non-zero)" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Valid Autobias voltage (finite and non-zero)" -> "Check if no TTL channels are active" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Check if no TTL channels are active" -> "All required analysis parameters present?\nSamplingMultiplier: variable" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"All required analysis parameters present?\nSamplingMultiplier: variable" -> "Search for final DAScale in one of the existing sweeps" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Search for final DAScale in one of the existing sweeps" -> "All checks passed" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"All checks passed" -> "Abort" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Post DAQ Event" -> "Update Dashboard" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Post Set Event" -> "Mark set as failed if it has not yet passed" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mid Sweep Event" -> "BL QC passed? [1]" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"BL QC passed? [1]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Grab next completely acquired chunk\n (500ms) of stimset baseline" -> "Chunk already evaluated?" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Have one"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Grab next completely acquired chunk\n (500ms) of stimset baseline" -> "Last chunk?" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "None left"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Last chunk?" -> "Mark BL QC as failed" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Chunk already evaluated?" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Chunk already evaluated?" -> "Baseline chunk type" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Baseline chunk type" -> "Check RMS short" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "pre pulse"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Check RMS short" -> "Check RMS long" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Passed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Check RMS short" -> "Mark BL QC as failed" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Failed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Check RMS long" -> "Mark BL QC as failed" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Failed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Check RMS long" -> "Check target voltage [1]" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Passed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Check target voltage [1]" -> "Mark chunk as passed/failed [1]" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Passed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Failed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Baseline chunk type" -> "Check target voltage [2]" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "post pulse"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Check target voltage [2]" -> "Mark chunk as passed/failed [2]" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Failed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark chunk as passed/failed [2]" -> "Mark BL QC as passed" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Passed"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"First Sweep?" -> "Store final DAScale of last sweep\n from previous RAC as initial DAScale" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Post Sweep Event" -> "First Sweep?" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"BL QC passed? [2]" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Previous sweep has opposite spike result\nand same step size?" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Previous sweep has opposite spike result\nand same step size?" -> "DAScale larger than 50pA\nor stepsize is 2pA" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"DAScale larger than 50pA\nor stepsize is 2pA" -> "Mark set as passed" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"DAScale larger than 50pA\nor stepsize is 2pA" -> "Store DAScale stepsize of 2pA in LBN" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Store DAScale stepsize of 2pA in LBN" -> "Spike detected? (queried from labnotebook)" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark set as passed" -> "Skip to end of active set" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Previous sweep has opposite spike result\nand same step size?" -> "Spike detected? (queried from labnotebook)" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Spike detected? (queried from labnotebook)" -> "Offset DAScale by minus\nstepsize from LBN" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Offset DAScale by minus\nstepsize from LBN" -> "DAScale is zero?" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"DAScale is zero?" -> "Stepsize?" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Stepsize?" -> "Set DAScale and stepsize to 2pA" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "10pA"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Stepsize?" -> "Add \"limited resolution\"\nlabnotebook entry" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "2pA"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Add \"limited resolution\"\nlabnotebook entry" -> "Mark set as failed" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Offset DAScale by plus\nstepsize from LBN" -> "DAScale is zero?" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"DAScale is zero?" -> "Difference to initial DAScale larger than 60pA?" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Spike detected? (queried from labnotebook)" -> "Offset DAScale by plus\nstepsize from LBN" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark set as failed" -> "Skip to end" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Store final DAScale of last sweep\n from previous RAC as initial DAScale" -> "Store DAScale stepsize of 10pA in LBN" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Store DAScale stepsize of 10pA in LBN" -> "BL QC passed? [2]" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark BL QC as passed" -> "Early sweep stop" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark BL QC as failed" -> "Early sweep stop" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Difference to initial DAScale larger than 60pA?" -> "Set \"range exceeded\" labnotebook\nentry to true for sweep" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Set \"range exceeded\" labnotebook\nentry to true for sweep" -> "Mark set as failed" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark set as failed if it has not yet passed" -> "Skip to end" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Failure"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"First Sweep?" -> "BL QC passed? [2]" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
 }

@@ -1,94 +1,817 @@
-digraph G {
-    fontname="Helvetica";
-    compound="true";
-    ratio="0,01";
-    center="true";
-    penwidth="0.1";
-    edge [comment="Wildcard edge",
-          fontname="Helvetica",
-          fontsize=10,
-          colorscheme="blues3",
-          color=2,
-          fontcolor=3];
-    node [fontname="Helvetica",
-          fontsize=13,
-          fillcolor="1",
-          colorscheme="blues4",
-          color="2",
-          fontcolor="4",
-          style="filled"];
-    "Start DAQ/RA";
-    "Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
-    "Post Sweep Event";
-    "Start DAQ/RA" -> "Post Sweep Event";
-    "Post DAQ Event";
-    "Start DAQ/RA" -> "Post DAQ Event";
-    "Post DAQ Event" -> "Update Dashboard";
-    subgraph cluster_preDAQ {
-        color="invis";
-        edge [comment="Wildcard node added automatic in EG."];
-        node [comment="Wildcard node added automatic in EG."];
-        "Enable \"Multidevice DAQ\"";
-        "Disable \"dDAQ\"/\"oodDAQ\"";
-        "Enable \"Repeated Acquisition\"";
-        "Check if no TTL channels are active";
-        "Set \"TP during ITI\" to disabled";
-        "Prepare DAQ/Pre Set Event";
-        "Check if only one headstage is active";
-        "All checks passed";
-        "All required analysis parameters present?\nSamplingMultiplier: variable";
-        "Prepare DAQ/Pre Set Event" -> "Enable \"Multidevice DAQ\"";
-        "Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
-        "Disable \"dDAQ\"/\"oodDAQ\"" -> "Set \"TP inserting\" to disabled";
-        "Set \"TP inserting\" to disabled" -> "Set \"TP during ITI\" to disabled";
-        "Set \"TP during ITI\" to disabled" -> "Set \"ITI\" to 100ms";
-        "Set \"ITI\" to 100ms" -> "Enable \"Repeated Acquisition\"";
-        "Prepare DAQ/Pre Set Event" -> "Check if mode is IC";
-        "Check if mode is IC" -> "Check if no TTL channels are active";
-        "Check if no TTL channels are active" -> "Check if only one headstage is active";
-        "Check if only one headstage is active" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
-        "All required analysis parameters present?\nSamplingMultiplier: variable" -> "All checks passed";
-        "All checks passed" -> "Set DAScale to 100pA"  [label="Yes"];
-        "Write initial stepsize of 100pA into labnotebook";
-        "Set DAScale to 100pA" -> "Write initial stepsize of 100pA into labnotebook";
-        "Abort";
-        "All checks passed" -> "Abort"  [label="No"];
-    }
-
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook";
-    "Post Sweep Event" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook";
-    "DAScale is zero";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "DAScale is zero"  [label="Yes"];
-    "DAScale is zero" -> "Step size from labnotebook?"  [label="No"];
-    "DAScale is zero" -> "Add labnotebook entry\ndocumenting this case"  [label="Yes"];
-    "Add labnotebook entry\ndocumenting this case" -> "Mark sweep as failure [2]";
-    "Mark sweep as failure [2]" -> "Three sweeps exist with\nthis labnotebook entry?";
-    "Skip to end of active set";
-    "Three sweeps exist with\nthis labnotebook entry?" -> "Skip to end of active set"  [label="Yes"];
-    "Step size from labnotebook?" -> "Store DAScale\nin labnotebook"  [label="+10pA"];
-    "Offset DAScale\nby -50pA";
-    "Step size from labnotebook?" -> "Offset DAScale\nby -50pA"  [label="-50pA"];
-    "Write step size of\n-50pA to labnotebook";
-    "Step size from labnotebook?" -> "Write step size of\n-50pA to labnotebook"  [label="+100pA"];
-    "Write step size of\n-50pA to labnotebook" -> "Offset DAScale\nby -50pA";
-    "Step size from labnotebook?";
-    "Step Size from labnotebook?";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step Size from labnotebook?"  [label="No"];
-    "Write step size of\n+10pA to labnotebook";
-    "Offset DAScale\nby +10pA";
-    "Offset DAScale\nby +100pA";
-    "Step Size from labnotebook?" -> "Offset DAScale\nby +10pA"  [label="+10pA"];
-    "Step Size from labnotebook?" -> "Write step size of\n+10pA to labnotebook"  [label="-50pA"];
-    "Step Size from labnotebook?" -> "Offset DAScale\nby +100pA"  [label="+100pA"];
-    "Write step size of\n+10pA to labnotebook" -> "Offset DAScale\nby +10pA";
-    "Mark sweep as passed";
-    "Mark sweep as passed" -> "Skip to end of active set";
-    "Store DAScale\nin labnotebook" -> "Mark sweep as passed";
-    "Mark sweep as failed [1]";
-    "Offset DAScale\nby -50pA" -> "Mark sweep as failed [1]";
-    "Offset DAScale\nby +10pA" -> "Mark sweep as failed [1]";
-    "Offset DAScale\nby +100pA" -> "Mark sweep as failed [1]";
-    "Start DAQ/RA" -> "Post Set Event";
-    "Post Set Event" -> "Mark set as passed if 1 sweep passed,\nas failure otherwise";
-    "Mark set as passed if 1 sweep passed,\nas failure otherwise" -> "Skip to end"  [label="Failure"];
+digraph "G" {
+	graph [
+		fontsize = "14"
+		fontname = "Helvetica"
+		fontcolor = "black"
+		ratio = "compress"
+		penwidth = "0.1"
+		compound = "true"
+		center = "true"
+	]
+	node [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	edge [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Start DAQ/RA" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Prepare DAQ/Pre Set Event" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Post Sweep Event" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Post DAQ Event" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Update Dashboard" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Enable \"Multidevice DAQ\"" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Disable \"dDAQ\"/\"oodDAQ\"" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Enable \"Repeated Acquisition\"" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Check if no TTL channels are active" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Set \"TP during ITI\" to disabled" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Check if only one headstage is active" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"All checks passed" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"All required analysis parameters present?\nSamplingMultiplier: variable" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Set \"TP inserting\" to disabled" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Set \"ITI\" to 100ms" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Check if mode is IC" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Set DAScale to 100pA" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Write initial stepsize of 100pA into labnotebook" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Abort" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"DAScale is zero" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Step size from labnotebook?" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Add labnotebook entry\ndocumenting this case" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mark sweep as failure [2]" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Three sweeps exist with\nthis labnotebook entry?" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Skip to end of active set" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Store DAScale\nin labnotebook" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Offset DAScale\nby -50pA" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Write step size of\n-50pA to labnotebook" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Step Size from labnotebook?" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Write step size of\n+10pA to labnotebook" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Offset DAScale\nby +10pA" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Offset DAScale\nby +100pA" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mark sweep as passed" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mark sweep as failed [1]" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Post Set Event" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Mark set as passed if 1 sweep passed,\nas failure otherwise" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+	"Skip to end" [
+		fontsize = "13"
+		fontname = "Helvetica"
+		fontcolor = "4"
+		fillcolor = "1"
+		shape = "ellipse"
+		style = "filled"
+		colorscheme = "blues4"
+		color = "2"
+	]
+		"Prepare DAQ/Pre Set Event"
+		"Enable \"Multidevice DAQ\""
+		"Disable \"dDAQ\"/\"oodDAQ\""
+		"Enable \"Repeated Acquisition\""
+		"Check if no TTL channels are active"
+		"Set \"TP during ITI\" to disabled"
+		"Check if only one headstage is active"
+		"All checks passed"
+		"All required analysis parameters present?\nSamplingMultiplier: variable"
+		"Set \"TP inserting\" to disabled"
+		"Set \"ITI\" to 100ms"
+		"Check if mode is IC"
+		"Set DAScale to 100pA"
+		"Write initial stepsize of 100pA into labnotebook"
+		"Abort"
+	"Start DAQ/RA" -> "Prepare DAQ/Pre Set Event" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Start DAQ/RA" -> "Post Sweep Event" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Start DAQ/RA" -> "Post DAQ Event" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Post DAQ Event" -> "Update Dashboard" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Prepare DAQ/Pre Set Event" -> "Enable \"Multidevice DAQ\"" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Set \"TP inserting\" to disabled" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Set \"TP inserting\" to disabled" -> "Set \"TP during ITI\" to disabled" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Set \"TP during ITI\" to disabled" -> "Set \"ITI\" to 100ms" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Set \"ITI\" to 100ms" -> "Enable \"Repeated Acquisition\"" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Prepare DAQ/Pre Set Event" -> "Check if mode is IC" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Check if mode is IC" -> "Check if no TTL channels are active" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Check if no TTL channels are active" -> "Check if only one headstage is active" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Check if only one headstage is active" -> "All required analysis parameters present?\nSamplingMultiplier: variable" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"All required analysis parameters present?\nSamplingMultiplier: variable" -> "All checks passed" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"All checks passed" -> "Set DAScale to 100pA" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Set DAScale to 100pA" -> "Write initial stepsize of 100pA into labnotebook" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"All checks passed" -> "Abort" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Post Sweep Event" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "DAScale is zero" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"DAScale is zero" -> "Step size from labnotebook?" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"DAScale is zero" -> "Add labnotebook entry\ndocumenting this case" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Add labnotebook entry\ndocumenting this case" -> "Mark sweep as failure [2]" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark sweep as failure [2]" -> "Three sweeps exist with\nthis labnotebook entry?" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Three sweeps exist with\nthis labnotebook entry?" -> "Skip to end of active set" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Yes"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Step size from labnotebook?" -> "Store DAScale\nin labnotebook" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "+10pA"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Step size from labnotebook?" -> "Offset DAScale\nby -50pA" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "-50pA"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Step size from labnotebook?" -> "Write step size of\n-50pA to labnotebook" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "+100pA"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Write step size of\n-50pA to labnotebook" -> "Offset DAScale\nby -50pA" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step Size from labnotebook?" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "No"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Step Size from labnotebook?" -> "Offset DAScale\nby +10pA" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "+10pA"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Step Size from labnotebook?" -> "Write step size of\n+10pA to labnotebook" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "-50pA"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Step Size from labnotebook?" -> "Offset DAScale\nby +100pA" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "+100pA"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Write step size of\n+10pA to labnotebook" -> "Offset DAScale\nby +10pA" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark sweep as passed" -> "Skip to end of active set" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Store DAScale\nin labnotebook" -> "Mark sweep as passed" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Offset DAScale\nby -50pA" -> "Mark sweep as failed [1]" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Offset DAScale\nby +10pA" -> "Mark sweep as failed [1]" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Offset DAScale\nby +100pA" -> "Mark sweep as failed [1]" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Start DAQ/RA" -> "Post Set Event" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Post Set Event" -> "Mark set as passed if 1 sweep passed,\nas failure otherwise" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
+	"Mark set as passed if 1 sweep passed,\nas failure otherwise" -> "Skip to end" [
+		fontsize = "10"
+		fontname = "Helvetica"
+		fontcolor = "3"
+		label = "Failure"
+		style = "solid"
+		comment = "Wildcard edge"
+		colorscheme = "blues3"
+		color = "2"
+	]
 }
