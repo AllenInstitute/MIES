@@ -634,7 +634,7 @@ static Function PSQ_GetDAStimsetLength(panelTitle, headstage)
 	return DimSize(stimset, ROWS) * DimDelta(stimset, ROWS)
 End
 
-/// PSQ_PSQ_CreateOverrideResults("ITC18USB_DEV_0", 0, $type) where type is one of:
+/// @brief Create the overrides results wave for CI testing
 ///
 /// #PSQ_SQUARE_PULSE:
 ///
