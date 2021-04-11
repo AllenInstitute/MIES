@@ -753,7 +753,7 @@ static Function PSQ_StoreStepSizeInLBN(panelTitle, type, sweepNo, stepsize, [fut
 End
 
 /// @brief Search the AD channel of the given headstage for spikes from the
-/// pulse onset until the end of the sweep
+/// pulse onset until the end of the sweep or `searchEnd` if given
 ///
 /// @param[in] panelTitle            device
 /// @param[in] type                  One of @ref PatchSeqAnalysisFunctionTypes
@@ -761,6 +761,7 @@ End
 /// @param[in] headstage             headstage in the range [0, NUM_HEADSTAGES[
 /// @param[in] offset                offset in ms where the spike search should start, commonly the totalOnsetDelay
 /// @param[in] level                 set the level for the spike search
+/// @param[in] searchEnd             [optional, defaults to inf] total length in ms of the spike search, relative to sweepWave start
 /// @param[in] numberOfSpikesReq     [optional, defaults to one] number of spikes to look for
 ///                                  Positive finite value: Return value is 1 iff at least `numberOfSpikes` were found
 ///                                  Inf: Return value is 1 if at least 1 spike was found
@@ -772,7 +773,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	string panelTitle
 	variable type
 	WAVE sweepWave
-	variable headstage, offset, level
+	variable headstage, offset, level, searchEnd
 	variable numberOfSpikesReq
 	WAVE spikePositions
 	variable &numberOfSpikesFound
@@ -787,6 +788,10 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		WAVE config = GetDAQConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
+	endif
+
+	if(ParamIsDefault(searchEnd))
+		searchEnd = inf
 	endif
 
 	if(ParamIsDefault(numberOfSpikesReq))
@@ -810,11 +815,13 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	if(minVal == 0 && maxVal == 0)
 		if(type == PSQ_SQUARE_PULSE)
 			first = 0
-			last = inf
+			last = searchEnd
 		else
 			return spikeDetection
 		endif
 	else
+
+
 		rangeSearchLevel = minVal + GetMachineEpsilon(WaveType(singleDA))
 
 		Make/FREE/D levels
@@ -825,7 +832,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		if(type == PSQ_DA_SCALE)
 			last = levels[1]
 		else
-			last  = inf
+			last = searchEnd
 		endif
 	endif
 
