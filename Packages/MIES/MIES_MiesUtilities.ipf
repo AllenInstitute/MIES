@@ -7161,3 +7161,25 @@ Function UploadLogFile()
 
 	printf "Successfully uploaded the MIES logfile. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
 End
+
+/// @brief Update the logging template used by the ZeroMQ-XOP
+Function/S UpdateZeroMQXOPLoggingTemplate()
+	variable JSONid
+	string str
+
+#if exists("zeromq_set_logging_template")
+
+	JSONid = LOG_GenerateEntryTemplate("XOP")
+
+	str = JSON_Dump(JSONid)
+	JSON_Release(JSONid)
+
+	zeromq_set_logging_template(str)
+#else
+
+	DEBUGPRINT("ZeroMQ XOP is not present")
+
+#endif
+
+	return str
+End
