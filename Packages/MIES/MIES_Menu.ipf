@@ -43,6 +43,7 @@ Menu "Mies Panels"
 		"Configuration"                        , /Q, CONF_OpenConfigInNotebook()
 		"Package settings"                     , /Q, MEN_OpenPackageSettingsAsNotebook()
 		"MIES Log"                             , /Q, MEN_OpenMiesLogFile()
+		"ZeroMQ-XOP Log"                       , /Q, MEN_OpenZeroMQXOPLogFile()
 	End
 	"-"
 	"Check Installation"                       , /Q, CHI_CheckInstallation()
@@ -221,6 +222,28 @@ Function MEN_OpenMIESLogFile()
 		DoWindow/F $name
 	else
 		path = LOG_GetFile(PACKAGE_MIES)
+
+		if(!FileExists(path))
+			print "The log file does not (yet) exist."
+			ControlwindowToFront()
+			return NaN
+		endif
+
+		OpenNotebook/K=1/ENCG=1/N=$name/R path
+	endif
+
+	NotebookSelectionAtEnd(name)
+End
+
+Function MEN_OpenZeroMQXOPLogFile()
+	string name, path
+
+	name = "ZeroMQLogFile"
+
+	if(WindowExists(name))
+		DoWindow/F $name
+	else
+		path = GetZeroMQXOPLogfile()
 
 		if(!FileExists(path))
 			print "The log file does not (yet) exist."

@@ -7183,3 +7183,10 @@ Function/S UpdateZeroMQXOPLoggingTemplate()
 
 	return str
 End
+
+/// @brief Return the disc location of the (possibly non-existing) ZeroMQ-XOP logfile
+Function/S GetZeroMQXOPLogfile()
+
+	// one down and up to "ZeroMQ"
+	return PS_GetSettingsFolder(PACKAGE_MIES) + ":ZeroMQ:Log.jsonl"
+End
