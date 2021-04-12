@@ -1,94 +1,70 @@
 digraph G {
-    fontname="sans-serif";
-    compound="true";
-    ratio="0,01";
-    center="true";
-    penwidth="0.1";
-    edge [comment="Wildcard edge",
-          fontname="sans-serif",
-          fontsize=10,
-          colorscheme="blues3",
-          color=2,
-          fontcolor=3];
-    node [fontname="serif",
-          fontsize=13,
-          fillcolor="1",
-          colorscheme="blues4",
-          color="2",
-          fontcolor="4",
-          style="filled"];
-    "Start DAQ/RA";
-    "Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
-    "Post Sweep Event";
-    "Start DAQ/RA" -> "Post Sweep Event";
-    "Post DAQ Event";
-    "Start DAQ/RA" -> "Post DAQ Event";
-    "Post DAQ Event" -> "Update Dashboard";
-    subgraph cluster_preDAQ {
-        color="invis";
-        edge [comment="Wildcard node added automatic in EG."];
-        node [comment="Wildcard node added automatic in EG."];
-        "Enable \"Multidevice DAQ\"";
-        "Disable \"dDAQ\"/\"oodDAQ\"";
-        "Enable \"Repeated Acquisition\"";
-        "Check if no TTL channels are active";
-        "Set \"TP during ITI\" to disabled";
-        "Prepare DAQ/Pre Set Event";
-        "Check if only one headstage is active";
-        "All checks passed";
-        "All required analysis parameters present?\nSamplingMultiplier: variable";
-        "Prepare DAQ/Pre Set Event" -> "Enable \"Multidevice DAQ\"";
-        "Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
-        "Disable \"dDAQ\"/\"oodDAQ\"" -> "Set \"TP inserting\" to disabled";
-        "Set \"TP inserting\" to disabled" -> "Set \"TP during ITI\" to disabled";
-        "Set \"TP during ITI\" to disabled" -> "Set \"ITI\" to 100ms";
-        "Set \"ITI\" to 100ms" -> "Enable \"Repeated Acquisition\"";
-        "Prepare DAQ/Pre Set Event" -> "Check if mode is IC";
-        "Check if mode is IC" -> "Check if no TTL channels are active";
-        "Check if no TTL channels are active" -> "Check if only one headstage is active";
-        "Check if only one headstage is active" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
-        "All required analysis parameters present?\nSamplingMultiplier: variable" -> "All checks passed";
-        "All checks passed" -> "Set DAScale to 100pA"  [label="Yes"];
-        "Write initial stepsize of 100pA into labnotebook";
-        "Set DAScale to 100pA" -> "Write initial stepsize of 100pA into labnotebook";
-        "Abort";
-        "All checks passed" -> "Abort"  [label="No"];
-    }
-
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook";
-    "Post Sweep Event" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook";
-    "DAScale is zero";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "DAScale is zero"  [label="Yes"];
-    "DAScale is zero" -> "Step size from labnotebook?"  [label="No"];
-    "DAScale is zero" -> "Add labnotebook entry\ndocumenting this case"  [label="Yes"];
-    "Add labnotebook entry\ndocumenting this case" -> "Mark sweep as failure [2]";
-    "Mark sweep as failure [2]" -> "Three sweeps exist with\nthis labnotebook entry?";
-    "Skip to end of active set";
-    "Three sweeps exist with\nthis labnotebook entry?" -> "Skip to end of active set"  [label="Yes"];
-    "Step size from labnotebook?" -> "Store DAScale\nin labnotebook"  [label="+10pA"];
-    "Offset DAScale\nby -50pA";
-    "Step size from labnotebook?" -> "Offset DAScale\nby -50pA"  [label="-50pA"];
-    "Write step size of\n-50pA to labnotebook";
-    "Step size from labnotebook?" -> "Write step size of\n-50pA to labnotebook"  [label="+100pA"];
-    "Write step size of\n-50pA to labnotebook" -> "Offset DAScale\nby -50pA";
-    "Step size from labnotebook?";
-    "Step Size from labnotebook?";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step Size from labnotebook?"  [label="No"];
-    "Write step size of\n+10pA to labnotebook";
-    "Offset DAScale\nby +10pA";
-    "Offset DAScale\nby +100pA";
-    "Step Size from labnotebook?" -> "Offset DAScale\nby +10pA"  [label="+10pA"];
-    "Step Size from labnotebook?" -> "Write step size of\n+10pA to labnotebook"  [label="-50pA"];
-    "Step Size from labnotebook?" -> "Offset DAScale\nby +100pA"  [label="+100pA"];
-    "Write step size of\n+10pA to labnotebook" -> "Offset DAScale\nby +10pA";
-    "Mark sweep as passed";
-    "Mark sweep as passed" -> "Skip to end of active set";
-    "Store DAScale\nin labnotebook" -> "Mark sweep as passed";
-    "Mark sweep as failed [1]";
-    "Offset DAScale\nby -50pA" -> "Mark sweep as failed [1]";
-    "Offset DAScale\nby +10pA" -> "Mark sweep as failed [1]";
-    "Offset DAScale\nby +100pA" -> "Mark sweep as failed [1]";
-    "Start DAQ/RA" -> "Post Set Event";
-    "Post Set Event" -> "Mark set as passed if 1 sweep passed,\nas failure otherwise";
-    "Mark set as passed if 1 sweep passed,\nas failure otherwise" -> "Skip to end"  [label="Failure"];
+	graph [center=true,
+		compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1,
+		ratio=compress
+	];
+	node [color=2,
+		colorscheme=blues4,
+		fillcolor=1,
+		fontcolor=4,
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color=2,
+		colorscheme=blues3,
+		comment="Wildcard edge",
+		fontcolor=3,
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
+	"Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
+	"Start DAQ/RA" -> "Post Sweep Event";
+	"Start DAQ/RA" -> "Post DAQ Event";
+	"Start DAQ/RA" -> "Post Set Event";
+	"Prepare DAQ/Pre Set Event" -> "Enable \"Multidevice DAQ\"";
+	"Prepare DAQ/Pre Set Event" -> "Check if mode is IC";
+	"Post Sweep Event" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook";
+	"Post DAQ Event" -> "Update Dashboard";
+	"Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Set \"TP inserting\" to disabled";
+	"Check if no TTL channels are active" -> "Check if only one headstage is active";
+	"Set \"TP during ITI\" to disabled" -> "Set \"ITI\" to 100ms";
+	"Check if only one headstage is active" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
+	"All checks passed" -> "Set DAScale to 100pA"	[label=Yes];
+	"All checks passed" -> Abort	[label=No];
+	"All required analysis parameters present?\nSamplingMultiplier: variable" -> "All checks passed";
+	"Set \"TP inserting\" to disabled" -> "Set \"TP during ITI\" to disabled";
+	"Set \"ITI\" to 100ms" -> "Enable \"Repeated Acquisition\"";
+	"Check if mode is IC" -> "Check if no TTL channels are active";
+	"Set DAScale to 100pA" -> "Write initial stepsize of 100pA into labnotebook";
+	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "DAScale is zero"	[label=Yes];
+	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step Size from labnotebook?"	[label=No];
+	"DAScale is zero" -> "Step size from labnotebook?"	[label=No];
+	"DAScale is zero" -> "Add labnotebook entry\ndocumenting this case"	[label=Yes];
+	"Step size from labnotebook?" -> "Store DAScale\nin labnotebook"	[label="+10pA"];
+	"Step size from labnotebook?" -> "Offset DAScale\nby -50pA"	[label="-50pA"];
+	"Step size from labnotebook?" -> "Write step size of\n-50pA to labnotebook"	[label="+100pA"];
+	"Add labnotebook entry\ndocumenting this case" -> "Mark sweep as failure [2]";
+	"Mark sweep as failure [2]" -> "Three sweeps exist with\nthis labnotebook entry?";
+	"Three sweeps exist with\nthis labnotebook entry?" -> "Skip to end of active set"	[label=Yes];
+	"Store DAScale\nin labnotebook" -> "Mark sweep as passed";
+	"Offset DAScale\nby -50pA" -> "Mark sweep as failed [1]";
+	"Write step size of\n-50pA to labnotebook" -> "Offset DAScale\nby -50pA";
+	"Step Size from labnotebook?" -> "Write step size of\n+10pA to labnotebook"	[label="-50pA"];
+	"Step Size from labnotebook?" -> "Offset DAScale\nby +10pA"	[label="+10pA"];
+	"Step Size from labnotebook?" -> "Offset DAScale\nby +100pA"	[label="+100pA"];
+	"Write step size of\n+10pA to labnotebook" -> "Offset DAScale\nby +10pA";
+	"Offset DAScale\nby +10pA" -> "Mark sweep as failed [1]";
+	"Offset DAScale\nby +100pA" -> "Mark sweep as failed [1]";
+	"Mark sweep as passed" -> "Skip to end of active set";
+	"Post Set Event" -> "Mark set as passed if 1 sweep passed,\nas failure otherwise";
+	"Mark set as passed if 1 sweep passed,\nas failure otherwise" -> "Skip to end"	[label=Failure];
 }

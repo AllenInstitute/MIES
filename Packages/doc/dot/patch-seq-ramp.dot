@@ -1,139 +1,91 @@
 digraph G {
-    fontname="sans-serif";
-    ratio="0,01";
-    center="true";
-    compound="true";
-    rank="same";
-    penwidth="0.1";
-    edge [comment="Wildcard edge",
-          fontname="sans-serif",
-          fontsize=10,
-          colorscheme="blues3",
-          color=2,
-          fontcolor=3];
-    node [fontname="serif",
-          fontsize=13,
-          fillcolor="1",
-          colorscheme="blues4",
-          color="2",
-          fontcolor="4",
-          style="filled"];
-    "Start DAQ/RA";
-    "Mid Sweep Event";
-    "Post Set Event";
-    "Post Sweep Event";
-    "Post DAQ Event";
-    "Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
-    "Start DAQ/RA" -> "Post Set Event";
-    "Start DAQ/RA" -> "Post Sweep Event";
-    "Start DAQ/RA" -> "Post DAQ Event";
-    subgraph cluster_preDAQ {
-        color="invis";
-        edge [comment="Wildcard node added automatic in EG."];
-        node [comment="Wildcard node added automatic in EG."];
-        "Prepare DAQ/Pre Set Event";
-        "Enable \"TP during ITI\"";
-        "Enable \"Autobias\"";
-        "Enable \"Multidevice DAQ\"";
-        "Enable \"Inserted TP\"";
-        "Stimset is longer than 1.5s";
-        "Valid Autobias voltage (finite and non-zero)";
-        "Disable \"dDAQ\"/\"oodDAQ\"";
-        "Stimset has at least three sweeps";
-        "Set DAScale to 1pA";
-        "Set ITI to zero";
-        "Stimset is large enough";
-        "Check if mode is IC";
-        "Enable \"Repeated Acquisition\"";
-        "Check if no TTL channels are active";
-        "All required analysis parameters present?\nSamplingMultiplier: variable";
-        "Check if only one headstage is active";
-        "All checks passed";
-        "Abort";
-        "Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
-        "Enable \"Autobias\"" -> "Enable \"Inserted TP\"";
-        "Enable \"Inserted TP\"" -> "Enable \"Multidevice DAQ\"";
-        "Enable \"Multidevice DAQ\"" -> "Enable \"TP during ITI\"";
-        "Enable \"TP during ITI\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
-        "Disable \"dDAQ\"/\"oodDAQ\"" -> "Set ITI to zero";
-        "Set ITI to zero" -> "Set DAScale to 1pA";
-        "Set DAScale to 1pA" -> "Enable \"Repeated Acquisition\"";
-        "Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
-        "Valid Autobias voltage (finite and non-zero)" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
-        "All required analysis parameters present?\nSamplingMultiplier: variable" -> "Stimset is longer than 1.5s";
-        "Stimset is longer than 1.5s" -> "Check if only one headstage is active";
-        "Check if only one headstage is active" -> "Stimset has at least three sweeps";
-        "Stimset has at least three sweeps" -> "Stimset is large enough";
-        "Stimset is large enough" -> "Check if mode is IC";
-        "Check if mode is IC" -> "Check if no TTL channels are active";
-        "Check if no TTL channels are active" -> "All checks passed";
-        "All checks passed" -> "Abort"  [label="No"];
-    }
-
-    "Post DAQ Event" -> "Update Dashboard";
-    "Start DAQ/RA" -> "Mid Sweep Event";
-    "Mark set as passed if 3 sweeps passed, as failure otherwise";
-    "Post Set Event" -> "Mark set as passed if 3 sweeps passed, as failure otherwise";
-    "Last Sweep passed?";
-    "Check if 3 sweeps passed from RA cycle";
-    "Skip to end of active set";
-    "Skip to end";
-    "Post Sweep Event" -> "Last Sweep passed?";
-    "Last Sweep passed?" -> "Check if 3 sweeps passed from RA cycle"  [label="Yes"];
-    "Check if 3 sweeps passed from RA cycle" -> "Skip to end of active set"  [label="Yes"];
-    "Check if the Set can still pass";
-    "Last Sweep passed?" -> "Check if the Set can still pass"  [label="No"];
-    "Check if the Set can still pass" -> "Skip to end"  [label="No"];
-    "BL QC passed?";
-    "Mid Sweep Event" -> "BL QC passed?";
-    "Grab next completely acquired chunk (500ms) of stimset baseline";
-    "BL QC passed?" -> "Grab next completely acquired chunk (500ms) of stimset baseline"  [label="No"];
-    "Baseline chunk type";
-    "Chunk already evaluated?";
-    "Grab next completely acquired chunk (500ms) of stimset baseline" -> "Chunk already evaluated?"  [label="Have one"];
-    "Grab next completely acquired chunk (500ms) of stimset baseline" -> "Last chunk?"  [label="None left"];
-    "Last chunk?" -> "Mark Sweep/BL QC as failed"  [label="Yes"];
-    "Chunk already evaluated?" -> "Grab next completely acquired chunk (500ms) of stimset baseline"  [label="Yes"];
-    "Chunk already evaluated?" -> "Baseline chunk type"  [label="No"];
-    "Check RMS short";
-    "Check RMS long";
-    "Check target voltage [1]";
-    "Check target voltage [2]";
-    "Baseline chunk type" -> "Check RMS short"  [label="pre pulse"];
-    "Check RMS short" -> "Check RMS long"  [label="Passed"];
-    "Mark Sweep/BL QC as passed";
-    "Mark Sweep/BL QC as failed";
-    "Check RMS short" -> "Mark Sweep/BL QC as failed"  [label="Failed"];
-    "Check RMS long" -> "Mark Sweep/BL QC as failed"  [label="Failed"];
-    "Check RMS long" -> "Check target voltage [1]"  [label="Passed"];
-    "Mark chunk as passed/failed [1]";
-    "Check target voltage [1]" -> "Mark chunk as passed/failed [1]";
-    "Early sweep stop, repurpose ITI and add 10s to ITI";
-    "Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"  [label="Failed"];
-    "Baseline chunk type" -> "Check target voltage [2]"  [label="post pulse"];
-    "Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
-    "Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk (500ms) of stimset baseline"  [label="Failed"];
-    "Mark chunk as passed/failed [2]" -> "Mark Sweep/BL QC as passed"  [label="Passed"];
-    "Mark Sweep/BL QC as passed" -> "Early Sweep stop";
-    "Mark Sweep/BL QC as failed" -> "Early Sweep stop";
-    "Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk (500ms) of stimset baseline"  [label="Passed"];
-    "Search spike result in labnotebook";
-    "Search spike result in labnotebook" -> "Get pulse duration from labnotebook (calculate if not present)"  [label="Not Found"];
-    "Mid Sweep Event" -> "Search spike result in labnotebook";
-    "After pulse onset";
-    "Get pulse duration from labnotebook (calculate if not present)" -> "After pulse onset";
-    "Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)";
-    "Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "After pulse"  [label="No"];
-    "After pulse" -> "Write spike result \"failed\" into LBN"  [label="Yes"];
-    "After pulse onset" -> "Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)"  [label="Yes"];
-    "Write spike result (true/false) into labnotebook";
-    "Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "Write spike result (true/false) into labnotebook"  [label="Yes"];
-    "Write spike position in ms into labnotebook";
-    "Set DA channel to zero from here to the end\n(implies DAQ restart)";
-    "Write spike position in ms into labnotebook" -> "Set DA channel to zero from here to the end\n(implies DAQ restart)";
-    "Set AD channel to zero for the duration of the DAQ restart";
-    "Set DA channel to zero from here to the end\n(implies DAQ restart)" -> "Set AD channel to zero for the duration of the DAQ restart";
-    "Recalculate pulse duration and\nstore in labnotebook";
-    "Set AD channel to zero for the duration of the DAQ restart" -> "Recalculate pulse duration and\nstore in labnotebook";
-    "Write spike result (true/false) into labnotebook" -> "Write spike position in ms into labnotebook";
+	graph [center=true,
+		compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1,
+		rank=same,
+		ratio="0,01"
+	];
+	node [color=2,
+		colorscheme=blues4,
+		fillcolor=1,
+		fontcolor=4,
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color=2,
+		colorscheme=blues3,
+		comment="Wildcard edge",
+		fontcolor=3,
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
+	"Start DAQ/RA" -> "Mid Sweep Event";
+	"Start DAQ/RA" -> "Post Set Event";
+	"Start DAQ/RA" -> "Post Sweep Event";
+	"Start DAQ/RA" -> "Post DAQ Event";
+	"Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
+	"Mid Sweep Event" -> "BL QC passed?";
+	"Mid Sweep Event" -> "Search spike result in labnotebook";
+	"Post Set Event" -> "Mark set as passed if 3 sweeps passed, as failure otherwise";
+	"Post Sweep Event" -> "Last Sweep passed?";
+	"Post DAQ Event" -> "Update Dashboard";
+	"Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
+	"Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
+	"Enable \"TP during ITI\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+	"Enable \"Autobias\"" -> "Enable \"Inserted TP\"";
+	"Enable \"Multidevice DAQ\"" -> "Enable \"TP during ITI\"";
+	"Enable \"Inserted TP\"" -> "Enable \"Multidevice DAQ\"";
+	"Stimset is longer than 1.5s" -> "Check if only one headstage is active";
+	"Valid Autobias voltage (finite and non-zero)" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
+	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Set ITI to zero";
+	"Stimset has at least three sweeps" -> "Stimset is large enough";
+	"Set DAScale to 1pA" -> "Enable \"Repeated Acquisition\"";
+	"Set ITI to zero" -> "Set DAScale to 1pA";
+	"Stimset is large enough" -> "Check if mode is IC";
+	"Check if mode is IC" -> "Check if no TTL channels are active";
+	"Check if no TTL channels are active" -> "All checks passed";
+	"All required analysis parameters present?\nSamplingMultiplier: variable" -> "Stimset is longer than 1.5s";
+	"Check if only one headstage is active" -> "Stimset has at least three sweeps";
+	"All checks passed" -> Abort	[label=No];
+	"Last Sweep passed?" -> "Check if 3 sweeps passed from RA cycle"	[label=Yes];
+	"Last Sweep passed?" -> "Check if the Set can still pass"	[label=No];
+	"Check if 3 sweeps passed from RA cycle" -> "Skip to end of active set"	[label=Yes];
+	"Check if the Set can still pass" -> "Skip to end"	[label=No];
+	"BL QC passed?" -> "Grab next completely acquired chunk (500ms) of stimset baseline"	[label=No];
+	"Grab next completely acquired chunk (500ms) of stimset baseline" -> "Chunk already evaluated?"	[label="Have one"];
+	"Grab next completely acquired chunk (500ms) of stimset baseline" -> "Last chunk?"	[label="None left"];
+	"Baseline chunk type" -> "Check RMS short"	[label="pre pulse"];
+	"Baseline chunk type" -> "Check target voltage [2]"	[label="post pulse"];
+	"Chunk already evaluated?" -> "Grab next completely acquired chunk (500ms) of stimset baseline"	[label=Yes];
+	"Chunk already evaluated?" -> "Baseline chunk type"	[label=No];
+	"Last chunk?" -> "Mark Sweep/BL QC as failed"	[label=Yes];
+	"Mark Sweep/BL QC as failed" -> "Early Sweep stop";
+	"Check RMS short" -> "Mark Sweep/BL QC as failed"	[label=Failed];
+	"Check RMS short" -> "Check RMS long"	[label=Passed];
+	"Check RMS long" -> "Mark Sweep/BL QC as failed"	[label=Failed];
+	"Check RMS long" -> "Check target voltage [1]"	[label=Passed];
+	"Check target voltage [1]" -> "Mark chunk as passed/failed [1]";
+	"Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
+	"Mark Sweep/BL QC as passed" -> "Early Sweep stop";
+	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk (500ms) of stimset baseline"	[label=Passed];
+	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	[label=Failed];
+	"Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk (500ms) of stimset baseline"	[label=Failed];
+	"Mark chunk as passed/failed [2]" -> "Mark Sweep/BL QC as passed"	[label=Passed];
+	"Search spike result in labnotebook" -> "Get pulse duration from labnotebook (calculate if not present)"	[label="Not Found"];
+	"Get pulse duration from labnotebook (calculate if not present)" -> "After pulse onset";
+	"After pulse onset" -> "Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)"	[label=Yes];
+	"Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "After pulse"	[label=No];
+	"Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "Write spike result (true/false) into labnotebook"	[label=Yes];
+	"After pulse" -> "Write spike result \"failed\" into LBN"	[label=Yes];
+	"Write spike result (true/false) into labnotebook" -> "Write spike position in ms into labnotebook";
+	"Write spike position in ms into labnotebook" -> "Set DA channel to zero from here to the end\n(implies DAQ restart)";
+	"Set DA channel to zero from here to the end\n(implies DAQ restart)" -> "Set AD channel to zero for the duration of the DAQ restart";
+	"Set AD channel to zero for the duration of the DAQ restart" -> "Recalculate pulse duration and\nstore in labnotebook";
 }
