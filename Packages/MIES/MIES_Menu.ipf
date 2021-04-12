@@ -42,7 +42,7 @@ Menu "Mies Panels"
 	SubMenu "View Files"
 		"Configuration"                        , /Q, CONF_OpenConfigInNotebook()
 		"Package settings"                     , /Q, MEN_OpenPackageSettingsAsNotebook()
-		"Log"                                  , /Q, MEN_OpenLogFile()
+		"MIES Log"                             , /Q, MEN_OpenMiesLogFile()
 	End
 	"-"
 	"Check Installation"                       , /Q, CHI_CheckInstallation()
@@ -212,10 +212,10 @@ Function MEN_OpenPackageSettingsAsNotebook()
 	JSONid = NaN
 End
 
-Function MEN_OpenLogFile()
+Function MEN_OpenMIESLogFile()
 	string name, path
 
-	name = "LogFile"
+	name = "MIESLogFile"
 
 	if(WindowExists(name))
 		DoWindow/F $name
