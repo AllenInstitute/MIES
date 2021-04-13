@@ -59,7 +59,7 @@ Menu "Mies Panels"
 		"Show Diagnostics (crash dumps) directory" , /Q, ShowDiagnosticsDirectory()
 		"Upload crash dumps"                       , /Q, UploadCrashDumps()
 		"Clear package settings"                   , /Q, MEN_ClearPackageSettings()
-		"Upload log file"                          , /Q, UploadLogFile()
+		"Upload log files"                         , /Q, UploadLogFiles()
 		SubMenu "Panels"
 			"Reset and store DA_EPHYS"                  , /Q, DAP_EphysPanelStartUpSettings()
 			"Reset and store DataBrowser"               , /Q, DB_ResetAndStoreCurrentDBPanel()

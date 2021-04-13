@@ -7144,7 +7144,7 @@ Function UploadCrashDumps()
 	return 1
 End
 
-Function UploadLogFile()
+Function UploadLogFiles()
 	string file, ticket
 	variable jsonID
 
@@ -7153,13 +7153,20 @@ Function UploadLogFile()
 
 	AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = 1)
 
+	file = GetZeroMQXOPLogfile()
+	if(FileExists(file))
+		AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = 1)
+	else
+		AddPayloadEntries(jsonID, {"ZeroMQ-XOP-log-file-does-not-exist"}, {""})
+	endif
+
 	ticket = GenerateRFC4122UUID()
 	AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = 1)
 
 	UploadJSONPayload(jsonID)
 	JSON_Release(jsonID)
 
-	printf "Successfully uploaded the MIES logfile. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+	printf "Successfully uploaded the MIES and ZeroMQ-XOP logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
 End
 
 /// @brief Update the logging template used by the ZeroMQ-XOP
