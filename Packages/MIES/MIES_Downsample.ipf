@@ -100,6 +100,8 @@ Function/S GetPopupMenuDeviceListWithData()
 	variable numDeviceTypes   = ItemsInList(DEVICE_TYPES_ITC)
 	variable numDevices       = ItemsInList(DEVICE_NUMBERS)
 
+	// @todo: Does not know about NI devices and should probably prefer GetAllDevicesWithContent
+
 	for(i=0; i < numDeviceTypes; i+=1)
 		deviceType = StringFromList(i, DEVICE_TYPES_ITC)
 		path       = GetDeviceTypePathAsString(deviceType)
