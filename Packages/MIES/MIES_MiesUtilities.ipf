@@ -1749,7 +1749,7 @@ Function/S GetAllDevices()
 
 			if(DataFolderExists(path))
 				DFREF dfr = $path
-					NVAR/SDFR=dfr/Z deviceID, ITCDeviceIDGlobal
+				NVAR/SDFR=dfr/Z deviceID, ITCDeviceIDGlobal
 
 				if(NVAR_Exists(deviceID) || NVAR_Exists(ITCDeviceIDGlobal))
 					list = AddListItem(device, list, ";", inf)
