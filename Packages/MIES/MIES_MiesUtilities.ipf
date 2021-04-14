@@ -1721,7 +1721,7 @@ Function/S GetAllDevices()
 	for(i = 0; i < numEntries; i += 1)
 		folder = StringFromList(i, folders)
 
-		if(GrepString(folder, "^ITC.*"))
+		if(GrepString(folder, ITC_DEVICE_REGEXP))
 			DFREF subFolderDFR = $(devicesFolderPath + ":" + folder)
 			subFolders = GetListOfObjects(subFolderDFR, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
 
