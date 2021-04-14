@@ -99,7 +99,7 @@ Function/S DAP_GetNIDeviceList()
 	// we want to have device infos for all NI devices
 	// devList holds only the ones suitable for DAQ but
 	// skips the ones used for pressure
-	DAP_UpdateDeviceInfoWaves(HW_NI_ListDevices())
+	DAP_UpdateDeviceInfoWaves(HW_NI_ListDevices(), HARDWARE_NI_DAC)
 
 	return devList
 End
@@ -118,7 +118,7 @@ Function/S DAP_GetITCDeviceList()
 
 	globalITCDevList = HW_ITC_ListDevices()
 
-	DAP_UpdateDeviceInfoWaves(globalITCDevList)
+	DAP_UpdateDeviceInfoWaves(globalITCDevList, HARDWARE_ITC_DAC)
 
 	return globalITCDevList
 End
@@ -5538,16 +5538,17 @@ End
 ///
 /// Usually only called once during startup
 ///
-/// @param deviceList list of devices usable for DAQ and pressure
-Function DAP_UpdateDeviceInfoWaves(string deviceList)
+/// @param deviceList   list of devices usable for DAQ and pressure
+/// @param hardwareType One of @ref HardwareDACTypeConstants
+Function DAP_UpdateDeviceInfoWaves(string deviceList, variable hardwareType)
 	string device
-	variable numEntries, i, hardwareType
+	variable numEntries, i
 
 	numEntries = ItemsInList(deviceList)
 	for(i = 0; i < numEntries; i += 1)
 		device = StringFromList(i, deviceList)
 		WAVE deviceInfo = GetDeviceInfoWave(device)
-		WAVE devInfoHW = HW_GetDeviceInfoUnregistered(device)
+		WAVE devInfoHW = HW_GetDeviceInfoUnregistered(hardwareType, device)
 		hardwareType = GetHardwareType(device)
 		HW_WriteDeviceInfo(hardwareType, deviceInfo, devInfoHW)
 	endfor

@@ -446,16 +446,16 @@ End
 ///
 /// This function does not require the device to be registered compared to HW_GetDeviceInfo().
 ///
+/// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param device name of the device
 /// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function/WAVE HW_GetDeviceInfoUnregistered(string device, [variable flags])
+Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device, [variable flags])
 
-	variable hardwareType, deviceID
-
-	deviceID = HW_OpenDevice(device, hardwareType, flags = flags)
+	variable deviceID
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
+			deviceID = HW_OpenDevice(device, hardwareType, flags = flags)
 			WAVE devInfo = HW_ITC_GetDeviceInfo(deviceID, flags = flags)
 			HW_CloseDevice(hardwareType, deviceID)
 			break
