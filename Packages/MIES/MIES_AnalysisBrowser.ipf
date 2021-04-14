@@ -832,7 +832,7 @@ static Function/S AB_LoadLabNotebookFromIgor(discLocation)
 			// ITC hardware is in a specific subfolder
 			for(j = 0; j < numNumbers ; j += 1)
 				number = StringFromList(j, DEVICE_NUMBERS)
-				device = BuildDeviceString(type, number)
+				device = HW_ITC_BuildDeviceString(type, number)
 				path = GetDataFolder(1, newDFR) + type + ":Device" + number
 
 				AB_LoadLabNotebookFromIgorLow(discLocation, path, device, deviceList)

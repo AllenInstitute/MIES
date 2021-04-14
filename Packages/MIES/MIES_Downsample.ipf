@@ -110,7 +110,7 @@ Function/S GetPopupMenuDeviceListWithData()
 
 		for(j=0; j < numDevices; j+=1)
 			deviceNumber = StringFromList(j, DEVICE_NUMBERS)
-			deviceString = BuildDeviceString(deviceType, deviceNumber)
+			deviceString = HW_ITC_BuildDeviceString(deviceType, deviceNumber)
 			path         = GetDevicePathAsString(deviceString)
 
 			if(!DataFolderExists(path))
@@ -189,7 +189,7 @@ static Function AppendEntries(list, dataRef, rate, startIndex, deviceType, devic
 
 	string listOfDataWaves, name
 	variable numWaves, i, idx, convrate, samplingInterval
-	dfref deviceDFR = GetDeviceDataPath(BuildDeviceString(deviceType, deviceNumber))
+	dfref deviceDFR = GetDeviceDataPath(HW_ITC_BuildDeviceString(deviceType, deviceNumber))
 
 	listOfDataWaves = GetListOfObjects(deviceDFR, DATA_SWEEP_REGEXP)
 	numWaves = ItemsInList(listOfDataWaves)

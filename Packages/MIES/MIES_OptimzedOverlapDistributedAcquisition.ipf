@@ -295,7 +295,7 @@ static Function OOD_StorePreload(panelTitle, preload)
 
 	ParseDeviceString(panelTitle, deviceType, deviceNumberStr)
 	deviceNumber = str2num(deviceNumberStr) + 1
-	panelTitleNext = BuildDeviceString(deviceType, num2str(deviceNumber))
+	panelTitleNext = HW_ITC_BuildDeviceString(deviceType, num2str(deviceNumber))
 
 	WAVE preloadPerm = GetDistDAQPreloadWave(panelTitleNext)
 

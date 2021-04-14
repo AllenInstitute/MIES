@@ -671,6 +671,20 @@ End
 /// @name ITC
 /// @{
 
+/// @brief Build the device string for ITC devices
+///
+/// There is no corresponding function for other hardware types like NI devices
+/// because those do not have a two part device name
+Function/S HW_ITC_BuildDeviceString(string deviceType, string deviceNumber)
+	ASSERT(!isEmpty(deviceType) && !isEmpty(deviceNumber), "empty device type or number")
+
+	if(FindListItem(deviceType, DEVICE_TYPES_ITC) > -1)
+		return deviceType + "_Dev_" + deviceNumber
+	endif
+
+	ASSERT(0, "No NI or ITC device with this name found");
+End
+
 #ifdef ITC_XOP_PRESENT
 
 /// @brief Return a list of all open ITC devices
@@ -691,7 +705,7 @@ Function/S HW_ITC_ListOfOpenDevices()
 
 		type   = StringFromList(DevInfo[0], DEVICE_TYPES_ITC)
 		number = StringFromList(DevInfo[1], DEVICE_NUMBERS)
-		device = BuildDeviceString(type, number)
+		device = HW_ITC_BuildDeviceString(type, number)
 		list   = AddListItem(device, list, ";", Inf)
 	endfor
 
@@ -723,7 +737,7 @@ Function/S HW_ITC_ListDevices()
 		endif
 
 #ifdef EVIL_KITTEN_EATING_MODE
-		device = BuildDeviceString(type, "0")
+		device = HW_ITC_BuildDeviceString(type, "0")
 		list = AddListItem(device, list, ";", inf)
 		continue
 #endif
@@ -736,7 +750,7 @@ Function/S HW_ITC_ListDevices()
 		if(V_Value > 0)
 			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
 				number = StringFromList(j, DEVICE_NUMBERS)
-				device = BuildDeviceString(type,number)
+				device = HW_ITC_BuildDeviceString(type,number)
 
 				do
 					ITCOpenDevice2/Z=1/DTS=type str2num(number)

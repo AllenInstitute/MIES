@@ -1730,7 +1730,7 @@ Function/S GetAllDevices()
 			for(j = 0; j < numDevices ; j += 1)
 				subFolder = StringFromList(j, subFolders)
 				number = RemovePrefix(subFolder, start = "Device")
-				device = BuildDeviceString(folder, number)
+				device = HW_ITC_BuildDeviceString(folder, number)
 				path   = GetDevicePathAsString(device)
 
 				if(DataFolderExists(path))
@@ -2060,21 +2060,6 @@ threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 		deviceType   = StringFromList(0,device,"_")
 		deviceNumber = StringFromList(2,device,"_")
 		return !isEmpty(deviceType) && !isEmpty(deviceNumber) && cmpstr(deviceType, "DA")
-	endif
-End
-
-/// @brief Builds device string
-Function/S BuildDeviceString(deviceType, deviceNumber)
-	string deviceType, deviceNumber
-
-	ASSERT(!isEmpty(deviceType) && !isEmpty(deviceNumber), "empty device type or number");
-// check what device we have
-	if(FindListItem(deviceType, DAP_GetNIDeviceList()) > -1)
-		return deviceType
-	elseif(FindListItem(deviceType, DEVICE_TYPES_ITC) > -1)
-		return deviceType + "_Dev_" + deviceNumber
-	else
-		ASSERT(0, "No NI or ITC device with this name found");
 	endif
 End
 
