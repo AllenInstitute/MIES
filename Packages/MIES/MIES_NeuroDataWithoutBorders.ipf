@@ -173,6 +173,7 @@ static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExpo
 		endif
 
 		IPNWB#CreateCommonGroups(fileID, ti)
+		IPNWB#CreateIntraCellularEphys(fileID)
 
 		NWB_AddGeneratorString(fileID, nwbVersion)
 		NWB_AddSpecifications(fileID, nwbVersion)
@@ -397,7 +398,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen
 
 	string devicesWithContent, panelTitle, list, name
-	variable i, j, numEntries, locationID, sweep, numWaves, firstCall, deviceID, createdNewNWBFile
+	variable i, j, numEntries, locationID, sweep, numWaves, deviceID, createdNewNWBFile
 	string stimsetList = ""
 
 	if(ParamIsDefault(writeStoredTestPulses))
@@ -446,7 +447,6 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	print "Please be patient while we export all existing acquired content of all devices to NWB"
 	ControlWindowToFront()
 
-	firstCall = 1
 	numEntries = ItemsInList(devicesWithContent)
 	for(i = 0; i < numEntries; i += 1)
 		panelTitle = StringFromList(i, devicesWithContent)
@@ -461,11 +461,6 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		LOG_AddEntry(PACKAGE_MIES, "export", keys = {"device", "#sweeps"}, values = {panelTitle, num2str(numWaves)})
 
 		for(j = 0; j < numWaves; j += 1)
-			if(firstCall)
-				IPNWB#CreateIntraCellularEphys(locationID)
-				firstCall = 0
-			endif
-
 			name = StringFromList(j, list)
 			WAVE/SDFR=dfr sweepWave = $name
 			WAVE/Z configWave = GetConfigWave(sweepWave)
@@ -726,7 +721,6 @@ Function NWB_AppendSweep(panelTitle, DAQDataWave, DAQConfigWave, sweep, nwbVersi
 	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
 
 	IPNWB#AddModificationTimeEntry(locationID, nwbVersion)
-	IPNWB#CreateIntraCellularEphys(locationID)
 	NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion)
 	NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQDataWave, DAQConfigWave, sweep)
 	stimsets = NWB_GetStimsetFromPanel(panelTitle, sweep)
