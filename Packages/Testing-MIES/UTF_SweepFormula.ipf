@@ -1034,7 +1034,7 @@ Function TestLabNotebook()
 	Variable mode = DATA_ACQUISITION_MODE
 	String channelType = StringFromList(XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_NAMES)
 	String win = DATABROWSER_WINDOW_TITLE
-	String device = BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+	String device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
 
 	String channelTypeC = channelType + "C"
 

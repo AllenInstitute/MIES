@@ -446,16 +446,16 @@ End
 ///
 /// This function does not require the device to be registered compared to HW_GetDeviceInfo().
 ///
+/// @param hardwareType One of @ref HardwareDACTypeConstants
 /// @param device name of the device
 /// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function/WAVE HW_GetDeviceInfoUnregistered(string device, [variable flags])
+Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device, [variable flags])
 
-	variable hardwareType, deviceID
-
-	deviceID = HW_OpenDevice(device, hardwareType, flags = flags)
+	variable deviceID
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
+			deviceID = HW_OpenDevice(device, hardwareType, flags = flags)
 			WAVE devInfo = HW_ITC_GetDeviceInfo(deviceID, flags = flags)
 			HW_CloseDevice(hardwareType, deviceID)
 			break
@@ -671,6 +671,20 @@ End
 /// @name ITC
 /// @{
 
+/// @brief Build the device string for ITC devices
+///
+/// There is no corresponding function for other hardware types like NI devices
+/// because those do not have a two part device name
+Function/S HW_ITC_BuildDeviceString(string deviceType, string deviceNumber)
+	ASSERT(!isEmpty(deviceType) && !isEmpty(deviceNumber), "empty device type or number")
+
+	if(FindListItem(deviceType, DEVICE_TYPES_ITC) > -1)
+		return deviceType + "_Dev_" + deviceNumber
+	endif
+
+	ASSERT(0, "No NI or ITC device with this name found");
+End
+
 #ifdef ITC_XOP_PRESENT
 
 /// @brief Return a list of all open ITC devices
@@ -691,7 +705,7 @@ Function/S HW_ITC_ListOfOpenDevices()
 
 		type   = StringFromList(DevInfo[0], DEVICE_TYPES_ITC)
 		number = StringFromList(DevInfo[1], DEVICE_NUMBERS)
-		device = BuildDeviceString(type, number)
+		device = HW_ITC_BuildDeviceString(type, number)
 		list   = AddListItem(device, list, ";", Inf)
 	endfor
 
@@ -723,7 +737,7 @@ Function/S HW_ITC_ListDevices()
 		endif
 
 #ifdef EVIL_KITTEN_EATING_MODE
-		device = BuildDeviceString(type, "0")
+		device = HW_ITC_BuildDeviceString(type, "0")
 		list = AddListItem(device, list, ";", inf)
 		continue
 #endif
@@ -736,7 +750,7 @@ Function/S HW_ITC_ListDevices()
 		if(V_Value > 0)
 			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
 				number = StringFromList(j, DEVICE_NUMBERS)
-				device = BuildDeviceString(type,number)
+				device = HW_ITC_BuildDeviceString(type,number)
 
 				do
 					ITCOpenDevice2/Z=1/DTS=type str2num(number)
