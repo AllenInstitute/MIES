@@ -1880,6 +1880,8 @@ Function/WAVE GetDAQDataSingleColumnWaves(sweepDFR, channelType)
 	DFREF sweepDFR
 	variable channelType
 
+	ASSERT(DataFolderExistsDFR(sweepDFR), "sweepDFR is invalid")
+
 	Make/FREE/WAVE/N=(GetNumberFromType(xopVar=channelType)) matches = GetDAQDataSingleColumnWave(sweepDFR, channelType, p)
 
 	return matches
