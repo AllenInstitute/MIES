@@ -4912,7 +4912,6 @@ Function/WAVE GetTTLStimSets(numericalValues, textualValues, sweep)
 
 	if(WaveExists(ttlStimsets))
 		// NI hardware
-		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL stim sets", DATA_ACQUISITION_MODE)
 		return ListToTextWave(ttlStimsets[index], ";")
 	elseif(WaveExists(ttlStimsetsRackZero) || WaveExists(ttlStimsetsRackOne))
 		// ITC hardware
