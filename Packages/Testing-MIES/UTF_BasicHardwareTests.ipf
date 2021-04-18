@@ -3684,7 +3684,7 @@ Function HasNaNAsDefaultWhenAborted_REENTRY([str])
 
 	// check that we have NaNs for all columns starting from the first unacquired point
 	Duplicate/FREE/RMD=[V_row,][] sweepWave, unacquiredData
-	WaveStats/M=1 unacquiredData
+	WaveStats/Q/M=1 unacquiredData
 	CHECK_EQUAL_VAR(V_numNans, DimSize(unacquiredData, ROWS) * DimSize(unacquiredData, COLS))
 	CHECK_EQUAL_VAR(V_npnts, 0)
 End
