@@ -3967,6 +3967,52 @@ End
 
 /// @}
 
+/// ListToNumericWave
+/// @{
+
+Function LTNWWorks()
+	WAVE wv = ListToNumericWave("1;1e6;-inf;1.5;NaN;", ";")
+
+	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_EQUAL_WAVES(wv, {1, 1e6, -inf, 1.5, NaN}, mode = WAVE_DATA)
+End
+
+Function LTNWWorksWithCustomSepAndFloatType()
+	WAVE wv = ListToNumericWave("1|1e6|-inf|1.5|NaN|", "|", type = IGOR_TYPE_32BIT_FLOAT)
+
+	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+	CHECK_EQUAL_WAVES(wv, {1, 1e6, -inf, 1.5, NaN}, mode = WAVE_DATA)
+End
+
+Function LTNWWorksWithIntegerType()
+	WAVE wv = ListToNumericWave("1;-1;", ";", type = IGOR_TYPE_32BIT_INT)
+
+	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = INT32_WAVE)
+	CHECK_EQUAL_WAVES(wv, {1, -1}, mode = WAVE_DATA)
+End
+
+Function LTNWWorksWithOnlySeps()
+	WAVE wv = ListToNumericWave(";;;", ";")
+
+	CHECK_WAVE(wv, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+	CHECK_EQUAL_WAVES(wv, {NaN, NaN, NaN}, mode = WAVE_DATA)
+End
+
+Function LTNWRoundtripsWithNumericWaveToList()
+	string list
+
+	Make/FREE expected = {1, 1e6, -inf, 1.5, NaN}
+
+	list = NumericWaveToList(expected, ";")
+
+	WAVE actual = ListToNumericWave(list, ";")
+
+	CHECK_WAVE(expected, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+	CHECK_EQUAL_WAVES(expected, actual, mode = WAVE_DATA)
+End
+
+/// @}
+
 /// Backup functions
 /// - CreateBackupWave
 /// - CreateBackupWavesForAll
