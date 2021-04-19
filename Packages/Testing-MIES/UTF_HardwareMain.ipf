@@ -29,7 +29,6 @@
 #include "UTF_Epochs"
 #include "UTF_HelperFunctions"
 #include "UTF_VeryLastTestSuite"
-
 StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
 
 // Entry point for UTF
@@ -300,6 +299,8 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 		CheckLBIndexCache_IGNORE(dev)
 		CheckLBRowCache_IGNORE(dev)
+
+		TestSweepReconstruction_IGNORE(dev)
 	endfor
 
 	StopAllBackgroundTasks()
@@ -852,4 +853,83 @@ Function AddLabnotebookEntries_IGNORE(s)
 	endif
 
 	return 0
+End
+
+static Function TestSweepReconstruction_IGNORE(string panelTitle)
+	variable i, numEntries, sweepNo
+	string list, nameRecon, nameOrig
+
+	WAVE numericalValues = GetLBTextualValues(panelTitle)
+
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
+
+	if(!WaveExists(sweeps))
+		// no sweeps acquired, so we can't test anything
+		PASS()
+		return NaN
+	endif
+
+	DFREF deviceDFR = GetDeviceDataPath(panelTitle)
+
+	DuplicateDataFolder/O=1 deviceDFR, deviceDataBorkedUp
+	DFREF deviceDataBorkedUp = deviceDataBorkedUp
+
+	// we might already have X_XXXX folders from the databrowser, delete them in our copy
+	list = GetListOfObjects(deviceDataBorkedUp, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath = 1)
+	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
+
+	// generate 1D sweep waves in X_XXXX folders
+	numEntries = DimSize(sweeps, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		sweepNo = sweeps[i]
+
+		WAVE sweepWave  = GetSweepWave(panelTitle, sweepNo)
+		WAVE configWave = GetConfigWave(sweepWave)
+
+		DFREF singleSweepDFR = GetSingleSweepFolder(deviceDataBorkedUp, sweepNo)
+
+		SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_OFF, targetDFR=singleSweepDFR)
+	endfor
+
+	// delete 2D sweep and config waves
+	list = GetListOfObjects(deviceDataBorkedUp, ".*", typeFlag = COUNTOBJECTS_WAVES, fullPath = 1)
+	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
+
+	RecreateMissingSweepAndConfigWaves(panelTitle, deviceDataBorkedUp)
+
+	// compare the 2D sweep and config waves in deviceDFR and reconstructed
+	DFREF reconstructed = root:reconstructed
+
+	WAVE/T wavesReconstructed = ListToTextWave(GetListOfObjects(reconstructed, ".*", typeFlag = COUNTOBJECTS_WAVES, fullPath = 1), ";")
+	WAVE/T wavesOriginal = ListToTextWave(GetListOfObjects(deviceDFR, ".*", typeFlag = COUNTOBJECTS_WAVES, fullPath = 1), ";")
+
+	Sort wavesReconstructed, wavesReconstructed
+	Sort wavesOriginal, wavesOriginal
+
+	CHECK(DimSize(sweeps, ROWS) > 0)
+	CHECK_EQUAL_VAR(DimSize(wavesReconstructed, ROWS), DimSize(sweeps, ROWS) * 2)
+	CHECK_EQUAL_VAR(DimSize(wavesOriginal, ROWS), DimSize(sweeps, ROWS) * 2)
+
+	// loop over all waves and compare them
+	numEntries = DimSize(wavesReconstructed, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/Z wvReconstructed = $wavesReconstructed[i]
+		CHECK_WAVE(wvReconstructed, NUMERIC_WAVE)
+
+		WAVE/Z wvOriginal = $wavesOriginal[i]
+		CHECK_WAVE(wvOriginal, NUMERIC_WAVE)
+
+		nameRecon = NameOfWave(wvReconstructed)
+		nameOrig  = NameOfWave(wvOriginal)
+		CHECK_EQUAL_STR(nameRecon, nameOrig)
+
+		if(GrepString(nameRecon, DATA_CONFIG_REGEXP))
+			// set offset to zero for comparison
+			// only data acquired with PSQ_Ramp has offset != 0
+			wvReconstructed[][%Offset] = 0
+			wvOriginal[][%Offset]      = 0
+		endif
+
+		CHECK_EQUAL_WAVES(wvReconstructed, wvOriginal)
+	endfor
 End
