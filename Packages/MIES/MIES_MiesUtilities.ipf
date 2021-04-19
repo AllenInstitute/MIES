@@ -4879,6 +4879,172 @@ Function GetTTLBits(numericalValues, sweep, channel)
 	return ttlBits[index]
 End
 
+/// @brief Return a wave with the used TTL channels/bits which are indexed by DAEphys TTL channels
+///
+/// @param numericalValues Numerical labnotebook values
+/// @param textualValues   Text labnotebook values
+/// @param sweep           Sweep number
+static Function/WAVE GetTTLChannelsOrBits(WAVE numericalValues, WAVE textualValues, variable sweep)
+	variable index, first, last
+
+	index = GetIndexForHeadstageIndepData(numericalValues)
+
+	WAVE/T/Z ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlBitsRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero bits", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlBitsRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one bits", DATA_ACQUISITION_MODE)
+
+	if(WaveExists(ttlChannels))
+		// NI hardware
+		return ListToNumericWave(ttlChannels[index], ";", type = IGOR_TYPE_32BIT_FLOAT)
+	elseif(WaveExists(ttlBitsRackZero) || WaveExists(ttlBitsRackOne))
+		// ITC hardware
+		Make/FREE/Y=(IGOR_TYPE_32BIT_FLOAT)/N=(NUM_DA_TTL_CHANNELS) entries = NaN
+
+		if(WaveExists(ttlBitsRackZero))
+			HW_ITC_GetRackRange(RACK_ZERO, first, last)
+			entries[first, last] = (ttlBitsRackZero[index] & 2^p) == 2^p ? p : NaN
+		endif
+
+		if(WaveExists(ttlBitsRackOne))
+			HW_ITC_GetRackRange(RACK_ONE, first, last)
+			entries[first, last] = (ttlBitsRackOne[index] & 2^p) == 2^p ? p : NaN
+		endif
+
+		return entries
+	endif
+
+	// no TTL entries
+	return $""
+End
+
+/// @brief Return a wave with the used TTL channels which are indexed by DAEphys TTL channels
+///
+/// The returned wave is *not* hardware independent.
+/// For ITC hardware this will only ever return at most one active channel.
+///
+/// @param numericalValues Numerical labnotebook values
+/// @param textualValues   Text labnotebook values
+/// @param sweep           Sweep number
+static Function/WAVE GetTTLChannels(WAVE numericalValues, WAVE textualValues, variable sweep)
+	variable index
+
+	index = GetIndexForHeadstageIndepData(numericalValues)
+
+	WAVE/T/Z ttlChannels = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlChannelRackZero = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlChannelRackOne = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
+
+	if(WaveExists(ttlChannels))
+		// NI hardware
+		return ListToNumericWave(ttlChannels[index], ";")
+	elseif(WaveExists(ttlChannelRackZero) || WaveExists(ttlChannelRackOne))
+		// ITC hardware
+		Make/FREE/D/N=(NUM_DA_TTL_CHANNELS) entries = NaN
+		if(WaveExists(ttlChannelRackZero))
+			entries[ttlChannelRackZero[index]] = ttlChannelRackZero[index]
+		endif
+
+		if(WaveExists(ttlChannelRackOne))
+			entries[ttlChannelRackOne[index]] = ttlChannelRackOne[index]
+		endif
+
+		return entries
+	endif
+
+	// no TTL entries
+	return $""
+End
+
+/// @brief Return a fixed size wave with the the active channels for the given channel type
+///
+/// The function takes into account unassociated DA/AD channels as well. It returns fixed size waves with the active
+/// entries having the same value as their index. This allows users to either remove unused entries and use the wave as
+/// active entries list or use the whole wave where not being NaN is active.
+///
+/// With the following DAEphys setup (only the first four channels are shown)
+///
+/// \rst
+///
+/// +----+----+----+-----+
+/// | Nr | DA | AD | TTL |
+/// +====+====+====+=====+
+/// | 0  |    | •  |     |
+/// +----+----+----+-----+
+/// | 1  | •  |    |     |
+/// +----+----+----+-----+
+/// | 2  |    |    |  •  |
+/// +----+----+----+-----+
+/// | 3  |    |    |  •  |
+/// +----+----+----+-----+
+///
+/// this function returns the following:
+///
+/// - ``DA``: ``{NaN,  1, NaN, NaN, ...}``
+/// - ``AD``: ``{0, NaN, NaN, NaN, ...}``
+/// - ``TTL``:
+///
+///   - NI hardware (regardless of TTLmode): ``{NaN, NaN, 2, 3, ...}``
+///   - ITC hardware (ITC18 specifically) with TTLmode:
+///
+///     - ``TTL_DAEPHYS_CHANNEL``: ``{NaN, NaN, 2, 3, ...}``
+///     - ``TTL_HARDWARE_CHANNEL``: ``{NaN, 1, NaN, NaN, ...}``
+///
+/// \endrst
+///
+/// @see HW_ITC_GetITCXOPChannelForRack
+///
+/// @param numericalValues Numerical labnotebook values
+/// @param textualValues   Text labnotebook values
+/// @param sweepNo         Sweep number
+/// @param channelType     One of @ref XopChannelConstants
+/// @param TTLmode         [optional, defaults to #TTL_DAEPHYS_CHANNEL] One of @ref ActiveChannelsTTLMode.
+///                        Does only apply to TTL channels.
+Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, [variable TTLmode])
+	variable i, numEntries, index
+	string key
+
+	if(ParamIsDefault(TTLmode))
+		TTLmode = TTL_DAEPHYS_CHANNEL
+	endif
+
+	switch(channelType)
+		case XOP_CHANNEL_TYPE_DAC:
+			key = "DAC"
+			break
+		case XOP_CHANNEL_TYPE_ADC:
+			key = "ADC"
+			break
+		case XOP_CHANNEL_TYPE_TTL:
+			switch(TTLmode)
+				case TTL_HARDWARE_CHANNEL:
+					return GetTTLChannels(numericalValues, textualValues, sweepNo)
+				case TTL_DAEPHYS_CHANNEL:
+					return GetTTLChannelsOrBits(numericalValues, textualValues, sweepNo)
+				default:
+					ASSERT(0, "Invalid TTLmode")
+			endswitch
+		default:
+			ASSERT(0, "Unexpected channelType")
+	endswitch
+
+	numEntries = GetNumberFromType(xopVar = channelType)
+
+	Make/FREE/N=(numEntries) channelStatus = NaN
+
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/Z setting
+		[setting, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, key, i, channelType, DATA_ACQUISITION_MODE)
+
+		if(!WaveExists(setting))
+			continue
+		endif
+
+		channelStatus[i] = i
+	endfor
+
+	return channelStatus
+End
+
 /// @brief Return the index for headstage independent data
 ///
 /// Before dfe2d862 (Make the function AB_SplitTTLWaveIntoComponents available for all, 2015-10-07)

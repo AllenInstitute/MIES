@@ -102,6 +102,12 @@ Constant DAQ_CHANNEL_TYPE_TP     = 2
 Constant TIME_TP_ONLY_ON_DAQ = 1
 /// @}
 
+/// @name Flags for GetActiveChannels
+/// @anchor ActiveChannelsTTLMode
+/// @{
+Constant TTL_HARDWARE_CHANNEL  = 0x0
+Constant TTL_DAEPHYS_CHANNEL   = 0x1
+/// @}
 
 Constant MINIMUM_WAVE_SIZE = 64
 Constant MINIMUM_WAVE_SIZE_LARGE = 2048
