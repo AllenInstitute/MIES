@@ -412,3 +412,16 @@ Windows 10 S30 MIES CI:
 - ITC18-USB hardware, 2 AD/DA channels are looped
 - MCC demo amplifier only
 - Latest required nightly version of Igor Pro 8
+
+Branch naming scheme
+~~~~~~~~~~~~~~~~~~~~
+
+For making code review easier we try to follow a naming scheme for branches behind PRs.
+
+Scheme: ``$prefix/$pr-$text(-backport)?``
+
+Where ``$prefix`` is one of ``feature``/``bugfix``, ``$pr`` is the number of the soon-to-be-created pull request and
+``$text`` a user defined descriptive text. ``-backport`` must be present for PRs against release branches only.
+
+Contributers are encouraged to install the ``pre-push`` git hook from the tools directory. The script
+``tools/nextFreePRNumber.sh`` can get the soon-to-be-created PR number on the commandline (requires curl and jq) as well.
