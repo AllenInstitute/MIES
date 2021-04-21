@@ -1366,6 +1366,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 
 	DC_DocumentChannelProperty(panelTitle, "MIES version", INDEP_HEADSTAGE, NaN, NaN, str=GetMIESVersionAsString())
 	DC_DocumentChannelProperty(panelTitle, "Igor Pro version", INDEP_HEADSTAGE, NaN, NaN, str=GetIgorProVersion())
+	DC_DocumentChannelProperty(panelTitle, "Igor Pro build", INDEP_HEADSTAGE, NaN, NaN, str=GetIgorProBuildVersion())
 	DC_DocumentChannelProperty(panelTitle, "Igor Pro bitness", INDEP_HEADSTAGE, NaN, NaN, var=GetArchitectureBits())
 	DC_DocumentChannelProperty(panelTitle, "JSON config file: path", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_SOURCEFILE_PATH))
 	DC_DocumentChannelProperty(panelTitle, "JSON config file: SHA-256 hash", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_SOURCEFILE_HASH))
