@@ -1730,7 +1730,7 @@ Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 27
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 28
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -2215,6 +2215,7 @@ End
 /// - 29: JSON config file: path (`|` separated list of full file paths)
 /// - 30: JSON config file: SHA-256 hash (`|` separated list of hashes)
 /// - 31: JSON config file: stimset nwb file path
+/// - 32: Igor Pro build
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
@@ -2233,9 +2234,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 32, 0) wv
+		Redimension/N=(-1, 33, 0) wv
 	else
-		Make/T/N=(1, 32) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 33) newDFR:$newName/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -2274,6 +2275,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][29] = "JSON config file: path"
 	wv[0][30] = "JSON config file: SHA-256 hash"
 	wv[0][31] = "JSON config file: stimset nwb file path"
+	wv[0][32] = "Igor Pro build"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
