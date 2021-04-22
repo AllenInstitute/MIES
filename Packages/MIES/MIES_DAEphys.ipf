@@ -12,7 +12,7 @@
 static Constant DATA_ACQU_TAB_NUM         = 0
 static Constant HARDWARE_TAB_NUM          = 6
 
-static StrConstant YOKE_LIST_OF_CONTROLS  = "button_Hardware_Lead1600;button_Hardware_Independent;title_hardware_1600inst;title_hardware_Follow;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;title_hardware_Release;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
+static StrConstant YOKE_LIST_OF_CONTROLS  = "group_Hardware_YokeInner;button_Hardware_Lead1600;button_Hardware_Independent;button_Hardware_AddFollower;popup_Hardware_AvailITC1600s;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke"
 static StrConstant YOKE_CONTROLS_DISABLE  = "StartTestPulseButton;DataAcquireButton;Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward"
 /// Synced with `desc` in DAP_CheckSettingsAcrossYoked()
 static StrConstant YOKE_CONTROLS_DISABLE_AND_LINK = "Check_DataAcq1_RepeatAcq;Check_DataAcq1_DistribDaq;SetVar_DataAcq_dDAQDelay;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI;Setvar_DataAcq_dDAQOptOvPre;Setvar_DataAcq_dDAQOptOvPost;Check_DataAcq1_dDAQOptOv;setvar_DataAcq_dDAQOptOvRes"
@@ -867,11 +867,6 @@ Function DAP_UpdateYokeControls(panelTitle)
 		HideControls(panelTitle,YOKE_LIST_OF_CONTROLS)
 	else
 		ShowControls(panelTitle,YOKE_LIST_OF_CONTROLS)
-		if(DeviceCanLead(panelTitle))
-			TitleBox title_hardware_1600inst win = $panelTitle, title = "Designate the status of the ITC1600 assigned to this device"
-		else
-			TitleBox title_hardware_1600inst win = $panelTitle, title = "To yoke devices go to panel: " + ITC1600_FIRST_DEVICE
-		endif
 		SetVariable setvar_Hardware_YokeList win = $panelTitle, value = _STR:DAP_GUIListOfYokedDevices()
 	endif
 End
