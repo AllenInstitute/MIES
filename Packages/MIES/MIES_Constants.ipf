@@ -1434,3 +1434,7 @@ Constant HW_NI_CONFIG_NRSE                = 2 //< NRSE terminal configuration
 Constant HW_NI_CONFIG_DIFFERENTIAL        = 4 //< Differential terminal configuration
 Constant HW_NI_CONFIG_PSEUDO_DIFFERENTIAL = 8 //< Pseudodifferential terminal configuration
 /// @}
+
+StrConstant PACKAGE_SETTINGS_JSON = "Settings.json"
+
+StrConstant LOGFILE_NAME = "Log.jsonl"

@@ -69,6 +69,8 @@ End
 ///
 ///        Threadsafe variant which requires the symbolic path `PackageFolder` created by
 ///        PS_Initialize() to exist.
+///
+///        The returned folder location includes a trailing colon (":")
 threadsafe Function/S PS_GetSettingsFolder_TS(package)
 	string package
 
@@ -80,6 +82,8 @@ End
 
 /// @brief Return the absolute path to the settings folder for `package`
 ///        creating it when necessary.
+///
+///        The returned folder location includes a trailing colon (":")
 Function/S PS_GetSettingsFolder(package)
 	string package
 
@@ -103,7 +107,7 @@ static Function/S PS_GetSettingsFile(package)
 
 	folder = PS_GetSettingsFolder(package)
 
-	return folder + ":Settings.json"
+	return folder + PACKAGE_SETTINGS_JSON
 End
 
 /// @brief Move the window to the stored location
@@ -255,5 +259,55 @@ Function PS_OpenNotebook(string package, variable JSONid)
 	else
 		path = PS_GetSettingsFile(package)
 		OpenNotebook/ENCG=1/N=$name path
+	endif
+End
+
+/// Fixup the settings and log file location for Igor Pro prior to 0855279d (Fix package folder location on disk,
+/// 2021-04-01).
+///
+/// Package JSON:
+/// - Incorrect is moved to the correct location
+///
+/// JSONL logfile:
+/// - Incorrect is moved to the correct location only if the correct does not exists
+/// - If the correct does exist as well, the incorrect is read and appened to to the correct one
+Function PS_FixPackageLocation(string package)
+	string folder, incorrectFolder, incorrectPackageFile, incorrectLogFile
+	string correctPackageFile, correctLogFile, incorrectData, correctData, fName, data
+
+	folder = PS_GetSettingsFolder(package)
+
+	// folder is the correct location, the old and incorrect version is one-level up
+	incorrectFolder = RemoveEnding(folder, package + ":")
+	ASSERT(cmpstr(folder, incorrectFolder), "Invalid incorrectFolder")
+
+	incorrectPackageFile = incorrectFolder + PACKAGE_SETTINGS_JSON
+	incorrectLogFile = incorrectFolder + LOGFILE_NAME
+
+	if(!FileExists(incorrectPackageFile) && !FileExists(incorrectLogFile))
+		// nothing to do
+		return NaN
+	endif
+
+	// always overwrite correct location
+	correctPackageFile = folder + PACKAGE_SETTINGS_JSON
+	if(FileExists(incorrectPackageFile))
+		MoveFile/O incorrectPackageFile correctPackageFile
+		ASSERT(FileExists(correctPackageFile) && !FileExists(incorrectPackageFile), "Incorrect package file location upgrade")
+	endif
+
+	correctLogFile = folder + LOGFILE_NAME
+	if(FileExists(incorrectLogFile))
+		if(!FileExists(correctLogFile))
+			MoveFile incorrectLogFile correctLogFile
+		else
+			// read the incorrect log file and append it to the correct one
+			[incorrectData, fName] = LoadTextFile(incorrectLogFile)
+			[correctData, fName] = LoadTextFile(correctLogFile)
+			data = RemoveEnding(correctData, "\n") + "\n" + incorrectData
+			SaveTextFile(data, correctLogFile)
+			DeleteFile incorrectLogFile
+		endif
+		ASSERT(FileExists(correctLogFile) && !FileExists(incorrectLogFile), "Incorrect log file location upgrade")
 	endif
 End
