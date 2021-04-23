@@ -23,6 +23,7 @@
 #include "UTF_TestNWBExportV2"
 #include "UTF_Epochs"
 #include "UTF_HelperFunctions"
+#include "UTF_IVSCC"
 
 StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
 
@@ -41,6 +42,7 @@ Function run()
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list)
 	list = AddListItem("UTF_Epochs.ipf", list)
 	list = AddListItem("UTF_SetControls.ipf", list)
+	list = AddListItem("UTF_IVSCC.ipf", list)
 
 	// the last will be first
 	// use this hack until https://github.com/byte-physics/igor-unit-testing-framework/issues/109

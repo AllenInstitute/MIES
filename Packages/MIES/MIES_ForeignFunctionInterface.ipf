@@ -7,13 +7,13 @@
 #endif
 
 /// @file MIES_ForeignFunctionInterface.ipf
-/// @brief __FFI__ ACQ4 accessible functions
+/// @brief __FFI__ ACQ4/ZeroMQ accessible functions
 
-///@brief Function to return Peak Resistance, Steady State Resistance to ACQ4 (Neurophysiology Acquisition and Analysis System.
+/// @brief Function to return Peak Resistance, Steady State Resistance to ACQ4 (Neurophysiology Acquisition and Analysis System.
 /// See http://acq4.org/ for more details)
 ///
-///The function will pull the values (PeakResistance, SteadyStateResistance, and TimeStamp) out of
-///the TP storage wave and put them in a 3x8 wave, in a designated location where ACQ4 can then find them
+/// The function will pull the values (PeakResistance, SteadyStateResistance, and TimeStamp) out of
+/// the TP storage wave and put them in a 3x8 wave, in a designated location where ACQ4 can then find them
 Function/WAVE FFI_ReturnTPValues()
 	string lockedDevList
 	variable noLockedDevs
@@ -52,4 +52,14 @@ Function/WAVE FFI_ReturnTPValues()
 	endfor
 
 	return acqStorageWave
+End
+
+/// @brief Return a text wave with all available message filters for Publisher/Subscriber ZeroMQ sockets
+Function/WAVE FFI_GetAvailableMessageFilters()
+
+	Make/FREE/T wv = {ZeroMQ_HEARTBEAT, IVS_PUB_FILTER}
+
+	Note/K wv "Heartbeat is sent every 5 seconds."
+
+	return wv
 End

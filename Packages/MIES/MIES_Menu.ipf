@@ -43,19 +43,19 @@ Menu "Mies Panels"
 	"About MIES"                               , /Q, OpenAboutDialog()
 	"-"
 	SubMenu "Advanced"
-		"Restart ZeroMQ Message Handler"           , /Q, StartZeroMQMessageHandler()
-		"Turn off ASLR (requires UAC elevation)"   , /Q, TurnOffASLR()
-		"Open debug panel"                         , /Q, DP_OpenDebugPanel()
-		"Check Installation"                       , /Q, CHI_CheckInstallation()
-		"Start Background Task watcher panel"      , /Q, BkgWatcher#BW_StartPanel()
-		"Enable Independent Module editing"        , /Q, SetIgorOption IndependentModuleDev=1
-		"Reset and store current DA_EPHYS panel"   , /Q, DAP_EphysPanelStartUpSettings()
-		"Reset and store current DataBrowser panel", /Q, DB_ResetAndStoreCurrentDBPanel()
-		"Check GUI control procedures of top panel", /Q, SearchForInvalidControlProcs(GetCurrentWindow())
-		"Flush Cache"                              , /Q, CA_FlushCache()
-		"Output Cache statistics"                  , /Q, CA_OutputCacheStatistics()
-		"Show Diagnostics (crash dumps) directory" , /Q, ShowDiagnosticsDirectory()
-		"Upload crash dumps"                       , /Q, UploadCrashDumps()
+		"Restart ZeroMQ Sockets and Message Handler", /Q, StartZeroMQSockets(forceRestart = 1)
+		"Turn off ASLR (requires UAC elevation)"    , /Q, TurnOffASLR()
+		"Open debug panel"                          , /Q, DP_OpenDebugPanel()
+		"Check Installation"                        , /Q, CHI_CheckInstallation()
+		"Start Background Task watcher panel"       , /Q, BkgWatcher#BW_StartPanel()
+		"Enable Independent Module editing"         , /Q, SetIgorOption IndependentModuleDev=1
+		"Reset and store current DA_EPHYS panel"    , /Q, DAP_EphysPanelStartUpSettings()
+		"Reset and store current DataBrowser panel" , /Q, DB_ResetAndStoreCurrentDBPanel()
+		"Check GUI control procedures of top panel" , /Q, SearchForInvalidControlProcs(GetCurrentWindow())
+		"Flush Cache"                               , /Q, CA_FlushCache()
+		"Output Cache statistics"                   , /Q, CA_OutputCacheStatistics()
+		"Show Diagnostics (crash dumps) directory"  , /Q, ShowDiagnosticsDirectory()
+		"Upload crash dumps"                        , /Q, UploadCrashDumps()
 	End
 End
 

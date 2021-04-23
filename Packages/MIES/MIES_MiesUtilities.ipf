@@ -5289,52 +5289,64 @@ Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
 	return key
 End
 
-/// @brief Start the ZeroMQ message handler
+/// @brief Start the ZeroMQ sockets and the message handler
 ///
 /// Debug note: Tracking the connection state can be done via
 /// `netstat | grep $port`. The binded port only shows up *after* a
 /// successfull connection with zeromq_client_connect() is established.
-Function StartZeroMQMessageHandler()
+Function StartZeroMQSockets([variable forceRestart])
 
-	variable i, port, err
+	variable i, port, err, numBinds
 
 #if exists("zeromq_stop")
 
-	// do nothing if we are already running
-	zeromq_handler_start(); err = GetRTError(1)
-	if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
-		DEBUGPRINT("Already running, nothing to do.")
-		return NaN
+	if(ParamIsDefault(forceRestart))
+		forceRestart = 0
+	else
+		forceRestart = !!forceRestart
+	endif
+
+	if(!forceRestart)
+		// do nothing if we are already running
+		zeromq_handler_start(); err = GetRTError(1)
+		if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
+			DEBUGPRINT("Already running, nothing to do.")
+			return NaN
+		endif
 	endif
 
 	zeromq_stop()
 
 #if defined(DEBUGGING_ENABLED)
-	zeromq_set(ZeroMQ_SET_FLAGS_DEBUG | ZeroMQ_SET_FLAGS_DEFAULT)
+	zeromq_set(ZeroMQ_SET_FLAGS_DEBUG | ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV)
 #else
-	zeromq_set(ZeroMQ_SET_FLAGS_DEFAULT)
+	zeromq_set(ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV)
 #endif
 
 	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
 		port = ZEROMQ_BIND_REP_PORT + i
 		zeromq_server_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1)
 
-		if(err != 0)
-			DEBUGPRINT("The port is in use:", var=port)
-			continue
+		if(!err)
+			DEBUGPRINT("Successfully listening with server on port:", var=port)
+			numBinds += 1
+			break
 		endif
-
-		zeromq_handler_start(); err = GetRTError(1)
-		if(err != 0)
-			zeromq_stop() // restart from scratch
-			continue
-		endif
-
-		DEBUGPRINT("Successfully listening on port:", var=port)
-		return NaN
 	endfor
 
-	ASSERT(0, "Could not start ZeroMQ Message Handler!")
+	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
+		port = ZEROMQ_BIND_PUB_PORT + i
+		zeromq_pub_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1)
+
+		if(!err)
+			DEBUGPRINT("Successfully listening with publisher on port:", var=port)
+			numBinds += 1
+			break
+		endif
+	endfor
+
+	ASSERT(numBinds == 2, "Could not establish ZeroMQ bind connections.")
+	zeromq_handler_start()
 
 #else
 

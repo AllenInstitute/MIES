@@ -683,6 +683,8 @@ Constant ZEROMQ_NUM_BIND_TRIALS = 32
 
 Constant ZEROMQ_BIND_REP_PORT = 5670
 
+Constant ZEROMQ_BIND_PUB_PORT = 5770
+
 /// @name Constants for AnalysisBrowserMap (Text Wave)
 /// @{
 StrConstant ANALYSISBROWSER_FILE_TYPE_IGOR = "I"
@@ -1305,3 +1307,5 @@ StrConstant TUD_INDEX_JSON = "INDEX_JSON"
 
 /// @brief sprintf field width for trace names
 Constant TRACE_NAME_NUM_DIGITS = 6
+
+StrConstant IVS_PUB_FILTER = "ivscc"
