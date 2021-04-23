@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -e
+
+IFS=' '
+while read local_ref local_sha remote_ref remote_sha
+do
+  if [[ "$remote_sha" != "0000000000000000000000000000000000000000" ]]
+  then
+    # remote branch already exists, nothing to check
+    exit 0
+  fi
+
+  branch=$(echo $remote_ref | cut -d "/" -f 3-)
+  prefix=$(echo $branch | cut -d "/" -f 1)
+  pr=$(echo $branch | cut -d "/" -f 2| cut -d "-" -f 1)
+
+  # echo $branch
+  # echo $prefix
+  # echo $pr
+
+  if [[ "$prefix" != "feature" && "$prefix" != "bugfix" ]]
+  then
+    echo "The naming of the branch \"$branch\" does not match the required naming scheme as the prefix \"$prefix\" is wrong." > /dev/stderr
+    exit 1
+  fi
+
+  top_level=$(git rev-parse --show-toplevel)
+
+  nextFreePR=$($top_level/tools/nextFreePRNumber.sh)
+  if [[ "$pr" != "$nextFreePR" ]]
+  then
+    echo "The next free PR number is $nextFreePR, but this branch has $pr." > /dev/stderr
+    exit 1
+  fi
+
+  # echo "Good: The remote branch \"$branch\" follows the desired naming scheme."
+done
+
+exit 0
