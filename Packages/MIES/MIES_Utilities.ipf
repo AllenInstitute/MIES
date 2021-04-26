@@ -3165,8 +3165,6 @@ Function/WAVE ListToNumericWave(list, sep, [type])
 		type = IGOR_TYPE_64BIT_FLOAT
 	endif
 
-	list = RemoveEnding(list, sep)
-
 	Make/FREE/Y=(type)/N=(ItemsInList(list, sep)) wv = str2num(StringFromList(p, list, sep))
 
 	return wv

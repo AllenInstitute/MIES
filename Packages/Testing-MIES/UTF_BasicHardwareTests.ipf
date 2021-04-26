@@ -2552,6 +2552,28 @@ Function UnassociatedChannels_REENTRY([str])
 				expectedStr= "mV"
 				CHECK_EQUAL_STR(str, expectedStr)
 			endfor
+
+			// test GetActiveChannels
+			WAVE DA  = GetActiveChannels(numericalValues, textualValues, j, XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_WAVES(DA, {0, 1, 2, NaN, NaN, NaN, NaN, NaN})
+
+			WAVE AD  = GetActiveChannels(numericalValues, textualValues, j, XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_WAVES(AD, {0, 1, 2, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN})
+
+			WAVE TTL = GetActiveChannels(numericalValues, textualValues, j, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_DAEPHYS_CHANNEL)
+			CHECK_EQUAL_WAVES(TTL, {NaN, 1, NaN, 3, NaN, NaN, NaN, NaN})
+
+			WAVE TTL = GetActiveChannels(numericalValues, textualValues, j, XOP_CHANNEL_TYPE_TTL, TTLmode = TTL_HARDWARE_CHANNEL)
+
+			if(GetHardwareType(device) == HARDWARE_NI_DAC)
+				Make/FREE/D TTLRef = {NaN, 1, NaN, 3, NaN, NaN, NaN, NaN}
+			else
+				Make/FREE/D/N=(NUM_DA_TTL_CHANNELS) TTLRef = NaN
+				index = HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO)
+				TTLRef[index] = index
+			endif
+
+			CHECK_EQUAL_WAVES(TTL, TTLRef)
 		endfor
 	endfor
 
@@ -3684,7 +3706,7 @@ Function HasNaNAsDefaultWhenAborted_REENTRY([str])
 
 	// check that we have NaNs for all columns starting from the first unacquired point
 	Duplicate/FREE/RMD=[V_row,][] sweepWave, unacquiredData
-	WaveStats/M=1 unacquiredData
+	WaveStats/Q/M=1 unacquiredData
 	CHECK_EQUAL_VAR(V_numNans, DimSize(unacquiredData, ROWS) * DimSize(unacquiredData, COLS))
 	CHECK_EQUAL_VAR(V_npnts, 0)
 End

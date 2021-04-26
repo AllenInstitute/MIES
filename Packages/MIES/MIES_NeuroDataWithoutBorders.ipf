@@ -456,6 +456,8 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
 		numWaves = ItemsInList(list)
 
+		NWB_CheckForMissingSweeps(panelTitle, ListToTextWave(list, ";"))
+
 		LOG_AddEntry(PACKAGE_MIES, "export", keys = {"device", "#sweeps"}, values = {panelTitle, num2str(numWaves)})
 
 		for(j = 0; j < numWaves; j += 1)
@@ -471,8 +473,6 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 			sweep = ExtractSweepNumber(name)
 
 			if(!WaveExists(configWave))
-				printf "Sweep %d can not be exported as the config wave is missing.", sweep
-				ControlWindowToFront()
 				continue
 			endif
 
@@ -488,6 +488,30 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
+End
+
+Function NWB_CheckForMissingSweeps(string panelTitle, WAVE/T sweepNames)
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	WAVE sweepsFromLBN = GetSweepsWithSetting(numericalValues, "SweepNum")
+
+	Make/FREE/N=(DimSize(sweepNames, ROWS)) sweepsFromDFR = ExtractSweepNumber(sweepNames[p])
+
+	if(EqualWaves(sweepsfromLBN, sweepsFromDFR, 1) == 1)
+		return 0
+	endif
+
+	printf "The labnotebook and the device data folder from device %s differ in the number of recorded sweeps.\r", panelTitle
+	printf "If you have used sweep rollback, this can be totally normal and expected.\r"
+	printf "In other cases, or if you think that data is unexpectedly missing please see RecreateSweepWaveFromBackupAndLBN().\r"
+	printf "Labnotebook: \r"
+	print sweepsFromLBN
+	printf "Device data folder: \r"
+	print sweepsFromDFR
+
+	ControlWindowToFront()
+
+	return 1
 End
 
 /// @brief Return the file size in MiB of the currently written into NWB file
