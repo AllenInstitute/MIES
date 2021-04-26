@@ -484,6 +484,19 @@ Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last
 	endif
 End
 
+/// @brief Test helper to enforce that every query done for an INDEP_HEADSTAGE setting
+/// does not search an entry which is HEADSTAGE dependent. The additional check that not all
+/// entries are the same is for really old legacy entries which are INDEP but set for all headstages.
+///
+/// Does nothing outside of CI.
+static Function EnforceIndependentSetting(WAVE settings)
+
+#ifdef AUTOMATED_TESTING
+	Duplicate/FREE/RMD=[0, NUM_HEADSTAGES - 1] settings, settingsHS
+	ASSERT(!HasOneValidEntry(settingsHS) || IsConstant(settings, settings[0]), "The labnotebook query asked for independent headstage setting, but the entry has headstage dependent settings.")
+#endif
+End
+
 /// @brief Returns the numerical index for the sweep number column
 /// in the settings history waves (numeric and text)
 Function GetSweepColumn(labnotebookValues)
@@ -581,6 +594,7 @@ Function GetLastSettingIndep(numericalValues, sweepNo, setting, entrySourceType,
 	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
 
 	if(WaveExists(settings))
+		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
 		DEBUGPRINT("Missing setting in labnotebook", str=setting)
@@ -607,6 +621,7 @@ Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceT
 	WAVE/T/Z settings = GetLastSetting(textualValues, sweepNo, setting, entrySourceType)
 
 	if(WaveExists(settings))
+		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
 	else
 		DEBUGPRINT("Missing setting in labnotebook", str=setting)
@@ -634,6 +649,7 @@ Function GetLastSettingIndepRAC(numericalValues, sweepNo, setting, entrySourceTy
 	WAVE/Z settings = GetLastSettingRAC(numericalValues, sweepNo, setting, entrySourceType)
 
 	if(WaveExists(settings))
+		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
 		DEBUGPRINT("Missing setting in labnotebook", str=setting)
@@ -661,6 +677,7 @@ Function GetLastSettingIndepSCI(numericalValues, sweepNo, setting, headstage, en
 	WAVE/Z settings = GetLastSettingSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
 
 	if(WaveExists(settings))
+		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
 		DEBUGPRINT("Missing setting in labnotebook", str=setting)
@@ -688,6 +705,7 @@ Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, s
 	WAVE/T/Z settings = GetLastSettingTextRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType)
 
 	if(WaveExists(settings))
+		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
 	else
 		DEBUGPRINT("Missing setting in labnotebook", str=setting)
@@ -1635,6 +1653,7 @@ Function GetLastSweepWithSettingIndep(numericalValues, setting, sweepNo, [defVal
 	WAVE/Z settings = GetLastSweepWithSetting(numericalValues, setting, sweepNo)
 
 	if(WaveExists(settings))
+		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
 		DEBUGPRINT("Missing setting in labnotebook", str=setting)
@@ -1698,6 +1717,7 @@ Function/S GetLastSweepWithSettingTextI(numericalValues, setting, sweepNo, [defV
 	WAVE/T/Z settings = GetLastSweepWithSettingText(numericalValues, setting, sweepNo)
 
 	if(WaveExists(settings))
+		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
 		DEBUGPRINT("Missing setting in labnotebook", str=setting)
