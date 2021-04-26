@@ -45,7 +45,7 @@ End
 /// @brief Generate a JSON text with all required entries
 ///
 /// Caller is responsible for the JSON text memory.
-threadsafe static Function LOG_GenerateEntryTemplate(string source)
+threadsafe Function LOG_GenerateEntryTemplate(string source)
 	variable JSONid
 
 	JSONid = JSON_New()

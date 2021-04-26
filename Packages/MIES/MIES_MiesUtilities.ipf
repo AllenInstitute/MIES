@@ -5700,30 +5700,38 @@ Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
 	return key
 End
 
-/// @brief Start the ZeroMQ message handler
+/// @brief Start the ZeroMQ sockets and the message handler
 ///
 /// Debug note: Tracking the connection state can be done via
 /// `netstat | grep $port`. The binded port only shows up *after* a
 /// successfull connection with zeromq_client_connect() is established.
-Function StartZeroMQMessageHandler()
+Function StartZeroMQSockets([variable forceRestart])
 
 	variable i, port, err
 
 #if exists("zeromq_stop")
 
-	// do nothing if we are already running
-	zeromq_handler_start(); err = GetRTError(1)
-	if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
-		DEBUGPRINT("Already running, nothing to do.")
-		return NaN
+	if(ParamIsDefault(forceRestart))
+		forceRestart = 0
+	else
+		forceRestart = !!forceRestart
+	endif
+
+	if(!forceRestart)
+		// do nothing if we are already running
+		zeromq_handler_start(); err = GetRTError(1)
+		if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
+			DEBUGPRINT("Already running, nothing to do.")
+			return NaN
+		endif
 	endif
 
 	zeromq_stop()
 
 #if defined(DEBUGGING_ENABLED)
-	zeromq_set(ZeroMQ_SET_FLAGS_DEBUG | ZeroMQ_SET_FLAGS_DEFAULT)
+	zeromq_set(ZeroMQ_SET_FLAGS_DEBUG | ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV)
 #else
-	zeromq_set(ZeroMQ_SET_FLAGS_DEFAULT)
+	zeromq_set(ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV)
 #endif
 
 	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
@@ -7156,7 +7164,7 @@ Function UploadCrashDumps()
 	return 1
 End
 
-Function UploadLogFile()
+Function UploadLogFiles()
 	string file, ticket
 	variable jsonID
 
@@ -7165,11 +7173,47 @@ Function UploadLogFile()
 
 	AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = 1)
 
+	file = GetZeroMQXOPLogfile()
+	if(FileExists(file))
+		AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = 1)
+	else
+		AddPayloadEntries(jsonID, {"ZeroMQ-XOP-log-file-does-not-exist"}, {""})
+	endif
+
 	ticket = GenerateRFC4122UUID()
 	AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = 1)
 
 	UploadJSONPayload(jsonID)
 	JSON_Release(jsonID)
 
-	printf "Successfully uploaded the MIES logfile. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+	printf "Successfully uploaded the MIES and ZeroMQ-XOP logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+End
+
+/// @brief Update the logging template used by the ZeroMQ-XOP
+Function/S UpdateZeroMQXOPLoggingTemplate()
+	variable JSONid
+	string str
+
+#if exists("zeromq_set_logging_template")
+
+	JSONid = LOG_GenerateEntryTemplate("XOP")
+
+	str = JSON_Dump(JSONid)
+	JSON_Release(JSONid)
+
+	zeromq_set_logging_template(str)
+#else
+
+	DEBUGPRINT("ZeroMQ XOP is not present")
+
+#endif
+
+	return str
+End
+
+/// @brief Return the disc location of the (possibly non-existing) ZeroMQ-XOP logfile
+Function/S GetZeroMQXOPLogfile()
+
+	// one down and up to "ZeroMQ"
+	return PS_GetSettingsFolder(PACKAGE_MIES) + ":ZeroMQ:Log.jsonl"
 End

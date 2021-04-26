@@ -42,7 +42,8 @@ Menu "Mies Panels"
 	SubMenu "View Files"
 		"Configuration"                        , /Q, CONF_OpenConfigInNotebook()
 		"Package settings"                     , /Q, MEN_OpenPackageSettingsAsNotebook()
-		"Log"                                  , /Q, MEN_OpenLogFile()
+		"MIES Log"                             , /Q, MEN_OpenMiesLogFile()
+		"ZeroMQ-XOP Log"                       , /Q, MEN_OpenZeroMQXOPLogFile()
 	End
 	"-"
 	"Check Installation"                       , /Q, CHI_CheckInstallation()
@@ -50,7 +51,7 @@ Menu "Mies Panels"
 	"About MIES"                               , /Q, MEN_OpenAboutDialog()
 	"-"
 	SubMenu "Advanced"
-		"Restart ZeroMQ Message Handler"           , /Q, StartZeroMQMessageHandler()
+		"Restart ZeroMQ Sockets and Message Handler", /Q, StartZeroMQSockets(forceRestart = 1)
 		"Turn off ASLR (requires UAC elevation)"   , /Q, TurnOffASLR()
 		"Enable Independent Module editing"        , /Q, SetIgorOption IndependentModuleDev=1
 		"Flush Cache"                              , /Q, CA_FlushCache()
@@ -58,7 +59,7 @@ Menu "Mies Panels"
 		"Show Diagnostics (crash dumps) directory" , /Q, ShowDiagnosticsDirectory()
 		"Upload crash dumps"                       , /Q, UploadCrashDumps()
 		"Clear package settings"                   , /Q, MEN_ClearPackageSettings()
-		"Upload log file"                          , /Q, UploadLogFile()
+		"Upload log files"                         , /Q, UploadLogFiles()
 		SubMenu "Panels"
 			"Reset and store DA_EPHYS"                  , /Q, DAP_EphysPanelStartUpSettings()
 			"Reset and store DataBrowser"               , /Q, DB_ResetAndStoreCurrentDBPanel()
@@ -212,15 +213,37 @@ Function MEN_OpenPackageSettingsAsNotebook()
 	JSONid = NaN
 End
 
-Function MEN_OpenLogFile()
+Function MEN_OpenMIESLogFile()
 	string name, path
 
-	name = "LogFile"
+	name = "MIESLogFile"
 
 	if(WindowExists(name))
 		DoWindow/F $name
 	else
 		path = LOG_GetFile(PACKAGE_MIES)
+
+		if(!FileExists(path))
+			print "The log file does not (yet) exist."
+			ControlwindowToFront()
+			return NaN
+		endif
+
+		OpenNotebook/K=1/ENCG=1/N=$name/R path
+	endif
+
+	NotebookSelectionAtEnd(name)
+End
+
+Function MEN_OpenZeroMQXOPLogFile()
+	string name, path
+
+	name = "ZeroMQLogFile"
+
+	if(WindowExists(name))
+		DoWindow/F $name
+	else
+		path = GetZeroMQXOPLogfile()
 
 		if(!FileExists(path))
 			print "The log file does not (yet) exist."
