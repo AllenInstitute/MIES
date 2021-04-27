@@ -28,6 +28,7 @@
 #include "UTF_TestNWBExportV2"
 #include "UTF_Epochs"
 #include "UTF_HelperFunctions"
+#include "UTF_IVSCC"
 #include "UTF_VeryLastTestSuite"
 StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
 
@@ -76,6 +77,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
+	list = AddListItem("UTF_IVSCC.ipf", list)
 	list = AddListItem("UTF_VeryLastTestSuite.ipf", list, ";", inf)
 
 	if(ParamIsDefault(testsuite))
