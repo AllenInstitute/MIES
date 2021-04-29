@@ -3252,6 +3252,8 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV."
 		case "NumberOfChirpCycles":
 			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
+		case "NumberOfFailedSweeps":
+			return "Number of failed sweeps which marks the set as failed."
 		case "SpikeCheck":
 			return "Toggle spike check during the chirp. Defaults to off."
 		case "FailedLevel":
@@ -3283,6 +3285,7 @@ Function/S PSQ_Chirp_CheckParam(string name, string params)
 			endif
 			break
 		case "NumberOfChirpCycles":
+		case "NumberOfFailedSweeps": // fallthrough-by-design
 			val = AFH_GetAnalysisParamNumerical(name, params)
 			if(!IsFinite(val) || !IsInteger(val) || val <= 0)
 				return "Must be a finite non-zero integer"
@@ -3320,9 +3323,9 @@ End
 
 /// @brief Return a list of required analysis functions for PSQ_Chirp()
 Function/S PSQ_Chirp_GetParams()
-	return "LowerRelativeBound:variable,UpperRelativeBound:variable," +                     \
-           "[NumberOfChirpCycles:variable],[SpikeCheck:variable],[FailedLevel:variable]," + \
-           "[DAScaleOperator:string],[DAScaleModifier:variable]"
+	return "LowerRelativeBound:variable,UpperRelativeBound:variable," +                                  \
+           "[NumberOfChirpCycles:variable],[SpikeCheck:variable],[FailedLevel:variable]," +             \
+           "[DAScaleOperator:string],[DAScaleModifier:variable],[NumberOfFailedSweeps:variable]"
 End
 
 /// @brief Analysis function for determining the impedance of the cell using a sine chirp stim set
@@ -3374,12 +3377,13 @@ Function PSQ_Chirp(panelTitle, s)
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
 	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, numBaselineChunks, chirpStart, chirpDuration
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck
-	variable spikeCheckPassed, daScaleModifier, chirpEnd
+	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed
 	string setName, key, msg, stimset, str, daScaleOperator
 
 	lowerRelativeBound = AFH_GetAnalysisParamNumerical("LowerRelativeBound", s.params)
 	numberOfChirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", s.params, defValue = 1)
 	upperRelativeBound = AFH_GetAnalysisParamNumerical("UpperRelativeBound", s.params)
+	numSweepsFailedAllowed = AFH_GetAnalysisParamNumerical("NumberOfFailedSweeps", s.params, defValue = 3)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -3557,7 +3561,7 @@ Function PSQ_Chirp(panelTitle, s)
 					// DAScale value
 					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf)
-				elseif(failsInSet >= PSQ_CR_NUM_SWEEPS_FAIL)
+				elseif(failsInSet >= numSweepsFailedAllowed)
 					// failed too many sweeps
 					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf)

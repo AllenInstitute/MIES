@@ -1040,7 +1040,6 @@ Constant PSQ_RA_NUM_SWEEPS_PASS = 3
 /// @name PatchSeq Chirp
 /// @{
 Constant PSQ_CR_NUM_SWEEPS_PASS = 3
-Constant PSQ_CR_NUM_SWEEPS_FAIL = 3
 Constant PSQ_CR_RESISTANCE_FAKE = 1 // GOhm
 Constant PSQ_CR_BASELINE_V_FAKE = 1 // mV
 Constant PSQ_CR_LIMIT_BAND_LOW  = 1 // mV

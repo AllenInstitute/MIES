@@ -646,7 +646,7 @@ digraph "G" {
 		colorscheme = "blues4"
 		color = "2"
 	]
-	"Have three sweeps failed?" [
+	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" [
 		fontsize = "13"
 		fontname = "Helvetica"
 		fontcolor = "4"
@@ -1533,7 +1533,7 @@ digraph "G" {
 		colorscheme = "blues3"
 		color = "2"
 	]
-	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Have three sweeps failed?" [
+	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" [
 		fontsize = "10"
 		fontname = "Helvetica"
 		fontcolor = "3"
@@ -1543,7 +1543,7 @@ digraph "G" {
 		colorscheme = "blues3"
 		color = "2"
 	]
-	"Have three sweeps failed?" -> "Skip to end of DAQ" [
+	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Skip to end of DAQ" [
 		fontsize = "10"
 		fontname = "Helvetica"
 		fontcolor = "3"
