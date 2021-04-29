@@ -198,7 +198,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 		EnableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)
 	else
 		DisableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)
-		DisableControls(bsPanel, "list_dashboard;check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	endif
 	PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = #("TimeAlignGetAllTraces(\"" + mainPanel + "\")")
 

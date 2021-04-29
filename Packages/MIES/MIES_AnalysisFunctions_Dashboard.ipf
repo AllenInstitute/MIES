@@ -27,11 +27,11 @@ Function AD_UpdateAllDatabrowser()
 	endfor
 End
 
-/// @brief Update the dashboards of the given databrowser
+/// @brief Update the dashboards of the given sweepbrowser/databrowser
 Function AD_Update(win)
 	string win
 
-	string device, mainPanel
+	string mainPanel
 	variable numEntries, refTime
 
 	refTime = DEBUG_TIMER_START()
@@ -43,51 +43,46 @@ Function AD_Update(win)
 	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
 	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
 
-	device = BSP_GetDevice(win)
-	numEntries = AD_FillWaves(device, listWave, infoWave)
+	numEntries = AD_FillWaves(win, listWave, infoWave)
 	Redimension/N=(numEntries, -1, -1) selWave, listWave, infoWave
 
 	if(numEntries > 0)
 		selWave[][][%foreColors] = cmpstr(listWave[p][%Result], DASHBOARD_PASSING_MESSAGE) == 0 ? 2 : 1
 
 		mainPanel = BSP_GetPanel(win)
-		EnableControls(mainPanel, "list_dashboard;check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
+		EnableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	endif
 
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
 /// @brief Get result list of analysis function runs
-static Function AD_FillWaves(panelTitle, list, info)
-	string panelTitle
+static Function AD_FillWaves(win, list, info)
+	string win
 	WAVE/T list, info
 
-	variable lastSweep, i, j, headstage, passed, sweepNo, numEntries
+	variable i, j, headstage, passed, sweepNo, numEntries
 	variable index, anaFuncType, stimsetCycleID, firstValid, lastValid
 	string key, anaFunc, stimset, msg
 
-	lastSweep = AFH_GetLastSweepAcquired(panelTitle)
+	WAVE/Z totalSweepsPresent = GetPlainSweepList(win)
 
-	if(isNan(lastSweep))
-		return 0
+	// as many sweeps as entries in numericalValuesWave/textualValuesWave
+	WAVE/WAVE/Z numericalValuesWave = BSP_GetNumericalValues(win)
+	WAVE/WAVE/Z textualValuesWave   = BSP_GetTextualValues(win)
+
+	if(!WaveExists(numericalValuesWave) || !WaveExists(textualValuesWave) || !WaveExists(totalSweepsPresent))
+		return NaN
 	endif
-
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues   = GetLBTextualValues(panelTitle)
 
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
 
-	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/Z sweepsWithGenericFunc = GetSweepsWithSetting(textualValues, key)
-
-	if(!WaveExists(sweepsWithGenericFunc))
-		return 0
-	endif
-
-	numEntries = DimSize(sweepsWithGenericFunc, ROWS)
+	numEntries = DimSize(totalSweepsPresent, ROWS)
 	for(i = 0; i < numEntries; i += 1)
+		sweepNo = totalSweepsPresent[i]
 
-		sweepNo = sweepsWithGenericFunc[i]
+		WAVE textualValues   = textualValuesWave[i]
+		WAVE numericalValues = numericalValuesWave[i]
 
 		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
@@ -625,7 +620,7 @@ static Function AD_SelectResult(win, [index])
 		return NaN
 	endif
 
-	Make/D/N=0/FREE sweeps
+	Make/N=0/FREE sweeps
 	if(GetCheckBoxState(bspPanel, "check_BrowserSettings_DB_Passed"))
 		list = info[index][%$"Passing Sweeps"]
 
@@ -656,12 +651,11 @@ static Function AD_SelectResult(win, [index])
 		WaveClear sweeps
 	endif
 
-	WAVE/T ovsListWave = GetOverlaySweepsListWave(dfr)
-	WAVE ovsSelWave    = GetOverlaySweepsListSelWave(dfr)
-
 	if(!GetCheckBoxState(bspPanel,"check_BrowserSettings_OVS"))
 		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_OVS", val = 1)
-	else
+	elseif(BSP_IsDataBrowser(win))
+		WAVE/T ovsListWave = GetOverlaySweepsListWave(dfr)
+
 		// update databrowser if required and not already done
 		WAVE/Z indizes = FindIndizes(ovsListWave, col = 0, var = (numEntries > 0 ? sweeps[numEntries - 1] : -1))
 		if(!WaveExists(indizes))
@@ -675,6 +669,15 @@ static Function AD_SelectResult(win, [index])
 
 	if(!GetCheckBoxState(bspPanel,"check_BrowserSettings_DAC"))
 		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_DAC", val = 1)
+	endif
+
+	if(!BSP_IsDataBrowser(win) && WaveExists(sweeps))
+		WAVE allSweeps = GetPlainSweepList(win)
+		WAVE/Z presentSweeps = GetSetIntersection(allSweeps, sweeps)
+		if(!WaveExists(presentSweeps) || EqualWaves(presentSweeps, sweeps, 1) != 1)
+			printf "Some requested sweeps can not be displayed, as they are not loaded into this sweepbrowser.\r"
+			ControlWindowToFront()
+		endif
 	endif
 
 	OVS_ChangeSweepSelectionState(win, 1, sweeps = sweeps, invertOthers = 1)
