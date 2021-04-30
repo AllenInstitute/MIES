@@ -375,6 +375,7 @@ Constant MIES_BSP_CS  = 2
 Constant MIES_BSP_AR  = 3
 Constant MIES_BSP_PA  = 4
 Constant MIES_BSP_SF  = 5
+Constant MIES_BSP_DS  = 7
 /// @}
 
 /// @name values for  UserData in BrowserSettings and derived windows
@@ -618,7 +619,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 52
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 26
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 28
 Constant WAVEBUILDER_PANEL_VERSION         = 9
 
 /// Version of the labnotebooks (numerical and textual)
@@ -994,6 +995,8 @@ StrConstant PSQ_FMT_LBN_CR_SPIKE_PASS      = "%s spike QC"
 ///
 /// Constant values must *not* overlap between PSQ_XXX and MSQ_YYY.
 /// @{
+
+Constant INVALID_ANALYSIS_FUNCTION = 0xFFFF
 
 /// @anchor PatchSeqAnalysisFunctionTypes
 /// @{
@@ -1484,3 +1487,5 @@ StrConstant LOGFILE_NAME = "Log.jsonl"
 StrConstant IVS_PUB_FILTER = "ivscc"
 
 Constant PSQ_CR_SPIKE_CHECK_DEFAULT = 1
+
+StrConstant NOT_AVAILABLE = "n/a"

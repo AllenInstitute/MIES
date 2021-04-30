@@ -6334,6 +6334,29 @@ Function/WAVE GetAnaFuncDashboardColorWave(dfr)
 	return wv
 End
 
+/// @brief Return the analysis function dashboard help wave for the
+///        databrowser or the sweepbrowser
+Function/WAVE GetAnaFuncDashboardHelpWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/T/Z/SDFR=dfr wv = dashboardHelpWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(0) dfr:dashboardHelpWave/Wave=wv
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
 /// @brief Return a wave with device information
 Function/WAVE GetDeviceInfoWave(panelTitle)
 	string panelTitle

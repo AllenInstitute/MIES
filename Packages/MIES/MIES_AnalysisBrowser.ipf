@@ -2352,6 +2352,7 @@ Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 			oneValidSweep = AB_LoadFromFile(AB_LOAD_SWEEP, sweepBrowserDFR = dfr)
 			SVAR/SDFR=dfr graph
 			if(oneValidSweep)
+				AD_Update(graph)
 				panel = BSP_GetSweepControlsPanel(graph)
 				PGC_SetAndActivateControl(panel, "button_SweepControl_PrevSweep")
 			else

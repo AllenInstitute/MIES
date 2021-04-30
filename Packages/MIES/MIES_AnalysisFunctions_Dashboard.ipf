@@ -27,79 +27,157 @@ Function AD_UpdateAllDatabrowser()
 	endfor
 End
 
-/// @brief Update the dashboards of the given databrowser
+static Function AD_GetColorForResultMessage(string result)
+
+	strswitch(result)
+		case DASHBOARD_PASSING_MESSAGE:
+			return 2
+		case NOT_AVAILABLE:
+			return 0
+		default:
+			return 1
+	endswitch
+End
+
+/// @brief Update the dashboards of the given sweepbrowser/databrowser
 Function AD_Update(win)
 	string win
 
-	string device, mainPanel
+	string mainPanel
 	variable numEntries, refTime
 
 	refTime = DEBUG_TIMER_START()
 
+	mainPanel = BSP_GetPanel(win)
+
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
+	WAVE/T helpWave = GetAnaFuncDashboardHelpWave(dfr)
 	WAVE colorWave  = GetAnaFuncDashboardColorWave(dfr)
 	WAVE selWave    = GetAnaFuncDashboardselWave(dfr)
 	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
 	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
 
-	device = BSP_GetDevice(win)
-	numEntries = AD_FillWaves(device, listWave, infoWave)
-	Redimension/N=(numEntries, -1, -1) selWave, listWave, infoWave
+	if(BSP_IsActive(mainPanel, MIES_BSP_DS))
+		numEntries = AD_FillWaves(win, listWave, infoWave)
+	endif
+
+	Redimension/N=(numEntries, -1, -1) selWave, listWave, infoWave, helpWave
 
 	if(numEntries > 0)
-		selWave[][][%foreColors] = cmpstr(listWave[p][%Result], DASHBOARD_PASSING_MESSAGE) == 0 ? 2 : 1
+		selWave[][][%foreColors] = AD_GetColorForResultMessage(listWave[p][%Result])
 
-		mainPanel = BSP_GetPanel(win)
-		EnableControls(mainPanel, "list_dashboard;check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
+		helpWave[] = "Result: " + listWave[p][%Result]
+
+		EnableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
+	else
+		SetNumberInWaveNote(listWave, NOTE_INDEX, 0)
+		DisableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	endif
 
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
+static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
+
+	if(passed)
+		return "Pass"
+	endif
+
+	// PSQ_DA, PSQ_RB, PSQ_RA, PSQ_SP, PSQ_CR
+	// PSQ_FMT_LBN_BL_QC_PASS
+
+	// MSQ_DA
+	// - always passes
+
+	// MSQ_FRE
+	// - MSQ_FMT_LBN_DASCALE_EXC present (optional)
+	// - Not enough sweeps
+
+	// MSQ_SC
+	// - MSQ_FMT_LBN_RERUN_TRIALS_EXC present
+	// - Spike counts state
+	// - Spontaneous spiking check
+	// - Not enough sweeps
+
+	// PSQ_CR
+	// - needs at least PSQ_CR_NUM_SWEEPS_PASS passing sweeps with the same to-full-pA rounded DAScale
+
+	// PSQ_DA
+	// - needs at least $NUM_DA_SCALES passing sweeps
+	//   and for supra mode if the FinalSlopePercent parameter is present this has to be reached as well
+
+	// PSQ_RA
+	// - needs at least PSQ_RA_NUM_SWEEPS_PASS passing sweeps
+
+	// PSQ_RB
+	// - Difference to initial DAScale larger than 60pA?
+	// - Not enough sweeps
+
+	// PSQ_SP
+	// - only reached PSQ_FMT_LBN_STEPSIZE step size and not PSQ_SP_INIT_AMP_p10 with a spike
+
+	switch(anaFuncType)
+		case MSQ_DA_SCALE:
+			BUG("Unknown reason for failure")
+			return "Failure"
+		case MSQ_FAST_RHEO_EST:
+			return AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
+		case PSQ_CHIRP:
+			return AD_GetChirpFailMsg(numericalValues, sweepNo, headstage)
+		case PSQ_DA_SCALE:
+			return AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
+		case PSQ_RAMP:
+			return AD_GetRampFailMsg(numericalValues, sweepNo, headstage)
+		case PSQ_RHEOBASE:
+			return AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
+		case PSQ_SQUARE_PULSE:
+			return AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
+		case SC_SPIKE_CONTROL:
+			return AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
+		case INVALID_ANALYSIS_FUNCTION:
+			return NOT_AVAILABLE
+		default:
+			ASSERT(0, "Unsupported analysis function")
+	endswitch
+End
+
 /// @brief Get result list of analysis function runs
-static Function AD_FillWaves(panelTitle, list, info)
-	string panelTitle
+static Function AD_FillWaves(win, list, info)
+	string win
 	WAVE/T list, info
 
-	variable lastSweep, i, j, headstage, passed, sweepNo, numEntries
+	variable i, j, headstage, passed, sweepNo, numEntries
 	variable index, anaFuncType, stimsetCycleID, firstValid, lastValid
 	string key, anaFunc, stimset, msg
 
-	lastSweep = AFH_GetLastSweepAcquired(panelTitle)
+	WAVE/Z totalSweepsPresent = GetPlainSweepList(win)
 
-	if(isNan(lastSweep))
-		return 0
+	// as many sweeps as entries in numericalValuesWave/textualValuesWave
+	WAVE/WAVE/Z numericalValuesWave = BSP_GetNumericalValues(win)
+	WAVE/WAVE/Z textualValuesWave   = BSP_GetTextualValues(win)
+
+	if(!WaveExists(numericalValuesWave) || !WaveExists(textualValuesWave) || !WaveExists(totalSweepsPresent))
+		return NaN
 	endif
-
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues   = GetLBTextualValues(panelTitle)
 
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
 
-	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/Z sweepsWithGenericFunc = GetSweepsWithSetting(textualValues, key)
-
-	if(!WaveExists(sweepsWithGenericFunc))
-		return 0
-	endif
-
-	numEntries = DimSize(sweepsWithGenericFunc, ROWS)
+	numEntries = DimSize(totalSweepsPresent, ROWS)
 	for(i = 0; i < numEntries; i += 1)
+		sweepNo = totalSweepsPresent[i]
 
-		sweepNo = sweepsWithGenericFunc[i]
+		WAVE textualValues   = textualValuesWave[i]
+		WAVE numericalValues = numericalValuesWave[i]
 
 		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
-		if(!WaveExists(anaFuncs))
-			continue
-		endif
-
-		Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
-
-		if(!HasOneValidEntry(anaFuncTypes))
-			continue
+		if(WaveExists(anaFuncs))
+			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
+		else
+			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE/T anaFuncs = NOT_AVAILABLE
+			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = INVALID_ANALYSIS_FUNCTION
 		endif
 
 		WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
@@ -113,20 +191,16 @@ static Function AD_FillWaves(panelTitle, list, info)
 
 			headstage = j
 
-			if(IsNaN(headstages[headstage]))
+			if(headstages[headstage] != 1)
 				continue
 			endif
 
 			anaFuncType = anaFuncTypes[headstage]
 			anaFunc = anaFuncs[headstage]
 
-			if(IsNaN(anaFuncType)) // unsupported analysis function
-				continue
-			endif
-
 			WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
 
-			if(!WaveExists(stimsetCycleIDs)) // TP during DAQ
+			if(!WaveExists(stimsetCycleIDs)) // TP during DAQ or data before d6046561 (Add a stimset acquisition cycle ID, 2018-05-30)
 				continue
 			endif
 
@@ -142,83 +216,17 @@ static Function AD_FillWaves(panelTitle, list, info)
 
 			stimset = stimsets[headstage]
 
-			key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
-			passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+			if(anaFuncType != INVALID_ANALYSIS_FUNCTION)
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
+				passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
-			if(isNaN(passed))
-				// the set is not yet finished
-				continue
+				if(isNaN(passed))
+					// the set is not yet finished
+					continue
+				endif
 			endif
 
-			if(passed)
-				msg = "Pass"
-			else
-				anaFuncType = MapAnaFuncToConstant(anaFunc)
-				ASSERT(IsFinite(anaFuncType), "Invalid analysis function type")
-
-				// PSQ_DA, PSQ_RB, PSQ_RA, PSQ_SP, PSQ_CR
-				// PSQ_FMT_LBN_BL_QC_PASS
-
-				// MSQ_DA
-				// - always passes
-
-				// MSQ_FRE
-				// - MSQ_FMT_LBN_DASCALE_EXC present (optional)
-				// - Not enough sweeps
-
-				// MSQ_SC
-				// - MSQ_FMT_LBN_RERUN_TRIALS_EXC present
-				// - Spike counts state
-				// - Spontaneous spiking check
-				// - Not enough sweeps
-
-				// PSQ_CR
-				// - needs at least PSQ_CR_NUM_SWEEPS_PASS passing sweeps with the same to-full-pA rounded DAScale
-
-				// PSQ_DA
-				// - needs at least $NUM_DA_SCALES passing sweeps
-				//   and for supra mode if the FinalSlopePercent parameter is present this has to be reached as well
-
-				// PSQ_RA
-				// - needs at least PSQ_RA_NUM_SWEEPS_PASS passing sweeps
-
-				// PSQ_RB
-				// - Difference to initial DAScale larger than 60pA?
-				// - Not enough sweeps
-
-				// PSQ_SP
-				// - only reached PSQ_FMT_LBN_STEPSIZE step size and not PSQ_SP_INIT_AMP_p10 with a spike
-
-				switch(anaFuncType)
-					case MSQ_DA_SCALE:
-						BUG("Unknown reason for failure")
-						msg = "Failure"
-						break
-					case MSQ_FAST_RHEO_EST:
-						msg = AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
-						break
-					case PSQ_CHIRP:
-						msg = AD_GetChirpFailMsg(numericalValues, sweepNo, headstage)
-						break
-					case PSQ_DA_SCALE:
-						msg = AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
-						break
-					case PSQ_RAMP:
-						msg = AD_GetRampFailMsg(numericalValues, sweepNo, headstage)
-						break
-					case PSQ_RHEOBASE:
-						msg = AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
-						break
-					case PSQ_SQUARE_PULSE:
-						msg = AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
-						break
-					case SC_SPIKE_CONTROL:
-						msg = AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
-						break
-					default:
-						ASSERT(0, "Unsupported analysis function")
-				endswitch
-			endif
+			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, headstage)
 
 			EnsureLargeEnoughWave(list, dimension = ROWS, minimumSize = index)
 			EnsureLargeEnoughWave(info, dimension = ROWS, minimumSize = index)
@@ -270,6 +278,11 @@ static Function AD_FillWaves(panelTitle, list, info)
 						Duplicate/FREE sweeps, failingSweeps
 						WAVE/Z passingSweeps
 					endif
+					break
+				case INVALID_ANALYSIS_FUNCTION:
+					// all sweeps are both passing and failing
+					Duplicate/FREE sweeps, failingSweeps
+					Duplicate/FREE sweeps, passingSweeps
 					break
 				default:
 					ASSERT(0, "Unsupported analysis function")
@@ -625,13 +638,13 @@ static Function AD_SelectResult(win, [index])
 		return NaN
 	endif
 
-	Make/D/N=0/FREE sweeps
+	Make/N=0/FREE sweepsWithDuplicates
 	if(GetCheckBoxState(bspPanel, "check_BrowserSettings_DB_Passed"))
 		list = info[index][%$"Passing Sweeps"]
 
 		if(!IsEmpty(list))
 			WAVE wv = ListToNumericWave(list, ";")
-			Concatenate/NP {wv}, sweeps
+			Concatenate/NP {wv}, sweepsWithDuplicates
 		endif
 	endif
 
@@ -640,7 +653,7 @@ static Function AD_SelectResult(win, [index])
 
 		if(!IsEmpty(list))
 			WAVE wv = ListToNumericWave(list, ";")
-			Concatenate/NP {wv}, sweeps
+			Concatenate/NP {wv}, sweepsWithDuplicates
 		endif
 	endif
 
@@ -650,18 +663,19 @@ static Function AD_SelectResult(win, [index])
 		return NaN
 	endif
 
+	WAVE sweeps = GetUniqueEntries(sweepsWithDuplicates)
+
 	numEntries = DimSize(sweeps, ROWS)
 
 	if(!numEntries)
 		WaveClear sweeps
 	endif
 
-	WAVE/T ovsListWave = GetOverlaySweepsListWave(dfr)
-	WAVE ovsSelWave    = GetOverlaySweepsListSelWave(dfr)
-
 	if(!GetCheckBoxState(bspPanel,"check_BrowserSettings_OVS"))
 		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_OVS", val = 1)
-	else
+	elseif(BSP_IsDataBrowser(win))
+		WAVE/T ovsListWave = GetOverlaySweepsListWave(dfr)
+
 		// update databrowser if required and not already done
 		WAVE/Z indizes = FindIndizes(ovsListWave, col = 0, var = (numEntries > 0 ? sweeps[numEntries - 1] : -1))
 		if(!WaveExists(indizes))
@@ -675,6 +689,15 @@ static Function AD_SelectResult(win, [index])
 
 	if(!GetCheckBoxState(bspPanel,"check_BrowserSettings_DAC"))
 		PGC_SetAndActivateControl(bspPanel, "check_BrowserSettings_DAC", val = 1)
+	endif
+
+	if(!BSP_IsDataBrowser(win) && WaveExists(sweeps))
+		WAVE allSweeps = GetPlainSweepList(win)
+		WAVE/Z presentSweeps = GetSetIntersection(allSweeps, sweeps)
+		if(!WaveExists(presentSweeps) || EqualWaves(presentSweeps, sweeps, 1) != 1)
+			printf "Some requested sweeps can not be displayed, as they are not loaded into this sweepbrowser.\r"
+			ControlWindowToFront()
+		endif
 	endif
 
 	OVS_ChangeSweepSelectionState(win, 1, sweeps = sweeps, invertOthers = 1)
@@ -711,6 +734,18 @@ Function AD_CheckProc_FailedSweeps(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			AD_SelectResult(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function AD_CheckProc_Toggle(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			AD_Update(cba.win)
 			break
 	endswitch
 

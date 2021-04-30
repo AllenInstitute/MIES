@@ -7181,7 +7181,7 @@ End
 
 /// @brief Map from analysis function name to numeric constant
 ///
-/// @return One of @ref SpecialAnalysisFunctionTypes
+/// @return One of @ref SpecialAnalysisFunctionTypes which includes #INVALID_ANALYSIS_FUNCTION
 Function MapAnaFuncToConstant(anaFunc)
 	string anaFunc
 
@@ -7203,7 +7203,7 @@ Function MapAnaFuncToConstant(anaFunc)
 		case "SC_SpikeControl":
 			return SC_SPIKE_CONTROL
 		default:
-			return NaN
+			return INVALID_ANALYSIS_FUNCTION
 	endswitch
 End
 
