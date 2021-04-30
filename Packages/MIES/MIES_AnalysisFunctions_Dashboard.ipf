@@ -27,6 +27,16 @@ Function AD_UpdateAllDatabrowser()
 	endfor
 End
 
+static Function AD_GetColorForResultMessage(string result)
+
+	strswitch(result)
+		case DASHBOARD_PASSING_MESSAGE:
+			return 2
+		default:
+			return 1
+	endswitch
+End
+
 /// @brief Update the dashboards of the given sweepbrowser/databrowser
 Function AD_Update(win)
 	string win
@@ -47,7 +57,7 @@ Function AD_Update(win)
 	Redimension/N=(numEntries, -1, -1) selWave, listWave, infoWave
 
 	if(numEntries > 0)
-		selWave[][][%foreColors] = cmpstr(listWave[p][%Result], DASHBOARD_PASSING_MESSAGE) == 0 ? 2 : 1
+		selWave[][][%foreColors] = AD_GetColorForResultMessage(listWave[p][%Result])
 
 		mainPanel = BSP_GetPanel(win)
 		EnableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
