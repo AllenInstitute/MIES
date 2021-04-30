@@ -995,6 +995,8 @@ StrConstant PSQ_FMT_LBN_CR_SPIKE_PASS      = "%s spike QC"
 /// Constant values must *not* overlap between PSQ_XXX and MSQ_YYY.
 /// @{
 
+Constant INVALID_ANALYSIS_FUNCTION = 0xFFFF
+
 /// @anchor PatchSeqAnalysisFunctionTypes
 /// @{
 Constant PSQ_DA_SCALE      = 0x01

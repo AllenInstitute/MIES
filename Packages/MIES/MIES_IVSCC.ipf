@@ -611,7 +611,7 @@ Function IVS_GetSetQCForSweep(panelTitle, sweepNo)
 	Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
 
 	anaFuncType = anaFuncTypes[headstage]
-	ASSERT(IsFinite(anaFuncType), "The used analysis function is not a patch-seq one.")
+	ASSERT(anaFuncType != INVALID_ANALYSIS_FUNCTION, "The used analysis function is not a patch-seq one.")
 
 	key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
 	return GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE) == 1

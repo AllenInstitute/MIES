@@ -93,10 +93,6 @@ static Function AD_FillWaves(win, list, info)
 
 		Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
 
-		if(!HasOneValidEntry(anaFuncTypes))
-			continue
-		endif
-
 		WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 
 		// present since 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
@@ -115,7 +111,7 @@ static Function AD_FillWaves(win, list, info)
 			anaFuncType = anaFuncTypes[headstage]
 			anaFunc = anaFuncs[headstage]
 
-			if(IsNaN(anaFuncType)) // unsupported analysis function
+			if(anaFuncType == INVALID_ANALYSIS_FUNCTION)
 				continue
 			endif
 
