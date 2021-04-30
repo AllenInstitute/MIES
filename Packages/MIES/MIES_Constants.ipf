@@ -1486,3 +1486,5 @@ StrConstant LOGFILE_NAME = "Log.jsonl"
 StrConstant IVS_PUB_FILTER = "ivscc"
 
 Constant PSQ_CR_SPIKE_CHECK_DEFAULT = 1
+
+StrConstant NOT_AVAILABLE = "n/a"

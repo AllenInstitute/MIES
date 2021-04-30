@@ -32,6 +32,8 @@ static Function AD_GetColorForResultMessage(string result)
 	strswitch(result)
 		case DASHBOARD_PASSING_MESSAGE:
 			return 2
+		case NOT_AVAILABLE:
+			return 0
 		default:
 			return 1
 	endswitch
@@ -123,6 +125,8 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 			return AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 		case SC_SPIKE_CONTROL:
 			return AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
+		case INVALID_ANALYSIS_FUNCTION:
+			return NOT_AVAILABLE
 		default:
 			ASSERT(0, "Unsupported analysis function")
 	endswitch
@@ -159,11 +163,12 @@ static Function AD_FillWaves(win, list, info)
 		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
-		if(!WaveExists(anaFuncs))
-			continue
+		if(WaveExists(anaFuncs))
+			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
+		else
+			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE/T anaFuncs = NOT_AVAILABLE
+			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = INVALID_ANALYSIS_FUNCTION
 		endif
-
-		Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
 
 		WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 
@@ -183,10 +188,6 @@ static Function AD_FillWaves(win, list, info)
 			anaFuncType = anaFuncTypes[headstage]
 			anaFunc = anaFuncs[headstage]
 
-			if(anaFuncType == INVALID_ANALYSIS_FUNCTION)
-				continue
-			endif
-
 			WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
 
 			if(!WaveExists(stimsetCycleIDs)) // TP during DAQ or data before d6046561 (Add a stimset acquisition cycle ID, 2018-05-30)
@@ -205,12 +206,14 @@ static Function AD_FillWaves(win, list, info)
 
 			stimset = stimsets[headstage]
 
-			key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
-			passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+			if(anaFuncType != INVALID_ANALYSIS_FUNCTION)
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
+				passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
-			if(isNaN(passed))
-				// the set is not yet finished
-				continue
+				if(isNaN(passed))
+					// the set is not yet finished
+					continue
+				endif
 			endif
 
 			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, headstage)
@@ -265,6 +268,11 @@ static Function AD_FillWaves(win, list, info)
 						Duplicate/FREE sweeps, failingSweeps
 						WAVE/Z passingSweeps
 					endif
+					break
+				case INVALID_ANALYSIS_FUNCTION:
+					// all sweeps are both passing and failing
+					Duplicate/FREE sweeps, failingSweeps
+					Duplicate/FREE sweeps, passingSweeps
 					break
 				default:
 					ASSERT(0, "Unsupported analysis function")
