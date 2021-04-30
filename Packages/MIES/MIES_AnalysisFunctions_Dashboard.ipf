@@ -176,7 +176,7 @@ static Function AD_FillWaves(win, list, info)
 
 			headstage = j
 
-			if(IsNaN(headstages[headstage]))
+			if(headstages[headstage] != 1)
 				continue
 			endif
 
