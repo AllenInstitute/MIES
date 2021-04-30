@@ -344,14 +344,15 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, i
 		if(WaveExists(sweeps))
 			numEntries = DimSize(sweeps, ROWS)
 
-			Make/FREE/N=(numEntries, 2) indices
+			Make/FREE/N=(numEntries) indices1D
 
 			for(i = 0; i < numEntries; i += 1)
 				sweepNo = sweeps[i]
 				FindValue/RMD=[][0]/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
-				ASSERT(V_Value >= 0, "Could not find sweep")
-				indices[i][0] = V_Value
+				indices1D[i] = V_Value >= 0 ? V_Value : NaN
 			endfor
+
+			Wave/Z indices = ZapNans(indices1D)
 		endif
 	else
 		ASSERT(0, "Requires one of index or sweepNo")
