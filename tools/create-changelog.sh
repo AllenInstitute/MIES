@@ -35,3 +35,9 @@ old_tag=$(git describe --tags --abbrev=0 --match "Release_*")
 git --git-dir=$git_dir log --submodule=diff --no-merges --pretty="$fmt" $old_tag..HEAD > changelog.txt
 
 $top_level/tools/get-changed-controls.sh >> changelog.txt
+
+echo "" >> changelog.txt
+echo "Commits which have LABNOTEBOOK_VERSION in their diff" >> changelog.txt
+echo "" >> changelog.txt
+
+git log --regexp-ignore-case --pretty="$fmt" -G LABNOTEBOOK_VERSION ${old_tag}.. $top_level/Packages/MIES/MIES_Constants.ipf >> changelog.txt
