@@ -156,7 +156,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 				anaFuncType = MapAnaFuncToConstant(anaFunc)
 				ASSERT(IsFinite(anaFuncType), "Invalid analysis function type")
 
-				// PSQ_DA, PSQ_RB, PSQ_RA, PSQ_SP
+				// PSQ_DA, PSQ_RB, PSQ_RA, PSQ_SP, PSQ_CR
 				// PSQ_FMT_LBN_BL_QC_PASS
 
 				// MSQ_DA
@@ -171,6 +171,9 @@ static Function AD_FillWaves(panelTitle, list, info)
 				// - Spike counts state
 				// - Spontaneous spiking check
 				// - Not enough sweeps
+
+				// PSQ_CR
+				// - needs at least PSQ_CR_NUM_SWEEPS_PASS passing sweeps with the same to-full-pA rounded DAScale
 
 				// PSQ_DA
 				// - needs at least $NUM_DA_SCALES passing sweeps
@@ -193,6 +196,9 @@ static Function AD_FillWaves(panelTitle, list, info)
 						break
 					case MSQ_FAST_RHEO_EST:
 						msg = AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
+						break
+					case PSQ_CHIRP:
+						msg = AD_GetChirpFailMsg(numericalValues, sweepNo, headstage)
 						break
 					case PSQ_DA_SCALE:
 						msg = AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
@@ -223,13 +229,14 @@ static Function AD_FillWaves(panelTitle, list, info)
 			list[index][3] = msg
 
 			// get the passing/failing sweeps
-			// PSQ_DA PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE, MSQ_SC: use PSQ_FMT_LBN_SWEEP_PASS
+			// PSQ_CR, PSQ_DA, PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE, MSQ_SC: use PSQ_FMT_LBN_SWEEP_PASS
 			// PSQ_RB: If passed use last spiking/non-spiking duo
 			//     If not passed, all are failing
 
 			WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 
 			switch(anaFuncType)
+				case PSQ_CHIRP:
 				case PSQ_DA_SCALE:
 				case PSQ_RAMP:
 				case PSQ_SQUARE_PULSE:
@@ -245,7 +252,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 					failingSweepsAll[] = !sweepPass[p] ? sweeps[p] : NaN
 
 					WAVE/Z passingSweeps = ZapNaNs(passingSweepsAll)
-					WAVE/Z fallingSweeps = ZapNaNs(failingSweepsAll)
+					WAVE/Z failingSweeps = ZapNaNs(failingSweepsAll)
 
 					break
 				case PSQ_RHEOBASE:
@@ -492,6 +499,58 @@ static Function/S AD_GetSpikeControlFailMsg(WAVE numericalValues, WAVE textualVa
 	return "Failure as we ran out of sweeps"
 End
 
+/// @brief Return an appropriate error message for why #PSQ_CHIRP failed
+///
+/// @param numericalValues Numerical labnotebook
+/// @param sweepNo         Sweep number
+/// @param headstage       Headstage
+static Function/S AD_GetChirpFailMsg(numericalValues, sweepNo, headstage)
+	WAVE numericalValues
+	variable sweepNo
+	variable headstage
+
+	string key, msg, str
+	string text = ""
+	variable numPasses, i, numEntries, setPassed, maxOccurences
+
+	msg = AD_GetBaselineFailMsg(PSQ_CHIRP, numericalValues, sweepNo, headstage)
+
+	if(!IsEmpty(msg))
+		return msg
+	endif
+
+	numPasses = PSQ_NumPassesInSet(numericalValues, PSQ_CHIRP, sweepNo, headstage)
+	if(numPasses < PSQ_CR_NUM_SWEEPS_PASS)
+		sprintf msg, "Failure as we ran out of sweeps (%d passed but we needed %d)", numPasses, PSQ_CR_NUM_SWEEPS_PASS
+		return msg
+	endif
+
+	[setPassed, maxOccurences] = PSQ_CR_SetHasPassed(numericalValues, sweepNo, headstage)
+
+	if(!setPassed)
+
+		key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+		WAVE sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+		WAVE DAScales = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, headstage, DATA_ACQUISITION_MODE)
+		ASSERT(DimSize(sweepPass, ROWS) == DimSize(DAScales, ROWS), "Unexpected sizes")
+
+		for(i = 0; i < numEntries; i += 1)
+			sprintf str, "%g:%d, ", DAScales[i], sweepPass[i]
+
+			text += str
+		endfor
+
+		text = RemoveEnding(text, ", ")
+
+		sprintf msg, "Failure as we did not have enough passing sweeps with the same DAScale value (maximum #%g), \"DAScale:SweepQC\" -> (%s)", maxOccurences, text
+		return msg
+	endif
+
+	BUG("Unknown reason for failure")
+	return "Failure"
+End
+
 /// @brief Return an appropriate error message if the baseline QC failed, or an empty string otherwise
 ///
 /// @param anaFuncType     One of @ref PatchSeqAnalysisFunctionTypes
@@ -510,8 +569,15 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 		case PSQ_DA_SCALE:
 		case PSQ_RHEOBASE:
 		case PSQ_RAMP:
+		case PSQ_CHIRP:
 			key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQC = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+			if(anaFuncType == PSQ_CHIRP && !WaveExists(baselineQC))
+				// we did not evaluate the baseline completely but aborted earlier
+				return ""
+			endif
+
 			ASSERT(WaveExists(baselineQC), "Missing baseline QC LBN entry")
 
 			if(!baselineQC[headstage])

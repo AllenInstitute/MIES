@@ -894,6 +894,34 @@ Function PlotResistanceGraph(panelTitle)
 	endif
 End
 
+/// @brief Helper for setting the DAScale
+Function SetDAScaleModOp(string panelTitle, variable headstage, variable modifier, string operator, [variable invert, variable roundTopA])
+
+	if(ParamIsDefault(invert))
+		invert = 0
+	else
+		invert = !!invert
+	endif
+
+	if(ParamIsDefault(roundTopA))
+		roundTopA = 0
+	else
+		roundTopA = !!roundTopA
+	endif
+
+	strswitch(operator)
+		case "+":
+			SetDAScale(panelTitle, headstage, offset = invert ? - modifier : modifier, roundTopA = roundTopA)
+			break
+		case "*":
+			SetDAScale(panelTitle, headstage, relative = invert ? 1 / modifier : modifier, roundTopA = roundTopA)
+			break
+		default:
+			ASSERT(0, "Invalid operator")
+			break
+	endswitch
+End
+
 /// @brief Set the DAScale value of the given headstage
 ///
 /// @param panelTitle device

@@ -688,28 +688,6 @@ static Function SC_SkipsExhausted(variable minTrials, string params)
 	return DEBUGPRINTv(minTrials >= maxTrialsAllowed)
 End
 
-/// @brief Helper for setting the DAScale
-static Function SC_SetDAScaleModOp(string panelTitle, variable headstage, variable modifier, string operator, [variable invert])
-
-	if(ParamIsDefault(invert))
-		invert = 0
-	else
-		invert = !!invert
-	endif
-
-	strswitch(operator)
-		case "+":
-			SetDAScale(panelTitle, headstage, offset = invert ? - modifier : modifier)
-			break
-		case "*":
-			SetDAScale(panelTitle, headstage, relative = invert ? 1 / modifier : modifier)
-			break
-		default:
-			ASSERT(0, "Invalid operator")
-			break
-	endswitch
-End
-
 /// @brief Perform various actions on QC failures
 static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string params)
 	variable daScaleSpikePositionModifier, daScaleModifier, i, autoBiasV, autobiasModifier, prevSliderPos
@@ -749,7 +727,7 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 			if(!spikePositionsQCLBN[i])
 				sprintf msg, "spike position QC failed on HS%d, adapting DAScale", i
 				DebugPrint(msg)
-				SC_SetDAScaleModOp(panelTitle, i, daScaleSpikePositionModifier, daScaleSpikePositionOperator)
+				SetDAScaleModOp(panelTitle, i, daScaleSpikePositionModifier, daScaleSpikePositionOperator)
 			endif
 
 			continue
@@ -773,7 +751,7 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 
 		strswitch(spikeCountStateLBN[i])
 			case SC_SPIKE_COUNT_STATE_STR_TOO_MANY:
-				SC_SetDAScaleModOp(panelTitle, i, 2 * daScaleModifier, daScaleOperator, invert = 1)
+				SetDAScaleModOp(panelTitle, i, 2 * daScaleModifier, daScaleOperator, invert = 1)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_MIXED:
 				printf "The spike count on headstage %d in sweep %d is mixed (some pulses have too few, others too many)\n", i, sweepNo
@@ -787,7 +765,7 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 					ControlWindowToFront()
 				endif
 			case SC_SPIKE_COUNT_STATE_STR_TOO_FEW: // fallthrough-by-design
-				SC_SetDAScaleModOp(panelTitle, i, daScaleModifier, daScaleOperator)
+				SetDAScaleModOp(panelTitle, i, daScaleModifier, daScaleOperator)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_GOOD:
 				// nothing to do
