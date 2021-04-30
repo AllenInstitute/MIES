@@ -425,10 +425,27 @@ Function/S SB_GetSweepList(win)
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
 
 	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
-	for(i = 0; i < numRows; i += 1)
-		sprintf str, "Sweep %d [%s.%s]", str2num(map[i][%Sweep]), ReplaceString(";", GetBaseName(map[i][%FileName]), "_"), GetFileSuffix(map[i][%FileName])
-		list = AddListItem(str, list, ";", Inf)
-	endfor
+
+	if(!numRows)
+		return ""
+	endif
+
+	Duplicate/FREE/RMD=[0, numRows - 1][FindDimlabel(map, COLS, "FileName")] map, filenames
+
+	WAVE/T uniqueEntries = GetUniqueEntries(filenames)
+
+	// all sweeps are from the same experiment, use a less verbose list format
+	if(DimSize(uniqueEntries, ROWS) == 1)
+		for(i = 0; i < numRows; i += 1)
+			sprintf str, "Sweep %d", str2num(map[i][%Sweep])
+			list = AddListItem(str, list, ";", Inf)
+		endfor
+	else
+		for(i = 0; i < numRows; i += 1)
+			sprintf str, "Sweep %d [%s.%s]", str2num(map[i][%Sweep]), ReplaceString(";", GetBaseName(map[i][%FileName]), "_"), GetFileSuffix(map[i][%FileName])
+			list = AddListItem(str, list, ";", Inf)
+		endfor
+	endif
 
 	return list
 End
