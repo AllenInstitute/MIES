@@ -24,9 +24,6 @@ static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
 static StrConstant BROWSERSETTINGS_CONTROLS_DATABROWSER = "popup_DB_lockedDevices;"
 static StrConstant BROWSERSETTINGS_AXES_SCALING_CHECKBOXES = "check_Display_VisibleXrange;check_Display_EqualYrange;check_Display_EqualYignore"
 
-/// @brief List of controls that have specific control procedures set
-static StrConstant SWEEPCONTROL_UNSET_CONTROLPROCEDURES = "setvar_SweepControl_SweepNo"
-
 /// @brief exclusive controls that are enabled/disabled for the specific browser window type
 static StrConstant SWEEPCONTROL_CONTROLS_DATABROWSER = "check_SweepControl_AutoUpdate;setvar_SweepControl_SweepNo;"
 static StrConstant SWEEPCONTROL_CONTROLS_SWEEPBROWSER = "popup_SweepControl_Selector;"
@@ -168,7 +165,6 @@ Function BSP_UnsetDynamicSweepControlOfDataBrowser(mainPanel)
 	scPanel = BSP_GetSweepControlsPanel(mainPanel)
 	ASSERT(WindowExists(scPanel), "external SweepControl panel not found")
 	SetWindow $scPanel, hook(main)=$""
-	SetControlProcedures(scPanel, SWEEPCONTROL_UNSET_CONTROLPROCEDURES, "")
 End
 
 /// @brief dynamic settings for panel initialization
