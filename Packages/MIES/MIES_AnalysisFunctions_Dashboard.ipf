@@ -66,6 +66,68 @@ Function AD_Update(win)
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
+static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
+
+	if(passed)
+		return "Pass"
+	endif
+
+	// PSQ_DA, PSQ_RB, PSQ_RA, PSQ_SP, PSQ_CR
+	// PSQ_FMT_LBN_BL_QC_PASS
+
+	// MSQ_DA
+	// - always passes
+
+	// MSQ_FRE
+	// - MSQ_FMT_LBN_DASCALE_EXC present (optional)
+	// - Not enough sweeps
+
+	// MSQ_SC
+	// - MSQ_FMT_LBN_RERUN_TRIALS_EXC present
+	// - Spike counts state
+	// - Spontaneous spiking check
+	// - Not enough sweeps
+
+	// PSQ_CR
+	// - needs at least PSQ_CR_NUM_SWEEPS_PASS passing sweeps with the same to-full-pA rounded DAScale
+
+	// PSQ_DA
+	// - needs at least $NUM_DA_SCALES passing sweeps
+	//   and for supra mode if the FinalSlopePercent parameter is present this has to be reached as well
+
+	// PSQ_RA
+	// - needs at least PSQ_RA_NUM_SWEEPS_PASS passing sweeps
+
+	// PSQ_RB
+	// - Difference to initial DAScale larger than 60pA?
+	// - Not enough sweeps
+
+	// PSQ_SP
+	// - only reached PSQ_FMT_LBN_STEPSIZE step size and not PSQ_SP_INIT_AMP_p10 with a spike
+
+	switch(anaFuncType)
+		case MSQ_DA_SCALE:
+			BUG("Unknown reason for failure")
+			return "Failure"
+		case MSQ_FAST_RHEO_EST:
+			return AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
+		case PSQ_CHIRP:
+			return AD_GetChirpFailMsg(numericalValues, sweepNo, headstage)
+		case PSQ_DA_SCALE:
+			return AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
+		case PSQ_RAMP:
+			return AD_GetRampFailMsg(numericalValues, sweepNo, headstage)
+		case PSQ_RHEOBASE:
+			return AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
+		case PSQ_SQUARE_PULSE:
+			return AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
+		case SC_SPIKE_CONTROL:
+			return AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
+		default:
+			ASSERT(0, "Unsupported analysis function")
+	endswitch
+End
+
 /// @brief Get result list of analysis function runs
 static Function AD_FillWaves(win, list, info)
 	string win
@@ -151,75 +213,7 @@ static Function AD_FillWaves(win, list, info)
 				continue
 			endif
 
-			if(passed)
-				msg = "Pass"
-			else
-				anaFuncType = MapAnaFuncToConstant(anaFunc)
-				ASSERT(IsFinite(anaFuncType), "Invalid analysis function type")
-
-				// PSQ_DA, PSQ_RB, PSQ_RA, PSQ_SP, PSQ_CR
-				// PSQ_FMT_LBN_BL_QC_PASS
-
-				// MSQ_DA
-				// - always passes
-
-				// MSQ_FRE
-				// - MSQ_FMT_LBN_DASCALE_EXC present (optional)
-				// - Not enough sweeps
-
-				// MSQ_SC
-				// - MSQ_FMT_LBN_RERUN_TRIALS_EXC present
-				// - Spike counts state
-				// - Spontaneous spiking check
-				// - Not enough sweeps
-
-				// PSQ_CR
-				// - needs at least PSQ_CR_NUM_SWEEPS_PASS passing sweeps with the same to-full-pA rounded DAScale
-
-				// PSQ_DA
-				// - needs at least $NUM_DA_SCALES passing sweeps
-				//   and for supra mode if the FinalSlopePercent parameter is present this has to be reached as well
-
-				// PSQ_RA
-				// - needs at least PSQ_RA_NUM_SWEEPS_PASS passing sweeps
-
-				// PSQ_RB
-				// - Difference to initial DAScale larger than 60pA?
-				// - Not enough sweeps
-
-				// PSQ_SP
-				// - only reached PSQ_FMT_LBN_STEPSIZE step size and not PSQ_SP_INIT_AMP_p10 with a spike
-
-				switch(anaFuncType)
-					case MSQ_DA_SCALE:
-						BUG("Unknown reason for failure")
-						msg = "Failure"
-						break
-					case MSQ_FAST_RHEO_EST:
-						msg = AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
-						break
-					case PSQ_CHIRP:
-						msg = AD_GetChirpFailMsg(numericalValues, sweepNo, headstage)
-						break
-					case PSQ_DA_SCALE:
-						msg = AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
-						break
-					case PSQ_RAMP:
-						msg = AD_GetRampFailMsg(numericalValues, sweepNo, headstage)
-						break
-					case PSQ_RHEOBASE:
-						msg = AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
-						break
-					case PSQ_SQUARE_PULSE:
-						msg = AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
-						break
-					case SC_SPIKE_CONTROL:
-						msg = AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
-						break
-					default:
-						ASSERT(0, "Unsupported analysis function")
-				endswitch
-			endif
+			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, headstage)
 
 			EnsureLargeEnoughWave(list, dimension = ROWS, minimumSize = index)
 			EnsureLargeEnoughWave(info, dimension = ROWS, minimumSize = index)
