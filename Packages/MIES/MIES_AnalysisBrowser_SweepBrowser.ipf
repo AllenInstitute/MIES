@@ -517,16 +517,18 @@ Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
 	string win, scPanel
-	variable newSweep
+	variable newSweep, newIndex
 
 	switch(pa.eventCode)
 		case 2: // mouse up
 			win = pa.win
-			newSweep = pa.popNum - 1
+			WAVE sweeps = SB_GetPlainSweepList(win)
+			newIndex = pa.popNum - 1
+			newSweep = sweeps[newIndex]
 			SetSetVariable(win, "setvar_SweepControl_SweepNo", newSweep)
 
 			if(OVS_IsActive(win))
-				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index=newSweep)
+				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index=newIndex)
 			else
 				UpdateSweepPlot(win)
 			endif

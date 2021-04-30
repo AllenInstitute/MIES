@@ -124,7 +124,7 @@ End
 /// Must be called after the sweeps changed.
 Function OVS_UpdatePanel(string win, [variable fullUpdate])
 
-	variable i, numEntries, sweepNo, lastEntry, newCycleHasStartedRAC, newCycleHasStartedSCI
+	variable i, numEntries, sweepNoOrIndex, lastEntry, newCycleHasStartedRAC, newCycleHasStartedSCI
 	string extPanel, scPanel
 
 	if(ParamIsDefault(fullUpdate))
@@ -191,9 +191,14 @@ Function OVS_UpdatePanel(string win, [variable fullUpdate])
 		FindValue/I=(LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED)/RMD=[][0] listBoxSelWave
 		if(V_Value == -1)
 			scPanel = BSP_GetSweepControlsPanel(win)
-			sweepNo = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
 
-			listBoxSelWave[sweepNo][%Sweep] = SetBit(listBoxSelWave[sweepNo][%Sweep], LISTBOX_CHECKBOX_SELECTED)
+			if(BSP_IsDataBrowser(win))
+				sweepNoOrIndex = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+			else
+				sweepNoOrIndex = GetPopupMenuIndex(scPanel, "Popup_SweepControl_Selector")
+			endif
+
+			listBoxSelWave[sweepNoOrIndex][%Sweep] = SetBit(listBoxSelWave[sweepNoOrIndex][%Sweep], LISTBOX_CHECKBOX_SELECTED)
 		endif
 	endif
 

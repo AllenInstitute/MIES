@@ -1316,7 +1316,7 @@ Function BSP_UpdateSweepNote(win)
 		graph = GetMainWindow(win)
 
 		scPanel = BSP_GetSweepControlsPanel(win)
-		index = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+		index = GetPopupMenuIndex(scPanel, "Popup_SweepControl_Selector")
 
 		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 		WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
