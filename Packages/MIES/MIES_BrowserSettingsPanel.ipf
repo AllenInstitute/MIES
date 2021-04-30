@@ -279,10 +279,11 @@ Function BSP_BindListBoxWaves(win)
 	BSP_ChannelSelectionWaveToGUI(bsPanel, channelSelection)
 
 	// dashboard
+	WAVE listBoxHelpWave  = GetAnaFuncDashboardHelpWave(dfr)
 	WAVE listBoxColorWave = GetAnaFuncDashboardColorWave(dfr)
 	WAVE listBoxSelWave   = GetAnaFuncDashboardselWave(dfr)
 	WAVE/T listBoxWave    = GetAnaFuncDashboardListWave(dfr)
-	ListBox list_dashboard, win=$bsPanel, listWave=listBoxWave, colorWave=listBoxColorWave, selWave=listBoxSelWave
+	ListBox list_dashboard, win=$bsPanel, listWave=listBoxWave, colorWave=listBoxColorWave, selWave=listBoxSelWave, helpWave=listBoxHelpWave
 
 	// sweep formula tab
 	SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)

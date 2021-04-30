@@ -50,16 +50,19 @@ Function AD_Update(win)
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
+	WAVE/T helpWave = GetAnaFuncDashboardHelpWave(dfr)
 	WAVE colorWave  = GetAnaFuncDashboardColorWave(dfr)
 	WAVE selWave    = GetAnaFuncDashboardselWave(dfr)
 	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
 	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
 
 	numEntries = AD_FillWaves(win, listWave, infoWave)
-	Redimension/N=(numEntries, -1, -1) selWave, listWave, infoWave
+	Redimension/N=(numEntries, -1, -1) selWave, listWave, infoWave, helpWave
 
 	if(numEntries > 0)
 		selWave[][][%foreColors] = AD_GetColorForResultMessage(listWave[p][%Result])
+
+		helpWave[] = "Result: " + listWave[p][%Result]
 
 		mainPanel = BSP_GetPanel(win)
 		EnableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
