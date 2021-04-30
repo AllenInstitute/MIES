@@ -33,3 +33,5 @@ fmt="(%h) %<(80,trunc)%s%w(0,0,10)%+b"
 old_tag=$(git describe --tags --abbrev=0 --match "Release_*")
 
 git --git-dir=$git_dir log --submodule=diff --no-merges --pretty="$fmt" $old_tag..HEAD > changelog.txt
+
+$top_level/tools/get-changed-controls.sh >> changelog.txt
