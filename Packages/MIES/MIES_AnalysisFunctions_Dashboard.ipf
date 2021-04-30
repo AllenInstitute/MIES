@@ -620,13 +620,13 @@ static Function AD_SelectResult(win, [index])
 		return NaN
 	endif
 
-	Make/N=0/FREE sweeps
+	Make/N=0/FREE sweepsWithDuplicates
 	if(GetCheckBoxState(bspPanel, "check_BrowserSettings_DB_Passed"))
 		list = info[index][%$"Passing Sweeps"]
 
 		if(!IsEmpty(list))
 			WAVE wv = ListToNumericWave(list, ";")
-			Concatenate/NP {wv}, sweeps
+			Concatenate/NP {wv}, sweepsWithDuplicates
 		endif
 	endif
 
@@ -635,7 +635,7 @@ static Function AD_SelectResult(win, [index])
 
 		if(!IsEmpty(list))
 			WAVE wv = ListToNumericWave(list, ";")
-			Concatenate/NP {wv}, sweeps
+			Concatenate/NP {wv}, sweepsWithDuplicates
 		endif
 	endif
 
@@ -644,6 +644,8 @@ static Function AD_SelectResult(win, [index])
 		ControlWindowToFront()
 		return NaN
 	endif
+
+	WAVE sweeps = GetUniqueEntries(sweepsWithDuplicates)
 
 	numEntries = DimSize(sweeps, ROWS)
 
