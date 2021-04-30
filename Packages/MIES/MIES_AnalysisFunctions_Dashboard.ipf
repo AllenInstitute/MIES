@@ -189,7 +189,7 @@ static Function AD_FillWaves(win, list, info)
 
 			WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
 
-			if(!WaveExists(stimsetCycleIDs)) // TP during DAQ
+			if(!WaveExists(stimsetCycleIDs)) // TP during DAQ or data before d6046561 (Add a stimset acquisition cycle ID, 2018-05-30)
 				continue
 			endif
 
