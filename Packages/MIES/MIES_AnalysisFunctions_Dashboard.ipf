@@ -48,6 +48,8 @@ Function AD_Update(win)
 
 	refTime = DEBUG_TIMER_START()
 
+	mainPanel = BSP_GetPanel(win)
+
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
 	WAVE/T helpWave = GetAnaFuncDashboardHelpWave(dfr)
@@ -56,7 +58,10 @@ Function AD_Update(win)
 	WAVE/T listWave = GetAnaFuncDashboardListWave(dfr)
 	WAVE/T infoWave = GetAnaFuncDashboardInfoWave(dfr)
 
-	numEntries = AD_FillWaves(win, listWave, infoWave)
+	if(BSP_IsActive(mainPanel, MIES_BSP_DS))
+		numEntries = AD_FillWaves(win, listWave, infoWave)
+	endif
+
 	Redimension/N=(numEntries, -1, -1) selWave, listWave, infoWave, helpWave
 
 	if(numEntries > 0)
@@ -64,8 +69,10 @@ Function AD_Update(win)
 
 		helpWave[] = "Result: " + listWave[p][%Result]
 
-		mainPanel = BSP_GetPanel(win)
 		EnableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
+	else
+		SetNumberInWaveNote(listWave, NOTE_INDEX, 0)
+		DisableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	endif
 
 	DEBUGPRINT_ELAPSED(refTime)
@@ -727,6 +734,18 @@ Function AD_CheckProc_FailedSweeps(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			AD_SelectResult(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function AD_CheckProc_Toggle(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			AD_Update(cba.win)
 			break
 	endswitch
 

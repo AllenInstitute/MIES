@@ -864,6 +864,9 @@ Function BSP_IsActive(win, elementID)
 		case MIES_BSP_SF:
 			control = "check_BrowserSettings_SF"
 			break
+		case MIES_BSP_DS:
+			control = "check_BrowserSettings_DS"
+			break
 		default:
 			return 0
 	endswitch

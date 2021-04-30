@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(1230.75,578,1662.75,1013)/K=1  as "DataBrowser"
+	Display /W=(1219.5,593,1651.5,1029.5)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel
 	Button button_BSP_open,title="<<",help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -44,7 +44,7 @@ Window DataBrowser() : Graph
 	ValDisplay valdisp_SweepControl_LastSweep,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_SweepControl_LastSweep,value=#"nan"
 	ValDisplay valdisp_SweepControl_LastSweep,barBackColor=(56576,56576,56576)
-	SetVariable setvar_SweepControl_SweepNo,pos={158.00,4.00},size={72.00,35.00}
+	SetVariable setvar_SweepControl_SweepNo,pos={158.00,4.00},size={72.00,35.00},proc=DB_SetVarProc_SweepNo
 	SetVariable setvar_SweepControl_SweepNo,help={"Sweep number of last sweep plotted"}
 	SetVariable setvar_SweepControl_SweepNo,userdata(lastSweep)="NaN"
 	SetVariable setvar_SweepControl_SweepNo,userdata(Config_DontRestore)="1"
@@ -95,7 +95,7 @@ Window DataBrowser() : Graph
 	TabControl Settings,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TabControl Settings,tabLabel(0)="Settings",tabLabel(1)="OVS",tabLabel(2)="CS"
 	TabControl Settings,tabLabel(3)="AR",tabLabel(4)="PA",tabLabel(5)="SF"
-	TabControl Settings,tabLabel(6)="Note",tabLabel(7)="Dashboard",value=0
+	TabControl Settings,tabLabel(6)="Note",tabLabel(7)="DS",value=0
 	ListBox list_of_ranges,pos={81.00,198.00},size={223.00,380.00},disable=3,proc=OVS_MainListBoxProc
 	ListBox list_of_ranges,help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
 	ListBox list_of_ranges,userdata(tabnum)="1",userdata(tabcontrol)="Settings"
@@ -990,27 +990,36 @@ Window DataBrowser() : Graph
 	ListBox list_dashboard,userdata(Config_DontRestore)="1"
 	ListBox list_dashboard,userdata(Config_DontSave)="1",fSize=12,mode=1,selRow=-1
 	ListBox list_dashboard,widths={141,109,77},userColumnResize=1
+	CheckBox check_BrowserSettings_DS,pos={164.00,47.00},size={51.00,15.00},disable=1,proc=AD_CheckProc_Toggle
+	CheckBox check_BrowserSettings_DS,title="enable"
+	CheckBox check_BrowserSettings_DS,help={"Enable the dashboard support"}
+	CheckBox check_BrowserSettings_DS,userdata(tabnum)="7"
+	CheckBox check_BrowserSettings_DS,userdata(tabcontrol)="Settings"
+	CheckBox check_BrowserSettings_DS,userdata(ResizeControlsInfo)=A"!!,G4!!#>J!!#>Z!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_BrowserSettings_DS,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#N3Bk1ctAStpcCh5qOGZ8U#zzzzzzzz"
+	CheckBox check_BrowserSettings_DS,userdata(ResizeControlsInfo)+=A"zzz!!#N3Bk1ctAStpcCh5qOGX?=jFDl!rzzzzzzzzzz!!!"
+	CheckBox check_BrowserSettings_DS,value=0
 	GroupBox group_enable_dashboard,pos={5.00,25.00},size={388.00,60.00},disable=1
 	GroupBox group_enable_dashboard,userdata(tabnum)="7"
 	GroupBox group_enable_dashboard,userdata(tabcontrol)="Settings"
 	GroupBox group_enable_dashboard,userdata(ResizeControlsInfo)=A"!!,?X!!#=+!!#C'!!#?)z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	GroupBox group_enable_dashboard,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_enable_dashboard,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_BrowserSettings_DB_Passed,pos={175.00,39.00},size={52.00,15.00},disable=1,proc=AD_CheckProc_PassedSweeps
+	CheckBox check_BrowserSettings_DB_Passed,pos={15.00,35.00},size={52.00,15.00},disable=1,proc=AD_CheckProc_PassedSweeps
 	CheckBox check_BrowserSettings_DB_Passed,title="Passed"
 	CheckBox check_BrowserSettings_DB_Passed,help={"Show passed sweeps on double click into ListBox "}
 	CheckBox check_BrowserSettings_DB_Passed,userdata(tabnum)="7"
 	CheckBox check_BrowserSettings_DB_Passed,userdata(tabcontrol)="Settings"
-	CheckBox check_BrowserSettings_DB_Passed,userdata(ResizeControlsInfo)=A"!!,G?!!#>*!!#>^!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_BrowserSettings_DB_Passed,userdata(ResizeControlsInfo)=A"!!,B)!!#=o!!#>^!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_DB_Passed,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_DB_Passed,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_DB_Passed,value=0
-	CheckBox check_BrowserSettings_DB_Failed,pos={175.00,60.00},size={47.00,15.00},disable=1,proc=AD_CheckProc_FailedSweeps
+	CheckBox check_BrowserSettings_DB_Failed,pos={15.00,56.00},size={47.00,15.00},disable=1,proc=AD_CheckProc_FailedSweeps
 	CheckBox check_BrowserSettings_DB_Failed,title="Failed"
 	CheckBox check_BrowserSettings_DB_Failed,help={"Show failed sweeps on double click into ListBox "}
 	CheckBox check_BrowserSettings_DB_Failed,userdata(tabnum)="7"
 	CheckBox check_BrowserSettings_DB_Failed,userdata(tabcontrol)="Settings"
-	CheckBox check_BrowserSettings_DB_Failed,userdata(ResizeControlsInfo)=A"!!,G?!!#?)!!#>J!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_BrowserSettings_DB_Failed,userdata(ResizeControlsInfo)=A"!!,B)!!#>n!!#>J!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_DB_Failed,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_DB_Failed,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_DB_Failed,value=0
@@ -1245,9 +1254,9 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	RenameWindow #,BrowserSettingsPanel
 	SetActiveSubwindow ##
-	NewPanel/HOST=#/EXT=2/W=(0,0,580,105)  as " "
+	NewPanel/HOST=#/EXT=2/W=(0,0,580,114)  as " "
 	ModifyPanel fixedSize=0
-	Button popupext_LBKeys,pos={416.00,26.00},size={150.00,19.00},bodyWidth=150,proc=PEXT_ButtonProc
+	Button popupext_LBKeys,pos={408.00,26.00},size={150.00,19.00},bodyWidth=150,proc=PEXT_ButtonProc
 	Button popupext_LBKeys,title="Lab Notebook Entries ▼"
 	Button popupext_LBKeys,help={"Select lab notebook data to display"}
 	Button popupext_LBKeys,userdata(popupProc)="DB_PopMenuProc_LabNotebook"
@@ -1255,24 +1264,24 @@ Window DataBrowser() : Graph
 	Button popupext_LBKeys,userdata(ResizeControlsInfo)=A"!!,I6!!#=3!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button popupext_LBKeys,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	Button popupext_LBKeys,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	Button button_clearlabnotebookgraph,pos={407.00,55.00},size={80.00,25.00},proc=DB_ButtonProc_ClearGraph
+	Button button_clearlabnotebookgraph,pos={399.00,55.00},size={80.00,25.00},proc=DB_ButtonProc_ClearGraph
 	Button button_clearlabnotebookgraph,title="Clear graph"
 	Button button_clearlabnotebookgraph,help={"Clear the labnotebook visualization graph"}
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)=A"!!,I1J,ho@!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	Button button_switchxaxis,pos={499.00,55.00},size={80.00,25.00},proc=DB_ButtonProc_SwitchXAxis
+	Button button_switchxaxis,pos={491.00,55.00},size={80.00,25.00},proc=DB_ButtonProc_SwitchXAxis
 	Button button_switchxaxis,title="Switch X-axis"
 	Button button_switchxaxis,help={"Toggle lab notebook horizontal axis between time of day or sweep number"}
 	Button button_switchxaxis,userdata(ResizeControlsInfo)=A"!!,I_J,ho@!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	GroupBox group_labnotebook_ctrls,pos={408.00,5.00},size={170.00,47.00}
+	GroupBox group_labnotebook_ctrls,pos={400.00,5.00},size={170.00,47.00}
 	GroupBox group_labnotebook_ctrls,title="Settings History Column"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)=A"!!,I2!!#9W!!#A9!!#>Jz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	Button button_DataBrowser_setaxis,pos={406.00,84.00},size={171.00,25.00},proc=DB_ButtonProc_AutoScale
+	Button button_DataBrowser_setaxis,pos={398.00,84.00},size={171.00,25.00},proc=DB_ButtonProc_AutoScale
 	Button button_DataBrowser_setaxis,title="Autoscale"
 	Button button_DataBrowser_setaxis,help={"Autoscale sweep data"}
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)=A"!!,I1!!#?a!!#A:!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
