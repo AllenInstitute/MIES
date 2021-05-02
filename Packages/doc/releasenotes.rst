@@ -3,6 +3,352 @@ Release notes
 
 .. toctree::
 
+Release 2.2
+===========
+
+This version is the first version of MIES with support for upcoming Igor Pro 9. And it will also be the last with
+support for Igor Pro 8.
+
+Controls
+--------
+
+All added, removed or renamed controls of the main GUIs are listed here. These lists are intended to help upgrading the JSON
+configuration files manually. Controls which can not be read/written with the configuration code, like GroupBox'es, are not included.
+
+DA\_Ephys
+~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+- ``Check_Settings_Append``
+- ``setvar_Settings_DecMethodFac``
+- ``title_hardware_Follow``
+- ``title_hardware_Release``
+
+Renamed
+^^^^^^^
+
+None
+
+Databrowser
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+- ``check_BrowserSettings_DS``
+- ``check_pulseAver_ShowImage``
+- ``check_pulseAver_drawXZeroLine``
+- ``check_pulseAver_fixedPulseLength``
+- ``check_pulseAver_hideFailedPulses``
+- ``check_pulseAver_searchFailedPulses``
+- ``check_pulseAver_showTraces``
+- ``popup_pulseAver_colorscales``
+- ``popup_pulseAver_pulseSortOrder``
+- ``setvar_pulseAver_failedPulses_level``
+- ``setvar_pulseAver_numberOfSpikes``
+- ``setvar_pulseAver_vert_scale_bar``
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+- ``check_pulseAver_indTraces`` → ``check_pulseAver_indPulses``
+- ``check_pulseAver_zeroTrac`` → ``check_pulseAver_zero``
+- ``setvar_pulseAver_fallbackLength`` → ``setvar_pulseAver_overridePulseLength``
+
+Wavebuilder
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Sweep Formula
+-------------
+
+- Add ``area`` operation
+- Fix most cases of ignored minus signs in formulas
+- Make it more user friendly on errors by not just asserting out
+
+AnalysisBrowser
+---------------
+
+None
+
+DataBrowser
+-----------
+
+Dashboard
+~~~~~~~~~
+
+- Display the headstages for each sweep
+- Add support for multipatch seq analysis functions
+- Add "enable checkbox" for the dashboard
+- Show the dashboard result message as tooltip
+- Add support for all sweeps even without having an analysis function attached to the stimulus set
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Fix restoring from backup so that it works again and also restore all sweeps and not only the displayed ones
+- The axes' locations are now more predictable for zooming in/out via mouse wheel
+- Don't display data from TP during DAQ channels
+- Always create backup waves when splitting the sweep
+- Speedup plotting of many traces by grouping AppendToGraph calls. This is mostly noticable in Igor Pro 8, less in
+  Igor Pro 9.
+- Make overlay sweeps with headstage removal faster
+- Select the current sweep when enabling overlay sweeps
+- Add new trace popup for convenient stimulus set opening in the wavebuilder
+- Fix displaying TTL data with only "TP during DAQ" data
+- Use a different marker for the first headstage. ``+`` can be easily hidden by axis ticks, but ``#`` not
+
+SweepBrowser
+------------
+
+- Add dashboard support
+- Show the sweep number in the sweep control and not the index into the list of sweeps
+
+DA\_Ephys
+---------
+
+- Closing the DAEphys panel that is running TP now waits for the TP analysis to finish before closing
+- Ignore TP during DAQ channels for locked indexing
+- Prevent sweep skipping from crossing stimulus set borders
+- Handle relocking a device with data better. We now don't start at sweep zero but at the next sweep after the last acquired
+- Remove decimation factor control
+- Make rerunning the TP with the same settings faster
+- Don't disable dDAQ and oodDAQ checkboxes during data aquisition anymore
+- Don't allow dialogs during background function execution, this should prevent Igor Pro crashes
+- Add new trace popup for convenient stimulus set opening
+- Warn users about permanent data loss when using sweep rollback
+- Fix TP during DAQ channels with TTL channels
+- Fix auto pipette offset taking "Apply on mode switch" into account
+- Remove the "Enable async acquisition" checkbox from the settings panel. Enable async from the async tab of the DA_Ephys panel.
+- Change sweep rollback to move the data to an archive folder instead of deleting it
+
+JSON Configuration
+------------------
+
+- Remove the old experiment configuration. The new JSON based configuration now completely replaces it.
+- Add menu option to open all JSON configuration files in a notebook
+- Add entry "Sweep Rollback allowed" defaulting to false. This means users who are configuring MIES must explicitly
+  allow sweep rollback. This was done to make the chance of misuse smaller
+
+Downsample
+----------
+
+None
+
+Analysis Functions
+------------------
+
+- SetControlInEvent: Warn when trying to set a control which can not be set
+- Add ``SC_SpikeControl``
+- Convert ReachTargetVoltage to V3 format
+- Use correct labnotebook prefix for headstage active entry in MSQ_DAScale
+- Make MSQ_FastRheoEst/MSQ_DAScale/MSQ_SpikeControl/ReachTargetVoltage compatible with locked indexing
+- Add option to query the autobias target voltage from the user in ReachTargetVoltage
+- Make execution faster by not trying to redo baseline QC when it was already done
+
+Pulse Average Plot
+------------------
+
+- Completely rework it for better performance
+- Add documentation for time align code
+- Add support for failed spike detection. Failed spikes can be highlighted or hidden in the PA plot.
+- Allow one PA plot per browser window
+- Add X/Y scale bars with zoom support
+- Make averaging faster by adding support for incremental updates and parallelizing the calculations
+- Make adding new sweeps during data acquisition much faster
+- Nicify GUI controls and add more help entries
+- Rework the time alignment code for faster execution
+- Allow displaying deconvoluted pulses without visualized average wave
+- Add image plot mode with external subwindows for the color scales and the option to
+  choose the pulse sorting order
+- Add option ``Draw X zero line`` to draw a line crossing the plots at ``x == 0``
+- Add option to always use a fixed pulse length
+- Read pulse starting times from the labnotebook if present and only fallback to calculating them
+- Add Tests
+- Ignore spikes which are narrower than 0.2 ms
+
+Foreign Function interface
+--------------------------
+
+- Add ``FFI_GetAvailableMessageFilters`` to query all available subscriber message filters
+
+General
+-------
+
+- Add a menu option for resetting the package settings to their default
+- Adapt ``Check Installation`` for Igor Pro 9
+- Make querying the labnotebok faster by adding support for incremental updates for the cache waves
+- An early version of MIES user documentation
+- Make the Igor Pro version check much more user friendly to use. We now don't bug out on old Igor Pro
+  versions anymore but display a dialog and allow direct download of the new version.
+  This also includes up-to-date links in the documentation.
+- Sweep Rollback: Fix and avoid deleting the wrong sweeps. In some cases deleted sweeps can be reconstructed via
+  ``RecreateSweepWaveFromBackupAndLBN``. Please create an issue if you need help with that.
+- Enhance the user experience when old NIDAQ-mx XOP versions are used with MIES
+- Make unlocked indexing work with TP during DAQ
+- Add menu option for opening the package settings in a notebook
+- Add sub sub epoch information for pulse train pulses
+- Fix POST_SET_EVENT/PRE_SET_EVENT determination in DC_PlaceDataInDAQDataWave for headstages in special cases.
+- Add option to upload the MIES and ZeroMQ log files
+
+ITC XOP 2
+---------
+
+None
+
+ZeroMQ XOP
+----------
+
+- Add support for logging in JSONL-format on disk. This is used for debugging and performance gathering. Enabled by default.
+- Add support for publisher/subscriber sockets
+
+MCC XOP
+-------
+
+None
+
+MIESUtils XOP
+-------------
+
+None
+
+Labnotebook
+-----------
+
+- Set the exact same timestamps for all entries added with one call. Previously these could differ in the
+  sub-millisecond range.
+- Store timestamps with enough resolution in textual labnotebook, so instead of 3.6968e+09 we now store 3696770484.463
+- Fix storing the wrong value for the alarm checkbox for the asynchronous tab
+- With asynchronous acquisition unused channels don't result in empty labnotebook entries anymore
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+- ``Autobias %``: Autobias percentage as set in DAEphys
+- ``Autobias Interval``: Autobias interval as set in DAEphys
+- ``Acquisition State``: Add new standard entry which defines at which point during data acquisition an entry was
+  added. See also :ref:`File MIES_AcquisitionStateHandling.ipf`
+- ``Skip Sweeps``: Store the number of performed sweep skips
+- ``PSQ_FMT_LBN_DA_OPMODE``: Operation mode for ``PSQ_DAScale`` analysis function
+- ``PSQ_FMT_LBN_TARGETV``: Target voltage baseline
+- New entries for ``SC_SpikeControl``, see :ref:`File MIES_AnalysisFunctions_MultiPatchSeq.ipf`
+- New entries for ``PSQ_Chirp``, see :ref:`File MIES_AnalysisFunctions_PatchSeq.ipf`
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+- ``Igor Pro build``: Igor Pro build revision
+- ``JSON config file: stimset nwb file path``: Stimulus set path from the configuration file
+- New entries for ``SC_SpikeControl``, see :ref:`File MIES_AnalysisFunctions_MultiPatchSeq.ipf`
+- New entries for ``PSQ_Chirp``, see :ref:`File MIES_AnalysisFunctions_PatchSeq.ipf`
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+NWB/IPNWB
+---------
+
+- Add the Igor Pro build version to the ``generated_by`` dataset from ndx-MIES
+- Make it faster by only saving the filled rows for the labnotebook and TP storage waves
+- Skip sweeps on export which don't have a config wave
+- Store the MIES log file in the same place as the Igor Pro history
+
+File format
+~~~~~~~~~~~
+
+None
+
+Pressure Control
+----------------
+
+- We now enforce that NI hardware uses differential setup for the AI channels
+
+WaveBuilder
+-----------
+
+- Use WP and SegWvType with double precision for new waves. We keep the existing single precision waves
+  as we want to generate the exact stimulus sets again.
+- Jump to the selected analysis function if possible when "Open" is pressed
+- Make selecting epochs with the mouse work with flipping enabled
+- Add help entry for delta modes
+- Warn on too long explicit delta value list
+
+Work Sequencing Engine
+----------------------
+
+- Remove existing file first when exporting into NWB
+- Publish QC results from background functions via ZeroMQ publisher socket
+
+Internal
+--------
+
+- Enhance error reporting in ``ASSERT_TS`` with  outputting the stacktrace in IP9
+- Make NumericWaveToList faster by using wfprintf
+- Make ``GetAllDevices`` faster
+- Fix various corner cases in ``RA_SkipSweeps``
+- Unify naming for HardwareDataWave/ITCDataWave to DAQDataWave
+- Minor fixes for Igor Pro 9
+- Make compiling slightly faster by not compiling the background watchter panel by default
+- Add debug visualization for epochs in the Databrowser/Sweepbrowser
+- Fix GetSweepSettings for the textual labnotebook
+- Add ``GetActiveChannels`` which allow to determine which channels were active for a given sweep
+
+Tests
+-----
+
+- Cleanup initialization code and add ``RunWithOpts``
+- Add basic dashboard testing
+
+Async Framework
+---------------
+
+- Add tracking jobs by ``workload`` parameters. This allows to check if all jobs of a given workload are finished.
+
+Logging
+-------
+
+- Add support for logging in JSONL-format on disk. This is used for debugging and performance gathering.
+- Store assertions, Igor starting/stopping/quitting/compiling, NWB export and device/pressure locking
+
+Installer
+---------
+
+- Skip vc_redist installation as non-admin
+- Use latest 2019 vc_redist package
+
 Release 2.1
 ===========
 
