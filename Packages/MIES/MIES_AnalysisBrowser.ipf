@@ -1452,6 +1452,19 @@ static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 	return oneValidLoad
 End
 
+Function AB_LoadStimsetForSweep(string device, variable index, variable sweep)
+
+	string dataFolder, discLocation, fileType
+
+	WAVE/T map = GetAnalysisBrowserMap()
+
+	dataFolder   = map[index][%DataFolder]
+	discLocation = map[index][%DiscLocation]
+	fileType     = map[index][%FileType]
+
+	return AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = 0)
+End
+
 // @brief common ASSERT statements for AB_LoadSweepFromFile and AB_LoadStimsetFromFile
 static Function AB_LoadFromFileASSERT(discLocation, dataFolder, fileType, device, sweep, overwrite)
 	string discLocation, dataFolder, fileType, device
