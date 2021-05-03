@@ -199,7 +199,7 @@ static Function NWB_AddGeneratorString(fileID, nwbVersion)
 
 	IPNWB#EnsureValidNWBVersion(nwbVersion)
 
-	Make/FREE/T/N=(6, 2) props
+	Make/FREE/T/N=(7, 2) props
 
 	props[0][0] = "Program"
 	props[0][1] = "Igor Pro " + num2str(GetArchitectureBits()) + "bit"
@@ -218,6 +218,9 @@ static Function NWB_AddGeneratorString(fileID, nwbVersion)
 
 	props[5][0] = "Labnotebook Version"
 	props[5][1] = num2str(LABNOTEBOOK_VERSION)
+
+	props[6][0] = "HDF5 Library Version"
+	props[6][1] = IPNWB#H5_GetLibraryVersion()
 
 	if(nwbVersion == 1)
 		IPNWB#H5_WriteTextDataset(fileID, "/general/generated_by", wvText=props)
