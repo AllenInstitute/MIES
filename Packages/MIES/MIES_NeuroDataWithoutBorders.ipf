@@ -95,7 +95,7 @@ static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExpo
 	filePath = filePathExport
 
 	if(ParamIsDefault(overrideFilePath))
-		if(IPNWB#H5_IsFileOpen(fileIDExport))
+		if(H5_IsFileOpen(fileIDExport))
 			return [fileIDExport, 0]
 		endif
 
@@ -122,8 +122,8 @@ static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExpo
 	ASSERT(!IsEmpty(filePath), "filePath can not be empty")
 
 	if(FileExists(filePath))
-		fileID = IPNWB#H5_OpenFile(filePath, write = 1)
-		ASSERT(IPNWB#GetNWBMajorVersion(IPNWB#ReadNWBVersion(fileID)) == nwbVersion, "NWB_GetFileForExport: NWB version of the selected NWB file differs.")
+		fileID = H5_OpenFile(filePath, write = 1)
+		ASSERT(GetNWBMajorVersion(ReadNWBVersion(fileID)) == nwbVersion, "NWB_GetFileForExport: NWB version of the selected NWB file differs.")
 
 		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
 
@@ -143,8 +143,8 @@ static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExpo
 			return [fileID, createdNewNWBFile]
 		endif
 
-		STRUCT IPNWB#ToplevelInfo ti
-		IPNWB#InitToplevelInfo(ti, nwbVersion)
+		STRUCT ToplevelInfo ti
+		InitToplevelInfo(ti, nwbVersion)
 
 		NVAR sessionStartTime = $GetSessionStartTime()
 
@@ -172,8 +172,8 @@ static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExpo
 			endif
 		endif
 
-		IPNWB#CreateCommonGroups(fileID, ti)
-		IPNWB#CreateIntraCellularEphys(fileID)
+		CreateCommonGroups(fileID, ti)
+		CreateIntraCellularEphys(fileID)
 
 		NWB_AddGeneratorString(fileID, nwbVersion)
 		NWB_AddSpecifications(fileID, nwbVersion)
@@ -197,7 +197,7 @@ End
 static Function NWB_AddGeneratorString(fileID, nwbVersion)
 	variable fileID, nwbVersion
 
-	IPNWB#EnsureValidNWBVersion(nwbVersion)
+	EnsureValidNWBVersion(nwbVersion)
 
 	Make/FREE/T/N=(7, 2) props
 
@@ -220,34 +220,34 @@ static Function NWB_AddGeneratorString(fileID, nwbVersion)
 	props[5][1] = num2str(LABNOTEBOOK_VERSION)
 
 	props[6][0] = "HDF5 Library Version"
-	props[6][1] = IPNWB#H5_GetLibraryVersion()
+	props[6][1] = H5_GetLibraryVersion()
 
 	if(nwbVersion == 1)
-		IPNWB#H5_WriteTextDataset(fileID, "/general/generated_by", wvText=props)
-		IPNWB#MarkAsCustomEntry(fileID, "/general/generated_by")
+		H5_WriteTextDataset(fileID, "/general/generated_by", wvText=props)
+		MarkAsCustomEntry(fileID, "/general/generated_by")
 	elseif(nwbVersion == 2)
-		IPNWB#H5_WriteTextDataset(fileID, "/general/generated_by", wvText=props)
-		IPNWB#WriteNeuroDataType(fileID, "/general/generated_by", "GeneratedBy")
-		IPNWB#H5_WriteTextDataset(fileID, "/general/source_script", str=props[3][1])
-		IPNWB#H5_WriteTextAttribute(fileID, "file_name", "/general/source_script", str=IgorInfo(1))
+		H5_WriteTextDataset(fileID, "/general/generated_by", wvText=props)
+		WriteNeuroDataType(fileID, "/general/generated_by", "GeneratedBy")
+		H5_WriteTextDataset(fileID, "/general/source_script", str=props[3][1])
+		H5_WriteTextAttribute(fileID, "file_name", "/general/source_script", str=IgorInfo(1))
 	endif
 End
 
 static Function NWB_AddSpecifications(fileID, nwbVersion)
 	variable fileID, nwbVersion
 
-	IPNWB#EnsureValidNWBVersion(nwbVersion)
+	EnsureValidNWBVersion(nwbVersion)
 	if(nwbVersion == 1)
 		return NaN
 	endif
 
-	IPNWB#WriteSpecifications(fileID)
+	WriteSpecifications(fileID)
 End
 
 static Function NWB_ReadSessionStartTime(fileID)
 	variable fileID
 
-	string str = IPNWB#ReadTextDataSetAsString(fileID, "/session_start_time")
+	string str = ReadTextDataSetAsString(fileID, "/session_start_time")
 
 	ASSERT(cmpstr(str, IPNWB_PLACEHOLDER), "Could not read session_start_time back from the NWB file")
 
@@ -283,10 +283,10 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 	endif
 
 	if(ParamIsDefault(compressionMode))
-		compressionMode = IPNWB#GetNoCompression()
+		compressionMode = GetNoCompression()
 	endif
 
-	IPNWB#AddDevice(locationID, panelTitle, nwbVersion, NWB_GenerateDeviceDescription(panelTitle))
+	AddDevice(locationID, panelTitle, nwbVersion, NWB_GenerateDeviceDescription(panelTitle))
 
 	// keys getter functions handle labnotebook wave upgrades
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
@@ -296,30 +296,30 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 
 	path = "/general/labnotebook/" + panelTitle
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, path)
-	groupID = IPNWB#H5_OpenGroup(locationID, path)
+	H5_CreateGroupsRecursively(locationID, path)
+	groupID = H5_OpenGroup(locationID, path)
 
 	if(nwbVersion == 1)
-		IPNWB#MarkAsCustomEntry(locationID, "/general/labnotebook")
+		MarkAsCustomEntry(locationID, "/general/labnotebook")
 	elseif(nwbVersion == 2)
-		IPNWB#WriteNeuroDataType(locationID, "/general/labnotebook", "LabNotebook")
-		IPNWB#WriteNeuroDataType(locationID, path, "LabNotebookDevice")
+		WriteNeuroDataType(locationID, "/general/labnotebook", "LabNotebook")
+		WriteNeuroDataType(locationID, path, "LabNotebookDevice")
 	endif
 
 	WAVE numericalValuesTrimmed = RemoveUnusedRows(numericalValues)
-	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=numericalValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
-	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=numericalKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+	H5_WriteDataset(groupID, "numericalValues", wv=numericalValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+	H5_WriteTextDataset(groupID, "numericalKeys", wvText=numericalKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 
 	WAVE textualValuesTrimmed = RemoveUnusedRows(textualValues)
-	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=textualValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+	H5_WriteTextDataset(groupID, "textualValues", wvText=textualValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 
-	IPNWB#H5_WriteTextDataset(groupID, "textualKeys", wvText=textualKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+	H5_WriteTextDataset(groupID, "textualKeys", wvText=textualKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 
 	if(nwbVersion == 2)
-		IPNWB#WriteNeuroDataType(groupID, "numericalValues", "LabNotebookNumericalValues")
-		IPNWB#WriteNeuroDataType(groupID, "numericalKeys", "LabNotebookNumericalKeys")
-		IPNWB#WriteNeuroDataType(groupID, "textualValues", "LabNotebookTextualValues")
-		IPNWB#WriteNeuroDataType(groupID, "textualKeys", "LabNotebookTextualKeys")
+		WriteNeuroDataType(groupID, "numericalValues", "LabNotebookNumericalValues")
+		WriteNeuroDataType(groupID, "numericalKeys", "LabNotebookNumericalKeys")
+		WriteNeuroDataType(groupID, "textualValues", "LabNotebookTextualValues")
+		WriteNeuroDataType(groupID, "textualKeys", "LabNotebookTextualKeys")
 	endif
 
 	HDF5CloseGroup/Z groupID
@@ -327,18 +327,18 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 
 	path = "/general/user_comment/" + panelTitle
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, path)
-	groupID = IPNWB#H5_OpenGroup(locationID, path)
+	H5_CreateGroupsRecursively(locationID, path)
+	groupID = H5_OpenGroup(locationID, path)
 
 	SVAR userComment = $GetUserComment(panelTitle)
-	IPNWB#H5_WriteTextDataset(groupID, "userComment", str=userComment, overwrite=1, compressionMode = compressionMode)
+	H5_WriteTextDataset(groupID, "userComment", str=userComment, overwrite=1, compressionMode = compressionMode)
 
 	if(nwbVersion == 1)
-		IPNWB#MarkAsCustomEntry(locationID, "/general/user_comment")
+		MarkAsCustomEntry(locationID, "/general/user_comment")
 	elseif(nwbVersion == 2)
-		IPNWB#WriteNeuroDataType(locationID, "/general/user_comment", "UserComment")
-		IPNWB#WriteNeuroDataType(locationID, path, "UserCommentDevice")
-		IPNWB#WriteNeuroDataType(groupID, "userComment", "UserCommentString")
+		WriteNeuroDataType(locationID, "/general/user_comment", "UserComment")
+		WriteNeuroDataType(locationID, path, "UserCommentDevice")
+		WriteNeuroDataType(groupID, "userComment", "UserCommentString")
 	endif
 
 	HDF5CloseGroup/Z groupID
@@ -346,20 +346,20 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 
 	path = "/general/testpulse/" + panelTitle
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, path)
-	groupID = IPNWB#H5_OpenGroup(locationID, path)
+	H5_CreateGroupsRecursively(locationID, path)
+	groupID = H5_OpenGroup(locationID, path)
 
 	if(nwbVersion == 1)
-		IPNWB#MarkAsCustomEntry(locationID, "/general/testpulse")
+		MarkAsCustomEntry(locationID, "/general/testpulse")
 	elseif(nwbVersion == 2)
-		IPNWB#WriteNeuroDataType(locationID, "/general/testpulse", "Testpulse")
-		IPNWB#WriteNeuroDataType(locationID, path, "TestpulseDevice")
+		WriteNeuroDataType(locationID, "/general/testpulse", "Testpulse")
+		WriteNeuroDataType(locationID, path, "TestpulseDevice")
 	endif
 
-	if(compressionMode == IPNWB#GetNoCompression())
+	if(compressionMode == GetNoCompression())
 		compressionModeStoredTP = compressionMode
 	else
-		compressionModeStoredTP = IPNWB#GetSingleChunkCompression()
+		compressionModeStoredTP = GetSingleChunkCompression()
 	endif
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
@@ -370,10 +370,10 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 		WAVE/SDFR=dfr wv = $name
 
 		WAVE wvTrimmed = RemoveUnusedRows(wv)
-		IPNWB#H5_WriteDataset(groupID, name, wv=wvTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+			H5_WriteDataset(groupID, name, wv=wvTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 
 		if(nwbVersion == 2)
-			IPNWB#WriteNeuroDataType(groupID, name, "TestpulseMetadata")
+				WriteNeuroDataType(groupID, name, "TestpulseMetadata")
 		endif
 	endfor
 
@@ -417,12 +417,12 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	endif
 
 	if(ParamIsDefault(compressionMode))
-		compressionMode = IPNWB#GetChunkedCompression()
+		compressionMode = GetChunkedCompression()
 	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"nwbVersion", "writeStoredTP", "writeIgorHistory", "compression"},            \
 	                                    values = {num2str(nwbVersion), num2str(writeStoredTestPulses),                        \
-	                                              num2str(writeIgorHistory), IPNWB#CompressionModeToString(compressionMode)})
+	                                              num2str(writeIgorHistory), CompressionModeToString(compressionMode)})
 
 	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
 
@@ -445,7 +445,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		return NaN
 	endif
 
-	IPNWB#AddModificationTimeEntry(locationID, nwbVersion)
+	AddModificationTimeEntry(locationID, nwbVersion)
 
 	print "Please be patient while we export all existing acquired content of all devices to NWB"
 	ControlWindowToFront()
@@ -569,12 +569,12 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 		return NaN
 	endif
 
-	IPNWB#AddModificationTimeEntry(locationID, nwbVersion)
+	AddModificationTimeEntry(locationID, nwbVersion)
 
 	print "Please be patient while we export all existing stimsets to NWB"
 	ControlWindowToFront()
 
-	NWB_AppendStimset(nwbVersion, locationID, stimsets, IPNWB#GetChunkedCompression())
+	NWB_AppendStimset(nwbVersion, locationID, stimsets, GetChunkedCompression())
 	CloseNWBFile()
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
@@ -594,7 +594,7 @@ Function NWB_ExportWithDialog(exportType, [nwbVersion])
 	variable refNum, pathNeedsKilling
 
 	if(ParamIsDefault(nwbVersion))
-		nwbVersion = IPNWB#GetNWBVersion()
+		nwbVersion = GetNWBVersion()
 	endif
 
 	expName = GetExperimentName()
@@ -656,10 +656,10 @@ static Function NWB_AppendStoredTestPulses(panelTitle, nwbVersion, locationID, c
 
 	for(i = 0; i < index; i += 1)
 		sprintf name, "StoredTestPulses_%d", i
-		IPNWB#H5_WriteDataset(locationID, name, wv = storedTP[i], compressionMode = compressionMode, overwrite = 1, writeIgorAttr = 1)
+		H5_WriteDataset(locationID, name, wv = storedTP[i], compressionMode = compressionMode, overwrite = 1, writeIgorAttr = 1)
 
 		if(nwbVersion == 2)
-			IPNWB#WriteNeuroDataType(locationID, name, "TestpulseRawData")
+			WriteNeuroDataType(locationID, name, "TestpulseRawData")
 		endif
 	endfor
 End
@@ -723,11 +723,11 @@ Function NWB_AppendSweep(panelTitle, DAQDataWave, DAQConfigWave, sweep, nwbVersi
 
 	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
 
-	IPNWB#AddModificationTimeEntry(locationID, nwbVersion)
+	AddModificationTimeEntry(locationID, nwbVersion)
 	NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion)
 	NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQDataWave, DAQConfigWave, sweep)
 	stimsets = NWB_GetStimsetFromPanel(panelTitle, sweep)
-	NWB_AppendStimset(nwbVersion, locationID, stimsets, IPNWB#GetChunkedCompression())
+	NWB_AppendStimset(nwbVersion, locationID, stimsets, GetChunkedCompression())
 End
 
 /// @brief Get stimsets by analysing currently loaded sweep
@@ -824,7 +824,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 	refTime = DEBUG_TIMER_START()
 
 	if(ParamIsDefault(compressionMode))
-		compressionMode = IPNWB#GetNoCompression()
+		compressionMode = GetNoCompression()
 	endif
 
 	NVAR session_start_time = $GetSessionStartTimeReadBack()
@@ -932,8 +932,8 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 		endif
 	endif
 
-	STRUCT IPNWB#WriteChannelParams params
-	IPNWB#InitWriteChannelParams(params)
+	STRUCT WriteChannelParams params
+	InitWriteChannelParams(params)
 
 	params.sweep         = sweep
 	params.device        = panelTitle
@@ -953,10 +953,10 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 			continue
 		endif
 
-		STRUCT IPNWB#TimeSeriesProperties tsp
+		STRUCT TimeSeriesProperties tsp
 
 		sprintf contents, "Headstage %d", i
-		IPNWB#AddElectrode(locationID, electrodeNames[i], nwbVersion, contents, panelTitle)
+		AddElectrode(locationID, electrodeNames[i], nwbVersion, contents, panelTitle)
 
 		adc                    = ADCs[i]
 		dac                    = DACs[i]
@@ -966,15 +966,15 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 		params.stimset         = stimSets[i]
 
 		if(IsFinite(adc))
-			path                    = IPNWB#GetNWBgroupPatchClampSeries(nwbVersion)
+			path                    = GetNWBgroupPatchClampSeries(nwbVersion)
 			params.channelNumber    = ADCs[i]
 			params.channelType      = XOP_CHANNEL_TYPE_ADC
 			col                     = AFH_GetDAQDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
 			WAVE params.data        = ExtractOneDimDataFromSweep(DAQConfigWave, DAQDataWave, col)
 			NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
-			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
-			IPNWB#WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
+			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(locationID, path)
+			WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
 		endif
 
 		DEBUGPRINT_ELAPSED(refTime)
@@ -987,8 +987,8 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 			writtenDataColumns[col] = 1
 			WAVE params.data        = ExtractOneDimDataFromSweep(DAQConfigWave, DAQDataWave, col)
 			NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
-			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
-			IPNWB#WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
+			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(locationID, path)
+			WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
 		endif
 
 		NWB_ClearWriteChannelParams(params)
@@ -1057,16 +1057,16 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 				params.channelSuffixDesc = NWB_SOURCE_TTL_BIT
 				params.stimset       = ttlStimsets[log(ttlBit)/log(2)]
 				NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
-				params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
-				IPNWB#WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
+				params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(locationID, path)
+				WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
 			endfor
 		elseif(hardwareType == HARDWARE_NI_DAC)
 			WAVE params.data     = data
 			path                 = "/stimulus/presentation"
 			params.stimset       = stimset
 			NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
-			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
-			IPNWB#WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
+			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(locationID, path)
+			WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
 		endif
 
 		NWB_ClearWriteChannelParams(params)
@@ -1093,7 +1093,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 
 		switch(params.channelType)
 			case XOP_CHANNEL_TYPE_ADC:
-				path = IPNWB#GetNWBgroupPatchClampSeries(nwbVersion)
+				path = GetNWBgroupPatchClampSeries(nwbVersion)
 				break
 			case XOP_CHANNEL_TYPE_DAC:
 				path = "/stimulus/presentation"
@@ -1105,8 +1105,8 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 
 		NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
 		WAVE params.data       = ExtractOneDimDataFromSweep(DAQConfigWave, DAQDataWave, i)
-		params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
-		IPNWB#WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
+		params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(locationID, path)
+		WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
 		NWB_ClearWriteChannelParams(params)
 	endfor
 
@@ -1115,7 +1115,7 @@ End
 
 /// @brief Clear all entries which are channel specific
 static Function NWB_ClearWriteChannelParams(s)
-	STRUCT IPNWB#WriteChannelParams &s
+	STRUCT WriteChannelParams &s
 
 	string device
 	variable sweep, startingTime, samplingRate, groupIndex
@@ -1134,7 +1134,7 @@ static Function NWB_ClearWriteChannelParams(s)
 	// This avoids a memory leak. (Reported to WM)
 	WaveClear s.data
 
-	STRUCT IPNWB#WriteChannelParams defaultValues
+	STRUCT WriteChannelParams defaultValues
 
 	s = defaultValues
 
@@ -1170,23 +1170,23 @@ static Function NWB_WriteStimsetCustomWave(nwbVersion, locationID, custom_wave, 
 
 	custom_wave_name = NameOfWave(custom_wave)
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, pathInNWB)
-	groupID = IPNWB#H5_OpenGroup(locationID, pathInNWB)
+	H5_CreateGroupsRecursively(locationID, pathInNWB)
+	groupID = H5_OpenGroup(locationID, pathInNWB)
 
-	IPNWB#H5_WriteDataset(groupID, custom_wave_name, wv=custom_wave, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
+	H5_WriteDataset(groupID, custom_wave_name, wv=custom_wave, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 
 	if(nwbVersion == 2)
-		IPNWB#WriteNeuroDataType(locationID, "/general/stimsets/referenced", "StimulusSetReferenced")
+		WriteNeuroDataType(locationID, "/general/stimsets/referenced", "StimulusSetReferenced")
 
 		path = ""
 		numEntries = ItemsInList(pathInNWB, "/")
 		for(i = 4; i < numEntries; i += 1)
 			path += StringFromList(i, pathInNWB, "/")
-			IPNWB#WriteNeuroDataType(locationID, "/general/stimsets/referenced/" + path, "StimulusSetReferencedFolder")
+			WriteNeuroDataType(locationID, "/general/stimsets/referenced/" + path, "StimulusSetReferencedFolder")
 			path += "/"
 		endfor
 
-		IPNWB#WriteNeuroDataType(groupID, custom_wave_name, "StimulusSetReferencedWaveform")
+		WriteNeuroDataType(groupID, custom_wave_name, "StimulusSetReferencedWaveform")
 	endif
 
 	HDF5CloseGroup groupID
@@ -1201,13 +1201,13 @@ static Function NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, stimSet, c
 	string name, path
 
 	path = "/general/stimsets"
-	IPNWB#H5_CreateGroupsRecursively(locationID, path)
-	groupID = IPNWB#H5_OpenGroup(locationID, path)
+	H5_CreateGroupsRecursively(locationID, path)
+	groupID = H5_OpenGroup(locationID, path)
 
 	if(nwbVersion == 1)
-		IPNWB#MarkAsCustomEntry(locationID, path)
+		MarkAsCustomEntry(locationID, path)
 	elseif(nwbVersion == 2)
-		IPNWB#WriteNeuroDataType(locationID, path, "StimulusSets")
+		WriteNeuroDataType(locationID, path, "StimulusSets")
 	endif
 
 	// write the stim set parameter waves only if all three exist
@@ -1222,10 +1222,10 @@ static Function NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, stimSet, c
 		endif
 
 		stimset = NameOfWave(stimSetWave)
-		IPNWB#H5_WriteDataset(groupID, stimset, wv=stimSetWave, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
+		H5_WriteDataset(groupID, stimset, wv=stimSetWave, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 
 		if(nwbVersion == 2)
-			IPNWB#WriteNeuroDataType(groupID, stimset, "StimulusSetWaveform")
+			WriteNeuroDataType(groupID, stimset, "StimulusSetWaveform")
 		endif
 
 		HDF5CloseGroup groupID
@@ -1237,21 +1237,21 @@ static Function NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, stimSet, c
 	WAVE SegWvType = WB_GetSegWvTypeForSet(stimSet)
 
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP, nwbFormat = 1)
-	IPNWB#H5_WriteDataset(groupID, name, wv=WP, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
+	H5_WriteDataset(groupID, name, wv=WP, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 	if(nwbVersion == 2)
-		IPNWB#WriteNeuroDataType(groupID, name, "StimulusSetWavebuilderParameter")
+		WriteNeuroDataType(groupID, name, "StimulusSetWavebuilderParameter")
 	endif
 
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT, nwbFormat = 1)
-	IPNWB#H5_WriteDataset(groupID, name, wv=WPT, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
+	H5_WriteDataset(groupID, name, wv=WPT, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 	if(nwbVersion == 2)
-		IPNWB#WriteNeuroDataType(groupID, name, "StimulusSetWavebuilderParameterText")
+		WriteNeuroDataType(groupID, name, "StimulusSetWavebuilderParameterText")
 	endif
 
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE, nwbFormat = 1)
-	IPNWB#H5_WriteDataset(groupID, name, wv=SegWVType, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
+	H5_WriteDataset(groupID, name, wv=SegWVType, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 	if(nwbVersion == 2)
-		IPNWB#WriteNeuroDataType(groupID, name, "StimulusSetWavebuilderSegmentTypes")
+		WriteNeuroDataType(groupID, name, "StimulusSetWavebuilderSegmentTypes")
 	endif
 
 	HDF5CloseGroup groupID
@@ -1303,7 +1303,7 @@ static Function NWB_LoadStimset(locationID, stimset, overwrite, [verbose])
 	DFREF paramDFR = GetSetParamFolder(stimsetType)
 
 	// convert stimset name to upper case
-	NWBstimsets = IPNWB#H5_ListGroupMembers(locationID, "./")
+	NWBstimsets = H5_ListGroupMembers(locationID, "./")
 	WP_name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP, nwbFormat = 1)
 	WP_name = StringFromList(WhichListItem(WP_name, NWBstimsets, ";", 0, 0), NWBstimsets)
 	WPT_name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT, nwbFormat = 1)
@@ -1311,9 +1311,9 @@ static Function NWB_LoadStimset(locationID, stimset, overwrite, [verbose])
 	SegWvType_name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE, nwbFormat = 1)
 	SegWvType_name = StringFromList(WhichListItem(SegWvType_name, NWBstimsets, ";", 0, 0), NWBstimsets)
 
-	WAVE/Z   WP        = IPNWB#H5_LoadDataset(locationID, WP_name)
-	WAVE/Z/T WPT       = IPNWB#H5_LoadDataset(locationID, WPT_name)
-	WAVE/Z   SegWVType = IPNWB#H5_LoadDataset(locationID, SegWvType_name)
+	WAVE/Z   WP        = H5_LoadDataset(locationID, WP_name)
+	WAVE/Z/T WPT       = H5_LoadDataset(locationID, WPT_name)
+	WAVE/Z   SegWVType = H5_LoadDataset(locationID, SegWvType_name)
 	if(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType))
 		MoveWave WP,        paramDFR:$(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP))
 		MoveWave WPT,       paramDFR:$(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT))
@@ -1327,8 +1327,8 @@ static Function NWB_LoadStimset(locationID, stimset, overwrite, [verbose])
 	// load custom stimset if previous load failed
 	WB_KillParameterWaves(stimset)
 
-	if(IPNWB#H5_DatasetExists(locationID, stimset))
-		WAVE/Z wv = IPNWB#H5_LoadDataset(locationID, stimset)
+	if(H5_DatasetExists(locationID, stimset))
+		WAVE/Z wv = H5_LoadDataset(locationID, stimset)
 		if(!WaveExists(wv))
 			DFREF setDFR = GetSetParamFolder(stimsetType)
 			MoveWave wv setDFR
@@ -1370,12 +1370,12 @@ Function NWB_LoadCustomWave(locationID, fullPath, overwrite)
 	pathInNWB = ReplaceString(":", pathInNWB, "/")
 	pathInNWB = "/general/stimsets/referenced/" + pathInNWB
 
-	if(!IPNWB#H5_DatasetExists(locationID, pathInNWB))
+	if(!H5_DatasetExists(locationID, pathInNWB))
 		printf "custom wave \t%s not found in current NWB file on location \t%s\r", fullPath, pathInNWB
 		return 1
 	endif
 
-	WAVE wv = IPNWB#H5_LoadDataset(locationID, pathInNWB)
+	WAVE wv = H5_LoadDataset(locationID, pathInNWB)
 	DFREF dfr = createDFWithAllParents(GetFolder(fullPath))
 	MoveWave wv dfr
 
@@ -1423,17 +1423,17 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	fileID = IPNWB#H5_OpenFile(fullPath)
+	fileID = H5_OpenFile(fullPath)
 
-	if(!IPNWB#StimsetPathExists(fileID))
+	if(!StimsetPathExists(fileID))
 		printf "no stimsets present in %s\r", fullPath
-		IPNWB#H5_CloseFile(fileID)
+		H5_CloseFile(fileID)
 		return 1
 	endif
 
-	stimsets = IPNWB#ReadStimsets(fileID)
+	stimsets = ReadStimsets(fileID)
 	if(ItemsInList(stimsets) == 0)
-		IPNWB#H5_CloseFile(fileID)
+		H5_CloseFile(fileID)
 		return 0
 	endif
 
@@ -1446,7 +1446,7 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 	stimsets = ReplaceString(suffix, stimsets, ";")
 	stimsets = GetUniqueTextEntriesFromList(stimsets, caseSensitive=0)
 
-	groupID = IPNWB#OpenStimset(fileID)
+	groupID = OpenStimset(fileID)
 	numStimsets = ItemsInList(stimsets)
 	for(i = 0; i < numStimsets; i += 1)
 		stimset = StringFromList(i, stimsets)
@@ -1466,7 +1466,7 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 
 	NWB_LoadCustomWaves(groupID, loadedStimsets, overwrite)
 	HDF5CloseGroup/Z groupID
-	IPNWB#H5_CloseFile(fileID)
+	H5_CloseFile(fileID)
 
 	WBP_UpdateDaEphysStimulusSetPopups()
 
@@ -1479,7 +1479,7 @@ End
 ///
 /// see AB_LoadStimsets() for similar structure
 ///
-/// @param groupID           Open Stimset Group of HDF5 File. See IPNWB#OpenStimset()
+/// @param groupID           Open Stimset Group of HDF5 File. See OpenStimset()
 /// @param stimsets          ";" separated list of all stimsets of the current sweep.
 /// @param processedStimsets [optional] the list indicates which stimsets were already loaded.
 ///                          on recursion this parameter avoids duplicate circle references.
@@ -1552,13 +1552,13 @@ End
 
 static Function NWB_GetTimeSeriesProperties(nwbVersion, p, tsp)
 	variable nwbVersion
-	STRUCT IPNWB#WriteChannelParams &p
-	STRUCT IPNWB#TimeSeriesProperties &tsp
+	STRUCT WriteChannelParams &p
+	STRUCT TimeSeriesProperties &tsp
 
 	WAVE/T numericalKeys = GetLBNumericalKeys(p.device)
 	WAVE numericalValues = GetLBNumericalValues(p.device)
 
-	IPNWB#InitTimeSeriesProperties(tsp, p.channelType, p.clampMode)
+	InitTimeSeriesProperties(tsp, p.channelType, p.clampMode)
 
 	// unassociated channel
 	if(!IsFinite(p.clampMode))
@@ -1586,25 +1586,25 @@ static Function NWB_GetTimeSeriesProperties(nwbVersion, p, tsp)
 			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "Neut Cap Value", "capacitance_compensation", p.electrodeNumber, tsp, enabledProp="Neut Cap Enabled")
 		elseif(p.clampMode == I_EQUAL_ZERO_MODE)
 			// IZeroClampSeries: datasets
-			IPNWB#AddProperty(tsp, "bias_current", 0.0, unit = "A")
-			IPNWB#AddProperty(tsp, "bridge_balance", 0.0, unit = "Ohm")
-			IPNWB#AddProperty(tsp, "capacitance_compensation", 0.0, unit = "F")
+			AddProperty(tsp, "bias_current", 0.0, unit = "A")
+			AddProperty(tsp, "bridge_balance", 0.0, unit = "Ohm")
+			AddProperty(tsp, "capacitance_compensation", 0.0, unit = "F")
 		endif
 
 		// PatchClampSeries
-		if(WhichListItem("PatchClampSeries", IPNWB#DetermineDataTypeRefTree(IPNWB#DetermineDataTypeFromProperties(p.channelType, p.clampMode))) != -1)
+		if(WhichListItem("PatchClampSeries", DetermineDataTypeRefTree(DetermineDataTypeFromProperties(p.channelType, p.clampMode))) != -1)
 			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "AD Gain", "gain", p.electrodeNumber, tsp)
 		endif
 	elseif(p.channelType == XOP_CHANNEL_TYPE_DAC)
 		// PatchClampSeries
-		if(WhichListItem("PatchClampSeries", IPNWB#DetermineDataTypeRefTree(IPNWB#DetermineDataTypeFromProperties(p.channelType, p.clampMode))) != -1)
+		if(WhichListItem("PatchClampSeries", DetermineDataTypeRefTree(DetermineDataTypeFromProperties(p.channelType, p.clampMode))) != -1)
 			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "DA Gain", "gain", p.electrodeNumber, tsp)
 		endif
 
 		if(nwbVersion == 1)
 			WAVE/Z values = GetLastSetting(numericalValues, p.sweep, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 			if(WaveExists(values) || IsFinite(values[p.electrodeNumber]))
-				IPNWB#AddCustomProperty(tsp, "scale", values[p.electrodeNumber])
+				AddCustomProperty(tsp, "scale", values[p.electrodeNumber])
 			endif
 		endif
 	endif
@@ -1616,7 +1616,7 @@ static Function NWB_AddSweepDataSets(numericalKeys, numericalValues, sweep, sett
 	variable sweep
 	string settingsProp, nwbProp
 	variable headstage
-	STRUCT IPNWB#TimeSeriesProperties &tsp
+	STRUCT TimeSeriesProperties &tsp
 	variable factor
 	string enabledProp
 
@@ -1640,9 +1640,9 @@ static Function NWB_AddSweepDataSets(numericalKeys, numericalValues, sweep, sett
 	endif
 
 	if(GetKeyWaveParameterAndUnit(numericalKeys, settingsProp, lbl, unit, col))
-		IPNWB#AddProperty(tsp, nwbProp, values[headstage] * factor)
+		AddProperty(tsp, nwbProp, values[headstage] * factor)
 	else
-		IPNWB#AddProperty(tsp, nwbProp, values[headstage] * factor, unit = unit)
+		AddProperty(tsp, nwbProp, values[headstage] * factor, unit = unit)
 	endif
 End
 
@@ -1663,7 +1663,7 @@ Function NWB_LoadLabNoteBook(locationID, notebook, dfr)
 	endif
 
 	path = "/general/labnotebook/" + notebook
-	if(IPNWB#H5_GroupExists(locationID, path))
+	if(H5_GroupExists(locationID, path))
 		HDF5LoadGroup/Z/IGOR=-1 dfr, locationID, path
 		if(!V_flag)
 			return ItemsInList(S_objectPaths)
@@ -1678,11 +1678,11 @@ Function NWB_Flush()
 	SVAR filePathExport = $GetNWBFilePathExport()
 	NVAR fileIDExport   = $GetNWBFileIDExport()
 
-	if(!IsFinite(fileIDExport) || !IPNWB#H5_IsFileOpen(fileIDExport))
+	if(!IsFinite(fileIDExport) || !H5_IsFileOpen(fileIDExport))
 		return NaN
 	endif
 
-	fileIDExport = IPNWB#H5_FlushFile(fileIDExport, filePathExport, write = 1)
+	fileIDExport = H5_FlushFile(fileIDExport, filePathExport, write = 1)
 End
 
 static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
@@ -1691,8 +1691,8 @@ static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	variable groupID
 	string history, name, logfile, fname, data, entry
 
-	IPNWB#EnsureValidNWBVersion(nwbVersion)
-	ASSERT(IPNWB#GetNWBMajorVersion(IPNWB#ReadNWBVersion(locationID)) == nwbVersion, "NWB version of the selected file differs.")
+	EnsureValidNWBVersion(nwbVersion)
+	ASSERT(GetNWBMajorVersion(ReadNWBVersion(locationID)) == nwbVersion, "NWB version of the selected file differs.")
 
 	history = GetHistoryNotebookText()
 
@@ -1702,8 +1702,8 @@ static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 		name = "data_collection"
 	endif
 
-	groupID = IPNWB#H5_OpenGroup(locationID, "/general")
-	ASSERT(!IsNaN(groupID), "IPNWB#CreateCommonGroups() needs to be called prior to this call")
+	groupID = H5_OpenGroup(locationID, "/general")
+	ASSERT(!IsNaN(groupID), "CreateCommonGroups() needs to be called prior to this call")
 	entry = NormalizeToEOL(history, "\n")
 
 	logfile = LOG_GetFile(PACKAGE_MIES)
@@ -1715,10 +1715,10 @@ static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 		entry += "\n" + LOGFILE_NWB_MARKER + "\n" + NormalizeToEOL(data, "\n")
 	endif
 
-	IPNWB#H5_WriteTextDataset(groupID, name, str=entry, compressionMode = IPNWB#GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
+	H5_WriteTextDataset(groupID, name, str=entry, compressionMode = GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
 
 	if(nwbVersion == 1)
-		IPNWB#MarkAsCustomEntry(groupID, name)
+		MarkAsCustomEntry(groupID, name)
 	endif
 
 	HDF5CloseGroup/Z groupID

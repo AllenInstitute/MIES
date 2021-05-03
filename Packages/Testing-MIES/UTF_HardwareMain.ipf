@@ -977,7 +977,7 @@ End
 Function [string baseFolder, string nwbFile] GetUniqueNWBFileForExport(variable nwbVersion)
 	string suffix
 
-	ASSERT(IPNWB#EnsureValidNWBVersion(nwbVersion), "Invalid nwb version")
+	ASSERT(EnsureValidNWBVersion(nwbVersion), "Invalid nwb version")
 
 	PathInfo home
 	REQUIRE(V_flag)
