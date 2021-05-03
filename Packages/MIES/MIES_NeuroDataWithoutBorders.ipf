@@ -968,7 +968,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 		if(IsFinite(adc))
 			path                    = GetNWBgroupPatchClampSeries(nwbVersion)
 			params.channelNumber    = ADCs[i]
-			params.channelType      = XOP_CHANNEL_TYPE_ADC
+			params.channelType      = IPNWB_CHANNEL_TYPE_ADC
 			col                     = AFH_GetDAQDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
 			WAVE params.data        = ExtractOneDimDataFromSweep(DAQConfigWave, DAQDataWave, col)
@@ -982,7 +982,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 		if(IsFinite(dac))
 			path                    = "/stimulus/presentation"
 			params.channelNumber    = DACs[i]
-			params.channelType      = XOP_CHANNEL_TYPE_DAC
+			params.channelType      = IPNWB_CHANNEL_TYPE_DAC
 			col                     = AFH_GetDAQDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
 			WAVE params.data        = ExtractOneDimDataFromSweep(DAQConfigWave, DAQDataWave, col)
@@ -1033,7 +1033,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 
 		params.clampMode        = NaN
 		params.channelNumber    = i
-		params.channelType      = XOP_CHANNEL_TYPE_TTL
+		params.channelType      = IPNWB_CHANNEL_TYPE_TTL
 		params.electrodeNumber  = NaN
 		params.electrodeName    = ""
 		col                     = AFH_GetDAQDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
@@ -1092,10 +1092,10 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 		params.stimSet         = IPNWB_PLACEHOLDER
 
 		switch(params.channelType)
-			case XOP_CHANNEL_TYPE_ADC:
+			case IPNWB_CHANNEL_TYPE_ADC:
 				path = GetNWBgroupPatchClampSeries(nwbVersion)
 				break
-			case XOP_CHANNEL_TYPE_DAC:
+			case IPNWB_CHANNEL_TYPE_DAC:
 				path = "/stimulus/presentation"
 				break
 			default:
@@ -1569,7 +1569,7 @@ static Function NWB_GetTimeSeriesProperties(nwbVersion, p, tsp)
 		ASSERT(IsFinite(p.electrodeNumber), "Expected finite electrode number with non empty \"missing_fields\"")
 	endif
 
-	if(p.channelType == XOP_CHANNEL_TYPE_ADC)
+	if(p.channelType == IPNWB_CHANNEL_TYPE_ADC)
 		if(p.clampMode == V_CLAMP_MODE)
 			// VoltageClampSeries: datasets
 			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "Fast compensation capacitance", "capacitance_fast", p.electrodeNumber, tsp)
@@ -1595,7 +1595,7 @@ static Function NWB_GetTimeSeriesProperties(nwbVersion, p, tsp)
 		if(WhichListItem("PatchClampSeries", DetermineDataTypeRefTree(DetermineDataTypeFromProperties(p.channelType, p.clampMode))) != -1)
 			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "AD Gain", "gain", p.electrodeNumber, tsp)
 		endif
-	elseif(p.channelType == XOP_CHANNEL_TYPE_DAC)
+	elseif(p.channelType == IPNWB_CHANNEL_TYPE_DAC)
 		// PatchClampSeries
 		if(WhichListItem("PatchClampSeries", DetermineDataTypeRefTree(DetermineDataTypeFromProperties(p.channelType, p.clampMode))) != -1)
 			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "DA Gain", "gain", p.electrodeNumber, tsp)
