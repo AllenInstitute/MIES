@@ -725,11 +725,6 @@ Function NWB_AppendSweep(panelTitle, DAQDataWave, DAQConfigWave, sweep, nwbVersi
 	NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQDataWave, DAQConfigWave, sweep)
 	stimsets = NWB_GetStimsetFromPanel(panelTitle, sweep)
 	NWB_AppendStimset(nwbVersion, locationID, stimsets, IPNWB#GetChunkedCompression())
-
-	NVAR nwbThreadID = $GetNWBThreadID()
-	if(IsFinite(nwbThreadID) && !TS_ThreadGroupFinished(nwbThreadID))
-		TS_ThreadGroupPutVariable(nwbThreadID, "flushID", locationID)
-	endif
 End
 
 /// @brief Get stimsets by analysing currently loaded sweep
@@ -1724,45 +1719,4 @@ static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	endif
 
 	HDF5CloseGroup/Z groupID
-End
-
-/// @brief Start the thread group responsible for interacting with the NWB file
-Function NWB_StartThreadGroup()
-	string panelTitle
-
-	NVAR tgID = $GetNWBThreadID()
-
-	TS_StopThreadGroup(tgID)
-	tgID = ThreadGroupCreate(1)
-
-	ThreadStart tgID, 0, NWB_SendFlush()
-End
-
-/// @brief Worker function for the NWB thread group
-///
-/// Actions for variables in the input queue:
-/// - `abort`: worker function will quit
-/// - `flushID`: HDF5FlushFile will be called and the contents of the variable
-///              treated as HDF5 fileID
-threadsafe Function NWB_SendFlush()
-	for(;;)
-		DFREF dfr = ThreadGroupGetDFR(MAIN_THREAD, 100)
-
-		if(!DataFolderExistsDFR(dfr))
-			continue
-		endif
-
-		NVAR/Z/SDFR=dfr abort
-
-		if(NVAR_Exists(abort))
-			DEBUGPRINT_TS("NWB_SendFlush: stopping")
-			break
-		endif
-
-		NVAR/Z/SDFR=dfr flushID
-		ASSERT_TS(NVAR_Exists(flushID), "Missing flush variable")
-
-		HDF5FlushFile flushID; AbortOnRTE
-		DEBUGPRINT_TS("NWB_SendFlush: flushing")
-	endfor
 End
