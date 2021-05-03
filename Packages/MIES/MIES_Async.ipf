@@ -938,19 +938,12 @@ End
 /// @brief returns 1 if ASYNC framework is running, 0 otherwise
 static Function ASYNC_IsASYNCRunning()
 
-	variable waitResult, doe
+	variable waitResult, err
 
 	NVAR tgID = $GetThreadGroupID()
-	doe = DisableDebugOnError()
-	try
-		ClearRTError()
-		waitResult = ThreadGroupWait(tgID, 0);AbortOnRTE
-	catch
-		ClearRTError()
-		waitResult = 0
-	endtry
-	ResetDebugOnError(doe)
-	return waitResult != 0
+	waitResult = ThreadGroupWait(tgID, 0); err = GetRTError(1)
+
+	return err == 0 && waitResult != 0
 End
 
 /// @brief Deletes one row, column, layer or chunk from a wave
