@@ -1981,7 +1981,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-Function/S GetBaseName(filePathWithSuffix, [sep])
+threadsafe Function/S GetBaseName(filePathWithSuffix, [sep])
 	string filePathWithSuffix, sep
 
 	if(ParamIsDefault(sep))
@@ -1998,7 +1998,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-Function/S GetFileSuffix(filePathWithSuffix, [sep])
+threadsafe Function/S GetFileSuffix(filePathWithSuffix, [sep])
 	string filePathWithSuffix, sep
 
 	if(ParamIsDefault(sep))
@@ -2015,7 +2015,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-Function/S GetFolder(filePathWithSuffix, [sep])
+threadsafe Function/S GetFolder(filePathWithSuffix, [sep])
 	string filePathWithSuffix, sep
 
 	if(ParamIsDefault(sep))
@@ -2032,7 +2032,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-Function/S GetFile(filePathWithSuffix, [sep])
+threadsafe Function/S GetFile(filePathWithSuffix, [sep])
 	string filePathWithSuffix, sep
 
 	if(ParamIsDefault(sep))
@@ -2043,14 +2043,14 @@ Function/S GetFile(filePathWithSuffix, [sep])
 End
 
 /// @brief Return the path converted to a windows style path
-Function/S GetWindowsPath(path)
+threadsafe Function/S GetWindowsPath(path)
 	string path
 
 	return ParseFilepath(5, path, "\\", 0, 0)
 End
 
 /// @brief Return the path converted to a HFS style (aka ":" separated) path
-Function/S GetHFSPath(string path)
+threadsafe Function/S GetHFSPath(string path)
 	return ParseFilePath(5, path, ":", 0, 0)
 End
 
@@ -2426,7 +2426,7 @@ End
 
 /// @brief Add a string prefix to each list item and
 /// return the new list
-Function/S AddPrefixToEachListItem(prefix, list)
+threadsafe Function/S AddPrefixToEachListItem(prefix, list)
 	string prefix, list
 
 	string result = ""
@@ -2572,7 +2572,7 @@ End
 /// \endrst
 ///
 /// [1]: 8th edition of the SI Brochure (2014), http://www.bipm.org/en/publications/si-brochure
-Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
+threadsafe Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
 	string unitWithPrefix
 	string &prefix
 	variable &numPrefix
@@ -2580,7 +2580,7 @@ Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
 
 	string expr
 
-	ASSERT(!isEmpty(unitWithPrefix), "empty unit")
+	ASSERT_TS(!isEmpty(unitWithPrefix), "empty unit")
 
 	prefix    = ""
 	numPrefix = NaN
@@ -2589,7 +2589,7 @@ Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
 	expr = "(Y|Z|E|P|T|G|M|k|h|d|c|m|mu|n|p|f|a|z|y)?[[:space:]]*(m|kg|s|A|K|mol|cd|Hz|V|N|W|J|a.u.)"
 
 	SplitString/E=(expr) unitWithPrefix, prefix, unit
-	ASSERT(V_flag >= 1, "Could not parse unit string")
+	ASSERT_TS(V_flag >= 1, "Could not parse unit string")
 
 	numPrefix = GetDecimalMultiplierValue(prefix)
 End
@@ -2597,7 +2597,7 @@ End
 /// @brief Return the numerical value of a SI decimal multiplier
 ///
 /// @see ParseUnit
-Function GetDecimalMultiplierValue(prefix)
+threadsafe Function GetDecimalMultiplierValue(prefix)
 	string prefix
 
 	if(isEmpty(prefix))
@@ -2608,9 +2608,9 @@ Function GetDecimalMultiplierValue(prefix)
 	Make/FREE/D values   = {1e24, 1e21, 1e18, 1e15, 1e12, 1e9, 1e6, 1e3, 1e2, 1e1, 1e-1, 1e-2, 1e-3, 1e-6, 1e-9, 1e-12, 1e-15, 1e-18, 1e-21, 1e-24}
 
 	FindValue/Z/TXOP=(1 + 4)/TEXT=(prefix) prefixes
-	ASSERT(V_Value != -1, "Could not find prefix")
+	ASSERT_TS(V_Value != -1, "Could not find prefix")
 
-	ASSERT(DimSize(prefixes, ROWS) == DimSize(values, ROWS), "prefixes and values wave sizes must match")
+	ASSERT_TS(DimSize(prefixes, ROWS) == DimSize(values, ROWS), "prefixes and values wave sizes must match")
 	return values[V_Value]
 End
 
@@ -2672,7 +2672,7 @@ End
 /// - ` `/`T` between date and time
 /// - fractional seconds
 /// - `,`/`.` as decimal separator
-Function ParseISO8601TimeStamp(timestamp)
+threadsafe Function ParseISO8601TimeStamp(timestamp)
 	string timestamp
 
 	string year, month, day, hour, minute, second, regexp, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute
@@ -2702,7 +2702,7 @@ Function ParseISO8601TimeStamp(timestamp)
 		elseif(!cmpstr(tzOffsetSign, "-"))
 			secondsSinceEpoch += timeOffset
 		else
-			ASSERT(0, "Invalid case")
+			ASSERT_TS(0, "Invalid case")
 		endif
 	endif
 
@@ -2954,7 +2954,7 @@ End
 ///
 /// Counterpart @see ConvertListToTextWave
 /// @see NumericWaveToList
-Function/S TextWaveToList(WAVE/T/Z txtWave, string sep, [string colSep, variable stopOnEmpty])
+threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string sep, [string colSep, variable stopOnEmpty])
 	string entry, colList
 	string list = ""
 	variable i, j, numRows, numCols
@@ -2963,14 +2963,14 @@ Function/S TextWaveToList(WAVE/T/Z txtWave, string sep, [string colSep, variable
 		return ""
 	endif
 
-	ASSERT(IsTextWave(txtWave), "Expected a text wave")
-	ASSERT(DimSize(txtWave, LAYERS) == 0, "Expected a 1D or 2D wave")
-	ASSERT(!IsEmpty(sep), "Expected a non-empty row list separator")
+	ASSERT_TS(IsTextWave(txtWave), "Expected a text wave")
+	ASSERT_TS(DimSize(txtWave, LAYERS) == 0, "Expected a 1D or 2D wave")
+	ASSERT_TS(!IsEmpty(sep), "Expected a non-empty row list separator")
 
 	if(ParamIsDefault(colSep))
 		colSep = ","
 	else
-		ASSERT(!IsEmpty(colSep), "Expected a non-empty column list separator")
+		ASSERT_TS(!IsEmpty(colSep), "Expected a non-empty column list separator")
 	endif
 	stopOnEmpty = ParamIsDefault(stopOnEmpty) ? 0 : !!stopOnEmpty
 
@@ -4369,13 +4369,13 @@ End
 /// @param[in] precision [optional, default 5] number of precision digits after the decimal dot using "round-half-to-even" rounding rule.
 ///                      Precision must be in the range 0 to #MAX_DOUBLE_PRECISION.
 /// @return string with textual number representation
-Function/S num2strHighPrec(val, [precision])
+threadsafe Function/S num2strHighPrec(val, [precision])
 	variable val, precision
 
 	string str
 
 	precision = ParamIsDefault(precision) ? 5 : precision
-	ASSERT(precision >= 0 && precision <= MAX_DOUBLE_PRECISION, "Invalid precision, must be >= 0 and <= MAX_DOUBLE_PRECISION")
+	ASSERT_TS(precision >= 0 && precision <= MAX_DOUBLE_PRECISION, "Invalid precision, must be >= 0 and <= MAX_DOUBLE_PRECISION")
 
 	sprintf str, "%.*f", precision, val
 
@@ -5114,7 +5114,7 @@ EndStructure
 ///
 /// See also https://www.rfc-editor.org/errata/eid3546 and https://www.rfc-editor.org/errata/eid1957
 /// for some clarifications.
-Function/S GenerateRFC4122UUID()
+threadsafe Function/S GenerateRFC4122UUID()
 
 	string str, randomness
 	STRUCT Uuid uu
@@ -5142,26 +5142,26 @@ Function/S GenerateRFC4122UUID()
 End
 
 /// @brief Convert a hexadecimal character into a number
-Function HexToNumber(ch)
+threadsafe Function HexToNumber(ch)
 	string ch
 
 	variable var
 
-	ASSERT(strlen(ch) <= 2, "Expected only up to two characters")
+	ASSERT_TS(strlen(ch) <= 2, "Expected only up to two characters")
 
 	sscanf ch, "%x", var
-	ASSERT(V_flag == 1, "Unexpected string")
+	ASSERT_TS(V_flag == 1, "Unexpected string")
 
 	return var
 End
 
 /// @brief Convert a number into hexadecimal
-Function/S NumberToHex(var)
+threadsafe Function/S NumberToHex(var)
 	variable var
 
 	string str
 
-	ASSERT(IsInteger(var) && var >= 0 && var < 256 , "Invalid input")
+	ASSERT_TS(IsInteger(var) && var >= 0 && var < 256 , "Invalid input")
 
 	sprintf str, "%02x", var
 
@@ -5171,13 +5171,13 @@ End
 /// @brief Convert a string in hex format to an unsigned binary wave
 ///
 /// This function works on a byte level so it does not care about endianess.
-Function/WAVE HexToBinary(str)
+threadsafe Function/WAVE HexToBinary(str)
 	string str
 
 	variable length
 
 	length = strlen(str)
-	ASSERT(mod(length, 2) == 0, "Expected a string with a power of 2 length")
+	ASSERT_TS(mod(length, 2) == 0, "Expected a string with a power of 2 length")
 
 	Make/N=(length / 2)/FREE/B/U bin = HexToNumber(str[p * 2]) | (HexToNumber(str[p * 2 + 1]) << 4)
 
