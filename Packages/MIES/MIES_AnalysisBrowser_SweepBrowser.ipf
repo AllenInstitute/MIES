@@ -21,6 +21,18 @@ Function/DF SB_GetSweepBrowserFolder(win)
 	return BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 End
 
+Function SB_TranslateSBMapIndexToABMapIndex(string win, variable sbIndex)
+
+	WAVE/T sweepMap = SB_GetSweepBrowserMapFromGraph(win)
+	WAVE/T analysisMap = GetAnalysisBrowserMap()
+
+	// now search the DataFolder from sweepMap in the analyisMap
+	FindValue/TXOP=4/RMD=[][FindDimLabel(analysisMap, COLS, "DataFolder")]/TEXT=(sweepMap[sbIndex][%DataFolder]) analysisMap
+	ASSERT(V_Value >= 0, "Inconsistent AnalysisBrowserMap and SweepBrowserMap")
+
+	return V_row
+End
+
 static Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
 	DFREF sweepBrowserDFR
 	variable mapIndex

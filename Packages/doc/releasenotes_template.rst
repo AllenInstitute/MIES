@@ -1,6 +1,48 @@
 Release X.Y
 ===========
 
+Controls
+--------
+
+All added, removed or renamed controls of the main GUIs are listed. These lists are intended to help upgrading the JSON
+configuration files. Controls, like GroupBox'es, which can not be read/written with the configuration code are not included.
+
+DA\_Ephys
+~~~~~~~~~
+
+Added
+^^^^^
+
+Removed
+^^^^^^^
+
+Renamed
+^^^^^^^
+
+Databrowser
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+Removed
+^^^^^^^
+
+Renamed
+^^^^^^^
+
+Wavebuilder
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+Removed
+^^^^^^^
+
+Renamed
+^^^^^^^
+
 Sweep Formula
 -------------
 
@@ -21,8 +63,8 @@ DA\_Ephys
 ---------
 
 
-ExperimentConfig
-----------------
+JSON Configuration
+------------------
 
 
 Downsample
@@ -35,6 +77,10 @@ Analysis Functions
 
 Foreign Function interface
 --------------------------
+
+
+Pulse Average Plot
+------------------
 
 
 General
@@ -101,10 +147,6 @@ Internal
 --------
 
 
-Tango
------
-
-
 Tests
 -----
 
@@ -112,6 +154,9 @@ Tests
 Async Framework
 ---------------
 
+
+Logging
+-------
 
 Installer
 ---------

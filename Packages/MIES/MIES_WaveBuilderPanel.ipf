@@ -38,8 +38,8 @@ static Constant FROM_WAVE_TO_PANEL = 0x2
 
 Function WB_OpenStimulusSetInWaveBuilder()
 
-	string graph, trace, extPanel, waveBuilder
-	variable sweepNo, headstage
+	string graph, trace, extPanel, waveBuilder, stimset, device
+	variable sweepNo, headstage, abIndex, sbIndex
 
 	GetLastUserMenuInfo
 	graph = S_graphName
@@ -57,16 +57,44 @@ Function WB_OpenStimulusSetInWaveBuilder()
 	headstage = str2num(TUD_GetUserData(graph, trace, "headstage"))
 	WAVE/T textualValues = $TUD_GetUserData(graph, trace, "textualValues")
 
-	WAVE/T/Z stimset = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	WAVE/T/Z stimsetLBN = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 
-	if(!WaveExists(stimset))
+	if(!WaveExists(stimsetLBN) || IsNaN(headstage))
 		printf "Context menu option \"%s\" could not find the stimulus set of the trace %s.\r", S_Value, trace
 		ControlWindowToFront()
 		return NaN
 	endif
 
+	stimset = stimsetLBN[headstage]
+
+	WAVE/Z stimsetWave = WB_CreateAndGetStimSet(stimset)
+
+	if(!WaveExists(stimsetWave))
+		if(BSP_IsDataBrowser(graph))
+			printf "Context menu option \"%s\" could not be find the stimulus set %s.", S_Value, stimset
+			ControlWindowToFront()
+			return NaN
+		else
+			// we might need to load the stimset
+			WAVE traceWave = $TUD_GetUserData(graph, trace, "fullPath")
+			DFREF sweepDataDFR = GetWavesDataFolderDFR(traceWave)
+			sbIndex = SB_GetIndexFromSweepDataPath(graph, sweepDataDFR)
+
+			DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+			WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+
+			abIndex = SB_TranslateSBMapIndexToABMapIndex(graph, sbIndex)
+			device  = sweepMap[sbIndex][%Device]
+			if(AB_LoadStimsetForSweep(device, abIndex, sweepNo))
+				printf "Context menu option \"%s\" could not load the stimulus set %s.", S_Value, stimset
+				ControlWindowToFront()
+				return NaN
+			endif
+		endif
+	endif
+
 	waveBuilder = WBP_CreateWaveBuilderPanel()
-	PGC_SetAndActivateControl(waveBuilder, "popup_WaveBuilder_SetList", str = stimset[headstage])
+	PGC_SetAndActivateControl(waveBuilder, "popup_WaveBuilder_SetList", str = stimset)
 End
 
 Function/S WBP_CreateWaveBuilderPanel()
