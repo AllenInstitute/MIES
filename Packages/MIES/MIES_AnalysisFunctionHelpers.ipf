@@ -105,13 +105,13 @@ End
 ///                      `GetDAQConfigWave(panelTitle)` to get that wave.
 /// @param channelNumber channel number (0-based)
 /// @param channelType   channel type, one of @ref XopChannelConstants
-Function AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
+threadsafe Function AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
 	WAVE DAQConfigWave
 	variable channelNumber, channelType
 
 	variable numRows, i
 
-	ASSERT(IsFinite(channelNumber), "Non-finite channel number")
+	ASSERT_TS(IsFinite(channelNumber), "Non-finite channel number")
 
 	numRows = DimSize(DAQConfigWave, ROWS)
 	for(i = 0; i < numRows; i += 1)
@@ -127,9 +127,9 @@ Function AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
 		return i
 	endfor
 
-	DEBUGPRINT("Could not find the column")
-	DEBUGPRINT("Channel number", var = channelNumber)
-	DEBUGPRINT("Channel type", var = channelType)
+	DEBUGPRINT_TS("Could not find the column")
+	DEBUGPRINT_TS("Channel number", var = channelNumber)
+	DEBUGPRINT_TS("Channel type", var = channelType)
 
 	return NaN
 End
@@ -138,7 +138,7 @@ End
 ///
 /// @param DAQConfigWave DAQ configuration wave, most users need to call
 ///                      `GetDAQConfigWave(panelTitle)` to get that wave.
-Function/WAVE AFH_GetChannelUnits(DAQConfigWave)
+threadsafe Function/WAVE AFH_GetChannelUnits(DAQConfigWave)
 	WAVE DAQConfigWave
 
 	string units
