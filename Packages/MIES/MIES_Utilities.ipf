@@ -365,6 +365,46 @@ static Function/S GetAllObjects(dfr, typeFlag)
 	return list
 End
 
+/// @brief Return a list of all objects of the given type from dfr
+///
+/// @todo merge with GetAllObjects once IP9 is mandatory as then
+///       VariableList and StringList are threadsafe
+///
+/// Does not work for datafolders which have a comma (`,`) in them.
+threadsafe Function/S GetAllObjects_TS(DFREF dfr, variable typeFlag)
+	string list
+
+	DFREF oldDFR = GetDataFolderDFR()
+
+	// @todo remove SetDataFolder call once IP9 is mandatory as the XXXList function
+	// then have a dfr parameter
+	SetDataFolder dfr
+
+	switch(typeFlag)
+		case COUNTOBJECTS_WAVES:
+			list = WaveList("*", ";", "")
+			break
+		case COUNTOBJECTS_VAR:
+			ASSERT_TS(0, "Not supported as it is only threadsafe in IP9")
+			break
+		case COUNTOBJECTS_STR:
+			ASSERT_TS(0, "Not supported as it is only threadsafe in IP9")
+			break
+		case COUNTOBJECTS_DATAFOLDER:
+			list = DataFolderDir(2^0)
+			list = StringByKey("FOLDERS", list)
+			list = ReplaceString(",", list, ";")
+			break
+		default:
+			SetDataFolder oldDFR
+			ASSERT_TS(0, "Invalid type flag")
+	endswitch
+
+	SetDataFolder oldDFR
+
+	return list
+End
+
 /// @brief Matches `list` against the expression `matchExpr` using the given
 ///        convention in `exprType`
 Function/S ListMatchesExpr(list, matchExpr, exprType)
