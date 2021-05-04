@@ -1684,7 +1684,7 @@ End
 /// - RAC (repeated acquisition cycle IDs) sweeps
 /// - SCI (simset cycle IDs) sweeps
 ///
-Function/WAVE GetLBNidCache(numericalValues)
+threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	WAVE numericalValues
 
 	variable actual, rollbackCount
@@ -1692,12 +1692,12 @@ Function/WAVE GetLBNidCache(numericalValues)
 
 	variable versionOfNewWave = 3
 
-	ASSERT(!IsTextWave(numericalValues), "Expected numerical labnotebook")
+	ASSERT_TS(!IsTextWave(numericalValues), "Expected numerical labnotebook")
 
 	actual        = WaveModCountWrapper(numericalValues)
 	name          = GetWavesDataFolder(numericalValues, 2)
 	rollbackCount = GetNumberFromWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT)
-	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
+	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_RACidCache"
 
