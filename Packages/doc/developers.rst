@@ -176,8 +176,6 @@ Cutting a new release
 ~~~~~~~~~~~~~~~~~~~~~
 
 -  Checkout the main branch
--  Check that MIES compiles
--  Check that doxygen/sphinx/breathe returns neither errors nor warnings
 -  Paste the contents of ``Packages\doc\releasenotes_template.rst`` to
    the top of ``Packages\doc\releasenotes.rst``
 -  Call ``tools\create-changelog.sh`` which generate a raw changelog and
@@ -189,9 +187,9 @@ Cutting a new release
 -  Create the release branches:
 
    -  ``git checkout -b release/X.Y``
-   -  ``git push -u origin release/X.Y``
+   -  ``git push --no-verify -u origin release/X.Y``
 
--  Change the bamboo jobs using release branches to use the branch
+-  Change the bamboo plans using release branches to use the branch
    release/X.Y
 -  Create a new release on github and check that the bamboo job correctly
    uploads the artifacts
@@ -207,12 +205,6 @@ Creating a release package manually
 -  Execute ``./create-release.sh``
 -  The release package including the version information is then
    available as zip file
-
-Installing a release
-~~~~~~~~~~~~~~~~~~~~
-
--  Extract the zip archive into a folder on the target machine
--  Follow the steps outlined in the section "Full Installation"
 
 Continuous integration server
 -----------------------------
@@ -231,9 +223,8 @@ Automatic release package building
 -  The result of the release script, called an artifact in CI-speech, is
    then available as zip package from the `Package
    section <http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful>`__.
--  The release packaging job can be run on a linux box or on a windows
-   box with git for windows installed. This is ensured by a platform
-   requirement for the job.
+-  The release packaging job can be run on a windows box with git for windows installed.
+   This is ensured by a platform requirement for the job.
 
 Compilation testing
 ~~~~~~~~~~~~~~~~~~~
@@ -298,8 +289,6 @@ Install required software
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 -  Install `Docker <https://docker.io>`__
--  Wine 64-bit: ``apt install wine``
--  Wine 32-bit: ``dpkg --add-architecture i386 && apt update && apt install wine32``
 -  Misc required software: ``apt install git cron-apt``
 -  Enable automatic updates: ``echo "dist-upgrade -y -o APT::Get::Show-Upgraded=true" > /etc/cron-apt/action.d/4-upgrade``
 -  Install OpenJDK 8 by adding a file with the following

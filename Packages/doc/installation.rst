@@ -49,12 +49,9 @@ The manual installation instructions are here for
 historical/compatibility reasons. Whenever possible users should install
 via the Installer package.
 
-Install the `Visual C++ Redistributable for Visual Studio
-2015 <https://www.microsoft.com/en-us/download/details.aspx?id=48145>`__
-packages both for 32bit(x86) and 64bit(x64) in English.
-
-Igor Pro 8
-~~~~~~~~~~
+Install the `Visual C++ Redistributable for Visual Studio 2019
+<https://support.microsoft.com/en-us/topic/the-latest-supported-visual-c-downloads-2647da03-1eea-4433-9aff-95f26a218cc0>`__
+packages both for 32bit (x86) and 64bit (x64) in English.
 
 -  Quit Igor Pro
 -  Create the following shortcuts in
@@ -80,12 +77,11 @@ Igor Pro 8
 
 -  Start Igor Pro
 
-Manual Installation without hardware dependencies/XOPs
-------------------------------------------------------
+Manual Installation without hardware dependencies
+-------------------------------------------------
 
-In case you don't have the hardware connected/available a certain XOP
-requires you can also install MIES without any hardware related XOPs
-present.
+In case you don't have the hardware connected/available which some XOPs require, you can also install MIES without any
+hardware related XOPs present.
 
 -  Quit Igor Pro
 -  Create the following shortcuts in
@@ -99,13 +95,20 @@ present.
 
    -  In ``Igor Procedures`` a shortcut pointing to
       ``Packages\MIES_Include.ipf``
+
    -  In ``Igor Extensions (64-bit)`` a shortcut pointing to
 
       -  ``XOPs-IP8-64bit\HDF5-64.xop``
+      -  ``XOPs-IP8-64bit\JSON-64.xop``
+      -  ``XOPs-IP8-64bit\MIESUtils-64.xop``
+      -  ``XOPs-IP8-64bit\ZeroMQ-64.xop``
 
    -  In ``Igor Extensions`` a shortcut pointing to
 
       -  ``XOPs-IP8\HDF5.xop``
+      -  ``XOPs-IP8\JSON.xop``
+      -  ``XOPs-IP8\MIESUtils.xop``
+      -  ``XOPs-IP8\ZeroMQ.xop``
 
    -  In ``Igor Help Files`` a shortcut pointing to HelpFiles-IP8
 

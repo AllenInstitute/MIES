@@ -379,6 +379,11 @@ Function DB_UpdateLastSweepControls(win, first, last)
 	if(formerLast != last || (IsNaN(formerLast) && IsFinite(last)))
 		SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=last)
 		SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", first, last, 1)
+
+		if(IsNaN(GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")))
+			SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", first)
+		endif
+
 		OVS_UpdatePanel(win)
 		AD_Update(win)
 	endif
