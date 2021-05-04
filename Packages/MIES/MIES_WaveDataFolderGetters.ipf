@@ -200,28 +200,28 @@ threadsafe static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
 End
 
 /// @brief Check if the given wave's version is equal or larger than the given version, if version is not set false is returned
-static Function WaveVersionIsAtLeast(wv, existingVersion)
+threadsafe static Function WaveVersionIsAtLeast(wv, existingVersion)
 	WAVE/Z wv
 	variable existingVersion
 
 	variable waveVersion
 
-	ASSERT(WaveExists(wv), "Wave does not exist")
-	ASSERT(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
+	ASSERT_TS(WaveExists(wv), "Wave does not exist")
+	ASSERT_TS(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
 	waveVersion = GetWaveVersion(wv)
 
 	return !isNaN(waveVersion) && waveVersion >= existingVersion
 End
 
 /// @brief Check if the given wave's version is smaller than the given version, if version is not set true is returned
-static Function WaveVersionIsSmaller(wv, existingVersion)
+threadsafe static Function WaveVersionIsSmaller(wv, existingVersion)
 	WAVE/Z wv
 	variable existingVersion
 
 	variable waveVersion
 
-	ASSERT(WaveExists(wv), "Wave does not exist")
-	ASSERT(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
+	ASSERT_TS(WaveExists(wv), "Wave does not exist")
+	ASSERT_TS(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
 	waveVersion = GetWaveVersion(wv)
 
 	return isNaN(waveVersion) || waveVersion < existingVersion
@@ -235,16 +235,16 @@ threadsafe Function GetWaveVersion(wv)
 End
 
 /// @brief Set the wave layout version of wave
-static Function SetWaveVersion(wv, val)
+threadsafe static Function SetWaveVersion(wv, val)
 	Wave wv
 	variable val
 
-	ASSERT(IsValidWaveVersion(val), "val must be a positive and non-zero integer")
+	ASSERT_TS(IsValidWaveVersion(val), "val must be a positive and non-zero integer")
 	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, val)
 End
 
 /// @brief A valid wave version is a positive non-zero integer
-static Function IsValidWaveVersion(variable value)
+threadsafe static Function IsValidWaveVersion(variable value)
 	return value > 0 && IsInteger(value)
 End
 
