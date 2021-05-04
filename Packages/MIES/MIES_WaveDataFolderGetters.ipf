@@ -1535,7 +1535,7 @@ End
 ///
 /// Layers:
 /// - One for each entrySourceType, mapped via EntrySourceTypeMapper()
-Function/WAVE GetLBRowCache(values)
+threadsafe Function/WAVE GetLBRowCache(values)
 	WAVE values
 
 	variable actual, rollbackCount, sweepNo, first, last
@@ -1546,7 +1546,7 @@ Function/WAVE GetLBRowCache(values)
 	actual        = WaveModCountWrapper(values)
 	name          = GetWavesDataFolder(values, 2)
 	rollbackCount = GetNumberFromWaveNote(values, LABNOTEBOOK_ROLLBACK_COUNT)
-	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
+	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_RowCache"
 
@@ -1614,7 +1614,7 @@ End
 /// Contents:
 /// - row index if the entry could be found, #LABNOTEBOOK_MISSING_VALUE if it
 ///   could not be found, and #LABNOTEBOOK_UNCACHED_VALUE if the cache is empty.
-Function/WAVE GetLBIndexCache(values)
+threadsafe Function/WAVE GetLBIndexCache(values)
 	WAVE values
 
 	variable actual, rollbackCount, sweepNo, first, last
@@ -1625,7 +1625,7 @@ Function/WAVE GetLBIndexCache(values)
 	actual        = WaveModCountWrapper(values)
 	name          = GetWavesDataFolder(values, 2)
 	rollbackCount = GetNumberFromWaveNote(values, LABNOTEBOOK_ROLLBACK_COUNT)
-	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
+	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_IndexCache"
 
@@ -5100,19 +5100,19 @@ End
 /// @name Getters relating to caching
 /// @{
 /// @brief Return the datafolder reference to the wave cache
-Function/DF GetCacheFolder()
+threadsafe Function/DF GetCacheFolder()
 	return createDFWithAllParents(GetCacheFolderAS())
 End
 
 /// @brief Return the full path to the wave cache datafolder, e.g. root:MIES:Cache
-Function/S GetCacheFolderAS()
+threadsafe Function/S GetCacheFolderAS()
 	return GetMiesPathAsString() + ":Cache"
 End
 
 /// @brief Return the wave reference wave holding the cached data
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
-Function/Wave GetCacheValueWave()
+threadsafe Function/Wave GetCacheValueWave()
 
 	DFREF dfr = GetCacheFolder()
 
@@ -5132,7 +5132,7 @@ End
 /// @brief Return the wave reference wave holding the cache keys
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
-Function/Wave GetCacheKeyWave()
+threadsafe Function/Wave GetCacheKeyWave()
 
 	DFREF dfr = GetCacheFolder()
 
@@ -5161,7 +5161,7 @@ End
 /// - 3: Size in bytes (Updated on write)
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
-Function/Wave GetCacheStatsWave()
+threadsafe Function/Wave GetCacheStatsWave()
 
 	variable versionOfNewWave = 3
 
@@ -5175,7 +5175,7 @@ Function/Wave GetCacheStatsWave()
 		WAVE/T keys      = GetCacheKeyWave()
 		WAVE/WAVE values = GetCacheValueWave()
 		numRows = DimSize(values, ROWS)
-		ASSERT(DimSize(keys, ROWS) == numRows, "Mismatched row sizes")
+		ASSERT_TS(DimSize(keys, ROWS) == numRows, "Mismatched row sizes")
 
 		if(WaveExists(wv))
 			// experiments prior to efebc382 (Merge pull request #490 from AllenInstitute/mh_fix_uniquedatafoldername, 2020-03-16)

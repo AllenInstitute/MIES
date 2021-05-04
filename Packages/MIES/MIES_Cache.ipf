@@ -318,13 +318,13 @@ End
 ///        Multithread assignments
 ///
 /// Only the size is relevant, the rest is undefined.
-Function/S CA_TemporaryWaveKey(dims)
+threadsafe Function/S CA_TemporaryWaveKey(dims)
 	WAVE dims
 
 	variable numRows, crc, i
 
 	numRows = DimSize(dims, ROWS)
-	ASSERT(numRows > 0 && numRows <= MAX_DIMENSION_COUNT && DimSize(dims, COLS) <= 1, "Invalid dims dimensions")
+	ASSERT_TS(numRows > 0 && numRows <= MAX_DIMENSION_COUNT && DimSize(dims, COLS) <= 1, "Invalid dims dimensions")
 
 	for(i = 0; i < numRows; i += 1)
 		crc = StringCRC(crc, num2istr(dims[i]))
@@ -381,7 +381,7 @@ End
 /// @brief Make space for one new entry in the cache waves
 ///
 /// @return index into cache waves
-static Function CA_MakeSpaceForNewEntry()
+threadsafe static Function CA_MakeSpaceForNewEntry()
 
 	variable index
 
@@ -390,13 +390,13 @@ static Function CA_MakeSpaceForNewEntry()
 	WAVE stats       = GetCacheStatsWave()
 
 	index = GetNumberFromWaveNote(keys, NOTE_INDEX)
-	ASSERT(index == GetNumberFromWaveNote(values, NOTE_INDEX), "Mismatched indizes in key and value waves")
+	ASSERT_TS(index == GetNumberFromWaveNote(values, NOTE_INDEX), "Mismatched indizes in key and value waves")
 
 	EnsureLargeEnoughWave(keys, dimension=ROWS, minimumSize=index)
 	EnsureLargeEnoughWave(values, dimension=ROWS, minimumSize=index)
 	EnsureLargeEnoughWave(stats, dimension=ROWS, minimumSize=index, initialValue = NaN)
-	ASSERT(DimSize(keys, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
-	ASSERT(DimSize(stats, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
+	ASSERT_TS(DimSize(keys, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
+	ASSERT_TS(DimSize(stats, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
 
 	SetNumberInWaveNote(keys, NOTE_INDEX, index + 1)
 	SetNumberInWaveNote(values, NOTE_INDEX, index + 1)
@@ -413,7 +413,7 @@ End
 ///                @ref CacheFetchOptions
 ///
 /// Existing entries with the same key are overwritten.
-Function CA_StoreEntryIntoCache(key, val, [options])
+threadsafe Function CA_StoreEntryIntoCache(key, val, [options])
 	string key
 	WAVE val
 	variable options
@@ -426,7 +426,7 @@ Function CA_StoreEntryIntoCache(key, val, [options])
 		storeDuplicate = !(options & CA_OPTS_NO_DUPLICATE)
 	endif
 
-	ASSERT(!IsEmpty(key), "Key must not be empty")
+	ASSERT_TS(!IsEmpty(key), "Key must not be empty")
 
 	WAVE/T keys      = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
@@ -461,10 +461,10 @@ End
 /// @brief Return the index of the entry `key`
 ///
 /// @return non-negative number or `NaN` if it could not be found.
-static Function CA_GetCacheIndex(key)
+threadsafe static Function CA_GetCacheIndex(key)
 	string key
 
-	ASSERT(!isEmpty(key), "Cache key can not be empty")
+	ASSERT_TS(!isEmpty(key), "Cache key can not be empty")
 
 	WAVE/T keys = GetCacheKeyWave()
 	FindValue/TXOP=4/TEXT=key keys
@@ -480,7 +480,7 @@ End
 ///
 /// @return A wave reference with the stored data or a invalid wave reference
 /// if nothing could be found.
-Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
+threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 	string key
 	variable options
 
@@ -495,7 +495,7 @@ Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 	index = CA_GetCacheIndex(key)
 
 	if(!IsFinite(index))
-		DEBUGPRINT("Could not find a cache entry for key=", str=key)
+		DEBUGPRINT_TS("Could not find a cache entry for key=", str=key)
 		return $""
 	endif
 
@@ -503,11 +503,11 @@ Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 	WAVE/WAVE values = GetCacheValueWave()
 	WAVE stats       = GetCacheStatsWave()
 
-	ASSERT(index < DimSize(values, ROWS), "Invalid index")
+	ASSERT_TS(index < DimSize(values, ROWS), "Invalid index")
 	WAVE/Z cache = values[index]
 
 	if(!WaveExists(cache))
-		DEBUGPRINT("Could not find a valid wave for key=", str=key)
+		DEBUGPRINT_TS("Could not find a valid wave for key=", str=key)
 		// invalidate cache entry due to non existent wave,
 		// this can happen for unpacked experiments which don't store free waves
 		keys[index] = ""
@@ -515,7 +515,7 @@ Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 	endif
 
 	stats[index][%Hits] += 1
-	DEBUGPRINT("Found cache entry for key=", str=key)
+	DEBUGPRINT_TS("Found cache entry for key=", str=key)
 
 	if(returnDuplicate)
 		if(IsWaveRefWave(cache))
