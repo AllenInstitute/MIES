@@ -1984,17 +1984,17 @@ End
 
 /// @brief Returns the sampling interval of the sweep
 /// in microseconds (1e-6s)
-Function GetSamplingInterval(config)
+threadsafe Function GetSamplingInterval(config)
 	Wave config
 
-	ASSERT(IsValidConfigWave(config, version=0), "Expected a valid config wave")
+	ASSERT_TS(IsValidConfigWave(config, version=0), "Expected a valid config wave")
 
 	// from ITCConfigAllChannels help file:
 	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
 	Duplicate/D/R=[][2]/FREE config samplingInterval
 
 	// The sampling interval is the same for all channels
-	ASSERT(WaveMax(samplingInterval) == WaveMin(samplingInterval),"Expected constant sample interval for all channels")
+	ASSERT_TS(WaveMax(samplingInterval) == WaveMin(samplingInterval),"Expected constant sample interval for all channels")
 	return samplingInterval[0]
 End
 
@@ -3107,7 +3107,7 @@ End
 /// @param[out] unit      unit of the result [empty if not found]
 /// @param[out] col       column of the result into the keyWave [NaN if not found]
 /// @returns one on error, zero otherwise
-Function GetKeyWaveParameterAndUnit(keyWave, key, parameter, unit, col)
+threadsafe Function GetKeyWaveParameterAndUnit(keyWave, key, parameter, unit, col)
 	WAVE/T/Z keyWave
 	string key
 	string &parameter, &unit
@@ -3732,12 +3732,12 @@ End
 /// @param var    numeric channel types
 /// @param str    string channel types
 /// @param xopVar numeric XOP channel types
-Function GetNumberFromType([var, str, xopVar])
+threadsafe Function GetNumberFromType([var, str, xopVar])
 	variable var
 	string str
 	variable xopVar
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(xopVar) == 2, "Expected exactly one parameter")
+	ASSERT_TS(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(xopVar) == 2, "Expected exactly one parameter")
 
 	if(!ParamIsDefault(str))
 		strswitch(str)
@@ -3759,7 +3759,7 @@ Function GetNumberFromType([var, str, xopVar])
 				return NUM_ASYNC_CHANNELS
 				break
 			default:
-				ASSERT(0, "invalid type")
+				ASSERT_TS(0, "invalid type")
 				break
 		endswitch
 	elseif(!ParamIsDefault(var))
@@ -3779,7 +3779,7 @@ Function GetNumberFromType([var, str, xopVar])
 				return NUM_AD_CHANNELS
 				break
 			default:
-				ASSERT(0, "invalid type")
+				ASSERT_TS(0, "invalid type")
 				break
 		endswitch
 	elseif(!ParamIsDefault(xopVar))
@@ -3792,7 +3792,7 @@ Function GetNumberFromType([var, str, xopVar])
 				return NUM_DA_TTL_CHANNELS
 				break
 			default:
-				ASSERT(0, "Invalid type")
+				ASSERT_TS(0, "Invalid type")
 				break
 		endswitch
 	endif
@@ -3805,19 +3805,19 @@ End
 /// @param index  index into `sweep`, can be queried with #AFH_GetDAQDataColumn
 ///
 /// @returns a reference to a free wave with the single channel data
-Function/Wave ExtractOneDimDataFromSweep(config, sweep, index)
+threadsafe Function/Wave ExtractOneDimDataFromSweep(config, sweep, index)
 	WAVE config
 	WAVE sweep
 	variable index
 
-	ASSERT(IsValidSweepAndConfig(sweep, config, configVersion = 0), "Sweep and config are not compatible")
+	ASSERT_TS(IsValidSweepAndConfig(sweep, config, configVersion = 0), "Sweep and config are not compatible")
 
 	if(IsWaveRefWave(sweep))
-		ASSERT(index < DimSize(sweep, ROWS), "The index is out of range")
+		ASSERT_TS(index < DimSize(sweep, ROWS), "The index is out of range")
 		WAVE/WAVE sweepRef = sweep
 		Duplicate/FREE sweepRef[index], data
 	else
-		ASSERT(index < DimSize(sweep, COLS), "The index is out of range")
+		ASSERT_TS(index < DimSize(sweep, COLS), "The index is out of range")
 		MatrixOP/FREE data = col(sweep, index)
 	endif
 
@@ -4857,7 +4857,7 @@ End
 /// @param numericalValues Numerical labnotebook values
 /// @param sweep           Sweep number
 /// @param channel         TTL hardware channel
-Function GetTTLBits(numericalValues, sweep, channel)
+threadsafe Function GetTTLBits(numericalValues, sweep, channel)
 	WAVE numericalValues
 	variable sweep, channel
 
@@ -4882,7 +4882,7 @@ End
 /// @param numericalValues Numerical labnotebook values
 /// @param textualValues   Text labnotebook values
 /// @param sweep           Sweep number
-static Function/WAVE GetTTLChannelsOrBits(WAVE numericalValues, WAVE textualValues, variable sweep)
+threadsafe static Function/WAVE GetTTLChannelsOrBits(WAVE numericalValues, WAVE textualValues, variable sweep)
 	variable index, first, last
 
 	index = GetIndexForHeadstageIndepData(numericalValues)
@@ -4923,7 +4923,7 @@ End
 /// @param numericalValues Numerical labnotebook values
 /// @param textualValues   Text labnotebook values
 /// @param sweep           Sweep number
-static Function/WAVE GetTTLChannels(WAVE numericalValues, WAVE textualValues, variable sweep)
+threadsafe static Function/WAVE GetTTLChannels(WAVE numericalValues, WAVE textualValues, variable sweep)
 	variable index
 
 	index = GetIndexForHeadstageIndepData(numericalValues)
@@ -4997,7 +4997,7 @@ End
 /// @param channelType     One of @ref XopChannelConstants
 /// @param TTLmode         [optional, defaults to #TTL_DAEPHYS_CHANNEL] One of @ref ActiveChannelsTTLMode.
 ///                        Does only apply to TTL channels.
-Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, [variable TTLmode])
+threadsafe Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, [variable TTLmode])
 	variable i, numEntries, index
 	string key
 
@@ -5019,10 +5019,10 @@ Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualValues, variab
 				case TTL_DAEPHYS_CHANNEL:
 					return GetTTLChannelsOrBits(numericalValues, textualValues, sweepNo)
 				default:
-					ASSERT(0, "Invalid TTLmode")
+					ASSERT_TS(0, "Invalid TTLmode")
 			endswitch
 		default:
-			ASSERT(0, "Unexpected channelType")
+			ASSERT_TS(0, "Unexpected channelType")
 	endswitch
 
 	numEntries = GetNumberFromType(xopVar = channelType)
@@ -5048,7 +5048,7 @@ End
 /// Before dfe2d862 (Make the function AB_SplitTTLWaveIntoComponents available for all, 2015-10-07)
 /// we stored headstage independent data in either all entries or only the first one.
 /// Since that commit we store the data in `INDEP_HEADSTAGE`.
-Function GetIndexForHeadstageIndepData(values)
+threadsafe Function GetIndexForHeadstageIndepData(values)
 	WAVE values
 
 	return DimSize(values, LAYERS) == NUM_HEADSTAGES ? 0 : INDEP_HEADSTAGE
@@ -5062,7 +5062,7 @@ End
 /// @param numericalValues Numerical labnotebook values
 /// @param textualValues   Text labnotebook values
 /// @param sweep           Sweep number
-Function/WAVE GetTTLStimSets(numericalValues, textualValues, sweep)
+threadsafe Function/WAVE GetTTLStimSets(numericalValues, textualValues, sweep)
 	WAVE numericalValues, textualValues
 	variable sweep
 
@@ -5264,7 +5264,7 @@ End
 ///                   when on, does no rescaling when off.
 ///
 /// The created waves will be named `TTL_3_3` so the final suffix is the running TTL Bit.
-Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix, rescale)
+threadsafe Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix, rescale)
 	WAVE data
 	variable ttlBits
 	DFREF targetDFR
@@ -5290,7 +5290,7 @@ Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix, rescal
 		elseif(rescale == TTL_RESCALE_OFF)
 			MultiThread dest[] = dest[p] & bit
 		else
-			ASSERT(0, "Invalid rescale parameter")
+			ASSERT_TS(0, "Invalid rescale parameter")
 		endif
 	endfor
 End
@@ -5825,10 +5825,10 @@ Function/S GetProgramFilesFolder()
 End
 
 /// @brief Return the default name of a electrode
-Function/S GetDefaultElectrodeName(headstage)
+threadsafe Function/S GetDefaultElectrodeName(headstage)
 	variable headstage
 
-	ASSERT(headstage >=0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(headstage >=0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
 
 	return num2str(headstage)
 End
@@ -5842,20 +5842,20 @@ End
 ///
 /// New style have the format "$Name u_(AD|DA)$ChannelNumber", these include
 /// the channel type to make them more self explaining.
-Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
+threadsafe Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
 	string setting
 	variable channelNumber, channelType
 
-	ASSERT(!IsEmpty(setting), "Expected non empty string")
-	ASSERT(IsFinite(channelNumber), "Expected finite channel number")
+	ASSERT_TS(!IsEmpty(setting), "Expected non empty string")
+	ASSERT_TS(IsFinite(channelNumber), "Expected finite channel number")
 
 	string key
 
 	if(IsNaN(channelType))
 		sprintf key, "%s UNASSOC_%d", setting, channelNumber
 	else
-		ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC, "Invalid channel type")
-		ASSERT(IsInteger(channelNumber) && channelNumber >= 0 && channelNumber < GetNumberFromType(xopVar = channelType), "channelNumber is out of range")
+		ASSERT_TS(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC, "Invalid channel type")
+		ASSERT_TS(IsInteger(channelNumber) && channelNumber >= 0 && channelNumber < GetNumberFromType(xopVar = channelType), "channelNumber is out of range")
 		sprintf key, "%s u_%s%d", setting, StringFromList(channelType, XOP_CHANNEL_NAMES), channelNumber
 	endif
 
@@ -6357,14 +6357,14 @@ End
 
 /// @brief Maps the labnotebook entry source type, one of @ref DataAcqModes, to
 ///        a valid wave index.
-Function EntrySourceTypeMapper(entrySourceType)
+threadsafe Function EntrySourceTypeMapper(entrySourceType)
 	variable entrySourceType
 
 	return IsFinite(entrySourceType) ? ++entrySourceType : 0
 End
 
 /// @brief Rerverse the effect of EntrySourceTypeMapper()
-Function ReverseEntrySourceTypeMapper(variable mapped)
+threadsafe Function ReverseEntrySourceTypeMapper(variable mapped)
 	return	(mapped == 0 ? NaN : --mapped)
 End
 
@@ -6758,7 +6758,7 @@ End
 ///
 /// @returns A wave with the row indizes of the found values. An invalid wave reference if the
 /// value could not be found.
-Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, startRow, endRow, startLayer, endLayer])
+threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, startRow, endRow, startLayer, endLayer])
 	WAVE numericOrTextWave
 	variable col, var, prop
 	string str, colLabel
@@ -6768,14 +6768,14 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	variable numCols, numRows, numLayers
 	string key
 
-	ASSERT(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
-	ASSERT(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2              \
+	ASSERT_TS(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
+	ASSERT_TS(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2              \
 		   || (!ParamIsDefault(prop)                                                          \
 			  && (prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) \
 			  && (ParamIsDefault(var) + ParamIsDefault(str)) == 1),                           \
 			  "Invalid combination of var/str/prop arguments")
 
-	ASSERT(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
+	ASSERT_TS(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
 
 	if(DimSize(numericOrTextWave, ROWS) == 0)
 		return $""
@@ -6784,14 +6784,14 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	numRows   = DimSize(numericOrTextWave, ROWS)
 	numCols   = DimSize(numericOrTextWave, COLS)
 	numLayers = DimSize(numericOrTextWave, LAYERS)
-	ASSERT(DimSize(numericOrTextWave, CHUNKS) <= 1, "No support for chunks")
+	ASSERT_TS(DimSize(numericOrTextWave, CHUNKS) <= 1, "No support for chunks")
 
 	if(!ParamIsDefault(colLabel))
 		col = FindDimLabel(numericOrTextWave, COLS, colLabel)
-		ASSERT(col >= 0, "invalid column label")
+		ASSERT_TS(col >= 0, "invalid column label")
 	endif
 
-	ASSERT(col == 0 || (col > 0 && col < numCols), "Invalid column")
+	ASSERT_TS(col == 0 || (col > 0 && col < numCols), "Invalid column")
 
 	if(IsTextWave(numericOrTextWave))
 		WAVE/T wvText = numericOrTextWave
@@ -6802,7 +6802,7 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	endif
 
 	if(!ParamIsDefault(prop))
-		ASSERT(prop == PROP_NON_EMPTY                    \
+		ASSERT_TS(prop == PROP_NON_EMPTY                    \
 			   || prop == PROP_EMPTY                     \
 			   || prop == PROP_MATCHES_VAR_BIT_MASK      \
 			   || prop == PROP_NOT_MATCHES_VAR_BIT_MASK, \
@@ -6824,31 +6824,31 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	if(ParamIsDefault(startRow))
 		startRow = 0
 	else
-		ASSERT(startRow >= 0 && startRow < numRows, "Invalid startRow")
+		ASSERT_TS(startRow >= 0 && startRow < numRows, "Invalid startRow")
 	endif
 
 	if(ParamIsDefault(endRow))
 		endRow = inf
 	else
-		ASSERT(endRow >= 0 && endRow < numRows, "Invalid endRow")
+		ASSERT_TS(endRow >= 0 && endRow < numRows, "Invalid endRow")
 	endif
 
-	ASSERT(startRow <= endRow, "endRow must be larger than startRow")
+	ASSERT_TS(startRow <= endRow, "endRow must be larger than startRow")
 
 	if(ParamIsDefault(startLayer))
 		startLayer = 0
 	else
-		ASSERT(startLayer >= 0 && (numLayers == 0 || startLayer < numLayers), "Invalid startLayer")
+		ASSERT_TS(startLayer >= 0 && (numLayers == 0 || startLayer < numLayers), "Invalid startLayer")
 	endif
 
 	if(ParamIsDefault(endLayer))
 		// only look in the first layer by default
 		endLayer = 0
 	else
-		ASSERT(endLayer >= 0 && (numLayers == 0 || endLayer < numLayers), "Invalid endLayer")
+		ASSERT_TS(endLayer >= 0 && (numLayers == 0 || endLayer < numLayers), "Invalid endLayer")
 	endif
 
-	ASSERT(startLayer <= endLayer, "endLayer must be larger than startLayer")
+	ASSERT_TS(startLayer <= endLayer, "endLayer must be larger than startLayer")
 
 	// Algorithm:
 	// * The matches wave has the same size as one column of the input wave
@@ -6881,7 +6881,7 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!(wv[p][col][q] & var) ? p : -1)
 			endif
 		else
-			ASSERT(!IsNaN(var), "Use PROP_EMPTY to search for NaN")
+			ASSERT_TS(!IsNaN(var), "Use PROP_EMPTY to search for NaN")
 			MultiThread matches[startRow, endRow][startLayer, endLayer] = ((wv[p][col][q] == var) ? p : -1)
 		endif
 	else
