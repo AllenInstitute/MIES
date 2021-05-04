@@ -289,8 +289,6 @@ Install required software
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 -  Install `Docker <https://docker.io>`__
--  Wine 64-bit: ``apt install wine``
--  Wine 32-bit: ``dpkg --add-architecture i386 && apt update && apt install wine32``
 -  Misc required software: ``apt install git cron-apt``
 -  Enable automatic updates: ``echo "dist-upgrade -y -o APT::Get::Show-Upgraded=true" > /etc/cron-apt/action.d/4-upgrade``
 -  Install OpenJDK 8 by adding a file with the following
