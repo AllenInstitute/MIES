@@ -528,8 +528,6 @@ Function GetSweepColumn(labnotebookValues)
 		return sweepCol
 	endif
 
-	DEBUGPRINT("Could not find sweep number dimension label, trying with column zero")
-
 	return 0
 End
 
@@ -598,7 +596,6 @@ Function GetLastSettingIndep(numericalValues, sweepNo, setting, entrySourceType,
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -625,7 +622,6 @@ Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceT
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -653,7 +649,6 @@ Function GetLastSettingIndepRAC(numericalValues, sweepNo, setting, entrySourceTy
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -681,7 +676,6 @@ Function GetLastSettingIndepSCI(numericalValues, sweepNo, setting, headstage, en
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -709,7 +703,6 @@ Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, s
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -958,7 +951,6 @@ Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [
 	settingCol = FindDimLabel(values, COLS, setting)
 
 	if(settingCol <= 0)
-		DEBUGPRINT("Could not find the setting", str=setting)
 		return $""
 	endif
 
@@ -1657,7 +1649,6 @@ Function GetLastSweepWithSettingIndep(numericalValues, setting, sweepNo, [defVal
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -1721,7 +1712,6 @@ Function/S GetLastSweepWithSettingTextI(numericalValues, setting, sweepNo, [defV
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
