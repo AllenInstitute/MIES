@@ -168,21 +168,21 @@ static Function/WAVE ExtractLBColumn(values, col, suffix)
 End
 
 /// @brief Return a list of the AD channels from the DAQ config
-Function/WAVE GetADCListFromConfig(config)
+threadsafe Function/WAVE GetADCListFromConfig(config)
 	WAVE config
 
 	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_ADC)
 End
 
 /// @brief Return a list of the DA channels from the DAQ config
-Function/WAVE GetDACListFromConfig(config)
+threadsafe Function/WAVE GetDACListFromConfig(config)
 	WAVE config
 
 	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_DAC)
 End
 
 /// @brief Return a list of the TTL channels from the DAQ config
-Function/WAVE GetTTLListFromConfig(config)
+threadsafe Function/WAVE GetTTLListFromConfig(config)
 	WAVE config
 
 	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_TTL)
@@ -194,13 +194,13 @@ End
 ///
 /// @param config       DAQConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
-static Function/WAVE GetChanneListFromDAQConfigWave(config, channelType)
+threadsafe static Function/WAVE GetChanneListFromDAQConfigWave(config, channelType)
 	WAVE config
 	variable channelType
 
 	variable numRows, i, j
 
-	ASSERT(IsValidConfigWave(config, version=0), "Invalid config wave")
+	ASSERT_TS(IsValidConfigWave(config, version=0), "Invalid config wave")
 
 	numRows = DimSize(config, ROWS)
 	Make/U/B/FREE/N=(numRows) activeChannels
