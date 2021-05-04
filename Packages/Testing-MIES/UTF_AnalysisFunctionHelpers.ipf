@@ -5,6 +5,8 @@
 
 static StrConstant device = "ITC18USB_Dev_0"
 
+static Constant NUM_REPEATS = 10
+
 static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	string testCase
 
@@ -334,39 +336,55 @@ End
 
 Function AE_NumericHasCorrectTimeStamps()
 
-	variable row, col, ts
+	variable row, col, ts, i
 	string key = "someKey"
 
-	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
-	values[0, NUM_HEADSTAGES - 1] = p^2
-	ED_AddEntryToLabnotebook(device, key, values)
+	for(i = 0; i < NUM_REPEATS; i += 1)
+		KillOrMoveToTrashPath("root:MIES:LabNoteBook")
 
-	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
-	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
+		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+		values[0, NUM_HEADSTAGES - 1] = p^2
+		ED_AddEntryToLabnotebook(device, key, values)
 
-	CHECK_WAVE(numericalKeys, TEXT_WAVE)
-	CHECK_WAVE(numericalValues, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
+		WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
+		WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
 
-	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key numericalKeys
-	CHECK_EQUAL_VAR(V_Value, -1)
+		CHECK_WAVE(numericalKeys, TEXT_WAVE)
+		CHECK_WAVE(numericalValues, NUMERIC_WAVE, minorType = DOUBLE_WAVE)
 
-	FindValue/TEXT=key numericalKeys
-	col = floor(V_Value / DimSize(numericalKeys, ROWS))
-	row = V_Value - col * DimSize(numericalKeys, ROWS)
-	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
+		// key is added with prefix, so there is no full match
+		FindValue/TXOP=4/TEXT=key numericalKeys
+		CHECK_EQUAL_VAR(V_Value, -1)
 
-	ts = numericalValues[0][1][0]
-	// entry has timestamp with full resolution
-	CHECK(!IsInteger(ts))
-	// and at most 1s old
-	CHECK((DateTime - ts) < 1)
+		FindValue/TEXT=key numericalKeys
+		col = floor(V_Value / DimSize(numericalKeys, ROWS))
+		row = V_Value - col * DimSize(numericalKeys, ROWS)
+		CHECK_EQUAL_VAR(row, 0)
+		CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
-	// same for UTC variant
-	ts = numericalValues[0][2][0]
-	CHECK(!IsInteger(ts))
-	CHECK((DateTimeInUTC() - ts) < 1)
+		ts = numericalValues[0][1][0]
+
+		// entry has timestamp with full resolution
+		// but by accident this could be an integer
+		if(IsInteger(ts))
+			continue
+		endif
+
+		// and at most 1s old
+		CHECK((DateTime - ts) < 1)
+
+		// same for UTC variant
+		ts = numericalValues[0][2][0]
+
+		if(IsInteger(ts))
+			continue
+		endif
+
+		CHECK((DateTimeInUTC() - ts) < 1)
+		break
+	endfor
+
+	CHECK(i < NUM_REPEATS)
 End
 
 Function AE_WorksIndepHeadstage()
@@ -570,37 +588,52 @@ Function AE_TextWorksIndepHeadstage()
 End
 
 Function AE_TextHasCorrectTimeStamps()
-
-	variable row, col, ts
+	variable row, col, ts, i
 	string key = "someKey"
 
-	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
-	values[LABNOTEBOOK_LAYER_COUNT - 1] = "4711"
-	ED_AddEntryToLabnotebook(device, key, values)
+	for(i = 0;i < NUM_REPEATS; i += 1)
+		KillOrMoveToTrashPath("root:MIES:LabNoteBook")
 
-	WAVE/T textualKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:textualKeys
-	WAVE/T textualValues = root:MIES:LabNoteBook:ITC18USB:Device0:textualValues
+		Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
+		values[LABNOTEBOOK_LAYER_COUNT - 1] = "4711"
+		ED_AddEntryToLabnotebook(device, key, values)
 
-	// key is added with prefix, so there is no full match
-	FindValue/TXOP=4/TEXT=key textualKeys
-	CHECK_EQUAL_VAR(V_Value, -1)
+		WAVE/T textualKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:textualKeys
+		WAVE/T textualValues = root:MIES:LabNoteBook:ITC18USB:Device0:textualValues
 
-	FindValue/TEXT=key textualKeys
-	col = floor(V_Value / DimSize(textualKeys, ROWS))
-	row = V_Value - col * DimSize(textualKeys, ROWS)
-	CHECK_EQUAL_VAR(row, 0)
-	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
+		// key is added with prefix, so there is no full match
+		FindValue/TXOP=4/TEXT=key textualKeys
+		CHECK_EQUAL_VAR(V_Value, -1)
 
-	ts = str2num(textualValues[0][1][0])
-	// entry has timestamp with full resolution
-	CHECK(!IsInteger(ts))
-	// and at most 1s old
-	CHECK((DateTime - ts) < 1)
+		FindValue/TEXT=key textualKeys
+		col = floor(V_Value / DimSize(textualKeys, ROWS))
+		row = V_Value - col * DimSize(textualKeys, ROWS)
+		CHECK_EQUAL_VAR(row, 0)
+		CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT)
 
-	// same for UTC variant
-	ts = str2num(textualValues[0][2][0])
-	CHECK(!IsInteger(ts))
-	CHECK((DateTimeInUTC() - ts) < 1)
+		ts = str2num(textualValues[0][1][0])
+
+		// entry has timestamp with full resolution
+		// but by accident this could be an integer
+		if(IsInteger(ts))
+			continue
+		endif
+
+		// and at most 1s old
+		CHECK((DateTime - ts) < 1)
+
+		// same for UTC variant
+		ts = str2num(textualValues[0][2][0])
+
+		if(IsInteger(ts))
+			continue
+		endif
+
+		CHECK((DateTimeInUTC() - ts) < 1)
+		break
+	endfor
+
+	CHECK(i < NUM_REPEATS)
 End
 
 Function AE_NormalizesEOLs()
