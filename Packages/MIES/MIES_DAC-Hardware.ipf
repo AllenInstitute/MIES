@@ -1828,7 +1828,7 @@ Function HW_ITC_CalculateDevChannelOff(panelTitle)
 End
 
 /// @brief Return the `first` and `last` TTL bits/channels for the given `rack`
-Function HW_ITC_GetRackRange(rack, first, last)
+threadsafe Function HW_ITC_GetRackRange(rack, first, last)
 	variable rack
 	variable &first, &last
 
@@ -1839,7 +1839,7 @@ Function HW_ITC_GetRackRange(rack, first, last)
 		first = NUM_ITC_TTL_BITS_PER_RACK
 		last = 2 * NUM_ITC_TTL_BITS_PER_RACK - 1
 	else
-		ASSERT(0, "Invalid rack parameter")
+		ASSERT_TS(0, "Invalid rack parameter")
 	endif
 End
 
