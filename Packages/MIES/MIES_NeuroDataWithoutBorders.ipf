@@ -493,9 +493,17 @@ End
 Function NWB_CheckForMissingSweeps(string panelTitle, WAVE/T sweepNames)
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-	WAVE sweepsFromLBN = GetSweepsWithSetting(numericalValues, "SweepNum")
+	WAVE/Z sweepsFromLBN = GetSweepsWithSetting(numericalValues, "SweepNum")
 
-	Make/FREE/N=(DimSize(sweepNames, ROWS)) sweepsFromDFR = ExtractSweepNumber(sweepNames[p])
+	if(!WaveExists(sweepsFromLBN))
+		Make/FREE/N=(0) sweepsFromLBN
+	endif
+
+	if(DimSize(sweepNames, ROWS) == 0)
+		Make/FREE/N=(0) sweepsFromDFR
+	else
+		Make/FREE/N=(DimSize(sweepNames, ROWS)) sweepsFromDFR = ExtractSweepNumber(sweepNames[p])
+	endif
 
 	if(EqualWaves(sweepsfromLBN, sweepsFromDFR, 1) == 1)
 		return 0
