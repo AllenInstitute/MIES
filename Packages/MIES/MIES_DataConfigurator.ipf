@@ -809,6 +809,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	samplingInterval      = DAP_GetSampInt(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
 	WAVE/T allSetNames    = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	WAVE/T allIndexingEndSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 	hardwareType          = GetHardwareType(panelTitle)
 
 	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
@@ -872,6 +873,8 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 			else
 				ASSERT(0, "Unknown DAQ Channel Type")
 			endif
+
+			DC_DocumentChannelProperty(panelTitle, "Indexing End Stimset", headstage, channel, XOP_CHANNEL_TYPE_DAC, str = allIndexingEndSetNames[channel])
 
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
 
