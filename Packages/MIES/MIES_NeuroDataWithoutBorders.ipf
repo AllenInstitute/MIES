@@ -1130,10 +1130,6 @@ static Function NWB_ClearWriteChannelParams(s)
 	samplingRate = s.samplingRate
 	groupIndex   = s.groupIndex
 
-	// Clear wave elements before overwriting with a default initialized structure.
-	// This avoids a memory leak. (Reported to WM)
-	WaveClear s.data
-
 	STRUCT WriteChannelParams defaultValues
 
 	s = defaultValues
