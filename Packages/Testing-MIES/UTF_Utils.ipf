@@ -4882,3 +4882,56 @@ Function BST_Works()
 End
 
 /// @}
+
+
+// GetWaveSize
+/// @{
+
+Function/WAVE GenerateAllPossibleWaveTypes()
+
+	variable numberOfNumericTypes
+
+	Make/FREE types = {IGOR_TYPE_8BIT_INT,                                           \
+	                   IGOR_TYPE_16BIT_INT,                                          \
+	                   IGOR_TYPE_32BIT_INT,                                          \
+	                   IGOR_TYPE_64BIT_INT,                                          \
+	                   IGOR_TYPE_8BIT_INT | IGOR_TYPE_UNSIGNED,                      \
+	                   IGOR_TYPE_16BIT_INT | IGOR_TYPE_UNSIGNED,                     \
+	                   IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED,                     \
+	                   IGOR_TYPE_64BIT_INT | IGOR_TYPE_UNSIGNED,                     \
+	                   IGOR_TYPE_8BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX,  \
+	                   IGOR_TYPE_16BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
+	                   IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
+	                   IGOR_TYPE_64BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
+	                   IGOR_TYPE_32BIT_FLOAT,                                        \
+	                   IGOR_TYPE_64BIT_FLOAT}
+
+	numberOfNumericTypes = DimSize(types, ROWS)
+
+	Make/FREE/WAVE/N=(numberOfNumericTypes + 3) waves
+	waves[0, numberOfNumericTypes - 1] = NewFreeWave(types[p], 1)
+
+	Make/T/FREE textWave
+	waves[numberOfNumericTypes] = textWave
+
+	Make/DF/FREE dfrefWave = NewFreeDataFolder()
+	waves[numberOfNumericTypes + 1] = dfrefWave
+
+	Make/WAVE/FREE wvRefWave = {NewFreeWave(IGOR_TYPE_16BIT_INT, 1), $""}
+	waves[numberOfNumericTypes + 2] = wvRefWave
+
+	return waves
+End
+
+// UTF_TD_GENERATOR GenerateAllPossibleWaveTypes
+Function GWS_Works([WAVE wv])
+
+	CHECK_WAVE(wv, FREE_WAVE)
+	CHECK(GetWaveSize(wv) > 0)
+
+	Make/N=1 junkWave
+	MultiThread junkWave = GetWaveSize(wv)
+	CHECK(junkWave[0] > 0)
+End
+
+/// @}
