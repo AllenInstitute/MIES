@@ -2531,7 +2531,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	endif
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_NwbExport"))
-		NWB_PrepareExport(DAG_GetNumericalValue(panelTitle, "Popup_Settings_NwbVersion"))
+		NWB_PrepareExport(str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_NwbVersion")))
 	endif
 
 	return 0
