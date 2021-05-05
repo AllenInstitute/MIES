@@ -6,6 +6,9 @@
 #pragma ModuleName=MIES_UTILS
 #endif
 
+/// The size in bytes of a wave with zero points. Experimentally determined in Igor Pro 6.34 under windows.
+static Constant PROPRIETARY_HEADER_SIZE = 320
+
 /// @file MIES_Utilities.ipf
 /// @brief General utility functions
 
@@ -571,6 +574,57 @@ Function ConvertFromBytesToMiB(var)
 	return var / 1024 / 1024
 End
 
+/// @brief Returns the size of the wave in bytes
+threadsafe static Function GetWaveSizeImplementation(wv)
+	Wave wv
+
+ #if IgorVersion() >= 9.0 && (NumberByKey("BUILD", IgorInfo(0)) >= 37431)
+	return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
+#else
+	return PROPRIETARY_HEADER_SIZE + GetSizeOfType(wv) * numpnts(wv) + strlen(note(wv))
+#endif
+End
+
+/// @brief Return the size in bytes of a given type
+///
+/// Inspired by http://www.igorexchange.com/node/1845
+threadsafe Function GetSizeOfType(WAVE wv)
+	variable type, size
+
+	type = WaveType(wv)
+
+	if(type == 0)
+		// text waves, wave reference wave, dfref wave
+		// we just return the size of a pointer on 64bit as
+		// everything else would be too expensive to calculate
+		return 8
+	endif
+
+	size = 1
+
+	if(type & IGOR_TYPE_COMPLEX)
+		size *= 2
+	endif
+
+	if(type & IGOR_TYPE_32BIT_FLOAT)
+		size *= 4
+	elseif(type & IGOR_TYPE_64BIT_FLOAT)
+		size *= 8
+	elseif(type & IGOR_TYPE_8BIT_INT)
+		// do nothing
+	elseif(type & IGOR_TYPE_16BIT_INT)
+		size *= 2
+	elseif(type & IGOR_TYPE_32BIT_INT)
+		size *= 4
+	elseif(type & IGOR_TYPE_64BIT_INT)
+		size *= 8
+	else
+		ASSERT_TS(0, "Unexpected type")
+	endif
+
+	return size
+End
+
 /// @brief Returns the size of the wave in bytes.
 threadsafe Function GetWaveSize(wv, [recursive])
 	WAVE/Z wv
@@ -587,7 +641,7 @@ threadsafe Function GetWaveSize(wv, [recursive])
 	endif
 
 	if(!recursive || !IsWaveRefWave(wv))
-		return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
+		return GetWaveSizeImplementation(wv)
 	endif
 
 	WAVE/WAVE waveRefs = wv
