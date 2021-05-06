@@ -391,6 +391,15 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
+/// @brief Programmatically export all acquired data from all devices into a NWB file
+///
+/// Use NWB_ExportWithDialog() for interactive export.
+///
+/// @param nwbVersion            major NWB format version, one of 1 or 2 (aka NWB_VERSION_LATEST)
+/// @param overrideFilePath      use this file path instead of an internally derived one
+/// @param writeStoredTestPulses [optional, defaults to false] store the raw test pulse data
+/// @param writeIgorHistory      [optional, defaults to true] store the Igor Pro history and the log file
+/// @param compressionMode       [optional, default to chunked compression] One of @ref CompressionMode
 Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode])
 	variable nwbVersion
 	string overrideFilePath
