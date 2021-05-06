@@ -726,15 +726,10 @@ Function NWB_AppendSweep(panelTitle, DAQDataWave, DAQConfigWave, sweep, nwbVersi
 	WAVE DAQDataWave, DAQConfigWave
 	variable sweep, nwbVersion
 
-	variable locationID, deviceID, createdNewNWBFile
+	variable locationID, deviceID
 	string stimsets
 
-	locationID = NWB_PrepareExport(nwbVersion, createdNewNWBFile = createdNewNWBFile)
-
-	// in case we created a new NWB file we already exported everyting so we are done
-	if(!IsFinite(locationID) || createdNewNWBFile)
-		return NaN
-	endif
+	locationID = NWB_GetFileForExport(nwbVersion)
 
 	IPNWB#AddModificationTimeEntry(locationID, nwbVersion)
 	IPNWB#CreateIntraCellularEphys(locationID)
