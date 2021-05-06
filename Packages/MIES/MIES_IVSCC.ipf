@@ -481,7 +481,6 @@ Function IVS_ExportAllData(filePath)
 	printf "Saving experiment data in NWB format to %s\r", filePath
 
 	NWB_ExportAllData(IVS_DEFAULT_NWBVERSION, overrideFilePath = filePath)
-	CloseNWBFile()
 End
 
 Function/S IVS_ReturnNWBFileLocation()

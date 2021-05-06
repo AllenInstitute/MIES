@@ -395,11 +395,12 @@ End
 /// @param overrideFilePath      use this file path instead of an internally derived one
 /// @param writeStoredTestPulses [optional, defaults to false] store the raw test pulse data
 /// @param writeIgorHistory      [optional, defaults to true] store the Igor Pro history and the log file
-/// @param compressionMode       [optional, default to chunked compression] One of @ref CompressionMode
-Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode])
+/// @param compressionMode       [optional, defaults to chunked compression] One of @ref CompressionMode
+/// @param keepFileOpen          [optional, defaults to false] keep the NWB file open after return, or close it
+Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen])
 	variable nwbVersion
 	string overrideFilePath
-	variable writeStoredTestPulses, writeIgorHistory, compressionMode
+	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen
 
 	string devicesWithContent, panelTitle, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves, firstCall, deviceID, createdNewNWBFile
@@ -491,6 +492,8 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	if(writeIgorHistory)
 		NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	endif
+
+	CloseNWBFile()
 
 	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
 End
@@ -633,8 +636,6 @@ Function NWB_ExportWithDialog(exportType, [nwbVersion])
 	else
 		ASSERT(0, "unexpected exportType")
 	endif
-
-	CloseNWBFile()
 End
 
 /// @brief Write the stored test pulses to the NWB file
@@ -706,7 +707,7 @@ Function NWB_PrepareExport(nwbVersion)
 	endif
 
 	if(createdNewNWBFile)
-		NWB_ExportAllData(nwbVersion)
+		NWB_ExportAllData(nwbVersion, keepFileOpen = 1)
 	endif
 
 	return locationID
