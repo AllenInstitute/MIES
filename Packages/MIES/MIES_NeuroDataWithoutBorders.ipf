@@ -537,6 +537,9 @@ static Function NWB_GetExportedFileSize()
 	return GetFileSize(filePathExport) / 1024 / 1024
 End
 
+/// @brief Export all stimsets into NWB
+///
+/// NWB file is closed after the functionr returns.
 Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 	variable nwbVersion
 	string overrideFilePath
