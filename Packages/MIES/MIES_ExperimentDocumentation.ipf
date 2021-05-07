@@ -546,15 +546,13 @@ Function ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
 	variable sweepNo
 
 	Make/FREE/N=(3, 1)/T keys
-	keys = ""
 
 	keys[0][0] =  "User comment"
 	keys[1][0] =  ""
 	keys[2][0] =  LABNOTEBOOK_NO_TOLERANCE
 
-
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
-	values[][][8] = comment
+	values[][][INDEP_HEADSTAGE] = comment
 
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, panelTitle, UNKNOWN_MODE)
 End
