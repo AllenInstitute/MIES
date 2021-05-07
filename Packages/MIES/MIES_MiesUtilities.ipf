@@ -612,6 +612,8 @@ threadsafe Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, e
 	string setting, defValue
 	variable entrySourceType
 
+	ASSERT_TS(IsTextWave(textualValues), "Can only work with text waves")
+
 	if(ParamIsDefault(defValue))
 		defValue = ""
 	endif
