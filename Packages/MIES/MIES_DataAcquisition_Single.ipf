@@ -105,10 +105,7 @@ Function DQS_BkrdDataAcq(panelTitle)
 End
 
 /// @brief Stop single device data acquisition
-static Function DQS_StopDataAcq(panelTitle, [forcedStop])
-	string panelTitle
-	variable forcedStop
-
+static Function DQS_StopDataAcq(string panelTitle, [variable forcedStop])
 	if(ParamIsDefault(forcedStop))
 		forcedStop = 0
 	else
