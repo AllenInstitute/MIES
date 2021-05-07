@@ -13,15 +13,10 @@
 ///
 /// For existing sweeps with #HIGH_PREC_SWEEP_START_KEY labnotebook entries we use the sweep wave's modification time.
 /// The sweep wave can be either an `DAQDataWave` or a `Sweep_$num` wave. Passing the `DAQDataWave` is more accurate.
-static Function NWB_GetStartTimeOfSweep(panelTitle, sweepNo, sweepWave)
-	string panelTitle
-	variable sweepNo
-	WAVE sweepWave
-
+threadsafe static Function NWB_GetStartTimeOfSweep(WAVE/T textualValues, variable sweepNo, WAVE sweepWave)
 	variable startingTime
 	string timestamp
 
-	WAVE/T textualValues = GetLBTextualValues(panelTitle)
 	timestamp = GetLastSettingTextIndep(textualValues, sweepNo, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE)
 
 	if(!isEmpty(timestamp))
@@ -29,7 +24,7 @@ static Function NWB_GetStartTimeOfSweep(panelTitle, sweepNo, sweepWave)
 	endif
 
 	// fallback mode for old sweeps
-	ASSERT(!cmpstr(WaveUnits(sweepWave, ROWS), "ms"), "Expected ms as wave units")
+	ASSERT_TS(!cmpstr(WaveUnits(sweepWave, ROWS), "ms"), "Expected ms as wave units")
 	// last time the wave was modified (UTC)
 	startingTime  = NumberByKeY("MODTIME", WaveInfo(sweepWave, 0)) - date2secs(-1, -1, -1)
 	// we want the timestamp of the beginning of the measurement
@@ -57,6 +52,8 @@ static Function NWB_FirstStartTimeOfAllSweeps()
 	for(i = 0; i < numEntries; i += 1)
 		panelTitle = StringFromList(i, devicesWithData)
 
+		WAVE/T textualValues = GetLBTextualValues(panelTitle)
+
 		DFREF dfr = GetDeviceDataPath(panelTitle)
 		list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
 		numWaves = ItemsInList(list)
@@ -66,7 +63,7 @@ static Function NWB_FirstStartTimeOfAllSweeps()
 			ASSERT(IsValidSweepNumber(sweepNo), "Could not extract sweep number")
 			WAVE/SDFR=dfr sweepWave = $name
 
-			oldest = min(oldest, NWB_GetStartTimeOfSweep(panelTitle, sweepNo, sweepWave))
+			oldest = min(oldest, NWB_GetStartTimeOfSweep(textualValues, sweepNo, sweepWave))
 		endfor
 	endfor
 
@@ -940,7 +937,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 	params.channelSuffix = ""
 
 	// starting time of the dataset, relative to the start of the session
-	params.startingTime = NWB_GetStartTimeOfSweep(panelTitle, sweep, DAQDataWave) - session_start_time
+	params.startingTime = NWB_GetStartTimeOfSweep(textualValues, sweep, DAQDataWave) - session_start_time
 	ASSERT(params.startingTime > 0, "TimeSeries starting time can not be negative")
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(DAQConfigWave)) * 1000
