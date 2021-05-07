@@ -251,15 +251,41 @@ static Function NWB_ReadSessionStartTime(fileID)
 	return ParseISO8601TimeStamp(str)
 End
 
-static Function/S NWB_GenerateDeviceDescription(panelTitle)
-	string panelTitle
+threadsafe static Function/S NWB_GenerateDeviceDescription(string panelTitle, WAVE numericalValues, WAVE/T textualValues)
+	variable hardwareType, sweepNo
+	string desc, deviceType, deviceNumber, hardwareName
 
-	string deviceType, deviceNumber, desc
+	// digitizer info is fixed per "panelTitle" device
+	sweepNo = 0
 
-	ASSERT(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Could not parse panelTitle")
+	hardwareType = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", UNKNOWN_MODE)
 
-	/// @todo handle NI Hardware
-	sprintf desc, "Harvard Bioscience (formerly HEKA/Instrutech) Model: %s", deviceType
+	if(IsNaN(hardwareType))
+		// if we don't have a hardware type this must be ITC hardware
+		hardwareType = HARDWARE_ITC_DAC
+
+		ASSERT_TS(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Could not parse panelTitle")
+		hardwareName = deviceType
+	else
+		// present since e2302f5d (DC_PlaceDataInHardwareDataWave: Add hardware name and serial numbers to the labnotebook, 2019-02-22)
+		hardwareName = GetLastSettingTextIndep(textualValues, sweepNo, "Digitizer Hardware Name", UNKNOWN_MODE)
+
+		if(IsEmpty(hardwareName))
+			hardwareName = panelTitle
+		endif
+	endif
+
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			sprintf desc, "Harvard Bioscience (formerly HEKA/Instrutech) Model: %s", hardwareName
+			break
+		case HARDWARE_NI_DAC:
+			sprintf desc, "National Instruments Model: %s", hardwareName
+			break
+		default:
+			ASSERT_TS(0, "Invalid hardwareType")
+	endswitch
+
 	return desc
 End
 
@@ -269,7 +295,7 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 	variable nwbVersion, compressionMode, writeStoredTestPulses
 
 	variable groupID, i, numEntries, refTime, compressionModeStoredTP
-	string path, list, name, contents
+	string path, list, name, contents, deviceDesc
 
 	refTime = DEBUG_TIMER_START()
 
@@ -283,13 +309,14 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 		compressionMode = GetNoCompression()
 	endif
 
-	AddDevice(locationID, panelTitle, nwbVersion, NWB_GenerateDeviceDescription(panelTitle))
-
 	// keys getter functions handle labnotebook wave upgrades
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
 	WAVE/T textualValues = GetLBTextualValues(panelTitle)
 	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
+
+	deviceDesc = NWB_GenerateDeviceDescription(panelTitle, numericalValues, textualValues)
+	AddDevice(locationID, panelTitle, nwbVersion, deviceDesc)
 
 	path = "/general/labnotebook/" + panelTitle
 
