@@ -40,9 +40,7 @@ End
 ///
 /// @param panelTitle      device
 /// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled
-Function DQ_StopOngoingDAQ(panelTitle, [startTPAfterDAQ])
-	string panelTitle
-	variable startTPAfterDAQ
+Function DQ_StopOngoingDAQ(string panelTitle, [variable startTPAfterDAQ])
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
@@ -68,10 +66,7 @@ static Function DQ_StopOngoingDAQHelperNoTPA(panelTitle)
 End
 
 /// @brief Stop the testpulse and data acquisition
-static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
-	string panelTitle
-	variable startTPAfterDAQ
-
+static Function DQ_StopOngoingDAQHelper(string panelTitle, [variable startTPAfterDAQ])
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 	variable stopDeviceTimer  = 0
@@ -206,10 +201,7 @@ End
 ///
 /// Assumes that single device and multi device do not run at the same time.
 /// @return One of @ref DAQRunModes
-Function DQ_StopDAQ(panelTitle, [startTPAfterDAQ])
-	string panelTitle
-	variable startTPAfterDAQ
-
+Function DQ_StopDAQ(string panelTitle, [variable startTPAfterDAQ])
 	variable runMode
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
