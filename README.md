@@ -22,6 +22,7 @@ acquisition, and analysis.
 ## Supported Hardware
 
 - National Instruments:
+  * [PCIe-6341](https://www.ni.com/de-de/support/model.pcie-6341.html)
   * [PCIe-6343](https://www.ni.com/en-us/support/model.pcie-6343.html)
   * [PXI-6259](https://www.ni.com/en-us/support/model.pxi-6259.html)
 
