@@ -694,13 +694,13 @@ Function RUR_ChecksNote2()
 	endtry
 End
 
-Function RUR_ReturnsInvalidWaveRef()
+Function RUR_ReturnsAlwaysAWave()
 
 	Make/FREE wv
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
-	WAVE/Z dup = RemoveUnusedRows(wv)
-	CHECK_WAVE(dup, NULL_WAVE)
+	WAVE dup = RemoveUnusedRows(wv)
+	CHECK_EQUAL_WAVES(dup, {0}, mode = WAVE_DATA | WAVE_DATA_TYPE | DIMENSION_SIZES)
 End
 
 Function RUR_Works()

@@ -302,16 +302,12 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 		IPNWB#WriteNeuroDataType(locationID, path, "LabNotebookDevice")
 	endif
 
-	WAVE/Z numericalValuesTrimmed = RemoveUnusedRows(numericalValues)
-	if(WaveExists(numericalValuesTrimmed))
-		IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=numericalValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
-	endif
+	WAVE numericalValuesTrimmed = RemoveUnusedRows(numericalValues)
+	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=numericalValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=numericalKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 
-	WAVE/Z textualValuesTrimmed = RemoveUnusedRows(textualValues)
-	if(WaveExists(textualValuesTrimmed))
-		IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=textualValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
-	endif
+	WAVE textualValuesTrimmed = RemoveUnusedRows(textualValues)
+	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=textualValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 
 	IPNWB#H5_WriteTextDataset(groupID, "textualKeys", wvText=textualKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 
@@ -369,13 +365,11 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 		name = StringFromList(i, list)
 		WAVE/SDFR=dfr wv = $name
 
-		WAVE/Z wvTrimmed = RemoveUnusedRows(wv)
-		if(WaveExists(wvTrimmed))
-			IPNWB#H5_WriteDataset(groupID, name, wv=wvTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+		WAVE wvTrimmed = RemoveUnusedRows(wv)
+		IPNWB#H5_WriteDataset(groupID, name, wv=wvTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 
-			if(nwbVersion == 2)
-				IPNWB#WriteNeuroDataType(groupID, name, "TestpulseMetadata")
-			endif
+		if(nwbVersion == 2)
+			IPNWB#WriteNeuroDataType(groupID, name, "TestpulseMetadata")
 		endif
 	endfor
 
