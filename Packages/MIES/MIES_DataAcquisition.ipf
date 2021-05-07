@@ -197,11 +197,9 @@ Function DQ_StopDAQ(string panelTitle, [variable startTPAfterDAQ])
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
-
-	// create copy as the implicitly called DAP_OneTimeCallAfterDAQ()
+	// create readonly copy as the implicitly called DAP_OneTimeCallAfterDAQ()
 	// will change it
-	runMode = dataAcqRunMode
+	runMode = ROVar(GetDataAcqRunMode(panelTitle))
 
 	switch(runMode)
 		case DAQ_FG_SINGLE_DEVICE:
