@@ -346,12 +346,18 @@ static Function TASYNC_AddParam_Wave()
 
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
-	Make/N=1 wv
+	Make/N=1 wv = p
 	ASYNC_AddParam(threadDF, w=wv)
 
+	Make/FREE/N=2 wv2 = p
+	ASYNC_AddParam(threadDF, w=wv2, name = "myParam")
+
 	DFREF dfrInp = threadDF:input
-	WAVE/Z/SDFR=dfrInp p0 = param0
-	CHECK_WAVE(p0, NUMERIC_WAVE)
+	WAVE/Z/SDFR=dfrInp wv1 = param0
+	CHECK_EQUAL_WAVES(wv1, {0})
+
+	WAVE/Z/SDFR=dfrInp wv2 = myParam
+	CHECK_EQUAL_WAVES(wv2, {0, 1})
 
 	ASYNC_Stop(timeout=1)
 End
@@ -365,12 +371,18 @@ static Function TASYNC_AddParam_FreeWave()
 
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
-	Make/FREE/N=1 wv
-	ASYNC_AddParam(threadDF, w=wv)
+	Make/FREE/N=1 wv1 = p
+	ASYNC_AddParam(threadDF, w=wv1)
+
+	Make/FREE/N=2 wv2 = p
+	ASYNC_AddParam(threadDF, w=wv2, name = "myParam")
 
 	DFREF dfrInp = threadDF:input
-	WAVE/Z/SDFR=dfrInp p0 = param0
-	CHECK_WAVE(p0, NUMERIC_WAVE)
+	WAVE/Z/SDFR=dfrInp wv1 = param0
+	CHECK_EQUAL_WAVES(wv1, {0})
+
+	WAVE/Z/SDFR=dfrInp wv2 = myParam
+	CHECK_EQUAL_WAVES(wv2, {0, 1})
 
 	ASYNC_Stop(timeout=1)
 End
@@ -385,10 +397,17 @@ static Function TASYNC_AddParam_Var()
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
 	ASYNC_AddParam(threadDF, var=1)
+	ASYNC_AddParam(threadDF, var=2, name = "myParam")
 
 	DFREF dfrInp = threadDF:input
-	NVAR/Z/SDFR=dfrInp v = param0
-	CHECK(NVAR_Exists(v))
+
+	NVAR/Z/SDFR=dfrInp v1 = param0
+	CHECK(NVAR_Exists(v1))
+	CHECK_EQUAL_VAR(v1, 1)
+
+	NVAR/Z/SDFR=dfrInp v2 = myParam
+	CHECK(NVAR_Exists(v2))
+	CHECK_EQUAL_VAR(v2, 2)
 
 	ASYNC_Stop(timeout=1)
 End
@@ -397,16 +416,81 @@ End
 static Function TASYNC_AddParam_Str()
 
 	DFREF threadDF
+	string strRef, strRead
 
 	ASYNC_Start(ThreadProcessorCount)
 
 	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
 
 	ASYNC_AddParam(threadDF, str="1")
+	ASYNC_AddParam(threadDF, str="2", name = "myParam")
 
 	DFREF dfrInp = threadDF:input
-	SVAR/Z/SDFR=dfrInp s = param0
-	CHECK(SVAR_Exists(s))
+	SVAR/Z/SDFR=dfrInp s1 = param0
+	CHECK(SVAR_Exists(s1))
+	strRef = "1"
+	strRead = s1
+	CHECK_EQUAL_STR(strRef, strRead)
+
+	SVAR/Z/SDFR=dfrInp s2 = myParam
+	CHECK(SVAR_Exists(s2))
+	strRef = "2"
+	strRead = s2
+	CHECK_EQUAL_STR(strRef, strRead)
+
+	ASYNC_Stop(timeout=1)
+End
+
+static Function TASYNC_TestFetch()
+
+	DFREF threadDF
+	variable var
+	string strRef, strRead, str
+
+	ASYNC_Start(ThreadProcessorCount)
+
+	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "TASYNCTest")
+
+	Make/FREE/N=2 w = p
+	ASYNC_AddParam(threadDF, w=w)
+
+	ASYNC_AddParam(threadDF, var=0)
+	ASYNC_AddParam(threadDF, str="1")
+
+	DFREF dfrInp = threadDF:input
+
+	// works
+	WAVE/Z resultWave = ASYNC_FetchWave(dfrInp, "param0")
+	CHECK_EQUAL_WAVES(w, resultWave)
+
+	var = ASYNC_FetchVariable(dfrInp, "param1")
+	CHECK_EQUAL_VAR(var, 0)
+
+	strRead = ASYNC_FetchString(dfrInp, "param2")
+	strRef = "1"
+	CHECK_EQUAL_STR(strRead, strRef)
+
+	// asserts on invalid name
+	try
+		WAVE/Z wv = ASYNC_FetchWave(dfrInp, "I_DONT_EXIST")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		var = ASYNC_FetchVariable(dfrInp, "I_DONT_EXIST")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		str = ASYNC_FetchString(dfrInp, "I_DONT_EXIST")
+		FAIL()
+	catch
+		PASS()
+	endtry
 
 	ASYNC_Stop(timeout=1)
 End
