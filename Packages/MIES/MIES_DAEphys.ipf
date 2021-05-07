@@ -1344,10 +1344,7 @@ End
 /// @param panelTitle      device
 /// @param forcedStop      [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false)
 /// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled at the end
-Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
-	string panelTitle
-	variable forcedStop, startTPAfterDAQ
-
+Function DAP_OneTimeCallAfterDAQ(string panelTitle, [variable forcedStop, variable startTPAfterDAQ])
 	variable hardwareType
 
 	forcedStop      = ParamIsDefault(forcedStop)      ? 0 : !!forcedStop
