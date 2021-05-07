@@ -1,15 +1,12 @@
 [submodule "Packages/unit-testing"]
-	fetchRecurseSubmodules = false
 	path = Packages/unit-testing
 	shallow = true
 	url = https://github.com/byte-physics/igor-unit-testing-framework
 [submodule "Packages/IPNWB"]
-	fetchRecurseSubmodules = true
 	path = Packages/IPNWB
 	shallow = true
 	url = https://github.com/AllenInstitute/IPNWB
 [submodule "Packages/doc/doxygen-filter-ipf"]
-	fetchRecurseSubmodules = false
 	path = Packages/doc/doxygen-filter-ipf
 	shallow = true
 	url = https://github.com/byte-physics/doxygen-filter-ipf
