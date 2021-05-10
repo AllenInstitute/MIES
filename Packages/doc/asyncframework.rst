@@ -256,96 +256,86 @@ Code example
 
    Constant NUMBER_OF_JOBS = 200
 
-   Function AsyncExample(inOrder)
-     variable inOrder
+   Function AsyncExample(variable inOrder)
+           variable i
 
-     variable i
+           // Start Async FrameWork
+           ASYNC_Start(ThreadProcessorCount)
 
-     // Start Async FrameWork
-     ASYNC_Start(ThreadProcessorCount)
+           // Some data
+           Make/O/N=(NUMBER_OF_JOBS) data = 31337
 
-     // Some data
-     Make/O/N=(NUMBER_OF_JOBS) data = 31337
+           // We want to setup NUMBER_OF_JOBS workers to run
+           for(i = 0;i < NUMBER_OF_JOBS; i += 1)
 
-     // We want to setup NUMBER_OF_JOBS workers to run
-     for(i = 0;i < NUMBER_OF_JOBS; i += 1)
+                   // Prepare a thread df
+                   DFREF threadDF = ASYNC_PrepareDF("Worker", "ReadOut", "myworkload", inOrder=inOrder)
 
-       // Prepare a thread df
-       DFREF threadDF = ASYNC_PrepareDF("Worker", "ReadOut", inOrder=inOrder)
-       // Add param0 which is a numeric variable that counts executed jobs
-       ASYNC_AddParam(threadDF, var=i)
-       // Add param1 which is a numeric wave
-       ASYNC_AddParam(threadDF, w=data, move=0)
+                   // Add parameter
+                   ASYNC_AddParam(threadDF, var=i, name = "jobCounter")
+                   ASYNC_AddParam(threadDF, w=data, move=0, name = "data")
+                   Make/O/N=(NUMBER_OF_JOBS) moreData = 31337
+                   ASYNC_AddParam(threadDF, w=moreData, move=1, name = "moreData")
 
-       // Add param2 which is a numeric wave that is moved
-       Make/O/N=(NUMBER_OF_JOBS) moredata = 31337
-       ASYNC_AddParam(threadDF, w=moredata, move=1)
-
-       ASYNC_Execute(threadDF)
-     endfor
-     ASYNC_Stop()
+                   ASYNC_Execute(threadDF)
+           endfor
+           ASYNC_Stop()
    End
 
    // example worker function
-   threadsafe Function/DF Worker(dfr)
-     DFREF dfr
-     // dfr is the input data folder
+   threadsafe Function/DF Worker(DFREF dfr)
+           variable i, j, wID
+           string s
 
-     // create a data folder for output data
-     DFREF dfrOut = NewFreeDataFolder()
+           // lets assume there happens a runtime error each 50 jobs
+           wID = ASYNC_FetchVariable(dfr, "jobCounter")
+           if(!mod(wID, 50))
+                   WAVE w = $""
+                   w[0] = 0
+           endif
 
-     variable i, j
-     string s
+           // some processing that has a random runtime
+           variable runtime = abs(floor(gnoise(1))) * 10
+           for(i = 0; i < runtime; i += 1)
+                   // waste some time
+                   for(j = 0; j < 100; j += 1)
+                           s = num2str(i)
+                   endfor
+           endfor
 
-     // lets assume there happens a runtime error each 50 jobs
-     // get our job counter
-     NVAR wID=dfr:param0
-     if(!mod(wID, 50))
+           // Get input parameter wave references
+           WAVE data = ASYNC_FetchWave(dfr, "data")
+           WAVE moreData = ASYNC_FetchWave(dfr, "moredata")
 
-       WAVE w = $""
-       w[0] = 0
+           // process wave
+           moreData[wID] += wID
 
-     endif
+           // create a data folder for output data
+           DFREF dfrOut = NewFreeDataFolder()
 
-     // some processing that has a random runtime
-     variable runtime = abs(floor(gnoise(1))) * 10
-     for(i = 0; i < runtime; i += 1)
-       // waste some time
-       for(j = 0; j < 100; j += 1)
-         s = num2str(i)
-       endfor
-     endfor
+           // put counter in output data
+           variable/G dfrOut:counter = wID
 
-     // Get input parameter references
-     NVAR/SDFR=dfr param0 // was i
-     WAVE/SDFR=dfr param1 // was data
-     WAVE/SDFR=dfr param2 // was moredata
-     // process wave
-     param2[param0] += param0
+           // Move processed wave to output DF
+           MoveWave moreData, dfrOut:outWave
 
-     // put counter in output data
-     variable/G dfrOut:counter = param0
-     // Move processed wave to output DF
-     MoveWave param2, dfrOut:outWave
-
-     return dfrOut
+           return dfrOut
    End
 
    // example readout function
-   Function ReadOut(dfr, err, errmsg)
-     DFREF dfr
-     variable err
-     string errmsg
+   Function ReadOut(DFREF dfr, variable err, string errmsg)
+           variable counter
 
-     if(err)
-       // Insert error handling here
-       print "error caught code: " + num2str(err) + "\r" + errmsg
-     else
-       // do the readout here
-       WAVE/SDFR=dfr outWave
-       NVAR counter = dfr:counter
-       if(outWave[counter] != 31337 + counter)
-         print "Processing by worker yielded unexpected result"
-       endif
-     endif
+           if(err)
+                   // Insert error handling here
+                   print "error caught code: " + num2str(err) + "\r" + errmsg
+           else
+                   // do the readout here
+                   WAVE outWave = ASYNC_FetchWave(dfr, "outWave")
+                   counter = ASYNC_FetchVariable(dfr, "counter")
+
+                   if(outWave[counter] != 31337 + counter)
+                           print "Processing by worker yielded unexpected result"
+                   endif
+           endif
    End
