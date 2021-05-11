@@ -5619,7 +5619,7 @@ End
 /// - preserve the dimension labels (this can get lost for empty waves when duplication/saving)
 ///
 /// @see EnsureLargeEnoughWave()
-Function/WAVE RemoveUnusedRows(WAVE wv)
+threadsafe Function/WAVE RemoveUnusedRows(WAVE wv)
 
 	variable index
 
@@ -5629,7 +5629,7 @@ Function/WAVE RemoveUnusedRows(WAVE wv)
 		return wv
 	endif
 
-	ASSERT(IsInteger(index) && index >= 0, "Expected non-negative and integer NOTE_INDEX")
+	ASSERT_TS(IsInteger(index) && index >= 0, "Expected non-negative and integer NOTE_INDEX")
 
 	Duplicate/FREE/RMD=[0, max(0, index - 1)] wv, dup
 

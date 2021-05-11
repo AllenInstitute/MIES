@@ -55,7 +55,7 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 	ED_createWaveNoteTags(panelTitle, sweepNo)
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_NwbExport"))
-		NWB_AppendSweep(panelTitle, sweepWave, configWave, sweepNo, str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_NwbVersion")))
+		NWB_AppendSweepDuringDAQ(panelTitle, sweepWave, configWave, sweepNo, str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_NwbVersion")))
 	endif
 
 	SWS_AfterSweepDataChangeHook(panelTitle)
