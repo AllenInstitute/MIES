@@ -198,10 +198,11 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 	string channelName, key
 	variable entry, index
 
+	WAVE loadedFromNWB = LoadTimeSeriesImpl(groupID, channel, params.channelType)
+
 	switch(params.channelType)
 		case XOP_CHANNEL_TYPE_DAC:
 			channelName = "DA"
-			WAVE loadedFromNWB = LoadStimulus(groupID, channel)
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
@@ -218,7 +219,6 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 			break
 		case XOP_CHANNEL_TYPE_ADC:
 			channelName = "AD"
-			WAVE loadedFromNWB = LoadTimeseries(groupID, channel, NWB_VERSION)
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
@@ -235,7 +235,6 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 			break
 		case XOP_CHANNEL_TYPE_TTL:
 			channelName  = "TTL"
-			WAVE loadedFromNWB = LoadStimulus(groupID, channel)
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsFinite(params.ttlBit))
