@@ -1000,7 +1000,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 			col                     = AFH_GetDAQDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
 			WAVE params.data        = ExtractOneDimDataFromSweep(DAQConfigWave, DAQDataWave, col)
-			NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
+			NWB_GetTimeSeriesProperties(nwbVersion, numericalKeys, numericalValues, params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(locationID, path)
 			WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
 		endif
@@ -1014,7 +1014,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 			col                     = AFH_GetDAQDataColumn(DAQConfigWave, params.channelNumber, params.channelType)
 			writtenDataColumns[col] = 1
 			WAVE params.data        = ExtractOneDimDataFromSweep(DAQConfigWave, DAQDataWave, col)
-			NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
+			NWB_GetTimeSeriesProperties(nwbVersion, numericalKeys, numericalValues, params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(locationID, path)
 			WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
 		endif
@@ -1084,7 +1084,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 				params.channelSuffix = num2str(ttlBit)
 				params.channelSuffixDesc = NWB_SOURCE_TTL_BIT
 				params.stimset       = ttlStimsets[log(ttlBit)/log(2)]
-				NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
+				NWB_GetTimeSeriesProperties(nwbVersion, numericalKeys, numericalValues, params, tsp)
 				params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(locationID, path)
 				WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
 			endfor
@@ -1092,7 +1092,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 			WAVE params.data     = data
 			path                 = "/stimulus/presentation"
 			params.stimset       = stimset
-			NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
+			NWB_GetTimeSeriesProperties(nwbVersion, numericalKeys, numericalValues, params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(locationID, path)
 			WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
 		endif
@@ -1131,7 +1131,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 				break
 		endswitch
 
-		NWB_GetTimeSeriesProperties(nwbVersion, params, tsp)
+		NWB_GetTimeSeriesProperties(nwbVersion, numericalKeys, numericalValues, params, tsp)
 		WAVE params.data       = ExtractOneDimDataFromSweep(DAQConfigWave, DAQDataWave, i)
 		params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(locationID, path)
 		WriteSingleChannel(locationID, path, nwbVersion, params, tsp, compressionMode = compressionMode)
@@ -1574,14 +1574,7 @@ Function NWB_LoadCustomWaves(groupID, stimsets, overwrite)
 	return 0
 End
 
-static Function NWB_GetTimeSeriesProperties(nwbVersion, p, tsp)
-	variable nwbVersion
-	STRUCT WriteChannelParams &p
-	STRUCT TimeSeriesProperties &tsp
-
-	WAVE/T numericalKeys = GetLBNumericalKeys(p.device)
-	WAVE numericalValues = GetLBNumericalValues(p.device)
-
+threadsafe static Function NWB_GetTimeSeriesProperties(variable nwbVersion, WAVE/T numericalKeys, WAVE numericalValues, STRUCT WriteChannelParams &p, STRUCT TimeSeriesProperties &tsp)
 	InitTimeSeriesProperties(tsp, p.channelType, p.clampMode)
 
 	// unassociated channel
@@ -1590,7 +1583,7 @@ static Function NWB_GetTimeSeriesProperties(nwbVersion, p, tsp)
 	endif
 
 	if(strlen(tsp.missing_fields) > 0)
-		ASSERT(IsFinite(p.electrodeNumber), "Expected finite electrode number with non empty \"missing_fields\"")
+		ASSERT_TS(IsFinite(p.electrodeNumber), "Expected finite electrode number with non empty \"missing_fields\"")
 	endif
 
 	if(p.channelType == IPNWB_CHANNEL_TYPE_ADC)
@@ -1634,7 +1627,7 @@ static Function NWB_GetTimeSeriesProperties(nwbVersion, p, tsp)
 	endif
 End
 
-static Function NWB_AddSweepDataSets(numericalKeys, numericalValues, sweep, settingsProp, nwbProp, headstage, tsp, [factor, enabledProp])
+threadsafe static Function NWB_AddSweepDataSets(numericalKeys, numericalValues, sweep, settingsProp, nwbProp, headstage, tsp, [factor, enabledProp])
 	WAVE/T numericalKeys
 	WAVE numericalValues
 	variable sweep
