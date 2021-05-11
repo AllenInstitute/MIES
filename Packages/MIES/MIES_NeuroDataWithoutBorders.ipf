@@ -1674,15 +1674,9 @@ Function NWB_LoadLabNoteBook(locationID, notebook, dfr)
 End
 
 /// @brief Flushes the contents of the NWB file to disc
-Function NWB_Flush()
-	SVAR filePathExport = $GetNWBFilePathExport()
-	NVAR fileIDExport   = $GetNWBFileIDExport()
+threadsafe Function NWB_Flush(variable locationID)
 
-	if(!IsFinite(fileIDExport) || !H5_IsFileOpen(fileIDExport))
-		return NaN
-	endif
-
-	fileIDExport = H5_FlushFile(fileIDExport, filePathExport, write = 1)
+	H5_FlushFile(locationID)
 End
 
 static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)

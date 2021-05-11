@@ -137,7 +137,9 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 #if !defined(IGOR64)
 	IH_KillStimSets()
 #endif
-	NWB_Flush()
+
+	NVAR fileIDExport = $GetNWBFileIDExport()
+	NWB_Flush(fileIDExport)
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 End
