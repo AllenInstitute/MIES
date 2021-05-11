@@ -425,7 +425,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen
 
 	string devicesWithContent, panelTitle, list, name
-	variable i, j, numEntries, locationID, sweep, numWaves, deviceID, createdNewNWBFile
+	variable i, j, numEntries, locationID, sweep, numWaves, createdNewNWBFile
 	string stimsetList = ""
 
 	if(ParamIsDefault(writeStoredTestPulses))
