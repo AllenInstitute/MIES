@@ -514,6 +514,10 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
 End
 
+static Function/S NWB_ASYNC_WorkLoadName(string paneltitle)
+	return NWB_WORKLOAD_CLASS + "_" + paneltitle
+End
+
 Function NWB_CheckForMissingSweeps(string panelTitle, WAVE/T sweepNames)
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
