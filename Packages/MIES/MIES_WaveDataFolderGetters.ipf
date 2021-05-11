@@ -1555,6 +1555,8 @@ threadsafe Function/WAVE GetLBRowCache(values)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
 			return wv
+		elseif(!MU_RunningInMainThread() && GetLockState(values) == 1)
+			return wv
 		elseif(rollbackCount == GetNumberFromWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT))
 			// new entries were added so we need to propagate all entries to LABNOTEBOOK_GET_RANGE
 			// for sweep numbers >= than the currently acquired sweep
@@ -1634,6 +1636,8 @@ threadsafe Function/WAVE GetLBIndexCache(values)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
 			return wv
+		elseif(!MU_RunningInMainThread() && GetLockState(values) == 1)
+			return wv
 		elseif(rollbackCount == GetNumberFromWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT))
 			// new entries were added so we need to propagate all entries to uncached values
 			// for sweep numbers >= than the currently acquired sweep
@@ -1705,6 +1709,8 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
+			return wv
+		elseif(!MU_RunningInMainThread() && GetLockState(numericalValues) == 1)
 			return wv
 		else
 			// we can't easily do an incremental update as we would need to
