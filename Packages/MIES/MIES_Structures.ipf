@@ -357,3 +357,71 @@ Structure ChirpBoundsInfo
 	variable minimumFac, centerFac, maximumFac
 	string state
 EndStructure
+
+/// @brief Helper structure for the ASYNC NWB writing during DAQ
+///
+/// @sa NWB_ASYNC_SerializeStruct() and NWB_ASYNC_DeserializeStruct()
+Structure NWBAsyncParameters
+	string device, userComment
+
+	variable sweep, compressionMode, session_start_time
+	variable locationID, nwbVersion
+
+	WAVE DAQDataWave, DAQConfigWave
+
+	WAVE numericalValues
+	WAVE/T numericalKeys
+	WAVE/T textualValues
+	WAVE/T textualKeys
+EndStructure
+
+Function NWB_ASYNC_SerializeStruct(STRUCT NWBAsyncParameters &s, DFREF threadDFR)
+
+	ASYNC_AddParam(threadDFR, str = s.device, name = "device")
+	ASYNC_AddParam(threadDFR, str = s.userComment, name = "userComment")
+
+	ASYNC_AddParam(threadDFR, var = s.sweep, name = "sweep")
+	ASYNC_AddParam(threadDFR, var = s.compressionMode, name = "compressionMode")
+	ASYNC_AddParam(threadDFR, var = s.session_start_time, name = "session_start_time")
+	ASYNC_AddParam(threadDFR, var = s.locationID, name = "locationID")
+	ASYNC_AddParam(threadDFR, var = s.nwbVersion, name = "nwbVersion")
+
+	ASYNC_AddParam(threadDFR, w = s.DAQDataWave,  name = "DAQDataWave")
+	ASYNC_AddParam(threadDFR, w = s.DAQConfigWave,  name = "DAQConfigWave")
+
+	ASYNC_AddParam(threadDFR, w = s.numericalValues, name = "numericalValues")
+	ASYNC_AddParam(threadDFR, w = s.numericalKeys, name = "numericalKeys")
+	ASYNC_AddParam(threadDFR, w = s.textualValues, name = "textualValues")
+	ASYNC_AddParam(threadDFR, w = s.textualKeys, name = "textualKeys")
+End
+
+threadsafe Function [STRUCT NWBAsyncParameters s] NWB_ASYNC_DeserializeStruct(DFREF threadDFR)
+
+	s.device = ASYNC_FetchString(threadDFR, "device")
+	s.userComment = ASYNC_FetchString(threadDFR, "userComment")
+
+	s.sweep = ASYNC_FetchVariable(threadDFR, "sweep")
+	s.compressionMode = ASYNC_FetchVariable(threadDFR, "compressionMode")
+	s.session_start_time = ASYNC_FetchVariable(threadDFR, "session_start_time")
+
+	s.locationID = ASYNC_FetchVariable(threadDFR, "locationID")
+	s.nwbVersion = ASYNC_FetchVariable(threadDFR, "nwbVersion")
+
+	WAVE s.DAQDataWave = ASYNC_FetchWave(threadDFR, "DAQDataWave")
+	ChangeWaveLock(s.DAQDataWave, 1)
+
+	WAVE s.DAQConfigWave = ASYNC_FetchWave(threadDFR, "DAQConfigWave")
+	ChangeWaveLock(s.DAQConfigWave, 1)
+
+	WAVE s.numericalValues = ASYNC_FetchWave(threadDFR, "numericalValues")
+	ChangeWaveLock(s.numericalValues, 1)
+
+	WAVE/T s.numericalKeys = ASYNC_FetchWave(threadDFR, "numericalKeys")
+	ChangeWaveLock(s.numericalKeys, 1)
+
+	WAVE/T s.textualValues = ASYNC_FetchWave(threadDFR, "textualValues")
+	ChangeWaveLock(s.textualValues, 1)
+
+	WAVE/T s.textualKeys = ASYNC_FetchWave(threadDFR, "textualKeys")
+	ChangeWaveLock(s.textualKeys, 1)
+End
