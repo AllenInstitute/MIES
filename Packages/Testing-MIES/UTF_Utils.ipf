@@ -4995,3 +4995,27 @@ Function WMCW_Works2()
 End
 
 /// @}
+
+// GetLockState
+/// @{
+
+Function GLS_Works()
+	Make/FREE data
+
+	CHECK_EQUAL_VAR(GetLockState(data), 0)
+
+	SetWaveLock 1, data
+	CHECK_EQUAL_VAR(GetLockState(data), 1)
+End
+
+Function GLS_Checks()
+
+	try
+		GetLockState($"")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @}

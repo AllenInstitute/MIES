@@ -651,6 +651,14 @@ threadsafe Function GetWaveSize(wv, [recursive])
 	return GetWaveSize(wv, recursive = 0) + Sum(sizes)
 End
 
+/// @brief Return the lock state of the passed wave
+threadsafe Function GetLockState(WAVE wv)
+
+	ASSERT_TS(WaveExists(wv), "Invalid wave")
+
+	return NumberByKey("LOCK", WaveInfo(wv, 0))
+End
+
 /// @brief Convert the sampling interval in microseconds (1e-6s) to the rate in kHz
 threadsafe Function ConvertSamplingIntervalToRate(val)
 	variable val
