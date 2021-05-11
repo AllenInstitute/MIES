@@ -15,17 +15,17 @@
 // These are sphinx substitutions destined for Packages/doc/installation_subst.txt.
 // They are defined here so that we can parse them from within IP.
 //
-// .. |IgorPro8Nightly| replace:: `Igor Pro 8 <https://www.byte-physics.de/Downloads/WinIgor8_28APR2021.zip>`__
-// .. |IgorPro9Nightly| replace:: `Igor Pro 9 <https://www.byte-physics.de/Downloads/WinIgor9_02FEB2021.zip>`__
+// .. |IgorPro8Nightly| replace:: `Igor Pro 8 <https://www.byte-physics.de/Downloads/WinIgor8_12MAY2021.zip>`__
+// .. |IgorPro9Nightly| replace:: `Igor Pro 9 <https://www.byte-physics.de/Downloads/WinIgor9_13MAY2021.zip>`__
 
 #pragma IgorVersion=8.04
 
 #if IgorVersion() >= 9.0
-#if (NumberByKey("BUILD", IgorInfo(0)) < 37086)
+#if (NumberByKey("BUILD", IgorInfo(0)) < 37462)
 #define TOO_OLD_IGOR
 #endif
 #else
-#if (NumberByKey("BUILD", IgorInfo(0)) < 37395)
+#if (NumberByKey("BUILD", IgorInfo(0)) < 37456)
 #define TOO_OLD_IGOR
 #endif
 #endif
