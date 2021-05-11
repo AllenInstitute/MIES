@@ -252,7 +252,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 	return channelName
 End
 
-static Function/WAVE LoadTimeSeries(groupID, channel, channelType)
+static Function/WAVE LoadTimeSeriesImpl(groupID, channel, channelType)
 	variable groupID, channelType
 	string channel
 
@@ -295,7 +295,7 @@ static Function TestSourceAttribute(groupID, device, channel, sweep, pxpSweepsDF
 
 	// check that we stored it under the correct name
 	WAVE/Z/SDFR=pxpSweepsDFR pxpWave = $channelName
-	WAVE loadedFromNWB = LoadTimeSeries(groupID, channel, params.channelType)
+	WAVE loadedFromNWB = LoadTimeSeriesImpl(groupID, channel, params.channelType)
 	CHECK_EQUAL_WAVES(pxpWave, loadedFromNWB)
 
 	// groupIndex is written by AnalyseChannelName
@@ -326,7 +326,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 
 	// num_samples
 	num_samples = ReadDataSetAsNumber(channelGroupID, "num_samples")
-	WAVE loadedFromNWB = LoadTimeSeries(groupID, channel, params.channelType)
+	WAVE loadedFromNWB = LoadTimeSeriesImpl(groupID, channel, params.channelType)
 	CHECK_EQUAL_VAR(num_samples, DimSize(loadedFromNWB, ROWS))
 
 	// starting_time

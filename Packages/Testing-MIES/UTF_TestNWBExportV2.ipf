@@ -283,7 +283,7 @@ static Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep,
 	return channelName
 End
 
-static Function/WAVE LoadTimeSeries(groupID, channel, channelType)
+static Function/WAVE LoadTimeSeriesImpl(groupID, channel, channelType)
 	variable groupID, channelType
 	string channel
 
@@ -335,7 +335,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE/T textualValues = GetLBTextualValues(device)
 
-	WAVE loadedFromNWB = LoadTimeSeries(groupID, channel, params.channelType)
+	WAVE loadedFromNWB = LoadTimeSeriesImpl(groupID, channel, params.channelType)
 
 	// starting_time
 	starting_time = ReadDataSetAsNumber(channelGroupID, "starting_time")
