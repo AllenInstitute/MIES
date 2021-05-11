@@ -4209,12 +4209,19 @@ threadsafe Function IsFreeWave(wv)
 End
 
 /// @brief Return the modification count of the (permanent) wave
-threadsafe Function WaveModCountWrapper(wv)
-	Wave wv
+///
+/// Returns NaN when running in a preemptive thread
+threadsafe Function WaveModCountWrapper(WAVE wv)
 
-	ASSERT_TS(!IsFreeWave(wv), "Can not work with free waves")
+	if(MU_RunningInMainThread())
+		ASSERT_TS(!IsFreeWave(wv), "Can not work with free waves")
 
-	return WaveModCount(wv)
+		return WaveModCount(wv)
+	else
+		ASSERT_TS(IsFreeWave(wv), "Can only work with free waves")
+
+		return NaN
+	endif
 End
 
 // @brief Convert a number to the strings `Passed` (!= 0) or `Failed` (0).

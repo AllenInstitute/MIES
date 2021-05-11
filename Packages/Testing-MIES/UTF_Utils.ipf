@@ -4935,3 +4935,63 @@ Function GWS_Works([WAVE wv])
 End
 
 /// @}
+
+// WaveModCountWrapper
+/// @{
+
+Function WMCW_ChecksMainThread()
+	variable val
+
+	Make/FREE data
+
+	try
+		WaveModCountWrapper(data)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+threadsafe Function WMCW_ChecksPreemptiveThreadHelper(WAVE wv)
+
+	try
+		WaveModCountWrapper(wv)
+		return inf
+	catch
+		return 0
+	endtry
+End
+
+Function WMCW_ChecksPreemptiveThread()
+
+	Make/O data
+	Make/FREE junkWave
+	MultiThread junkWave = WMCW_ChecksPreemptiveThreadHelper(data)
+
+	WaveStats/Q/M=2 junkWave
+	CHECK_EQUAL_VAR(V_numNaNs, 0)
+	CHECK_EQUAL_VAR(V_numInfs, 0)
+	CHECK_EQUAL_VAR(V_Sum, 0)
+End
+
+Function WMCW_Works1()
+	variable val
+
+	Make/O data
+	val = WaveModCountWrapper(data)
+	data += 1
+	CHECK_EQUAL_VAR(val + 1, WaveModCountWrapper(data))
+End
+
+Function WMCW_Works2()
+	variable val
+
+	Make/FREE data
+	Make/FREE junkWave
+	MultiThread junkWave = WaveModCountWrapper(data)
+
+	WaveStats/Q/M=2 junkWave
+	CHECK_EQUAL_VAR(V_numNans, DimSize(junkWave, ROWS))
+End
+
+/// @}
