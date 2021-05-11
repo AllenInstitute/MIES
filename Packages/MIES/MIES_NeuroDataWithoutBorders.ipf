@@ -1142,7 +1142,7 @@ static Function NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, DAQD
 End
 
 /// @brief Clear all entries which are channel specific
-static Function NWB_ClearWriteChannelParams(s)
+threadsafe static Function NWB_ClearWriteChannelParams(s)
 	STRUCT WriteChannelParams &s
 
 	string device
