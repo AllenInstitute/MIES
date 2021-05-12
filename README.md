@@ -22,13 +22,18 @@ acquisition, and analysis.
 ## Supported Hardware
 
 - National Instruments:
-  [PCIe-6343](https://www.ni.com/en-us/support/model.pcie-6343.html)
-  and [PXI-6259](https://www.ni.com/en-us/support/model.pxi-6259.html)
-- Instrutech/HEKA ITC [16](http://www.heka.com/downloads/hardware/manual/itc16.pdf),
-  [18](http://www.heka.com/downloads/hardware/manual/m_itc18.pdf) and
-  [1600](http://www.heka.com/downloads/hardware/manual/m_itc1600.pdf) devices.
+  * [PCIe-6341](https://www.ni.com/de-de/support/model.pcie-6341.html)
+  * [PCIe-6343](https://www.ni.com/en-us/support/model.pcie-6343.html)
+  * [PXI-6259](https://www.ni.com/en-us/support/model.pxi-6259.html)
+
+- Instrutech/HEKA ITC:
+  * [16](http://www.heka.com/downloads/hardware/manual/itc16.pdf)
+  * [18](http://www.heka.com/downloads/hardware/manual/m_itc18.pdf)
+  * [1600](http://www.heka.com/downloads/hardware/manual/m_itc1600.pdf)
+
   ITC devices are at the End-Of-Service-Life (EOSL). National Instruments DACs are recommended for MIES users looking
   for new hardware.
+
 - Amplifier: Molecular Devices [700B](https://www.moleculardevices.com/products/axon-patch-clamp-system/amplifiers/axon-instruments-patch-clamp-amplifiers)
 - Pressure control (optional): ITC 18/1600 or National Instruments [USB 6001](https://www.ni.com/en-us/support/model.usb-6001.html)
 
