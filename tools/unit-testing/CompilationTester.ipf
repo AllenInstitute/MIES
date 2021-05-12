@@ -95,7 +95,6 @@ Function TestCompilationOnFile(includeFile, [useDefine, define])
 	Execute/P "COMPILEPROCEDURES "
 	Execute/P "root:compilationState = CompilationTester#IsProcGlobalCompiled() ? 0x4 : 0x8"
 	Execute/P "DELETEINCLUDE \"" + includeFile + "\""
-	Execute/P "CloseProc/COMP=1/NAME=\"" + includeFile + ".ipf\""
 	Execute/P "CompilationTester#runTest(\"CompilationTester.ipf\", name = \"Evaluate " + includeFile +"\", testCase = \"EvaluateResult\", enableJU = 1)"
 End
 
