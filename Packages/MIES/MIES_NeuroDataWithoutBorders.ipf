@@ -78,17 +78,15 @@ End
 ///
 /// Open one if it does not exist yet.
 ///
-/// @param[in]  nwbVersion         Set NWB version if new file is created. default: latest version
-/// @param[in]  overrideFilePath   [optional] file path for new files to override the internal
-///                                generation algorithm
-/// @param[out] createdNewNWBFile  [optional] a new NWB file was created (1) or an existing opened (0)
-static Function NWB_GetFileForExport(nwbVersion, [overrideFilePath, createdNewNWBFile])
-	variable nwbVersion
-	string overrideFilePath
-	variable &createdNewNWBFile
-
+/// @param  nwbVersion        Set NWB version if new file is created
+/// @param  overrideFilePath  [optional] file path for new files to override the internal
+///                           generation algorithm
+///
+/// @retval fileID            HDF5 file identifier or NaN on user abort
+/// @retval createdNewNWBFile new NWB file was created (1) or an existing opened (0)
+static Function [variable fileID, variable createdNewNWBFile] NWB_GetFileForExport(variable nwbVersion, [string overrideFilePath])
 	string expName, fileName, filePath
-	variable fileID, refNum, oldestData
+	variable refNum, oldestData
 
 	NVAR fileIDExport = $GetNWBFileIDExport()
 	NVAR sessionStartTimeReadBack = $GetSessionStartTimeReadBack()
@@ -98,7 +96,7 @@ static Function NWB_GetFileForExport(nwbVersion, [overrideFilePath, createdNewNW
 
 	if(ParamIsDefault(overrideFilePath))
 		if(IPNWB#H5_IsFileOpen(fileIDExport))
-			return fileIDExport
+			return [fileIDExport, 0]
 		endif
 
 		if(isEmpty(filePath)) // need to derive a new NWB filename
@@ -109,7 +107,7 @@ static Function NWB_GetFileForExport(nwbVersion, [overrideFilePath, createdNewNW
 				Open/D/M="Save as NWB file"/F="NWB files (*.nwb):.nwb;" refNum as fileName
 
 				if(isEmpty(S_fileName))
-					return NaN
+					return [NaN, 0]
 				endif
 				filePath = S_fileName
 			else
@@ -132,9 +130,7 @@ static Function NWB_GetFileForExport(nwbVersion, [overrideFilePath, createdNewNW
 		fileIDExport   = fileID
 		filePathExport = filePath
 
-		if(!ParamIsDefault(createdNewNWBFile))
-			createdNewNWBFile = 0
-		endif
+		createdNewNWBFile = 0
 	else // file does not exist
 		HDF5CreateFile/Z fileID as filePath
 		if(V_flag)
@@ -143,7 +139,8 @@ static Function NWB_GetFileForExport(nwbVersion, [overrideFilePath, createdNewNW
 			fileIDExport   = NaN
 			DEBUGPRINT("Could not create HDF5 file")
 			// and retry
-			return NWB_GetFileForExport(nwbVersion)
+			[fileID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
+			return [fileID, createdNewNWBFile]
 		endif
 
 		STRUCT IPNWB#ToplevelInfo ti
@@ -186,15 +183,14 @@ static Function NWB_GetFileForExport(nwbVersion, [overrideFilePath, createdNewNW
 		fileIDExport   = fileID
 		filePathExport = filePath
 
-		if(!ParamIsDefault(createdNewNWBFile))
-			createdNewNWBFile = 1
-		endif
+		createdNewNWBFile = 1
 	endif
 
 	DEBUGPRINT("fileIDExport", var=fileIDExport, format="%15d")
 	DEBUGPRINT("filePathExport", str=filePathExport)
+	DEBUGPRINT("createdNewNWBFile", var=createdNewNWBFile)
 
-	return fileIDExport
+	return [fileIDExport, createdNewNWBFile]
 End
 
 static Function NWB_AddGeneratorString(fileID, nwbVersion)
@@ -391,13 +387,23 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
-Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode])
+/// @brief Programmatically export all acquired data from all devices into a NWB file
+///
+/// Use NWB_ExportWithDialog() for interactive export.
+///
+/// @param nwbVersion            major NWB format version, one of 1 or 2 (aka NWB_VERSION_LATEST)
+/// @param overrideFilePath      use this file path instead of an internally derived one
+/// @param writeStoredTestPulses [optional, defaults to false] store the raw test pulse data
+/// @param writeIgorHistory      [optional, defaults to true] store the Igor Pro history and the log file
+/// @param compressionMode       [optional, defaults to chunked compression] One of @ref CompressionMode
+/// @param keepFileOpen          [optional, defaults to false] keep the NWB file open after return, or close it
+Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen])
 	variable nwbVersion
 	string overrideFilePath
-	variable writeStoredTestPulses, writeIgorHistory, compressionMode
+	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen
 
 	string devicesWithContent, panelTitle, list, name
-	variable i, j, numEntries, locationID, sweep, numWaves, firstCall, deviceID
+	variable i, j, numEntries, locationID, sweep, numWaves, firstCall, deviceID, createdNewNWBFile
 	string stimsetList = ""
 
 	if(ParamIsDefault(writeStoredTestPulses))
@@ -431,9 +437,9 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	endif
 
 	if(!ParamIsDefault(overrideFilePath))
-		locationID = NWB_GetFileForExport(nwbVersion, overrideFilePath=overrideFilePath)
+		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, overrideFilePath=overrideFilePath)
 	else
-		locationID = NWB_GetFileForExport(nwbVersion)
+		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
 	endif
 
 	if(!IsFinite(locationID))
@@ -487,6 +493,8 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	endif
 
+	CloseNWBFile()
+
 	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
 End
 
@@ -528,11 +536,14 @@ static Function NWB_GetExportedFileSize()
 	return GetFileSize(filePathExport) / 1024 / 1024
 End
 
+/// @brief Export all stimsets into NWB
+///
+/// NWB file is closed after the functionr returns.
 Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 	variable nwbVersion
 	string overrideFilePath
 
-	variable locationID
+	variable locationID, createdNewNWBFile
 	string stimsets
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
@@ -548,9 +559,9 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 	endif
 
 	if(!ParamIsDefault(overrideFilePath))
-		locationID = NWB_GetFileForExport(nwbVersion, overrideFilePath=overrideFilePath)
+		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, overrideFilePath=overrideFilePath)
 	else
-		locationID = NWB_GetFileForExport(nwbVersion)
+		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
 	endif
 
 	if(!IsFinite(locationID))
@@ -625,8 +636,6 @@ Function NWB_ExportWithDialog(exportType, [nwbVersion])
 	else
 		ASSERT(0, "unexpected exportType")
 	endif
-
-	CloseNWBFile()
 End
 
 /// @brief Write the stored test pulses to the NWB file
@@ -686,24 +695,19 @@ static Function NWB_AppendStimset(nwbVersion, locationID, stimsets, compressionM
 End
 
 /// @brief Prepare everything for sweep-by-sweep NWB export
-Function NWB_PrepareExport(nwbVersion, [createdNewNWBFile])
+Function NWB_PrepareExport(nwbVersion)
 	variable nwbVersion
-	variable &createdNewNWBFile
 
-	variable locationID, createdNewNWBFileLocal
+	variable locationID, createdNewNWBFile
 
-	locationID = NWB_GetFileForExport(nwbVersion, createdNewNWBFile = createdNewNWBFileLocal)
-
-	if(!ParamIsDefault(createdNewNWBFile))
-		createdNewNWBFile = createdNewNWBFileLocal
-	endif
+	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
 
 	if(!IsFinite(locationID))
 		return NaN
 	endif
 
-	if(createdNewNWBFileLocal)
-		NWB_ExportAllData(nwbVersion)
+	if(createdNewNWBFile)
+		NWB_ExportAllData(nwbVersion, keepFileOpen = 1)
 	endif
 
 	return locationID
@@ -717,12 +721,7 @@ Function NWB_AppendSweep(panelTitle, DAQDataWave, DAQConfigWave, sweep, nwbVersi
 	variable locationID, deviceID, createdNewNWBFile
 	string stimsets
 
-	locationID = NWB_PrepareExport(nwbVersion, createdNewNWBFile = createdNewNWBFile)
-
-	// in case we created a new NWB file we already exported everyting so we are done
-	if(!IsFinite(locationID) || createdNewNWBFile)
-		return NaN
-	endif
+	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
 
 	IPNWB#AddModificationTimeEntry(locationID, nwbVersion)
 	IPNWB#CreateIntraCellularEphys(locationID)

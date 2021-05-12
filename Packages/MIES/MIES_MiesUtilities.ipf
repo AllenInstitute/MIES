@@ -5305,6 +5305,8 @@ Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix, rescal
 End
 
 /// @brief Close a possibly open export-into-NWB file
+///
+/// We have only one NWB file open for all running devices
 Function CloseNWBFile()
 	NVAR fileID = $GetNWBFileIDExport()
 

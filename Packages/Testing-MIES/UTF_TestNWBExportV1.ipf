@@ -572,7 +572,6 @@ static Function/S TestFileExport()
 	KillOrMoveToTrash(dfr = GetAnalysisFolder())
 
 	NWB_ExportAllData(NWB_VERSION, compressionMode = IPNWB#GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath=discLocation)
-	CloseNWBFile()
 
 	GetFileFolderInfo/P=home/Q/Z nwbFile
 	CHECK(V_IsFile)
