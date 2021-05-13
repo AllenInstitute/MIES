@@ -62,6 +62,7 @@ Function DQM_FIFOMonitor(s)
 				catch
 					errMsg = GetRTErrMessage()
 					err = ClearRTError()
+					LOG_AddEntry(PACKAGE_MIES, "hardware error")
 					DQ_StopOngoingDAQ(panelTitle, startTPAfterDAQ = 0)
 					if(err == 18)
 						ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")

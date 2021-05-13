@@ -441,6 +441,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	if(ret) // running out of memory
 		printf "The amount of free memory is too low to increase TPStorage, please create a new experiment.\r"
 		ControlWindowToFront()
+		LOG_AddEntry(PACKAGE_MIES, "out of memory")
 		DQ_StopDAQ(panelTitle, startTPAfterDAQ = 0)
 		TP_StopTestPulse(panelTitle)
 		return NaN
