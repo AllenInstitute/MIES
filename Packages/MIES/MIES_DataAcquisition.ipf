@@ -32,37 +32,25 @@ End
 /// @param panelTitle      device
 /// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled
 Function DQ_StopOngoingDAQ(string panelTitle, [variable startTPAfterDAQ])
+	variable i, numEntries
+	string list, device
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
-	if(startTPAfterDAQ)
-		DQM_CallFuncForDevicesYoked(panelTitle, DQ_StopOngoingDAQHelperWithTPA)
-	else
-		DQM_CallFuncForDevicesYoked(panelTitle, DQ_StopOngoingDAQHelperNoTPA)
-	endif
-End
+	list = GetListofLeaderAndPossFollower(panelTitle)
+	numEntries = ItemsInList(list)
 
-/// @brief Helper function for DQ_StopOngoingDAQHelper() with CallFunctionForEachListItem() compatible signature
-static Function DQ_StopOngoingDAQHelperWithTPA(panelTitle)
-	string panelTitle
-
-	DQ_StopOngoingDAQHelper(panelTitle, startTPAfterDAQ = 1)
-End
-
-/// @brief Helper function for DQ_StopOngoingDAQHelper() with CallFunctionForEachListItem() compatible signature
-static Function DQ_StopOngoingDAQHelperNoTPA(panelTitle)
-	string panelTitle
-
-	DQ_StopOngoingDAQHelper(panelTitle, startTPAfterDAQ = 0)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, list)
+		DQ_StopOngoingDAQHelper(device, startTPAfterDAQ)
+	endfor
 End
 
 /// @brief Stop the testpulse and data acquisition
-static Function DQ_StopOngoingDAQHelper(string panelTitle, [variable startTPAfterDAQ])
+static Function DQ_StopOngoingDAQHelper(string panelTitle, variable startTPAfterDAQ)
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 	variable stopDeviceTimer  = 0
-
-	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
 	if(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TP))
 		TPS_StopTestPulseSingleDevice(panelTitle)
