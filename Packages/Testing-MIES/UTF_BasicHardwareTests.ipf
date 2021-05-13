@@ -2040,6 +2040,35 @@ Function Abort_ITI_TP_A_TP_SD_REENTRY([str])
 	CheckLastLBNEntryFromTP_IGNORE(str)
 End
 
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function Abort_ITI_TP_A_TP_MD([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
+	AcquireData(s, str)
+
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
+	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
+
+	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(str, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(str, "check_Settings_TPAfterDAQ", val = 1)
+End
+
+Function Abort_ITI_TP_A_TP_MD_REENTRY([str])
+	string str
+
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
+
+	// check that TP after DAQ really ran
+	CheckLastLBNEntryFromTP_IGNORE(str)
+End
+
 Function StartDAQDuringTP_IGNORE(device)
 	string device
 
@@ -2121,35 +2150,6 @@ Function StartDAQDuringTP_REENTRY([str])
 	CHECK_EQUAL_WAVES(settings, {0, 1, 2, 3, 4, 5, 6, 7, NaN}, mode = WAVE_DATA)
 
 	// ascending sweep numbers are checked in TEST_CASE_BEGIN_OVERRIDE()
-End
-
-// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function Abort_ITI_TP_A_TP_MD([str])
-	string str
-
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
-	AcquireData(s, str)
-
-	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
-	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
-
-	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(str, "SetVar_DataAcq_ITI", val = 5)
-	PGC_SetAndActivateControl(str, "check_Settings_TPAfterDAQ", val = 1)
-End
-
-Function Abort_ITI_TP_A_TP_MD_REENTRY([str])
-	string str
-
-	NVAR runModeDAQ = $GetDataAcqRunMode(str)
-	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
-
-	NVAR runModeTP = $GetTestpulseRunMode(str)
-	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
-
-	// check that TP after DAQ really ran
-	CheckLastLBNEntryFromTP_IGNORE(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
