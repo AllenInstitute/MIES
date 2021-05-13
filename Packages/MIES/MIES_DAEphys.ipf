@@ -1342,9 +1342,10 @@ End
 /// @brief One time cleaning up after data acquisition
 ///
 /// @param panelTitle      device
+/// @param stopReason      One of @ref DAQStoppingFlags
 /// @param forcedStop      [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false)
 /// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled at the end
-Function DAP_OneTimeCallAfterDAQ(string panelTitle, [variable forcedStop, variable startTPAfterDAQ])
+Function DAP_OneTimeCallAfterDAQ(string panelTitle, variable stopReason, [variable forcedStop, variable startTPAfterDAQ])
 	variable hardwareType
 
 	forcedStop      = ParamIsDefault(forcedStop)      ? 0 : !!forcedStop
@@ -1354,6 +1355,9 @@ Function DAP_OneTimeCallAfterDAQ(string panelTitle, [variable forcedStop, variab
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
+
+	// needs to be done before changing the acquisition state
+	DAP_DocumentStopReason(panelTitle, stopReason)
 
 	AS_HandlePossibleTransition(panelTitle, AS_POST_DAQ, call = !forcedStop)
 
@@ -1414,6 +1418,22 @@ Function DAP_OneTimeCallAfterDAQ(string panelTitle, [variable forcedStop, variab
 	else
 		TPS_StartTestPulseSingleDevice(panelTitle)
 	endif
+End
+
+static Function DAP_DocumentStopReason(string panelTitle, variable stopReason)
+	variable sweepNo
+
+	Make/FREE/N=(3, 1)/T keys
+
+	keys[0][0] =  "DAQ stop reason"
+	keys[1][0] =  "" // @todo: use enumeration as unit once available
+	keys[2][0] =  LABNOTEBOOK_NO_TOLERANCE
+
+	Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[][][INDEP_HEADSTAGE] = stopReason
+
+	sweepNo = AS_GetSweepNumber(panelTitle)
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, panelTitle, UNKNOWN_MODE)
 End
 
 Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
@@ -1547,7 +1567,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			                   && indexing)))
 
 			if(activeChannel)
-				dataAcqRunMode = DQ_StopDAQ(panelTitle, startTPAfterDAQ = 0)
+				dataAcqRunMode = DQ_StopDAQ(panelTitle, DQ_STOP_REASON_STIMSET_SELECTION, startTPAfterDAQ = 0)
 
 				// stopping DAQ will reset the stimset popupmenu to its initial value
 				// so we have to set the now old value again
@@ -4174,7 +4194,7 @@ Function DAP_ButtonProc_TPDAQ(ba) : ButtonControl
 						DQS_StartDAQSingleDevice(panelTitle)
 					endif
 				else // data acquistion is ongoing, stop data acq
-					DQ_StopDAQ(panelTitle)
+					DQ_StopDAQ(panelTitle, DQ_STOP_REASON_DAQ_BUTTON)
 				endif
 			else
 				ASSERT(0, "invalid control")
@@ -4993,7 +5013,7 @@ static Function DAP_UnlockDevice(panelTitle)
 	// especially for foreground TP
 	state = DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ")
 	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = CHECKBOX_UNSELECTED)
-	DQ_StopDAQ(panelTitle)
+	DQ_StopDAQ(panelTitle, DQ_STOP_REASON_UNLOCKED_DEVICE)
 	TP_StopTestPulse(panelTitle)
 	ASSERT(!ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_TP + panelTitle, DAP_WAITFORTPANALYSIS_TIMEOUT), "TP analysis did not finish within timeout")
 	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = state)

@@ -271,7 +271,7 @@ static Function BeforeUncompiledHook(changeCode, procedureWindowTitleStr, textCh
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	DQ_StopOngoingDAQAllLocked()
+	DQ_StopOngoingDAQAllLocked(DQ_STOP_REASON_UNCOMPILED)
 
 	ASYNC_Stop(timeout=5)
 

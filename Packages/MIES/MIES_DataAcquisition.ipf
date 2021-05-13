@@ -10,7 +10,7 @@
 /// @brief __DQ__ Routines for Data acquisition
 
 /// @brief Stop DAQ and TP on all locked devices
-Function DQ_StopOngoingDAQAllLocked()
+Function DQ_StopOngoingDAQAllLocked(variable stopReason)
 	string panelTitle
 
 	variable i, numDev, err
@@ -21,7 +21,7 @@ Function DQ_StopOngoingDAQAllLocked()
 	for(i = 0; i < numDev; i += 1)
 		device = StringFromList(i, devices)
 
-		DQ_StopOngoingDAQ(device, startTPAfterDAQ = 0); err = GetRTError(1)
+		DQ_StopOngoingDAQ(device, stopReason, startTPAfterDAQ = 0); err = GetRTError(1)
 	endfor
 End
 
@@ -30,8 +30,9 @@ End
 /// Works with single/multi device mode and on yoked devices simultaneously.
 ///
 /// @param panelTitle      device
+/// @param stopReason      One of @ref DAQStoppingFlags
 /// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled
-Function DQ_StopOngoingDAQ(string panelTitle, [variable startTPAfterDAQ])
+Function DQ_StopOngoingDAQ(string panelTitle, variable stopReason, [variable startTPAfterDAQ])
 	variable i, numEntries
 	string list, device
 
@@ -42,12 +43,12 @@ Function DQ_StopOngoingDAQ(string panelTitle, [variable startTPAfterDAQ])
 
 	for(i = 0; i < numEntries; i += 1)
 		device = StringFromList(i, list)
-		DQ_StopOngoingDAQHelper(device, startTPAfterDAQ)
+		DQ_StopOngoingDAQHelper(device, stopReason, startTPAfterDAQ)
 	endfor
 End
 
 /// @brief Stop the testpulse and data acquisition
-static Function DQ_StopOngoingDAQHelper(string panelTitle, variable startTPAfterDAQ)
+static Function DQ_StopOngoingDAQHelper(string panelTitle, variable stopReason, variable startTPAfterDAQ)
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 	variable stopDeviceTimer  = 0
@@ -120,7 +121,7 @@ static Function DQ_StopOngoingDAQHelper(string panelTitle, variable startTPAfter
 	endif
 
 	if(needsOTCAfterDAQ)
-		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1, startTPAfterDAQ = startTPAfterDAQ)
+		DAP_OneTimeCallAfterDAQ(panelTitle, stopReason, forcedStop = 1, startTPAfterDAQ = startTPAfterDAQ)
 	endif
 End
 
@@ -180,7 +181,7 @@ End
 ///
 /// Assumes that single device and multi device do not run at the same time.
 /// @return One of @ref DAQRunModes
-Function DQ_StopDAQ(string panelTitle, [variable startTPAfterDAQ])
+Function DQ_StopDAQ(string panelTitle, variable stopReason, [variable startTPAfterDAQ])
 	variable runMode
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
@@ -195,7 +196,7 @@ Function DQ_StopDAQ(string panelTitle, [variable startTPAfterDAQ])
 			return runMode
 		case DAQ_BG_SINGLE_DEVICE:
 		case DAQ_BG_MULTI_DEVICE:
-			DQ_StopOngoingDAQ(panelTitle, startTPAfterDAQ = startTPAfterDAQ)
+			DQ_StopOngoingDAQ(panelTitle, stopReason, startTPAfterDAQ = startTPAfterDAQ)
 			return runMode
 	endswitch
 

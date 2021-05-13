@@ -63,7 +63,7 @@ Function DQM_FIFOMonitor(s)
 					errMsg = GetRTErrMessage()
 					err = ClearRTError()
 					LOG_AddEntry(PACKAGE_MIES, "hardware error")
-					DQ_StopOngoingDAQ(panelTitle, startTPAfterDAQ = 0)
+					DQ_StopOngoingDAQ(panelTitle, DQ_STOP_REASON_HW_ERROR, startTPAfterDAQ = 0)
 					if(err == 18)
 						ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
 					else
@@ -110,7 +110,7 @@ Function DQM_FIFOMonitor(s)
 		endif
 
 		if(GetKeyState(0) & ESCAPE_KEY)
-			DQ_StopOngoingDAQ(panelTitle, startTPAfterDAQ = 0)
+			DQ_StopOngoingDAQ(panelTitle, DQ_STOP_REASON_ESCAPE_KEY, startTPAfterDAQ = 0)
 			return 1
 		endif
 	endfor
@@ -179,7 +179,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 		NVAR maxITI = $GetMaxIntertrialInterval(panelTitle)
 	catch
 		if(initialSetupReq)
-			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
+			DAP_OneTimeCallAfterDAQ(panelTitle, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
 		else // required for RA for the lead device only
 			DQ_StopDAQDeviceTimer(panelTitle)
 		endif
@@ -219,10 +219,10 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 		if(initialSetupReq)
 			for(i = 0; i < numFollower; i += 1)
 				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-				DAP_OneTimeCallAfterDAQ(followerPanelTitle, forcedStop = 1)
+				DAP_OneTimeCallAfterDAQ(followerPanelTitle, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
 			endfor
 
-			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
+			DAP_OneTimeCallAfterDAQ(panelTitle, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
 		else // required for RA for the lead device only
 			DQ_StopDAQDeviceTimer(panelTitle)
 		endif

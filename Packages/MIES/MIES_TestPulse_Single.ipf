@@ -63,7 +63,7 @@ Function TPS_TestPulseFunc(s)
 	SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)
 
 	if(GetKeyState(0) & ESCAPE_KEY)
-		DQ_StopOngoingDAQ(panelTitle)
+		DQ_StopOngoingDAQ(panelTitle, DQ_STOP_REASON_ESCAPE_KEY)
 		return 1
 	endif
 
@@ -104,7 +104,7 @@ Function TPS_StartTestPulseSingleDevice(panelTitle, [fast])
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
-	DQ_StopOngoingDAQ(panelTitle)
+	DQ_StopOngoingDAQ(panelTitle, DQ_STOP_REASON_TP_STARTED)
 
 	// stop early as "TP after DAQ" might be already running
 	if(TP_CheckIfTestpulseIsRunning(panelTitle))
