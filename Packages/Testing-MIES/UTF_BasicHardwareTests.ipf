@@ -1945,6 +1945,16 @@ static Function CheckLastLBNEntryFromTP_IGNORE(device)
 	CHECK_EQUAL_VAR(numericalValues[index - 1][%EntrySourceType], TEST_PULSE_MODE)
 End
 
+static Function CheckThatTestpulseRan_IGNORE(device)
+	string device
+	variable sweepNo
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "ADC", TEST_PULSE_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
 Function Abort_ITI_TP_SD([str])
 	string str
@@ -2166,8 +2176,7 @@ Function Abort_ITI_PressAcq_SD_REENTRY([str])
 	NVAR runModeTP = $GetTestpulseRunMode(str)
 	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-	// check that TP after DAQ really ran
-	CheckLastLBNEntryFromTP_IGNORE(str)
+	CheckThatTestpulseRan_IGNORE(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -2194,8 +2203,7 @@ Function Abort_ITI_PressAcq_MD_REENTRY([str])
 	NVAR runModeTP = $GetTestpulseRunMode(str)
 	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-	// check that TP after DAQ really ran
-	CheckLastLBNEntryFromTP_IGNORE(str)
+	CheckThatTestpulseRan_IGNORE(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
