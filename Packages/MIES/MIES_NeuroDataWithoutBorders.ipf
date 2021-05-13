@@ -475,6 +475,12 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	variable i, j, numEntries, locationID, sweep, numWaves, createdNewNWBFile
 	string stimsetList = ""
 
+	if(ParamIsDefault(keepFileOpen))
+		keepFileOpen = 0
+	else
+		keepFileOpen = !!keepFileOpen
+	endif
+
 	if(ParamIsDefault(writeStoredTestPulses))
 		writeStoredTestPulses = 0
 	else
@@ -578,7 +584,9 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	endif
 
-	CloseNWBFile()
+	if(!keepFileOpen)
+		CloseNWBFile()
+	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
 End
