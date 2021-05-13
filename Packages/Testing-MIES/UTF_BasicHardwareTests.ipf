@@ -2236,7 +2236,7 @@ Function Abort_ITI_TP_A_PressAcq_SD_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function Abort_ITI_TP_A_Acq_MD([str])
+Function Abort_ITI_TP_A_PressAcq_MD([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -2251,7 +2251,7 @@ Function Abort_ITI_TP_A_Acq_MD([str])
 	PGC_SetAndActivateControl(str, "check_Settings_TPAfterDAQ", val = 1)
 End
 
-Function Abort_ITI_TP_A_Acq_MD_REENTRY([str])
+Function Abort_ITI_TP_A_PressAcq_MD_REENTRY([str])
 	string str
 
 	NVAR runModeDAQ = $GetDataAcqRunMode(str)
