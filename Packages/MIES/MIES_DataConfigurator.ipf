@@ -2581,10 +2581,6 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 	endif
 End
 
-/// Epoch times are saved in s, so 7 digits are 0.1 microseconds precision
-/// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.
-static Constant EPOCHTIME_PRECISION = 7
-
 /// @brief Sorts all epochs per channel in EpochsWave
 /// @param[in] panelTitle title of device panel
 static Function DC_SortEpochs(panelTitle)

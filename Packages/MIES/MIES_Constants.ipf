@@ -1567,3 +1567,6 @@ Constant LBN_TEXTUAL_VALUES   = 0x8
 /// @}
 
 StrConstant PRESSURE_FILTER = "pressure:state"
+
+/// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.
+Constant EPOCHTIME_PRECISION = 7
