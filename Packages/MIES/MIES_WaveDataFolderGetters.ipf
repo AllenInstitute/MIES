@@ -1730,7 +1730,7 @@ Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 29
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 30
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -1871,6 +1871,7 @@ End
 /// - 51: oodDAQ member, true if headstage takes part in oodDAQ mode, false otherwise
 /// - 52: Autobias % (DAEphys->Settings->Amplifier)
 /// - 53: Autobias Interval (DAEphys->Settings->Amplifier)
+/// - 54: TP after DAQ
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -1889,9 +1890,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 54) wv
+		Redimension/N=(-1, 55) wv
 	else
-		Make/T/N=(3, 54) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 55) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -2115,6 +2116,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][53] = "Autobias Interval"
 	wv[%Units][53]     = "s"
 	wv[%Tolerance][53] = "0.1"
+
+	wv[%Parameter][54] = "TP after DAQ"
+	wv[%Units][54]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][54] = LABNOTEBOOK_NO_TOLERANCE
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)

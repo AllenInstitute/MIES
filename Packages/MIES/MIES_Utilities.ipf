@@ -2657,6 +2657,13 @@ Function QuerySetIgorOption(name, [globalSymbol])
 	return result
 End
 
+/// @brief Force recompilation of all procedure files
+///
+/// Uses the "Operation Queue".
+Function ForceRecompile()
+	Execute/P/Q/Z "Silent 100"
+End
+
 /// @brief Parse a ISO8601 timestamp, e.g. created by GetISO8601TimeStamp(), and returns the number
 /// of seconds, including fractional parts, since Igor Pro epoch (1/1/1904) in UTC time zone
 ///

@@ -451,6 +451,38 @@ Function StopAcqDuringITI_IGNORE(s)
 	return 0
 End
 
+Function StopAcqByUnlocking_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
+
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		PGC_SetAndActivateControl(device, "button_SettingsPlus_unLockDevic")
+		return 1
+	endif
+
+	return 0
+End
+
+Function StopAcqByUncompiled_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
+
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		ForceRecompile()
+		return 1
+	endif
+
+	return 0
+End
+
 Function StartTPDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 

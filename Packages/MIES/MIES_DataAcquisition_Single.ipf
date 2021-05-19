@@ -35,7 +35,7 @@ Function DQS_StartDAQSingleDevice(panelTitle, [useBackground])
 		DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
 	catch
 		// we need to undo the earlier one time call only
-		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
+		DAP_OneTimeCallAfterDAQ(panelTitle, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
 		return NaN
 	endtry
 
@@ -77,12 +77,12 @@ Function DQS_DataAcq(panelTitle)
 
 		DoUpdate/W=$oscilloscopeSubwindow
 		if(GetKeyState(0) & ESCAPE_KEY)
-			DQS_StopDataAcq(panelTitle, forcedStop = 1)
+			DQS_StopDataAcq(panelTitle, DQ_STOP_REASON_ESCAPE_KEY, forcedStop = 1)
 			return NaN
 		endif
 	while(moreData)
 
-	DQS_StopDataAcq(panelTitle)
+	DQS_StopDataAcq(panelTitle, DQ_STOP_REASON_FINISHED)
 End
 
 /// @brief Fifo monitor for DAQ Single Device
@@ -105,10 +105,7 @@ Function DQS_BkrdDataAcq(panelTitle)
 End
 
 /// @brief Stop single device data acquisition
-static Function DQS_StopDataAcq(panelTitle, [forcedStop])
-	string panelTitle
-	variable forcedStop
-
+static Function DQS_StopDataAcq(string panelTitle, variable stopReason, [variable forcedStop])
 	if(ParamIsDefault(forcedStop))
 		forcedStop = 0
 	else
@@ -120,7 +117,7 @@ static Function DQS_StopDataAcq(panelTitle, [forcedStop])
 	SWS_SaveAcquiredData(panelTitle, forcedStop = forcedStop)
 
 	if(forcedStop)
-		DQ_StopOngoingDAQ(panelTitle)
+		DQ_StopOngoingDAQ(panelTitle, stopReason)
 	else
 		RA_ContinueOrStop(panelTitle, multiDevice=0)
 	endif
@@ -158,12 +155,12 @@ Function DQS_FIFOMonitor(s)
 
 	if(!moreData)
 		DQS_STOPBackgroundFifoMonitor()
-		DQS_StopDataAcq(panelTitleG)
+		DQS_StopDataAcq(panelTitleG, DQ_STOP_REASON_FINISHED)
 		return 1
 	endif
 
 	if(GetKeyState(0) & ESCAPE_KEY)
-		DQ_StopOngoingDAQ(panelTitleG, startTPAfterDAQ = 0)
+		DQ_StopOngoingDAQ(panelTitleG, DQ_STOP_REASON_ESCAPE_KEY, startTPAfterDAQ = 0)
 		return 1
 	endif
 

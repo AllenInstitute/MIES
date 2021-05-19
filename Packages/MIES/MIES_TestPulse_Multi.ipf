@@ -109,7 +109,7 @@ Function TPM_StartTestPulseMultiDevice(panelTitle, [fast])
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
-	DQ_StopOngoingDAQ(panelTitle)
+	DQ_StopOngoingDAQ(panelTitle, DQ_STOP_REASON_TP_STARTED)
 
 	// stop early as "TP after DAQ" might be already running
 	if(TP_CheckIfTestpulseIsRunning(panelTitle))
@@ -234,7 +234,8 @@ Function TPM_BkrdTPFuncMD(s)
 						catch
 							errMsg = GetRTErrMessage()
 							err = ClearRTError()
-							DQ_StopOngoingDAQ(panelTitle)
+							LOG_AddEntry(PACKAGE_MIES, "hardware error")
+							DQ_StopOngoingDAQ(panelTitle, DQ_STOP_REASON_HW_ERROR)
 							if(err == 18)
 								ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
 							else
@@ -313,7 +314,7 @@ Function TPM_BkrdTPFuncMD(s)
 		SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)
 
 		if(GetKeyState(0) & ESCAPE_KEY)
-			DQ_StopOngoingDAQ(panelTitle)
+			DQ_StopOngoingDAQ(panelTitle, DQ_STOP_REASON_ESCAPE_KEY)
 		endif
 	endfor
 

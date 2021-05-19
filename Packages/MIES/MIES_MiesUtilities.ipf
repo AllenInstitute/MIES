@@ -384,7 +384,7 @@ End
 /// @param[in]  entrySourceType   type of the labnotebook entry, one of @ref DataAcqModes
 /// @param[out] first             point index of the beginning of the range
 /// @param[out] last              point index of the end of the range
-Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last)
+static Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last)
 	WAVE wv
 	variable col, val, forwardORBackward, entrySourceType
 	variable &first, &last

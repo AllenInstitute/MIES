@@ -5,6 +5,40 @@
 
 /// @file UTF_BasicHardWareTests.ipf Implement some basic tests using the DAQ hardware.
 
+/// Test matrix for DQ_STOP_REASON_XXX
+///
+/// DQ_STOP_REASON_DAQ_BUTTON
+/// - Abort_ITI_TP_A_PressAcq_MD
+/// - Abort_ITI_TP_A_PressAcq_SD
+/// - Abort_ITI_PressAcq_MD
+/// - Abort_ITI_PressAcq_SD
+///
+/// DQ_STOP_REASON_CONFIG_FAILED
+/// - ConfigureFails
+///
+/// DQ_STOP_REASON_FINISHED
+/// - AllTests(...)
+///
+/// DQ_STOP_REASON_UNCOMPILED
+/// - StopDAQDueToUncompiled
+///
+/// DQ_STOP_REASON_TP_STARTED
+/// - Abort_ITI_TP_A_TP_MD
+/// - Abort_ITI_TP_A_TP_SD
+/// - Abort_ITI_TP_MD
+/// - Abort_ITI_TP_SD
+///
+/// DQ_STOP_REASON_STIMSET_SELECTION
+/// - ChangeStimSetDuringDAQ
+///
+/// DQ_STOP_REASON_UNLOCKED_DEVICE
+/// - StopDAQDueToUnlocking
+///
+/// DQ_STOP_REASON_OUT_OF_MEMORY
+/// DQ_STOP_REASON_HW_ERROR
+/// DQ_STOP_REASON_ESCAPE_KEY
+/// - not tested
+
 static StrConstant REF_DAEPHYS_CONFIG_FILE = "DA_Ephys.json"
 static StrConstant REF_TMP1_CONFIG_FILE = "UserConfigTemplate_Temp1.txt"
 
@@ -295,6 +329,8 @@ static Function AllTests(t, devices)
 			CHECK_EQUAL_TEXTWAVES(indexEndStimsetsGUI, indexEndStimsetsLBN)
 		endfor
 	endfor
+
+	CheckDAQStopReason(device, DQ_STOP_REASON_FINISHED)
 
 	TestNwbExportV1()
 	TestNwbExportV2()
@@ -1945,6 +1981,33 @@ static Function CheckLastLBNEntryFromTP_IGNORE(device)
 	CHECK_EQUAL_VAR(numericalValues[index - 1][%EntrySourceType], TEST_PULSE_MODE)
 End
 
+static Function CheckThatTestpulseRan_IGNORE(device)
+	string device
+	variable sweepNo
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "ADC", TEST_PULSE_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+End
+
+static Function CheckDAQStopReason(string device, variable stopReason)
+	string key
+	variable sweepNo
+
+	key = "DAQ stop reason"
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	CHECK(DimSize(sweeps, ROWS) >= 1)
+
+	sweepNo = sweeps[0]
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(settings[INDEP_HEADSTAGE], stopReason)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
 Function Abort_ITI_TP_SD([str])
 	string str
@@ -1971,6 +2034,8 @@ Function Abort_ITI_TP_SD_REENTRY([str])
 
 	// check that TP after DAQ really ran
 	CheckLastLBNEntryFromTP_IGNORE(str)
+
+	CheckDAQStopReason(str, DQ_STOP_REASON_TP_STARTED)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1999,6 +2064,8 @@ Function Abort_ITI_TP_MD_REENTRY([str])
 
 	// check that TP after DAQ really ran
 	CheckLastLBNEntryFromTP_IGNORE(str)
+
+	CheckDAQStopReason(str, DQ_STOP_REASON_TP_STARTED)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
@@ -2028,6 +2095,39 @@ Function Abort_ITI_TP_A_TP_SD_REENTRY([str])
 
 	// check that TP after DAQ really ran
 	CheckLastLBNEntryFromTP_IGNORE(str)
+
+	CheckDAQStopReason(str, DQ_STOP_REASON_TP_STARTED)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function Abort_ITI_TP_A_TP_MD([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
+	AcquireData(s, str)
+
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
+	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
+
+	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(str, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(str, "check_Settings_TPAfterDAQ", val = 1)
+End
+
+Function Abort_ITI_TP_A_TP_MD_REENTRY([str])
+	string str
+
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
+
+	// check that TP after DAQ really ran
+	CheckLastLBNEntryFromTP_IGNORE(str)
+
+	CheckDAQStopReason(str, DQ_STOP_REASON_TP_STARTED)
 End
 
 Function StartDAQDuringTP_IGNORE(device)
@@ -2113,35 +2213,6 @@ Function StartDAQDuringTP_REENTRY([str])
 	// ascending sweep numbers are checked in TEST_CASE_BEGIN_OVERRIDE()
 End
 
-// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function Abort_ITI_TP_A_TP_MD([str])
-	string str
-
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
-	AcquireData(s, str)
-
-	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
-	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
-
-	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(str, "SetVar_DataAcq_ITI", val = 5)
-	PGC_SetAndActivateControl(str, "check_Settings_TPAfterDAQ", val = 1)
-End
-
-Function Abort_ITI_TP_A_TP_MD_REENTRY([str])
-	string str
-
-	NVAR runModeDAQ = $GetDataAcqRunMode(str)
-	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
-
-	NVAR runModeTP = $GetTestpulseRunMode(str)
-	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
-
-	// check that TP after DAQ really ran
-	CheckLastLBNEntryFromTP_IGNORE(str)
-End
-
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
 Function Abort_ITI_PressAcq_SD([str])
 	string str
@@ -2166,8 +2237,9 @@ Function Abort_ITI_PressAcq_SD_REENTRY([str])
 	NVAR runModeTP = $GetTestpulseRunMode(str)
 	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-	// check that TP after DAQ really ran
-	CheckLastLBNEntryFromTP_IGNORE(str)
+	CheckThatTestpulseRan_IGNORE(str)
+
+	CheckDAQStopReason(str, DQ_STOP_REASON_DAQ_BUTTON)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -2194,8 +2266,9 @@ Function Abort_ITI_PressAcq_MD_REENTRY([str])
 	NVAR runModeTP = $GetTestpulseRunMode(str)
 	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-	// check that TP after DAQ really ran
-	CheckLastLBNEntryFromTP_IGNORE(str)
+	CheckThatTestpulseRan_IGNORE(str)
+
+	CheckDAQStopReason(str, DQ_STOP_REASON_DAQ_BUTTON)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
@@ -2228,7 +2301,7 @@ Function Abort_ITI_TP_A_PressAcq_SD_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function Abort_ITI_TP_A_Acq_MD([str])
+Function Abort_ITI_TP_A_PressAcq_MD([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -2243,7 +2316,7 @@ Function Abort_ITI_TP_A_Acq_MD([str])
 	PGC_SetAndActivateControl(str, "check_Settings_TPAfterDAQ", val = 1)
 End
 
-Function Abort_ITI_TP_A_Acq_MD_REENTRY([str])
+Function Abort_ITI_TP_A_PressAcq_MD_REENTRY([str])
 	string str
 
 	NVAR runModeDAQ = $GetDataAcqRunMode(str)
@@ -2254,6 +2327,8 @@ Function Abort_ITI_TP_A_Acq_MD_REENTRY([str])
 
 	// check that TP after DAQ really ran
 	CheckLastLBNEntryFromTP_IGNORE(str)
+
+	CheckDAQStopReason(str, DQ_STOP_REASON_DAQ_BUTTON)
 End
 
 static Function SetSingleDeviceDAQ_IGNORE(device)
@@ -2350,6 +2425,8 @@ Function ChangeStimSetDuringDAQ_REENTRY([str])
 		NVAR runModeTP = $GetTestpulseRunMode(device)
 		CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 	endfor
+
+	CheckDAQStopReason(str, DQ_STOP_REASON_STIMSET_SELECTION)
 End
 
 Function EnableUnassocChannels_IGNORE(device)
@@ -4464,4 +4541,94 @@ Function CheckAcquisitionStates(string str)
 				FAIL()
 		endswitch
 	endfor
+End
+
+Function ConfigureFails_IGNORE(string device)
+
+	string ctrl
+
+	ctrl = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	PGC_SetAndActivateControl(device, ctrl, val = 10000)
+End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function ConfigureFails([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	try
+		AcquireData(s, str, preAcquireFunc = ConfigureFails_IGNORE)
+	catch
+		// do nothing
+	endtry
+End
+
+Function ConfigureFails_REENTRY([str])
+	string str
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	CheckDAQStopReason(str, DQ_STOP_REASON_CONFIG_FAILED)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function StopDAQDueToUnlocking([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
+	AcquireData(s, str)
+
+	CtrlNamedBackGround UnlockDevice, start, period=30, proc=StopAcqByUnlocking_IGNORE
+
+	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(str, "SetVar_DataAcq_ITI", val = 5)
+End
+
+Function StopDAQDueToUnlocking_REENTRY([str])
+	string str
+
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
+
+	CheckThatTestpulseRan_IGNORE(str)
+
+	CheckDAQStopReason(str, DQ_STOP_REASON_UNLOCKED_DEVICE)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function StopDAQDueToUncompiled([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
+	AcquireData(s, str)
+
+	CtrlNamedBackGround UncompileProcedures, start, period=30, proc=StopAcqByUncompiled_IGNORE
+
+	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(str, "SetVar_DataAcq_ITI", val = 5)
+End
+
+Function StopDAQDueToUncompiled_REENTRY([str])
+	string str
+
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
+
+	CheckThatTestpulseRan_IGNORE(str)
+
+	CheckDAQStopReason(str, DQ_STOP_REASON_UNCOMPILED)
 End

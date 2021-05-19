@@ -629,7 +629,7 @@ Constant WAVEBUILDER_PANEL_VERSION         = 9
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 44
+Constant LABNOTEBOOK_VERSION = 46
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
@@ -1489,3 +1489,19 @@ StrConstant IVS_PUB_FILTER = "ivscc"
 Constant PSQ_CR_SPIKE_CHECK_DEFAULT = 1
 
 StrConstant NOT_AVAILABLE = "n/a"
+
+/// @name Flags for stopping DAQ
+/// @anchor DAQStoppingFlags
+///
+/// @{
+Constant DQ_STOP_REASON_DAQ_BUTTON        = 0x001
+Constant DQ_STOP_REASON_CONFIG_FAILED     = 0x002
+Constant DQ_STOP_REASON_FINISHED          = 0x004
+Constant DQ_STOP_REASON_UNCOMPILED        = 0x008
+Constant DQ_STOP_REASON_HW_ERROR          = 0x010
+Constant DQ_STOP_REASON_ESCAPE_KEY        = 0x020
+Constant DQ_STOP_REASON_TP_STARTED        = 0x040
+Constant DQ_STOP_REASON_STIMSET_SELECTION = 0x080
+Constant DQ_STOP_REASON_UNLOCKED_DEVICE   = 0x100
+Constant DQ_STOP_REASON_OUT_OF_MEMORY     = 0x200
+/// @}

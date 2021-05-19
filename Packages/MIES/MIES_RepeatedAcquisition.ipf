@@ -266,7 +266,7 @@ static Function RA_FinishAcquisition(panelTitle)
 
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
-		DAP_OneTimeCallAfterDAQ(StringFromList(i, list))
+		DAP_OneTimeCallAfterDAQ(StringFromList(i, list), DQ_STOP_REASON_FINISHED)
 	endfor
 End
 
@@ -629,7 +629,7 @@ Function RA_ContinueOrStop(panelTitle, [multiDevice])
 				RA_Start(panelTitle)
 			endif
 		else
-			DAP_OneTimeCallAfterDAQ(panelTitle)
+			DAP_OneTimeCallAfterDAQ(panelTitle, DQ_STOP_REASON_FINISHED)
 		endif
 	else
 		if(multiDevice)

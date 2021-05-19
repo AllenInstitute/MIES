@@ -10,28 +10,19 @@
 /// @brief __DQ__ Routines for Data acquisition
 
 /// @brief Stop DAQ and TP on all locked devices
-Function DQ_StopOngoingDAQAllLocked()
+Function DQ_StopOngoingDAQAllLocked(variable stopReason)
 	string panelTitle
 
-	variable i, numDev, debuggerState
+	variable i, numDev, err
 	string device
-
-	debuggerState = DisableDebugger()
 
 	SVAR devices = $GetDevicePanelTitleList()
 	numDev = ItemsInList(devices)
 	for(i = 0; i < numDev; i += 1)
 		device = StringFromList(i, devices)
 
-		try
-			ClearRTError()
-			DQ_StopOngoingDAQ(device, startTPAfterDAQ = 0); AbortOnRTE
-		catch
-			ClearRTError()
-		endtry
+		DQ_StopOngoingDAQ(device, stopReason, startTPAfterDAQ = 0); err = GetRTError(1)
 	endfor
-
-	ResetDebuggerState(debuggerState)
 End
 
 /// @brief Stop the DAQ and testpulse
@@ -39,44 +30,28 @@ End
 /// Works with single/multi device mode and on yoked devices simultaneously.
 ///
 /// @param panelTitle      device
+/// @param stopReason      One of @ref DAQStoppingFlags
 /// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled
-Function DQ_StopOngoingDAQ(panelTitle, [startTPAfterDAQ])
-	string panelTitle
-	variable startTPAfterDAQ
+Function DQ_StopOngoingDAQ(string panelTitle, variable stopReason, [variable startTPAfterDAQ])
+	variable i, numEntries
+	string list, device
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
-	if(startTPAfterDAQ)
-		DQM_CallFuncForDevicesYoked(panelTitle, DQ_StopOngoingDAQHelperWithTPA)
-	else
-		DQM_CallFuncForDevicesYoked(panelTitle, DQ_StopOngoingDAQHelperNoTPA)
-	endif
-End
+	list = GetListofLeaderAndPossFollower(panelTitle)
+	numEntries = ItemsInList(list)
 
-/// @brief Helper function for DQ_StopOngoingDAQHelper() with CallFunctionForEachListItem() compatible signature
-static Function DQ_StopOngoingDAQHelperWithTPA(panelTitle)
-	string panelTitle
-
-	DQ_StopOngoingDAQHelper(panelTitle, startTPAfterDAQ = 1)
-End
-
-/// @brief Helper function for DQ_StopOngoingDAQHelper() with CallFunctionForEachListItem() compatible signature
-static Function DQ_StopOngoingDAQHelperNoTPA(panelTitle)
-	string panelTitle
-
-	DQ_StopOngoingDAQHelper(panelTitle, startTPAfterDAQ = 0)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, list)
+		DQ_StopOngoingDAQHelper(device, stopReason, startTPAfterDAQ)
+	endfor
 End
 
 /// @brief Stop the testpulse and data acquisition
-static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
-	string panelTitle
-	variable startTPAfterDAQ
-
+static Function DQ_StopOngoingDAQHelper(string panelTitle, variable stopReason, variable startTPAfterDAQ)
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 	variable stopDeviceTimer  = 0
-
-	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
 	if(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TP))
 		TPS_StopTestPulseSingleDevice(panelTitle)
@@ -146,7 +121,7 @@ static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
 	endif
 
 	if(needsOTCAfterDAQ)
-		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1, startTPAfterDAQ = startTPAfterDAQ)
+		DAP_OneTimeCallAfterDAQ(panelTitle, stopReason, forcedStop = 1, startTPAfterDAQ = startTPAfterDAQ)
 	endif
 End
 
@@ -206,19 +181,14 @@ End
 ///
 /// Assumes that single device and multi device do not run at the same time.
 /// @return One of @ref DAQRunModes
-Function DQ_StopDAQ(panelTitle, [startTPAfterDAQ])
-	string panelTitle
-	variable startTPAfterDAQ
-
+Function DQ_StopDAQ(string panelTitle, variable stopReason, [variable startTPAfterDAQ])
 	variable runMode
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
-
-	// create copy as the implicitly called DAP_OneTimeCallAfterDAQ()
+	// create readonly copy as the implicitly called DAP_OneTimeCallAfterDAQ()
 	// will change it
-	runMode = dataAcqRunMode
+	runMode = ROVar(GetDataAcqRunMode(panelTitle))
 
 	switch(runMode)
 		case DAQ_FG_SINGLE_DEVICE:
@@ -226,7 +196,7 @@ Function DQ_StopDAQ(panelTitle, [startTPAfterDAQ])
 			return runMode
 		case DAQ_BG_SINGLE_DEVICE:
 		case DAQ_BG_MULTI_DEVICE:
-			DQ_StopOngoingDAQ(panelTitle, startTPAfterDAQ = startTPAfterDAQ)
+			DQ_StopOngoingDAQ(panelTitle, stopReason, startTPAfterDAQ = startTPAfterDAQ)
 			return runMode
 	endswitch
 
