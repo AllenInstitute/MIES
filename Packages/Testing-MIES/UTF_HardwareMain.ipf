@@ -973,3 +973,19 @@ static Function TestSweepReconstruction_IGNORE(string panelTitle)
 		CHECK_EQUAL_WAVES(wvReconstructed, wvOriginal)
 	endfor
 End
+
+Function [string baseFolder, string nwbFile] GetUniqueNWBFileForExport(variable nwbVersion)
+	string suffix
+
+	ASSERT(IPNWB#EnsureValidNWBVersion(nwbVersion), "Invalid nwb version")
+
+	PathInfo home
+	REQUIRE(V_flag)
+	baseFolder = S_path
+
+	sprintf suffix, "-V%d.nwb", nwbVersion
+
+	nwbFile = UniqueFileOrFolder("home", GetExperimentName(), suffix = suffix)
+
+	return [baseFolder, nwbFile]
+End
