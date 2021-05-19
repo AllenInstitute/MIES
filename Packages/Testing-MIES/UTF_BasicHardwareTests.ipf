@@ -286,6 +286,13 @@ static Function AllTests(t, devices)
 
 			WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
 			CHECK_EQUAL_WAVES(ADChannelTypes, t.DAQChannelTypeAD, mode = WAVE_DATA)
+
+			WAVE/T indexEndStimsetsGUI = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+			Redimension/N=(2) indexEndStimsetsGUI
+
+			WAVE/T indexEndStimsetsLBN = GetLastSetting(textualValues, sweepNo, "Indexing End Stimset", DATA_ACQUISITION_MODE)
+			Redimension/N=(2) indexEndStimsetsLBN
+			CHECK_EQUAL_TEXTWAVES(indexEndStimsetsGUI, indexEndStimsetsLBN)
 		endfor
 	endfor
 
