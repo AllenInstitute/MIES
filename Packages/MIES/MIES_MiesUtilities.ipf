@@ -785,6 +785,12 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 			WAVE/Z settings = GetLastSetting(values, sweepNo, setting, entrySourceType)
 
 			if(WaveExists(settings))
+				WAVE/T settingsT = settings
+				if((IsNumericWave(settings) && IsNaN(settings[indizes[0]]))          \
+				   || (IsTextWave(settingsT) && !cmpstr(settingsT[indizes[0]], "")))
+					return [$"", NaN]
+				endif
+
 				return [settings, indizes[0]]
 			endif
 
