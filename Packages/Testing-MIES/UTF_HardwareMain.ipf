@@ -989,3 +989,12 @@ Function [string baseFolder, string nwbFile] GetUniqueNWBFileForExport(variable 
 
 	return [baseFolder, nwbFile]
 End
+
+Function/WAVE MajorNWBVersions()
+
+	Make/FREE wv = {1, 2}
+
+	SetDimensionLabels(wv, "v1;v2", ROWS)
+
+	return wv
+End

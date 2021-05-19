@@ -4632,3 +4632,47 @@ Function StopDAQDueToUncompiled_REENTRY([str])
 
 	CheckDAQStopReason(str, DQ_STOP_REASON_UNCOMPILED)
 End
+
+// Roundtrip stimsets, this also leaves the NWBv2 file lying around
+// for later validation.
+//
+// UTF_TD_GENERATOR HardwareMain#MajorNWBVersions
+Function ExportStimsetsAndRoundtripThem([variable var])
+
+	string baseFolder, nwbFile, discLocation
+	variable numEntries, i
+
+	[baseFolder, nwbFile] = GetUniqueNWBFileForExport(var)
+	discLocation = baseFolder + nwbFile
+
+	NWB_ExportAllStimsets(var, overrideFilePath = discLocation)
+
+	GetFileFolderInfo/Q/Z discLocation
+	REQUIRE(V_IsFile)
+
+	DFREF dfr = GetWaveBuilderPath()
+	MoveDataFolder dfr, :
+	RenameDataFolder WaveBuilder, old
+
+	KillOrMoveToTrash(dfr = GetMiesPath())
+
+	NWB_LoadAllStimsets(filename = discLocation)
+
+	DFREF dfr = GetWaveBuilderPath()
+	MoveDataFolder dfr, :
+	RenameDataFolder WaveBuilder, new
+
+	WAVE/T oldWaves = ListToTextWave(GetListOfObjects(old, ".*", recursive = 1, fullPath = 1), ";")
+	WAVE/T newWaves =  ListToTextWave(GetListOfObjects(new, ".*", recursive = 1, fullPath = 1), ";")
+	CHECK_EQUAL_VAR(DimSize(oldWaves, ROWS), DimSize(newWaves, ROWS))
+
+	numEntries = DimSize(oldWaves, ROWS)
+	CHECK(numEntries > 0)
+
+	for(i = 0; i < numEntries; i += 1)
+		WAVE oldWave = $oldWaves[i]
+		WAVE newWave = $newWaves[i]
+
+		CHECK_EQUAL_WAVES(oldWave, newWave)
+	endfor
+End
