@@ -23,6 +23,8 @@
 ///
 /// For exporting sweep-by-sweep:
 /// - NWB_PrepareExport(), once from DAP_CheckSettings() before DAQ
+///   * NWB_AppendStimset() for all stimsets
+///     + AddModificationTimeEntry()
 /// - NWB_AppendSweepDuringDAQ():
 ///   * NWB_ASYNC_Worker()
 ///     + AddModificationTimeEntry()
@@ -809,6 +811,7 @@ Function NWB_PrepareExport(nwbVersion)
 	variable nwbVersion
 
 	variable locationID, createdNewNWBFile
+	string stimsets
 
 	[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
 
@@ -818,6 +821,8 @@ Function NWB_PrepareExport(nwbVersion)
 
 	if(createdNewNWBFile)
 		NWB_ExportAllData(nwbVersion, keepFileOpen = 1)
+		stimsets = ReturnListOfAllStimSetsFromAllChannelTypes()
+		NWB_AppendStimset(nwbVersion, locationID, stimsets, GetNoCompression())
 	endif
 
 	return locationID
