@@ -5097,6 +5097,12 @@ threadsafe Function/WAVE GetTTLStimSets(numericalValues, textualValues, sweep)
 	return $""
 End
 
+Function/S ReturnListOfAllStimSetsFromAllChannelTypes()
+
+	return ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)   \
+	       + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
+End
+
 /// @brief Return a sorted list of all DA/TTL stim set waves
 ///
 /// @param channelType              #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL

@@ -653,7 +653,7 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	stimsets = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING) + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
+	stimsets = ReturnListOfAllStimSetsFromAllChannelTypes()
 
 	if(IsEmpty(stimsets))
 		print "No stimsets found for NWB export"
