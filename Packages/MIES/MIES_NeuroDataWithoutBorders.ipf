@@ -18,6 +18,7 @@
 ///   * NWB_WriteTestpulseData()
 /// - NWB_AppendSweepLowLevel() for each sweep
 /// - NWB_AppendStimset() for each stimset
+///   * AddModificationTimeEntry()
 /// - NWB_AppendIgorHistoryAndLogFile()
 ///
 /// For exporting sweep-by-sweep:
@@ -674,8 +675,6 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 		return NaN
 	endif
 
-	AddModificationTimeEntry(locationID, nwbVersion)
-
 	print "Please be patient while we export all existing stimsets to NWB"
 	ControlWindowToFront()
 
@@ -783,6 +782,12 @@ static Function NWB_AppendStimset(nwbVersion, locationID, stimsets, compressionM
 	variable i, numStimsets, numWaves
 
 	stimsets = GrepList(stimsets, "(?i)\\Q" + STIMSET_TP_WHILE_DAQ + "\\E", 1)
+
+	if(IsEmpty(stimsets))
+		return NaN
+	endif
+
+	AddModificationTimeEntry(locationID, nwbVersion)
 
 	// process stimsets and dependent stimsets
 	stimsets = WB_StimsetRecursionForList(stimsets)
