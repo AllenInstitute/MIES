@@ -216,7 +216,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
 
 	variable numWindows, i
-	string list, reentryFuncName, win
+	string list, reentryFuncName, win, experimentName
 
 	// cut off multi data suffix
 	name = StringFromList(0, name, ":")
@@ -251,13 +251,17 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 #ifndef TESTS_WITH_NI_HARDWARE
 	HW_ITC_CloseAllDevices()
 #endif
+
+	// remove NWB file which will be used for sweep-by-sweep export
+	CloseNwBFile()
+	DeleteFile/Z GetExperimentNWBFileForExport()
 End
 
 Function TEST_CASE_END_OVERRIDE(name)
 	string name
 
-	string dev
-	variable numEntries, i
+	string dev, experimentNWBFile, baseFolder, nwbFile
+	variable numEntries, i, fileID, nwbVersion
 
 	// cut off multi data suffix
 	name = StringFromList(0, name, ":")
@@ -311,6 +315,19 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 	NVAR bugCount = $GetBugCount()
 	CHECK_EQUAL_VAR(bugCount, 0)
+
+	// store experiment NWB file for later validation
+	HDF5CloseFile/A/Z 0
+	experimentNWBFile = GetExperimentNWBFileForExport()
+
+	if(FileExists(experimentNWBFile))
+		fileID = H5_OpenFile(experimentNWBFile)
+		nwbVersion = GetNWBMajorVersion(ReadNWBVersion(fileID))
+		HDF5CloseFile fileID
+
+		[baseFolder, nwbFile] = GetUniqueNWBFileForExport(nwbVersion)
+		MoveFile experimentNWBFile as (baseFolder + nwbFile)
+	endif
 
 #ifdef AUTOMATED_TESTING_DEBUGGING
 
@@ -997,4 +1014,17 @@ Function/WAVE MajorNWBVersions()
 	SetDimensionLabels(wv, "v1;v2", ROWS)
 
 	return wv
+End
+
+Function/S GetExperimentNWBFileForExport()
+
+	string experimentName
+
+	PathInfo home
+	CHECK(V_Flag)
+
+	experimentName = GetExperimentName()
+	CHECK(cmpstr(experimentName, UNTITLED_EXPERIMENT))
+
+	return S_path + experimentName + ".nwb"
 End

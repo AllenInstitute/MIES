@@ -4686,15 +4686,6 @@ Function ExportIntoNWB([str])
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
-	CloseNwBFile()
-	PathInfo home
-	CHECK(V_Flag)
-
-	experimentName = GetExperimentName()
-	CHECK(cmpstr(experimentName, UNTITLED_EXPERIMENT))
-
-	DeleteFile/Z S_path + experimentName + ".nwb"
-
 	AcquireData(s, str, startTPInstead = 1)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
