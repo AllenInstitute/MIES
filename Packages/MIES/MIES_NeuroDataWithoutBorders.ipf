@@ -643,7 +643,7 @@ End
 
 /// @brief Export all stimsets into NWB
 ///
-/// NWB file is closed after the functionr returns.
+/// NWB file is closed after the function returns.
 Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 	variable nwbVersion
 	string overrideFilePath
