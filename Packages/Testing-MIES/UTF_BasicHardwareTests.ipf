@@ -4676,3 +4676,53 @@ Function ExportStimsetsAndRoundtripThem([variable var])
 		CHECK_EQUAL_WAVES(oldWave, newWave)
 	endfor
 End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function ExportIntoNWB([str])
+	string str
+
+	string filePathExport, experimentName
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	CloseNwBFile()
+	PathInfo home
+	CHECK(V_Flag)
+
+	experimentName = GetExperimentName()
+	CHECK(cmpstr(experimentName, UNTITLED_EXPERIMENT))
+
+	DeleteFile/Z S_path + experimentName + ".nwb"
+
+	AcquireData(s, str, startTPInstead = 1)
+
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+End
+
+Function ExportIntoNWB_REENTRY([str])
+	string str
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	RegisterReentryFunction(GetRTStackInfo(1))
+
+	PGC_SetAndActivateControl(str, "Check_Settings_NwbExport", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(str, "StartTestPulseButton")
+
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+End
+
+Function ExportIntoNWB_REENTRY_REENTRY([str])
+	string str
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+End

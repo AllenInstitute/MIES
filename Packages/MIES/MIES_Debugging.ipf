@@ -315,8 +315,12 @@ Function DEBUGPRINTSTACKINFO()
 
 	print GetStackTrace(prefix = "\tDEBUG ")
 
+	if(!cmpstr(GetExperimentName(), UNTITLED_EXPERIMENT))
+		// do nothing
+		return NaN
+	endif
+
 	if(!windowExists("HistoryCarbonCopy"))
-		ASSERT(cmpstr(GetExperimentName(), UNTITLED_EXPERIMENT), "Untitled experiments do not work")
 		CreateHistoryLog()
 	endif
 
@@ -343,6 +347,8 @@ static Function SaveHistoryLog()
 		ControlWindowToFront()
 		return NaN
 	endif
+
+	ASSERT(cmpstr(GetExperimentName(), UNTITLED_EXPERIMENT), "Untitled experiments do not work")
 
 	SaveNoteBook/O/S=3/P=home HistoryCarbonCopy as historyLog
 End
