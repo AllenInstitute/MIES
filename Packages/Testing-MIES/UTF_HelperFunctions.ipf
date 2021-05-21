@@ -38,6 +38,9 @@ Function AdditionalExperimentCleanup()
 	name = GetDataFolder(0, dfr)
 	MoveDataFolder/O=1 dfr, root:
 
+	CloseNWBFile()
+	HDF5CloseFile/A/Z 0
+
 	KillOrMoveToTrash(dfr=root:MIES)
 
 	NewDataFolder root:MIES

@@ -167,6 +167,8 @@ End
 
 /// @brief Query a control value from the numerical gui state wave
 ///
+/// This does return the zero-based *index* for PopupMenues.
+///
 /// Convienience wrapper to make the call sites nicer.
 ///
 /// @param panelTitle device

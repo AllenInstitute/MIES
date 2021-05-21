@@ -5497,6 +5497,11 @@ End
 
 /// @brief Remove unused rows from the passed wave and return a copy of it.
 ///
+/// If the wave is empty with index being zero, we return a wave with one point
+/// so that we:
+/// - can store something non-empty
+/// - preserve the dimension labels (this can get lost for empty waves when duplication/saving)
+///
 /// @see EnsureLargeEnoughWave()
 Function/WAVE RemoveUnusedRows(WAVE wv)
 
@@ -5506,13 +5511,11 @@ Function/WAVE RemoveUnusedRows(WAVE wv)
 
 	if(IsNaN(index))
 		return wv
-	elseif(index == 0)
-		return $""
 	endif
 
-	ASSERT(IsInteger(index) && index > 0, "Expected strictly positive and integer NOTE_INDEX")
+	ASSERT(IsInteger(index) && index >= 0, "Expected non-negative and integer NOTE_INDEX")
 
-	Duplicate/FREE/RMD=[0, index - 1] wv, dup
+	Duplicate/FREE/RMD=[0, max(0, index - 1)] wv, dup
 
 	return dup
 End
