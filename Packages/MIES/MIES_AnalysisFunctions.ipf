@@ -396,7 +396,7 @@ Function StimParamGUI()
 	string StimSetList, stimSet
 	variable Vm1, Scale, sweeps, ITI
 
-	StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
+	StimSetList = WB_GetStimsetList(channelType = CHANNEL_TYPE_DAC)
 	stimSet = STIM_SET_LOCAL
 	Vm1 = VM1_LOCAL
 	Scale = SCALE_LOCAL

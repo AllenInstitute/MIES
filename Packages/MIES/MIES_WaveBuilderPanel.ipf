@@ -1039,7 +1039,7 @@ End
 
 Function/S WBP_ReturnListSavedSets()
 
-	string DAClist, TTLlist, searchString
+	string stimsetList, searchString
 
 	searchString = GetSetVariableString(panel, "setvar_WaveBuilder_search")
 
@@ -1047,10 +1047,9 @@ Function/S WBP_ReturnListSavedSets()
 		searchString = "*"
 	endif
 
-	ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, searchString, WBstimSetList = DAClist)
-	ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, searchString, WBstimSetList = TTLlist)
+	WB_GetStimsetList(searchString = searchString, WBstimSetList = stimsetList)
 
-	return NONE + ";" + SortList(DAClist + TTLlist, ";", 16)
+	return NONE + ";" + stimsetList
 end
 
 /// @brief Return true if the given stimset is a builtin, false otherwise
@@ -1362,8 +1361,8 @@ Function WBP_UpdateDaEphysStimulusSetPopups([panelTitle])
 
 	DEBUGPRINT("Updating", str=listOfPanels)
 
-	DAlist  = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
-	TTLlist = ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
+	DAlist  = WB_GetStimsetList(channelType = CHANNEL_TYPE_DAC)
+	TTLlist = WB_GetStimsetList(channelType = CHANNEL_TYPE_TTL)
 
 	numPanels = ItemsInList(listOfPanels)
 	for(i = 0; i < numPanels; i += 1)

@@ -4847,20 +4847,6 @@ Function/S GetSetParamFolderAsString(channelType)
 	endif
 End
 
-/// @brief Return a search string, suitable for `WaveList`, for
-/// the given channelType
-Function/S GetSearchStringForChannelType(channelType)
-	variable channelType
-
-	if(channelType == CHANNEL_TYPE_DAC)
-		return CHANNEL_DA_SEARCH_STRING
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		return CHANNEL_TTL_SEARCH_STRING
-	else
-		ASSERT(0, "Unexpected channel type")
-	endif
-End
-
 /// @brief Get the TTL bit mask from the labnotebook
 /// @param numericalValues Numerical labnotebook values
 /// @param sweep           Sweep number
@@ -5101,55 +5087,6 @@ threadsafe Function/WAVE GetTTLStimSets(numericalValues, textualValues, sweep)
 
 	// no TTL entries
 	return $""
-End
-
-Function/S ReturnListOfAllStimSetsFromAllChannelTypes()
-
-	return ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)   \
-	       + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
-End
-
-/// @brief Return a sorted list of all DA/TTL stim set waves
-///
-/// @param channelType              #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
-/// @param searchString             search string in wildcard syntax
-/// @param WBstimSetList            [optional] returns the list of stim sets built with the wavebuilder
-/// @param thirdPartyStimSetList    [optional] returns the list of third party stim sets not built with the wavebuilder
-Function/S ReturnListOfAllStimSets(channelType, searchString, [WBstimSetList, thirdPartyStimSetList])
-	variable channelType
-	string searchString
-	string &WBstimSetList
-	string &thirdPartyStimSetList
-
-	string list, listInternal, listThirdParty
-
-	// fetch stim sets created with the WaveBuilder
-	DFREF dfr = GetSetParamFolder(channelType)
-
-	list = GetListOfObjects(dfr, "WP_" + searchString, exprType = MATCH_WILDCARD)
-	listInternal = RemovePrefixFromListItem("WP_", list)
-
-	// fetch third party stim sets
-	DFREF dfr = GetSetFolder(channelType)
-
-	list = GetListOfObjects(dfr, searchString, exprType = MATCH_WILDCARD)
-	listThirdParty = GetListDifference(list,listInternal)
-
-	if(!ParamIsDefault(WBstimSetList))
-		WBstimSetList = SortList(listInternal,";",16)
-	endif
-
-	if(!ParamIsDefault(thirdPartyStimSetList))
-		thirdPartyStimSetList = SortList(listThirdParty,";",16)
-	endif
-
-	list = SortList(listInternal + listThirdParty, ";", 16)
-
-	if(channelType == CHANNEL_TYPE_DAC)
-		list = AddListItem(STIMSET_TP_WHILE_DAQ, list, ";", 0)
-	endif
-
-	return list
 End
 
 /// @brief Return the name short String of the Parameter Wave used in the WaveBuilder

@@ -707,7 +707,7 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	stimsets = ReturnListOfAllStimSetsFromAllChannelTypes()
+	stimsets = WB_GetStimsetList()
 
 	if(IsEmpty(stimsets))
 		print "No stimsets found for NWB export"
@@ -872,7 +872,7 @@ Function NWB_PrepareExport(nwbVersion)
 
 	if(createdNewNWBFile)
 		NWB_ExportAllData(nwbVersion, keepFileOpen = 1)
-		stimsets = ReturnListOfAllStimSetsFromAllChannelTypes()
+		stimsets = WB_GetstimsetList()
 		NWB_AppendStimset(nwbVersion, locationID, stimsets, GetNoCompression())
 	endif
 

@@ -258,7 +258,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Gain_DA_06 WIN = $panelTitle, value = _NUM:0.00
 	SetVariable Gain_DA_07 WIN = $panelTitle, value = _NUM:0.00
 
-	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, GetSearchStringForChannelType(CHANNEL_TYPE_DAC))
+	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC)
 	PopupMenu Wave_DA_00 WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
 	PopupMenu Wave_DA_01 WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
 	PopupMenu Wave_DA_02 WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
@@ -295,7 +295,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $panelTitle,value= _NUM:10
 	SetVariable SetVar_DataAcq_TPBaselinePerc  WIN = $panelTitle,value= _NUM:25
 
-	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, GetSearchStringForChannelType(CHANNEL_TYPE_TTL))
+	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL)
 	PopupMenu Wave_TTL_00 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
 	PopupMenu Wave_TTL_01 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
 	PopupMenu Wave_TTL_02 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
@@ -424,7 +424,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Search_TTL_07 WIN = $panelTitle, value= _STR:""
 	SetVariable Search_TTL_All WIN = $panelTitle, value= _STR:""
 
-	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, GetSearchStringForChannelType(CHANNEL_TYPE_DAC))
+	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC)
 	PopupMenu IndexEnd_DA_00 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
 	PopupMenu IndexEnd_DA_01 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
 	PopupMenu IndexEnd_DA_02 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
@@ -437,7 +437,7 @@ Function DAP_EphysPanelStartUpSettings()
 	PopupMenu IndexEnd_DA_AllVClamp WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
 	PopupMenu IndexEnd_DA_AllICLamp WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
 
-	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, GetSearchStringForChannelType(CHANNEL_TYPE_TTL))
+	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL)
 	PopupMenu IndexEnd_TTL_00 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
 	PopupMenu IndexEnd_TTL_01 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
 	PopupMenu IndexEnd_TTL_02 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
@@ -787,12 +787,13 @@ End
 
 /// @brief Return a popValue string suitable for stimsets
 /// @todo rework the code to have a fixed popValue
-Function/S DAP_FormatStimSetPopupValue(channelType, searchString)
-	variable channelType
-	string searchString
+Function/S DAP_FormatStimSetPopupValue(variable channelType, [string searchString])
+	if(ParamIsDefault(searchString))
+		searchString = "*"
+	endif
 
 	string str
-	sprintf str, "\"%s;\"+%s%s%s", NONE, "ReturnListOfAllStimSets(" + num2str(channelType) + ",\"", searchString,"\")"
+	sprintf str, "\"%s;\"+WB_GetStimsetList(channelType = %d, searchString = \"%s\")", NONE, channelType, searchString
 
 	return str
 End
@@ -908,14 +909,14 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
 
 			if(isEmpty(varstr))
-				searchString = GetSearchStringForChannelType(channelType)
+				searchString = "*"
 			else
 				isCustomSearchString = 1
 				searchString = varStr
 			endif
 
-			listOfWaves = ReturnListOfAllStimSets(channelType, searchString)
-			popupValue = DAP_FormatStimSetPopupValue(channelType, searchString)
+			listOfWaves = WB_GetStimsetList(channelType = channelType, searchString = searchString)
+			popupValue = DAP_FormatStimSetPopupValue(channelType, searchString = searchString)
 
 			ctrl = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_WAVE)
 			PopupMenu $ctrl win=$panelTitle, value=#popupValue, userdata(MenuExp)=listOfWaves
