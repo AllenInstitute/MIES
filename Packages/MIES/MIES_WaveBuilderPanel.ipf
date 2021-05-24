@@ -517,16 +517,13 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 				numPanels = ItemsInList(lockedDevices)
 				for(i = 0; i < numPanels; i += 1)
 					panelTitle = StringFromList(i, lockedDevices)
-					if(StringMatch(SetWaveToDelete, CHANNEL_DA_SEARCH_STRING))
-						channelType = CHANNEL_TYPE_DAC
-					else
-						channelType = CHANNEL_TYPE_TTL
-					endif
 
 					if(!WindowExists(panelTitle))
 						WBP_DeleteSet()
 						continue
 					endif
+
+					channelType = GetStimSetType(SetWaveToDelete)
 
 					popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(panelTitle, channelType, CHANNEL_CONTROL_WAVE)
 					popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(panelTitle, channelType, CHANNEL_CONTROL_INDEX_END)
@@ -1196,7 +1193,7 @@ static Function WBP_DeleteSet()
 		return NaN
 	endif
 
-	if(StringMatch(setName, CHANNEL_TTL_SEARCH_STRING))
+	if(GetStimSetType(setName) == CHANNEL_TYPE_TTL)
 		dfref paramDFR = GetWBSvdStimSetParamTTLPath()
 		dfref dfr      = GetWBSvdStimSetTTLPath()
 	else
