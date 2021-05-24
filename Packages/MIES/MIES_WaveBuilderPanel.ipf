@@ -1181,6 +1181,7 @@ End
 static Function WBP_DeleteSet()
 
 	string WPName, WPTName, SegWvTypeName, setName
+	variable channelType
 
 	setName = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
 
@@ -1193,13 +1194,10 @@ static Function WBP_DeleteSet()
 		return NaN
 	endif
 
-	if(GetStimSetType(setName) == CHANNEL_TYPE_TTL)
-		dfref paramDFR = GetWBSvdStimSetParamTTLPath()
-		dfref dfr      = GetWBSvdStimSetTTLPath()
-	else
-		dfref paramDFR = GetWBSvdStimSetParamDAPath()
-		dfref dfr      = GetWBSvdStimSetDAPath()
-	endif
+	channelType = GetStimSetType(setName)
+
+	dfref paramDFR = GetSetParamFolder(channelType)
+	dfref dfr      = GetSetFolder(channelType)
 
 	KillOrMoveToTrash(wv=dfr:$SetName)
 	KillOrMoveToTrash(wv=paramDFR:$WPName)
