@@ -143,6 +143,10 @@ Function/Wave WB_GetWaveParamForSet(setName)
 
 	WAVE/Z/SDFR=dfr wv = $WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
 
+	if(WaveExists(wv))
+		UpgradeWaveParam(wv)
+	endif
+
 	return wv
 End
 
@@ -188,6 +192,10 @@ Function/Wave WB_GetSegWvTypeForSet(setName)
 	DFREF dfr = GetSetParamFolder(type)
 
 	WAVE/Z/SDFR=dfr wv = $WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
+
+	if(WaveExists(wv))
+		UpgradeSegWvType(wv)
+	endif
 
 	return wv
 End
@@ -415,10 +423,6 @@ static Function/Wave WB_GetStimSet([setName])
 		if(!WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType))
 			return $""
 		endif
-
-		UpgradeWaveParam(WP)
-		UpgradeWaveTextParam(WPT)
-		UpgradeSegWvType(SegWvType)
 	endif
 
 	// WB_AddDelta modifies the waves so we pass a copy instead
@@ -2052,9 +2056,6 @@ Function/WAVE WB_CustomWavesPathFromStimSet([stimsetList])
 			continue
 		endif
 
-		UpgradeSegWvType(SegWvType)
-		UpgradeWaveTextParam(WPT)
-
 		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
@@ -2103,9 +2104,6 @@ Function/WAVE WB_UpgradeCustomWaves([stimsetList])
 			continue
 		endif
 
-		UpgradeSegWvType(SegWvType)
-		UpgradeWaveTextParam(WPT)
-
 		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
@@ -2145,7 +2143,6 @@ static Function/S WB_StimsetChildren([stimset])
 
 	ASSERT(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType), "Parameter Waves not found.")
 
-	UpgradeSegWvType(SegWvType)
 	ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "Dimension Label not found. Check for changed DimLabels in SegWave!")
 	numEpochs = SegWvType[%'Total number of epochs']
 
