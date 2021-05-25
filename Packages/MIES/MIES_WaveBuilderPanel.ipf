@@ -36,6 +36,9 @@ static Constant FROM_PANEL_TO_WAVE = 0x1
 static Constant FROM_WAVE_TO_PANEL = 0x2
 /// @}
 
+static StrConstant HIDDEN_CONTROLS_CUSTOM_COMBINE = "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_op_P70;popup_WaveBuilder_op_P71;popup_WaveBuilder_op_P72;setvar_explDeltaValues_T11;setvar_explDeltaValues_T12_DD02;setvar_explDeltaValues_T13"
+static StrConstant HIDDEN_CONTROLS_SQUARE_PULSE   = "popup_WaveBuilder_op_P71;setvar_explDeltaValues_T12;setvar_explDeltaValues_T12_DD02"
+
 Function WB_OpenStimulusSetInWaveBuilder()
 
 	string graph, trace, extPanel, waveBuilder, stimset, device
@@ -607,17 +610,16 @@ Function WBP_FinalTabHook(tca)
 		EnableControl(panel, "SetVar_WaveBuilder_P0")
 	endif
 
-	ShowControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_op_P70;popup_WaveBuilder_op_P71;popup_WaveBuilder_op_P72;setvar_explDeltaValues_T11;setvar_explDeltaValues_T12_DD02;setvar_explDeltaValues_T13")
+	ShowControls(tca.win, HIDDEN_CONTROLS_CUSTOM_COMBINE)
+	ShowControls(tca.win, HIDDEN_CONTROLS_SQUARE_PULSE)
 
 	switch(tca.tab)
 		case EPOCH_TYPE_CUSTOM:
-			HideControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_op_P70;popup_WaveBuilder_op_P71;popup_WaveBuilder_op_P72;setvar_explDeltaValues_T11;setvar_explDeltaValues_T12_DD02;setvar_explDeltaValues_T13")
-			break
 		case EPOCH_TYPE_COMBINE:
-			HideControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_op_P70;popup_WaveBuilder_op_P71;popup_WaveBuilder_op_P72;setvar_explDeltaValues_T11;setvar_explDeltaValues_T12_DD02;setvar_explDeltaValues_T13")
+			HideControls(tca.win, HIDDEN_CONTROLS_CUSTOM_COMBINE)
 			break
 		case EPOCH_TYPE_SQUARE_PULSE:
-			HideControls(tca.win, "popup_WaveBuilder_op_P71;setvar_explDeltaValues_T12_DD02;")
+			HideControls(tca.win, HIDDEN_CONTROLS_SQUARE_PULSE)
 			break
 	endswitch
 
