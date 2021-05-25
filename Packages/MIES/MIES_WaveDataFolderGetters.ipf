@@ -3611,18 +3611,18 @@ End
 /// Rows:
 /// -  0: Name of the custom wave for #EPOCH_TYPE_CUSTOM (legacy format: wave
 ///       name only, current format: absolute path including the wave name)
-/// -  1: Analysis function, pre daq
-/// -  2: Analysis function, mid sweep
-/// -  3: Analysis function, post sweep
-/// -  4: Analysis function, post set
-/// -  5: Analysis function, post daq
+/// -  1: Analysis function, pre daq (deprecated)
+/// -  2: Analysis function, mid sweep (deprecated)
+/// -  3: Analysis function, post sweep (deprecated)
+/// -  4: Analysis function, post set (deprecated)
+/// -  5: Analysis function, post daq (deprecated)
 /// -  6: Formula
 /// -  7: Formula version: "[[:digit:]]+"
-/// -  8: Analysis function, pre sweep
+/// -  8: Analysis function, pre sweep (deprecated)
 /// -  9: Analysis function, generic
 /// - 10: Unused
 /// - 11-26: Explicit delta values. `;` separated list as long as the number of sweeps.
-/// - 27: Analysis function, pre set
+/// - 27: Analysis function, pre set (deprecated)
 /// - 28: Explicit delta value for "Inter trial interval"
 /// - 29: Analysis function parameters. See below for a detailed explanation.
 /// - 30-50: unused
