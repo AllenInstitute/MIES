@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 
 from pynwb import NWBHDF5IO
 import h5py
@@ -19,7 +19,7 @@ def checkFile(path):
         return 1
 
     # 1.) Validation
-    comp = run(["python3", "-m", "pynwb.validate", "--cached-namespace", path],
+    comp = run(["python", "-m", "pynwb.validate", "--cached-namespace", path],
                stdout=PIPE, stderr=STDOUT, universal_newlines=True, timeout=20)
 
     if comp.returncode != 0:
