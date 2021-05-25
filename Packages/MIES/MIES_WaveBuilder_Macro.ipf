@@ -974,11 +974,6 @@ Window WaveBuilder() : Panel
 	SetVariable setvar_explDeltaValues_T11,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_explDeltaValues_T11,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_explDeltaValues_T11,value= _STR:""
-	SetVariable setvar_explDeltaValues_T12,pos={557.00,81.00},size={149.00,18.00},disable=3,proc=WBP_SetVarProc_UpdateParam
-	SetVariable setvar_explDeltaValues_T12,userdata(ResizeControlsInfo)= A"!!,Iq5QF-F!!#A$!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_explDeltaValues_T12,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	SetVariable setvar_explDeltaValues_T12,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_explDeltaValues_T12,value= _STR:""
 	SetVariable setvar_explDeltaValues_T20,pos={717.00,124.00},size={149.00,18.00},disable=3,proc=WBP_SetVarProc_UpdateParam
 	SetVariable setvar_explDeltaValues_T20,userdata(tabnum)=  "2"
 	SetVariable setvar_explDeltaValues_T20,userdata(tabcontrol)=  "WBP_WaveType"
