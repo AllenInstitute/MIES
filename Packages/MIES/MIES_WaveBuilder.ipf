@@ -2475,3 +2475,22 @@ Function/S WB_GetStimsetList([variable channelType, string searchString, string 
 
 	return listAll
 End
+
+/// @brief Remove the given stimulus set and update all relevant GUIs
+Function WB_RemoveStimSet(string setName)
+	variable i, numPanels
+	string lockedDevices, panelTitle
+
+	lockedDevices = GetListOfLockedDevices()
+	if(IsEmpty(lockedDevices))
+		DAP_DeleteStimulusSet(setName)
+		return NaN
+	endif
+
+	numPanels = ItemsInList(lockedDevices)
+	for(i = 0; i < numPanels; i += 1)
+		panelTitle = StringFromList(i, lockedDevices)
+
+		DAP_DeleteStimulusSet(setName, device = panelTitle)
+	endfor
+End

@@ -497,9 +497,7 @@ End
 Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string setWaveToDelete, panelTitle, lockedDevices
-	string popupMenuSelectedItemsStart, popupMenuSelectedItemsEnd
-	variable i, numPanels, channelType
+	string setWaveToDelete
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -512,30 +510,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 				break
 			endif
 
-			lockedDevices = GetListOfLockedDevices()
-			if(!IsEmpty(lockedDevices))
-				numPanels = ItemsInList(lockedDevices)
-				for(i = 0; i < numPanels; i += 1)
-					panelTitle = StringFromList(i, lockedDevices)
-
-					if(!WindowExists(panelTitle))
-						WBP_DeleteSet()
-						continue
-					endif
-
-					channelType = GetStimSetType(SetWaveToDelete)
-
-					popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(panelTitle, channelType, CHANNEL_CONTROL_WAVE)
-					popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(panelTitle, channelType, CHANNEL_CONTROL_INDEX_END)
-					WBP_DeleteSet()
-					WBP_RestorePopupMenuSelection(panelTitle, channelType, CHANNEL_CONTROL_WAVE, popupMenuSelectedItemsStart)
-					WBP_RestorePopupMenuSelection(panelTitle, channelType, CHANNEL_CONTROL_INDEX_END, popupMenuSelectedItemsEnd)
-				endfor
-			else
-				WBP_DeleteSet()
-			endif
-
-			WBP_UpdateDaEphysStimulusSetPopups()
+			WB_RemoveStimSet(setWaveToDelete)
 
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
 			PopupMenu popup_WaveBuilder_SetList win=$panel, mode = 1
@@ -656,7 +631,7 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 			WBP_SaveSetParam(setName)
 
 			// propagate the existence of the new set
-			WBP_UpdateDaEphysStimulusSetPopups()
+			DAP_UpdateDaEphysStimulusSetPopups()
 			WB_UpdateEpochCombineList(WBP_GetStimulusType())
 
 			WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
@@ -1147,33 +1122,6 @@ static Function SetAnalysisFunctionIfFuncExists(win, ctrl, stimset, funcList, fu
 	SetPopupMenuString(win, ctrl, entry)
 End
 
-static Function WBP_DeleteSet()
-
-	string WPName, WPTName, SegWvTypeName, setName
-	variable channelType
-
-	setName = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
-
-	WPName        = WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
-	WPTName       = WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
-	SegWvTypeName = WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
-
-	// makes sure that a set is selected
-	if(!CmpStr(setName, NONE))
-		return NaN
-	endif
-
-	channelType = GetStimSetType(setName)
-
-	dfref paramDFR = GetSetParamFolder(channelType)
-	dfref dfr      = GetSetFolder(channelType)
-
-	KillOrMoveToTrash(wv=dfr:$SetName)
-	KillOrMoveToTrash(wv=paramDFR:$WPName)
-	KillOrMoveToTrash(wv=paramDFR:$WPTName)
-	KillOrMoveToTrash(wv=paramDFR:$SegWvTypeName)
-End
-
 static Function WBP_UpdateEpochControls()
 
 	variable currentEpoch, numEpochs
@@ -1302,94 +1250,6 @@ Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
 	endswitch
 
 	return 0
-End
-
-/// @brief Update the popup menus and its `MenuExp` user data after stim set changes
-///
-/// @param panelTitle [optional, defaults to all locked devices] device
-Function WBP_UpdateDaEphysStimulusSetPopups([panelTitle])
-	string panelTitle
-
-	variable i, j, numPanels
-	string ctrlWave, ctrlIndexEnd, DAlist, TTLlist, listOfPanels
-
-	if(ParamIsDefault(panelTitle))
-		listOfPanels = GetListOfLockedDevices()
-
-		if(isEmpty(listOfPanels))
-			return NaN
-		endif
-	else
-		listOfPanels = panelTitle
-	endif
-
-	DEBUGPRINT("Updating", str=listOfPanels)
-
-	DAlist  = WB_GetStimsetList(channelType = CHANNEL_TYPE_DAC)
-	TTLlist = WB_GetStimsetList(channelType = CHANNEL_TYPE_TTL)
-
-	numPanels = ItemsInList(listOfPanels)
-	for(i = 0; i < numPanels; i += 1)
-		panelTitle = StringFromList(i, listOfPanels)
-
-		if(!WindowExists(panelTitle))
-			continue
-		endif
-
-		for(j = CHANNEL_INDEX_ALL; j < NUM_DA_TTL_CHANNELS; j += 1)
-			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-			SetControlUserData(panelTitle, ctrlWave, "MenuExp", DAlist)
-			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", DAlist)
-
-			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-			SetControlUserData(panelTitle, ctrlWave, "MenuExp", TTLlist)
-			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", TTLlist)
-		endfor
-
-		DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
-	endfor
-End
-
-/// @brief Returns the names of the items in the popmenu controls in a list
-static Function/S WBP_PopupMenuWaveNameList(panelTitle, channelType, controlType)
-	string panelTitle
-	variable channelType, controlType
-
-	string ctrl, stimset
-	string list = ""
-	variable i
-
-	ASSERT(controlType == CHANNEL_CONTROL_WAVE || controlType == CHANNEL_CONTROL_INDEX_END, "Invalid controlType")
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, channelType, controlType)
-		stimset = GetPopupMenuString(panelTitle, ctrl)
-		list = AddListItem(stimset, list, ";", Inf)
-	endfor
-
-	return list
-End
-
-static Function WBP_RestorePopupMenuSelection(panelTitle, channelType, controlType, list)
-	variable channelType, controlType
-	string panelTitle, list
-
-	variable i, stimsetIndex
-	string ctrl, stimset
-
-	ASSERT(controlType == CHANNEL_CONTROL_WAVE || controlType == CHANNEL_CONTROL_INDEX_END, "Invalid controlType")
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl    = GetPanelControl(i, channelType, controlType)
-		stimset = GetPopupMenuString(panelTitle, ctrl)
-
-		if(cmpstr(stimset, StringFromList(i, list)) == 1 || isEmpty(stimset))
-			stimsetIndex = GetPopupMenuIndex(panelTitle, ctrl)
-			PGC_SetAndActivateControl(paneltitle, ctrl, val=(stimsetIndex - 1))
-		endif
-	endfor
 End
 
 Function WBP_CheckProc_PreventUpdate(cba) : CheckBoxControl
