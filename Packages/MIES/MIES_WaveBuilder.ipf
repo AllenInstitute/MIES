@@ -2076,7 +2076,7 @@ End
 /// do not try to upgrade when loading stimsets. The custom waves have to be loaded first.
 ///
 /// @returns a text wave with paths to custom waves.
-Function/WAVE WB_UpgradeCustomWaves([stimsetList])
+static Function/WAVE WB_UpgradeCustomWaves([stimsetList])
 	string stimsetList
 
 	variable channelType, numStimsets, numEpochs, i, j
