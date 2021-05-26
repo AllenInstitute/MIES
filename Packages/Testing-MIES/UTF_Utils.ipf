@@ -4882,3 +4882,140 @@ Function BST_Works()
 End
 
 /// @}
+
+
+// GetWaveSize
+/// @{
+
+Function/WAVE GenerateAllPossibleWaveTypes()
+
+	variable numberOfNumericTypes
+
+	Make/FREE types = {IGOR_TYPE_8BIT_INT,                                           \
+	                   IGOR_TYPE_16BIT_INT,                                          \
+	                   IGOR_TYPE_32BIT_INT,                                          \
+	                   IGOR_TYPE_64BIT_INT,                                          \
+	                   IGOR_TYPE_8BIT_INT | IGOR_TYPE_UNSIGNED,                      \
+	                   IGOR_TYPE_16BIT_INT | IGOR_TYPE_UNSIGNED,                     \
+	                   IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED,                     \
+	                   IGOR_TYPE_64BIT_INT | IGOR_TYPE_UNSIGNED,                     \
+	                   IGOR_TYPE_8BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX,  \
+	                   IGOR_TYPE_16BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
+	                   IGOR_TYPE_32BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
+	                   IGOR_TYPE_64BIT_INT | IGOR_TYPE_UNSIGNED | IGOR_TYPE_COMPLEX, \
+	                   IGOR_TYPE_32BIT_FLOAT,                                        \
+	                   IGOR_TYPE_64BIT_FLOAT}
+
+	numberOfNumericTypes = DimSize(types, ROWS)
+
+	Make/FREE/WAVE/N=(numberOfNumericTypes + 3) waves
+	waves[0, numberOfNumericTypes - 1] = NewFreeWave(types[p], 1)
+
+	Make/T/FREE textWave
+	waves[numberOfNumericTypes] = textWave
+
+	Make/DF/FREE dfrefWave = NewFreeDataFolder()
+	waves[numberOfNumericTypes + 1] = dfrefWave
+
+	Make/WAVE/FREE wvRefWave = {NewFreeWave(IGOR_TYPE_16BIT_INT, 1), $""}
+	waves[numberOfNumericTypes + 2] = wvRefWave
+
+	return waves
+End
+
+// UTF_TD_GENERATOR GenerateAllPossibleWaveTypes
+Function GWS_Works([WAVE wv])
+
+	CHECK_WAVE(wv, FREE_WAVE)
+	CHECK(GetWaveSize(wv) > 0)
+
+	Make/N=1 junkWave
+	MultiThread junkWave = GetWaveSize(wv)
+	CHECK(junkWave[0] > 0)
+End
+
+/// @}
+
+// WaveModCountWrapper
+/// @{
+
+Function WMCW_ChecksMainThread()
+	variable val
+
+	Make/FREE data
+
+	try
+		WaveModCountWrapper(data)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+threadsafe Function WMCW_ChecksPreemptiveThreadHelper(WAVE wv)
+
+	try
+		WaveModCountWrapper(wv)
+		return inf
+	catch
+		return 0
+	endtry
+End
+
+Function WMCW_ChecksPreemptiveThread()
+
+	Make/O data
+	Make/FREE junkWave
+	MultiThread junkWave = WMCW_ChecksPreemptiveThreadHelper(data)
+
+	WaveStats/Q/M=2 junkWave
+	CHECK_EQUAL_VAR(V_numNaNs, 0)
+	CHECK_EQUAL_VAR(V_numInfs, 0)
+	CHECK_EQUAL_VAR(V_Sum, 0)
+End
+
+Function WMCW_Works1()
+	variable val
+
+	Make/O data
+	val = WaveModCountWrapper(data)
+	data += 1
+	CHECK_EQUAL_VAR(val + 1, WaveModCountWrapper(data))
+End
+
+Function WMCW_Works2()
+	variable val
+
+	Make/FREE data
+	Make/FREE junkWave
+	MultiThread junkWave = WaveModCountWrapper(data)
+
+	WaveStats/Q/M=2 junkWave
+	CHECK_EQUAL_VAR(V_numNans, DimSize(junkWave, ROWS))
+End
+
+/// @}
+
+// GetLockState
+/// @{
+
+Function GLS_Works()
+	Make/FREE data
+
+	CHECK_EQUAL_VAR(GetLockState(data), 0)
+
+	SetWaveLock 1, data
+	CHECK_EQUAL_VAR(GetLockState(data), 1)
+End
+
+Function GLS_Checks()
+
+	try
+		GetLockState($"")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @}

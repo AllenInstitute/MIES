@@ -168,21 +168,21 @@ static Function/WAVE ExtractLBColumn(values, col, suffix)
 End
 
 /// @brief Return a list of the AD channels from the DAQ config
-Function/WAVE GetADCListFromConfig(config)
+threadsafe Function/WAVE GetADCListFromConfig(config)
 	WAVE config
 
 	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_ADC)
 End
 
 /// @brief Return a list of the DA channels from the DAQ config
-Function/WAVE GetDACListFromConfig(config)
+threadsafe Function/WAVE GetDACListFromConfig(config)
 	WAVE config
 
 	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_DAC)
 End
 
 /// @brief Return a list of the TTL channels from the DAQ config
-Function/WAVE GetTTLListFromConfig(config)
+threadsafe Function/WAVE GetTTLListFromConfig(config)
 	WAVE config
 
 	return GetChanneListFromDAQConfigWave(config, XOP_CHANNEL_TYPE_TTL)
@@ -194,13 +194,13 @@ End
 ///
 /// @param config       DAQConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
-static Function/WAVE GetChanneListFromDAQConfigWave(config, channelType)
+threadsafe static Function/WAVE GetChanneListFromDAQConfigWave(config, channelType)
 	WAVE config
 	variable channelType
 
 	variable numRows, i, j
 
-	ASSERT(IsValidConfigWave(config, version=0), "Invalid config wave")
+	ASSERT_TS(IsValidConfigWave(config, version=0), "Invalid config wave")
 
 	numRows = DimSize(config, ROWS)
 	Make/U/B/FREE/N=(numRows) activeChannels
@@ -384,7 +384,7 @@ End
 /// @param[in]  entrySourceType   type of the labnotebook entry, one of @ref DataAcqModes
 /// @param[out] first             point index of the beginning of the range
 /// @param[out] last              point index of the end of the range
-static Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last)
+threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last)
 	WAVE wv
 	variable col, val, forwardORBackward, entrySourceType
 	variable &first, &last
@@ -490,17 +490,17 @@ End
 /// entries are the same is for really old legacy entries which are INDEP but set for all headstages.
 ///
 /// Does nothing outside of CI.
-static Function EnforceIndependentSetting(WAVE settings)
+threadsafe static Function EnforceIndependentSetting(WAVE settings)
 
 #ifdef AUTOMATED_TESTING
 	Duplicate/FREE/RMD=[0, NUM_HEADSTAGES - 1] settings, settingsHS
-	ASSERT(!HasOneValidEntry(settingsHS) || IsConstant(settings, settings[0]), "The labnotebook query asked for independent headstage setting, but the entry has headstage dependent settings.")
+	ASSERT_TS(!HasOneValidEntry(settingsHS) || IsConstant(settings, settings[0]), "The labnotebook query asked for independent headstage setting, but the entry has headstage dependent settings.")
 #endif
 End
 
 /// @brief Returns the numerical index for the sweep number column
 /// in the settings history waves (numeric and text)
-Function GetSweepColumn(labnotebookValues)
+threadsafe Function GetSweepColumn(labnotebookValues)
 	Wave labnotebookValues
 
 	variable sweepCol
@@ -527,8 +527,6 @@ Function GetSweepColumn(labnotebookValues)
 	if(sweepCol >= 0)
 		return sweepCol
 	endif
-
-	DEBUGPRINT("Could not find sweep number dimension label, trying with column zero")
 
 	return 0
 End
@@ -582,7 +580,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function GetLastSettingIndep(numericalValues, sweepNo, setting, entrySourceType, [defValue])
+threadsafe Function GetLastSettingIndep(numericalValues, sweepNo, setting, entrySourceType, [defValue])
 	Wave numericalValues
 	variable sweepNo
 	string setting
@@ -598,7 +596,6 @@ Function GetLastSettingIndep(numericalValues, sweepNo, setting, entrySourceType,
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -609,11 +606,13 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceType, [defValue])
+threadsafe Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceType, [defValue])
 	Wave/T textualValues
 	variable sweepNo
 	string setting, defValue
 	variable entrySourceType
+
+	ASSERT_TS(IsTextWave(textualValues), "Can only work with text waves")
 
 	if(ParamIsDefault(defValue))
 		defValue = ""
@@ -625,7 +624,6 @@ Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceT
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -637,7 +635,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function GetLastSettingIndepRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
+threadsafe Function GetLastSettingIndepRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
 	Wave numericalValues
 	variable sweepNo
 	string setting
@@ -653,7 +651,6 @@ Function GetLastSettingIndepRAC(numericalValues, sweepNo, setting, entrySourceTy
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -665,7 +662,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function GetLastSettingIndepSCI(numericalValues, sweepNo, setting, headstage, entrySourceType, [defValue])
+threadsafe Function GetLastSettingIndepSCI(numericalValues, sweepNo, setting, headstage, entrySourceType, [defValue])
 	Wave numericalValues
 	variable sweepNo
 	string setting
@@ -681,7 +678,6 @@ Function GetLastSettingIndepSCI(numericalValues, sweepNo, setting, headstage, en
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -692,7 +688,7 @@ End
 /// @return the headstage independent setting or `defValue`
 ///
 /// @ingroup LabnotebookQueryFunctions
-Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
+threadsafe Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
 	WAVE numericalValues
 	wAVE/T textualValues
 	variable sweepNo
@@ -709,7 +705,6 @@ Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, s
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -720,7 +715,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSettingChannelInternal()
-Function [WAVE/Z settings, variable index] GetLastSettingChannel(WAVE numericalValues, WAVE/T/Z textualValues, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
+threadsafe Function [WAVE/Z settings, variable index] GetLastSettingChannel(WAVE numericalValues, WAVE/T/Z textualValues, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
 
 	[settings, index] = GetLastSettingChannelInternal(numericalValues, numericalValues, sweepNo, setting, channelNumber, channelType, entrySourceType)
 	if(WaveExists(settings))
@@ -765,7 +760,7 @@ End
 /// @return A tuple of the result wave and the index into it.
 ///
 /// @sa GetLastSettingChannel
-static Function [WAVE/Z wv, variable index] GetLastSettingChannelInternal(WAVE numericalValues, WAVE values, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
+threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInternal(WAVE numericalValues, WAVE values, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
 	string entryName
 
 	switch(channelType)
@@ -776,7 +771,7 @@ static Function [WAVE/Z wv, variable index] GetLastSettingChannelInternal(WAVE n
 			entryName = "ADC"
 			break
 		default:
-			ASSERT(0, "Unsupported channelType")
+			ASSERT_TS(0, "Unsupported channelType")
 	endswitch
 
 	WAVE/Z activeChannels = GetLastSetting(numericalValues, sweepNo, entryName, entrySourceType)
@@ -785,7 +780,7 @@ static Function [WAVE/Z wv, variable index] GetLastSettingChannelInternal(WAVE n
 		WAVE/Z indizes = FindIndizes(activeChannels, col=0, var=channelNumber)
 		if(WaveExists(indizes))
 			// associated entry
-			ASSERT(DimSize(indizes, ROWS) == 1, "Unexpected size")
+			ASSERT_TS(DimSize(indizes, ROWS) == 1, "Unexpected size")
 
 			WAVE/Z settings = GetLastSetting(values, sweepNo, setting, entrySourceType)
 
@@ -831,7 +826,7 @@ End
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType)
+threadsafe Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType)
 	wAVE values
 	variable sweepNo
 	string setting
@@ -886,13 +881,13 @@ Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType)
 												first = first, last = last, rowIndex = rowIndex)
 
 		if(WaveExists(settings))
-			ASSERT(first >= 0 && last >= 0 && rowIndex >= 0, "invalid return combination from GetLastSettingNoCache")
+			ASSERT_TS(first >= 0 && last >= 0 && rowIndex >= 0, "invalid return combination from GetLastSettingNoCache")
 			rowCache[sweepNo][%first][entrySourceTypeIndex] = first
 			rowCache[sweepNo][%last][entrySourceTypeIndex]  = last
 
 			indexWave[sweepNo][settingCol][entrySourceTypeIndex] = rowIndex
 		else
-			ASSERT(first < 0 || last < 0 || rowIndex < 0, "invalid return combination from GetLastSettingNoCache")
+			ASSERT_TS(first < 0 || last < 0 || rowIndex < 0, "invalid return combination from GetLastSettingNoCache")
 			indexWave[sweepNo][settingCol][entrySourceTypeIndex] = LABNOTEBOOK_MISSING_VALUE
 		endif
 
@@ -901,7 +896,7 @@ Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType)
 		return $""
 	endif
 
-	ASSERT(0, "Unexpected type")
+	ASSERT_TS(0, "Unexpected type")
 End
 
 /// @brief Return a wave with the latest value of a setting from the
@@ -924,7 +919,7 @@ End
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [first, last, rowIndex])
+threadsafe Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [first, last, rowIndex])
 	Wave values
 	variable sweepNo
 	string setting
@@ -948,17 +943,16 @@ Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [
 		elseif(first >= 0 && last >= 0)
 			mode = GET_LB_MODE_READ
 		else
-			ASSERT(0, "Invalid params")
+			ASSERT_TS(0, "Invalid params")
 		endif
 	else
-		ASSERT(0, "Invalid params")
+		ASSERT_TS(0, "Invalid params")
 	endif
 
 	numLayers = DimSize(values, LAYERS)
 	settingCol = FindDimLabel(values, COLS, setting)
 
 	if(settingCol <= 0)
-		DEBUGPRINT("Could not find the setting", str=setting)
 		return $""
 	endif
 
@@ -974,7 +968,7 @@ Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [
 		lastValue  = last
 	endif
 
-	ASSERT(firstValue <= lastValue, "Invalid value range")
+	ASSERT_TS(firstValue <= lastValue, "Invalid value range")
 
 	if(mode == GET_LB_MODE_WRITE)
 		first = firstValue
@@ -1000,7 +994,7 @@ Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [
 					endif
 				elseif(entrySourceType != str2num(textualValues[i][sourceTypeCol][0]))
 					// labnotebook has entrySourceType and it is not matching
-					DEBUGPRINT("Skipping the given row as sourceType is available and not matching: ", var=i)
+					DEBUGPRINT_TS("Skipping the given row as sourceType is available and not matching: ", var=i)
 					continue
 				endif
 			endif
@@ -1084,18 +1078,18 @@ Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [
 						// testpulse block starts but DAQ was requested
 						// two row long testpulse block, skip it
 						i -= testpulseBlockLength
-						DEBUGPRINT("Skipping the testpulse block as DAQ is requested, testpulseBlockLength:", var=testPulseBlockLength)
+						DEBUGPRINT_TS("Skipping the testpulse block as DAQ is requested, testpulseBlockLength:", var=testPulseBlockLength)
 						continue
 					elseif(entrySourceType == TEST_PULSE_MODE && blockType == DATA_ACQUISITION_MODE)
 						// sweep block starts but TP was requested
 						// as the sweep block occupies always the first blocks
 						// we now know that we did not find the entries
-						DEBUGPRINT("Skipping the DAQ block as testpulse is requested, as this is the last block, we can also return.")
+						DEBUGPRINT_TS("Skipping the DAQ block as testpulse is requested, as this is the last block, we can also return.")
 						return $""
 					endif
 				elseif(entrySourceType != numericalValues[i][sourceTypeCol][0])
 					// labnotebook has entrySourceType and it is not matching
-					DEBUGPRINT("Skipping the given row as sourceType is available and not matching: ", var=i)
+					DEBUGPRINT_TS("Skipping the given row as sourceType is available and not matching: ", var=i)
 					continue
 				endif
 			endif
@@ -1119,7 +1113,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingTextRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType)
+threadsafe Function/WAVE GetLastSettingTextRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType)
 	WAVE numericalValues
 	WAVE/T textualValues
 	variable sweepNo
@@ -1149,7 +1143,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingRAC(numericalValues, sweepNo, setting, entrySourceType)
+threadsafe Function/WAVE GetLastSettingRAC(numericalValues, sweepNo, setting, entrySourceType)
 	WAVE numericalValues
 	variable sweepNo
 	string setting
@@ -1182,7 +1176,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
+threadsafe Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
 	WAVE numericalValues
 	variable sweepNo
 	string setting
@@ -1218,7 +1212,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
+threadsafe Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
 	WAVE numericalValues
 	WAVE/T textualValues
 	variable sweepNo
@@ -1256,7 +1250,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting
-Function/WAVE GetLastSettingEachRAC(numericalValues, sweepNo, setting, headstage, entrySourceType)
+threadsafe Function/WAVE GetLastSettingEachRAC(numericalValues, sweepNo, setting, headstage, entrySourceType)
 	WAVE numericalValues
 	variable sweepNo
 	string setting
@@ -1264,7 +1258,7 @@ Function/WAVE GetLastSettingEachRAC(numericalValues, sweepNo, setting, headstage
 
 	variable i, numSweeps
 
-	ASSERT(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
@@ -1297,7 +1291,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
+threadsafe Function/WAVE GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
 	WAVE numericalValues
 	WAVE/T textualValues
 	variable sweepNo
@@ -1306,7 +1300,7 @@ Function/WAVE GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo,
 
 	variable i, numSweeps
 
-	ASSERT(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
@@ -1336,7 +1330,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
+threadsafe Function/WAVE GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
 	WAVE numericalValues
 	WAVE/T textualValues
 	variable sweepNo
@@ -1366,7 +1360,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
+threadsafe Function/WAVE GetLastSettingSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
 	WAVE numericalValues
 	variable sweepNo
 	string setting
@@ -1399,7 +1393,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingIndepEachSCI(numericalValues, sweepNo, setting, headstage, entrySourceType, [defValue])
+threadsafe Function/WAVE GetLastSettingIndepEachSCI(numericalValues, sweepNo, setting, headstage, entrySourceType, [defValue])
 	WAVE numericalValues
 	variable sweepNo
 	string setting
@@ -1435,7 +1429,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, headstage, setting, entrySourceType, [defValue])
+threadsafe Function/WAVE GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, headstage, setting, entrySourceType, [defValue])
 	WAVE numericalValues
 	WAVE/T textualValues
 	variable sweepNo
@@ -1473,7 +1467,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting
-Function/WAVE GetLastSettingEachSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
+threadsafe Function/WAVE GetLastSettingEachSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
 	WAVE numericalValues
 	variable sweepNo
 	string setting
@@ -1481,7 +1475,7 @@ Function/WAVE GetLastSettingEachSCI(numericalValues, sweepNo, setting, headstage
 
 	variable i, numSweeps
 
-	ASSERT(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
@@ -1514,7 +1508,7 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
+threadsafe Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
 	WAVE numericalValues
 	WAVE/T textualValues
 	variable sweepNo
@@ -1523,7 +1517,7 @@ Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo,
 
 	variable i, numSweeps
 
-	ASSERT(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
@@ -1550,7 +1544,7 @@ Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo,
 End
 
 /// @brief Return a wave with all labnotebook rows which have a non-empty entry for setting
-static Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
+threadsafe static Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
    WAVE labnotebookValues
    string setting
 
@@ -1595,6 +1589,7 @@ Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
 		Make/FREE/N=(DimSize(indizes, ROWS)) sweeps = labnotebookValues[indizes[p]][sweepCol][0]
 	endif
 
+	// @todo IP9: Make it threadsafe once FindDuplicates is threadsafe
 	return DeleteDuplicates(sweeps)
 End
 
@@ -1609,7 +1604,7 @@ End
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
+threadsafe Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
 	WAVE numericalValues
 	string setting
 	variable &sweepNo
@@ -1617,7 +1612,7 @@ Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
 	variable idx
 
 	sweepNo = NaN
-	ASSERT(IsNumericWave(numericalValues), "Can only work with numeric waves")
+	ASSERT_TS(IsNumericWave(numericalValues), "Can only work with numeric waves")
 
 	WAVE/Z indizes = GetNonEmptyLBNRows(numericalValues, setting)
 	if(!WaveExists(indizes))
@@ -1641,7 +1636,7 @@ End
 ///                              to return in case nothing could be found
 ///
 /// @ingroup LabnotebookQueryFunctions
-Function GetLastSweepWithSettingIndep(numericalValues, setting, sweepNo, [defValue])
+threadsafe Function GetLastSweepWithSettingIndep(numericalValues, setting, sweepNo, [defValue])
 	WAVE numericalValues
 	string setting
 	variable &sweepNo
@@ -1657,7 +1652,6 @@ Function GetLastSweepWithSettingIndep(numericalValues, setting, sweepNo, [defVal
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -1673,7 +1667,7 @@ End
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
+threadsafe Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
 	WAVE/T textualValues
 	string setting
 	variable &sweepNo
@@ -1681,7 +1675,7 @@ Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
 	variable idx
 
 	sweepNo = NaN
-	ASSERT(IsTextWave(textualValues), "Can only work with text waves")
+	ASSERT_TS(IsTextWave(textualValues), "Can only work with text waves")
 
 	WAVE/Z indizes = GetNonEmptyLBNRows(textualValues, setting)
 	if(!WaveExists(indizes))
@@ -1705,7 +1699,7 @@ End
 ///                              to return in case nothing could be found
 ///
 /// @ingroup LabnotebookQueryFunctions
-Function/S GetLastSweepWithSettingTextI(numericalValues, setting, sweepNo, [defValue])
+threadsafe Function/S GetLastSweepWithSettingTextI(numericalValues, setting, sweepNo, [defValue])
 	WAVE numericalValues
 	string setting
 	variable &sweepNo
@@ -1721,7 +1715,6 @@ Function/S GetLastSweepWithSettingTextI(numericalValues, setting, sweepNo, [defV
 		EnforceIndependentSetting(settings)
 		return settings[GetIndexForHeadstageIndepData(numericalValues)]
 	else
-		DEBUGPRINT("Missing setting in labnotebook", str=setting)
 		return defValue
 	endif
 End
@@ -1993,17 +1986,17 @@ End
 
 /// @brief Returns the sampling interval of the sweep
 /// in microseconds (1e-6s)
-Function GetSamplingInterval(config)
+threadsafe Function GetSamplingInterval(config)
 	Wave config
 
-	ASSERT(IsValidConfigWave(config, version=0), "Expected a valid config wave")
+	ASSERT_TS(IsValidConfigWave(config, version=0), "Expected a valid config wave")
 
 	// from ITCConfigAllChannels help file:
 	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
 	Duplicate/D/R=[][2]/FREE config samplingInterval
 
 	// The sampling interval is the same for all channels
-	ASSERT(WaveMax(samplingInterval) == WaveMin(samplingInterval),"Expected constant sample interval for all channels")
+	ASSERT_TS(WaveMax(samplingInterval) == WaveMin(samplingInterval),"Expected constant sample interval for all channels")
 	return samplingInterval[0]
 End
 
@@ -3116,7 +3109,7 @@ End
 /// @param[out] unit      unit of the result [empty if not found]
 /// @param[out] col       column of the result into the keyWave [NaN if not found]
 /// @returns one on error, zero otherwise
-Function GetKeyWaveParameterAndUnit(keyWave, key, parameter, unit, col)
+threadsafe Function GetKeyWaveParameterAndUnit(keyWave, key, parameter, unit, col)
 	WAVE/T/Z keyWave
 	string key
 	string &parameter, &unit
@@ -3741,12 +3734,12 @@ End
 /// @param var    numeric channel types
 /// @param str    string channel types
 /// @param xopVar numeric XOP channel types
-Function GetNumberFromType([var, str, xopVar])
+threadsafe Function GetNumberFromType([var, str, xopVar])
 	variable var
 	string str
 	variable xopVar
 
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(xopVar) == 2, "Expected exactly one parameter")
+	ASSERT_TS(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(xopVar) == 2, "Expected exactly one parameter")
 
 	if(!ParamIsDefault(str))
 		strswitch(str)
@@ -3768,7 +3761,7 @@ Function GetNumberFromType([var, str, xopVar])
 				return NUM_ASYNC_CHANNELS
 				break
 			default:
-				ASSERT(0, "invalid type")
+				ASSERT_TS(0, "invalid type")
 				break
 		endswitch
 	elseif(!ParamIsDefault(var))
@@ -3788,7 +3781,7 @@ Function GetNumberFromType([var, str, xopVar])
 				return NUM_AD_CHANNELS
 				break
 			default:
-				ASSERT(0, "invalid type")
+				ASSERT_TS(0, "invalid type")
 				break
 		endswitch
 	elseif(!ParamIsDefault(xopVar))
@@ -3801,7 +3794,7 @@ Function GetNumberFromType([var, str, xopVar])
 				return NUM_DA_TTL_CHANNELS
 				break
 			default:
-				ASSERT(0, "Invalid type")
+				ASSERT_TS(0, "Invalid type")
 				break
 		endswitch
 	endif
@@ -3814,19 +3807,19 @@ End
 /// @param index  index into `sweep`, can be queried with #AFH_GetDAQDataColumn
 ///
 /// @returns a reference to a free wave with the single channel data
-Function/Wave ExtractOneDimDataFromSweep(config, sweep, index)
+threadsafe Function/Wave ExtractOneDimDataFromSweep(config, sweep, index)
 	WAVE config
 	WAVE sweep
 	variable index
 
-	ASSERT(IsValidSweepAndConfig(sweep, config, configVersion = 0), "Sweep and config are not compatible")
+	ASSERT_TS(IsValidSweepAndConfig(sweep, config, configVersion = 0), "Sweep and config are not compatible")
 
 	if(IsWaveRefWave(sweep))
-		ASSERT(index < DimSize(sweep, ROWS), "The index is out of range")
+		ASSERT_TS(index < DimSize(sweep, ROWS), "The index is out of range")
 		WAVE/WAVE sweepRef = sweep
 		Duplicate/FREE sweepRef[index], data
 	else
-		ASSERT(index < DimSize(sweep, COLS), "The index is out of range")
+		ASSERT_TS(index < DimSize(sweep, COLS), "The index is out of range")
 		MatrixOP/FREE data = col(sweep, index)
 	endif
 
@@ -4866,7 +4859,7 @@ End
 /// @param numericalValues Numerical labnotebook values
 /// @param sweep           Sweep number
 /// @param channel         TTL hardware channel
-Function GetTTLBits(numericalValues, sweep, channel)
+threadsafe Function GetTTLBits(numericalValues, sweep, channel)
 	WAVE numericalValues
 	variable sweep, channel
 
@@ -4891,7 +4884,7 @@ End
 /// @param numericalValues Numerical labnotebook values
 /// @param textualValues   Text labnotebook values
 /// @param sweep           Sweep number
-static Function/WAVE GetTTLChannelsOrBits(WAVE numericalValues, WAVE textualValues, variable sweep)
+threadsafe static Function/WAVE GetTTLChannelsOrBits(WAVE numericalValues, WAVE textualValues, variable sweep)
 	variable index, first, last
 
 	index = GetIndexForHeadstageIndepData(numericalValues)
@@ -4932,7 +4925,7 @@ End
 /// @param numericalValues Numerical labnotebook values
 /// @param textualValues   Text labnotebook values
 /// @param sweep           Sweep number
-static Function/WAVE GetTTLChannels(WAVE numericalValues, WAVE textualValues, variable sweep)
+threadsafe static Function/WAVE GetTTLChannels(WAVE numericalValues, WAVE textualValues, variable sweep)
 	variable index
 
 	index = GetIndexForHeadstageIndepData(numericalValues)
@@ -5006,7 +4999,7 @@ End
 /// @param channelType     One of @ref XopChannelConstants
 /// @param TTLmode         [optional, defaults to #TTL_DAEPHYS_CHANNEL] One of @ref ActiveChannelsTTLMode.
 ///                        Does only apply to TTL channels.
-Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, [variable TTLmode])
+threadsafe Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, [variable TTLmode])
 	variable i, numEntries, index
 	string key
 
@@ -5028,10 +5021,10 @@ Function/WAVE GetActiveChannels(WAVE numericalValues, WAVE textualValues, variab
 				case TTL_DAEPHYS_CHANNEL:
 					return GetTTLChannelsOrBits(numericalValues, textualValues, sweepNo)
 				default:
-					ASSERT(0, "Invalid TTLmode")
+					ASSERT_TS(0, "Invalid TTLmode")
 			endswitch
 		default:
-			ASSERT(0, "Unexpected channelType")
+			ASSERT_TS(0, "Unexpected channelType")
 	endswitch
 
 	numEntries = GetNumberFromType(xopVar = channelType)
@@ -5057,7 +5050,7 @@ End
 /// Before dfe2d862 (Make the function AB_SplitTTLWaveIntoComponents available for all, 2015-10-07)
 /// we stored headstage independent data in either all entries or only the first one.
 /// Since that commit we store the data in `INDEP_HEADSTAGE`.
-Function GetIndexForHeadstageIndepData(values)
+threadsafe Function GetIndexForHeadstageIndepData(values)
 	WAVE values
 
 	return DimSize(values, LAYERS) == NUM_HEADSTAGES ? 0 : INDEP_HEADSTAGE
@@ -5071,7 +5064,7 @@ End
 /// @param numericalValues Numerical labnotebook values
 /// @param textualValues   Text labnotebook values
 /// @param sweep           Sweep number
-Function/WAVE GetTTLStimSets(numericalValues, textualValues, sweep)
+threadsafe Function/WAVE GetTTLStimSets(numericalValues, textualValues, sweep)
 	WAVE numericalValues, textualValues
 	variable sweep
 
@@ -5102,6 +5095,12 @@ Function/WAVE GetTTLStimSets(numericalValues, textualValues, sweep)
 
 	// no TTL entries
 	return $""
+End
+
+Function/S ReturnListOfAllStimSetsFromAllChannelTypes()
+
+	return ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)   \
+	       + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
 End
 
 /// @brief Return a sorted list of all DA/TTL stim set waves
@@ -5273,7 +5272,7 @@ End
 ///                   when on, does no rescaling when off.
 ///
 /// The created waves will be named `TTL_3_3` so the final suffix is the running TTL Bit.
-Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix, rescale)
+threadsafe Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix, rescale)
 	WAVE data
 	variable ttlBits
 	DFREF targetDFR
@@ -5299,7 +5298,7 @@ Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix, rescal
 		elseif(rescale == TTL_RESCALE_OFF)
 			MultiThread dest[] = dest[p] & bit
 		else
-			ASSERT(0, "Invalid rescale parameter")
+			ASSERT_TS(0, "Invalid rescale parameter")
 		endif
 	endfor
 End
@@ -5834,10 +5833,10 @@ Function/S GetProgramFilesFolder()
 End
 
 /// @brief Return the default name of a electrode
-Function/S GetDefaultElectrodeName(headstage)
+threadsafe Function/S GetDefaultElectrodeName(headstage)
 	variable headstage
 
-	ASSERT(headstage >=0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+	ASSERT_TS(headstage >=0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
 
 	return num2str(headstage)
 End
@@ -5851,20 +5850,20 @@ End
 ///
 /// New style have the format "$Name u_(AD|DA)$ChannelNumber", these include
 /// the channel type to make them more self explaining.
-Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
+threadsafe Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
 	string setting
 	variable channelNumber, channelType
 
-	ASSERT(!IsEmpty(setting), "Expected non empty string")
-	ASSERT(IsFinite(channelNumber), "Expected finite channel number")
+	ASSERT_TS(!IsEmpty(setting), "Expected non empty string")
+	ASSERT_TS(IsFinite(channelNumber), "Expected finite channel number")
 
 	string key
 
 	if(IsNaN(channelType))
 		sprintf key, "%s UNASSOC_%d", setting, channelNumber
 	else
-		ASSERT(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC, "Invalid channel type")
-		ASSERT(IsInteger(channelNumber) && channelNumber >= 0 && channelNumber < GetNumberFromType(xopVar = channelType), "channelNumber is out of range")
+		ASSERT_TS(channelType == XOP_CHANNEL_TYPE_DAC || channelType == XOP_CHANNEL_TYPE_ADC, "Invalid channel type")
+		ASSERT_TS(IsInteger(channelNumber) && channelNumber >= 0 && channelNumber < GetNumberFromType(xopVar = channelType), "channelNumber is out of range")
 		sprintf key, "%s u_%s%d", setting, StringFromList(channelType, XOP_CHANNEL_NAMES), channelNumber
 	endif
 
@@ -6366,14 +6365,14 @@ End
 
 /// @brief Maps the labnotebook entry source type, one of @ref DataAcqModes, to
 ///        a valid wave index.
-Function EntrySourceTypeMapper(entrySourceType)
+threadsafe Function EntrySourceTypeMapper(entrySourceType)
 	variable entrySourceType
 
 	return IsFinite(entrySourceType) ? ++entrySourceType : 0
 End
 
 /// @brief Rerverse the effect of EntrySourceTypeMapper()
-Function ReverseEntrySourceTypeMapper(variable mapped)
+threadsafe Function ReverseEntrySourceTypeMapper(variable mapped)
 	return	(mapped == 0 ? NaN : --mapped)
 End
 
@@ -6767,7 +6766,7 @@ End
 ///
 /// @returns A wave with the row indizes of the found values. An invalid wave reference if the
 /// value could not be found.
-Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, startRow, endRow, startLayer, endLayer])
+threadsafe Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, startRow, endRow, startLayer, endLayer])
 	WAVE numericOrTextWave
 	variable col, var, prop
 	string str, colLabel
@@ -6777,14 +6776,14 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	variable numCols, numRows, numLayers
 	string key
 
-	ASSERT(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
-	ASSERT(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2              \
+	ASSERT_TS(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
+	ASSERT_TS(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2              \
 		   || (!ParamIsDefault(prop)                                                          \
 			  && (prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) \
 			  && (ParamIsDefault(var) + ParamIsDefault(str)) == 1),                           \
 			  "Invalid combination of var/str/prop arguments")
 
-	ASSERT(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
+	ASSERT_TS(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
 
 	if(DimSize(numericOrTextWave, ROWS) == 0)
 		return $""
@@ -6793,14 +6792,14 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	numRows   = DimSize(numericOrTextWave, ROWS)
 	numCols   = DimSize(numericOrTextWave, COLS)
 	numLayers = DimSize(numericOrTextWave, LAYERS)
-	ASSERT(DimSize(numericOrTextWave, CHUNKS) <= 1, "No support for chunks")
+	ASSERT_TS(DimSize(numericOrTextWave, CHUNKS) <= 1, "No support for chunks")
 
 	if(!ParamIsDefault(colLabel))
 		col = FindDimLabel(numericOrTextWave, COLS, colLabel)
-		ASSERT(col >= 0, "invalid column label")
+		ASSERT_TS(col >= 0, "invalid column label")
 	endif
 
-	ASSERT(col == 0 || (col > 0 && col < numCols), "Invalid column")
+	ASSERT_TS(col == 0 || (col > 0 && col < numCols), "Invalid column")
 
 	if(IsTextWave(numericOrTextWave))
 		WAVE/T wvText = numericOrTextWave
@@ -6811,7 +6810,7 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	endif
 
 	if(!ParamIsDefault(prop))
-		ASSERT(prop == PROP_NON_EMPTY                    \
+		ASSERT_TS(prop == PROP_NON_EMPTY                    \
 			   || prop == PROP_EMPTY                     \
 			   || prop == PROP_MATCHES_VAR_BIT_MASK      \
 			   || prop == PROP_NOT_MATCHES_VAR_BIT_MASK, \
@@ -6833,31 +6832,31 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	if(ParamIsDefault(startRow))
 		startRow = 0
 	else
-		ASSERT(startRow >= 0 && startRow < numRows, "Invalid startRow")
+		ASSERT_TS(startRow >= 0 && startRow < numRows, "Invalid startRow")
 	endif
 
 	if(ParamIsDefault(endRow))
 		endRow = inf
 	else
-		ASSERT(endRow >= 0 && endRow < numRows, "Invalid endRow")
+		ASSERT_TS(endRow >= 0 && endRow < numRows, "Invalid endRow")
 	endif
 
-	ASSERT(startRow <= endRow, "endRow must be larger than startRow")
+	ASSERT_TS(startRow <= endRow, "endRow must be larger than startRow")
 
 	if(ParamIsDefault(startLayer))
 		startLayer = 0
 	else
-		ASSERT(startLayer >= 0 && (numLayers == 0 || startLayer < numLayers), "Invalid startLayer")
+		ASSERT_TS(startLayer >= 0 && (numLayers == 0 || startLayer < numLayers), "Invalid startLayer")
 	endif
 
 	if(ParamIsDefault(endLayer))
 		// only look in the first layer by default
 		endLayer = 0
 	else
-		ASSERT(endLayer >= 0 && (numLayers == 0 || endLayer < numLayers), "Invalid endLayer")
+		ASSERT_TS(endLayer >= 0 && (numLayers == 0 || endLayer < numLayers), "Invalid endLayer")
 	endif
 
-	ASSERT(startLayer <= endLayer, "endLayer must be larger than startLayer")
+	ASSERT_TS(startLayer <= endLayer, "endLayer must be larger than startLayer")
 
 	// Algorithm:
 	// * The matches wave has the same size as one column of the input wave
@@ -6890,7 +6889,7 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!(wv[p][col][q] & var) ? p : -1)
 			endif
 		else
-			ASSERT(!IsNaN(var), "Use PROP_EMPTY to search for NaN")
+			ASSERT_TS(!IsNaN(var), "Use PROP_EMPTY to search for NaN")
 			MultiThread matches[startRow, endRow][startLayer, endLayer] = ((wv[p][col][q] == var) ? p : -1)
 		endif
 	else

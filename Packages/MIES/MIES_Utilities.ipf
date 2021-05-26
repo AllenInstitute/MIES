@@ -6,6 +6,9 @@
 #pragma ModuleName=MIES_UTILS
 #endif
 
+/// The size in bytes of a wave with zero points. Experimentally determined in Igor Pro 6.34 under windows.
+static Constant PROPRIETARY_HEADER_SIZE = 320
+
 /// @file MIES_Utilities.ipf
 /// @brief General utility functions
 
@@ -365,6 +368,46 @@ static Function/S GetAllObjects(dfr, typeFlag)
 	return list
 End
 
+/// @brief Return a list of all objects of the given type from dfr
+///
+/// @todo merge with GetAllObjects once IP9 is mandatory as then
+///       VariableList and StringList are threadsafe
+///
+/// Does not work for datafolders which have a comma (`,`) in them.
+threadsafe Function/S GetAllObjects_TS(DFREF dfr, variable typeFlag)
+	string list
+
+	DFREF oldDFR = GetDataFolderDFR()
+
+	// @todo remove SetDataFolder call once IP9 is mandatory as the XXXList function
+	// then have a dfr parameter
+	SetDataFolder dfr
+
+	switch(typeFlag)
+		case COUNTOBJECTS_WAVES:
+			list = WaveList("*", ";", "")
+			break
+		case COUNTOBJECTS_VAR:
+			ASSERT_TS(0, "Not supported as it is only threadsafe in IP9")
+			break
+		case COUNTOBJECTS_STR:
+			ASSERT_TS(0, "Not supported as it is only threadsafe in IP9")
+			break
+		case COUNTOBJECTS_DATAFOLDER:
+			list = DataFolderDir(2^0)
+			list = StringByKey("FOLDERS", list)
+			list = ReplaceString(",", list, ";")
+			break
+		default:
+			SetDataFolder oldDFR
+			ASSERT_TS(0, "Invalid type flag")
+	endswitch
+
+	SetDataFolder oldDFR
+
+	return list
+End
+
 /// @brief Matches `list` against the expression `matchExpr` using the given
 ///        convention in `exprType`
 Function/S ListMatchesExpr(list, matchExpr, exprType)
@@ -413,7 +456,7 @@ End
 /// @param checkFreeMemory [optional, defaults to false] check if the free memory is enough for increasing the size
 ///
 /// @return 0 on success, (only for checkFreeMemory = True) 1 if increasing the wave's size would fail due to little memory
-Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue, checkFreeMemory])
+threadsafe Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue, checkFreeMemory])
 	Wave wv
 	variable minimumSize, dimension, initialValue, checkFreeMemory
 
@@ -427,9 +470,9 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue, checkF
 		checkFreeMemory = !!checkFreeMemory
 	endif
 
-	ASSERT(dimension == ROWS || dimension == COLS || dimension == LAYERS || dimension == CHUNKS, "Invalid dimension")
-	ASSERT(WaveExists(wv), "Wave does not exist")
-	ASSERT(IsFinite(minimumSize) && minimumSize >= 0, "Invalid minimum size")
+	ASSERT_TS(dimension == ROWS || dimension == COLS || dimension == LAYERS || dimension == CHUNKS, "Invalid dimension")
+	ASSERT_TS(WaveExists(wv), "Wave does not exist")
+	ASSERT_TS(IsFinite(minimumSize) && minimumSize >= 0, "Invalid minimum size")
 
 	if(ParamIsDefault(minimumSize))
 		minimumSize = MINIMUM_WAVE_SIZE - 1
@@ -457,7 +500,7 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue, checkF
 	Redimension/N=(targetSizes[ROWS], targetSizes[COLS], targetSizes[LAYERS], targetSizes[CHUNKS]) wv
 
 	if(!ParamIsDefault(initialValue))
-		ASSERT(ValueCanBeWritten(wv, initialValue), "initialValue can not be stored in wv")
+		ASSERT_TS(ValueCanBeWritten(wv, initialValue), "initialValue can not be stored in wv")
 		switch(dimension)
 			case ROWS:
 				wv[oldSizes[ROWS],][][][] = initialValue
@@ -480,7 +523,7 @@ End
 /// @brief Check that the given value can be stored in the wave
 ///
 /// Does currently ignore floating point precision and ranges for integer waves
-Function ValueCanBeWritten(wv, value)
+threadsafe Function ValueCanBeWritten(wv, value)
 	WAVE/Z wv
 	variable value
 
@@ -531,8 +574,59 @@ Function ConvertFromBytesToMiB(var)
 	return var / 1024 / 1024
 End
 
+/// @brief Returns the size of the wave in bytes
+threadsafe static Function GetWaveSizeImplementation(wv)
+	Wave wv
+
+ #if IgorVersion() >= 9.0 && (NumberByKey("BUILD", IgorInfo(0)) >= 37431)
+	return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
+#else
+	return PROPRIETARY_HEADER_SIZE + GetSizeOfType(wv) * numpnts(wv) + strlen(note(wv))
+#endif
+End
+
+/// @brief Return the size in bytes of a given type
+///
+/// Inspired by http://www.igorexchange.com/node/1845
+threadsafe Function GetSizeOfType(WAVE wv)
+	variable type, size
+
+	type = WaveType(wv)
+
+	if(type == 0)
+		// text waves, wave reference wave, dfref wave
+		// we just return the size of a pointer on 64bit as
+		// everything else would be too expensive to calculate
+		return 8
+	endif
+
+	size = 1
+
+	if(type & IGOR_TYPE_COMPLEX)
+		size *= 2
+	endif
+
+	if(type & IGOR_TYPE_32BIT_FLOAT)
+		size *= 4
+	elseif(type & IGOR_TYPE_64BIT_FLOAT)
+		size *= 8
+	elseif(type & IGOR_TYPE_8BIT_INT)
+		// do nothing
+	elseif(type & IGOR_TYPE_16BIT_INT)
+		size *= 2
+	elseif(type & IGOR_TYPE_32BIT_INT)
+		size *= 4
+	elseif(type & IGOR_TYPE_64BIT_INT)
+		size *= 8
+	else
+		ASSERT_TS(0, "Unexpected type")
+	endif
+
+	return size
+End
+
 /// @brief Returns the size of the wave in bytes.
-Function GetWaveSize(wv, [recursive])
+threadsafe Function GetWaveSize(wv, [recursive])
 	WAVE/Z wv
 	variable recursive
 
@@ -547,7 +641,7 @@ Function GetWaveSize(wv, [recursive])
 	endif
 
 	if(!recursive || !IsWaveRefWave(wv))
-		return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
+		return GetWaveSizeImplementation(wv)
 	endif
 
 	WAVE/WAVE waveRefs = wv
@@ -557,15 +651,23 @@ Function GetWaveSize(wv, [recursive])
 	return GetWaveSize(wv, recursive = 0) + Sum(sizes)
 End
 
+/// @brief Return the lock state of the passed wave
+threadsafe Function GetLockState(WAVE wv)
+
+	ASSERT_TS(WaveExists(wv), "Invalid wave")
+
+	return NumberByKey("LOCK", WaveInfo(wv, 0))
+End
+
 /// @brief Convert the sampling interval in microseconds (1e-6s) to the rate in kHz
-Function ConvertSamplingIntervalToRate(val)
+threadsafe Function ConvertSamplingIntervalToRate(val)
 	variable val
 
 	return 1 / val * 1e3
 End
 
 /// @brief Convert the rate in kHz to the sampling interval in microseconds (1e-6s)
-Function ConvertRateToSamplingInterval(val)
+threadsafe Function ConvertRateToSamplingInterval(val)
 	variable val
 
 	return 1 / val * 1e3
@@ -1056,7 +1158,7 @@ End
 /// @param listSep [optional, defaults to `;`] list separation character
 ///
 /// @returns the value on success. An empty string is returned if it could not be found
-Function/S GetStringFromWaveNote(wv, key, [keySep, listSep])
+threadsafe Function/S GetStringFromWaveNote(wv, key, [keySep, listSep])
 	Wave wv
 	string key
 	string keySep, listSep
@@ -1075,7 +1177,7 @@ End
 /// @brief Same functionality as GetStringFromWaveNote() but accepts a string
 ///
 /// @sa GetStringFromWaveNote()
-Function/S ExtractStringFromPair(str, key, [keySep, listSep])
+threadsafe Function/S ExtractStringFromPair(str, key, [keySep, listSep])
 	string str
 	string key
 	string keySep, listSep
@@ -1087,8 +1189,8 @@ Function/S ExtractStringFromPair(str, key, [keySep, listSep])
 		listSep = ";"
 	endif
 
-	ASSERT(!IsEmpty(str), "Empty string")
-	ASSERT(!IsEmpty(key), "Empty key")
+	ASSERT_TS(!IsEmpty(str), "Empty string")
+	ASSERT_TS(!IsEmpty(key), "Empty key")
 
 	// AddEntryIntoWaveNoteAsList creates whitespaces "key = value;"
 	str = ReplaceString(" " + keySep + " ", str, keySep)
@@ -1794,7 +1896,7 @@ End
 /// @brief Return the row index of the given value, string converted to a variable, or wv
 ///
 /// Assumes wv being one dimensional
-Function GetRowIndex(wv, [val, str, refWave])
+threadsafe Function GetRowIndex(wv, [val, str, refWave])
 	WAVE wv
 	variable val
 	string str
@@ -1802,10 +1904,10 @@ Function GetRowIndex(wv, [val, str, refWave])
 
 	variable numEntries, i
 
-	ASSERT(ParamIsDefault(val) + ParamIsDefault(str) + ParamIsDefault(refWave) == 2, "Expected exactly one argument")
+	ASSERT_TS(ParamIsDefault(val) + ParamIsDefault(str) + ParamIsDefault(refWave) == 2, "Expected exactly one argument")
 
 	if(!ParamIsDefault(refWave))
-		ASSERT(IsWaveRefWave(wv), "wv must be a wave holding wave references")
+		ASSERT_TS(IsWaveRefWave(wv), "wv must be a wave holding wave references")
 		numEntries = DimSize(wv, ROWS)
 		for(i = 0; i < numEntries; i += 1)
 			WAVE/WAVE cmpWave = wv
@@ -1981,7 +2083,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-Function/S GetBaseName(filePathWithSuffix, [sep])
+threadsafe Function/S GetBaseName(filePathWithSuffix, [sep])
 	string filePathWithSuffix, sep
 
 	if(ParamIsDefault(sep))
@@ -1998,7 +2100,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-Function/S GetFileSuffix(filePathWithSuffix, [sep])
+threadsafe Function/S GetFileSuffix(filePathWithSuffix, [sep])
 	string filePathWithSuffix, sep
 
 	if(ParamIsDefault(sep))
@@ -2015,7 +2117,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-Function/S GetFolder(filePathWithSuffix, [sep])
+threadsafe Function/S GetFolder(filePathWithSuffix, [sep])
 	string filePathWithSuffix, sep
 
 	if(ParamIsDefault(sep))
@@ -2032,7 +2134,7 @@ End
 /// @param filePathWithSuffix full path
 /// @param sep                [optional, defaults to ":"] character
 ///                           separating the path components
-Function/S GetFile(filePathWithSuffix, [sep])
+threadsafe Function/S GetFile(filePathWithSuffix, [sep])
 	string filePathWithSuffix, sep
 
 	if(ParamIsDefault(sep))
@@ -2043,14 +2145,14 @@ Function/S GetFile(filePathWithSuffix, [sep])
 End
 
 /// @brief Return the path converted to a windows style path
-Function/S GetWindowsPath(path)
+threadsafe Function/S GetWindowsPath(path)
 	string path
 
 	return ParseFilepath(5, path, "\\", 0, 0)
 End
 
 /// @brief Return the path converted to a HFS style (aka ":" separated) path
-Function/S GetHFSPath(string path)
+threadsafe Function/S GetHFSPath(string path)
 	return ParseFilePath(5, path, ":", 0, 0)
 End
 
@@ -2097,7 +2199,7 @@ End
 ///
 /// Due to memory fragmentation you can not assume that you can still create a wave
 /// occupying as much space as returned.
-Function GetFreeMemory()
+threadsafe Function GetFreeMemory()
 	variable freeMem
 
 #if defined(IGOR64)
@@ -2426,7 +2528,7 @@ End
 
 /// @brief Add a string prefix to each list item and
 /// return the new list
-Function/S AddPrefixToEachListItem(prefix, list)
+threadsafe Function/S AddPrefixToEachListItem(prefix, list)
 	string prefix, list
 
 	string result = ""
@@ -2572,7 +2674,7 @@ End
 /// \endrst
 ///
 /// [1]: 8th edition of the SI Brochure (2014), http://www.bipm.org/en/publications/si-brochure
-Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
+threadsafe Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
 	string unitWithPrefix
 	string &prefix
 	variable &numPrefix
@@ -2580,7 +2682,7 @@ Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
 
 	string expr
 
-	ASSERT(!isEmpty(unitWithPrefix), "empty unit")
+	ASSERT_TS(!isEmpty(unitWithPrefix), "empty unit")
 
 	prefix    = ""
 	numPrefix = NaN
@@ -2589,7 +2691,7 @@ Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
 	expr = "(Y|Z|E|P|T|G|M|k|h|d|c|m|mu|n|p|f|a|z|y)?[[:space:]]*(m|kg|s|A|K|mol|cd|Hz|V|N|W|J|a.u.)"
 
 	SplitString/E=(expr) unitWithPrefix, prefix, unit
-	ASSERT(V_flag >= 1, "Could not parse unit string")
+	ASSERT_TS(V_flag >= 1, "Could not parse unit string")
 
 	numPrefix = GetDecimalMultiplierValue(prefix)
 End
@@ -2597,7 +2699,7 @@ End
 /// @brief Return the numerical value of a SI decimal multiplier
 ///
 /// @see ParseUnit
-Function GetDecimalMultiplierValue(prefix)
+threadsafe Function GetDecimalMultiplierValue(prefix)
 	string prefix
 
 	if(isEmpty(prefix))
@@ -2608,9 +2710,9 @@ Function GetDecimalMultiplierValue(prefix)
 	Make/FREE/D values   = {1e24, 1e21, 1e18, 1e15, 1e12, 1e9, 1e6, 1e3, 1e2, 1e1, 1e-1, 1e-2, 1e-3, 1e-6, 1e-9, 1e-12, 1e-15, 1e-18, 1e-21, 1e-24}
 
 	FindValue/Z/TXOP=(1 + 4)/TEXT=(prefix) prefixes
-	ASSERT(V_Value != -1, "Could not find prefix")
+	ASSERT_TS(V_Value != -1, "Could not find prefix")
 
-	ASSERT(DimSize(prefixes, ROWS) == DimSize(values, ROWS), "prefixes and values wave sizes must match")
+	ASSERT_TS(DimSize(prefixes, ROWS) == DimSize(values, ROWS), "prefixes and values wave sizes must match")
 	return values[V_Value]
 End
 
@@ -2672,7 +2774,7 @@ End
 /// - ` `/`T` between date and time
 /// - fractional seconds
 /// - `,`/`.` as decimal separator
-Function ParseISO8601TimeStamp(timestamp)
+threadsafe Function ParseISO8601TimeStamp(timestamp)
 	string timestamp
 
 	string year, month, day, hour, minute, second, regexp, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute
@@ -2702,7 +2804,7 @@ Function ParseISO8601TimeStamp(timestamp)
 		elseif(!cmpstr(tzOffsetSign, "-"))
 			secondsSinceEpoch += timeOffset
 		else
-			ASSERT(0, "Invalid case")
+			ASSERT_TS(0, "Invalid case")
 		endif
 	endif
 
@@ -2954,7 +3056,7 @@ End
 ///
 /// Counterpart @see ConvertListToTextWave
 /// @see NumericWaveToList
-Function/S TextWaveToList(WAVE/T/Z txtWave, string sep, [string colSep, variable stopOnEmpty])
+threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string sep, [string colSep, variable stopOnEmpty])
 	string entry, colList
 	string list = ""
 	variable i, j, numRows, numCols
@@ -2963,14 +3065,14 @@ Function/S TextWaveToList(WAVE/T/Z txtWave, string sep, [string colSep, variable
 		return ""
 	endif
 
-	ASSERT(IsTextWave(txtWave), "Expected a text wave")
-	ASSERT(DimSize(txtWave, LAYERS) == 0, "Expected a 1D or 2D wave")
-	ASSERT(!IsEmpty(sep), "Expected a non-empty row list separator")
+	ASSERT_TS(IsTextWave(txtWave), "Expected a text wave")
+	ASSERT_TS(DimSize(txtWave, LAYERS) == 0, "Expected a 1D or 2D wave")
+	ASSERT_TS(!IsEmpty(sep), "Expected a non-empty row list separator")
 
 	if(ParamIsDefault(colSep))
 		colSep = ","
 	else
-		ASSERT(!IsEmpty(colSep), "Expected a non-empty column list separator")
+		ASSERT_TS(!IsEmpty(colSep), "Expected a non-empty column list separator")
 	endif
 	stopOnEmpty = ParamIsDefault(stopOnEmpty) ? 0 : !!stopOnEmpty
 
@@ -3164,7 +3266,7 @@ End
 /// @param list list with numeric entries
 /// @param sep  separator
 /// @param type [optional, defaults to double precision float (`IGOR_TYPE_64BIT_FLOAT`)] type of the created numeric wave
-Function/WAVE ListToNumericWave(list, sep, [type])
+threadsafe Function/WAVE ListToNumericWave(list, sep, [type])
 	string list, sep
 	variable type
 
@@ -3440,23 +3542,23 @@ End
 /// @param index     [optional] specifies the index into `dimension`
 /// @param indexWave [optional] specifies the indizes into `dimension`, allows for
 ///                  differing indizes per `src` entry
-Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
+threadsafe Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
 	WAVE/WAVE src
 	variable dimension, index
 	WAVE indexWave
 
 	variable i, numEntries
 
-	ASSERT(IsWaveRefWave(src), "Expected wave ref wave")
-	ASSERT(DimSize(src, COLS) <= 1, "Expected a 1D wave for src")
+	ASSERT_TS(IsWaveRefWave(src), "Expected wave ref wave")
+	ASSERT_TS(DimSize(src, COLS) <= 1, "Expected a 1D wave for src")
 
 	if(!ParamIsDefault(dimension))
-		ASSERT(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
-		ASSERT(ParamIsDefault(index) + ParamIsDefault(indexWave) == 1, "Need exactly one of parameter of type index or indexWave")
+		ASSERT_TS(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
+		ASSERT_TS(ParamIsDefault(index) + ParamIsDefault(indexWave) == 1, "Need exactly one of parameter of type index or indexWave")
 	endif
 
 	if(!ParamIsDefault(indexWave) || !ParamIsDefault(index))
-		ASSERT(!ParamIsDefault(dimension), "Missing optional parameter dimension")
+		ASSERT_TS(!ParamIsDefault(dimension), "Missing optional parameter dimension")
 	endif
 
 	Duplicate/WAVE/FREE src, dst
@@ -3464,12 +3566,12 @@ Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
 	numEntries = DimSize(src, ROWS)
 
 	if(!ParamIsDefault(indexWave))
-		ASSERT(numEntries == numpnts(indexWave), "indexWave and src must have the same number of points")
+		ASSERT_TS(numEntries == numpnts(indexWave), "indexWave and src must have the same number of points")
 	endif
 
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/Z srcWave = dst[i]
-		ASSERT(WaveExists(srcWave), "Missing wave at linear index" + num2str(i))
+		ASSERT_TS(WaveExists(srcWave), "Missing wave at linear index" + num2str(i))
 
 		if(!ParamIsDefault(indexWave))
 			index = indexWave[i]
@@ -3612,14 +3714,14 @@ End
 /// @brief Return a wave were all elements which are in both wave1 and wave2 have been removed from wave1
 ///
 /// @sa GetListDifference for string lists
-Function/WAVE GetSetDifference(wave1, wave2)
+threadsafe Function/WAVE GetSetDifference(wave1, wave2)
 	WAVE wave1
 	WAVE wave2
 
 	variable numEntries, i, j, value
 
-	ASSERT(IsFloatingPointWave(wave1) && IsFloatingPointWave(wave2), "Can only work with floating point waves.")
-	ASSERT(WaveType(wave1) == WaveType(wave2), "Wave type mismatch")
+	ASSERT_TS(IsFloatingPointWave(wave1) && IsFloatingPointWave(wave2), "Can only work with floating point waves.")
+	ASSERT_TS(WaveType(wave1) == WaveType(wave2), "Wave type mismatch")
 
 	Duplicate/FREE wave1, result
 
@@ -3736,7 +3838,7 @@ Function KillWindows(list)
 End
 
 /// @brief str2num variant with no runtime error on invalid conversions
-Function str2numSafe(str)
+threadsafe Function str2numSafe(str)
 	string str
 
 	variable err, var
@@ -3956,7 +4058,7 @@ End
 
 /// @brief Normalize the line endings in the given string to either classic Mac OS/Igor Pro EOLs (`\r`)
 ///        or Unix EOLs (`\n`)
-Function/S NormalizeToEOL(str, eol)
+threadsafe Function/S NormalizeToEOL(str, eol)
 	string str, eol
 
 	str = ReplaceString("\r\n", str, eol)
@@ -3966,7 +4068,7 @@ Function/S NormalizeToEOL(str, eol)
 	elseif(!cmpstr(eol, "\n"))
 		str = ReplaceString("\r", str, eol)
 	else
-		ASSERT(0, "unsupported EOL character")
+		ASSERT_TS(0, "unsupported EOL character")
 	endif
 
 	return str
@@ -4108,19 +4210,26 @@ Function GetMachineEpsilon(type)
 End
 
 /// @brief Return true if wv is a free wave, false otherwise
-Function IsFreeWave(wv)
+threadsafe Function IsFreeWave(wv)
 	Wave wv
 
 	return WaveType(wv, 2) == 2
 End
 
 /// @brief Return the modification count of the (permanent) wave
-Function WaveModCountWrapper(wv)
-	Wave wv
+///
+/// Returns NaN when running in a preemptive thread
+threadsafe Function WaveModCountWrapper(WAVE wv)
 
-	ASSERT(!IsFreeWave(wv), "Can not work with free waves")
+	if(MU_RunningInMainThread())
+		ASSERT_TS(!IsFreeWave(wv), "Can not work with free waves")
 
-	return WaveModCount(wv)
+		return WaveModCount(wv)
+	else
+		ASSERT_TS(IsFreeWave(wv), "Can only work with free waves")
+
+		return NaN
+	endif
 End
 
 // @brief Convert a number to the strings `Passed` (!= 0) or `Failed` (0).
@@ -4139,7 +4248,7 @@ End
 
 /// @brief Return true if not all wave entries are NaN, false otherwise.
 ///
-Function HasOneValidEntry(wv)
+threadsafe Function HasOneValidEntry(wv)
 	WAVE wv
 
 	variable numEntries
@@ -4147,15 +4256,15 @@ Function HasOneValidEntry(wv)
 	numEntries = numpnts(wv)
 
 	if(IsNumericWave(wv))
-		ASSERT(IsFloatingPointWave(wv), "Requires floating point type or text wave")
+		ASSERT_TS(IsFloatingPointWave(wv), "Requires floating point type or text wave")
 		WAVE stats = wv
 	else
-		ASSERT(IsTextWave(wv), "Expected a text wave")
+		ASSERT_TS(IsTextWave(wv), "Expected a text wave")
 		WAVE/T wvText = wv
 		Make/FREE/N=(numEntries) stats = strlen(wvText[p]) == 0 ? NaN : 1
 	endif
 
-	ASSERT(numEntries > 0, "Empty wave")
+	ASSERT_TS(numEntries > 0, "Empty wave")
 
 	WaveStats/Q/M=1 stats
 	return V_numNaNs != numEntries
@@ -4289,7 +4398,7 @@ threadsafe Function/S TestPulseRunModeToString(runMode)
 End
 
 /// @brief Adapt the wave lock status on the wave and its contained waves
-Function ChangeWaveLock(wv, val)
+threadsafe Function ChangeWaveLock(wv, val)
 	WAVE/WAVE wv
 	variable val
 
@@ -4303,7 +4412,7 @@ Function ChangeWaveLock(wv, val)
 		return NaN
 	endif
 
-	ASSERT(DimSize(wv, ROWS) == numpnts(wv), "Expected a 1D wave")
+	ASSERT_TS(DimSize(wv, ROWS) == numpnts(wv), "Expected a 1D wave")
 	numEntries = DimSize(wv, ROWS)
 
 	for(i = 0; i < numEntries; i += 1)
@@ -4369,13 +4478,13 @@ End
 /// @param[in] precision [optional, default 5] number of precision digits after the decimal dot using "round-half-to-even" rounding rule.
 ///                      Precision must be in the range 0 to #MAX_DOUBLE_PRECISION.
 /// @return string with textual number representation
-Function/S num2strHighPrec(val, [precision])
+threadsafe Function/S num2strHighPrec(val, [precision])
 	variable val, precision
 
 	string str
 
 	precision = ParamIsDefault(precision) ? 5 : precision
-	ASSERT(precision >= 0 && precision <= MAX_DOUBLE_PRECISION, "Invalid precision, must be >= 0 and <= MAX_DOUBLE_PRECISION")
+	ASSERT_TS(precision >= 0 && precision <= MAX_DOUBLE_PRECISION, "Invalid precision, must be >= 0 and <= MAX_DOUBLE_PRECISION")
 
 	sprintf str, "%.*f", precision, val
 
@@ -5114,7 +5223,7 @@ EndStructure
 ///
 /// See also https://www.rfc-editor.org/errata/eid3546 and https://www.rfc-editor.org/errata/eid1957
 /// for some clarifications.
-Function/S GenerateRFC4122UUID()
+threadsafe Function/S GenerateRFC4122UUID()
 
 	string str, randomness
 	STRUCT Uuid uu
@@ -5142,26 +5251,26 @@ Function/S GenerateRFC4122UUID()
 End
 
 /// @brief Convert a hexadecimal character into a number
-Function HexToNumber(ch)
+threadsafe Function HexToNumber(ch)
 	string ch
 
 	variable var
 
-	ASSERT(strlen(ch) <= 2, "Expected only up to two characters")
+	ASSERT_TS(strlen(ch) <= 2, "Expected only up to two characters")
 
 	sscanf ch, "%x", var
-	ASSERT(V_flag == 1, "Unexpected string")
+	ASSERT_TS(V_flag == 1, "Unexpected string")
 
 	return var
 End
 
 /// @brief Convert a number into hexadecimal
-Function/S NumberToHex(var)
+threadsafe Function/S NumberToHex(var)
 	variable var
 
 	string str
 
-	ASSERT(IsInteger(var) && var >= 0 && var < 256 , "Invalid input")
+	ASSERT_TS(IsInteger(var) && var >= 0 && var < 256 , "Invalid input")
 
 	sprintf str, "%02x", var
 
@@ -5171,13 +5280,13 @@ End
 /// @brief Convert a string in hex format to an unsigned binary wave
 ///
 /// This function works on a byte level so it does not care about endianess.
-Function/WAVE HexToBinary(str)
+threadsafe Function/WAVE HexToBinary(str)
 	string str
 
 	variable length
 
 	length = strlen(str)
-	ASSERT(mod(length, 2) == 0, "Expected a string with a power of 2 length")
+	ASSERT_TS(mod(length, 2) == 0, "Expected a string with a power of 2 length")
 
 	Make/N=(length / 2)/FREE/B/U bin = HexToNumber(str[p * 2]) | (HexToNumber(str[p * 2 + 1]) << 4)
 
@@ -5510,7 +5619,7 @@ End
 /// - preserve the dimension labels (this can get lost for empty waves when duplication/saving)
 ///
 /// @see EnsureLargeEnoughWave()
-Function/WAVE RemoveUnusedRows(WAVE wv)
+threadsafe Function/WAVE RemoveUnusedRows(WAVE wv)
 
 	variable index
 
@@ -5520,7 +5629,7 @@ Function/WAVE RemoveUnusedRows(WAVE wv)
 		return wv
 	endif
 
-	ASSERT(IsInteger(index) && index >= 0, "Expected non-negative and integer NOTE_INDEX")
+	ASSERT_TS(IsInteger(index) && index >= 0, "Expected non-negative and integer NOTE_INDEX")
 
 	Duplicate/FREE/RMD=[0, max(0, index - 1)] wv, dup
 
@@ -5534,7 +5643,7 @@ threadsafe Function EqualValuesOrBothNaN(variable left, variable right)
 End
 
 /// @brief Checks wether `wv` is constant and has the value `val`
-Function IsConstant(WAVE wv, variable val)
+threadsafe Function IsConstant(WAVE wv, variable val)
 
 	variable minimum, maximum
 
@@ -5602,9 +5711,9 @@ threadsafe Function/WAVE DuplicateWaveToFree(Wave w)
 End
 
 /// @brief Removes all NaNs from the input wave
-Function/WAVE ZapNaNs(WAVE data)
+threadsafe Function/WAVE ZapNaNs(WAVE data)
 
-	ASSERT(IsFloatingPointWave(data), "Can only work with floating point waves")
+	ASSERT_TS(IsFloatingPointWave(data), "Can only work with floating point waves")
 
 	if(DimSize(data, ROWS) == 0)
 		return $""

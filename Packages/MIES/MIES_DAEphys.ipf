@@ -1282,8 +1282,6 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 
 	RA_StepSweepsRemaining(panelTitle)
 
-	NWB_StartThreadGroup()
-
 	if(DC_GotTPChannelWhileDAQ(panelTitle))
 		TP_SetupCommon(panelTitle)
 		P_InitBeforeTP(panelTitle)
@@ -1392,10 +1390,6 @@ Function DAP_OneTimeCallAfterDAQ(string panelTitle, variable stopReason, [variab
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_ResetStartFinishForIndexing(panelTitle)
 	endif
-
-	NVAR tgID = $GetNWBThreadID()
-	TS_StopThreadGroup(tgID)
-	tgID = NaN
 
 	if(DC_GotTPChannelWhileDAQ(panelTitle))
 		TP_TeardownCommon(panelTitle)

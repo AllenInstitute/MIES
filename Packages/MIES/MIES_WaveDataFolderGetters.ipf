@@ -200,28 +200,28 @@ threadsafe static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
 End
 
 /// @brief Check if the given wave's version is equal or larger than the given version, if version is not set false is returned
-static Function WaveVersionIsAtLeast(wv, existingVersion)
+threadsafe static Function WaveVersionIsAtLeast(wv, existingVersion)
 	WAVE/Z wv
 	variable existingVersion
 
 	variable waveVersion
 
-	ASSERT(WaveExists(wv), "Wave does not exist")
-	ASSERT(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
+	ASSERT_TS(WaveExists(wv), "Wave does not exist")
+	ASSERT_TS(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
 	waveVersion = GetWaveVersion(wv)
 
 	return !isNaN(waveVersion) && waveVersion >= existingVersion
 End
 
 /// @brief Check if the given wave's version is smaller than the given version, if version is not set true is returned
-static Function WaveVersionIsSmaller(wv, existingVersion)
+threadsafe static Function WaveVersionIsSmaller(wv, existingVersion)
 	WAVE/Z wv
 	variable existingVersion
 
 	variable waveVersion
 
-	ASSERT(WaveExists(wv), "Wave does not exist")
-	ASSERT(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
+	ASSERT_TS(WaveExists(wv), "Wave does not exist")
+	ASSERT_TS(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
 	waveVersion = GetWaveVersion(wv)
 
 	return isNaN(waveVersion) || waveVersion < existingVersion
@@ -235,16 +235,16 @@ threadsafe Function GetWaveVersion(wv)
 End
 
 /// @brief Set the wave layout version of wave
-static Function SetWaveVersion(wv, val)
+threadsafe static Function SetWaveVersion(wv, val)
 	Wave wv
 	variable val
 
-	ASSERT(IsValidWaveVersion(val), "val must be a positive and non-zero integer")
+	ASSERT_TS(IsValidWaveVersion(val), "val must be a positive and non-zero integer")
 	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, val)
 End
 
 /// @brief A valid wave version is a positive non-zero integer
-static Function IsValidWaveVersion(variable value)
+threadsafe static Function IsValidWaveVersion(variable value)
 	return value > 0 && IsInteger(value)
 End
 
@@ -1535,7 +1535,7 @@ End
 ///
 /// Layers:
 /// - One for each entrySourceType, mapped via EntrySourceTypeMapper()
-Function/WAVE GetLBRowCache(values)
+threadsafe Function/WAVE GetLBRowCache(values)
 	WAVE values
 
 	variable actual, rollbackCount, sweepNo, first, last
@@ -1546,7 +1546,7 @@ Function/WAVE GetLBRowCache(values)
 	actual        = WaveModCountWrapper(values)
 	name          = GetWavesDataFolder(values, 2)
 	rollbackCount = GetNumberFromWaveNote(values, LABNOTEBOOK_ROLLBACK_COUNT)
-	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
+	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_RowCache"
 
@@ -1554,6 +1554,8 @@ Function/WAVE GetLBRowCache(values)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
+			return wv
+		elseif(!MU_RunningInMainThread() && GetLockState(values) == 1)
 			return wv
 		elseif(rollbackCount == GetNumberFromWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT))
 			// new entries were added so we need to propagate all entries to LABNOTEBOOK_GET_RANGE
@@ -1614,7 +1616,7 @@ End
 /// Contents:
 /// - row index if the entry could be found, #LABNOTEBOOK_MISSING_VALUE if it
 ///   could not be found, and #LABNOTEBOOK_UNCACHED_VALUE if the cache is empty.
-Function/WAVE GetLBIndexCache(values)
+threadsafe Function/WAVE GetLBIndexCache(values)
 	WAVE values
 
 	variable actual, rollbackCount, sweepNo, first, last
@@ -1625,7 +1627,7 @@ Function/WAVE GetLBIndexCache(values)
 	actual        = WaveModCountWrapper(values)
 	name          = GetWavesDataFolder(values, 2)
 	rollbackCount = GetNumberFromWaveNote(values, LABNOTEBOOK_ROLLBACK_COUNT)
-	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
+	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_IndexCache"
 
@@ -1633,6 +1635,8 @@ Function/WAVE GetLBIndexCache(values)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
+			return wv
+		elseif(!MU_RunningInMainThread() && GetLockState(values) == 1)
 			return wv
 		elseif(rollbackCount == GetNumberFromWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT))
 			// new entries were added so we need to propagate all entries to uncached values
@@ -1684,7 +1688,7 @@ End
 /// - RAC (repeated acquisition cycle IDs) sweeps
 /// - SCI (simset cycle IDs) sweeps
 ///
-Function/WAVE GetLBNidCache(numericalValues)
+threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	WAVE numericalValues
 
 	variable actual, rollbackCount
@@ -1692,12 +1696,12 @@ Function/WAVE GetLBNidCache(numericalValues)
 
 	variable versionOfNewWave = 3
 
-	ASSERT(!IsTextWave(numericalValues), "Expected numerical labnotebook")
+	ASSERT_TS(!IsTextWave(numericalValues), "Expected numerical labnotebook")
 
 	actual        = WaveModCountWrapper(numericalValues)
 	name          = GetWavesDataFolder(numericalValues, 2)
 	rollbackCount = GetNumberFromWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT)
-	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
+	ASSERT_TS(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_RACidCache"
 
@@ -1705,6 +1709,8 @@ Function/WAVE GetLBNidCache(numericalValues)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
+			return wv
+		elseif(!MU_RunningInMainThread() && GetLockState(numericalValues) == 1)
 			return wv
 		else
 			// we can't easily do an incremental update as we would need to
@@ -5100,19 +5106,19 @@ End
 /// @name Getters relating to caching
 /// @{
 /// @brief Return the datafolder reference to the wave cache
-Function/DF GetCacheFolder()
+threadsafe Function/DF GetCacheFolder()
 	return createDFWithAllParents(GetCacheFolderAS())
 End
 
 /// @brief Return the full path to the wave cache datafolder, e.g. root:MIES:Cache
-Function/S GetCacheFolderAS()
+threadsafe Function/S GetCacheFolderAS()
 	return GetMiesPathAsString() + ":Cache"
 End
 
 /// @brief Return the wave reference wave holding the cached data
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
-Function/Wave GetCacheValueWave()
+threadsafe Function/Wave GetCacheValueWave()
 
 	DFREF dfr = GetCacheFolder()
 
@@ -5132,7 +5138,7 @@ End
 /// @brief Return the wave reference wave holding the cache keys
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
-Function/Wave GetCacheKeyWave()
+threadsafe Function/Wave GetCacheKeyWave()
 
 	DFREF dfr = GetCacheFolder()
 
@@ -5161,7 +5167,7 @@ End
 /// - 3: Size in bytes (Updated on write)
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
-Function/Wave GetCacheStatsWave()
+threadsafe Function/Wave GetCacheStatsWave()
 
 	variable versionOfNewWave = 3
 
@@ -5175,7 +5181,7 @@ Function/Wave GetCacheStatsWave()
 		WAVE/T keys      = GetCacheKeyWave()
 		WAVE/WAVE values = GetCacheValueWave()
 		numRows = DimSize(values, ROWS)
-		ASSERT(DimSize(keys, ROWS) == numRows, "Mismatched row sizes")
+		ASSERT_TS(DimSize(keys, ROWS) == numRows, "Mismatched row sizes")
 
 		if(WaveExists(wv))
 			// experiments prior to efebc382 (Merge pull request #490 from AllenInstitute/mh_fix_uniquedatafoldername, 2020-03-16)

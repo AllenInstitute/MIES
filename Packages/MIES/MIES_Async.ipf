@@ -327,12 +327,14 @@ End
 /// @param var [optional, default = 0] variable to be added as parameter
 /// @param str [optional, default = 0] string to be added as parameter
 /// @param move [optional, default = 0] if a wave was given as parameter and move is not zero then the wave is moved to the threads data folder
-Function ASYNC_AddParam(dfr, [w, var, str, move])
+/// @param name [optional, default = paramXXX] name of the added parameter
+Function ASYNC_AddParam(dfr, [w, var, str, move, name])
 	DFREF dfr
 	WAVE w
 	variable var
 	string str
 	variable move
+	string name
 
 	variable paramCnt
 	string paramName
@@ -349,7 +351,11 @@ Function ASYNC_AddParam(dfr, [w, var, str, move])
 	paramCnt += 3 - ParamIsDefault(w) - ParamIsDefault(var) - ParamIsDefault(str)
 	ASSERT(paramCnt == 1, "You can build the input wave only with one parameter at a time")
 
-	paramName = "param" + num2str(paramCount)
+	if(ParamIsDefault(name))
+		paramName = "param" + num2str(paramCount)
+	else
+		paramName = name
+	endif
 
 	if(!ParamIsDefault(w))
 		if(move)
@@ -364,6 +370,33 @@ Function ASYNC_AddParam(dfr, [w, var, str, move])
 	endif
 
 	paramCount += 1
+End
+
+/// @brief Fetch a wave from the DFREF in the worker function
+threadsafe Function/WAVE ASYNC_FetchWave(DFREF dfr, string name)
+
+	WAVE/Z/SDFR=dfr wv = $name
+	ASSERT_TS(WaveExists(wv), "Missing wave: " + name)
+
+	return wv
+End
+
+/// @brief Fetch a variable from the DFREF in the worker function
+threadsafe Function ASYNC_FetchVariable(DFREF dfr, string name)
+
+	NVAR/Z/SDFR=dfr var = $name
+	ASSERT_TS(NVAR_Exists(var), "Missing variable: " + name)
+
+	return var
+End
+
+/// @brief Fetch a string from the DFREF in the worker function
+threadsafe Function/S ASYNC_FetchString(DFREF dfr, string name)
+
+	SVAR/Z/SDFR=dfr str = $name
+	ASSERT_TS(SVAR_Exists(str), "Missing string: " + name)
+
+	return str
 End
 
 /// @brief Stops the Async Framework
@@ -938,19 +971,12 @@ End
 /// @brief returns 1 if ASYNC framework is running, 0 otherwise
 static Function ASYNC_IsASYNCRunning()
 
-	variable waitResult, doe
+	variable waitResult, err
 
 	NVAR tgID = $GetThreadGroupID()
-	doe = DisableDebugOnError()
-	try
-		ClearRTError()
-		waitResult = ThreadGroupWait(tgID, 0);AbortOnRTE
-	catch
-		ClearRTError()
-		waitResult = 0
-	endtry
-	ResetDebugOnError(doe)
-	return waitResult != 0
+	waitResult = ThreadGroupWait(tgID, 0); err = GetRTError(1)
+
+	return err == 0 && waitResult != 0
 End
 
 /// @brief Deletes one row, column, layer or chunk from a wave

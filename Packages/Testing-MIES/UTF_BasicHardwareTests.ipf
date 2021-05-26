@@ -4686,15 +4686,6 @@ Function ExportIntoNWB([str])
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
-	CloseNwBFile()
-	PathInfo home
-	CHECK(V_Flag)
-
-	experimentName = GetExperimentName()
-	CHECK(cmpstr(experimentName, UNTITLED_EXPERIMENT))
-
-	DeleteFile/Z S_path + experimentName + ".nwb"
-
 	AcquireData(s, str, startTPInstead = 1)
 
 	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
@@ -4725,4 +4716,45 @@ Function ExportIntoNWB_REENTRY_REENTRY([str])
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
+End
+
+Function ExportIntoNWBSweepBySweep_IGNORE(string device)
+
+	CHECK_EQUAL_VAR(GetCheckBoxState(device, "Check_Settings_NwbExport"), CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "Check_Settings_NwbExport", val = CHECKBOX_SELECTED)
+End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function ExportIntoNWBSweepBySweep([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc = ExportIntoNWBSweepBySweep_IGNORE)
+End
+
+Function ExportIntoNWBSweepBySweep_REENTRY([str])
+	string str
+
+	string experimentNwbFile, stimsets, acquisition, stimulus
+	variable fileID, nwbVersion
+
+	CloseNwbFile()
+	experimentNwbFile = GetExperimentNWBFileForExport()
+	CHECK(FileExists(experimentNwbFile))
+
+	fileID = H5_OpenFile(experimentNWBFile)
+	nwbVersion = GetNWBMajorVersion(ReadNWBVersion(fileID))
+	CHECK_EQUAL_VAR(nwbVersion, 2)
+
+	stimsets = ReadStimsets(fileID)
+	CHECK_PROPER_STR(stimsets)
+
+	acquisition = ReadAcquisition(fileID, nwbVersion)
+	CHECK_PROPER_STR(acquisition)
+
+	stimulus = ReadStimulus(fileID)
+	CHECK_PROPER_STR(stimulus)
+	HDF5CloseFile fileID
 End

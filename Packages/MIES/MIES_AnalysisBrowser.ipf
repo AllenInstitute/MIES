@@ -585,21 +585,21 @@ static Function AB_LoadSweepsFromNWB(discLocation, dataFolder, device)
 	Wave/I sweeps = GetAnalysisChannelSweepWave(dataFolder, device)
 
 	// open hdf5 file
-	h5_fileID = IPNWB#H5_OpenFile(discLocation)
+	h5_fileID = H5_OpenFile(discLocation)
 
 	// load from /acquisition
-	nwbVersion = IPNWB#GetNWBMajorVersion(IPNWB#ReadNWBVersion(h5_fileID))
-	channelList = IPNWB#ReadAcquisition(h5_fileID, nwbVersion)
+	nwbVersion = GetNWBMajorVersion(ReadNWBVersion(h5_fileID))
+	channelList = ReadAcquisition(h5_fileID, nwbVersion)
 	Wave/T acquisition = GetAnalysisChannelAcqWave(dataFolder, device)
 	AB_StoreChannelsBySweep(h5_fileID, nwbVersion, channelList, sweeps, acquisition)
 
 	// load from /stimulus/presentation
-	channelList = IPNWB#ReadStimulus(h5_fileID)
+	channelList = ReadStimulus(h5_fileID)
 	Wave/T stimulus = GetAnalysisChannelStimWave(dataFolder, device)
 	AB_StoreChannelsBySweep(h5_fileID, nwbVersion, channelList, sweeps, stimulus)
 
 	// close hdf5 file
-	IPNWB#H5_CloseFile(h5_fileID)
+	H5_CloseFile(h5_fileID)
 End
 
 /// @brief Store channelList in storage wave according to index in sweeps wave
@@ -623,7 +623,7 @@ static Function AB_StoreChannelsBySweep(groupID, nwbVersion, channelList, sweeps
 	WAVE/Z SweepTableNumber
 	WAVE/Z/T SweepTableSeries
 	if(nwbVersion == 2)
-		[SweepTableNumber, SweepTableSeries] = IPNWB#LoadSweepTable(groupID, nwbVersion)
+		[SweepTableNumber, SweepTableSeries] = LoadSweepTable(groupID, nwbVersion)
 	endif
 
 	for(i = 0; i < numChannels; i += 1)
@@ -633,7 +633,7 @@ static Function AB_StoreChannelsBySweep(groupID, nwbVersion, channelList, sweeps
 			ASSERT(DimSize(indices, ROWS) == 1, "Invalid Amount of Sweep Number Associated in " + channelString)
 			sweepNo = SweepTableNumber[indices[0]]
 		else
-			sweepNo = IPNWB#LoadSweepNumber(groupID, channelString, nwbVersion)
+			sweepNo = LoadSweepNumber(groupID, channelString, nwbVersion)
 		endif
 		FindValue/I=(sweepNo)/S=0 sweeps
 		ASSERT(isFinite(sweepNo), "Invalid Sweep Number Associated in " + channelString)
@@ -685,12 +685,12 @@ Function AB_LoadTPStorageFromNWB(nwbFilePath, expFolder, device)
 	variable h5_fileID, testpulseGroup, numEntries, i
 	string dataFolderPath, list, name, groupName
 
-	h5_fileID = IPNWB#H5_OpenFile(nwbFilePath)
+	h5_fileID = H5_OpenFile(nwbFilePath)
 
 	groupName = "/general/testpulse/" + device
-	testpulseGroup = IPNWB#H5_OpenGroup(h5_fileID, groupName)
+	testpulseGroup = H5_OpenGroup(h5_fileID, groupName)
 
-	list = IPNWB#H5_ListGroupMembers(testpulseGroup, groupName)
+	list = H5_ListGroupMembers(testpulseGroup, groupName)
 	list = GrepList(list, TP_STORAGE_REGEXP)
 
 	DFREF targetDFR = GetAnalysisDeviceTestpulse(expFolder, device)
@@ -698,12 +698,12 @@ Function AB_LoadTPStorageFromNWB(nwbFilePath, expFolder, device)
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, list)
-		WAVE wv = IPNWB#H5_LoadDataset(testpulseGroup, name)
+		WAVE wv = H5_LoadDataset(testpulseGroup, name)
 		MoveWave wv, targetDFR
 	endfor
 
 	HDF5CloseGroup/Z testpulseGroup
-	IPNWB#H5_CloseFile(h5_fileID)
+	H5_CloseFile(h5_fileID)
 End
 
 static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
@@ -730,14 +730,14 @@ static Function AB_LoadUserCommentFromNWB(nwbFilePath, expFolder, device)
 	variable h5_fileID, commentGroup
 
 	DFREF targetDFR = GetAnalysisDeviceFolder(expFolder, device)
-	h5_fileID = IPNWB#H5_OpenFile(nwbFilePath)
+	h5_fileID = H5_OpenFile(nwbFilePath)
 
 	groupName = "/general/user_comment/" + device
-	commentGroup = IPNWB#H5_OpenGroup(h5_fileID, groupName)
+	commentGroup = H5_OpenGroup(h5_fileID, groupName)
 
-	comment = IPNWB#ReadTextDataSetAsString(commentGroup, "userComment")
+	comment = ReadTextDataSetAsString(commentGroup, "userComment")
 	HDF5CloseGroup/Z commentGroup
-	IPNWB#H5_CloseFile(h5_fileID)
+	H5_CloseFile(h5_fileID)
 
 	string/G targetDFR:userComment = comment
 End
@@ -936,15 +936,15 @@ static Function/S AB_LoadLabNotebookFromNWB(discLocation)
 	Wave/T nwb = AB_GetMap(discLocation)
 
 	try
-		h5_fileID = IPNWB#H5_OpenFile(nwb[%DiscLocation])
+		h5_fileID = H5_OpenFile(nwb[%DiscLocation])
 	catch
 		printf "Could not open the NWB file %s.\r", nwb[%DiscLocation]
-		IPNWB#H5_CloseFile(h5_fileID)
+		H5_CloseFile(h5_fileID)
 		return ""
 	endtry
 
-	notebookList = IPNWB#ReadLabNoteBooks(h5_fileID)
-	h5_notebooksID = IPNWB#H5_OpenGroup(h5_fileID, "/general/labnotebook")
+	notebookList = ReadLabNoteBooks(h5_fileID)
+	h5_notebooksID = H5_OpenGroup(h5_fileID, "/general/labnotebook")
 
 	numDevices = ItemsInList(notebookList)
 	devicelist = ""
@@ -966,7 +966,7 @@ static Function/S AB_LoadLabNotebookFromNWB(discLocation)
 
 	// H5_CloseFile closes all associated open groups.
 	HDF5CloseGroup/Z h5_notebooksID
-	IPNWB#H5_CloseFile(h5_fileID)
+	H5_CloseFile(h5_fileID)
 
 	return devicelist
 End
@@ -1553,21 +1553,21 @@ static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, devic
 			break
 		case ANALYSISBROWSER_FILE_TYPE_NWB:
 			stimsets = NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
-			h5_fileID  = IPNWB#H5_OpenFile(discLocation)
-			if(!IPNWB#StimsetPathExists(h5_fileID))
-				IPNWB#H5_CloseFile(h5_fileID)
+			h5_fileID  = H5_OpenFile(discLocation)
+			if(!StimsetPathExists(h5_fileID))
+				H5_CloseFile(h5_fileID)
 				return 1
 			endif
-			h5_groupID = IPNWB#OpenStimset(h5_fileID)
+			h5_groupID = OpenStimset(h5_fileID)
 			if(NWB_LoadStimsets(h5_groupID, stimsets, overwrite))
-				IPNWB#H5_CloseFile(h5_fileID)
+				H5_CloseFile(h5_fileID)
 				return 1
 			endif
 			if(NWB_LoadCustomWaves(h5_groupID, stimsets, overwrite))
-				IPNWB#H5_CloseFile(h5_fileID)
+				H5_CloseFile(h5_fileID)
 				return 1
 			endif
-			IPNWB#H5_CloseFile(h5_fileID)
+			H5_CloseFile(h5_fileID)
 			break
 		default:
 			ASSERT(0, "fileType not handled")
@@ -1610,13 +1610,13 @@ static Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	endif
 
 	// open NWB file
-	h5_fileID = IPNWB#H5_OpenFile(discLocation)
-	version = IPNWB#GetNWBMajorVersion(IPNWB#ReadNWBVersion(h5_fileID))
+	h5_fileID = H5_OpenFile(discLocation)
+	version = GetNWBMajorVersion(ReadNWBVersion(h5_fileID))
 
 	// load acquisition
 	Wave/T acquisition = GetAnalysisChannelAcqWave(nwb[%DataFolder], device)
 	channelList = acquisition[V_Value]
-	h5_groupID = IPNWB#OpenAcquisition(h5_fileID, version)
+	h5_groupID = OpenAcquisition(h5_fileID, version)
 	if(AB_LoadSweepFromNWBgeneric(h5_groupID, version, channelList, sweepDFR, configSweep))
 		return 1
 	endif
@@ -1624,13 +1624,13 @@ static Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	// load stimulus
 	Wave/T stimulus = GetAnalysisChannelStimWave(nwb[%DataFolder], device)
 	channelList = stimulus[V_Value]
-	h5_groupID = IPNWB#OpenStimulus(h5_fileID)
+	h5_groupID = OpenStimulus(h5_fileID)
 	if(AB_LoadSweepFromNWBgeneric(h5_groupID, version, channelList, sweepDFR, configSweep))
 		return 1
 	endif
 
 	// close NWB file
-	IPNWB#H5_CloseFile(h5_fileID)
+	H5_CloseFile(h5_fileID)
 
 	return 0
 End
@@ -1643,31 +1643,31 @@ static Function AB_LoadSweepFromNWBgeneric(h5_groupID, nwbVersion, channelList, 
 
 	string channel, channelName
 	variable numChannels, numEntries, i
-	STRUCT IPNWB#ReadChannelParams p
+	STRUCT ReadChannelParams p
 	variable waveNoteLoaded, fakeConfigWave
 
 	numChannels = ItemsInList(channelList)
 
 	for(i = 0; i < numChannels; i += 1)
 		channel = StringFromList(i, channelList)
-		IPNWB#AnalyseChannelName(channel, p)
+		AnalyseChannelName(channel, p)
 
 		switch(p.channelType)
 			case XOP_CHANNEL_TYPE_DAC:
 				channelName = "DA"
-				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel)
+				wave loaded = LoadStimulus(h5_groupID, channel)
 				channelName += "_" + num2str(p.channelNumber)
 				fakeConfigWave = 1
 				break
 			case XOP_CHANNEL_TYPE_ADC:
 				channelName = "AD"
-				wave loaded = IPNWB#LoadTimeseries(h5_groupID, channel, nwbVersion)
+				wave loaded = LoadTimeseries(h5_groupID, channel, nwbVersion)
 				channelName += "_" + num2str(p.channelNumber)
 				fakeConfigWave = 1
 				break
 			case XOP_CHANNEL_TYPE_TTL:
 				channelName  = "TTL"
-				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel)
+				wave loaded = LoadStimulus(h5_groupID, channel)
 				channelName += "_" + num2str(p.channelNumber)
 
 				if(IsFinite(p.ttlBit))

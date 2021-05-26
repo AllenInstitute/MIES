@@ -105,13 +105,13 @@ End
 ///                      `GetDAQConfigWave(panelTitle)` to get that wave.
 /// @param channelNumber channel number (0-based)
 /// @param channelType   channel type, one of @ref XopChannelConstants
-Function AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
+threadsafe Function AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
 	WAVE DAQConfigWave
 	variable channelNumber, channelType
 
 	variable numRows, i
 
-	ASSERT(IsFinite(channelNumber), "Non-finite channel number")
+	ASSERT_TS(IsFinite(channelNumber), "Non-finite channel number")
 
 	numRows = DimSize(DAQConfigWave, ROWS)
 	for(i = 0; i < numRows; i += 1)
@@ -127,9 +127,9 @@ Function AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
 		return i
 	endfor
 
-	DEBUGPRINT("Could not find the column")
-	DEBUGPRINT("Channel number", var = channelNumber)
-	DEBUGPRINT("Channel type", var = channelType)
+	DEBUGPRINT_TS("Could not find the column")
+	DEBUGPRINT_TS("Channel number", var = channelNumber)
+	DEBUGPRINT_TS("Channel type", var = channelType)
 
 	return NaN
 End
@@ -138,7 +138,7 @@ End
 ///
 /// @param DAQConfigWave DAQ configuration wave, most users need to call
 ///                      `GetDAQConfigWave(panelTitle)` to get that wave.
-Function/WAVE AFH_GetChannelUnits(DAQConfigWave)
+threadsafe Function/WAVE AFH_GetChannelUnits(DAQConfigWave)
 	WAVE DAQConfigWave
 
 	string units
@@ -236,7 +236,7 @@ End
 ///        AFH_GetSweepsFromSameRACycle().
 ///
 /// Return an invalid wave reference if not all required labnotebook entries are available
-static Function/WAVE AFH_GetSweepsFromSameRACycleNC(numericalValues, sweepNo)
+threadsafe static Function/WAVE AFH_GetSweepsFromSameRACycleNC(numericalValues, sweepNo)
 	WAVE numericalValues
 	variable sweepNo
 
@@ -250,7 +250,7 @@ static Function/WAVE AFH_GetSweepsFromSameRACycleNC(numericalValues, sweepNo)
 
 	WAVE/Z indizes = FindIndizes(numericalValues, colLabel = RA_ACQ_CYCLE_ID_KEY, var = raCycleID, \
 								 startLayer = INDEP_HEADSTAGE, endLayer = INDEP_HEADSTAGE)
-	ASSERT(WaveExists(indizes), "Expected at least one match")
+	ASSERT_TS(WaveExists(indizes), "Expected at least one match")
 
 	sweepCol = GetSweepColumn(numericalValues)
 	Make/FREE/D/N=(DimSize(indizes, ROWS)) sweeps = numericalValues[indizes[p]][sweepCol][0]
@@ -262,7 +262,7 @@ End
 ///        belong to the same RA cycle
 ///
 /// Return an invalid wave reference if not all required labnotebook entries are available
-Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+threadsafe Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	WAVE numericalValues
 	variable sweepNo
 
@@ -299,7 +299,7 @@ End
 ///        belong to the same stimset cycle
 ///
 /// Return an invalid wave reference if not all required labnotebook entries are available
-Function/WAVE AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+threadsafe Function/WAVE AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 	WAVE numericalValues
 	variable sweepNo, headstage
 
@@ -337,7 +337,7 @@ End
 ///        AFH_GetSweepsFromSameSCI().
 ///
 /// Return an invalid wave reference if not all required labnotebook entries are available
-static Function/WAVE AFH_GetSweepsFromSameSCINC(numericalValues, sweepNo, headstage)
+threadsafe static Function/WAVE AFH_GetSweepsFromSameSCINC(numericalValues, sweepNo, headstage)
 	WAVE numericalValues
 	variable sweepNo
 	variable headstage
@@ -352,7 +352,7 @@ static Function/WAVE AFH_GetSweepsFromSameSCINC(numericalValues, sweepNo, headst
 
 	WAVE/Z indizes = FindIndizes(numericalValues, colLabel = STIMSET_ACQ_CYCLE_ID_KEY, var = stimsetCycleIDs[headstage], \
 								 startLayer = headstage, endLayer = headstage)
-	ASSERT(WaveExists(indizes), "Expected at least one match")
+	ASSERT_TS(WaveExists(indizes), "Expected at least one match")
 
 	sweepCol = GetSweepColumn(numericalValues)
 	Make/FREE/D/N=(DimSize(indizes, ROWS)) sweeps = numericalValues[indizes[p]][sweepCol][0]
