@@ -33,6 +33,9 @@
 ///     + NWB_AppendSweepLowLevel()
 ///     + NWB_Flush()
 
+static Constant NWB_ASYNC_WRITING_TIMEOUT = 5
+static Constant NWB_ASYNC_MAX_ITERATIONS  = 120
+
 /// @brief Return the starting time, in fractional seconds since Igor Pro epoch in UTC, of the given sweep
 ///
 /// For existing sweeps with #HIGH_PREC_SWEEP_START_KEY labnotebook entries we use the sweep wave's modification time.
@@ -592,6 +595,27 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
+End
+
+/// @brief Wait for ASYNC nwb writing to finish
+///
+/// Currently wait up to 10min (NWB_ASYNC_WRITING_TIMEOUT * NWB_ASYNC_MAX_ITERATIONS),
+/// everything above 5s is considered a bug.
+Function NWB_ASYNC_FinishWriting(string panelTitle)
+
+	string workload, msg
+	variable i
+
+	workload = NWB_ASYNC_WorkLoadName(panelTitle)
+
+	for(i = 0; i < NWB_ASYNC_MAX_ITERATIONS; i += 1)
+		if(!ASYNC_WaitForWLCToFinishAndRemove(workload, NWB_ASYNC_WRITING_TIMEOUT))
+			return NaN
+		endif
+
+		sprintf msg, "Waiting for NWB writing thread %d/%d.\r" i + 1, NWB_ASYNC_MAX_ITERATIONS
+		BUG(msg)
+	endfor
 End
 
 static Function/S NWB_ASYNC_WorkLoadName(string paneltitle)

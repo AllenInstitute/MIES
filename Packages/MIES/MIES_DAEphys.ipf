@@ -5010,6 +5010,8 @@ static Function DAP_UnlockDevice(panelTitle)
 	DQ_StopDAQ(panelTitle, DQ_STOP_REASON_UNLOCKED_DEVICE)
 	TP_StopTestPulse(panelTitle)
 	ASSERT(!ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_TP + panelTitle, DAP_WAITFORTPANALYSIS_TIMEOUT), "TP analysis did not finish within timeout")
+	NWB_ASYNC_FinishWriting(panelTitle)
+
 	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = state)
 
 	DAP_SerializeCommentNotebook(panelTitle)
