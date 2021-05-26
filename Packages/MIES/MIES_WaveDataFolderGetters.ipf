@@ -3451,25 +3451,35 @@ Function/WAVE GetWaveBuilderWaveParam()
 	if(WaveExists(wv))
 		UpgradeWaveParam(wv)
 	else
-		Make/D/N=(86, 100, EPOCH_TYPES_TOTAL_NUMBER) dfr:WP/Wave=wvDouble
-		WAVE wv = wvDouble
-
-		// noise low/high pass filter to off
-		wv[20][][EPOCH_TYPE_NOISE] = 0
-		wv[22][][EPOCH_TYPE_NOISE] = 0
-
-		// noise filter order
-		wv[26][][EPOCH_TYPE_NOISE] = 6
-
-		// per epoch RNG seed
-		wv[39][][] = 1
-
-		// noise type
-		wv[54][][EPOCH_TYPE_NOISE] = 0
-
-		AddDimLabelsToWP(wv)
-		SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
+		WAVE wv = GetWaveBuilderWaveParamAsFree()
+		MoveWave wv, dfr:WP
 	endif
+
+	return wv
+End
+
+/// @brief Return a free wave version of GetWaveBuilderWaveParam()
+///
+/// @sa GetWaveBuilderWaveParam()
+Function/WAVE GetWaveBuilderWaveParamAsFree()
+
+	Make/D/N=(86, 100, EPOCH_TYPES_TOTAL_NUMBER)/FREE wv
+
+	// noise low/high pass filter to off
+	wv[20][][EPOCH_TYPE_NOISE] = 0
+	wv[22][][EPOCH_TYPE_NOISE] = 0
+
+	// noise filter order
+	wv[26][][EPOCH_TYPE_NOISE] = 6
+
+	// per epoch RNG seed
+	wv[39][][] = 1
+
+	// noise type
+	wv[54][][EPOCH_TYPE_NOISE] = 0
+
+	AddDimLabelsToWP(wv)
+	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
 
 	return wv
 End
@@ -3668,10 +3678,20 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 	if(WaveExists(wv))
 		UpgradeWaveTextParam(wv)
 	else
-		Make/N=(51, 100, EPOCH_TYPES_TOTAL_NUMBER)/T dfr:WPT/Wave=wv
-		AddDimLabelsToWPT(wv)
-		SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
+		WAVE/T wv = GetWaveBuilderWaveTextParamAsFree()
+		MoveWave wv, dfr:WPT
 	endif
+
+	return wv
+End
+
+/// @brief Return a free wave version of GetWaveBuilderWaveTextParam()
+///
+/// @sa GetWaveBuilderWaveTextParam()
+Function/WAVE GetWaveBuilderWaveTextParamAsFree()
+	Make/FREE/N=(51, 100, EPOCH_TYPES_TOTAL_NUMBER)/T wv
+	AddDimLabelsToWPT(wv)
+	SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
 
 	return wv
 End
@@ -3742,14 +3762,25 @@ Function/Wave GetSegmentTypeWave()
 	if(WaveExists(wv))
 		UpgradeSegWvType(wv)
 	else
-		Make/N=102/D dfr:SegWvType/Wave=wvDouble
-		WAVE wv = wvDouble
-
-		wv[100] = 1
-		wv[101] = 1
-		AddDimLabelsToSegWvType(wv)
-		SetWaveVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION)
+		WAVE wv = GetSegmentTypeWaveAsFree()
+		MoveWave wv, dfr:SegWvType
 	endif
+
+	return wv
+End
+
+/// @brief Return a free wave version of GetSegmentTypeWave()
+///
+/// @sa GetSegmentTypeWave()
+Function/Wave GetSegmentTypeWaveAsFree()
+
+	Make/N=102/D/FREE wv
+
+	wv[100] = 1
+	wv[101] = 1
+
+	AddDimLabelsToSegWvType(wv)
+	SetWaveVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION)
 
 	return wv
 End
