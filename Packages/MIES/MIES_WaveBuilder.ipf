@@ -2107,7 +2107,7 @@ static Function/WAVE WB_UpgradeCustomWaves([stimsetList])
 		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
-			if(SegWvType[j] == 7)
+			if(SegWvType[j] == EPOCH_TYPE_CUSTOM)
 				WB_UpgradecustomWaveInWPT(WPT, channelType, j)
 			endif
 		endfor
