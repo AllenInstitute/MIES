@@ -411,7 +411,7 @@ static Function/Wave WB_GetStimSet([setName])
 		WAVE WP        = GetWaveBuilderWaveParam()
 		WAVE/T WPT     = GetWaveBuilderWaveTextParam()
 		WAVE SegWvType = GetSegmentTypeWave()
-		channelType    = WBP_GetOutputType()
+		channelType    = WBP_GetStimulusType()
 
 		setName = ""
 	else
@@ -2092,7 +2092,7 @@ static Function/WAVE WB_UpgradeCustomWaves([stimsetList])
 		if(ParamIsDefault(stimsetList))
 			WAVE/Z/T WPT     = GetWaveBuilderWaveTextParam()
 			WAVE/Z SegWvType = GetSegmentTypeWave()
-			channelType    = WBP_GetOutputType()
+			channelType    = WBP_GetStimulusType()
 		else
 			stimset = StringFromList(i, stimsetList)
 			WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimSet)
@@ -2388,6 +2388,29 @@ Function WB_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
 #endif
 
 	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
+End
+
+Function/S WB_SerializeStimulusType(variable stimulusType)
+	switch(stimulusType)
+		case CHANNEL_TYPE_DAC:
+			return "DA"
+		case CHANNEL_TYPE_TTL:
+			return "TTL"
+		default:
+			ASSERT(0, "unknown stimulus type")
+	endswitch
+End
+
+Function WB_ParseStimulusType(string stimulusType)
+
+	strswitch(stimulusType)
+		case "DA":
+			return CHANNEL_TYPE_DAC
+		case "TTL":
+			return CHANNEL_TYPE_TTL
+		default:
+			ASSERT(0, "unknown stimulus type")
+	endswitch
 End
 
 /// @brief Return a sorted list of all DA/TTL stim set waves

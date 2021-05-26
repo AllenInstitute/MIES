@@ -27,10 +27,6 @@ static Constant WBP_WAVETYPE_WP        = 0x1
 static Constant WBP_WAVETYPE_WPT       = 0x2
 static Constant WBP_WAVETYPE_SEGWVTYPE = 0x4
 
-// Equal to the indizes of the Wave Type popup menu
-static Constant  STIMULUS_TYPE_DA            = 1
-static Constant  STIMULUS_TYPE_TLL           = 2
-
 /// @name Parameters for WBP_TranslateControlContents()
 /// @{
 static Constant FROM_PANEL_TO_WAVE = 0x1
@@ -403,7 +399,7 @@ static Function WBP_UpdatePanelIfAllowed()
 			endif
 			break
 		case EPOCH_TYPE_COMBINE:
-			WB_UpdateEpochCombineList(WBP_GetOutputType())
+			WB_UpdateEpochCombineList(WBP_GetStimulusType())
 			break
 		default:
 			// nothing to do
@@ -661,7 +657,7 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 
 			// propagate the existence of the new set
 			WBP_UpdateDaEphysStimulusSetPopups()
-			WB_UpdateEpochCombineList(WBP_GetOutputType())
+			WB_UpdateEpochCombineList(WBP_GetStimulusType())
 
 			WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
 			ASSERT(WaveExists(stimset), "Could not recreate stimset")
@@ -864,7 +860,7 @@ static Function WBP_ChangeWaveType()
 
 	stimulusType = WBP_GetStimulusType()
 
-	if(stimulusType == STIMULUS_TYPE_TLL)
+	if(stimulusType == CHANNEL_TYPE_TTL)
 		// recreate SegWvType with its defaults
 		KillOrMoveToTrash(wv=GetSegmentTypeWave())
 
@@ -877,7 +873,7 @@ static Function WBP_ChangeWaveType()
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P3", var = 0)
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P4", var = 0)
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P5", var = 0)
-	elseif(stimulusType == STIMULUS_TYPE_DA)
+	elseif(stimulusType == CHANNEL_TYPE_DAC)
 		SetVariable SetVar_WaveBuilder_P2 win =$panel, limits = {-inf,inf,1}
 		EnableControls(panel, list)
 	else
@@ -887,19 +883,10 @@ static Function WBP_ChangeWaveType()
 	WBP_UpdatePanelIfAllowed()
 End
 
-static Function WBP_GetStimulusType()
+Function WBP_GetStimulusType()
+	return WB_ParseStimulusType(GetPopupMenuString(panel, "popup_wavebuilder_outputtype"))
+End
 
-	strswitch(GetPopupMenuString(panel, "popup_WaveBuilder_OutputType"))
-		case "TTL":
-			return STIMULUS_TYPE_TLL
-			break
-		case "DA":
-			return STIMULUS_TYPE_DA
-			break
-		default:
-			ASSERT(0, "unknown stimulus type")
-			break
-	endswitch
 End
 
 Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
@@ -1016,27 +1003,6 @@ static Function WBP_SplitSetName(setName, setPrefix, channelType, setNumber)
 	setNumber   = str2num(setNumberString)
 End
 
-/// @brief Return the output type, one of #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
-Function WBP_GetOutputType()
-
-	variable outputType, idx
-	idx = GetPopupMenuIndex(panel, "popup_WaveBuilder_OutputType")
-
-	switch(idx)
-		case 0:
-			outputType = CHANNEL_TYPE_DAC
-			break
-		case 1:
-			outputType = CHANNEL_TYPE_TTL
-			break
-		default:
-			ASSERT(0, "unknown channelType")
-			break
-	endswitch
-
-	return outputType
-End
-
 Function/S WBP_ReturnListSavedSets()
 
 	string stimsetList, searchString
@@ -1070,7 +1036,7 @@ static Function WBP_SaveSetParam(setName)
 	WAVE WP        = GetWaveBuilderWaveParam()
 	WAVE WPT       = GetWaveBuilderWaveTextParam()
 
-	DFREF dfr = GetSetParamFolder(WBP_GetOutputType())
+	DFREF dfr = GetSetParamFolder(WBP_GetStimulusType())
 
 	// avoid circle references of any order
 	childStimsets = WB_StimsetRecursion()
@@ -1595,7 +1561,7 @@ static Function WBP_AnaFuncsToWPT()
 
 	string func
 
-	if(WBP_GetStimulusType() == STIMULUS_TYPE_TLL)
+	if(WBP_GetStimulusType() == CHANNEL_TYPE_TTL)
 		// don't store analysis functions for TTL
 		return NaN
 	endif
