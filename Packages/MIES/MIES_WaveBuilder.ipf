@@ -2408,6 +2408,57 @@ Function WB_SetAnalysisFunctionGeneric(variable stimulusType, string analysisFun
 
 	return 0
 End
+
+Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType, WAVE WP, WAVE/T WPT, variable setNumber, variable saveAsBuiltin)
+	string setName, genericFunc, params, errorMessage, childStimsets
+	variable i
+
+	setName = WB_AssembleSetName(baseName, stimulusType, setNumber)
+
+	if(WBP_IsBuiltinStimset(setName) && !saveAsBuiltin)
+		printf "The stimset %s can not be saved as it violates the naming scheme for user stimsets.\r", setName
+		ControlWindowToFront()
+		return ""
+	endif
+
+	genericFunc = WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
+	params = WPT[%$("Analysis function params (encoded)")][%Set][INDEP_EPOCH_TYPE]
+
+	errorMessage = AFH_CheckAnalysisParameter(genericFunc, params)
+
+	if(!IsEmpty(errorMessage))
+		printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"
+		print errorMessage
+		ControlWindowToFront()
+		return ""
+	endif
+
+	DFREF dfr = GetSetParamFolder(stimulusType)
+
+	// avoid circle references of any order
+	childStimsets = WB_StimsetRecursion()
+	if(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
+		do
+			i += 1
+			setName = WB_AssembleSetName(basename, stimulusType, setNumber, suffix = "_" + num2str(i))
+		while(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
+		printf "Naming failure: Stimset can not reference itself. Saving with different name: \"%s\" to remove reference to itself.\r", setName
+	endif
+
+	Duplicate/O SegWvType, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
+	Duplicate/O WP, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
+	Duplicate/O WPT, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
+
+	// propagate the existence of the new set
+	DAP_UpdateDaEphysStimulusSetPopups()
+	WB_UpdateEpochCombineList(stimulusType)
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	ASSERT(WaveExists(stimset), "Could not recreate stimset")
+
+	return setName
+End
+
 Function/S WB_SerializeStimulusType(variable stimulusType)
 	switch(stimulusType)
 		case CHANNEL_TYPE_DAC:

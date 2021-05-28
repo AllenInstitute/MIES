@@ -603,39 +603,28 @@ End
 Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string setName, genericFunc, params, errorMessage
+	string basename, setName
+	variable stimulusType, setNumber, saveAsBuiltin, ret
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			setName = WBP_AssembleSetNameFromPanel()
+			basename = GetSetVariableString(panel, "setvar_WaveBuilder_baseName")
+			stimulusType = WBP_GetStimulusType()
+			setNumber = GetSetVariable(panel, "setvar_WaveBuilder_SetNumber")
+			saveAsBuiltin = GetCheckBoxState(panel, "check_allow_saving_builtin_nam")
 
-			if(WBP_IsBuiltinStimset(setName) && !GetCheckBoxState(panel, "check_allow_saving_builtin_nam"))
-				printf "The stimset %s can not be saved as it violates the naming scheme "       + \
-					   "for user stimsets. Check the checkbox above if you really want to save " + \
-					   "a builtin stimset.\r", setName
-				ControlWindowToFront()
+			WAVE SegWvType = GetSegmentTypeWave()
+			WAVE WP        = GetWaveBuilderWaveParam()
+			WAVE/T WPT     = GetWaveBuilderWaveTextParam()
+
+			setName = WB_SaveStimSet(baseName, stimulusType, SegWvType, WP, WPT, setNumber, saveAsBuiltin)
+
+			if(IsEmpty(setName))
 				break
 			endif
 
-			genericFunc = WBP_GetAnalysisGenericFunction()
-			params = WBP_GetAnalysisParameters()
-			errorMessage = AFH_CheckAnalysisParameter(genericFunc, params)
-
-			if(!IsEmpty(errorMessage))
-				printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"
-				print errorMessage
-				ControlWindowToFront()
-				break
-			endif
-
-			WBP_SaveSetParam(setName)
-
-			// propagate the existence of the new set
 			DAP_UpdateDaEphysStimulusSetPopups()
-			WB_UpdateEpochCombineList(WBP_GetStimulusType())
-
-			WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
-			ASSERT(WaveExists(stimset), "Could not recreate stimset")
+			WB_UpdateEpochCombineList(stimulusType)
 
 			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", DEFAULT_SET_PREFIX)
 			WBP_LoadSet(NONE)
@@ -955,34 +944,6 @@ Function WBP_IsBuiltinStimset(setName)
 	string setName
 
 	return GrepString(setName, "^MIES_.*") || !CmpStr(setName, STIMSET_TP_WHILE_DAQ)
-End
-
-/// @brief Save the set parameter waves
-static Function WBP_SaveSetParam(setName)
-	string setName
-
-	string childStimsets
-	variable i
-
-	WAVE SegWvType = GetSegmentTypeWave()
-	WAVE WP        = GetWaveBuilderWaveParam()
-	WAVE WPT       = GetWaveBuilderWaveTextParam()
-
-	DFREF dfr = GetSetParamFolder(WBP_GetStimulusType())
-
-	// avoid circle references of any order
-	childStimsets = WB_StimsetRecursion()
-	if(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
-		do
-			i += 1
-			setName = WBP_AssembleSetNameFromPanel(suffix = "_" + num2str(i))
-		while(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
-		printf "Naming failure: Stimset can not reference itself. Saving with different name: \"%s\" to remove reference to itself.\r", setName
-	endif
-
-	Duplicate/O SegWvType , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
-	Duplicate/O WP	      , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
-	Duplicate/O WPT       , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
 End
 
 static Function WBP_LoadSet(setName)
@@ -2212,19 +2173,4 @@ static Function/WAVE WBP_ListControlsPerStimulusType(variable epochType)
 	Sort/LOC unique, unique
 
 	return unique
-End
-
-Function/S WBP_AssembleSetNameFromPanel([string suffix])
-	string basename
-	variable stimulusType, setNumber
-
-	basename = GetSetVariableString(panel, "setvar_WaveBuilder_baseName")
-	stimulusType = WBP_GetStimulusType()
-	setNumber = GetSetVariable(panel, "setvar_WaveBuilder_SetNumber")
-
-	if(ParamIsDefault(suffix))
-		return WB_AssembleSetName(basename, stimulusType, setNumber)
-	else
-		return WB_AssembleSetName(basename, stimulusType, setNumber, suffix = suffix)
-	endif
 End
