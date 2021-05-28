@@ -2454,22 +2454,25 @@ Function/S WB_AssembleSetName(string basename, variable stimulusType, variable s
 	return CleanupName(result, 0)
 End
 
-/// @brief Split the full setname into its three parts: prefix, outputType and set number
+/// @brief Split the full setname into its three parts: prefix, stimulusType and set number
 ///
 /// Counterpart to WB_AssembleSetName()
-Function WB_SplitStimsetName(setName, setPrefix, channelType, setNumber)
-	string setName
-	string &setPrefix
-	variable &channelType, &setNumber
+Function WB_SplitStimsetName(string setName, string &setPrefix, variable &stimulusType, variable &setNumber)
+	string stimulusTypeString, setNumberString, setPrefixString
 
-	string channelTypeString, setNumberString
+	setNumber    = NaN
+	setPrefix    = ""
+	stimulusType = CHANNEL_TYPE_UNKNOWN
 
-	SplitString/E="(.*)_(DA|TTL)_([[:digit:]]+)" setName, setPrefix, channelTypeString, setNumberString
+	SplitString/E="(.*)_(DA|TTL)_([[:digit:]]+)" setName, setPrefixString, stimulusTypeString, setNumberString
 
-	ASSERT(V_flag == 3, "Invalid setName format")
+	if(V_flag != 3)
+		return NaN
+	endif
 
-	channelType = !cmpstr(channelTypeString, "DA") ? CHANNEL_TYPE_DAC : CHANNEL_TYPE_TTL
-	setNumber   = str2num(setNumberString)
+	setNumber    = str2num(setNumberString)
+	setPrefix    = setPrefixString
+	stimulusType = WB_ParseStimulusType(stimulusTypeString)
 End
 
 /// @brief Return a sorted list of all DA/TTL stim set waves
