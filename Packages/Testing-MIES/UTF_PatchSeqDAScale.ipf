@@ -737,7 +737,7 @@ End
 Function PS_SetOffsetOp_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "OffsetOperator", str="*")
+	AFH_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "OffsetOperator", str="*")
 End
 
 // Different to PS_DS_Supra1 is that the second does not spike and a different offset operator
@@ -821,7 +821,7 @@ static Function PS_DS_Supra3_IGNORE(device)
 	string device
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
-	WBP_AddAnalysisParameter(stimSet, "FinalSlopePercent", var = 100)
+	AFH_AddAnalysisParameter(stimSet, "FinalSlopePercent", var = 100)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -904,7 +904,7 @@ static Function PS_DS_Supra4_IGNORE(device)
 	string device
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
-	WBP_AddAnalysisParameter(stimSet, "FinalSlopePercent", var = 60)
+	AFH_AddAnalysisParameter(stimSet, "FinalSlopePercent", var = 60)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -989,9 +989,9 @@ static Function PS_DS_Supra5_IGNORE(device)
 	string device
 
 	string stimSet = "PSQ_DS_SupraLong_DA_0"
-	WBP_AddAnalysisParameter(stimSet, "MinimumSpikeCount", var = 3)
-	WBP_AddAnalysisParameter(stimSet, "MaximumSpikeCount", var = 6)
-	WBP_AddAnalysisParameter(stimSet, "DAScaleModifier", var = DAScaleModifierPerc)
+	AFH_AddAnalysisParameter(stimSet, "MinimumSpikeCount", var = 3)
+	AFH_AddAnalysisParameter(stimSet, "MaximumSpikeCount", var = 6)
+	AFH_AddAnalysisParameter(stimSet, "DAScaleModifier", var = DAScaleModifierPerc)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1

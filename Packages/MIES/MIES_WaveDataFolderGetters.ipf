@@ -3523,7 +3523,7 @@ Function UpgradeWaveTextParam(wv)
 
 	// upgrade analysis parmeters
 	// we need to URL encode the string/textwave entries, this is done by
-	// WBP_AddAnalysisParameterIntoWPT, and that also takes care of moving it
+	// WB_AddAnalysisParameterIntoWPT, and that also takes care of moving it
 	// into the right place
 	if(WaveVersionIsSmaller(wv, 10))
 		params = wv[10][%Set][INDEP_EPOCH_TYPE]
@@ -3535,16 +3535,16 @@ Function UpgradeWaveTextParam(wv)
 			type = AFH_GetAnalysisParamType(name, params)
 			strswitch(type)
 				case "string":
-					WBP_AddAnalysisParameterIntoWPT(wv, name, str = AFH_GetAnalysisParamTextual(name, params, percentDecoded = 0))
+					WB_AddAnalysisParameterIntoWPT(wv, name, str = AFH_GetAnalysisParamTextual(name, params, percentDecoded = 0))
 					break
 				case "textwave":
-					WBP_AddAnalysisParameterIntoWPT(wv, name, wv = AFH_GetAnalysisParamTextWave(name, params, percentDecoded = 0))
+					WB_AddAnalysisParameterIntoWPT(wv, name, wv = AFH_GetAnalysisParamTextWave(name, params, percentDecoded = 0))
 					break
 				case "variable":
-					WBP_AddAnalysisParameterIntoWPT(wv, name, var = AFH_GetAnalysisParamNumerical(name, params))
+					WB_AddAnalysisParameterIntoWPT(wv, name, var = AFH_GetAnalysisParamNumerical(name, params))
 					break
 				case "wave":
-					WBP_AddAnalysisParameterIntoWPT(wv, name, wv = AFH_GetAnalysisParamWave(name, params))
+					WB_AddAnalysisParameterIntoWPT(wv, name, wv = AFH_GetAnalysisParamWave(name, params))
 					break
 				default:
 					ASSERT(0, "Unknown type")

@@ -1962,85 +1962,6 @@ static Function [STRUCT RGBColor s] WBP_GetSweepColor(variable sweep)
 	[s] = GetTraceColor(20 - mod(sweep, 20))
 End
 
-/// @brief Add an analysis function parameter to the given stimset
-///
-/// This function adds the parameter to the `WPT` wave and checks that it is valid.
-///
-/// Exactly one of `var`/`str`/`wv` must be given.
-///
-/// @param stimset stimset name
-/// @param name    name of the parameter
-/// @param var     [optional] numeric parameter
-/// @param str     [optional] string parameter
-/// @param wv      [optional] wave parameter can be numeric or text
-Function WBP_AddAnalysisParameter(stimset, name, [var, str, wv])
-	string stimset, name
-	variable var
-	string str
-	WAVE wv
-
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimset)
-	ASSERT(WaveExists(WPT), "Missing stimset")
-
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
-
-	if(!ParamIsDefault(var))
-		return WBP_AddAnalysisParameterIntoWPT(WPT, name, var = var)
-	elseif(!ParamIsDefault(str))
-		return WBP_AddAnalysisParameterIntoWPT(WPT, name, str = str)
-	elseif(!ParamIsDefault(wv))
-		return WBP_AddAnalysisParameterIntoWPT(WPT, name, wv = wv)
-	endif
-End
-
-/// @brief Internal use only
-Function WBP_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
-	WAVE/T WPT
-	string name
-	variable var
-	string str
-	WAVE wv
-
-	string type, value, formattedString, params
-
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
-
-	if(!ParamIsDefault(var))
-		type = "variable"
-		// numbers never need URL encoding
-		value = num2str(var)
-	elseif(!ParamIsDefault(str))
-		type = "string"
-		value = URLEncode(str)
-	elseif(!ParamIsDefault(wv))
-		ASSERT(DimSize(wv, ROWS) > 0, "Expected non-empty wave")
-		if(IsTextWave(wv))
-			type  = "textwave"
-			Duplicate/T/FREE wv, wvText
-			wvText = UrlEncode(wvText)
-			value = TextWaveToList(wvText, "|")
-		else
-			type = "wave"
-			// numbers never need URL encoding
-			value = NumericWaveToList(wv, "|", format = "%.15g")
-		endif
-	endif
-
-	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	ASSERT(!GrepString(value, "[=:,;]+"), "Broken URL encoding. Written entry contains invalid characters (one of `=:,;`)")
-	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
-
-	params = WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
-
-#ifndef AUTOMATED_TESTING
-	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
-		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
-	endif
-#endif
-
-	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
-End
-
 /// @brief Delete the given analysis parameter
 ///
 /// @param name    name of the parameter
@@ -2293,16 +2214,16 @@ Function WBP_ButtonProc_AddParam(ba) : ButtonControl
 
 			strswitch(type)
 				case "variable":
-					WBP_AddAnalysisParameterIntoWPT(WPT, name, var = str2numSafe(value))
+					WB_AddAnalysisParameterIntoWPT(WPT, name, var = str2numSafe(value))
 					break
 				case "string":
-					WBP_AddAnalysisParameterIntoWPT(WPT, name, str = value)
+					WB_AddAnalysisParameterIntoWPT(WPT, name, str = value)
 					break
 				case "wave":
-					WBP_AddAnalysisParameterIntoWPT(WPT, name, wv = ListToNumericWave(value, ";"))
+					WB_AddAnalysisParameterIntoWPT(WPT, name, wv = ListToNumericWave(value, ";"))
 					break
 				case "textwave":
-					WBP_AddAnalysisParameterIntoWPT(WPT, name, wv = ListToTextWave(value, ";"))
+					WB_AddAnalysisParameterIntoWPT(WPT, name, wv = ListToTextWave(value, ";"))
 					break
 				default:
 					ASSERT(0, "invalid type")

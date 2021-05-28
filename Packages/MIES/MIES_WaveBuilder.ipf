@@ -2342,6 +2342,54 @@ Function WB_StimsetIsFromThirdParty(stimset)
 	return !WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType)
 End
 
+/// @brief Internal use only
+Function WB_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
+	WAVE/T WPT
+	string name
+	variable var
+	string str
+	WAVE wv
+
+	string type, value, formattedString, params
+
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
+
+	if(!ParamIsDefault(var))
+		type = "variable"
+		// numbers never need URL encoding
+		value = num2str(var)
+	elseif(!ParamIsDefault(str))
+		type = "string"
+		value = URLEncode(str)
+	elseif(!ParamIsDefault(wv))
+		ASSERT(DimSize(wv, ROWS) > 0, "Expected non-empty wave")
+		if(IsTextWave(wv))
+			type  = "textwave"
+			Duplicate/T/FREE wv, wvText
+			wvText = UrlEncode(wvText)
+			value = TextWaveToList(wvText, "|")
+		else
+			type = "wave"
+			// numbers never need URL encoding
+			value = NumericWaveToList(wv, "|", format = "%.15g")
+		endif
+	endif
+
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
+	ASSERT(!GrepString(value, "[=:,;]+"), "Broken URL encoding. Written entry contains invalid characters (one of `=:,;`)")
+	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
+
+	params = WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
+
+#ifndef AUTOMATED_TESTING
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
+		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
+	endif
+#endif
+
+	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
+End
+
 /// @brief Return a sorted list of all DA/TTL stim set waves
 ///
 /// @param[in] channelType               [optional, defaults to all] #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL

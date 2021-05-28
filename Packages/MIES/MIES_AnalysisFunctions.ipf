@@ -77,7 +77,7 @@
 ///
 /// For some analysis functions it is beneficial to send in additional data
 /// depending on the stimset. This is supported by adding parameters and their
-/// values via WBP_AddAnalysisParameter() to the stimset, or using the
+/// values via AFH_AddAnalysisParameter() to the stimset, or using the
 /// Wavebuilder GUI, and then querying them with the help of @ref
 /// AnalysisFunctionParameterHelpers. The parameters are stored serialized in
 /// the `WPT` wave, see GetWaveBuilderWaveTextParam() for the exact format. See

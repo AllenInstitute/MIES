@@ -268,7 +268,7 @@ Structure AnalysisFunction_V3
 	variable sweepsInSet
 
 	/// Analysis function parameters set in the stimset's textual parameter
-	/// wave. Settable via WBP_AddAnalysisParameter().
+	/// wave. Settable via AFH_AddAnalysisParameter().
 	string params
 EndStructure
 

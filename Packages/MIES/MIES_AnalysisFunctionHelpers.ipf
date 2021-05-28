@@ -855,3 +855,30 @@ Function/S AFH_CheckAnalysisParameter(genericFunc, params)
 
 	return header + text
 End
+
+/// @brief Add an analysis function parameter to the given stimset
+///
+/// This function adds the parameter to the `WPT` wave and checks that it is valid.
+///
+/// Exactly one of `var`/`str`/`wv` must be given.
+///
+/// @param setName stimset name
+/// @param name    name of the parameter
+/// @param var     [optional] numeric parameter
+/// @param str     [optional] string parameter
+/// @param wv      [optional] wave parameter can be numeric or text
+Function AFH_AddAnalysisParameter(string setName, string name, [variable var, string str, WAVE wv])
+
+	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(setName)
+	ASSERT(WaveExists(WPT), "Missing stimset")
+
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
+
+	if(!ParamIsDefault(var))
+		return WB_AddAnalysisParameterIntoWPT(WPT, name, var = var)
+	elseif(!ParamIsDefault(str))
+		return WB_AddAnalysisParameterIntoWPT(WPT, name, str = str)
+	elseif(!ParamIsDefault(wv))
+		return WB_AddAnalysisParameterIntoWPT(WPT, name, wv = wv)
+	endif
+End
