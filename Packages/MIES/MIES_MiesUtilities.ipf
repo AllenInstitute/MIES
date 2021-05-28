@@ -4767,20 +4767,14 @@ Function/S GetListOfLockedITC1600Devices()
 End
 
 /// @brief Return the type, #CHANNEL_TYPE_DAC, #CHANNEL_TYPE_TTL or #CHANNEL_TYPE_UNKNOWN, of the stimset
-Function GetStimSetType(setName)
-	string setName
+Function GetStimSetType(string setName)
 
-	string type
+	string setPrefix
+	variable channelType, setNumber
 
-	type = StringFromList(ItemsInList(setName, "_") - 2, setName, "_")
+	WB_SplitStimsetName(setName, setPrefix, channelType, setNumber)
 
-	if(!cmpstr(type, "DA"))
-		return CHANNEL_TYPE_DAC
-	elseif(!cmpstr(type, "TTL"))
-		return CHANNEL_TYPE_TTL
-	else
-		return CHANNEL_TYPE_UNKNOWN
-	endif
+	return channelType
 End
 
 /// @brief Return the stimset folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
