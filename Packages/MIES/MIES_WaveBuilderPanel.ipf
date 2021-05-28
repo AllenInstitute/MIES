@@ -18,9 +18,10 @@ static StrConstant WaveBuilderGraph   = "WaveBuilder#WaveBuilderGraph"
 static StrConstant AnalysisParamGUI   = "WaveBuilder#AnalysisParamGUI"
 static StrConstant DEFAULT_SET_PREFIX = "StimulusSetA"
 
-static StrConstant SEGWVTYPE_CONTROL_REGEXP = ".*_S[[:digit:]]+"
-static StrConstant WP_CONTROL_REGEXP        = ".*_P[[:digit:]]+"
-static StrConstant WPT_CONTROL_REGEXP       = ".*_T[[:digit:]]+"
+static StrConstant SEGWVTYPE_CONTROL_REGEXP     = ".*_S[[:digit:]]+"
+static StrConstant WP_CONTROL_REGEXP            = ".*_P[[:digit:]]+"
+static StrConstant WPT_CONTROL_REGEXP           = ".*_T[[:digit:]]+"
+static StrConstant SEGWVTYPE_ALL_CONTROL_REGEXP = "^.*_ALL$"
 
 static Constant WBP_WAVETYPE_WP        = 0x1
 static Constant WBP_WAVETYPE_WPT       = 0x2
@@ -441,7 +442,7 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 		row = WBP_ExtractRowNumberFromControl(control)
 		ASSERT(IsFinite(row), "Could not find row in: " + control)
 
-		if(GrepString(control, "^.*_ALL$"))
+		if(GrepString(control, SEGWVTYPE_ALL_CONTROL_REGEXP))
 			data = WPT[row][%Set][INDEP_EPOCH_TYPE]
 		else
 			data = WPT[row][segment][stimulusType]
@@ -755,7 +756,7 @@ Function WBP_UpdateControlAndWave(control, [var, str])
 		case WBP_WAVETYPE_WPT:
 			WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-			if(GrepString(control, "^.*_ALL$"))
+			if(GrepString(control, SEGWVTYPE_ALL_CONTROL_REGEXP))
 				WPT[paramRow][%Set][INDEP_EPOCH_TYPE] = str
 			else
 				WPT[paramRow][epoch][stimulusType] = str
