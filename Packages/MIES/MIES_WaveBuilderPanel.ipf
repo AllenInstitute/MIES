@@ -510,7 +510,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 				break
 			endif
 
-			WB_RemoveStimSet(setWaveToDelete)
+			ST_RemoveStimSet(setWaveToDelete)
 
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
 			PopupMenu popup_WaveBuilder_SetList win=$panel, mode = 1
@@ -934,7 +934,7 @@ Function/S WBP_ReturnListSavedSets()
 		searchString = "*"
 	endif
 
-	WB_GetStimsetList(searchString = searchString, WBstimSetList = stimsetList)
+	ST_GetStimsetList(searchString = searchString, WBstimSetList = stimsetList)
 
 	return NONE + ";" + stimsetList
 end

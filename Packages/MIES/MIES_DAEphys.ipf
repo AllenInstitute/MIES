@@ -793,7 +793,7 @@ Function/S DAP_FormatStimSetPopupValue(variable channelType, [string searchStrin
 	endif
 
 	string str
-	sprintf str, "\"%s;\"+WB_GetStimsetList(channelType = %d, searchString = \"%s\")", NONE, channelType, searchString
+	sprintf str, "\"%s;\"+ST_GetStimsetList(channelType = %d, searchString = \"%s\")", NONE, channelType, searchString
 
 	return str
 End
@@ -915,7 +915,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 				searchString = varStr
 			endif
 
-			listOfWaves = WB_GetStimsetList(channelType = channelType, searchString = searchString)
+			listOfWaves = ST_GetStimsetList(channelType = channelType, searchString = searchString)
 			popupValue = DAP_FormatStimSetPopupValue(channelType, searchString = searchString)
 
 			ctrl = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_WAVE)
@@ -5616,8 +5616,8 @@ Function DAP_UpdateDaEphysStimulusSetPopups([panelTitle])
 
 	DEBUGPRINT("Updating", str=listOfPanels)
 
-	DAlist  = WB_GetStimsetList(channelType = CHANNEL_TYPE_DAC)
-	TTLlist = WB_GetStimsetList(channelType = CHANNEL_TYPE_TTL)
+	DAlist  = ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC)
+	TTLlist = ST_GetStimsetList(channelType = CHANNEL_TYPE_TTL)
 
 	numPanels = ItemsInList(listOfPanels)
 	for(i = 0; i < numPanels; i += 1)

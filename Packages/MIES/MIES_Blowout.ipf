@@ -80,7 +80,7 @@ static Function BWO_CheckGlobalSettings(panelTitle)
 		return 0
 	endif
 	// check that blowout protocol exists
-	stimSetList = WB_GetStimsetList(channelType = CHANNEL_TYPE_DAC, searchString = "MIES_Blowout*")
+	stimSetList = ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC, searchString = "MIES_Blowout*")
 	If(itemsinlist(stimSetList) ==  0)
 		print "Blowout stimulus set does not exist. Please create a MIES_Blowout stimulus set using the waveBuilder"
 		return 0

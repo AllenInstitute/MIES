@@ -1779,7 +1779,7 @@ Function WB_UpdateEpochCombineList(variable channelType)
 	string list, setPath, setParamPath, entry
 	variable numEntries, i
 
-	list = WB_GetStimsetList(channelType = channelType)
+	list = ST_GetStimsetList(channelType = channelType)
 	list = RemoveFromList(STIMSET_TP_WHILE_DAQ, list)
 
 	numEntries = ItemsInList(list)
@@ -2525,86 +2525,4 @@ Function WB_SplitStimsetName(string setName, string &setPrefix, variable &stimul
 	setNumber    = str2num(setNumberString)
 	setPrefix    = setPrefixString
 	stimulusType = WB_ParseStimulusType(stimulusTypeString)
-End
-
-/// @brief Return a sorted list of all DA/TTL stim set waves
-///
-/// @param[in] channelType               [optional, defaults to all] #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
-/// @param[in] searchString              [optional, defaults to "*"] search string in wildcard syntax
-/// @param[out] WBstimSetList            [optional] returns the list of stim sets built with the wavebuilder
-/// @param[out] thirdPartyStimSetList    [optional] returns the list of third party stim sets not built with the wavebuilder
-Function/S WB_GetStimsetList([variable channelType, string searchString, string &WBstimSetList, string &thirdPartyStimSetList])
-	string listAll = ""
-	string listInternal = ""
-	string listThirdParty = ""
-	string list
-	variable i, numEntries
-
-	if(ParamIsDefault(channelType))
-		Make/FREE channelTypes = {CHANNEL_TYPE_DAC, CHANNEL_TYPE_TTL}
-	else
-		Make/FREE channelTypes = {channelType}
-	endif
-
-	if(ParamIsDefault(searchString))
-		searchString = "*"
-	endif
-
-	if(!ParamIsDefault(WBstimSetList))
-		WBstimSetList = ""
-	endif
-
-	if(!ParamIsDefault(thirdPartyStimSetList))
-		thirdPartyStimSetList = ""
-	endif
-
-	numEntries = DimSize(channelTypes, ROWS)
-	for(i = 0; i < numEntries; i += 1)
-		// fetch stim sets created with the WaveBuilder
-		DFREF dfr = GetSetParamFolder(channelTypes[i])
-
-		list = GetListOfObjects(dfr, "WP_" + searchString, exprType = MATCH_WILDCARD)
-		listInternal = RemovePrefixFromListItem("WP_", list)
-
-		// fetch third party stim sets
-		DFREF dfr = GetSetFolder(channelType)
-
-		list = GetListOfObjects(dfr, searchString, exprType = MATCH_WILDCARD)
-		listThirdParty = GetListDifference(list, listInternal)
-
-		if(!ParamIsDefault(WBstimSetList))
-			WBstimSetList += SortList(listInternal, ";", 16)
-		endif
-
-		if(!ParamIsDefault(thirdPartyStimSetList))
-			thirdPartyStimSetList += SortList(listThirdParty, ";", 16)
-		endif
-
-		listAll += SortList(listInternal + listThirdParty, ";", 16)
-
-		if(channelType == CHANNEL_TYPE_DAC && stringmatch(STIMSET_TP_WHILE_DAQ, searchString))
-			listAll = AddListItem(STIMSET_TP_WHILE_DAQ, listAll, ";", 0)
-		endif
-	endfor
-
-	return listAll
-End
-
-/// @brief Remove the given stimulus set and update all relevant GUIs
-Function WB_RemoveStimSet(string setName)
-	variable i, numPanels
-	string lockedDevices, panelTitle
-
-	lockedDevices = GetListOfLockedDevices()
-	if(IsEmpty(lockedDevices))
-		DAP_DeleteStimulusSet(setName)
-		return NaN
-	endif
-
-	numPanels = ItemsInList(lockedDevices)
-	for(i = 0; i < numPanels; i += 1)
-		panelTitle = StringFromList(i, lockedDevices)
-
-		DAP_DeleteStimulusSet(setName, device = panelTitle)
-	endfor
 End
