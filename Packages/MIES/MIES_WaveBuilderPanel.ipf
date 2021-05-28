@@ -2338,3 +2338,101 @@ Function WBP_ButtonProc_LoadSet(ba) : ButtonControl
 
 	return 0
 End
+
+/// @brief Function to regenerate code for GetEpochParameterNames()
+Function/S WBP_RegenerateEpochParameterNamesCode()
+	variable i, numEntries
+	string list, msg
+	string code = ""
+
+	for(i = 0; i < EPOCH_TYPES_TOTAL_NUMBER; i += 1)
+		WAVE names = WBP_ListControlsPerStimulusType(i)
+		list = GetCodeForWaveContents(names)
+		sprintf msg, "Make/T/FREE st_%d = %s\r", i, list
+		code += msg
+	endfor
+
+	return code
+End
+
+/// @brief Return a list of all parameter names of the given epochType
+static Function/WAVE WBP_ListControlsPerStimulusType(variable epochType)
+	string list, control, tab, hiddenControls
+	variable i, numEntries, tabNumber, row, index
+
+	WBP_CreateWaveBuilderPanel()
+
+	WAVE WP    = GetWaveBuilderWaveParam()
+	WAVE/T WPT = GetWaveBuilderWaveTextParam()
+
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE) names
+	SetNumberInWaveNote(names, NOTE_INDEX, 0)
+
+	list = ControlNameList(panel)
+
+	switch(epochType)
+		case EPOCH_TYPE_COMBINE:
+		case EPOCH_TYPE_CUSTOM:
+			hiddenControls = HIDDEN_CONTROLS_CUSTOM_COMBINE
+			break
+		case EPOCH_TYPE_SQUARE_PULSE:
+			hiddenControls = HIDDEN_CONTROLS_SQUARE_PULSE
+			break
+		default:
+			hiddenControls = ""
+			break
+	endswitch
+
+	list = RemoveFromList(hiddenControls, list)
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		control = StringFromList(i, list)
+
+		if(!GrepString(control, WP_CONTROL_REGEXP) && !GrepString(control, WPT_CONTROL_REGEXP))
+			continue
+		endif
+
+		if(GrepString(control, SEGWVTYPE_ALL_CONTROL_REGEXP))
+			continue
+		endif
+
+		tabNumber = str2num(GetUserData(panel, control, "tabnum"))
+
+		if(tabNumber != epochType && !IsNaN(tabNumber))
+			continue
+		endif
+
+		row = WBP_ExtractRowNumberFromControl(control)
+		ASSERT(IsFinite(row), "Could not find row in: " + control)
+
+		index = GetNumberFromWaveNote(names, NOTE_INDEX)
+		EnsureLargeEnoughWave(names, minimumSize = index)
+
+		if(GrepString(control, WP_CONTROL_REGEXP))
+			names[index] = GetDimLabel(WP, ROWS, row)
+		elseif(GrepString(control, WPT_CONTROL_REGEXP))
+			names[index] = GetDimLabel(WPT, ROWS, row)
+		endif
+
+		SetNumberInWaveNote(names, NOTE_INDEX, ++index)
+	endfor
+
+	Redimension/N=(index) names
+	Note/K names
+
+	// additional entries which are not covered by the usual naming scheme
+	if(epochType == EPOCH_TYPE_CUSTOM)
+		Make/FREE/T additional = {"Custom epoch wave name"}
+	else
+		Make/FREE/T/N=(0) additional
+	endif
+
+	Concatenate/FREE/NP=(ROWS) {names, additional}, all
+
+	WAVE/T unique = GetUniqueEntries(all)
+
+	Sort/LOC unique, unique
+
+	return unique
+End

@@ -3867,6 +3867,52 @@ Function/Wave GetSegmentWave([duration])
 	return SegmentWave
 End
 
+Function/WAVE GetEpochParameterNames()
+
+	DFREF dfr = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv = epochParameterNames
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	/// Generated code, see WBP_RegenerateEpochParameterNamesCode
+	/// @{
+	Make/T/FREE st_0 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op"}
+	Make/T/FREE st_1 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op"}
+	Make/T/FREE st_2 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Build resolution (index)", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "High pass filter cut off", "High pass filter cut off delta", "High pass filter cut off dme", "High pass filter cut off ldel", "High pass filter cut off op", "Low pass filter cut off", "Low pass filter cut off delta", "Low pass filter cut off dme", "Low pass filter cut off ldel", "Low pass filter cut off op", "Noise filter order", "Noise filter order delta", "Noise filter order dme", "Noise filter order ldel", "Noise filter order op", "Noise Type: White, Pink, Brown", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Random Seed", "Reseed RNG for each epoch", "Reseed RNG for each step"}
+	Make/T/FREE st_3 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Chirp end frequency", "Chirp end frequency delta", "Chirp end frequency dme", "Chirp end frequency ldel", "Chirp end frequency op", "Chirp type: Log or sin", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op", "Trigonometric function Sin/Cos"}
+	Make/T/FREE st_4 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op"}
+	Make/T/FREE st_5 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Duration type: User/Automatic", "Number of pulses", "Number of pulses delta", "Number of pulses dme", "Number of pulses ldel", "Number of pulses op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Poisson distribution true/false", "PT: First Mixed Frequency", "PT: First Mixed Frequency delta", "PT: First Mixed Frequency dme", "PT: First Mixed Frequency ldel", "PT: First Mixed Frequency op", "PT: Last Mixed Frequency", "PT: Last Mixed Frequency delta", "PT: Last Mixed Frequency dme", "PT: Last Mixed Frequency ldel", "PT: Last Mixed Frequency op", "PT: Mixed Frequency", "PT: Shuffle", "Pulse train type (index)", "Random Seed", "Reseed RNG for each epoch", "Reseed RNG for each step", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op", "Train pulse duration", "Train pulse duration delta", "Train pulse duration dme", "Train pulse duration ldel", "Train pulse duration op"}
+	Make/T/FREE st_6 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "PSC exp decay time 1/2", "PSC exp decay time 1/2 delta", "PSC exp decay time 1/2 dme", "PSC exp decay time 1/2 ldel", "PSC exp decay time 1/2 op", "PSC exp decay time 2/2", "PSC exp decay time 2/2 delta", "PSC exp decay time 2/2 dme", "PSC exp decay time 2/2 ldel", "PSC exp decay time 2/2 op", "PSC exp rise time", "PSC exp rise time delta", "PSC exp rise time dme", "PSC exp rise time ldel", "PSC exp rise time op", "PSC ratio decay times", "PSC ratio decay times delta", "PSC ratio decay times dme", "PSC ratio decay times ldel", "PSC ratio decay times op"}
+	Make/T/FREE st_7 = {"Custom epoch wave name", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op"}
+	Make/T/FREE st_8 = {"Combine epoch formula"}
+	/// @}
+
+	Make/FREE sizes = {DimSize(st_0, ROWS), DimSize(st_1, ROWS), DimSize(st_2, ROWS), DimSize(st_3, ROWS), DimSize(st_4, ROWS), DimSize(st_5, ROWS), DimSize(st_6, ROWS), DimSize(st_7, ROWS), DimSize(st_8, ROWS)}
+
+	Redimension/N=(WaveMax(sizes)) st_0, st_1, st_2, st_3, st_4, st_5, st_6, st_7, st_8
+
+	Concatenate/FREE/T {st_0, st_1, st_2, st_3, st_4, st_5, st_6, st_7, st_8}, wv
+
+	MatrixTranspose wv
+
+	MoveWave wv, dfr:epochParameterNames
+
+	SetDimLabel ROWS, -1, $("Epoch type")        , wv
+	SetDimLabel ROWS,  0, $("Square pulse")      , wv
+	SetDimLabel ROWS,  1, $("Ramp")              , wv
+	SetDimLabel ROWS,  2, $("Noise")             , wv
+	SetDimLabel ROWS,  3, $("Sin")               , wv
+	SetDimLabel ROWS,  4, $("Saw tooth")         , wv
+	SetDimLabel ROWS,  5, $("Pulse train")       , wv
+	SetDimLabel ROWS,  6, $("PSC")               , wv
+	SetDimLabel ROWS,  7, $("Load custom wave")  , wv
+	SetDimLabel ROWS,  8, $("Combine")           , wv
+
+	return wv
+End
+
 /// @}
 
 /// @name Asynchronous Measurements

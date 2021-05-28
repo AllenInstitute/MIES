@@ -5824,3 +5824,22 @@ Function RenameDataFolderToUniqueName(string path, string suffix)
 	ASSERT_TS(!DataFolderExists(path), "Could not move it of the way.")
 	ASSERT_TS(DataFolderExists(folder), "Could not create it in the correct place.")
 End
+
+/// @brief Prepare wave for inline definition
+///
+/// Outputs a wave in a format so that it can be initialized
+/// with these contents in an Igor Pro procedure file.
+Function/S GetCodeForWaveContents(WAVE/T wv)
+
+	string list
+
+	ASSERT(DimSize(wv, COLS) <= 1, "Does only support 1D waves")
+	ASSERT(DimSize(wv, ROWS) > 0, "Does not support empty waves")
+
+	wv[] = "\"" + wv[p] + "\""
+
+	list = TextWaveToList(wv, ", ")
+	list = RemoveEnding(list, ", ")
+
+	return "{" + list + "}"
+End
