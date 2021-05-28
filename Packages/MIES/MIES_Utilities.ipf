@@ -2526,15 +2526,35 @@ End
 
 /// @brief Add a string prefix to each list item and
 /// return the new list
-threadsafe Function/S AddPrefixToEachListItem(prefix, list)
-	string prefix, list
-
+threadsafe Function/S AddPrefixToEachListItem(string prefix, string list, [string sep])
 	string result = ""
 	variable numEntries, i
 
-	numEntries = ItemsInList(list)
+	if(ParamIsDefault(sep))
+		sep = ";"
+	endif
+
+	numEntries = ItemsInList(list, sep)
 	for(i = 0; i < numEntries; i += 1)
-		result = AddListItem(prefix + StringFromList(i, list), result, ";", inf)
+		result = AddListItem(prefix + StringFromList(i, list, sep), result, sep, inf)
+	endfor
+
+	return result
+End
+
+/// @brief Add a string suffix to each list item and
+/// return the new list
+threadsafe Function/S AddSuffixToEachListItem(string suffix, string list, [string sep])
+	string result = ""
+	variable numEntries, i
+
+	if(ParamIsDefault(sep))
+		sep = ";"
+	endif
+
+	numEntries = ItemsInList(list, sep)
+	for(i = 0; i < numEntries; i += 1)
+		result = AddListItem(StringFromList(i, list, sep) + suffix, result, sep, inf)
 	endfor
 
 	return result

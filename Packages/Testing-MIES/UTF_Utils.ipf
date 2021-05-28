@@ -5053,3 +5053,65 @@ Function RDFU_Works()
 End
 
 /// @}
+
+// AddPrefixToEachListItem
+/// @{
+
+Function APTEA_WorksWithList()
+
+	string list, ref
+
+	list = AddPrefixToEachListItem("ab-", "c;d")
+	ref  = "ab-c;ab-d;"
+	CHECK_EQUAL_STR(list, ref)
+End
+
+Function APTEA_WorksWithListAndCustomSep()
+
+	string list, ref
+
+	list = AddPrefixToEachListItem("ab-", "c|d", sep = "|")
+	ref  = "ab-c|ab-d|"
+	CHECK_EQUAL_STR(list, ref)
+End
+
+Function APTEA_WorksOnEmptyBoth()
+
+	string list
+
+	list = AddPrefixToEachListItem("", "")
+	CHECK_EMPTY_STR(list)
+End
+
+/// @}
+
+// AddSuffixToEachListItem
+/// @{
+
+Function ASTEA_WorksWithList()
+
+	string list, ref
+
+	list = AddSuffixToEachListItem("-ab", "c;d")
+	ref  = "c-ab;d-ab;"
+	CHECK_EQUAL_STR(list, ref)
+End
+
+Function ASTEA_WorksWithListAndCustomSep()
+
+	string list, ref
+
+	list = AddSuffixToEachListItem("-ab", "c|d", sep = "|")
+	ref  = "c-ab|d-ab|"
+	CHECK_EQUAL_STR(list, ref)
+End
+
+Function ASTEA_WorksOnEmptyBoth()
+
+	string list
+
+	list = AddSuffixToEachListItem("", "")
+	CHECK_EMPTY_STR(list)
+End
+
+/// @}
