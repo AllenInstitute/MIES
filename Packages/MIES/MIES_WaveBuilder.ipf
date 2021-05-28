@@ -1779,7 +1779,7 @@ Function WB_UpdateEpochCombineList(variable channelType)
 	variable numEntries, i
 
 	list = WB_GetStimsetList(channelType = channelType)
-	list = RemoveFromList("TestPulse", list)
+	list = RemoveFromList(STIMSET_TP_WHILE_DAQ, list)
 
 	numEntries = ItemsInList(list)
 
