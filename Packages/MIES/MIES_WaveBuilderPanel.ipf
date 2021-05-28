@@ -607,7 +607,7 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			setName = WBP_AssembleSetName()
+			setName = WBP_AssembleSetNameFromPanel()
 
 			if(WBP_IsBuiltinStimset(setName) && !GetCheckBoxState(panel, "check_allow_saving_builtin_nam"))
 				printf "The stimset %s can not be saved as it violates the naming scheme "       + \
@@ -862,8 +862,6 @@ Function WBP_GetStimulusType()
 	return WB_ParseStimulusType(GetPopupMenuString(panel, "popup_wavebuilder_outputtype"))
 End
 
-End
-
 Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
 	STRUCT WMPopupAction& pa
 
@@ -936,47 +934,6 @@ Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
 	endswitch
 End
 
-/// @brief This function creates a string that is used to name the 2d output wave of the wavebuilder panel.
-///
-/// The naming is based on userinput to the wavebuilder panel
-static Function/S WBP_AssembleSetName([modName])
-	string modName
-	string AssembledBaseName = ""
-
-	variable maxLength = (MAX_OBJECT_NAME_LENGTH_IN_BYTES_SHORT - 1) / 2
-
-	ControlInfo/W=$panel setvar_WaveBuilder_baseName
-	if(ParamIsDefault(modName))
-		AssembledBaseName += s_value[0,maxLength]
-	else
-		AssembledBaseName += s_value[0,(maxLength - strlen(modName))]
-		AssembledBaseName += modName
-	endif
-	ControlInfo/W=$panel popup_WaveBuilder_OutputType
-	AssembledBaseName += "_" + s_value + "_"
-	ControlInfo/W=$panel setvar_WaveBuilder_SetNumber
-	AssembledBaseName += num2str(v_value)
-
-	return CleanupName(AssembledBaseName, 0)
-End
-
-/// @brief Split the full setname into its three parts: prefix, outputType and set number
-///
-/// Counterpart to WBP_AssembleSetName()
-static Function WBP_SplitSetName(setName, setPrefix, channelType, setNumber)
-	string setName
-	string &setPrefix
-	variable &channelType, &setNumber
-
-	string channelTypeString, setNumberString
-
-	SplitString/E="(.*)_(DA|TTL)_([[:digit:]]+)" setName, setPrefix, channelTypeString, setNumberString
-
-	ASSERT(V_flag == 3, "Invalid setName format")
-
-	channelType = !cmpstr(channelTypeString, "DA") ? CHANNEL_TYPE_DAC : CHANNEL_TYPE_TTL
-	setNumber   = str2num(setNumberString)
-End
 
 Function/S WBP_ReturnListSavedSets()
 
@@ -1018,7 +975,7 @@ static Function WBP_SaveSetParam(setName)
 	if(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
 		do
 			i += 1
-			setName = WBP_AssembleSetName(modName = "_" + num2str(i))
+			setName = WBP_AssembleSetNameFromPanel(suffix = "_" + num2str(i))
 		while(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
 		printf "Naming failure: Stimset can not reference itself. Saving with different name: \"%s\" to remove reference to itself.\r", setName
 	endif
@@ -1039,7 +996,7 @@ static Function WBP_LoadSet(setName)
 	SetCheckBoxState(panel, "check_PreventUpdate", 1)
 
 	if(cmpstr(setName, NONE))
-		WBP_SplitSetname(setName, setPrefix, channelType, setNumber)
+		WB_SplitStimsetName(setName, setPrefix, channelType, setNumber)
 
 		PGC_SetAndActivateControl(panel, "popup_WaveBuilder_OutputType", val = channelType)
 
@@ -2255,4 +2212,19 @@ static Function/WAVE WBP_ListControlsPerStimulusType(variable epochType)
 	Sort/LOC unique, unique
 
 	return unique
+End
+
+Function/S WBP_AssembleSetNameFromPanel([string suffix])
+	string basename
+	variable stimulusType, setNumber
+
+	basename = GetSetVariableString(panel, "setvar_WaveBuilder_baseName")
+	stimulusType = WBP_GetStimulusType()
+	setNumber = GetSetVariable(panel, "setvar_WaveBuilder_SetNumber")
+
+	if(ParamIsDefault(suffix))
+		return WB_AssembleSetName(basename, stimulusType, setNumber)
+	else
+		return WB_AssembleSetName(basename, stimulusType, setNumber, suffix = suffix)
+	endif
 End

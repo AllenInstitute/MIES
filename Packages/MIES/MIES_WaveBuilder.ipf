@@ -2431,6 +2431,47 @@ Function WB_ParseStimulusType(string stimulusType)
 	endswitch
 End
 
+/// @brief Return the name of a stimulus set build up from the passed parts
+Function/S WB_AssembleSetName(string basename, variable stimulusType, variable setNumber, [string suffix])
+	string result
+	variable maxLength
+
+	if(ParamIsDefault(suffix))
+		suffix = ""
+	endif
+
+	maxLength = (MAX_OBJECT_NAME_LENGTH_IN_BYTES_SHORT - 1) / 2
+
+	if(ParamIsDefault(suffix))
+		result = basename[0, maxLength]
+	else
+		result = basename[0, (maxLength - strlen(suffix))]
+		result += suffix
+	endif
+
+	result += "_" + WB_SerializeStimulusType(stimulusType) + "_" + num2str(setNumber)
+
+	return CleanupName(result, 0)
+End
+
+/// @brief Split the full setname into its three parts: prefix, outputType and set number
+///
+/// Counterpart to WB_AssembleSetName()
+Function WB_SplitStimsetName(setName, setPrefix, channelType, setNumber)
+	string setName
+	string &setPrefix
+	variable &channelType, &setNumber
+
+	string channelTypeString, setNumberString
+
+	SplitString/E="(.*)_(DA|TTL)_([[:digit:]]+)" setName, setPrefix, channelTypeString, setNumberString
+
+	ASSERT(V_flag == 3, "Invalid setName format")
+
+	channelType = !cmpstr(channelTypeString, "DA") ? CHANNEL_TYPE_DAC : CHANNEL_TYPE_TTL
+	setNumber   = str2num(setNumberString)
+End
+
 /// @brief Return a sorted list of all DA/TTL stim set waves
 ///
 /// @param[in] channelType               [optional, defaults to all] #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
