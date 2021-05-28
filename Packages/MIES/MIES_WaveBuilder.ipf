@@ -450,11 +450,12 @@ static Function/Wave WB_GetStimSet([setName])
 	WP[48][][] = WPCopy[48][q][r]
 	SegWvType[97] = SegWvTypeCopy[97]
 
+	Make/FREE/N=(lengthOf1DWaves, numSweeps) stimSet
+
 	if(lengthOf1DWaves == 0)
-		return $""
+		return stimSet
 	endif
 
-	Make/FREE/N=(lengthOf1DWaves, numSweeps) stimSet
 	FastOp stimSet = 0
 
 // note: here the stimset generation is coupled to the ITC minimum sample interval which is 200 kHz wheras for NI it is 500 kHz
