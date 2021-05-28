@@ -1419,24 +1419,18 @@ End
 
 static Function WBP_AnaFuncsToWPT()
 
-	string func
+	variable stimulusType
+	string analysisFunction
 
 	if(WBP_GetStimulusType() == CHANNEL_TYPE_TTL)
-		// don't store analysis functions for TTL
 		return NaN
 	endif
 
+	analysisFunction = GetPopupMenuString(panel, "popup_af_generic_S9")
+	stimulusType = WBP_GetStimulusType()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-	func = GetPopupMenuString(panel, "popup_af_generic_S9")
-	WPT[9][%Set][INDEP_EPOCH_TYPE] = SelectString(cmpstr(func, NONE), "", func)
-
-	// clear deprecated entries for single analysis function events
-	if(cmpstr(func, NONE))
-		WPT[1, 5][%Set][INDEP_EPOCH_TYPE] = ""
-		WPT[8][%Set][INDEP_EPOCH_TYPE]    = ""
-		WPT[27][%Set][INDEP_EPOCH_TYPE]   = ""
-	endif
+	WB_SetAnalysisFunctionGeneric(stimulusType, analysisFunction, WPT)
 
 	WBP_UpdateParameterWave()
 End

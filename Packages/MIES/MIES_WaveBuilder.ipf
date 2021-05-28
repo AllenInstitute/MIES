@@ -2390,6 +2390,24 @@ Function WB_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
 	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
 End
 
+/// @brief Internal use only
+Function WB_SetAnalysisFunctionGeneric(variable stimulusType, string analysisFunction, WAVE/T WPT)
+	if(stimulusType == CHANNEL_TYPE_TTL)
+		// don't store analysis functions for TTL
+		return 1
+	endif
+
+	WPT[9][%Set][INDEP_EPOCH_TYPE] = SelectString(cmpstr(analysisFunction, NONE), "", analysisFunction)
+
+	// clear deprecated entries for single analysis function events
+	if(cmpstr(analysisFunction, NONE))
+		WPT[1, 5][%Set][INDEP_EPOCH_TYPE] = ""
+		WPT[8][%Set][INDEP_EPOCH_TYPE]    = ""
+		WPT[27][%Set][INDEP_EPOCH_TYPE]   = ""
+	endif
+
+	return 0
+End
 Function/S WB_SerializeStimulusType(variable stimulusType)
 	switch(stimulusType)
 		case CHANNEL_TYPE_DAC:
