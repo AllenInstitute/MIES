@@ -22,6 +22,9 @@
 #include "UTF_HelperFunctions"
 #include "UTF_WaveAveraging"
 
+// include examples here so that these are compile tested as well
+#include "example-stimulus-set-api"
+
 // Entry point for UTF
 Function run()
 	return RunWithOpts()

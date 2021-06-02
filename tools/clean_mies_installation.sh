@@ -122,6 +122,7 @@ do
   mkdir -p "$user_proc/unit-testing"
   cp -r  "$top_level"/Packages/unit-testing/procedures "$user_proc/unit-testing"
   cp -r  "$top_level"/Packages/Testing-MIES  "$user_proc"
+  cp -r  "$top_level"/Packages/doc/ipf  "$user_proc"
 
   if [ "$sourceLoc" = "installer" ]
   then
