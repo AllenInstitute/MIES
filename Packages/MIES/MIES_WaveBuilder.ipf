@@ -2300,14 +2300,14 @@ Function WB_KillParameterWaves(stimset)
 	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimset)
 
 	if(!WaveExists(WP) && !WaveExists(WPT) && !WaveExists(SegWvType))
-		return 1
+		return NaN
 	endif
 
 	KillOrMoveToTrash(wv=WP)
 	KillOrMoveToTrash(wv=WPT)
 	KillOrMoveToTrash(wv=SegWvType)
 
-	return 1
+	return NaN
 End
 
 /// @brief Kill (custom) stimset
@@ -2318,12 +2318,12 @@ Function WB_KillStimset(stimset)
 	WAVE/Z/SDFR=setDFR wv = $stimset
 
 	if(!WaveExists(wv))
-		return 1
+		return NaN
 	endif
 
 	KillOrMoveToTrash(wv=wv)
 
-	return 1
+	return NaN
 End
 
 /// @brief Determine if the stimset is third party or from MIES
