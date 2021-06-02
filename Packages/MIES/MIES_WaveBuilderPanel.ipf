@@ -2179,3 +2179,8 @@ Function/S WBP_GetDeltaModes()
 
 	return WAVEBUILDER_DELTA_MODES
 End
+
+Function/S WBP_GetTriggerTypes()
+
+	return WAVEBUILDER_TRIGGER_TYPES
+End

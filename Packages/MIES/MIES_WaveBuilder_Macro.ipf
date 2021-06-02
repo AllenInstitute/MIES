@@ -597,7 +597,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_trig_type_P53,userdata(tabnum)=  "3"
-	PopupMenu popup_WaveBuilder_trig_type_P53,mode=1,popvalue="Sin",value= #"\"Sin;Cos\""
+	PopupMenu popup_WaveBuilder_trig_type_P53,mode=1,popvalue="Sin",value=WBP_GetTriggerTypes()
 	PopupMenu popup_WaveBuilder_build_res_P55,pos={884.00,121.00},size={129.00,19.00},bodyWidth=40,disable=1,proc=WBP_PopupMenu,title="Build Resolution"
 	PopupMenu popup_WaveBuilder_build_res_P55,help={"*Experimental*: Changes the resolution of the frequency spectra serving as input for the time-domain output. Requires a lot of RAM!"}
 	PopupMenu popup_WaveBuilder_build_res_P55,userdata(tabnum)=  "2"
