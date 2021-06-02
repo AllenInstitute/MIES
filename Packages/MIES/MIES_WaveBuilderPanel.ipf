@@ -2174,3 +2174,8 @@ static Function/WAVE WBP_ListControlsPerStimulusType(variable epochType)
 
 	return unique
 End
+
+Function/S WBP_GetDeltaModes()
+
+	return WAVEBUILDER_DELTA_MODES
+End

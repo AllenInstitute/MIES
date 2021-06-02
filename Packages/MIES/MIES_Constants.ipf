@@ -1523,3 +1523,5 @@ Constant ID_POPUPMENU_SETTINGS = 0x2
 /// @}
 
 Constant DND_STIMSET_DANDI_SET = 107
+
+StrConstant WAVEBUILDER_DELTA_MODES = "None;Multiplier;Log;Squared;Power;Alternate;Explicit"
