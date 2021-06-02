@@ -629,7 +629,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo)= A"!!,Jm!!#A4!!#?!!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_exp_P56,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_WaveBuilder_exp_P56,mode=1,popvalue="Square",value= #"\"Square;Triangle\""
+	PopupMenu popup_WaveBuilder_exp_P56,mode=1,popvalue="Square",value=WBP_GetPulseTypes()
 	CheckBox check_NewSeedForEachSweep_P49_0,pos={880.00,57.00},size={86.00,15.00},disable=3,proc=WBP_CheckProc,title="Seed / Sweep"
 	CheckBox check_NewSeedForEachSweep_P49_0,help={"When checked, the random number generator (RNG) seed is updated with each sweep. Seeds are saved with the stimulus."}
 	CheckBox check_NewSeedForEachSweep_P49_0,userdata(tabnum)=  "5"

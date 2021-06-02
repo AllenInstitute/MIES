@@ -2184,3 +2184,8 @@ Function/S WBP_GetTriggerTypes()
 
 	return WAVEBUILDER_TRIGGER_TYPES
 End
+
+Function/S WBP_GetPulseTypes()
+
+	return PULSE_TYPES_STRINGS
+End
