@@ -5027,3 +5027,29 @@ Function GLS_Checks()
 End
 
 /// @}
+
+// RenameDataFolderToUniqueName
+/// @{
+
+Function RDFU_Works()
+	string name, suffix, path
+
+	name = "I_DONT_EXIST"
+	suffix = "DONT_CARE"
+
+	CHECK(!DataFolderExists(name))
+	RenameDataFolderToUniqueName(name, suffix)
+	CHECK(!DataFolderExists(name))
+
+	name = "folder"
+	suffix = "_old"
+
+	NewDataFolder $name
+	path = GetDataFolder(1) + name
+	CHECK(DataFolderExists(path))
+	RenameDataFolderToUniqueName(path, suffix)
+	CHECK(!DataFolderExists(path))
+	CHECK(DataFolderExists(path + suffix))
+End
+
+/// @}
