@@ -1575,9 +1575,6 @@ End
 
 /// @brief Return an absolute unique data folder name which does not exist in dfr
 ///
-/// If you want to have the datafolder created for you and don't need a
-/// threadsafe function, use UniqueDataFolder() instead.
-///
 /// @param dfr      datafolder to search
 /// @param baseName first part of the datafolder, must be a *valid* Igor Pro object name
 threadsafe Function/S UniqueDataFolderName(dfr, baseName)
