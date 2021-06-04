@@ -4767,6 +4767,8 @@ Function/S GetListOfLockedITC1600Devices()
 End
 
 /// @brief Return the type, #CHANNEL_TYPE_DAC, #CHANNEL_TYPE_TTL or #CHANNEL_TYPE_UNKNOWN, of the stimset
+///
+/// All callers must ensure that they can handle the unexpected #CHANNEL_TYPE_UNKNOWN properly.
 Function GetStimSetType(string setName)
 
 	string setPrefix

@@ -245,8 +245,15 @@ End
 /// @brief Check if the stimset wave note has the latest version
 static Function WB_StimsetHasLatestNoteVersion(setName)
 	string setName
+	variable type
 
-	DFREF dfr = GetSetFolder(GetStimSetType(setName))
+	type = GetStimSetType(setName)
+
+	if(type == CHANNEL_TYPE_UNKNOWN)
+		return 0
+	endif
+
+	DFREF dfr = GetSetFolder(type)
 	WAVE/Z/SDFR=dfr stimSet = $setName
 	ASSERT(WaveExists(stimSet), "stimset must exist")
 
@@ -261,7 +268,7 @@ End
 static Function WB_ParameterWvsNewerThanStim(setName)
 	string setName
 
-	variable lastModStimSet, lastModWP, lastModWPT, lastModSegWvType
+	variable lastModStimSet, lastModWP, lastModWPT, lastModSegWvType, channelType
 	string msg, WPModCount, WPTModCount, SegWvTypeModCount
 
 	WAVE/Z WP        = WB_GetWaveParamForSet(setName)
@@ -280,7 +287,10 @@ static Function WB_ParameterWvsNewerThanStim(setName)
 		if(lastModWP > lastModStimSet || lastModWPT > lastModStimSet || lastModSegWvType > lastModStimSet)
 			return 1
 		elseif(lastModWP == lastModStimSet || lastModWPT == lastModStimSet || lastModSegWvType == lastModStimSet)
-			DFREF dfr = GetSetFolder(GetStimSetType(setName))
+			channelType = GetStimSetType(setName)
+			ASSERT(channelType != CHANNEL_TYPE_UNKNOWN, "Invalid channel type")
+
+			DFREF dfr = GetSetFolder(channelType)
 			WAVE/Z/SDFR=dfr stimSet = $setName
 			ASSERT(WaveExists(stimSet), "Unexpected missing wave")
 
@@ -359,8 +369,15 @@ End
 /// @return date of last modification as double precision Igor date/time value
 Function WB_GetLastModStimSet(setName)
 	string setname
+	variable channelType
 
-	DFREF dfr = GetSetFolder(GetStimSetType(setName))
+	channelType = GetStimSetType(setName)
+
+	if(channelType == CHANNEL_TYPE_UNKNOWN)
+		return 0
+	endif
+
+	DFREF dfr = GetSetFolder(channelType)
 	WAVE/Z/SDFR=dfr stimSet = $setName
 	if(!WaveExists(stimSet))
 		return 0
@@ -424,6 +441,8 @@ static Function/Wave WB_GetStimSet([setName])
 			return $""
 		endif
 	endif
+
+	ASSERT(channelType != CHANNEL_TYPE_UNKNOWN, "Unexpected channel type")
 
 	// WB_AddDelta modifies the waves so we pass a copy instead
 	Duplicate/FREE WP, WPCopy
@@ -2105,6 +2124,8 @@ static Function/WAVE WB_UpgradeCustomWaves([stimsetList])
 			continue
 		endif
 
+		ASSERT(channelType != CHANNEL_TYPE_UNKNOWN, "Unexpected channel type")
+
 		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
@@ -2280,8 +2301,15 @@ End
 /// @return 1 if stimset wave was found, 0 otherwise
 Function WB_StimsetExists(stimset)
 	string stimset
+	variable channelType
 
-	DFREF setDFR = GetSetFolder(GetStimSetType(stimset))
+	channelType = GetStimSetType(stimset)
+
+	if(channelType == CHANNEL_TYPE_UNKNOWN)
+		return 0
+	endif
+
+	DFREF setDFR = GetSetFolder(channelType)
 	WAVE/Z/SDFR=setDFR wv = $stimset
 
 	if(WaveExists(wv))
@@ -2314,7 +2342,15 @@ End
 Function WB_KillStimset(stimset)
 	string stimset
 
-	DFREF setDFR = GetSetFolder(GetStimSetType(stimset))
+	variable channelType
+
+	channelType = GetStimSetType(stimset)
+
+	if(channelType == CHANNEL_TYPE_UNKNOWN)
+		return NaN
+	endif
+
+	DFREF setDFR = GetSetFolder(channelType)
 	WAVE/Z/SDFR=setDFR wv = $stimset
 
 	if(!WaveExists(wv))
@@ -2393,8 +2429,8 @@ End
 
 /// @brief Internal use only
 Function WB_SetAnalysisFunctionGeneric(variable stimulusType, string analysisFunction, WAVE/T WPT)
-	if(stimulusType == CHANNEL_TYPE_TTL)
-		// don't store analysis functions for TTL
+	if(stimulusType != CHANNEL_TYPE_DAC)
+		// only store analysis functions for DAC
 		return 1
 	endif
 

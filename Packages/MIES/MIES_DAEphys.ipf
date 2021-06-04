@@ -5698,6 +5698,10 @@ Function DAP_DeleteStimulusSet(string setName, [string device])
 
 	channelType = GetStimSetType(setName)
 
+	if(channeltype == CHANNEL_TYPE_UNKNOWN)
+		return NaN
+	endif
+
 	popupMenuSelectedItemsStart = DAP_PopupMenuWaveNameList(device, channelType, CHANNEL_CONTROL_WAVE)
 	popupMenuSelectedItemsEnd = DAP_PopupMenuWaveNameList(device, channelType, CHANNEL_CONTROL_INDEX_END)
 	WB_KillParameterWaves(setName)

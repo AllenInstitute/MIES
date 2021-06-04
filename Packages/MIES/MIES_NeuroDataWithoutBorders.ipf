@@ -1450,6 +1450,11 @@ static Function NWB_LoadStimset(locationID, stimset, overwrite, [verbose])
 
 	// load stimsets with parameter waves
 	stimsetType = GetStimSetType(stimset)
+
+	if(stimsetType == CHANNEL_TYPE_UNKNOWN)
+		return 1
+	endif
+
 	DFREF paramDFR = GetSetParamFolder(stimsetType)
 
 	// convert stimset name to upper case
