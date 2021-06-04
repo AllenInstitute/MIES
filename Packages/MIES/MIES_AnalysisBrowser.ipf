@@ -199,7 +199,7 @@ static Function AB_AddFile(baseFolder, discLocation)
 	AB_LoadFile(discLocation)
 	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
 
-	if(lastMapped > firstMapped)
+	if(lastMapped >= firstMapped)
 		list[firstMapped, lastMapped][%experiment][1] = num2str(mapIndex)
 	else // experiment could not be loaded
 		AB_RemoveMapEntry(mapIndex)
