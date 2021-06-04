@@ -237,7 +237,7 @@ static Function AB_LoadFile(discLocation)
 			case ANALYSISBROWSER_FILE_TYPE_NWB:
 				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadTPStorageFromNWB(map[%DiscLocation], map[%DataFolder], device)
-				AB_LoadUserCommentFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadUserCommentAndHistoryFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				break
 			default:
 				ASSERT(0, "invalid file type")
@@ -723,11 +723,11 @@ static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 	return numStringsLoaded
 End
 
-static Function AB_LoadUserCommentFromNWB(nwbFilePath, expFolder, device)
+static Function AB_LoadUserCommentAndHistoryFromNWB(nwbFilePath, expFolder, device)
 	string nwbFilePath, expFolder, device
 
-	string groupName, comment
-	variable h5_fileID, commentGroup
+	string groupName, comment, datasetName, history
+	variable h5_fileID, commentGroup, version
 
 	DFREF targetDFR = GetAnalysisDeviceFolder(expFolder, device)
 	h5_fileID = H5_OpenFile(nwbFilePath)
@@ -737,9 +737,16 @@ static Function AB_LoadUserCommentFromNWB(nwbFilePath, expFolder, device)
 
 	comment = ReadTextDataSetAsString(commentGroup, "userComment")
 	HDF5CloseGroup/Z commentGroup
+
+	version = GetNWBMajorVersion(ReadNWBVersion(h5_fileID))
+
+	datasetName = "/general/" + GetHistoryAndLogFileDatasetName(version)
+	history = ReadTextDataSetAsString(h5_fileID, datasetName)
+
 	H5_CloseFile(h5_fileID)
 
 	string/G targetDFR:userComment = comment
+	string/G targetDFR:historyAndLogFile = history
 End
 
 static Function/S AB_LoadLabNotebook(discLocation)
