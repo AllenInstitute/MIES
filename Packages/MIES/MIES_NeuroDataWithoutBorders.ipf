@@ -1811,12 +1811,10 @@ static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	EnsureValidNWBVersion(nwbVersion)
 	ASSERT(GetNWBMajorVersion(ReadNWBVersion(locationID)) == nwbVersion, "NWB version of the selected file differs.")
 
-	history = GetHistoryNotebookText()
+	history = ROStr(GetNWBOverrideHistoryAndLogFile())
 
-	if(nwbVersion == 1)
-		name = "history"
-	elseif(nwbVersion == 2)
-		name = "data_collection"
+	if(IsEmpty(history))
+		history = GetHistoryNotebookText()
 	endif
 
 	groupID = H5_OpenGroup(locationID, "/general")
@@ -1831,6 +1829,8 @@ static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 		// someone might have edited the log file by hand
 		entry += "\n" + LOGFILE_NWB_MARKER + "\n" + NormalizeToEOL(data, "\n")
 	endif
+
+	name = GetHistoryAndLogFileDatasetName(nwbVersion)
 
 	H5_WriteTextDataset(groupID, name, str=entry, compressionMode = GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
 
