@@ -7,11 +7,11 @@ static Constant OODDAQ_PRECISION       = 0.001
 static Constant OTHER_EPOCHS_PRECISION = 0.050
 
 /// @brief Acquire data with the given DAQSettings on two headstages
-static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ])
+static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ, onsetDelayUser, terminationDelay])
 	STRUCT DAQSettings& s
 	string devices
 	string stimSetName1, stimSetName2
-	variable dDAQ, oodDAQ
+	variable dDAQ, oodDAQ, onsetDelayUser, terminationDelay
 
 	string unlockedPanelTitle, device
 	variable i, numEntries
@@ -66,6 +66,9 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 
 		PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = dDAQ)
 		PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = oodDAQ)
+
+		PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = onsetDelayUser)
+		PGC_SetAndActivateControl(device, "setvar_DataAcq_TerminationDelay", val = terminationDelay)
 
 		PASS()
 	endfor
