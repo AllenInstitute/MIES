@@ -634,6 +634,9 @@ Constant LABNOTEBOOK_VERSION = 46
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
 
+/// Version of the epoch information for DA data
+Constant SWEEP_EPOCH_VERSION = 0
+
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
 /// @{
