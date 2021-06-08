@@ -1066,7 +1066,7 @@ Function PSQ_DS_GetDAScaleOffset(panelTitle, headstage, opMode)
 			return PSQ_DS_OFFSETSCALE_FAKE
 		endif
 
-		sweepNo = PSQ_GetLastPassingLongRHSweep(panelTitle, sweepNo)
+		sweepNo = PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
 		if(!IsValidSweepNumber(sweepNo))
 			return NaN
 		endif
