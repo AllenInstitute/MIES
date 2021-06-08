@@ -2,8 +2,6 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=PatchSeqTestChirp
 
-static Constant HEADSTAGE = 0
-
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
@@ -32,18 +30,28 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
 	REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
-	// HS 0 with Amp
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = HEADSTAGE)
+	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 0)
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 1)
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = PSQ_TEST_HEADSTAGE)
 	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
 
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, HEADSTAGE), val=1)
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, PSQ_TEST_HEADSTAGE), val=1)
 	DoUpdate/W=$device
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = "0")
+	PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = "0")
+	PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = "1")
+	PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = "1")
 
 	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
-	PGC_SetAndActivateControl(device, GetPanelControl(HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+	PGC_SetAndActivateControl(device, GetPanelControl(PSQ_TEST_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "PatchSeqChirp*")
 
 	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
@@ -112,23 +120,23 @@ static Function/WAVE GetResults_IGNORE(device, sweepNo, name)
 		case PSQ_FMT_LBN_CR_INSIDE_BOUNDS:
 		case PSQ_FMT_LBN_CR_BOUNDS_ACTION:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
-			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_CR_BOUNDS_STATE:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
-			return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, HEADSTAGE, key, UNKNOWN_MODE)
+			return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, PSQ_TEST_HEADSTAGE, key, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_BL_QC_PASS:
 		case PSQ_FMT_LBN_CR_SPIKE_PASS:
 		case PSQ_FMT_LBN_PULSE_DUR:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
-			return GetLastSettingEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case STIMSET_SCALE_FACTOR_KEY:
-			return GetLastSettingEachSCI(numericalValues, sweepNo, name, HEADSTAGE, DATA_ACQUISITION_MODE)
+			return GetLastSettingEachSCI(numericalValues, sweepNo, name, PSQ_TEST_HEADSTAGE, DATA_ACQUISITION_MODE)
 		case PSQ_FMT_LBN_SET_PASS:
 		case PSQ_FMT_LBN_CR_SPIKE_CHECK:
 		case PSQ_FMT_LBN_INITIAL_SCALE:
 		case PSQ_FMT_LBN_CR_RESISTANCE:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
-			val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+			val = GetLastSettingIndepSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			Make/D/FREE wv = {val}
 			return wv
 		default:
@@ -154,7 +162,7 @@ static Function PS_CR1([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR1_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests fail
 	// layer 0: BL
 	// layer 1: Maximum of AD (0 triggers PSQ_CR_RERUN)
@@ -209,7 +217,7 @@ static Function PS_CR2([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR2_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
 	// layer 0: BL
 	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
@@ -265,7 +273,7 @@ static Function PS_CR3([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR3_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// BL fails, rest passes
 	// layer 0: BL
 	// layer 1: Maximum of AD (35 would be PSQ_CR_PASS but we abort early due to baseline not passing)
@@ -321,7 +329,7 @@ static Function PS_CR4([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR4_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
 
 	// BL passes
@@ -402,7 +410,7 @@ static Function PS_CR5([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR5_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
 
 	// BL passes
@@ -482,7 +490,7 @@ static Function PS_CR6([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR6_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
 
 	// BL passes
@@ -562,7 +570,7 @@ static Function PS_CR7([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR7_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
 
 	// BL passes
@@ -639,7 +647,7 @@ static Function PS_CR8([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR8_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
 
 	// BL passes
@@ -718,7 +726,7 @@ static Function PS_CR9([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR9_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
 
 	// BL passes
@@ -801,7 +809,7 @@ static Function PS_CR10([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR10_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
 
 	// BL passes
@@ -881,7 +889,7 @@ static Function PS_CR11([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR11_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests fail
 	// layer 0: BL
 	// layer 1: Maximum of AD (0 triggers PSQ_CR_RERUN)
@@ -944,7 +952,7 @@ static Function PS_CR12([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR12_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	// all tests pass
 	// layer 0: BL
 	// layer 1: Maximum of AD (35 triggers PSQ_CR_PASS)
@@ -1006,7 +1014,7 @@ static Function PS_CR13([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str, postInitializeFunc = PS_CR13_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_CHIRP)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
 	wv = 0
 
 	// layer 0: BL
