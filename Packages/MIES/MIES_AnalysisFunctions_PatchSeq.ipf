@@ -3232,7 +3232,8 @@ static Function/WAVE PSQ_CR_DetermineCycles(string panelTitle, WAVE rawDACWave, 
 
 		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, rawDACWave, i, XOP_CHANNEL_TYPE_DAC, config = config)
 
-		yval = singleDA[xstart] * gains[i]
+		// first active DA channel
+		yval = singleDA[xstart] / gains[0]
 
 		Make/FREE/R matches
 		FindLevels/DEST=matches/R=(xstart - minimumWidthX / 2, inf)/M=(minimumWidthX)/Q singleDA, yval
