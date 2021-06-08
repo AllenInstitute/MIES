@@ -261,7 +261,7 @@ Function move_rename_keeps_dfr()
 
 	CHECK(DataFolderExistsDFR(p.dfr))
 
-	WAVE/SDFR=tmpDFR src = $name
+	WAVE/SDFR=tmpDFR/Z src = $name
 	CHECK_WAVE(src, NULL_WAVE)
 End
 

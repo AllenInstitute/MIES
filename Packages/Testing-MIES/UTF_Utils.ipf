@@ -475,7 +475,7 @@ Function GSI_ReturnsInvalidWaveRefWOMatches2()
 	Make/Free/D data1
 	Make/Free/D/N=0 data2
 
-	WAVE matches = GetSetIntersection(data1, data2)
+	WAVE/Z matches = GetSetIntersection(data1, data2)
 	CHECK_WAVE(matches, NULL_WAVE)
 End
 
@@ -484,7 +484,7 @@ Function GSI_ReturnsInvalidWaveRefWOMatches3()
 	Make/Free/D data1 = p
 	Make/Free/D data2 = -1
 
-	WAVE matches = GetSetIntersection(data1, data2)
+	WAVE/Z matches = GetSetIntersection(data1, data2)
 	CHECK_WAVE(matches, NULL_WAVE)
 End
 /// @}
