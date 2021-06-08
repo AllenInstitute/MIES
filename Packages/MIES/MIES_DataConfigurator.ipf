@@ -2410,6 +2410,13 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 		endif
 
 	endfor
+
+	// stimsets with multiple sweeps where each sweep has a different length (due to delta mechanism)
+	// result in 2D stimset waves where all sweeps have the same length
+	// therefore we must add a baseline epoch after all defined epochs
+	if(stimsetEnd > stimsetEndLogical)
+		DC_AddEpoch(panelTitle, channel, stimsetEndLogical, stimsetEnd, EPOCH_BASELINE_REGION_KEY, 1)
+	endif
 End
 
 /// Epoch times are saved in s, so 7 digits are 0.1 microseconds precision
