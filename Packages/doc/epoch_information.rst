@@ -11,6 +11,21 @@ At acquisition time, sweep epoch metadata is generated.
 Epochs are contiguous time ranges in the input signal that feature certain signal shapes, such as e.g. pulse trains.
 This information is exported with each data acquisition to the lab notebook with the key "Epochs" for each DA channel.
 
+.. _Figure Epoch Visualization:
+
+.. figure:: svg/epoch-visualization.svg
+   :align: center
+
+   Epoch visualization with level 0 (top, at -10) to 3 (bottom)
+
+.. Graph recreation:
+.. 1HS, Stimset: PulseTrain_200Hz, no inserted TP
+.. Commands:
+.. Open Databrowser
+.. Enable Only DAC
+.. DC_AddDebugTracesForEpochs()
+.. SetAxis bottom 490,550
+
 Retrieving Epoch Information from the Lab Notebook
 --------------------------------------------------
 
