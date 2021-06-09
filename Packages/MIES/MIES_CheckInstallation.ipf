@@ -161,6 +161,40 @@ Function CHI_CheckInstallation()
 		printf "ASLR: (not relevant)\r"
 	endif
 
+	printf "\rChecking known defines:\r"
+
+	state.numTries += 1
+
+	printf "DEBUGGING_ENABLED: "
+#ifdef DEBUGGING_ENABLED
+	printf "Yes\r"
+#else
+	printf "No\r"
+#endif
+
+	printf "EVIL_KITTEN_EATING_MODE: "
+#ifdef EVIL_KITTEN_EATING_MODE
+	state.numErrors += 1
+	printf "Yes (Very Bad)\r"
+#else
+	printf "No\r"
+#endif
+
+	printf "BACKGROUND_TASK_DEBUGGING: "
+#ifdef BACKGROUND_TASK_DEBUGGING
+	printf "Yes\r"
+#else
+	printf "No\r"
+#endif
+
+	printf "THREADING_DISABLED: "
+#ifdef THREADING_DISABLED
+	state.numErrors += 1
+	printf "Yes (Very Bad)\r"
+#else
+	printf "No\r"
+#endif
+
 	printf "\rChecking base installation:\r"
 
 	SVAR miesVersion = $GetMiesVersion()
