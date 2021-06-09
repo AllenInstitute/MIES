@@ -631,6 +631,8 @@ static Function TASYNC_WorkerRealDF()
 	ASYNC_Stop(timeout=1)
 End
 
+#ifndef THREADING_DISABLED
+
 /// @brief Test if ASYNC_Stop does not throw with fromAssert=1
 static Function TASYNC_StopForAssert()
 
@@ -651,6 +653,8 @@ static Function TASYNC_StopForAssert()
 
 	ASYNC_Stop(timeout=1, fromAssert=1)
 End
+
+#endif
 
 /// @brief Test if ASYNC_Execute triggers execution and data is returned through readout.
 /// this test uses a worker returning no data folder
@@ -971,6 +975,8 @@ static Function TASYNC_OrderlessDirectStop()
 	endif
 End
 
+#ifndef THREADING_DISABLED
+
 /// @brief Test if a stop on delayed workloads releases the threads properly without force, discarding queued data for short timeout
 static Function TASYNC_StopTimeOut()
 
@@ -1018,6 +1024,8 @@ static Function TASYNC_StopTimeOutForce()
 	timeout=ASYNC_Stop(timeout = 0)
 	PASS()
 End
+
+#endif
 
 /// @brief Test if a direct stop after pushing mixed workloads finishes all readouts properly on stopping attempt
 static Function TASYNC_IODiffWLDirectStop()
