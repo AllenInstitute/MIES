@@ -54,7 +54,13 @@ static Function TFH_StartFIFODeamonInternal(hwType, deviceID, mode, [triggerMode
 	tgID = ThreadGroupCreate(1)
 
 	Duplicate/FREE DAQConfigWave, config
+
+#ifdef THREADING_DISABLED
+	BUG("Data acquisition with ITC hardware and no threading is not supported.")
+#else
 	ThreadStart tgID, 0, TFH_FifoLoop(config, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
+#endif
+
 End
 
 /// @brief Stop the FIFO daemon if required
