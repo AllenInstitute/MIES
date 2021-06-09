@@ -3786,12 +3786,16 @@ End
 /// MiesUtils XOP functions
 /// @{
 
+#ifndef THREADING_DISABLED
+
 Function RunningInMainThread_Thread()
 
 	make/FREE data
 	multithread data = MU_RunningInMainThread()
 	CHECK_EQUAL_VAR(Sum(data), 0)
 End
+
+#endif
 
 Function RunningInMainThread_Main()
 
@@ -4952,6 +4956,8 @@ Function WMCW_ChecksMainThread()
 	endtry
 End
 
+#ifndef THREADING_DISABLED
+
 threadsafe Function WMCW_ChecksPreemptiveThreadHelper(WAVE wv)
 
 	try
@@ -4993,6 +4999,8 @@ Function WMCW_Works2()
 	WaveStats/Q/M=2 junkWave
 	CHECK_EQUAL_VAR(V_numNans, DimSize(junkWave, ROWS))
 End
+
+#endif // THREADING_DISABLED
 
 /// @}
 
