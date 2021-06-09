@@ -2109,7 +2109,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage
 	variable ampSerial, ampChannelID, minValue, maxValue, hardwareType, hwChannel
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
-	variable DACchannel
+	variable DACchannel, ret
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
 	string list, lastStart
 
@@ -2475,9 +2475,22 @@ Function DAP_CheckSettings(panelTitle, mode)
 				continue
 			endif
 
-			if(DAP_CheckHeadStage(panelTitle, i, mode))
-				return 1
-			endif
+			ret = DAP_CheckHeadStage(panelTitle, i, mode)
+
+			switch(ret)
+				case 0:
+					// passed, do nothing
+					break
+				case 1: // non-recoverable error
+					return 1
+				case 2: // recoverable error, try again once
+					if(DAP_CheckHeadStage(panelTitle, i, mode))
+						return 1
+					endif
+					break
+				default:
+					ASSERT(0, "Unexpected value")
+			endswitch
 		endfor
 
 		if(DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPDuration") <= 0)
@@ -2591,7 +2604,7 @@ static Function DAP_CheckPressureSettings(string panelTitle)
 	return 0
 End
 
-/// @brief Returns 1 if the headstage has invalid settings, and zero if everything is okay
+/// @brief Returns zero if everything is okay, 1 if a non-recoverable error was found and 2 on recoverable errors
 static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	string panelTitle
 	variable headStage, mode
@@ -2674,11 +2687,11 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 		if(needResetting)
 			AI_UpdateChanAmpAssign(panelTitle, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
-			printf "(%s) Please restart DAQ or TP to use the automatically imported gains from MCC.\r", panelTitle
+			printf "(%s) The automatically imported gains from MCC were used to overwrite differing manual settings.\r", panelTitle
 			ControlWindowToFront()
 			DAP_UpdateChanAmpAssignPanel(panelTitle)
 			DAP_SyncChanAmpAssignToActiveHS(panelTitle)
-			return 1
+			return 2
 		endif
 	endif
 
