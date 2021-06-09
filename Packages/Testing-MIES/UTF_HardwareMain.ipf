@@ -31,7 +31,10 @@
 #include "UTF_HelperFunctions"
 #include "UTF_IVSCC"
 #include "UTF_VeryLastTestSuite"
+
 StrConstant LIST_OF_TESTS_WITH_SWEEP_ROLLBACK = "TestSweepRollback"
+
+Constant PSQ_TEST_HEADSTAGE = 2
 
 // Entry point for UTF
 Function run()

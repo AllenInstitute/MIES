@@ -3,8 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestDAScale
 
-static Constant HEADSTAGE = 0
-
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(s, stimset, device, [postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
@@ -34,18 +32,28 @@ static Function AcquireData(s, stimset, device, [postInitializeFunc, preAcquireF
 	REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
 	REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
-	// HS 0 with Amp
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = HEADSTAGE)
+	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 0)
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 1)
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = PSQ_TEST_HEADSTAGE)
 	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
 
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, HEADSTAGE), val=1)
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, PSQ_TEST_HEADSTAGE), val=1)
 	DoUpdate/W=$device
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = "0")
+	PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = "0")
+	PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = "1")
+	PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = "1")
 
 	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+	PGC_SetAndActivateControl(device, GetPanelControl(PSQ_TEST_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimset)
 
 	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
@@ -84,17 +92,17 @@ Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name)
 			return val
 		case PSQ_FMT_LBN_SWEEP_PASS:
 		case PSQ_FMT_LBN_DA_fI_SLOPE_REACHED:
-			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			break
 		case PSQ_FMT_LBN_DA_OPMODE:
-			return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, HEADSTAGE, key, UNKNOWN_MODE)
+			return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, PSQ_TEST_HEADSTAGE, key, UNKNOWN_MODE)
 			break
 		case PSQ_FMT_LBN_BL_QC_PASS:
 		case PSQ_FMT_LBN_SPIKE_DETECT:
 		case PSQ_FMT_LBN_SPIKE_COUNT:
 		case PSQ_FMT_LBN_PULSE_DUR:
 		case PSQ_FMT_LBN_DA_fI_SLOPE:
-			return GetLastSettingEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			break
 		default:
 			FAIL()
@@ -109,7 +117,7 @@ Function PS_DS_Sub1([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// all tests fail
 	wv = 0
 End
@@ -159,7 +167,7 @@ Function PS_DS_Sub1_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -175,7 +183,7 @@ Function PS_DS_Sub2([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// only pre pulse chunk pass, others fail
 	wv[]    = 0
 	wv[0][] = 1
@@ -226,7 +234,7 @@ Function PS_DS_Sub2_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -242,7 +250,7 @@ Function PS_DS_Sub3([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	wv[]      = 0
@@ -294,7 +302,7 @@ Function PS_DS_Sub3_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -310,7 +318,7 @@ Function PS_DS_Sub4([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// last post pulse chunk pass
 	wv[] = 0
@@ -363,7 +371,7 @@ Function PS_DS_Sub4_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -377,7 +385,7 @@ Function PS_DS_Sub5([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk fails
 	// all post pulse chunk pass
 	wv[]    = 1
@@ -429,7 +437,7 @@ Function PS_DS_Sub5_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -443,7 +451,7 @@ Function PS_DS_Sub6([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv[]    = 0
@@ -497,7 +505,7 @@ Function PS_DS_Sub6_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -513,7 +521,7 @@ Function PS_DS_Sub7([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// of sweeps 2-6
@@ -567,7 +575,7 @@ Function PS_DS_Sub7_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 7)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -30, -30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -583,7 +591,7 @@ Function PS_DS_Sub8([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0", str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// of sweep 0, 3, 6, 7 , 8
@@ -641,7 +649,7 @@ Function PS_DS_Sub8_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 9)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -50, -50, -70, -70, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
@@ -658,7 +666,7 @@ Function PS_DS_Supra1([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Supr_DA_0", str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv = 0
@@ -701,7 +709,7 @@ Function PS_DS_Supra1_REENTRY([str])
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
 	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
-	WAVE spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, HEADSTAGE)
+	WAVE spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, PSQ_TEST_HEADSTAGE)
 	CHECK_EQUAL_WAVES(spikeFreq, {1, 2}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
@@ -719,7 +727,7 @@ Function PS_DS_Supra1_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 2)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -741,7 +749,7 @@ Function PS_DS_Supra2([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Supr_DA_0", str, postInitializeFunc = PS_SetOffsetOp_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv = 0
@@ -783,7 +791,7 @@ Function PS_DS_Supra2_REENTRY([str])
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
 	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
-	WAVE spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, HEADSTAGE)
+	WAVE spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, PSQ_TEST_HEADSTAGE)
 	CHECK_EQUAL_WAVES(spikeFreq, {1, 0}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
@@ -801,7 +809,7 @@ Function PS_DS_Supra2_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 2)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE * 20, PSQ_DS_OFFSETSCALE_FAKE * 40}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -824,7 +832,7 @@ Function PS_DS_Supra3([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DS_SupraLong_DA_0", str, preAcquireFunc = PS_DS_Supra3_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv = 0
@@ -866,7 +874,7 @@ Function PS_DS_Supra3_REENTRY([str])
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
 	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
-	WAVE spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, HEADSTAGE)
+	WAVE spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, PSQ_TEST_HEADSTAGE)
 	CHECK_EQUAL_WAVES(spikeFreq, {1, 0, 3, 0, 5}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
@@ -884,7 +892,7 @@ Function PS_DS_Supra3_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40, PSQ_DS_OFFSETSCALE_FAKE + 60, PSQ_DS_OFFSETSCALE_FAKE + 80, PSQ_DS_OFFSETSCALE_FAKE + 100}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -907,7 +915,7 @@ Function PS_DS_Supra4([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DS_SupraLong_DA_0", str, preAcquireFunc = PS_DS_Supra4_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv = 0
@@ -949,7 +957,7 @@ Function PS_DS_Supra4_REENTRY([str])
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
 	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
-	WAVE spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, HEADSTAGE)
+	WAVE spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, PSQ_TEST_HEADSTAGE)
 	CHECK_EQUAL_WAVES(spikeFreq, {1, 0, 9, 0, 65}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
@@ -967,7 +975,7 @@ Function PS_DS_Supra4_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40, PSQ_DS_OFFSETSCALE_FAKE + 60, PSQ_DS_OFFSETSCALE_FAKE + 80, PSQ_DS_OFFSETSCALE_FAKE + 100}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
@@ -994,7 +1002,7 @@ Function PS_DS_Supra5([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DS_SupraLong_DA_0", str, preAcquireFunc = PS_DS_Supra5_IGNORE)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv = 0
@@ -1036,7 +1044,7 @@ Function PS_DS_Supra5_REENTRY([str])
 	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
 	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
 
-	WAVE/Z spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, HEADSTAGE)
+	WAVE/Z spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, PSQ_TEST_HEADSTAGE)
 	CHECK_EQUAL_WAVES(spikeFreq, {1 ,2, 5, 10, 17}, mode = WAVE_DATA, tol = 1e-3)
 
 	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
@@ -1051,7 +1059,7 @@ Function PS_DS_Supra5_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 5)
 
 	numEntries = DimSize(sweepPassed, ROWS)
-	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 
 
 	Make/FREE/D/N=(numEntries) stimScaleRef = {20 + PSQ_DS_OFFSETSCALE_FAKE,                                 \

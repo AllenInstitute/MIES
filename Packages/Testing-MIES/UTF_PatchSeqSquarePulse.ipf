@@ -3,8 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestSquarePulse
 
-static Constant HEADSTAGE = 0
-
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(s, device)
 	STRUCT DAQSettings& s
@@ -26,18 +24,28 @@ static Function AcquireData(s, device)
 	REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
 	REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
-	// HS 0 with Amp
-	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = HEADSTAGE)
+	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 0)
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 1)
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = PSQ_TEST_HEADSTAGE)
 	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
 
-	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, HEADSTAGE), val=1)
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, PSQ_TEST_HEADSTAGE), val=1)
 	DoUpdate/W=$device
+
+	PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = "0")
+	PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = "0")
+	PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = "1")
+	PGC_SetAndActivateControl(device, "Popup_Settings_IC_AD", str = "1")
 
 	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+	PGC_SetAndActivateControl(device, GetPanelControl(PSQ_TEST_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "PatchSeqSquarePu_DA_0")
 
 	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
@@ -63,7 +71,7 @@ static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
-	return GetLastSettingEachRAC(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
 static Function/WAVE GetDAScaleStepSize_IGNORE(sweepNo, device)
@@ -85,7 +93,7 @@ static Function PS_SP1([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// all tests fail
 	wv = 0
 End
@@ -126,7 +134,7 @@ static Function PS_SP1_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 20)
 
-	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
@@ -143,7 +151,7 @@ static Function PS_SP2([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// all tests fail
 	// spike before pulse, does not count
 	wv = 2.5
@@ -185,7 +193,7 @@ static Function PS_SP2_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 20)
 
-	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
@@ -202,7 +210,7 @@ static Function PS_SP3([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on second sweep, but never again
 	wv[]  = 0
 	wv[1] = 1
@@ -234,7 +242,7 @@ static Function PS_SP3_REENTRY([str])
 	CHECK_EQUAL_VAR(finalDAScale, NaN)
 
 	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
-	WAVE/Z daScaleZero = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z daScaleZero = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 	CHECK(!WaveExists(daScaleZero))
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -244,7 +252,7 @@ static Function PS_SP3_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 20)
 
-	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
@@ -261,7 +269,7 @@ static Function PS_SP4([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on second and third sweep, but never again
 	wv[]    = 0
 	wv[1,2] = 1
@@ -303,7 +311,7 @@ static Function PS_SP4_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 20)
 
-	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100,200,150,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
@@ -320,7 +328,7 @@ static Function PS_SP5([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on first and third sweep -> success
 	wv[]  = 0
 	wv[1] = 1
@@ -363,7 +371,7 @@ static Function PS_SP5_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 4)
 
-	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
@@ -380,7 +388,7 @@ static Function PS_SP6([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected so that we get a DAScale zero with spike LBN entry and success
 	wv[] = 0
 	wv[0,2] = 1
@@ -413,7 +421,7 @@ static Function PS_SP6_REENTRY([str])
 	CHECK_EQUAL_VAR(finalDAScale, 10e-12)
 
 	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
-	WAVE/Z daScaleZero = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+	WAVE/Z daScaleZero = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(daScaleZero, {NaN, NaN, 1, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
@@ -424,7 +432,7 @@ static Function PS_SP6_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 5)
 
-	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100, 50, 0, 0, 10}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
@@ -441,7 +449,7 @@ static Function PS_SP7([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_SQUARE_PULSE)
 	// always spikes -> failure due to DAScaleZero handling
 	wv[] = 1
 End
@@ -472,7 +480,7 @@ static Function PS_SP7_REENTRY([str])
 	CHECK_EQUAL_VAR(finalDAScale, NaN)
 
 	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
-	WAVE/Z daScaleZero = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	WAVE/Z daScaleZero = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(daScaleZero, {NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
@@ -483,7 +491,7 @@ static Function PS_SP7_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 5)
 
-	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100, 50, 0, 0, 0}, tol = 1e-14, mode = WAVE_DATA)
 
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)

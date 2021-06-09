@@ -1066,7 +1066,7 @@ Function PSQ_DS_GetDAScaleOffset(panelTitle, headstage, opMode)
 			return PSQ_DS_OFFSETSCALE_FAKE
 		endif
 
-		sweepNo = PSQ_GetLastPassingLongRHSweep(panelTitle, sweepNo)
+		sweepNo = PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
 		if(!IsValidSweepNumber(sweepNo))
 			return NaN
 		endif
@@ -3232,7 +3232,8 @@ static Function/WAVE PSQ_CR_DetermineCycles(string panelTitle, WAVE rawDACWave, 
 
 		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, rawDACWave, i, XOP_CHANNEL_TYPE_DAC, config = config)
 
-		yval = singleDA[xstart] * gains[i]
+		// first active DA channel
+		yval = singleDA[xstart] / gains[0]
 
 		Make/FREE/R matches
 		FindLevels/DEST=matches/R=(xstart - minimumWidthX / 2, inf)/M=(minimumWidthX)/Q singleDA, yval
