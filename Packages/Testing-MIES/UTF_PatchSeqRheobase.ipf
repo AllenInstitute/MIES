@@ -185,6 +185,9 @@ static Function PS_RB1_REENTRY([str])
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
+	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
+
 	CheckDashboard(str, {setPassed})
 End
 
@@ -251,6 +254,9 @@ static Function PS_RB2_REENTRY([str])
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
+	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
+
 	CheckDashboard(str, {setPassed})
 End
 
@@ -314,6 +320,9 @@ static Function PS_RB3_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
 	CheckDashboard(str, {setPassed})
 End
@@ -379,6 +388,9 @@ static Function PS_RB4_REENTRY([str])
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
+	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
+
 	CheckDashboard(str, {setPassed})
 End
 
@@ -443,6 +455,9 @@ static Function PS_RB5_REENTRY([str])
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
+	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
+
 	CheckDashboard(str, {setPassed})
 End
 
@@ -506,6 +521,9 @@ static Function PS_RB6_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
 	CheckDashboard(str, {setPassed})
 End
@@ -648,6 +666,9 @@ static Function PS_RB8_REENTRY([str])
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_SMALL)
 
+	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
+
 	CheckDashboard(str, {setPassed})
 End
 
@@ -718,6 +739,9 @@ static Function PS_RB9_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_SMALL)
+
+	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
 	CheckDashboard(str, {setPassed})
 End
