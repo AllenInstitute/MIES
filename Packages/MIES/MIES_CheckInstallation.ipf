@@ -148,6 +148,7 @@ Function CHI_CheckInstallation()
 
 	archBits = GetArchitectureBits()
 
+	printf "Checking system properties:\r"
 	printf "Igor %dbit: %s%s\r", archBits, StringByKey("IGORVERS", info), igorBuild
 	printf "Windows 10: %s\r", ToTrueFalse(IsWindows10())
 	if(IsWindows10() && archBits == 64)
