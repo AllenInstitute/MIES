@@ -108,9 +108,6 @@ End
 /// stopped.
 threadsafe static Function ASYNC_Thread()
 
-	DFREF dfrOut, dfrTemp
-	string datafolder
-
 	for(;;)
 		DFREF dfr = ThreadGroupGetDFR(0, 10)
 		if(!DataFolderExistsDFR(dfr))
@@ -126,45 +123,48 @@ threadsafe static Function ASYNC_Thread()
 			return 0
 		endif
 
-		SVAR WFunc = dfr:$ASYNC_WORKERFUNC_STR
-		FUNCREF ASYNC_Worker f = $WFunc
+		DFREF dfrOut = ASYNC_Run_Worker(dfr)
 
-		DFREF dfrInp = dfr:input
-		DFREF dfrAsync = dfr:async
-
-		variable/G dfrAsync:$ASYNC_ERROR_STR = 0
-		NVAR err = dfrAsync:$ASYNC_ERROR_STR
-		string/G dfrAsync:$ASYNC_ERRORMSG_STR = ""
-		SVAR errmsg = dfrAsync:$ASYNC_ERRORMSG_STR
-
-		err = 0
-		dfrOut = $""
-		try
-			ClearRTError()
-			dfrOut = f(dfrInp);AbortOnRTE
-		catch
-			errmsg = GetRTErrMessage()
-			err = ClearRTError()
-		endtry
-
-		if(DataFolderRefStatus(dfrOut) == 3)
-
-			MoveDataFolder dfrOut, dfrAsync
-
-		elseif(DataFolderExistsDFR(dfrOut))
-
-			MoveDataFolder dfrOut, dfrAsync
-			RenameDataFolder dfrOut, freeroot
-
-		else
-
-			NewDataFolder dfrAsync:freeroot
-
-		endif
-
-		TS_ThreadGroupPutDFR(0, dfrAsync)
+		TS_ThreadGroupPutDFR(0, dfrOut)
 		KillDataFolder dfr
 	endfor
+End
+
+threadsafe static Function/DF ASYNC_Run_Worker(DFREF dfr)
+
+	DFREF dfrOut, dfrTemp
+
+	SVAR WFunc = dfr:$ASYNC_WORKERFUNC_STR
+	FUNCREF ASYNC_Worker f = $WFunc
+
+	DFREF dfrInp = dfr:input
+	DFREF dfrAsync = dfr:async
+
+	variable/G dfrAsync:$ASYNC_ERROR_STR = 0
+	NVAR err = dfrAsync:$ASYNC_ERROR_STR
+	string/G dfrAsync:$ASYNC_ERRORMSG_STR = ""
+	SVAR errmsg = dfrAsync:$ASYNC_ERRORMSG_STR
+
+	err = 0
+	dfrOut = $""
+	try
+		ClearRTError()
+		dfrOut = f(dfrInp);AbortOnRTE
+	catch
+		errmsg = GetRTErrMessage()
+		err = ClearRTError()
+	endtry
+
+	if(DataFolderRefStatus(dfrOut) == 3)
+		MoveDataFolder dfrOut, dfrAsync
+	elseif(DataFolderExistsDFR(dfrOut))
+		MoveDataFolder dfrOut, dfrAsync
+		RenameDataFolder dfrOut, freeroot
+	else
+		NewDataFolder dfrAsync:freeroot
+	endif
+
+	return dfrAsync
 End
 
 /// @brief Receives data from finished workloads. Calls the user defined readout function.
