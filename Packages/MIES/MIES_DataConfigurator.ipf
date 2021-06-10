@@ -2365,7 +2365,7 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 						subEpochBegin = limit(subEpochBegin, epochBegin, Inf)
 						subEpochEnd = limit(subEpochEnd, -Inf, epochEnd)
 
-						// baseline before leftmost/rightmose pulse?
+						// baseline before leftmost/rightmost pulse?
 						if(((pulseNr == numPulses - 1 && flipping) || (!pulseNr && !flipping)) \
 						   && subEpochBegin > epochBegin && subEpochBegin > stimsetBegin)
 							DC_AddEpoch(panelTitle, channel, epochBegin, subEpochBegin, EPOCH_BASELINE_REGION_KEY, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
