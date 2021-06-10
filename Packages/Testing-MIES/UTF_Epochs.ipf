@@ -215,7 +215,7 @@ static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_a
 			continue
 		endif
 
-		// find a number of epochs larger than zero from matches which completely cover the current epoch
+		// find a number of epochs larger than zero from "matches" which completely cover the current epoch
 		// without gaps and without overlap or only touch it at the borders
 		ret = CheckFaithfullCoverage(startT, endT, matches, i)
 
@@ -300,9 +300,14 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 	for(i = 0; i < epochCnt; i += 1)
 		name  = e[i][2]
 		level = str2num(e[i][3])
-		first = startT[i] * 1000
-		last  = endT[i] * 1000
+		first = startT[i] * 1000 + OTHER_EPOCHS_PRECISION
+		last  = endT[i] * 1000 - OTHER_EPOCHS_PRECISION
 		range = last - first
+
+		if(range <= 0)
+			PASS()
+			continue
+		endif
 
 		// check amplitudes
 		if(strsearch(name, "Amplitude", 0) > 0)
@@ -310,12 +315,12 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 			amplitude = NumberByKey("Amplitude", name, "=")
 			CHECK(IsFinite(amplitude))
 
-			WaveStats/R=(first + OTHER_EPOCHS_PRECISION, last - OTHER_EPOCHS_PRECISION)/Q/M=1 DAChannel
+			WaveStats/R=(first, last)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_max, amplitude)
 
 			// check that the level 3 pulse epoch is really only the pulse
 			if(level == 3)
-				WaveStats/R=(first + OTHER_EPOCHS_PRECISION, last - OTHER_EPOCHS_PRECISION)/Q/M=1 DAChannel
+				WaveStats/R=(first, last)/Q/M=1 DAChannel
 				CHECK_EQUAL_VAR(V_min, amplitude)
 			endif
 		endif
@@ -327,7 +332,7 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 
 			// take something around the egdes due to decimation
 			// offsets are in ms
-			WaveStats/R=(first + OTHER_EPOCHS_PRECISION, last - OTHER_EPOCHS_PRECISION)/Q/M=1 DAChannel
+			WaveStats/R=(first, last)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_max, 0)
 		endif
 	endfor
