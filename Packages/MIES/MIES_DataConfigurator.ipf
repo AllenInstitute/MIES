@@ -2378,9 +2378,12 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 						// to avoid decimation errors we assign all of the left over time to pulse active
 						subsubEpochEnd = (pulseNr == (flipping ? 0 : numPulses - 1)) ? subEpochEnd : (subEpochBegin + pulseDuration)
 
-						if(subsubEpochBegin >= stimsetEnd || subsubEpochEnd <= stimsetBegin)
+						if(subsubEpochBegin >= subEpochEnd || subsubEpochEnd <= subEpochBegin)
 							DEBUGPRINT("Warning: sub sub epoch of active pulse starts after stimset end or ends before stimset start.")
 						else
+							subsubEpochBegin = limit(subsubEpochBegin, subEpochBegin, Inf)
+							subsubEpochEnd = limit(subsubEpochEnd, -Inf, subEpochEnd)
+
 							epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 							epSubSubName = epSubSubName + "Active"
 							DC_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubName, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
