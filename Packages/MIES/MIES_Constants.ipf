@@ -635,7 +635,7 @@ Constant LABNOTEBOOK_VERSION = 46
 Constant STIMSET_NOTE_VERSION = 7
 
 /// Version of the epoch information for DA data
-Constant SWEEP_EPOCH_VERSION = 0
+Constant SWEEP_EPOCH_VERSION = 1
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
