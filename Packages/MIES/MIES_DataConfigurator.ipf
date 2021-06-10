@@ -2343,11 +2343,13 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 						// shift all flipped pulse intervalls by pulseDuration to the left, except the rightmost with pulseNr 0
 						if(!pulseNr)
 							subEpochBegin = epochEnd - startTimes[0] - pulseDuration
-							subEpochEnd = subEpochBegin + pulseDuration
+							// assign left over time after the last pulse to that pulse
+							subEpochEnd = epochEnd
 						else
 							subEpochEnd = epochEnd - startTimes[pulseNr - 1] - pulseDuration
 							subEpochBegin = pulseNr + 1 == numPulses ? epochBegin : subEpochEnd - ptp[pulseNr]
 						endif
+
 					else
 						subEpochBegin = epochBegin + startTimes[pulseNr]
 						subEpochEnd = pulseNr + 1 == numPulses ? epochEnd : subEpochBegin + ptp[pulseNr + 1]
@@ -2372,9 +2374,15 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 
 						// active
 						subsubEpochBegin = subEpochBegin
-						// we never have a trailing baseline after the last pulse in the epoch
-						// to avoid decimation errors we assign all of the left over time to pulse active
-						subsubEpochEnd = (pulseNr == (flipping ? 0 : numPulses - 1)) ? subEpochEnd : (subEpochBegin + pulseDuration)
+
+						// normally we never have a trailing baseline with pulse train except when poission distribution
+						// is used. So we can only assign the left over time to pulse active if we are not in this
+						// special case.
+						if(!poissonDistribution && (pulseNr == (flipping ? 0 : numPulses - 1)))
+							subsubEpochEnd = subEpochEnd
+						else
+							subsubEpochEnd = subEpochBegin + pulseDuration
+						endif
 
 						if(subsubEpochBegin >= subEpochEnd || subsubEpochEnd <= subEpochBegin)
 							DEBUGPRINT("Warning: sub sub epoch of active pulse starts after stimset end or ends before stimset start.")
