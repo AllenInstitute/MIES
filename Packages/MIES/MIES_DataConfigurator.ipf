@@ -2255,7 +2255,7 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 	variable stimsetEnd, stimsetEndLogical
 	variable epochBegin, epochEnd, subEpochBegin, subEpochEnd
 	string epSweepName, epSubName, epSubSubName, epSpecifier
-	variable epochCount, totalDuration
+	variable epochCount, totalDuration, poissonDistribution
 	variable epochNr, pulseNr, numPulses, epochType, flipping, pulseToPulseLength, stimEpochAmplitude, amplitude
 	variable pulseDuration
 	variable subsubEpochBegin, subsubEpochEnd
@@ -2306,13 +2306,15 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 			continue
 		endif
 
+		poissonDistribution = !CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epochNr, key = "Poisson distribution"), "True")
+
 		epSubName = ReplaceNumberByKey("Epoch", epSweepName, epochNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		epSubName = ReplaceStringByKey("Type", epSubName, type, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		epSubName = ReplaceNumberByKey("Amplitude", epSubName, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		if(epochType == EPOCH_TYPE_PULSE_TRAIN)
 			if(!CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epochNr, key = "Mixed frequency"), "True"))
 				epSpecifier = "Mixed frequency"
-			elseif(!CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epochNr, key = "Poisson distribution"), "True"))
+			elseif(poissonDistribution)
 				epSpecifier = "Poisson distribution"
 			endif
 			if(!CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, key="Mixed frequency shuffle", sweep=sweep, epoch=epochNr), "True"))
