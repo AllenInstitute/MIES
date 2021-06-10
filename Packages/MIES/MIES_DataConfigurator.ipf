@@ -2485,7 +2485,7 @@ static Function DC_AddEpoch(panelTitle, channel, epBegin, epEnd, epName, level[,
 
 	WAVE/T epochWave = GetEpochsWave(panelTitle)
 	variable i, j, numEpochs, pos
-	string entry
+	string entry, startTimeStr, endTimeStr
 
 	lowerlimit = ParamIsDefault(lowerlimit) ? -Inf : lowerlimit
 	upperlimit = ParamIsDefault(upperlimit) ? Inf : upperlimit
@@ -2502,8 +2502,16 @@ static Function DC_AddEpoch(panelTitle, channel, epBegin, epEnd, epName, level[,
 	i = DC_GetEpochCount(panelTitle, channel)
 	EnsureLargeEnoughWave(epochWave, minimumSize = i + 1, dimension = ROWS)
 
-	epochWave[i][%StartTime][channel] = num2strHighPrec(epBegin / 1E6, precision = EPOCHTIME_PRECISION)
-	epochWave[i][%EndTime][channel] = num2strHighPrec(epEnd / 1E6, precision = EPOCHTIME_PRECISION)
+	startTimeStr = num2strHighPrec(epBegin / 1E6, precision = EPOCHTIME_PRECISION)
+	endTimeStr = num2strHighPrec(epEnd / 1E6, precision = EPOCHTIME_PRECISION)
+
+	if(!cmpstr(startTimeStr, endTimeStr))
+		// don't add single point epochs
+		return NaN
+	endif
+
+	epochWave[i][%StartTime][channel] = startTimeStr
+	epochWave[i][%EndTime][channel] = endTimeStr
 	epochWave[i][%Name][channel] = epName
 	epochWave[i][%TreeLevel][channel] = num2str(level)
 End
