@@ -4480,7 +4480,7 @@ Function/S GetAnalysisSweepDataPathAS(expFolder, device, sweep)
 	string expFolder, device
 	variable sweep
 
-	ASSERT(IsFinite(sweep), "Expected finite sweep number")
+	ASSERT(IsValidSweepNumber(sweep), "Expected finite sweep number")
 	return GetSingleSweepFolderAsString(GetAnalysisSweepPath(expFolder, device), sweep)
 End
 
