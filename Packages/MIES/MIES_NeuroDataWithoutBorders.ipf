@@ -564,6 +564,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	s.session_start_time = ROVAR(GetSessionStartTimeReadBack())
 	s.locationID = locationID
 	s.nwbVersion = nwbVersion
+	s.nwbFilePath = ROStr(GetNWBFilePathExport())
 
 	numEntries = ItemsInList(devicesWithContent)
 	for(i = 0; i < numEntries; i += 1)
@@ -606,13 +607,16 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 
 			NWB_AppendSweepLowLevel(s)
 			stimsetList += NWB_GetStimsetFromPanel(panelTitle, sweep)
+
+			NVAR fileIDExport = $GetNWBFileIDExport()
+			fileIDExport = s.locationID
 		endfor
 	endfor
 
-	NWB_AppendStimset(nwbVersion, locationID, stimsetList, compressionMode)
+	NWB_AppendStimset(nwbVersion, s.locationID, stimsetList, compressionMode)
 
 	if(writeIgorHistory)
-		NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
+		NWB_AppendIgorHistoryAndLogFile(nwbVersion, s.locationID)
 	endif
 
 	if(!keepFileOpen)
@@ -1150,7 +1154,8 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			WAVE params.data        = ExtractOneDimDataFromSweep(s.DAQConfigWave, s.DAQDataWave, col)
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
-			WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode)
+			WAVE/T/Z params.epochs = NWB_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
+			s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
 		endif
 
 		NWB_ClearWriteChannelParams(params)
@@ -1197,6 +1202,8 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 		col                     = AFH_GetDAQDataColumn(s.DAQConfigWave, params.channelNumber, params.channelType)
 		writtenDataColumns[col] = 1
 
+		WAVE/T/Z params.epochs = NWB_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
+
 		WAVE data = ExtractOneDimDataFromSweep(s.DAQConfigWave, s.DAQDataWave, col)
 
 		if(hardwareType == HARDWARE_ITC_DAC)
@@ -1216,7 +1223,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 				params.stimset       = ttlStimsets[log(ttlBit)/log(2)]
 				NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 				params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
-				WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode)
+				s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
 			endfor
 		elseif(hardwareType == HARDWARE_NI_DAC)
 			WAVE params.data     = data
@@ -1224,7 +1231,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 			params.stimset       = stimset
 			NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
-			WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode)
+			s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
 		endif
 
 		NWB_ClearWriteChannelParams(params)
@@ -1253,6 +1260,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 				break
 			case IPNWB_CHANNEL_TYPE_DAC:
 				path = "/stimulus/presentation"
+				WAVE/T/Z params.epochs = NWB_FetchEpochs(s.numericalValues, s.textualValues, s.sweep, params.channelNumber, params.channelType)
 				break
 			default:
 				ASSERT_TS(0, "Unexpected channel type")
@@ -1262,9 +1270,38 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 		NWB_GetTimeSeriesProperties(s.nwbVersion, s.numericalKeys, s.numericalValues, params, tsp)
 		WAVE params.data       = ExtractOneDimDataFromSweep(s.DAQConfigWave, s.DAQDataWave, i)
 		params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : GetNextFreeGroupIndex(s.locationID, path)
-		WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode)
+
+		s.locationID = WriteSingleChannel(s.locationID, path, s.nwbVersion, params, tsp, compressionMode = s.compressionMode, nwbFilePath = s.nwbFilePath)
+
 		NWB_ClearWriteChannelParams(params)
 	endfor
+End
+
+/// @brief Return free text wave with the epoch information of the given channel
+///
+/// See GetEpochsWave() for the wave layout.
+threadsafe static Function/WAVE NWB_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualValues, variable sweep, variable channelNumber, variable channelType)
+
+	variable index
+
+	/// @todo we don't yet write epoch info into the LBN
+	if(channelType != XOP_CHANNEL_TYPE_DAC)
+		return $""
+	endif
+
+	WAVE/Z setting
+	[setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, EPOCHS_ENTRY_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
+
+	if(WaveExists(setting))
+		WAVE/T settingText = setting
+		WAVE/T epochs = ListToTextWaveMD(settingText[index], 2, rowSep = ":", colSep = ",")
+		ASSERT_TS(DimSize(epochs, ROWS) > 0, "Invalid epochs")
+		SetEpochsDimensionLabels(epochs)
+
+		epochs[][%Name] = RemoveEnding(epochs[p][%Name], ";") + ";"
+	endif
+
+	return epochs
 End
 
 /// @brief Clear all entries which are channel specific
