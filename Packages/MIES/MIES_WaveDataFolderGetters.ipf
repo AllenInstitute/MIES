@@ -4697,7 +4697,7 @@ Function/Wave GetAnalysisConfigWave(dataFolder, device, sweep)
 	variable sweep
 
 	DFREF dfr = GetAnalysisDeviceConfigFolder(dataFolder, device)
-	string configSweep  = "Config_Sweep_" + num2str(sweep)
+	string configSweep = GetConfigWaveName(sweep)
 
 	Wave/I/Z/SDFR=dfr wv = $configSweep
 
