@@ -302,13 +302,14 @@ static Function/WAVE LoadTimeSeriesImpl(groupID, channel, channelType)
 	endswitch
 End
 
-static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep, pxpSweepsDFR)
+static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep, pxpSweepsDFR, epochs)
 	variable fileID, groupID, sweep
 	string filepath
 	string channel, device
 	DFREF pxpSweepsDFR
+	WAVE/Z epochs
 
-	variable channelGroupID, starting_time, session_start_time, actual
+	variable channelGroupID, starting_time, session_start_time, actual, idx, index
 	variable clampMode, gain, gain_ref, resolution, conversion, headstage, rate_ref, rate, samplingInterval, samplingInterval_ref
 	string stimulus, stimulus_expected, channelName, str, path, neurodata_type
 	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref
@@ -489,6 +490,29 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	else
 		FAIL()
 	endif
+
+	// epochs
+	// @todo TTL support
+	if(params.channelType == XOP_CHANNEL_TYPE_DAC && clampMode != I_EQUAL_ZERO_MODE)
+
+		// introduced in 18e1406b (Labnotebook: Add DA/AD ChannelType, 2019-02-15)
+		WAVE/Z setting
+		[setting, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DA ChannelType", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
+
+		if(WaveExists(setting) && setting[index] == DAQ_CHANNEL_TYPE_DAQ)
+			CHECK_WAVE(epochs, WAVE_WAVE)
+
+			idx = FindDimlabel(epochs, ROWS, channel)
+			CHECK(idx >= 0)
+
+			WAVE/T/Z epochsSingleChannel = WaveRef(epochs, row=idx)
+			CHECK_WAVE(epochsSingleChannel, TEXT_WAVE)
+
+			WAVE/Z epochsLBN = MIES_NWB#NWB_FetchEpochs(numericalValues, textualValues, sweep, params.channelNumber, params.channelType)
+			CHECK_WAVE(epochsLBN, TEXT_WAVE)
+			CHECK_EQUAL_TEXTWAVES(epochsLBN, epochsSingleChannel)
+		endif
+	endif
 End
 
 static Function/DF TestSweepData(entry, device, sweep)
@@ -625,6 +649,8 @@ Function TestNwbExportV2()
 	WAVE/Z/T stimuluses = GetAnalysisChannelStimWave(entry[%DataFolder], device)
 	CHECK_WAVE(stimuluses, TEXT_WAVE)
 
+	WAVE/WAVE/Z epochs = LoadEpochTable(discLocation)
+
 	fileID = H5_OpenFile(discLocation)
 	CHECK_EQUAL_VAR(GetNWBMajorVersion(ReadNWBVersion(fileID)), NWB_VERSION)
 
@@ -672,7 +698,7 @@ Function TestNwbExportV2()
 			// TimeSeries properties
 			TestTimeSeriesProperties(groupID, channel)
 
-			TestTimeSeries(fileID, discLocation, device, groupID, channel, sweep, pxpSweepsDFR)
+			TestTimeSeries(fileID, discLocation, device, groupID, channel, sweep, pxpSweepsDFR, epochs)
 		endfor
 
 		// check presentation/stimulus TimeSeries of NWB
@@ -684,7 +710,7 @@ Function TestNwbExportV2()
 			// TimeSeries properties
 			TestTimeSeriesProperties(groupID, channel)
 
-			TestTimeSeries(fileID, discLocation, device, groupID, channel, sweep, pxpSweepsDFR)
+			TestTimeSeries(fileID, discLocation, device, groupID, channel, sweep, pxpSweepsDFR, epochs)
 		endfor
 	endfor
 
