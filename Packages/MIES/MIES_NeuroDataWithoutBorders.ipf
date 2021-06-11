@@ -1768,6 +1768,10 @@ End
 /// @brief Flushes the contents of the NWB file to disc
 threadsafe Function NWB_Flush(variable locationID)
 
+	if(IsNaN(locationID))
+		return NaN
+	endif
+
 	H5_FlushFile(locationID)
 End
 
