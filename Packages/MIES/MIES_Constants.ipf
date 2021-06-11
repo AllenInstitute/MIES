@@ -1518,3 +1518,5 @@ StrConstant NWB_WORKLOAD_CLASS = "nwb_writing"
 Constant ID_HEADSTAGE_SETTINGS = 0x1
 Constant ID_POPUPMENU_SETTINGS = 0x2
 /// @}
+
+Constant DND_STIMSET_DANDI_SET = 107
