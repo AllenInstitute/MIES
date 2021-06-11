@@ -1502,10 +1502,12 @@ static Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device,
 
 	// sweep already loaded
 	if(DataFolderExists(sweepFolder))
-		if(overwrite)
-			/// @todo check complete sweep overwrite and *_LoadSweep functions
+		if(!overwrite)
+			return 0
 		endif
-		return 0
+
+		KillOrMoveToTrash(dfr = $sweepFolder)
+		KillOrMoveToTrash(wv = GetAnalysisConfigWave(dataFolder, device, sweep))
 	endif
 
 	DFREF sweepDFR = createDFWithAllParents(sweepFolder)
