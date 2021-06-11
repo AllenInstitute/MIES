@@ -3075,7 +3075,7 @@ End
 /// '_free_'[0][0][1][1]= {"","","",""}
 /// '_free_'[0][0][0][2]= {"6","","",""}
 /// '_free_'[0][0][1][2]= {"","","",""}
-Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, chuSep])
+threadsafe Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, chuSep])
 	string list
 	variable dims
 	string rowSep, colSep, laySep, chuSep
@@ -3084,8 +3084,8 @@ Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, chuSep])
 	variable rowMaxSize, colMaxSize, layMaxSize, chuMaxSize
 	variable rowNr, colNr, layNr
 
-	ASSERT(!isNull(list), "list input string is null")
-	ASSERT(dims > 0 && dims <= 4, "number of dimensions must be > 0 and < 5")
+	ASSERT_TS(!isNull(list), "list input string is null")
+	ASSERT_TS(dims > 0 && dims <= 4, "number of dimensions must be > 0 and < 5")
 
 	if(ParamIsDefault(rowSep))
 		rowSep = ";"
