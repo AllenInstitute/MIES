@@ -30,7 +30,8 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string pan
 	endif
 
 	// use the trials from the previous which is from the *same* SCI
-	WAVE trialsLBN = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
+	WAVE/Z trialsLBN = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
+	ASSERT(WaveExists(trialsLBN), "Missing trials LBN wave")
 
 	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
