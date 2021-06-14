@@ -486,7 +486,7 @@ End
 static Function SC_SpikePositionsCalcDetail(WAVE spikePositions, variable minimumSpikePosition)
 
 	WaveStats/Q/M=1 spikePositions
-	ASSERT_TS(V_numInfs == 0 && V_numNaNs == 0, "Unexpected non-finite entries in input")
+	ASSERT(V_numInfs == 0 && V_numNaNs == 0, "Unexpected non-finite entries in input")
 
 	return V_avg >= minimumSpikePosition
 End
