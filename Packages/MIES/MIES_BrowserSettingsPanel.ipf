@@ -1187,7 +1187,12 @@ Function/WAVE BSP_GetNumericalValues(string win, [variable sweepNumber])
 	if(BSP_IsDataBrowser(win))
 		// for all sweep numbers the same LBN
 		if(ParamIsDefault(sweepNumber))
-			WAVE sweeps = GetPlainSweepList(win)
+			WAVE/Z sweeps = GetPlainSweepList(win)
+
+			if(!WaveExists(sweeps))
+				return $""
+			endif
+
 			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) numericalValuesWave = DB_GetNumericalValues(win)
 			return numericalValuesWave
 		else
@@ -1213,7 +1218,12 @@ Function/WAVE BSP_GetTextualValues(string win, [variable sweepNumber])
 	if(BSP_IsDataBrowser(win))
 		// for all sweep numbers the same LBN
 		if(ParamIsDefault(sweepNumber))
-			WAVE sweeps = GetPlainSweepList(win)
+			WAVE/Z sweeps = GetPlainSweepList(win)
+
+			if(!WaveExists(sweeps))
+				return $""
+			endif
+
 			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) textualValuesWave = DB_GetTextualValues(win)
 			return textualValuesWave
 		else
