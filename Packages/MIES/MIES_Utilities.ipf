@@ -1578,6 +1578,7 @@ threadsafe Function/S RemovePrefix(string str, [string start, variable regExp])
 	endif
 
 	if(regExp)
+		ClearRTError()
 		SplitString/E="^(" + start + ")" str, regExpResult; err = GetRTError(1)
 
 		if(V_flag == 1 && err == 0)
