@@ -500,7 +500,7 @@ End
 /// @param minimumSpikePosition minimum allowed spike position
 static Function/WAVE SC_SpikePositionQC(string panelTitle, WAVE/T/Z spikePositionsLBN, variable minimumSpikePosition)
 	string list, msg
-	variable numPulses, i
+	variable numPulses, i, j
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikePositionsQCLBN = NaN
 
@@ -530,8 +530,10 @@ static Function/WAVE SC_SpikePositionQC(string panelTitle, WAVE/T/Z spikePositio
 			spikePositionsPerPulse[] = RemovePrefix(spikePositionsPerPulse[p], start = SC_PULSE_PREFIX_RE, regexp = 1)
 			Make/FREE/WAVE/N=(numPulses) spikePositionsPerPulseNum = ListToNumericWave(spikePositionsPerPulse[p], ",")
 
-			sprintf msg, "HS%d: (numeric) \"%s\", ", i, NumericWaveToList(spikePositionsPerPulseNum[i], ";")
-			DebugPrint(msg)
+			for(j = 0; j < numPulses; j += 1)
+				sprintf msg, "HS%d, Pulse %d: (numeric) \"%s\", ", i, j, NumericWaveToList(spikePositionsPerPulseNum[j], ";")
+				DebugPrint(msg)
+			endfor
 
 			Make/FREE/N=(numPulses) spikePositionQCPerPulse
 			spikePositionQCPerPulse = SC_SpikePositionsCalcDetail(spikePositionsPerPulseNum[p], minimumSpikePosition)
