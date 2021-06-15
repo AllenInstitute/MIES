@@ -5313,9 +5313,14 @@ End
 ///
 /// We have only one NWB file open for all running devices
 Function CloseNWBFile()
+	string lockedDevices
+
 	NVAR fileID = $GetNWBFileIDExport()
 
 	if(IsFinite(fileID))
+		lockedDevices = GetListOfLockedDevices()
+		CallFunctionForEachListItem(NWB_ASYNC_FinishWriting, lockedDevices)
+
 		HDF5CloseFile/Z fileID
 		DEBUGPRINT("Trying to close the NWB file using HDF5CloseFile returned: ", var=V_flag)
 		if(!V_flag) // success
