@@ -33,9 +33,7 @@ Function ID_AskUserForHeadstageSettings(string title, WAVE data, WAVE mock)
 	DFREF dfr = GetWavesDataFolderDFR(data)
 	SetWindow $win, userdata(folder) = GetDataFolder(1, dfr)
 
-	SetDrawLayer/W=$win UserBack
-	SetDrawEnv/W=$win textxjust= 1,textyjust= 1
-	DrawText/W=$win 45,15,title
+	ID_SetTitle(win, title)
 
 	for(i = 0; i < LABNOTEBOOK_LAYER_COUNT; i += 1)
 		ctrl = ID_GetControl(i)
@@ -60,6 +58,14 @@ Function ID_AskUserForHeadstageSettings(string title, WAVE data, WAVE mock)
 	KillVariables state
 
 	return state_var
+End
+
+static Function ID_SetTitle(string win, string title)
+
+	SetDrawLayer/W=$win UserBack
+	SetDrawEnv/W=$win xcoord=rel, ycoord=abs
+	SetDrawEnv/W=$win textxjust= 1,textyjust= 1
+	DrawText/W=$win 0.5,15,title
 End
 
 static Function/S ID_GetControl(variable index)
