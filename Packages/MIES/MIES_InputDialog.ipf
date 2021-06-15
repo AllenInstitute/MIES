@@ -80,12 +80,27 @@ static Function/S ID_GetControl(variable index)
 	return ctrl
 End
 
+static Function/DF ID_GetFolder(string win)
+	DFREF dfr = $GetUserData(win, "", "folder")
+	ASSERT(DataFolderExistsDFR(dfr), "Missing folder user data")
+
+	return dfr
+End
+
+static Function/WAVE ID_GetWave(string win)
+	DFREF dfr = ID_GetFolder(win)
+
+	WAVE/WAVE waves = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullPath = 1), 1)
+	ASSERT(DimSize(waves, ROWS) == 1, "Expected only one wave")
+
+	return waves[0]
+End
+
 Function ID_ButtonProc(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			DFREF dfr = $GetUserData(ba.win, "", "folder")
-			ASSERT(DataFolderExistsDFR(dfr), "Missing folder user data")
+			DFREF dfr = ID_GetFolder(ba.win)
 
 			strswitch(ba.ctrlName)
 				case "button_continue":
@@ -110,16 +125,10 @@ Function ID_SetVarProc(STRUCT WMSetVariableAction &sva) : SetVariableControl
 		case 1:
 		case 2:
 		case 3:
-			DFREF dfr = $GetUserData(sva.win, "", "folder")
-			ASSERT(DataFolderExistsDFR(dfr), "Missing folder user data")
-
-			WAVE/WAVE waves = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullPath = 1), 1)
-			ASSERT(DimSize(waves, ROWS) == 1, "Expected only one wave")
-
-			WAVE data = waves[0]
 			idx = str2num(GetUserData(sva.win, sva.ctrlName, "index"))
 			ASSERT(IsFinite(idx), "Invalid index")
 
+			WAVE data = ID_GetWave(sva.win)
 			data[idx] = sva.dval
 			break
 	endswitch
