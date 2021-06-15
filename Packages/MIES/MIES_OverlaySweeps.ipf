@@ -335,8 +335,9 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index, sweeps, i
 
 	if(!ParamIsDefault(sweepNo))
 		FindValue/RMD=[][0]/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
-		ASSERT(V_Value >= 0, "Could not find sweep")
-		Make/FREE/N=(1, 2) indices = {{V_Value}, {0}}
+		if(V_value >= 0)
+			Make/FREE/N=(1, 2) indices = {{V_Value}, {0}}
+		endif
 	elseif(!ParamIsDefault(index))
 		Make/FREE/N=(1, 2) indices = {{index}, {0}}
 		ASSERT(index >= 0 && index < DimSize(listboxWave, ROWS), "Could not find index")

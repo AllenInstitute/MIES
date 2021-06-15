@@ -30,7 +30,8 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string pan
 	endif
 
 	// use the trials from the previous which is from the *same* SCI
-	WAVE trialsLBN = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
+	WAVE/Z trialsLBN = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
+	ASSERT(WaveExists(trialsLBN), "Missing trials LBN wave")
 
 	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
@@ -485,7 +486,7 @@ End
 static Function SC_SpikePositionsCalcDetail(WAVE spikePositions, variable minimumSpikePosition)
 
 	WaveStats/Q/M=1 spikePositions
-	ASSERT_TS(V_numInfs == 0 && V_numNaNs == 0, "Unexpected non-finite entries in input")
+	ASSERT(V_numInfs == 0 && V_numNaNs == 0, "Unexpected non-finite entries in input")
 
 	return V_avg >= minimumSpikePosition
 End
@@ -499,7 +500,7 @@ End
 /// @param minimumSpikePosition minimum allowed spike position
 static Function/WAVE SC_SpikePositionQC(string panelTitle, WAVE/T/Z spikePositionsLBN, variable minimumSpikePosition)
 	string list, msg
-	variable numPulses, i
+	variable numPulses, i, j
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikePositionsQCLBN = NaN
 
@@ -529,8 +530,10 @@ static Function/WAVE SC_SpikePositionQC(string panelTitle, WAVE/T/Z spikePositio
 			spikePositionsPerPulse[] = RemovePrefix(spikePositionsPerPulse[p], start = SC_PULSE_PREFIX_RE, regexp = 1)
 			Make/FREE/WAVE/N=(numPulses) spikePositionsPerPulseNum = ListToNumericWave(spikePositionsPerPulse[p], ",")
 
-			sprintf msg, "HS%d: (numeric) \"%s\", ", i, NumericWaveToList(spikePositionsPerPulseNum[i], ";")
-			DebugPrint(msg)
+			for(j = 0; j < numPulses; j += 1)
+				sprintf msg, "HS%d, Pulse %d: (numeric) \"%s\", ", i, j, NumericWaveToList(spikePositionsPerPulseNum[j], ";")
+				DebugPrint(msg)
+			endfor
 
 			Make/FREE/N=(numPulses) spikePositionQCPerPulse
 			spikePositionQCPerPulse = SC_SpikePositionsCalcDetail(spikePositionsPerPulseNum[p], minimumSpikePosition)

@@ -158,7 +158,7 @@ static Function AD_FillWaves(win, list, info)
 	WAVE/WAVE/Z textualValuesWave   = BSP_GetTextualValues(win)
 
 	if(!WaveExists(numericalValuesWave) || !WaveExists(textualValuesWave) || !WaveExists(totalSweepsPresent))
-		return NaN
+		return 0
 	endif
 
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
