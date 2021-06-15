@@ -1510,3 +1510,11 @@ Constant DQ_STOP_REASON_OUT_OF_MEMORY     = 0x200
 /// @}
 
 StrConstant NWB_WORKLOAD_CLASS = "nwb_writing"
+
+/// @name Mode flags for ID_AskUserForSettings()
+/// @anchor AskUserSettingsModeFlag
+///
+/// @{
+Constant ID_HEADSTAGE_SETTINGS = 0x1
+Constant ID_POPUPMENU_SETTINGS = 0x2
+/// @}

@@ -11,39 +11,54 @@
 
 /// @brief Shows a dialog and queries numeric values from the user
 ///
-/// We currently ask for #NUM_HEADSTAGES headstage dependent entries and one independent value.
-/// All values must be numeric.
+/// We currently ask for #NUM_HEADSTAGES headstage dependent entries and one independent value when mode = ID_HEADSTAGE_SETTINGS.
+/// All values must be numeric. For ID_POPUPMENU_SETTINGS the row dimension labels of data fill the popup menu, and on return
+/// data will have a 1 at the selected entry.
 ///
+/// @param mode  One of @ref AskUserSettingsModeFlag
 /// @param title dialog title
 /// @param data  1D numeric wave, which must be permanent and
-///              in an otherwise empty folder of size #LABNOTEBOOK_LAYER_COUNT
+///              in an otherwise empty folder
 /// @param mock  This is mock data for testing which is written into data when
 ///              GetInteractiveMode() is false
 ///
 /// @return 0 on success, 1 if the user cancelled the dialog
-Function ID_AskUserForHeadstageSettings(string title, WAVE data, WAVE mock)
+Function ID_AskUserForSettings(variable mode, string title, WAVE data, WAVE mock)
 	string win, ctrl
 	variable i, state_var
 
 	ASSERT(!IsFreeWave(data), "Can only work with permanent waves")
 	ASSERT(EqualWaves(data, mock, 2 + 512), "Mismatched types or dimension sizes")
+	ASSERT(mode == ID_HEADSTAGE_SETTINGS || mode == ID_POPUPMENU_SETTINGS, "Invalid mode")
+	ASSERT(DimSize(data, ROWS) > 0, "Empty wave")
 
-	Execute "ID_Panel()"
+	if(mode == ID_HEADSTAGE_SETTINGS)
+		Execute "ID_Headstage_Panel()"
+	elseif(mode == ID_POPUPMENU_SETTINGS)
+		Execute "ID_Popup_Panel()"
+	endif
+
 	win = GetCurrentWindow()
 	DFREF dfr = GetWavesDataFolderDFR(data)
 	SetWindow $win, userdata(folder) = GetDataFolder(1, dfr)
 
 	ID_SetTitle(win, title)
 
-	for(i = 0; i < LABNOTEBOOK_LAYER_COUNT; i += 1)
-		ctrl = ID_GetControl(i)
+	if(mode == ID_HEADSTAGE_SETTINGS)
+		for(i = 0; i < LABNOTEBOOK_LAYER_COUNT; i += 1)
+			ctrl = ID_GetControl(i)
 
-		if(IsNaN(data[i]))
-			DisableControl(win, ctrl)
-		else
-			SetSetVariable(win, ctrl, data[i])
-		endif
-	endfor
+			if(IsNaN(data[i]))
+				DisableControl(win, ctrl)
+			else
+				SetSetVariable(win, ctrl, data[i])
+			endif
+		endfor
+	elseif(mode == ID_POPUPMENU_SETTINGS)
+		PopupMenu popup0, mode=1, win=$win, popvalue="", value=#"ID_GetPopupEntries()"
+		// select the first entry
+		PGC_SetAndActivateControl(win, "popup0", val = 0)
+	endif
 
 	if(ROVar(GetInteractiveMode()))
 		PauseForUser $win
@@ -134,7 +149,33 @@ Function ID_SetVarProc(STRUCT WMSetVariableAction &sva) : SetVariableControl
 	endswitch
 End
 
-Window ID_Panel() : Panel
+Function ID_PopMenuProc(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			WAVE data = ID_GetWave(pa.win)
+			data[] = 0
+			data[%$pa.popStr] = 1
+
+			break
+	endswitch
+
+	return 0
+End
+
+Function/S ID_GetPopupEntries()
+	string win
+
+	win = GetCurrentWindow()
+	WAVE data = ID_GetWave(win)
+
+	Make/T/FREE/N=(DimSize(data, ROWS)) items = GetDimLabel(data, ROWS, p)
+
+	return TextWaveToList(items, ";")
+End
+
+Window ID_Headstage_Panel() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel/K=1/W=(490,960,726,1225) as "InputPanelForHeadstages"
 	Button button_continue,pos={22.00,227.00},size={92.00,20.00},proc=ID_ButtonProc
@@ -206,4 +247,28 @@ Window ID_Panel() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={177,198.75,inf,inf}" // sizeLimit requires Igor 7 or later
+EndMacro
+
+Window ID_Popup_Panel() : Panel
+	PauseUpdate; Silent 1		// building window...
+	NewPanel /K=1 /W=(490,960,735,1066) as "InputPanelForPopupEntries"
+	SetDrawLayer UserBack
+	Button button_continue,pos={32.00,75.00},size={92.00,20.00},proc=ID_ButtonProc
+	Button button_continue,title="Continue"
+	Button button_continue,userdata(ResizeControlsInfo)=A"!!,Cd!!#?O!!#?q!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_continue,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_continue,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_cancel,pos={135.00,75.00},size={92.00,20.00},proc=ID_ButtonProc
+	Button button_cancel,title="Cancel"
+	Button button_cancel,userdata(ResizeControlsInfo)=A"!!,Fl!!#?O!!#?q!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_cancel,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_cancel,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu popup0,pos={68.00,37.00},size={120.00,19.00},bodyWidth=120,proc=ID_PopMenuProc
+	PopupMenu popup0,userdata(ResizeControlsInfo)=A"!!,EB!!#>\"!!#@T!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup0,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	PopupMenu popup0,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#B7!!#A!zzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
+	SetWindow kwTopWin,userdata(ResizeControlsHookStash)= "ResizeControls#ResizeControlsHook"
 EndMacro
