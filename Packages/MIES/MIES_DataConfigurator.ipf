@@ -2255,7 +2255,7 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 	variable stimsetEnd, stimsetEndLogical
 	variable epochBegin, epochEnd, subEpochBegin, subEpochEnd
 	string epSweepName, epSubName, epSubSubName, epSpecifier
-	variable epochCount, totalDuration
+	variable epochCount, totalDuration, poissonDistribution
 	variable epochNr, pulseNr, numPulses, epochType, flipping, pulseToPulseLength, stimEpochAmplitude, amplitude
 	variable pulseDuration
 	variable subsubEpochBegin, subsubEpochEnd
@@ -2306,13 +2306,15 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 			continue
 		endif
 
+		poissonDistribution = !CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epochNr, key = "Poisson distribution"), "True")
+
 		epSubName = ReplaceNumberByKey("Epoch", epSweepName, epochNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		epSubName = ReplaceStringByKey("Type", epSubName, type, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		epSubName = ReplaceNumberByKey("Amplitude", epSubName, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		if(epochType == EPOCH_TYPE_PULSE_TRAIN)
 			if(!CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epochNr, key = "Mixed frequency"), "True"))
 				epSpecifier = "Mixed frequency"
-			elseif(!CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epochNr, key = "Poisson distribution"), "True"))
+			elseif(poissonDistribution)
 				epSpecifier = "Poisson distribution"
 			endif
 			if(!CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, key="Mixed frequency shuffle", sweep=sweep, epoch=epochNr), "True"))
@@ -2345,11 +2347,13 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 						// shift all flipped pulse intervalls by pulseDuration to the left, except the rightmost with pulseNr 0
 						if(!pulseNr)
 							subEpochBegin = epochEnd - startTimes[0] - pulseDuration
-							subEpochEnd = subEpochBegin + pulseDuration
+							// assign left over time after the last pulse to that pulse
+							subEpochEnd = epochEnd
 						else
 							subEpochEnd = epochEnd - startTimes[pulseNr - 1] - pulseDuration
 							subEpochBegin = pulseNr + 1 == numPulses ? epochBegin : subEpochEnd - ptp[pulseNr]
 						endif
+
 					else
 						subEpochBegin = epochBegin + startTimes[pulseNr]
 						subEpochEnd = pulseNr + 1 == numPulses ? epochEnd : subEpochBegin + ptp[pulseNr + 1]
@@ -2363,7 +2367,7 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 						subEpochBegin = limit(subEpochBegin, epochBegin, Inf)
 						subEpochEnd = limit(subEpochEnd, -Inf, epochEnd)
 
-						// baseline before leftmost/rightmose pulse?
+						// baseline before leftmost/rightmost pulse?
 						if(((pulseNr == numPulses - 1 && flipping) || (!pulseNr && !flipping)) \
 						   && subEpochBegin > epochBegin && subEpochBegin > stimsetBegin)
 							DC_AddEpoch(panelTitle, channel, epochBegin, subEpochBegin, EPOCH_BASELINE_REGION_KEY, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
@@ -2374,13 +2378,22 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 
 						// active
 						subsubEpochBegin = subEpochBegin
-						// we never have a trailing baseline after the last pulse in the epoch
-						// to avoid decimation errors we assign all of the left over time to pulse active
-						subsubEpochEnd = (pulseNr == (flipping ? 0 : numPulses - 1)) ? subEpochEnd : (subEpochBegin + pulseDuration)
 
-						if(subsubEpochBegin >= stimsetEnd || subsubEpochEnd <= stimsetBegin)
+						// normally we never have a trailing baseline with pulse train except when poission distribution
+						// is used. So we can only assign the left over time to pulse active if we are not in this
+						// special case.
+						if(!poissonDistribution && (pulseNr == (flipping ? 0 : numPulses - 1)))
+							subsubEpochEnd = subEpochEnd
+						else
+							subsubEpochEnd = subEpochBegin + pulseDuration
+						endif
+
+						if(subsubEpochBegin >= subEpochEnd || subsubEpochEnd <= subEpochBegin)
 							DEBUGPRINT("Warning: sub sub epoch of active pulse starts after stimset end or ends before stimset start.")
 						else
+							subsubEpochBegin = limit(subsubEpochBegin, subEpochBegin, Inf)
+							subsubEpochEnd = limit(subsubEpochEnd, -Inf, subEpochEnd)
+
 							epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 							epSubSubName = epSubSubName + "Active"
 							DC_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubName, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
@@ -2410,6 +2423,13 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 		endif
 
 	endfor
+
+	// stimsets with multiple sweeps where each sweep has a different length (due to delta mechanism)
+	// result in 2D stimset waves where all sweeps have the same length
+	// therefore we must add a baseline epoch after all defined epochs
+	if(stimsetEnd > stimsetEndLogical)
+		DC_AddEpoch(panelTitle, channel, stimsetEndLogical, stimsetEnd, EPOCH_BASELINE_REGION_KEY, 1)
+	endif
 End
 
 /// Epoch times are saved in s, so 7 digits are 0.1 microseconds precision
@@ -2475,7 +2495,7 @@ static Function DC_AddEpoch(panelTitle, channel, epBegin, epEnd, epName, level[,
 
 	WAVE/T epochWave = GetEpochsWave(panelTitle)
 	variable i, j, numEpochs, pos
-	string entry
+	string entry, startTimeStr, endTimeStr
 
 	lowerlimit = ParamIsDefault(lowerlimit) ? -Inf : lowerlimit
 	upperlimit = ParamIsDefault(upperlimit) ? Inf : upperlimit
@@ -2492,8 +2512,16 @@ static Function DC_AddEpoch(panelTitle, channel, epBegin, epEnd, epName, level[,
 	i = DC_GetEpochCount(panelTitle, channel)
 	EnsureLargeEnoughWave(epochWave, minimumSize = i + 1, dimension = ROWS)
 
-	epochWave[i][%StartTime][channel] = num2strHighPrec(epBegin / 1E6, precision = EPOCHTIME_PRECISION)
-	epochWave[i][%EndTime][channel] = num2strHighPrec(epEnd / 1E6, precision = EPOCHTIME_PRECISION)
+	startTimeStr = num2strHighPrec(epBegin / 1E6, precision = EPOCHTIME_PRECISION)
+	endTimeStr = num2strHighPrec(epEnd / 1E6, precision = EPOCHTIME_PRECISION)
+
+	if(!cmpstr(startTimeStr, endTimeStr))
+		// don't add single point epochs
+		return NaN
+	endif
+
+	epochWave[i][%StartTime][channel] = startTimeStr
+	epochWave[i][%EndTime][channel] = endTimeStr
 	epochWave[i][%Name][channel] = epName
 	epochWave[i][%TreeLevel][channel] = num2str(level)
 End

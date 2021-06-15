@@ -220,7 +220,7 @@ static Function NWB_AddGeneratorString(fileID, nwbVersion)
 
 	EnsureValidNWBVersion(nwbVersion)
 
-	Make/FREE/T/N=(7, 2) props
+	Make/FREE/T/N=(8, 2) props
 
 	props[0][0] = "Program"
 	props[0][1] = "Igor Pro " + num2str(GetArchitectureBits()) + "bit"
@@ -242,6 +242,9 @@ static Function NWB_AddGeneratorString(fileID, nwbVersion)
 
 	props[6][0] = "HDF5 Library Version"
 	props[6][1] = H5_GetLibraryVersion()
+
+	props[7][0] = "Sweep Epoch Version"
+	props[7][1] = num2str(SWEEP_EPOCH_VERSION)
 
 	if(nwbVersion == 1)
 		H5_WriteTextDataset(fileID, "/general/generated_by", wvText=props)
