@@ -477,6 +477,8 @@ End
 /// @param keepFileOpen          [optional, defaults to false] keep the NWB file open after return, or close it
 /// @param overwrite             [optional, defaults to false] overwrite any existing NWB file with the same name, only
 ///                              used when overrideFilePath is passed
+///
+/// @return 0 on success, non-zero on failure
 Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite])
 	variable nwbVersion
 	string overrideFilePath
@@ -525,7 +527,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		ControlWindowToFront()
 
 		LOG_AddEntry(PACKAGE_MIES, "end")
-		return NaN
+		return 1
 	endif
 
 	if(!ParamIsDefault(overrideFilePath))
@@ -537,7 +539,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 			else
 				printf "The given path %s for the NWB export points to an existing file and overwrite is disabled.\r", overrideFilePath
 				ControlWindowToFront()
-				return NaN
+				return 1
 			endif
 		endif
 
@@ -548,7 +550,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 
 	if(!IsFinite(locationID))
 		LOG_AddEntry(PACKAGE_MIES, "end")
-		return NaN
+		return 1
 	endif
 
 	print "Please be patient while we export all existing acquired content of all devices to NWB"
@@ -618,6 +620,8 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
+
+	return 0
 End
 
 /// @brief Wait for ASYNC nwb writing to finish
