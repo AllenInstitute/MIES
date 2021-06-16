@@ -2227,12 +2227,16 @@ static Function AB_ScanFolder(win)
 	WAVE expBrowserList = GetExperimentBrowserGUIList()
 	numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
 	AB_ResetListBoxWaves(numEntries)
+End
 
+Function/S AB_GetPanelName()
+
+	return "AnalysisBrowser"
 End
 
 Function/S AB_OpenAnalysisBrowser()
 
-	string panel = "AnalysisBrowser"
+	string panel = AB_GetPanelName()
 	string directory
 
 	if(windowExists(panel))
