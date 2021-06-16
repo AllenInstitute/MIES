@@ -620,7 +620,8 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 52
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 28
-Constant WAVEBUILDER_PANEL_VERSION         = 9
+Constant WAVEBUILDER_PANEL_VERSION        =  9
+Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 
 /// Version of the labnotebooks (numerical and textual)
 ///
@@ -722,9 +723,11 @@ Constant ZEROMQ_BIND_REP_PORT = 5670
 Constant ZEROMQ_BIND_PUB_PORT = 5770
 
 /// @name Constants for AnalysisBrowserMap (Text Wave)
+/// @anchor AnalysisBrowserFileTypes
 /// @{
-StrConstant ANALYSISBROWSER_FILE_TYPE_IGOR = "I"
-StrConstant ANALYSISBROWSER_FILE_TYPE_NWB  = "N"
+StrConstant ANALYSISBROWSER_FILE_TYPE_IGOR  = "Igor"
+StrConstant ANALYSISBROWSER_FILE_TYPE_NWBv1 = "NWBv1"
+StrConstant ANALYSISBROWSER_FILE_TYPE_NWBV2 = "NWBv2"
 /// @}
 
 /// Convenience definition for functions interacting with threads

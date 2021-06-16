@@ -15,7 +15,8 @@
 ///   The latter ones are only useful if you need to know if the folder exists.
 /// - Modifying wave getter functions might require to introduce wave versioning, see @ref WaveVersioningSupport
 
-static Constant NUM_COLUMNS_LIST_WAVE   = 11
+static Constant ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION = 1
+static Constant NUM_COLUMNS_LIST_WAVE   = 12
 static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 
 static Constant WAVE_TYPE_NUMERICAL = 0x1
@@ -4480,7 +4481,7 @@ Function/S GetAnalysisSweepDataPathAS(expFolder, device, sweep)
 	string expFolder, device
 	variable sweep
 
-	ASSERT(IsFinite(sweep), "Expected finite sweep number")
+	ASSERT(IsValidSweepNumber(sweep), "Expected finite sweep number")
 	return GetSingleSweepFolderAsString(GetAnalysisSweepPath(expFolder, device), sweep)
 End
 
@@ -4598,6 +4599,22 @@ Function/Wave GetAnalysisDeviceWave(dataFolder)
 	return wv
 End
 
+/// @brief Return wave with all stored test pulses
+Function/Wave GetAnalysisStoredTestPulses(string dataFolder, string device)
+
+	DFREF dfr = GetAnalysisDeviceTestpulse(dataFolder, device)
+
+	Wave/Z/SDFR=dfr/WAVE wv = StoredTestPulses
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(0)/WAVE dfr:StoredTestPulses/Wave=wv
+
+	return wv
+End
+
 /// @brief Return AnalysisBrowser indexing storage wave
 ///
 /// Rows:
@@ -4607,10 +4624,10 @@ End
 /// - 0: %DiscLocation:  Path to Experiment on Disc
 /// - 1: %FileName:      Name of File in experiment column in ExperimentBrowser
 /// - 2: %DataFolder     Data folder inside current Igor experiment
-/// - 3: %FileType       File Type identifier for routing to loader functions
+/// - 3: %FileType       File Type identifier for routing to loader functions, one of @ref AnalysisBrowserFileTypes
 Function/Wave GetAnalysisBrowserMap()
 	DFREF dfr = GetAnalysisFolder()
-	variable versionOfWave = 2
+	variable versionOfWave = 3
 
 	STRUCT WaveLocationMod p
 	p.dfr     = dfr
@@ -4624,6 +4641,9 @@ Function/Wave GetAnalysisBrowserMap()
 		return wv
 	elseif(ExistsWithCorrectLayoutVersion(wv, 1))
 		// update dimension labels
+	elseif(ExistsWithCorrectLayoutVersion(wv, 2))
+		// clear file type as this now holds nwb version as well
+		wv[][%FileType] = ""
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, 4) wv
 		wv[][3] = ANALYSISBROWSER_FILE_TYPE_IGOR
@@ -4648,28 +4668,34 @@ End
 Function/Wave GetExperimentBrowserGUIList()
 
 	DFREF dfr = GetAnalysisFolder()
+	variable versionOfWave = ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION
 
 	Wave/Z/SDFR=dfr/T wv = expBrowserList
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, NUM_COLUMNS_LIST_WAVE, -1) wv
+		wv = ""
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE, 2)/T dfr:expBrowserList/Wave=wv
 	endif
 
-	Make/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE, 2)/T dfr:expBrowserList/Wave=wv
-
 	SetDimLabel COLS, 0 , $""          , wv
-	SetDimLabel COLS, 1 , experiment   , wv
-	SetDimLabel COLS, 2 , $""          , wv
-	SetDimLabel COLS, 3 , device       , wv
-	SetDimLabel COLS, 4 , '#sweeps'    , wv
-	SetDimLabel COLS, 5 , sweep        , wv
-	SetDimLabel COLS, 6 , '#headstages', wv
-	SetDimLabel COLS, 7 , 'stim sets'  , wv
-	SetDimLabel COLS, 8 , 'set count'  , wv
-	SetDimLabel COLS, 9 , '#DAC'       , wv
-	SetDimLabel COLS, 10, '#ADC'       , wv
+	SetDimLabel COLS, 1 , file         , wv
+	SetDimLabel COLS, 2 , type         , wv
+	SetDimLabel COLS, 3 , $""          , wv
+	SetDimLabel COLS, 4 , device       , wv
+	SetDimLabel COLS, 5 , '#sweeps'    , wv
+	SetDimLabel COLS, 6 , sweep        , wv
+	SetDimLabel COLS, 7 , '#headstages', wv
+	SetDimLabel COLS, 8 , 'stim sets'  , wv
+	SetDimLabel COLS, 9 , 'set count'  , wv
+	SetDimLabel COLS, 10, '#DAC'       , wv
+	SetDimLabel COLS, 11, '#ADC'       , wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetWaveVersion(wv, versionOfWave)
 
 	return wv
 End
@@ -4679,14 +4705,20 @@ End
 Function/Wave GetExperimentBrowserGUISel()
 
 	DFREF dfr = GetAnalysisFolder()
+	variable versionOfWave = ANALYSIS_BROWSER_LISTBOX_WAVE_VERSION
 
 	Wave/Z/SDFR=dfr wv = expBrowserSel
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, NUM_COLUMNS_LIST_WAVE, -1) wv
+		wv = 0
+	else
+		Make/R/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE) dfr:expBrowserSel/Wave=wv
 	endif
 
-	Make/R/N=(MINIMUM_WAVE_SIZE, NUM_COLUMNS_LIST_WAVE) dfr:expBrowserSel/Wave=wv
+	SetWaveVersion(wv, versionOfWave)
 
 	return wv
 End
@@ -4697,7 +4729,7 @@ Function/Wave GetAnalysisConfigWave(dataFolder, device, sweep)
 	variable sweep
 
 	DFREF dfr = GetAnalysisDeviceConfigFolder(dataFolder, device)
-	string configSweep  = "Config_Sweep_" + num2str(sweep)
+	string configSweep = GetConfigWaveName(sweep)
 
 	Wave/I/Z/SDFR=dfr wv = $configSweep
 

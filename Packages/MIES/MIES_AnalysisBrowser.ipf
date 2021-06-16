@@ -16,27 +16,32 @@ static Constant DEVICE_TREEVIEW_COLUMN     = 2
 static Constant AB_LOAD_SWEEP = 0
 static Constant AB_LOAD_STIMSET = 1
 
-static Function AB_ResetSelectionWave()
+static Function AB_ResetListBoxWaves(variable newSize)
 
 	variable col, val
-	val = LISTBOX_TREEVIEW | LISTBOX_TREEVIEW_EXPANDED
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 
-	if(DimSize(expBrowserSel, ROWS) == 0)
-		return NaN
+	Redimension/N=(newSize, -1, -1, -1) expBrowserList, expBrowserSel
+
+	if(DimSize(expBrowserSel, ROWS) > 0)
+		expBrowserSel = 0
+
+		val = LISTBOX_TREEVIEW | LISTBOX_TREEVIEW_EXPANDED
+
+		col = FindDimLabel(expBrowserList, COLS, "file")
+		ASSERT(col >= 0, "invalid column index")
+		expBrowserSel[][col - 1] = !cmpstr(expBrowserList[p][col], "") ? 0 : val
+
+		col = FindDimLabel(expBrowserList, COLS, "device")
+		ASSERT(col >= 0, "invalid column index")
+		expBrowserSel[][col - 1] = !cmpstr(expBrowserList[p][col], "") ? 0 : val
 	endif
 
-	expBrowserSel = 0
-
-	col = FindDimLabel(expBrowserList, COLS, "experiment")
-	ASSERT(col >= 0, "invalid column index")
-	expBrowserSel[][col - 1] = !cmpstr(expBrowserList[p][col], "") ? 0 : val
-
-	col = FindDimLabel(expBrowserList, COLS, "device")
-	ASSERT(col >= 0, "invalid column index")
-	expBrowserSel[][col - 1] = !cmpstr(expBrowserList[p][col], "") ? 0 : val
+	// backup initial state
+	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
+	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
 End
 
 /// @brief Clear all waves of the main experiment browser
@@ -68,7 +73,7 @@ End
 static Function AB_AddMapEntry(baseFolder, discLocation)
 	string baseFolder, discLocation
 
-	variable index
+	variable index, fileID, nwbVersion
 	string dataFolder, fileType, relativePath, extension
 	WAVE/T map = GetAnalysisBrowserMap()
 
@@ -98,7 +103,19 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 			fileType = ANALYSISBROWSER_FILE_TYPE_IGOR
 			break
 		case ".nwb":
-			fileType = ANALYSISBROWSER_FILE_TYPE_NWB
+			fileID = H5_OpenFile(discLocation)
+			nwbVersion = GetNWBMajorVersion(ReadNWBVersion(fileID))
+			H5_CloseFile(fileID)
+			switch(nwbVersion)
+				case 1:
+					fileType = ANALYSISBROWSER_FILE_TYPE_NWBv1
+					break
+				case 2:
+					fileType = ANALYSISBROWSER_FILE_TYPE_NWBv2
+					break
+				default:
+					ASSERT(0, "Unknown NWB version")
+			endswitch
 			break
 		default:
 			ASSERT(0, "invalid file type")
@@ -137,7 +154,7 @@ End
 /// 0: %DiscLocation:  Path to Experiment on Disc
 /// 1: %FileName:      Name of File in experiment column in ExperimentBrowser
 /// 2: %DataFolder     Data folder inside current Igor experiment
-/// 3: %FileType       File Type identifier for routing to loader functions
+/// 3: %FileType       File Type identifier for routing to loader functions, one of @ref AnalysisBrowserFileTypes
 Function/Wave AB_GetMap(discLocation)
 	string discLocation
 
@@ -199,8 +216,8 @@ static Function AB_AddFile(baseFolder, discLocation)
 	AB_LoadFile(discLocation)
 	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
 
-	if(lastMapped > firstMapped)
-		list[firstMapped, lastMapped][%experiment][1] = num2str(mapIndex)
+	if(lastMapped >= firstMapped)
+		list[firstMapped, lastMapped][%file][1] = num2str(mapIndex)
 	else // experiment could not be loaded
 		AB_RemoveMapEntry(mapIndex)
 		return 1
@@ -234,17 +251,18 @@ static Function AB_LoadFile(discLocation)
 				AB_LoadTPStorageFromIgor(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
 				break
-			case ANALYSISBROWSER_FILE_TYPE_NWB:
+			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadTPStorageFromNWB(map[%DiscLocation], map[%DataFolder], device)
-				AB_LoadUserCommentFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadUserCommentAndHistoryFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				break
 			default:
 				ASSERT(0, "invalid file type")
 		endswitch
 
 		Wave/I sweeps = GetAnalysisChannelSweepWave(map[%DataFolder], device)
-		AB_FillListWave(map[%FileName], device, map[%DataFolder], sweeps)
+		AB_FillListWave(map[%FileName], device, map[%DataFolder], map[%FileType], sweeps)
 	endfor
 End
 
@@ -288,7 +306,8 @@ static Function AB_HasCompatibleVersion(discLocation)
 				endif
 			endif
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWB:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			return 1
 		default:
 			ASSERT(0, "invalid file type")
@@ -314,24 +333,26 @@ End
 
 /// @brief Add an experiment entry into the list
 ///        if there is none yet.
-static Function AB_AddExperimentNameIfReq(expName, list, index)
+static Function AB_AddExperimentNameIfReq(expName, list, fileType, index)
 	string expName
 	WAVE/T list
+	string fileType
 	variable index
 
 	variable lastIndex
 
-	WAVE/Z indizes = FindIndizes(list, colLabel="experiment", str=expName)
+	WAVE/Z indizes = FindIndizes(list, colLabel="file", str=expName)
 
 	if(WaveExists(indizes))
 		lastIndex = indizes[DimSize(indizes, ROWS) - 1]
-		if(!cmpstr(list[lastIndex][%experiment][0], expName))
+		if(!cmpstr(list[lastIndex][%file][0], expName))
 			return NaN
 		endif
 	endif
 
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
-	list[index][%experiment][0] = expName
+	list[index][%file][0] = expName
+	list[index][%type][0] = fileType
 	index += 1
 End
 
@@ -342,10 +363,12 @@ End
 /// @param fileName   current Project's filename
 /// @param device     current device
 /// @param dataFolder current Project's Lab Notebook DataFolder reference
+/// @param fileType   current Project's file type, one of @ref AnalysisBrowserFileTypes
 /// @param sweepNums  Wave containing all sweeps actually present for device
-static Function AB_FillListWave(fileName, device, dataFolder, sweepNums)
-	string fileName, device, dataFolder
+static Function AB_FillListWave(fileName, device, dataFolder, fileType, sweepNums)
+	string fileName, device, dataFolder, fileType
 	WAVE sweepNums
+
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
 	string str
 
@@ -356,7 +379,7 @@ static Function AB_FillListWave(fileName, device, dataFolder, sweepNums)
 	WAVE/T list = GetExperimentBrowserGUIList()
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
 
-	AB_AddExperimentNameIfReq(fileName, list, index)
+	AB_AddExperimentNameIfReq(fileName, list, fileType, index)
 
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 	list[index][%device][0] = device
@@ -706,6 +729,40 @@ Function AB_LoadTPStorageFromNWB(nwbFilePath, expFolder, device)
 	H5_CloseFile(h5_fileID)
 End
 
+static Function AB_LoadStoredTestpulsesFromNWB(nwbFilePath, expFolder, device)
+	string nwbFilePath, expFolder, device
+
+	variable h5_fileID, testpulseGroup, numEntries, i
+	string dataFolderPath, list, name, groupName
+
+	WAVE/WAVE wv = GetAnalysisStoredTestPulses(expFolder, device)
+
+	if(DimSize(wv, ROWS) > 0)
+		return NaN
+	endif
+
+	h5_fileID = H5_OpenFile(nwbFilePath)
+
+	groupName = "/general/testpulse/" + device
+	testpulseGroup = H5_OpenGroup(h5_fileID, groupName)
+
+	list = H5_ListGroupMembers(testpulseGroup, groupName)
+	list = GrepList(list, STORED_TESTPULSES_REGEXP)
+
+	numEntries = ItemsInList(list)
+	Redimension/N=(numEntries) wv
+
+	for(i = 0; i < numEntries; i += 1)
+		name = StringFromList(i, list)
+		wv[i] = H5_LoadDataset(testpulseGroup, name)
+	endfor
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, numEntries)
+
+	HDF5CloseGroup/Z testpulseGroup
+	H5_CloseFile(h5_fileID)
+End
+
 static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 	string expFilePath, expFolder, device
 
@@ -723,11 +780,11 @@ static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 	return numStringsLoaded
 End
 
-static Function AB_LoadUserCommentFromNWB(nwbFilePath, expFolder, device)
+static Function AB_LoadUserCommentAndHistoryFromNWB(nwbFilePath, expFolder, device)
 	string nwbFilePath, expFolder, device
 
-	string groupName, comment
-	variable h5_fileID, commentGroup
+	string groupName, comment, datasetName, history
+	variable h5_fileID, commentGroup, version
 
 	DFREF targetDFR = GetAnalysisDeviceFolder(expFolder, device)
 	h5_fileID = H5_OpenFile(nwbFilePath)
@@ -737,9 +794,16 @@ static Function AB_LoadUserCommentFromNWB(nwbFilePath, expFolder, device)
 
 	comment = ReadTextDataSetAsString(commentGroup, "userComment")
 	HDF5CloseGroup/Z commentGroup
+
+	version = GetNWBMajorVersion(ReadNWBVersion(h5_fileID))
+
+	datasetName = "/general/" + GetHistoryAndLogFileDatasetName(version)
+	history = ReadTextDataSetAsString(h5_fileID, datasetName)
+
 	H5_CloseFile(h5_fileID)
 
 	string/G targetDFR:userComment = comment
+	string/G targetDFR:historyAndLogFile = history
 End
 
 static Function/S AB_LoadLabNotebook(discLocation)
@@ -787,7 +851,8 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
 			deviceList = AB_LoadLabNotebookFromIgor(map[%DiscLocation])
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWB:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			deviceList = AB_LoadLabNotebookFromNWB(map[%DiscLocation])
 			break
 	endswitch
@@ -1315,7 +1380,7 @@ static Function AB_LoadFromExpandedRange(row, subSectionColumn, AB_LoadType, [ov
 		endif
 
 		device      = GetLastNonEmptyEntry(expBrowserList, "device", j)
-		mapIndex    = str2num(expBrowserList[j][%experiment][1])
+		mapIndex    = str2num(expBrowserList[j][%file][1])
 		dataFolder   = map[mapIndex][%DataFolder]
 		discLocation = map[mapIndex][%DiscLocation]
 		fileType     = map[mapIndex][%FileType]
@@ -1424,7 +1489,7 @@ static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 		endif
 		device = GetLastNonEmptyEntry(expBrowserList, "device", row)
 
-		mapIndex    = str2num(expBrowserList[row][%experiment][1])
+		mapIndex    = str2num(expBrowserList[row][%file][1])
 		fileName     = map[mapIndex][%FileName]
 		dataFolder   = map[mapIndex][%DataFolder]
 		discLocation = map[mapIndex][%DiscLocation]
@@ -1495,10 +1560,12 @@ static Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device,
 
 	// sweep already loaded
 	if(DataFolderExists(sweepFolder))
-		if(overwrite)
-			/// @todo check complete sweep overwrite and *_LoadSweep functions
+		if(!overwrite)
+			return 0
 		endif
-		return 0
+
+		KillOrMoveToTrash(dfr = $sweepFolder)
+		KillOrMoveToTrash(wv = GetAnalysisConfigWave(dataFolder, device, sweep))
 	endif
 
 	DFREF sweepDFR = createDFWithAllParents(sweepFolder)
@@ -1514,7 +1581,8 @@ static Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device,
 				return 1
 			endif
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWB:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			if(AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep))
 				return 1
 			endif
@@ -1551,7 +1619,8 @@ static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, devic
 				return 1
 			endif
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWB:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			stimsets = NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
 			h5_fileID  = H5_OpenFile(discLocation)
 			if(!StimsetPathExists(h5_fileID))
@@ -2210,28 +2279,28 @@ static Function AB_ScanFolder(win)
 		AB_AddFile(baseFolder, entry)
 	endfor
 
-	// redimension to maximum size (all expanded)
 	WAVE expBrowserList = GetExperimentBrowserGUIList()
-	WAVE expBrowserSel  = GetExperimentBrowserGUISel()
-
 	numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
-	Redimension/N=(numEntries, -1, -1, -1) expBrowserList, expBrowserSel
+	AB_ResetListBoxWaves(numEntries)
+End
 
-	AB_ResetSelectionWave()
+Function/S AB_GetPanelName()
 
-	// backup initial state
-	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
-	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
+	return "AnalysisBrowser"
 End
 
 Function/S AB_OpenAnalysisBrowser()
 
-	string panel = "AnalysisBrowser"
+	string panel = AB_GetPanelName()
 	string directory
 
-	if(windowExists(panel))
-		DoWindow/F $panel
-		return panel
+	if(WindowExists(panel))
+		if(HasPanelLatestVersion(panel, ANALYSISBROWSER_PANEL_VERSION))
+			DoWindow/F $panel
+			return panel
+		endif
+
+		KillWindow/Z $panel
 	endif
 
 	WAVE/T list = GetExperimentBrowserGUIList()
@@ -2242,6 +2311,8 @@ Function/S AB_OpenAnalysisBrowser()
 	Execute "AnalysisBrowser()"
 	GetMiesVersion()
 
+	AddVersionToPanel(panel, ANALYSISBROWSER_PANEL_VERSION)
+
 	NVAR JSONid = $GetSettingsJSONid()
 	directory = JSON_GetString(jsonID, "/analysisbrowser/directory")
 	SetSetVariableString(panel, "setvar_baseFolder", directory)
@@ -2250,80 +2321,129 @@ Function/S AB_OpenAnalysisBrowser()
 	return panel
 End
 
+static Function AB_CheckPanelVersion(string panel)
+
+	if(!HasPanelLatestVersion(panel, ANALYSISBROWSER_PANEL_VERSION))
+		DoAbortNow("The Analysisbrowser is too old to be usable. Please close it and open a new one.")
+	endif
+End
+
 Window AnalysisBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(242,176,1118,664)
+	NewPanel /K=1 /W=(27,669,1169,1230)
 	SetDrawLayer UserBack
 	DrawLine 5,185,105,185
-	DrawLine 5,275,105,275
+	DrawLine 5,248,105,248
 	DrawLine 5,74,105,74
-	Button button_base_folder_scan,pos={5,45},size={100,25},proc=AB_ButtonProc_ScanFolder,title="Scan folder"
-	Button button_base_folder_scan,userdata(ResizeControlsInfo)= A"!!,?X!!#>B!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_base_folder_scan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Button button_base_folder_scan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_base_folder_scan, help={"Start scanning the base folder recursively for packed/unpacked experiments holding MIES data"}
+	DrawLine 5,297,104,297
+	DrawLine 6,346,105,346
+	Button button_base_folder_scan,pos={5.00,45.00},size={100.00,25.00},proc=AB_ButtonProc_ScanFolder
+	Button button_base_folder_scan,title="Scan folder"
+	Button button_base_folder_scan,help={"Start scanning the base folder recursively for packed/unpacked experiments holding MIES data"}
+	Button button_base_folder_scan,userdata(ResizeControlsInfo)=A"!!,?X!!#>B!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_base_folder_scan,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_base_folder_scan,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_baseFolder,pos={118.00,17.00},size={338.00,18.00}
-	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo)= A"!!,FQ!!#<@!!#Bc!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_baseFolder,value= _STR:"",noedit= 1
-	SetVariable setvar_baseFolder, help={"Base folder which is recursively searched for packed/unpacked experiments holding MIES data"}
-	ListBox list_experiment_contents,pos={119.00,43.00},size={749.00,439.00},proc=AB_ListBoxProc_ExpBrowser
-	ListBox list_experiment_contents,userdata(ResizeControlsInfo)= A"!!,FS!!#>:!!#DK5QF1+J,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
-	ListBox list_experiment_contents,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	ListBox list_experiment_contents,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_baseFolder,help={"Base folder which is recursively searched for packed/unpacked experiments and NWB files"}
+	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo)=A"!!,FQ!!#<@!!#Bc!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_baseFolder,value=_STR:""
+	ListBox list_experiment_contents,pos={119.00,43.00},size={1015.00,512.00},proc=AB_ListBoxProc_ExpBrowser
+	ListBox list_experiment_contents,help={"Various properties of the loaded sweep data"}
+	ListBox list_experiment_contents,userdata(ResizeControlsInfo)=A"!!,FS!!#>:!!#E8^]6b&z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox list_experiment_contents,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	ListBox list_experiment_contents,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_experiment_contents,listWave=root:MIES:Analysis:expBrowserList
-	ListBox list_experiment_contents,selWave=root:MIES:Analysis:expBrowserSel,row= 1
-	ListBox list_experiment_contents,mode= 4
-	ListBox list_experiment_contents,widths={33,260,24,137,55,45,75,130,45,63}
-	ListBox list_experiment_contents,userColumnResize= 1,hScroll= 3
-	ListBox list_experiment_contents, help={"Various properties of the loaded sweep data"}
-	Button button_select_same_stim_sets,pos={5,80},size={100,40},proc=AB_ButtonProc_SelectStimSets,title="Select same\rstim set sweeps"
+	ListBox list_experiment_contents,selWave=root:MIES:Analysis:expBrowserSel,mode=4
+	ListBox list_experiment_contents,widths={40,322,65,21,94,57,50,77,159,63,42,42}
+	ListBox list_experiment_contents,userColumnResize=1
+	Button button_select_same_stim_sets,pos={5.00,80.00},size={100.00,40.00},proc=AB_ButtonProc_SelectStimSets
+	Button button_select_same_stim_sets,title="Select same\rstim set sweeps"
 	Button button_select_same_stim_sets,help={"Starting from one selected sweep, select all other sweeps which were acquired with the same stimset"}
-	Button button_select_same_stim_sets,userdata(ResizeControlsInfo)= A"!!,?X!!#?Y!!#@,!!#>.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_select_same_stim_sets,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Button button_select_same_stim_sets,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_select_directory,pos={5,15},size={100,25},proc=AB_ButtonProc_SelectDirectory,title="Select directory"
-	Button button_select_directory,userdata(ResizeControlsInfo)= A"!!,?X!!#<(!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_select_directory,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Button button_select_directory,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_select_directory, help={"Open a directory selection dialog"}
-	Button button_collapse_all,pos={5,125},size={100,25},proc=AB_ButtonProc_CollapseAll,title="Collapse all"
-	Button button_collapse_all, help={"Collapse all entries giving the most compact view"}
-	Button button_collapse_all,userdata(ResizeControlsInfo)= A"!!,?X!!#@^!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_collapse_all,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Button button_collapse_all,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_expand_all,pos={5,155},size={100,25},proc=AB_ButtonProc_ExpandAll,title="Expand all"
-	Button button_expand_all, help={"Expand all entries giving the longest view"}
-	Button button_expand_all,userdata(ResizeControlsInfo)= A"!!,?X!!#A*!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_expand_all,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Button button_expand_all,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_load_sweeps,pos={5.00,190.00},size={100.00,25.00},proc=AB_ButtonProc_LoadSweeps,title="Load Sweeps"
-	Button button_load_sweeps, help={"Open a sweep browser panel from the selected sweeps. In case an experiment or device is selected, all sweeps are loaded from them."}
-	Button button_load_sweeps,userdata(ResizeControlsInfo)= A"!!,?X!!#AM!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_load_sweeps,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Button button_load_sweeps,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_load_stimsets,pos={5.00,220.00},size={100.00,25.00},proc=AB_ButtonProc_LoadStimsets,title="Load Stimsets"
+	Button button_select_same_stim_sets,userdata(ResizeControlsInfo)=A"!!,?X!!#?Y!!#@,!!#>.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_select_same_stim_sets,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_select_same_stim_sets,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_select_directory,pos={5.00,15.00},size={100.00,25.00},proc=AB_ButtonProc_SelectDirectory
+	Button button_select_directory,title="Select directory"
+	Button button_select_directory,help={"Open a directory selection dialog"}
+	Button button_select_directory,userdata(ResizeControlsInfo)=A"!!,?X!!#<(!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_select_directory,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_select_directory,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_collapse_all,pos={5.00,125.00},size={100.00,25.00},proc=AB_ButtonProc_CollapseAll
+	Button button_collapse_all,title="Collapse all"
+	Button button_collapse_all,help={"Collapse all entries giving the most compact view"}
+	Button button_collapse_all,userdata(ResizeControlsInfo)=A"!!,?X!!#@^!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_collapse_all,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_collapse_all,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_expand_all,pos={5.00,155.00},size={100.00,25.00},proc=AB_ButtonProc_ExpandAll
+	Button button_expand_all,title="Expand all"
+	Button button_expand_all,help={"Expand all entries giving the longest view"}
+	Button button_expand_all,userdata(ResizeControlsInfo)=A"!!,?X!!#A*!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_expand_all,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_expand_all,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_load_sweeps,pos={5.00,190.00},size={100.00,25.00},proc=AB_ButtonProc_LoadSweeps
+	Button button_load_sweeps,title="Load Sweeps"
+	Button button_load_sweeps,help={"Open a sweep browser panel from the selected sweeps. In case an experiment or device is selected, all sweeps are loaded from them."}
+	Button button_load_sweeps,userdata(ResizeControlsInfo)=A"!!,?X!!#AM!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_load_sweeps,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_load_sweeps,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_load_stimsets,pos={5.00,220.00},size={100.00,25.00},proc=AB_ButtonProc_LoadStimsets
+	Button button_load_stimsets,title="Load Stimsets"
 	Button button_load_stimsets,help={"Open the wave builder panel with the selected stimset. All selected stimsets are loaded recursively."}
-	Button button_load_stimsets,userdata(ResizeControlsInfo)= A"!!,?X!!#Ak!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_load_stimsets,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Button button_load_stimsets,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_show_usercomments,pos={5,280},size={100,40},proc=AB_ButtonProc_OpenCommentNB,title="Open comment \rNB"
-	Button button_show_usercomments, help={"Open a read-only notebook showing the user comment for the currently selected experiment."}
-	Button button_show_usercomments,userdata(ResizeControlsInfo)= A"!!,?X!!#BF!!#@,!!#>.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_show_usercomments,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Button button_show_usercomments,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox checkbox_load_overwrite,pos={20,250},size={64.00,15.00},title="overwrite"
-	CheckBox checkbox_load_overwrite,userdata(ResizeControlsInfo)= A"!!,BY!!#B4!!#?9!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox checkbox_load_overwrite,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox checkbox_load_overwrite,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox checkbox_load_overwrite,value= 0, help={"Overwrite existing stimsets"}
+	Button button_load_stimsets,userdata(ResizeControlsInfo)=A"!!,?X!!#Ak!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_load_stimsets,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_load_stimsets,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_show_usercomments,pos={5.00,253.00},size={100.00,40.00},proc=AB_ButtonProc_OpenCommentNB
+	Button button_show_usercomments,title="Open comment \rNB"
+	Button button_show_usercomments,help={"Open a read-only notebook showing the user comment for the currently selected experiment."}
+	Button button_show_usercomments,userdata(ResizeControlsInfo)=A"!!,?X!!#B7!!#@,!!#>.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_show_usercomments,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_show_usercomments,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox checkbox_load_overwrite,pos={23.00,352.00},size={67.00,15.00}
+	CheckBox checkbox_load_overwrite,title="Overwrite"
+	CheckBox checkbox_load_overwrite,help={"Overwrite existing stimsets on load or resaved NWBv2 files"}
+	CheckBox checkbox_load_overwrite,userdata(ResizeControlsInfo)=A"!!,Bq!!#Bj!!#??!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox checkbox_load_overwrite,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox checkbox_load_overwrite,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox checkbox_load_overwrite,value=0
+	Button button_show_resaveAsNWB,pos={5.00,302.00},size={100.00,40.00},proc=AB_ButtonProc_ResaveAsNWB
+	Button button_show_resaveAsNWB,title="Resave all\ras NWBv2"
+	Button button_show_resaveAsNWB,help={"Save the loaded experiments as NWBv2 files"}
+	Button button_show_resaveAsNWB,userdata(ResizeControlsInfo)=A"!!,?X!!#BQ!!#@,!!#>.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_show_resaveAsNWB,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_show_resaveAsNWB,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Dk!!#CYzzzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={657,366,inf,inf}" // sizeLimit requires Igor 7 or later
+	SetWindow kwTopWin,hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#EI^]6b25QCcazzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
+	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)= "1"
+	SetWindow kwTopWin,userdata(JSONSettings_WindowName)= "analysisbrowser"
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={855.75,420,inf,inf}" // sizeLimit requires Igor 7 or later
 EndMacro
+
+Function AB_BrowserStartupSettings()
+	string panel
+
+	panel = AB_GetPanelName()
+
+	HideTools/W=$panel/A
+	SetWindow $panel, userData(panelVersion) = ""
+
+	SetSetVariableString(panel, "setvar_baseFolder", "")
+	SetCheckBoxState(panel, "checkbox_load_overwrite", CHECKBOX_UNSELECTED)
+
+	AB_ResetListBoxWaves(0)
+
+	ResizeControlsPanel#SaveControlPositions(panel, 0)
+
+	SearchForInvalidControlProcs(panel)
+	print "Do not forget to increase ANALYSISBROWSER_PANEL_VERSION."
+
+	Execute/P/Z "DoWindow/R " + panel
+	Execute/P/Q/Z "COMPILEPROCEDURES "
+End
 
 /// @brief Button "Expand all"
 Function AB_ButtonProc_ExpandAll(ba) : ButtonControl
@@ -2331,6 +2451,7 @@ Function AB_ButtonProc_ExpandAll(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2:
+			AB_CheckPanelVersion(ba.win)
 			AB_ExpandListColumn(EXPERIMENT_TREEVIEW_COLUMN)
 			AB_ExpandListColumn(DEVICE_TREEVIEW_COLUMN)
 			break
@@ -2345,6 +2466,7 @@ Function AB_ButtonProc_CollapseAll(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2:
+			AB_CheckPanelVersion(ba.win)
 			AB_CollapseListColumn(EXPERIMENT_TREEVIEW_COLUMN)
 			break
 	endswitch
@@ -2361,6 +2483,8 @@ Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2:
+			AB_CheckPanelVersion(ba.win)
+
 			DFREF dfr = SB_OpenSweepBrowser()
 			oneValidSweep = AB_LoadFromFile(AB_LOAD_SWEEP, sweepBrowserDFR = dfr)
 			SVAR/SDFR=dfr graph
@@ -2386,6 +2510,8 @@ Function AB_ButtonProc_LoadStimsets(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2:
+			AB_CheckPanelVersion(ba.win)
+
 			oneValidStimset = AB_LoadFromFile(AB_LOAD_STIMSET)
 			if(oneValidStimset)
 				WBP_CreateWaveBuilderPanel()
@@ -2402,6 +2528,7 @@ Function AB_ButtonProc_ScanFolder(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
 			AB_ScanFolder(ba.win)
 		break
 	endswitch
@@ -2418,6 +2545,8 @@ Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
+
 			win = ba.win
 			baseFolder = GetSetVariableString(win, "setvar_baseFolder")
 			folder = AskUserForExistingFolder(baseFolder=baseFolder)
@@ -2440,6 +2569,8 @@ Function AB_ButtonProc_SelectStimSets(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
+
 			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 
@@ -2483,6 +2614,8 @@ Function AB_ListBoxProc_ExpBrowser(lba) : ListBoxControl
 
 	switch(lba.eventCode)
 		case 1: // mouse down
+			AB_CheckPanelVersion(lba.win)
+
 			row = lba.row
 			col = lba.col
 			lba.blockreentry = 1
@@ -2526,6 +2659,8 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
+
 			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 			WAVE/T map = GetAnalysisBrowserMap()
@@ -2539,7 +2674,7 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 			endif
 
 			row = indizes[0]
-			mapIndex = str2num(expBrowserList[row][%experiment][1])
+			mapIndex = str2num(expBrowserList[row][%file][1])
 
 			device = GetLastNonEmptyEntry(expBrowserList, "device", row)
 			if(isEmpty(device))
@@ -2569,14 +2704,201 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 	return 0
 End
 
+Function AB_ButtonProc_ResaveAsNWB(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	variable row, i, index, overwrite
+	string fileType, discLocation, experiment, win
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			win = ba.win
+			AB_CheckPanelVersion(ba.win)
+			WAVE/T map = GetAnalysisBrowserMap()
+
+			index = GetNumberFromWaveNote(map, NOTE_INDEX)
+
+			if(!index)
+				printf "No experiments loaded, aborting.\r"
+				ControlWindowToFront()
+				break
+			endif
+
+			overwrite = GetCheckBoxState(win, "checkbox_load_overwrite")
+
+			for(i = 0; i < index; i += 1)
+				experiment   = map[i][%FileName]
+				fileType     = map[i][%FileType]
+				discLocation = map[i][%DiscLocation]
+
+				if(cmpstr(fileType, ANALYSISBROWSER_FILE_TYPE_NWBv1))
+					printf "Skipping %s: Resaving to NWBv2 only works for NWBv1 files.\r", experiment
+					ControlWindowToFront()
+					continue
+				endif
+
+				AB_ReExport(i, overwrite)
+			endfor
+			break
+	endswitch
+End
+
+static Function AB_LoadAllSweepsAndStimsets(string discLocation, string dataFolder, string fileType, string device)
+
+	variable i, sweep, numEntries
+
+	// load all sweeps and stimsets
+	WAVE/Z sweeps = GetAnalysisChannelSweepWave(dataFolder, device)
+
+	if(!WaveExists(sweeps))
+		return NaN
+	endif
+
+	numEntries = DimSize(sweeps, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		sweep = sweeps[i]
+
+		if(!IsValidSweepNumber(sweep))
+			continue
+		endif
+
+		AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = 1)
+		AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = 1)
+	endfor
+End
+
+static Function AB_ReExport(variable index, variable overwrite)
+
+	string fileName, discLocation, dataFolder, experiment, path, name, suffix
+	string folder, devices, device, list, fileType
+	variable numDevices, i, j, numEntries, sweep, ret
+
+	WAVE/T map = GetAnalysisBrowserMap()
+
+	fileType     = map[index][%FileType]
+	discLocation = map[index][%DiscLocation]
+	dataFolder   = map[index][%DataFolder]
+	experiment   = map[index][%FileName]
+
+	// Iterate over all devices
+	devices = AB_GetAllDevicesForExperiment(dataFolder)
+	numDevices = ItemsInList(devices)
+
+	for(i = 0; i < numDevices; i += 1)
+		device = StringFromList(i, devices)
+
+		// load all sweeps and stimsets into the analysis browser
+		AB_LoadAllSweepsAndStimsets(discLocation, dataFolder, fileType, device)
+
+		// load stored testpulses
+		AB_LoadStoredTestpulsesFromNWB(discLocation, dataFolder, device)
+
+		// Move HardwareDevices out of the way
+		path = GetDAQDevicesFolderAsString()
+		RenameDataFolderToUniqueName(path, "_old")
+
+		// Move LabNoteBook out of the way
+		path = GetLabNotebookFolderAsString()
+		RenameDataFolderToUniqueName(path, "_old")
+
+		// Move NWB out of the way
+		path = GetNWBFolderAS()
+		RenameDataFolderToUniqueName(path, "_old")
+
+		// Create folders
+		DFREF dfr = GetDeviceDataPath(device)
+		DFREF dfr = GetDeviceTestPulse(device)
+		DFREF dfr = GetLabNotebookFolder()
+		DFREF dfr = GetDevSpecLabNBFolder(device)
+
+		// Copy labnotebooks
+		// root:MIES:Analysis:HardwareTests_compressed_V1_example:ITC18USB_Dev_0:labnotebook:
+		// ↓
+		// root:MIES:LabNoteBook:ITC18USB:Device0:
+		DFREF source = GetAnalysisLabNBFolder(dataFolder, device)
+		path = GetDevSpecLabNBFolderAsString(device)
+		path = path + "::" + GetFile(path)
+		DuplicateDataFolder/O=2 source, $path
+
+		// Copy TPStorage and StoredTestPulses waves
+		// root:MIES:Analysis:HardwareTests_compressed_V1_example:ITC18USB_Dev_0:testpulse:
+		// ↓
+		// root:MIES:HardwareDevices:ITC18USB:Device0:TestPulse:
+		DFREF source = GetAnalysisDeviceTestPulse(dataFolder, device)
+		path = GetDeviceTestPulseAsString(device) + "::"
+		DuplicateDataFolder/O=2 source, $path
+
+		// Copy DAQConfig waves
+		// root:MIES:Analysis:HardwareTests_compressed_V1_example:ITC18USB_Dev_0:config:
+		// ↓
+		// root:MIES:HardwareDevices:ITC18USB:Device0:Data:
+		DFREF source = GetAnalysisDeviceConfigFolder(dataFolder, device)
+		path = GetDeviceDataPathAsString(device)
+		path = path + "::" + GetFile(path)
+		DuplicateDataFolder/O=2 source, $path
+
+		// Copy sweeps
+		// root:MIES:Analysis:HardwareTests_compressed_V1_example:ITC18USB_Dev_0:sweep:
+		// ↓
+		// root:MIES:HardwareDevices:ITC18USB:Device0:Data:
+		DFREF source = GetAnalysisSweepPath(dataFolder, device)
+		path = GetDeviceDataPathAsString(device)
+		path = path + "::" + GetFile(path)
+		DuplicateDataFolder/O=2 source, $path
+
+		// Mock deviceID for GetAllDevicesWithContent
+		NVAR deviceID = $GetDAQDeviceID(device)
+
+		DFREF dfr = GetDeviceDataPath(device)
+
+		if(!IsDataFolderEmpty(dfr))
+			// Copy reconstructed 2D sweep waves
+			// Because we only have 1D sweep waves from the NWB file
+			RecreateMissingSweepAndConfigWaves(device, dfr)
+			//
+			// root:reconstructed
+			// ↓
+			// root:MIES:HardwareDevices:ITC18USB:Device0:Data:
+			DFREF source = root:reconstructed
+			path = GetDeviceDataPathAsString(device)
+			path = path + "::" + GetFile(path)
+			DuplicateDataFolder/O=2 source, $path
+		endif
+
+		// Place history in override location
+		DFREF source = GetAnalysisDeviceFolder(dataFolder, device)
+		SVAR/Z/SDFR=source historyAndLogFile
+		if(SVAR_Exists(historyAndLogFile))
+			SVAR overrideHistoryAndLogFile = $GetNwbOverrideHistoryAndLogFile()
+			overrideHistoryAndLogFile = historyAndLogFile
+		endif
+
+		// Now export all that data into NWBv2
+		suffix = "." + GetFileSuffix(discLocation)
+		name = GetFile(discLocation)
+		sprintf name, "%s%s-converted%s", RemoveEnding(name, suffix), SelectString(numDevices > 1, "", "-" + device), suffix
+		path = GetFolder(discLocation) + name
+
+		ret = NWB_ExportAllData(NWB_VERSION_LATEST, overrideFilePath = path, writeStoredTestPulses = 1, overwrite = overwrite)
+
+		if(!ret)
+			printf "####\r"
+			printf "Folder: %s\r", GetWindowsPath(GetFolder(discLocation))
+			printf "NWbv1: %s\r", GetFile(discLocation)
+			printf "NWbv2 (new): %s\r", GetFile(path)
+			printf "####\r"
+		endif
+	endfor
+End
+
 /// @brief Load dropped NWB files into the analysis browser
 static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 	variable refNum, kind
 	string file, pathName, type, creator
+	string baseFolder, fileSuffix
+	variable numEntries
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
-
-	string baseFolder, fileSuffix
 
 	fileSuffix = GetFileSuffix(file)
 	if(cmpstr(fileSuffix, "nwb"))
@@ -2598,27 +2920,18 @@ static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 		return 1
 	endif
 
-	// redimension to maximum size (all expanded)
 	WAVE expBrowserList = GetExperimentBrowserGUIList()
-	WAVE expBrowserSel  = GetExperimentBrowserGUISel()
-
-	variable numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
-	Redimension/N=(numEntries, -1, -1, -1) expBrowserList, expBrowserSel
-
-	AB_ResetSelectionWave()
-
-	// backup initial state
-	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
-	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
+	numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
+	AB_ResetListBoxWaves(numEntries)
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 
 	return 1
 End
 
-Function/S AB_GetAllDevicesForExperiment(string experiment)
+Function/S AB_GetAllDevicesForExperiment(string dataFolder)
 
-	DFREF expFolder = GetAnalysisExpFolder(experiment)
+	DFREF dfr = GetAnalysisExpFolder(dataFolder)
 
-	return GetListOfDataFolders(expFolder)
+	return GetListOfDataFolders(dfr)
 End

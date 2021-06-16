@@ -690,3 +690,10 @@ End
 Function/S GetBugCount()
 	return GetNVARAsString(GetMiesPath(), "bugCount", initialValue = 0)
 End
+
+/// @brief Temporary storage for IP history and logfile
+///
+/// Used for reexporting from NWBv1 into NWBv2, see AB_ReExport()
+Function/S GetNWBOverrideHistoryAndLogFile()
+	return GetSVARAsString(GetNwBFolder(), "overrideHistoryAndLogFile")
+End

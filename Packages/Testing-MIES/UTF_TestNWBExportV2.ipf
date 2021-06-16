@@ -568,10 +568,9 @@ static Function/S TestFileExport()
 	[baseFolder, nwbFile] = GetUniqueNWBFileForExport(NWB_VERSION)
 	discLocation = baseFolder + nwbFile
 
-	HDF5CloseFile/Z/A 0
 	KillOrMoveToTrash(dfr = GetAnalysisFolder())
 
-	NWB_ExportAllData(NWB_VERSION, compressionMode = GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath=discLocation)
+	NWB_ExportAllData(NWB_VERSION, compressionMode = GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath=discLocation, overwrite = 1)
 
 	GetFileFolderInfo/Q/Z discLocation
 	REQUIRE(V_IsFile)

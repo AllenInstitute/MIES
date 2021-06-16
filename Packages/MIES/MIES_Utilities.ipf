@@ -1575,9 +1575,6 @@ End
 
 /// @brief Return an absolute unique data folder name which does not exist in dfr
 ///
-/// If you want to have the datafolder created for you and don't need a
-/// threadsafe function, use UniqueDataFolder() instead.
-///
 /// @param dfr      datafolder to search
 /// @param baseName first part of the datafolder, must be a *valid* Igor Pro object name
 threadsafe Function/S UniqueDataFolderName(dfr, baseName)
@@ -5805,4 +5802,25 @@ end
 /// It allows to distinguish multiple Igor instances, but is not globally unique.
 threadsafe Function/S GetIgorInstanceID()
 	return Hash(IgorInfo(-102), 1)
+End
+
+/// @brief Rename the given datafolder path to a unique name
+///
+/// With path `root:a:b:c` and suffix `_old` the datafolder is renamed to `root:a:b:c_old` or if that exists
+/// `root:a:b:c_old_1` and so on.
+Function RenameDataFolderToUniqueName(string path, string suffix)
+
+	string name, folder
+
+	if(!DataFolderExists(path))
+		return NaN
+	endif
+
+	DFREF dfr = $path
+	name = GetFile(path)
+	folder = UniqueDataFolderName($path + "::", name + suffix)
+	name = GetFile(folder)
+	RenameDataFolder $path, $name
+	ASSERT_TS(!DataFolderExists(path), "Could not move it of the way.")
+	ASSERT_TS(DataFolderExists(folder), "Could not create it in the correct place.")
 End

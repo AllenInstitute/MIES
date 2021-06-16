@@ -475,10 +475,14 @@ End
 /// @param writeIgorHistory      [optional, defaults to true] store the Igor Pro history and the log file
 /// @param compressionMode       [optional, defaults to chunked compression] One of @ref CompressionMode
 /// @param keepFileOpen          [optional, defaults to false] keep the NWB file open after return, or close it
-Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen])
+/// @param overwrite             [optional, defaults to false] overwrite any existing NWB file with the same name, only
+///                              used when overrideFilePath is passed
+///
+/// @return 0 on success, non-zero on failure
+Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite])
 	variable nwbVersion
 	string overrideFilePath
-	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen
+	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite
 
 	string devicesWithContent, panelTitle, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves, createdNewNWBFile
@@ -506,6 +510,12 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		compressionMode = GetChunkedCompression()
 	endif
 
+	if(ParamIsDefault(overwrite))
+		overwrite = 0
+	else
+		overwrite = !!overwrite
+	endif
+
 	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"nwbVersion", "writeStoredTP", "writeIgorHistory", "compression"},            \
 	                                    values = {num2str(nwbVersion), num2str(writeStoredTestPulses),                        \
 	                                              num2str(writeIgorHistory), CompressionModeToString(compressionMode)})
@@ -517,10 +527,22 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		ControlWindowToFront()
 
 		LOG_AddEntry(PACKAGE_MIES, "end")
-		return NaN
+		return 1
 	endif
 
 	if(!ParamIsDefault(overrideFilePath))
+		if(FileExists(overrideFilePath))
+			if(overwrite)
+				CloseNWBFile()
+				DeleteFile/Z overrideFilePath
+				ASSERT(!FileExists(overrideFilePath), "File could not be deleted")
+			else
+				printf "The given path %s for the NWB export points to an existing file and overwrite is disabled.\r", overrideFilePath
+				ControlWindowToFront()
+				return 1
+			endif
+		endif
+
 		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, overrideFilePath=overrideFilePath)
 	else
 		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)
@@ -528,7 +550,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 
 	if(!IsFinite(locationID))
 		LOG_AddEntry(PACKAGE_MIES, "end")
-		return NaN
+		return 1
 	endif
 
 	print "Please be patient while we export all existing acquired content of all devices to NWB"
@@ -598,6 +620,8 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "end", keys = {"size [MiB]"}, values = {num2str(NWB_GetExportedFileSize())})
+
+	return 0
 End
 
 /// @brief Wait for ASYNC nwb writing to finish
@@ -1811,12 +1835,10 @@ static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	EnsureValidNWBVersion(nwbVersion)
 	ASSERT(GetNWBMajorVersion(ReadNWBVersion(locationID)) == nwbVersion, "NWB version of the selected file differs.")
 
-	history = GetHistoryNotebookText()
+	history = ROStr(GetNWBOverrideHistoryAndLogFile())
 
-	if(nwbVersion == 1)
-		name = "history"
-	elseif(nwbVersion == 2)
-		name = "data_collection"
+	if(IsEmpty(history))
+		history = GetHistoryNotebookText()
 	endif
 
 	groupID = H5_OpenGroup(locationID, "/general")
@@ -1831,6 +1853,8 @@ static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 		// someone might have edited the log file by hand
 		entry += "\n" + LOGFILE_NWB_MARKER + "\n" + NormalizeToEOL(data, "\n")
 	endif
+
+	name = GetHistoryAndLogFileDatasetName(nwbVersion)
 
 	H5_WriteTextDataset(groupID, name, str=entry, compressionMode = GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
 
