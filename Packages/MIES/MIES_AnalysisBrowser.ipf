@@ -2579,11 +2579,10 @@ End
 static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 	variable refNum, kind
 	string file, pathName, type, creator
+	string baseFolder, fileSuffix
 	variable numEntries
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
-
-	string baseFolder, fileSuffix
 
 	fileSuffix = GetFileSuffix(file)
 	if(cmpstr(fileSuffix, "nwb"))
