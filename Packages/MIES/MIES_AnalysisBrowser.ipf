@@ -16,27 +16,32 @@ static Constant DEVICE_TREEVIEW_COLUMN     = 2
 static Constant AB_LOAD_SWEEP = 0
 static Constant AB_LOAD_STIMSET = 1
 
-static Function AB_ResetSelectionWave()
+static Function AB_ResetListBoxWaves(variable newSize)
 
 	variable col, val
-	val = LISTBOX_TREEVIEW | LISTBOX_TREEVIEW_EXPANDED
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 
-	if(DimSize(expBrowserSel, ROWS) == 0)
-		return NaN
+	Redimension/N=(newSize, -1, -1, -1) expBrowserList, expBrowserSel
+
+	if(DimSize(expBrowserSel, ROWS) > 0)
+		expBrowserSel = 0
+
+		val = LISTBOX_TREEVIEW | LISTBOX_TREEVIEW_EXPANDED
+
+		col = FindDimLabel(expBrowserList, COLS, "experiment")
+		ASSERT(col >= 0, "invalid column index")
+		expBrowserSel[][col - 1] = !cmpstr(expBrowserList[p][col], "") ? 0 : val
+
+		col = FindDimLabel(expBrowserList, COLS, "device")
+		ASSERT(col >= 0, "invalid column index")
+		expBrowserSel[][col - 1] = !cmpstr(expBrowserList[p][col], "") ? 0 : val
 	endif
 
-	expBrowserSel = 0
-
-	col = FindDimLabel(expBrowserList, COLS, "experiment")
-	ASSERT(col >= 0, "invalid column index")
-	expBrowserSel[][col - 1] = !cmpstr(expBrowserList[p][col], "") ? 0 : val
-
-	col = FindDimLabel(expBrowserList, COLS, "device")
-	ASSERT(col >= 0, "invalid column index")
-	expBrowserSel[][col - 1] = !cmpstr(expBrowserList[p][col], "") ? 0 : val
+	// backup initial state
+	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
+	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
 End
 
 /// @brief Clear all waves of the main experiment browser
@@ -2219,18 +2224,10 @@ static Function AB_ScanFolder(win)
 		AB_AddFile(baseFolder, entry)
 	endfor
 
-	// redimension to maximum size (all expanded)
 	WAVE expBrowserList = GetExperimentBrowserGUIList()
-	WAVE expBrowserSel  = GetExperimentBrowserGUISel()
-
 	numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
-	Redimension/N=(numEntries, -1, -1, -1) expBrowserList, expBrowserSel
+	AB_ResetListBoxWaves(numEntries)
 
-	AB_ResetSelectionWave()
-
-	// backup initial state
-	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
-	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
 End
 
 Function/S AB_OpenAnalysisBrowser()
@@ -2582,6 +2579,7 @@ End
 static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 	variable refNum, kind
 	string file, pathName, type, creator
+	variable numEntries
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
@@ -2607,18 +2605,9 @@ static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
 		return 1
 	endif
 
-	// redimension to maximum size (all expanded)
 	WAVE expBrowserList = GetExperimentBrowserGUIList()
-	WAVE expBrowserSel  = GetExperimentBrowserGUISel()
-
-	variable numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
-	Redimension/N=(numEntries, -1, -1, -1) expBrowserList, expBrowserSel
-
-	AB_ResetSelectionWave()
-
-	// backup initial state
-	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
-	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
+	numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
+	AB_ResetListBoxWaves(numEntries)
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 
