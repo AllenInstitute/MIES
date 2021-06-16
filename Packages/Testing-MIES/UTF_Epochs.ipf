@@ -3,15 +3,18 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=Epochs
 
+// Check the root datafolder for waves which might be present and could help debugging
+
 static Constant OODDAQ_PRECISION       = 0.001
 static Constant OTHER_EPOCHS_PRECISION = 0.050
+static Constant MAX_ITERATIONS = 100000
 
 /// @brief Acquire data with the given DAQSettings on two headstages
-static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ])
+static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ, onsetDelayUser, terminationDelay])
 	STRUCT DAQSettings& s
 	string devices
 	string stimSetName1, stimSetName2
-	variable dDAQ, oodDAQ
+	variable dDAQ, oodDAQ, onsetDelayUser, terminationDelay
 
 	string unlockedPanelTitle, device
 	variable i, numEntries
@@ -67,6 +70,9 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 		PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = dDAQ)
 		PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = oodDAQ)
 
+		PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = onsetDelayUser)
+		PGC_SetAndActivateControl(device, "setvar_DataAcq_TerminationDelay", val = terminationDelay)
+
 		PASS()
 	endfor
 
@@ -110,12 +116,144 @@ static Function TestEpochChannelTight(e)
 	endfor
 End
 
-static Function TestEpochsMonotony(e, DAChannel)
+static Function [WAVE startT, WAVE endT, WAVE levels, WAVE/T description] RemoveOodDAQEntries(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_all, WAVE levels_all, WAVE/T description_all)
+
+	Duplicate/FREE startT_all, startT_sub
+	Duplicate/FREE endT_all, endT_sub
+	Duplicate/FREE levels_all, levels_sub
+	Duplicate/FREE/T description_all, description_sub
+
+	startT_sub[] = isOodDAQ_all[p] ? NaN : startT_all[p]
+	endT_sub[] = isOodDAQ_all[p] ? NaN : endT_all[p]
+	levels_sub[] = isOodDAQ_all[p] ? NaN : levels_all[p]
+	description_sub[] = SelectString(isOodDAQ_all[p], description_sub[p], "")
+
+	WAVE/Z startT = ZapNaNs(startT_sub)
+	CHECK_WAVE(startT, NUMERIC_WAVE)
+
+	WAVE/Z endT = ZapNaNs(endT_sub)
+	CHECK_WAVE(endT, NUMERIC_WAVE)
+
+	WAVE/Z levels = ZapNans(levels_sub)
+	CHECK_WAVE(levels, NUMERIC_WAVE)
+
+	WAVE/Z indizes = FindIndizes(description_sub, col = 0, prop = PROP_NON_EMPTY)
+	if(WaveExists(indizes))
+		Make/N=(DimSize(indizes, ROWS))/T/FREE description = description_sub[indizes[p]]
+	endif
+
+	return [startT, endT, levels, description]
+End
+
+static Function CheckFaithfullCoverage(WAVE startT_all, WAVE endT_all, WAVE matches, variable refEpoch)
+
+	variable refStart, refEnd, numMatches, smallestStart, highestEnd
+	variable rangeStart, rangeEnd, idx, i
+
+	refStart = startT_all[refEpoch]
+	refEnd = endT_all[refEpoch]
+
+	numMatches = DimSize(matches, ROWS)
+	Make/FREE/D/N=(numMatches) outside
+	Make/FREE/D/N=(numMatches) startT = startT_all[matches[p]]
+	Make/FREE/D/N=(numMatches) endT = endT_all[matches[p]]
+
+	// check if we don't overlap with anything at all
+	outside[] = (endT[p] <= refStart || startT[p] >= refEnd) && (startT[p] < endT[p])
+
+	if(Sum(outside) == numMatches)
+		// completely outside, they are allowed to touch though
+		return 1
+	endif
+
+	rangeStart = refStart
+
+	for(;i < MAX_ITERATIONS;)
+		idx = GetRowIndex(startT, val = rangeStart)
+		if(IsNaN(idx))
+			// broken chain
+			Duplicate/O outside, root:outside
+			Duplicate/O startT, root:startT
+			Duplicate/O endT, root:endT
+			Debugger
+			return 0
+		endif
+
+		rangeEnd = endT[idx]
+		if(rangeEnd == refEnd)
+			// done, full coverage
+			return 2
+		endif
+
+		rangeStart = rangeEnd
+	endfor
+
+	FAIL()
+End
+
+static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_all, WAVE levels_all, WAVE/T description_all)
+	variable i, level, epochCnt, ret, refStart, refEnd
+
+	WAVE/Z startT, endT, levels
+	WAVE/T/Z description
+	[startT, endT, levels, description] = RemoveOodDAQEntries(startT_all, endT_all, isOodDAQ_all, levels_all, description_all)
+
+	CHECK_EQUAL_WAVES(startT, endT, mode = DIMENSION_SIZES)
+	CHECK_EQUAL_WAVES(startT, levels, mode = DIMENSION_SIZES)
+	// workaround UTF issue: https://github.com/byte-physics/igor-unit-testing-framework/issues/199
+	CHECK_EQUAL_VAR(DimSize(startT, ROWS), DimSize(description, ROWS))
+
+	epochCnt = DimSize(levels, ROWS)
+
+	for(i = 0; i < epochCnt; i += 1)
+		level = levels[i]
+
+		// find all epochs which have level + 1
+		WAVE/Z matches = FindIndizes(levels, col = 0, var = level + 1)
+
+		if(!WaveExists(matches))
+			continue
+		endif
+
+		// find a number of epochs larger than zero from "matches" which completely cover the current epoch
+		// without gaps and without overlap or only touch it at the borders
+		ret = CheckFaithfullCoverage(startT, endT, matches, i)
+
+		CHECK(ret == 1 || ret == 2)
+		if(!ret)
+			printf "Could not find coverage epochs for %g (desc: %s, level %d)\r", i, description[i], level
+			print matches
+			return 1
+		endif
+	endfor
+
+	// check also that we don't have overlap in the same level
+	Make/FREE/N=(epochCnt) disjunct, sameLevel
+	for(i = 0; i < epochCnt; i += 1)
+		level = levels[i]
+		refStart = startT[i]
+		refEnd   = endT[i]
+
+		sameLevel[] = (level == levels[p])
+		disjunct[]  = sameLevel[p] && ((startT[p] <= refStart && endT[p] <= refStart) || (startT[p] >= refEnd && endT[p] >= refEnd))
+
+		// ignore current epoch
+		sameLevel[i] = NaN
+		disjunct[i]  = NaN
+
+		CHECK_EQUAL_WAVES(sameLevel, disjunct)
+	endfor
+
+	return 0
+End
+
+static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 	WAVE/T e
 	WAVE DAChannel
+	variable activeDAChannel
 
-	variable i, epochCnt, rowCnt, beginInt, endInt, epochNr, dur, amplitude, center, DAAmp
-	variable first, last, level, range
+	variable i, j, epochCnt, rowCnt, beginInt, endInt, epochNr, amplitude, center, DAAmp
+	variable first, last, level, range, ret
 	string s, name
 
 	rowCnt = DimSize(e, ROWS)
@@ -128,78 +266,48 @@ static Function TestEpochsMonotony(e, DAChannel)
 	endfor
 	REQUIRE(epochCnt > 0)
 
-	Make/FREE/D/N=(epochCnt) startT, endT, durT, marker, isOodDAQ
+	Make/FREE/D/N=(epochCnt) startT, endT, levels, isOodDAQ
 	startT[] = str2num(e[p][0])
 	endT[] = str2num(e[p][1])
-	durT[] = endT[p] - startT[p]
 	CHECK(WaveMin(startT) >= 0)
 	CHECK(WaveMin(endT) >= 0)
-	CHECK(WaveMin(durT) >= 0)
 	isOodDAQ[] = strsearch(e[p][2], EPOCH_OODDAQ_REGION_KEY, 0) != -1
+	levels[] = str2num(e[p][3])
 	CHECK_EQUAL_VAR(WaveMin(startT), 0)
-	CHECK(WaveMin(durT) >= 0)
 
-	// check if start times are monotonoeus increasing
+	Make/T/N=(epochCnt)/FREE description = e[p][2]
+
+	// check that start times are monotonously increasing
 	if(epochCnt > 1)
 		for(i = 1; i < epochCnt; i += 1)
 			CHECK(startT[i - 1] <= startT[i])
 		endfor
 	endif
 
-	// find subsequent covered range from epoch segments, exclude oodDAQ regions
-	do
-		dur = Inf
-		for(i = 0; i < epochCnt; i += 1)
-			if(!marker[i] && startT[i] == beginInt && !isOodDAQ[i])
-				if(durT[i] < dur)
-					dur = durT[i]
-					epochNr = i
-				endif
-			endif
-		endfor
-		if(dur < Inf)
-			beginInt = endT[epochNr]
-			marker[epochNr] = 1
-		endif
-	while(dur < Inf)
-	endInt = endT[epochNr]
+	// check for valid level
+	for(i = 0; i < epochCnt; i += 1)
+		CHECK(IsInteger(levels[i]) && levels[i] >= 0)
+	endfor
 
-	// check if remaining epochs are inside the covered range
-	// and start at a time of an already marked epoch
-	do
-		FindValue/V=0 marker
-		if(V_Value == -1)
-			break
-		endif
-		epochNr = V_Value
-		beginInt = startT[epochNr]
+	// check that a subset of epochs in level x fully cover exactly one epoch in level x - 1
+	ret = TestEpochOverlap(startT, endT, isOodDAQ, levels, description)
 
-		if(isOodDAQ[epochNr])
-			// for oodDAQ regions we check only if they are in range
-			REQUIRE(startT[epochNr] >= 0 && endT[epochNr] <= endInt + OODDAQ_PRECISION)
-			marker[epochNr] = 1
-		else
-			// check if range ends within consecutive range determined above
-			CHECK(endT[epochNr] <= endInt)
-			for(i = 0; i < epochCnt; i += 1)
-				if(marker[i] && startT[i] == beginInt)
-					marker[epochNr] = 1
-					break
-				endif
-			endfor
-			REQUIRE(marker[epochNr])
-			// for remaining epoch no identical start time of smaller epoch segment was found
-			// there should be an identical start time from a smaller segment due to the idea that the (non-oodDAQRegions) epochs are ordered tree like
-			REQUIRE(i < epochCnt)
-		endif
-	while(1)
+	if(ret != 0)
+		printf "ActiveDAC: %d\r", activeDAChannel
+		Duplicate/O e, root:epochs
+	endif
 
 	for(i = 0; i < epochCnt; i += 1)
 		name  = e[i][2]
 		level = str2num(e[i][3])
-		first = startT[i] * 1000
-		last  = endT[i] * 1000
+		first = startT[i] * 1000 + OTHER_EPOCHS_PRECISION
+		last  = endT[i] * 1000 - OTHER_EPOCHS_PRECISION
 		range = last - first
+
+		if(range <= 0)
+			PASS()
+			continue
+		endif
 
 		// check amplitudes
 		if(strsearch(name, "Amplitude", 0) > 0)
@@ -207,12 +315,12 @@ static Function TestEpochsMonotony(e, DAChannel)
 			amplitude = NumberByKey("Amplitude", name, "=")
 			CHECK(IsFinite(amplitude))
 
-			WaveStats/R=(first + OTHER_EPOCHS_PRECISION, last - OTHER_EPOCHS_PRECISION)/Q/M=1 DAChannel
+			WaveStats/R=(first, last)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_max, amplitude)
 
 			// check that the level 3 pulse epoch is really only the pulse
 			if(level == 3)
-				WaveStats/R=(first + OTHER_EPOCHS_PRECISION, last - OTHER_EPOCHS_PRECISION)/Q/M=1 DAChannel
+				WaveStats/R=(first, last)/Q/M=1 DAChannel
 				CHECK_EQUAL_VAR(V_min, amplitude)
 			endif
 		endif
@@ -224,7 +332,7 @@ static Function TestEpochsMonotony(e, DAChannel)
 
 			// take something around the egdes due to decimation
 			// offsets are in ms
-			WaveStats/R=(first + OTHER_EPOCHS_PRECISION, last - OTHER_EPOCHS_PRECISION)/Q/M=1 DAChannel
+			WaveStats/R=(first, last)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_max, 0)
 		endif
 	endfor
@@ -305,7 +413,7 @@ static Function TestEpochsGeneric(device)
 		Duplicate/FREE/RMD=[][i] sweep, DAchannel
 		Redimension/N=(-1, 0) DAchannel
 
-		TestEpochsMonotony(epochChannel, DAchannel)
+		TestEpochsMonotony(epochChannel, DAchannel, i)
 	endfor
 
 End
@@ -412,6 +520,36 @@ Function EP_EpochTest7([str])
 End
 
 Function EP_EpochTest7_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function EP_EpochTest8([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, "EpochTest5_DA_0", "EpochTest5_DA_0", onsetDelayUser = 50, terminationDelay = 100)
+End
+
+Function EP_EpochTest8_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function EP_EpochTest9([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, "EpochTest6_DA_0", "EpochTest6_DA_0", onsetDelayUser = 50, terminationDelay = 100)
+End
+
+Function EP_EpochTest9_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
