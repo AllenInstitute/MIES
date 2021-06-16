@@ -475,10 +475,12 @@ End
 /// @param writeIgorHistory      [optional, defaults to true] store the Igor Pro history and the log file
 /// @param compressionMode       [optional, defaults to chunked compression] One of @ref CompressionMode
 /// @param keepFileOpen          [optional, defaults to false] keep the NWB file open after return, or close it
-Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen])
+/// @param overwrite             [optional, defaults to false] overwrite any existing NWB file with the same name, only
+///                              used when overrideFilePath is passed
+Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite])
 	variable nwbVersion
 	string overrideFilePath
-	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen
+	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite
 
 	string devicesWithContent, panelTitle, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves, createdNewNWBFile
@@ -506,6 +508,12 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		compressionMode = GetChunkedCompression()
 	endif
 
+	if(ParamIsDefault(overwrite))
+		overwrite = 0
+	else
+		overwrite = !!overwrite
+	endif
+
 	LOG_AddEntry(PACKAGE_MIES, "start", keys = {"nwbVersion", "writeStoredTP", "writeIgorHistory", "compression"},            \
 	                                    values = {num2str(nwbVersion), num2str(writeStoredTestPulses),                        \
 	                                              num2str(writeIgorHistory), CompressionModeToString(compressionMode)})
@@ -521,6 +529,18 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	endif
 
 	if(!ParamIsDefault(overrideFilePath))
+		if(FileExists(overrideFilePath))
+			if(overwrite)
+				CloseNWBFile()
+				DeleteFile/Z overrideFilePath
+				ASSERT(!FileExists(overrideFilePath), "File could not be deleted")
+			else
+				printf "The given path %s for the NWB export points to an existing file and overwrite is disabled.\r", overrideFilePath
+				ControlWindowToFront()
+				return NaN
+			endif
+		endif
+
 		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion, overrideFilePath=overrideFilePath)
 	else
 		[locationID, createdNewNWBFile] = NWB_GetFileForExport(nwbVersion)

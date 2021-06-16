@@ -566,11 +566,9 @@ static Function/S TestFileExport()
 	nwbFile = GetExperimentName() + "-V1.nwb"
 	discLocation = baseFolder + nwbFile
 
-	HDF5CloseFile/Z/A 0
-	DeleteFile/Z/P=home nwbFile
 	KillOrMoveToTrash(dfr = GetAnalysisFolder())
 
-	NWB_ExportAllData(NWB_VERSION, compressionMode = GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath=discLocation)
+	NWB_ExportAllData(NWB_VERSION, compressionMode = GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath=discLocation, overwrite = 1)
 
 	GetFileFolderInfo/P=home/Q/Z nwbFile
 	CHECK(V_IsFile)

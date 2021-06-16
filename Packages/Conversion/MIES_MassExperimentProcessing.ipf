@@ -135,11 +135,6 @@ static Function PerformMiesTasks(outputFilePath)
 
 	printf "Free Memory: %g GB\r", GetFreeMemory()
 
-	if(FileExists(outputFilePath))
-		print "Output file already exists, skipping!"
-		return 0
-	endif
-
 	folder = GetFolder(outputFilePath)
 
 	if(!FolderExists(folder))
