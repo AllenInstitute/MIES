@@ -4599,6 +4599,22 @@ Function/Wave GetAnalysisDeviceWave(dataFolder)
 	return wv
 End
 
+/// @brief Return wave with all stored test pulses
+Function/Wave GetAnalysisStoredTestPulses(string dataFolder, string device)
+
+	DFREF dfr = GetAnalysisDeviceTestpulse(dataFolder, device)
+
+	Wave/Z/SDFR=dfr/WAVE wv = StoredTestPulses
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(0)/WAVE dfr:StoredTestPulses/Wave=wv
+
+	return wv
+End
+
 /// @brief Return AnalysisBrowser indexing storage wave
 ///
 /// Rows:
