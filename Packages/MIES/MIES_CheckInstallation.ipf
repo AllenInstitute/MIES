@@ -148,6 +148,7 @@ Function CHI_CheckInstallation()
 
 	archBits = GetArchitectureBits()
 
+	printf "Checking system properties:\r"
 	printf "Igor %dbit: %s%s\r", archBits, StringByKey("IGORVERS", info), igorBuild
 	printf "Windows 10: %s\r", ToTrueFalse(IsWindows10())
 	if(IsWindows10() && archBits == 64)
@@ -159,6 +160,40 @@ Function CHI_CheckInstallation()
 	else
 		printf "ASLR: (not relevant)\r"
 	endif
+
+	printf "\rChecking known defines:\r"
+
+	state.numTries += 1
+
+	printf "DEBUGGING_ENABLED: "
+#ifdef DEBUGGING_ENABLED
+	printf "Yes\r"
+#else
+	printf "No\r"
+#endif
+
+	printf "EVIL_KITTEN_EATING_MODE: "
+#ifdef EVIL_KITTEN_EATING_MODE
+	state.numErrors += 1
+	printf "Yes (Very Bad)\r"
+#else
+	printf "No\r"
+#endif
+
+	printf "BACKGROUND_TASK_DEBUGGING: "
+#ifdef BACKGROUND_TASK_DEBUGGING
+	printf "Yes\r"
+#else
+	printf "No\r"
+#endif
+
+	printf "THREADING_DISABLED: "
+#ifdef THREADING_DISABLED
+	state.numErrors += 1
+	printf "Yes (Very Bad)\r"
+#else
+	printf "No\r"
+#endif
 
 	printf "\rChecking base installation:\r"
 

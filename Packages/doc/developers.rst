@@ -414,3 +414,10 @@ Where ``$prefix`` is one of ``feature``/``bugfix``, ``$pr`` is the number of the
 
 Contributers are encouraged to install the ``pre-push`` git hook from the tools directory. The script
 ``tools/nextFreePRNumber.sh`` can get the soon-to-be-created PR number on the commandline (requires curl and jq) as well.
+
+Debugging threadsafe functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The function ``DisableThreadsafeSupport()`` allows to turn off threadsafe support globally. This allows to use the
+debugger in threadsafe functions. Every MIES features which does not complain via ``ASSERT()`` or ``BUG()`` is supposed
+to work without threadsafe support as well.

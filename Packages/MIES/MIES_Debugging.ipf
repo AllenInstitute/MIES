@@ -486,6 +486,18 @@ Function DisableEvilMode()
 	Execute/P/Q "COMPILEPROCEDURES "
 End
 
+/// @brief Disable threadsafe support
+Function DisableThreadsafeSupport()
+	Execute/P/Q "SetIgorOption poundDefine=THREADING_DISABLED"
+	Execute/P/Q "SetIgorOption DisableThreadsafe=1"
+End
+
+/// @brief Enable threadsafe support again (default on IP startup)
+Function EnableThreadsafeSupport()
+	Execute/P/Q "SetIgorOption poundUnDefine=THREADING_DISABLED"
+	Execute/P/Q "SetIgorOption DisableThreadsafe=0"
+End
+
 /// @brief Complain and ask the user to report the error
 ///
 /// In nearly all cases ASSERT() is the more appropriate method to use.

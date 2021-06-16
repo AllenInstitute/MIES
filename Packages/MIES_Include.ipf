@@ -119,7 +119,10 @@ End
 #include <Resize Controls>
 #include <Resize Controls Panel>
 #include <ZoomBrowser>
+
+#ifndef THREADING_DISABLED
 #include <FunctionProfiling>
+#endif
 
 #if IgorVersion() < 9.0
 #include <HDF5 Browser>

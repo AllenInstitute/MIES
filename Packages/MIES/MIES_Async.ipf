@@ -75,9 +75,11 @@ Function ASYNC_Start(numThreads, [disableTask])
 		CtrlNamedBackground $ASYNC_BACKGROUND, period=1, proc=ASYNC_BackgroundReadOut, start
 	endif
 
+#ifndef THREADING_DISABLED
 	for(i = 0; i < numThreads; i += 1)
 		ThreadStart tgID, i, ASYNC_Thread()
 	endfor
+#endif
 
 	return 1
 End
@@ -108,9 +110,6 @@ End
 /// stopped.
 threadsafe static Function ASYNC_Thread()
 
-	DFREF dfrOut, dfrTemp
-	string datafolder
-
 	for(;;)
 		DFREF dfr = ThreadGroupGetDFR(0, 10)
 		if(!DataFolderExistsDFR(dfr))
@@ -126,45 +125,48 @@ threadsafe static Function ASYNC_Thread()
 			return 0
 		endif
 
-		SVAR WFunc = dfr:$ASYNC_WORKERFUNC_STR
-		FUNCREF ASYNC_Worker f = $WFunc
+		DFREF dfrOut = ASYNC_Run_Worker(dfr)
 
-		DFREF dfrInp = dfr:input
-		DFREF dfrAsync = dfr:async
-
-		variable/G dfrAsync:$ASYNC_ERROR_STR = 0
-		NVAR err = dfrAsync:$ASYNC_ERROR_STR
-		string/G dfrAsync:$ASYNC_ERRORMSG_STR = ""
-		SVAR errmsg = dfrAsync:$ASYNC_ERRORMSG_STR
-
-		err = 0
-		dfrOut = $""
-		try
-			ClearRTError()
-			dfrOut = f(dfrInp);AbortOnRTE
-		catch
-			errmsg = GetRTErrMessage()
-			err = ClearRTError()
-		endtry
-
-		if(DataFolderRefStatus(dfrOut) == 3)
-
-			MoveDataFolder dfrOut, dfrAsync
-
-		elseif(DataFolderExistsDFR(dfrOut))
-
-			MoveDataFolder dfrOut, dfrAsync
-			RenameDataFolder dfrOut, freeroot
-
-		else
-
-			NewDataFolder dfrAsync:freeroot
-
-		endif
-
-		TS_ThreadGroupPutDFR(0, dfrAsync)
+		TS_ThreadGroupPutDFR(0, dfrOut)
 		KillDataFolder dfr
 	endfor
+End
+
+threadsafe static Function/DF ASYNC_Run_Worker(DFREF dfr)
+
+	DFREF dfrOut, dfrTemp
+
+	SVAR WFunc = dfr:$ASYNC_WORKERFUNC_STR
+	FUNCREF ASYNC_Worker f = $WFunc
+
+	DFREF dfrInp = dfr:input
+	DFREF dfrAsync = dfr:async
+
+	variable/G dfrAsync:$ASYNC_ERROR_STR = 0
+	NVAR err = dfrAsync:$ASYNC_ERROR_STR
+	string/G dfrAsync:$ASYNC_ERRORMSG_STR = ""
+	SVAR errmsg = dfrAsync:$ASYNC_ERRORMSG_STR
+
+	err = 0
+	dfrOut = $""
+	try
+		ClearRTError()
+		dfrOut = f(dfrInp);AbortOnRTE
+	catch
+		errmsg = GetRTErrMessage()
+		err = ClearRTError()
+	endtry
+
+	if(DataFolderRefStatus(dfrOut) == 3)
+		MoveDataFolder dfrOut, dfrAsync
+	elseif(DataFolderExistsDFR(dfrOut))
+		MoveDataFolder dfrOut, dfrAsync
+		RenameDataFolder dfrOut, freeroot
+	else
+		NewDataFolder dfrAsync:freeroot
+	endif
+
+	return dfrAsync
 End
 
 /// @brief Receives data from finished workloads. Calls the user defined readout function.
@@ -173,7 +175,7 @@ Function ASYNC_ThreadReadOut()
 	variable bufferSize, i
 	variable justBuffered
 
-	variable wlcIndex, statCnt
+	variable wlcIndex, statCnt, index
 	string rterrmsg
 	NVAR tgID = $GetThreadGroupID()
 	ASSERT(!isNaN(tgID), "Async frame work is not running")
@@ -181,7 +183,19 @@ Function ASYNC_ThreadReadOut()
 	WAVE track = GetWorkloadTracking(getAsyncHomeDF())
 
 	for(;;)
+#ifdef THREADING_DISABLED
+		WAVE/DF serialExecutionBuffer = GetSerialExecutionBuffer(getAsyncHomeDF())
+		index = GetNumberFromWaveNote(serialExecutionBuffer, NOTE_INDEX)
+		if(index > 0)
+			DFREF dfr = serialExecutionBuffer[--index]
+			SetNumberInWaveNote(serialExecutionBuffer, NOTE_INDEX, index)
+		else
+			DFREF dfr = $""
+		endif
+#else
 		DFREF dfr = ThreadGroupGetDFR(tgID, 0)
+#endif
+
 		if(!DataFolderExistsDFR(dfr))
 
 			if(justBuffered)
@@ -426,6 +440,9 @@ Function ASYNC_Stop([timeout, fromAssert])
 	NVAR tgID = $GetThreadGroupID()
 	fromAssert = ParamIsDefault(fromAssert) ? 0 : !!fromAssert
 
+#ifdef THREADING_DISABLED
+	ASYNC_ThreadReadOut()
+#else
 	// Send abort to all threads
 	NVAR numThreads = $GetNumThreads()
 	for(i = 0; i < numThreads; i += 1)
@@ -469,6 +486,7 @@ Function ASYNC_Stop([timeout, fromAssert])
 			break
 		endif
 	while(waitResult != 0)
+#endif
 
 	NVAR noTask = $GetTaskDisableStatus()
 	if(!noTask)
@@ -574,7 +592,7 @@ End
 Function ASYNC_Execute(dfr)
 	DFREF dfr
 
-	variable orderIndex, size
+	variable orderIndex, size, index
 
 	ASSERT(isThreadDF(dfr), "Invalid data folder or not a thread data folder")
 	NVAR tgID = $GetThreadGroupID()
@@ -606,7 +624,17 @@ Function ASYNC_Execute(dfr)
 		track[%$workloadClass][%INPUTCOUNT] += 1
 	endif
 
+#ifdef THREADING_DISABLED
+	DFREF result = ASYNC_Run_Worker(dfr)
+	WAVE/DF serialExecutionBuffer = GetSerialExecutionBuffer(getAsyncHomeDF())
+	index = GetNumberFromWaveNote(serialExecutionBuffer, NOTE_INDEX)
+	EnsureLargeEnoughWave(serialExecutionBuffer, minimumSize = index)
+	serialExecutionBuffer[index] = result
+	SetNumberInWaveNote(serialExecutionBuffer, NOTE_INDEX, ++index)
+#else
 	TS_ThreadGroupPutDFR(tgID, dfr)
+#endif
+
 End
 
 /// @brief Returns 1 if var is a finite/normal number, 0 otherwise
@@ -968,13 +996,36 @@ static Function/WAVE GetWorkloadTracking(dfr)
 	return wv
 End
 
+/// @brief Returns wave ref for buffering results when THREADING_DISABLED is defined
+/// 1D wave using NOTE_INDEX logic
+static Function/WAVE GetSerialExecutionBuffer(dfr)
+	DFREF dfr
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/Z/SDFR=dfr/DF wv = SerialExecutionBuffer
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/DF/N=(MINIMUM_WAVE_SIZE) dfr:SerialExecutionBuffer/Wave=wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
 /// @brief returns 1 if ASYNC framework is running, 0 otherwise
 static Function ASYNC_IsASYNCRunning()
 
 	variable waitResult, err
 
 	NVAR tgID = $GetThreadGroupID()
+
+#ifdef THREADING_DISABLED
+	return !IsNaN(tgID)
+#else
 	waitResult = ThreadGroupWait(tgID, 0); err = GetRTError(1)
+#endif
 
 	return err == 0 && waitResult != 0
 End

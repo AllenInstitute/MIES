@@ -20,6 +20,7 @@ fi
 echo DEBUGGING_ENABLED >> define.txt
 echo EVIL_KITTEN_EATING_MODE >> define.txt
 echo BACKGROUND_TASK_DEBUGGING >> define.txt
+echo THREADING_DISABLED >> define.txt
 
 ./autorun-test.sh $@
 

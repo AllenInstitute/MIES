@@ -467,6 +467,19 @@ Function LBN_CacheCorrectSourceTypes2()
 	CHECK_EQUAL_VAR(V_npnts, 2)
 End
 
+Function CompareLBNEntry(WAVE values, variable sweepNo, string key)
+
+	WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(values, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/Z settings        = GetLastSetting(values, sweepNo, key, DATA_ACQUISITION_MODE)
+
+	if(WaveExists(settingsNoCache) && WaveExists(settings))
+		CHECK_EQUAL_WAVES(settingsNoCache, settings)
+	else
+		CHECK_WAVE(settings, NULL_WAVE)
+		CHECK_WAVE(settingsNoCache, NULL_WAVE)
+	endif
+End
+
 /// Check that the cache returns the same entries
 Function LBNCache_Reliable()
 
@@ -478,41 +491,17 @@ Function LBNCache_Reliable()
 	WAVE/T numericalKeys = root:Labnotebook_CacheTest:numericalKeys
 
 	numKeys = DimSize(numericalKeys, COLS)
-	for(i = 1; i < numSweeps; i += 1)
-		for(j = INITIAL_KEY_WAVE_COL_COUNT; j < numKeys; j += 1) // don't ask for the five always present
 
-			key = numericalKeys[0][j]
-			WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, i, key, DATA_ACQUISITION_MODE)
-			WAVE/Z settings        = GetLastSetting(numericalValues, i, key, DATA_ACQUISITION_MODE)
+	Make/FREE/N=(numSweeps, numKeys) junkWave
 
-			if(WaveExists(settingsNoCache) && WaveExists(settings))
-				CHECK_EQUAL_WAVES(settingsNoCache, settings)
-			else
-				CHECK_WAVE(settings, NULL_WAVE)
-				CHECK_WAVE(settingsNoCache, NULL_WAVE)
-			endif
-		endfor
-	endfor
+	junkWave[1, numSweeps - 1][INITIAL_KEY_WAVE_COL_COUNT, numKeys - 1] = CompareLBNEntry(numericalValues, p, numericalKeys[0][q])
 
 	WAVE/T textualValues = root:Labnotebook_CacheTest:textualValues
 	WAVE/T textualKeys = root:Labnotebook_CacheTest:textualKeys
 
-	numKeys = DimSize(textualKeys, COLS)
-	for(i = 1; i < numSweeps; i += 1)
-		for(j = INITIAL_KEY_WAVE_COL_COUNT; j < numKeys; j += 1) // don't ask for the five always present
+	numKeys = DimSize(textualValues, COLS)
 
-			key = textualKeys[0][j]
-			WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, i, key, DATA_ACQUISITION_MODE)
-			WAVE/Z settings        = GetLastSetting(textualValues, i, key, DATA_ACQUISITION_MODE)
-
-			if(WaveExists(settingsNoCache) && WaveExists(settings))
-				CHECK_EQUAL_WAVES(settingsNoCache, settings)
-			else
-				CHECK_WAVE(settings, NULL_WAVE)
-				CHECK_WAVE(settingsNoCache, NULL_WAVE)
-			endif
-		endfor
-	endfor
+	junkWave[1, numSweeps - 1][INITIAL_KEY_WAVE_COL_COUNT, numKeys - 1] = CompareLBNEntry(textualValues, p, textualKeys[0][q])
 End
 
 /// Check that the cache returns the same entries
