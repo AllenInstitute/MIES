@@ -31,13 +31,14 @@ Menu "Mies Panels"
 		"IVSCC control panel"                  , /Q, IVS_CreatePanel()
 	End
 	"-"
-	SubMenu "Neurodata Without Borders (NWB)"
+	SubMenu "Neurodata Without Borders (NWB)/DANDI"
 		"Export all data into NWB"             , /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA)
 		"-"
 		"Export all data into NWBv1 (legacy)"  , /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA, nwbVersion = 1)
 		"-"
 		"Export all stimsets into NWB"         , /Q, NWB_ExportWithDialog(NWB_EXPORT_STIMSETS)
 		"Load Stimsets from NWB"               , /Q, NWB_LoadAllStimsets()
+		"Download Stimsets"                    , /Q, MEN_DownloadStimsets()
 	End
 	SubMenu "View Files"
 		"Configuration"                        , /Q, CONF_OpenConfigInNotebook()
@@ -255,4 +256,12 @@ Function MEN_OpenZeroMQXOPLogFile()
 	endif
 
 	NotebookSelectionAtEnd(name)
+End
+
+Function MEN_DownloadStimsets()
+	string path
+
+	path = DND_FetchAssetFromSet(DND_STIMSET_DANDI_SET)
+
+	NWB_LoadAllStimsets(filename = path, overwrite = 0)
 End

@@ -1117,7 +1117,7 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 				Duplicate/FREE autobiasV, autobiasVMock
 				autobiasVMock[] = autobiasVMock[p] + 1
 
-				result = ID_AskUserForHeadstageSettings("Autobias V", autobiasV, autobiasVMock)
+				result = ID_AskUserForSettings(ID_HEADSTAGE_SETTINGS, "Autobias V", autobiasV, autobiasVMock)
 
 				if(result)
 					return 1

@@ -175,6 +175,7 @@ End
 #include "MIES_DAEphys"
 #include "MIES_DAEphys_Macro"
 #include "MIES_DAEphys_GuiState"
+#include "MIES_DANDI"
 #include "MIES_DataBrowser"
 #include "MIES_DataBrowser_Macro"
 #include "MIES_DataAcquisition"

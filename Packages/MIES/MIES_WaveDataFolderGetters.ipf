@@ -6704,3 +6704,46 @@ Function/WAVE GetValidAcqStateTransitions()
 
 	return wv
 End
+
+Function/S GetDANDIFolderAsString()
+	return "root:MIES:DANDI"
+End
+
+/// @brief Return the data folder reference to the DANDI folder
+Function/DF GetDANDIFolder()
+
+	return createDFWithAllParents(GetDANDIFolderAsString())
+End
+
+/// @brief Return a free wave with the DANDI set properties
+///
+/// Rows:
+/// - one row for each asset
+///
+/// Columns:
+/// - ID
+/// - created timestamp (ISO8601)
+/// - modified timestamp (ISO8601)
+/// - file path of the asset inside the DANDI set
+Function/WAVE GetDandiSetProperties()
+
+	Make/FREE/N=(0, 4)/T wv
+
+	// we don't care about size
+	SetDimensionLabels(wv, "asset_id;created;modified;path", COLS)
+
+	return wv
+End
+
+Function/WAVE GetDandiDialogWave(WAVE props)
+
+	DFREF dfr = GetDANDIFolder()
+	Make/O/N=(DimSize(props, ROWS)) dfr:data/WAVE=data
+
+	Duplicate/FREE/RMD=[][FindDimLabel(props, COLS, "path")] props, paths
+	Redimension/N=(-1) paths
+
+	SetDimensionLabels(data, TextWaveToList(paths, ";"), ROWS)
+
+	return data
+End
