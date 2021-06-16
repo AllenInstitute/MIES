@@ -2239,9 +2239,13 @@ Function/S AB_OpenAnalysisBrowser()
 	string panel = AB_GetPanelName()
 	string directory
 
-	if(windowExists(panel))
-		DoWindow/F $panel
-		return panel
+	if(WindowExists(panel))
+		if(HasPanelLatestVersion(panel, ANALYSISBROWSER_PANEL_VERSION))
+			DoWindow/F $panel
+			return panel
+		endif
+
+		KillWindow/Z $panel
 	endif
 
 	WAVE/T list = GetExperimentBrowserGUIList()
@@ -2252,12 +2256,21 @@ Function/S AB_OpenAnalysisBrowser()
 	Execute "AnalysisBrowser()"
 	GetMiesVersion()
 
+	AddVersionToPanel(panel, ANALYSISBROWSER_PANEL_VERSION)
+
 	NVAR JSONid = $GetSettingsJSONid()
 	directory = JSON_GetString(jsonID, "/analysisbrowser/directory")
 	SetSetVariableString(panel, "setvar_baseFolder", directory)
 	PS_InitCoordinates(JSONid, panel, "analysisbrowser")
 
 	return panel
+End
+
+static Function AB_CheckPanelVersion(string panel)
+
+	if(!HasPanelLatestVersion(panel, ANALYSISBROWSER_PANEL_VERSION))
+		DoAbortNow("The Analysisbrowser is too old to be usable. Please close it and open a new one.")
+	endif
 End
 
 Window AnalysisBrowser() : Panel
@@ -2335,12 +2348,35 @@ Window AnalysisBrowser() : Panel
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={657,366,inf,inf}" // sizeLimit requires Igor 7 or later
 EndMacro
 
+Function AB_BrowserStartupSettings()
+	string panel
+
+	panel = AB_GetPanelName()
+
+	HideTools/W=$panel/A
+	SetWindow $panel, userData(panelVersion) = ""
+
+	SetSetVariableString(panel, "setvar_baseFolder", "")
+	SetCheckBoxState(panel, "checkbox_load_overwrite", CHECKBOX_UNSELECTED)
+
+	AB_ResetListBoxWaves(0)
+
+	ResizeControlsPanel#SaveControlPositions(panel, 0)
+
+	SearchForInvalidControlProcs(panel)
+	print "Do not forget to increase ANALYSISBROWSER_PANEL_VERSION."
+
+	Execute/P/Z "DoWindow/R " + panel
+	Execute/P/Q/Z "COMPILEPROCEDURES "
+End
+
 /// @brief Button "Expand all"
 Function AB_ButtonProc_ExpandAll(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	switch(ba.eventcode)
 		case 2:
+			AB_CheckPanelVersion(ba.win)
 			AB_ExpandListColumn(EXPERIMENT_TREEVIEW_COLUMN)
 			AB_ExpandListColumn(DEVICE_TREEVIEW_COLUMN)
 			break
@@ -2355,6 +2391,7 @@ Function AB_ButtonProc_CollapseAll(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2:
+			AB_CheckPanelVersion(ba.win)
 			AB_CollapseListColumn(EXPERIMENT_TREEVIEW_COLUMN)
 			break
 	endswitch
@@ -2371,6 +2408,8 @@ Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2:
+			AB_CheckPanelVersion(ba.win)
+
 			DFREF dfr = SB_OpenSweepBrowser()
 			oneValidSweep = AB_LoadFromFile(AB_LOAD_SWEEP, sweepBrowserDFR = dfr)
 			SVAR/SDFR=dfr graph
@@ -2396,6 +2435,8 @@ Function AB_ButtonProc_LoadStimsets(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2:
+			AB_CheckPanelVersion(ba.win)
+
 			oneValidStimset = AB_LoadFromFile(AB_LOAD_STIMSET)
 			if(oneValidStimset)
 				WBP_CreateWaveBuilderPanel()
@@ -2412,6 +2453,7 @@ Function AB_ButtonProc_ScanFolder(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
 			AB_ScanFolder(ba.win)
 		break
 	endswitch
@@ -2428,6 +2470,8 @@ Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
+
 			win = ba.win
 			baseFolder = GetSetVariableString(win, "setvar_baseFolder")
 			folder = AskUserForExistingFolder(baseFolder=baseFolder)
@@ -2450,6 +2494,8 @@ Function AB_ButtonProc_SelectStimSets(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
+
 			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 
@@ -2493,6 +2539,8 @@ Function AB_ListBoxProc_ExpBrowser(lba) : ListBoxControl
 
 	switch(lba.eventCode)
 		case 1: // mouse down
+			AB_CheckPanelVersion(lba.win)
+
 			row = lba.row
 			col = lba.col
 			lba.blockreentry = 1
@@ -2536,6 +2584,8 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			AB_CheckPanelVersion(ba.win)
+
 			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 			WAVE/T map = GetAnalysisBrowserMap()
