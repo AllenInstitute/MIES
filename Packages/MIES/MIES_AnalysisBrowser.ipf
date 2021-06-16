@@ -30,7 +30,7 @@ static Function AB_ResetListBoxWaves(variable newSize)
 
 		val = LISTBOX_TREEVIEW | LISTBOX_TREEVIEW_EXPANDED
 
-		col = FindDimLabel(expBrowserList, COLS, "experiment")
+		col = FindDimLabel(expBrowserList, COLS, "file")
 		ASSERT(col >= 0, "invalid column index")
 		expBrowserSel[][col - 1] = !cmpstr(expBrowserList[p][col], "") ? 0 : val
 
@@ -73,7 +73,7 @@ End
 static Function AB_AddMapEntry(baseFolder, discLocation)
 	string baseFolder, discLocation
 
-	variable index
+	variable index, fileID, nwbVersion
 	string dataFolder, fileType, relativePath, extension
 	WAVE/T map = GetAnalysisBrowserMap()
 
@@ -103,7 +103,19 @@ static Function AB_AddMapEntry(baseFolder, discLocation)
 			fileType = ANALYSISBROWSER_FILE_TYPE_IGOR
 			break
 		case ".nwb":
-			fileType = ANALYSISBROWSER_FILE_TYPE_NWB
+			fileID = H5_OpenFile(discLocation)
+			nwbVersion = GetNWBMajorVersion(ReadNWBVersion(fileID))
+			H5_CloseFile(fileID)
+			switch(nwbVersion)
+				case 1:
+					fileType = ANALYSISBROWSER_FILE_TYPE_NWBv1
+					break
+				case 2:
+					fileType = ANALYSISBROWSER_FILE_TYPE_NWBv2
+					break
+				default:
+					ASSERT(0, "Unknown NWB version")
+			endswitch
 			break
 		default:
 			ASSERT(0, "invalid file type")
@@ -142,7 +154,7 @@ End
 /// 0: %DiscLocation:  Path to Experiment on Disc
 /// 1: %FileName:      Name of File in experiment column in ExperimentBrowser
 /// 2: %DataFolder     Data folder inside current Igor experiment
-/// 3: %FileType       File Type identifier for routing to loader functions
+/// 3: %FileType       File Type identifier for routing to loader functions, one of @ref AnalysisBrowserFileTypes
 Function/Wave AB_GetMap(discLocation)
 	string discLocation
 
@@ -205,7 +217,7 @@ static Function AB_AddFile(baseFolder, discLocation)
 	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
 
 	if(lastMapped >= firstMapped)
-		list[firstMapped, lastMapped][%experiment][1] = num2str(mapIndex)
+		list[firstMapped, lastMapped][%file][1] = num2str(mapIndex)
 	else // experiment could not be loaded
 		AB_RemoveMapEntry(mapIndex)
 		return 1
@@ -239,7 +251,8 @@ static Function AB_LoadFile(discLocation)
 				AB_LoadTPStorageFromIgor(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
 				break
-			case ANALYSISBROWSER_FILE_TYPE_NWB:
+			case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+			case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadTPStorageFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadUserCommentAndHistoryFromNWB(map[%DiscLocation], map[%DataFolder], device)
@@ -249,7 +262,7 @@ static Function AB_LoadFile(discLocation)
 		endswitch
 
 		Wave/I sweeps = GetAnalysisChannelSweepWave(map[%DataFolder], device)
-		AB_FillListWave(map[%FileName], device, map[%DataFolder], sweeps)
+		AB_FillListWave(map[%FileName], device, map[%DataFolder], map[%FileType], sweeps)
 	endfor
 End
 
@@ -293,7 +306,8 @@ static Function AB_HasCompatibleVersion(discLocation)
 				endif
 			endif
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWB:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			return 1
 		default:
 			ASSERT(0, "invalid file type")
@@ -319,24 +333,26 @@ End
 
 /// @brief Add an experiment entry into the list
 ///        if there is none yet.
-static Function AB_AddExperimentNameIfReq(expName, list, index)
+static Function AB_AddExperimentNameIfReq(expName, list, fileType, index)
 	string expName
 	WAVE/T list
+	string fileType
 	variable index
 
 	variable lastIndex
 
-	WAVE/Z indizes = FindIndizes(list, colLabel="experiment", str=expName)
+	WAVE/Z indizes = FindIndizes(list, colLabel="file", str=expName)
 
 	if(WaveExists(indizes))
 		lastIndex = indizes[DimSize(indizes, ROWS) - 1]
-		if(!cmpstr(list[lastIndex][%experiment][0], expName))
+		if(!cmpstr(list[lastIndex][%file][0], expName))
 			return NaN
 		endif
 	endif
 
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
-	list[index][%experiment][0] = expName
+	list[index][%file][0] = expName
+	list[index][%type][0] = fileType
 	index += 1
 End
 
@@ -347,10 +363,12 @@ End
 /// @param fileName   current Project's filename
 /// @param device     current device
 /// @param dataFolder current Project's Lab Notebook DataFolder reference
+/// @param fileType   current Project's file type, one of @ref AnalysisBrowserFileTypes
 /// @param sweepNums  Wave containing all sweeps actually present for device
-static Function AB_FillListWave(fileName, device, dataFolder, sweepNums)
-	string fileName, device, dataFolder
+static Function AB_FillListWave(fileName, device, dataFolder, fileType, sweepNums)
+	string fileName, device, dataFolder, fileType
 	WAVE sweepNums
+
 	variable index, numWaves, i, j, sweepNo, numRows, numCols, setCount
 	string str
 
@@ -361,7 +379,7 @@ static Function AB_FillListWave(fileName, device, dataFolder, sweepNums)
 	WAVE/T list = GetExperimentBrowserGUIList()
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
 
-	AB_AddExperimentNameIfReq(fileName, list, index)
+	AB_AddExperimentNameIfReq(fileName, list, fileType, index)
 
 	EnsureLargeEnoughWave(list, minimumSize=index, dimension=ROWS)
 	list[index][%device][0] = device
@@ -799,7 +817,8 @@ static Function/S AB_LoadLabNotebookFromFile(discLocation)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
 			deviceList = AB_LoadLabNotebookFromIgor(map[%DiscLocation])
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWB:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			deviceList = AB_LoadLabNotebookFromNWB(map[%DiscLocation])
 			break
 	endswitch
@@ -1327,7 +1346,7 @@ static Function AB_LoadFromExpandedRange(row, subSectionColumn, AB_LoadType, [ov
 		endif
 
 		device      = GetLastNonEmptyEntry(expBrowserList, "device", j)
-		mapIndex    = str2num(expBrowserList[j][%experiment][1])
+		mapIndex    = str2num(expBrowserList[j][%file][1])
 		dataFolder   = map[mapIndex][%DataFolder]
 		discLocation = map[mapIndex][%DiscLocation]
 		fileType     = map[mapIndex][%FileType]
@@ -1436,7 +1455,7 @@ static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 		endif
 		device = GetLastNonEmptyEntry(expBrowserList, "device", row)
 
-		mapIndex    = str2num(expBrowserList[row][%experiment][1])
+		mapIndex    = str2num(expBrowserList[row][%file][1])
 		fileName     = map[mapIndex][%FileName]
 		dataFolder   = map[mapIndex][%DataFolder]
 		discLocation = map[mapIndex][%DiscLocation]
@@ -1528,7 +1547,8 @@ static Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device,
 				return 1
 			endif
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWB:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			if(AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep))
 				return 1
 			endif
@@ -1565,7 +1585,8 @@ static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, devic
 				return 1
 			endif
 			break
-		case ANALYSISBROWSER_FILE_TYPE_NWB:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
 			stimsets = NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
 			h5_fileID  = H5_OpenFile(discLocation)
 			if(!StimsetPathExists(h5_fileID))
@@ -2599,7 +2620,7 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 			endif
 
 			row = indizes[0]
-			mapIndex = str2num(expBrowserList[row][%experiment][1])
+			mapIndex = str2num(expBrowserList[row][%file][1])
 
 			device = GetLastNonEmptyEntry(expBrowserList, "device", row)
 			if(isEmpty(device))

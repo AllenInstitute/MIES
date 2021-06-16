@@ -723,9 +723,11 @@ Constant ZEROMQ_BIND_REP_PORT = 5670
 Constant ZEROMQ_BIND_PUB_PORT = 5770
 
 /// @name Constants for AnalysisBrowserMap (Text Wave)
+/// @anchor AnalysisBrowserFileTypes
 /// @{
-StrConstant ANALYSISBROWSER_FILE_TYPE_IGOR = "I"
-StrConstant ANALYSISBROWSER_FILE_TYPE_NWB  = "N"
+StrConstant ANALYSISBROWSER_FILE_TYPE_IGOR  = "Igor"
+StrConstant ANALYSISBROWSER_FILE_TYPE_NWBv1 = "NWBv1"
+StrConstant ANALYSISBROWSER_FILE_TYPE_NWBV2 = "NWBv2"
 /// @}
 
 /// Convenience definition for functions interacting with threads
