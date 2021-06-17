@@ -3,6 +3,8 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestRheobase
 
+static Constant PSQ_RHEOBASE_TEST_DURATION = 2
+
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(s, finalDAScaleFake, device)
 	STRUCT DAQSettings& s
@@ -188,6 +190,8 @@ static Function PS_RB1_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
 	CheckDashboard(str, {setPassed})
 End
 
@@ -257,6 +261,8 @@ static Function PS_RB2_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
 	CheckDashboard(str, {setPassed})
 End
 
@@ -323,6 +329,8 @@ static Function PS_RB3_REENTRY([str])
 
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
 	CheckDashboard(str, {setPassed})
 End
@@ -391,6 +399,8 @@ static Function PS_RB4_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 0)
+
 	CheckDashboard(str, {setPassed})
 End
 
@@ -457,6 +467,8 @@ static Function PS_RB5_REENTRY([str])
 
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 1)
 
 	CheckDashboard(str, {setPassed})
 End
@@ -525,6 +537,8 @@ static Function PS_RB6_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 2)
+
 	CheckDashboard(str, {setPassed})
 End
 
@@ -591,6 +605,8 @@ static Function PS_RB7_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
 	CheckDashboard(str, {setPassed})
 End
@@ -669,6 +685,8 @@ static Function PS_RB8_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 3)
+
 	CheckDashboard(str, {setPassed})
 End
 
@@ -743,6 +761,8 @@ static Function PS_RB9_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 2)
+
 	CheckDashboard(str, {setPassed})
 End
 
@@ -814,6 +834,8 @@ static Function PS_RB10_REENTRY([str])
 
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {1}, mode = WAVE_DATA, tol = 0.01)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
 	CheckDashboard(str, {setPassed})
 End
