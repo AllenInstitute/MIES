@@ -192,3 +192,15 @@ Function WB_EditingExistingKeepsPrecision()
 	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(newSetName)
 	CHECK_WAVE(SegWvType, NORMAL_WAVE, minorType = FLOAT_WAVE)
 End
+
+Function WB_CheckEpochParameters()
+	string newCode, existingCode
+
+	newCode = WBP_RegenerateEpochParameterNamesCode()
+	existingCode = ProcedureText("GetEpochParameterNames")
+
+	newCode = TrimString(newCode, 1)
+	existingCode = TrimString(existingCode, 1)
+
+	CHECK(strsearch(existingCode, newCode, 0) >= 0)
+End

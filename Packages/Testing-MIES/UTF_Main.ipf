@@ -15,11 +15,15 @@
 #include "UTF_WaveBuilderRegression"
 #include "UTF_WaveVersioning"
 #include "UTF_AsynFrameworkTest"
+#include "UTF_StimsetAPI"
 #include "UTF_SweepFormula"
 #include "UTF_TraceUserData"
 #include "UTF_Configuration"
 #include "UTF_HelperFunctions"
 #include "UTF_WaveAveraging"
+
+// include examples here so that these are compile tested as well
+#include "example-stimulus-set-api"
 
 // Entry point for UTF
 Function run()
@@ -55,6 +59,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	list = AddListItem("UTF_Configuration.ipf", list, ";", inf)
 	list = AddListItem("UTF_Labnotebook.ipf", list, ";", inf)
 	list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", inf)
+	list = AddListItem("UTF_StimsetAPI.ipf", list, ";", inf)
 	list = AddListItem("UTF_SweepFormula.ipf", list, ";", inf)
 	list = AddListItem("UTF_TraceUserData.ipf", list, ";", inf)
 	list = AddListItem("UTF_UpgradeDataFolderLocation.ipf", list, ";", inf)

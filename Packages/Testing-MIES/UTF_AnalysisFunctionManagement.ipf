@@ -1355,11 +1355,11 @@ static Function SetParams1_IGNORE(device)
 	string device
 
 	string stimSet = "AnaFuncParams1_DA_0"
-	WBP_AddAnalysisParameter(stimSet, "MyVar", str = "abcd")
-	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
-	WBP_AddAnalysisParameter(stimSet, "MyWave", wv = {1, 2, 3})
+	AFH_AddAnalysisParameter(stimSet, "MyVar", str = "abcd")
+	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
+	AFH_AddAnalysisParameter(stimSet, "MyWave", wv = {1, 2, 3})
 	Make/FREE/T textData = {"a", "b", "c"}
-	WBP_AddAnalysisParameter(stimSet, "MyTextWave", wv = textData)
+	AFH_AddAnalysisParameter(stimSet, "MyTextWave", wv = textData)
 End
 
 // test parameter handling
@@ -1442,8 +1442,8 @@ static Function SetParams2_IGNORE(device)
 	string device
 
 	string stimSet = "AnaFuncParams2_DA_0"
-	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
-	WBP_AddAnalysisParameter(stimSet, "MyVar", str = "abcd")
+	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
+	AFH_AddAnalysisParameter(stimSet, "MyVar", str = "abcd")
 End
 
 // test parameter handling with valid type string and optional parameter
@@ -1485,7 +1485,7 @@ static Function SetParams3_IGNORE(device)
 	string device
 
 	string stimSet = "AnaFuncParams3_DA_0"
-	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
+	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
 End
 
 // test parameter handling with non-matching type string
@@ -1535,7 +1535,7 @@ static Function SetParams4_IGNORE(device)
 	string device
 
 	string stimSet = "AnaFuncParams4_DA_0"
-	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
+	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
 End
 
 // test parameter handling with invalid type string
@@ -1585,8 +1585,8 @@ static Function SetParams5_IGNORE(device)
 	string device
 
 	string stimSet = "AnaFuncParams5_DA_0"
-	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "INVALIDCONTENT")
-	WBP_AddAnalysisParameter(stimSet, "MyNum", var = 123)
+	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "INVALIDCONTENT")
+	AFH_AddAnalysisParameter(stimSet, "MyNum", var = 123)
 End
 
 // test parameter handling with analysis parameter check and help function and
@@ -1637,8 +1637,8 @@ static Function SetParams6_IGNORE(device)
 	string device
 
 	string stimSet = "AnaFuncParams5_DA_0"
-	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
-	WBP_AddAnalysisParameter(stimSet, "MyNum", var = NaN)
+	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
+	AFH_AddAnalysisParameter(stimSet, "MyNum", var = NaN)
 End
 
 // Test parameter handling with analysis parameter check and help function
@@ -1691,8 +1691,8 @@ static Function SetParams7_IGNORE(device)
 	string device
 
 	string stimSet = "AnaFuncParams5_DA_0"
-	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
-	WBP_AddAnalysisParameter(stimSet, "MyNum", var = 1)
+	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
+	AFH_AddAnalysisParameter(stimSet, "MyNum", var = 1)
 End
 
 // test parameter handling with analysis parameter check and help function
@@ -1736,8 +1736,8 @@ static Function SetParams8_IGNORE(device)
 	string device
 
 	string stimSet = "AnaFuncParams5_DA_0"
-	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
-	WBP_AddAnalysisParameter(stimSet, "MyNum", var = 1)
+	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
+	AFH_AddAnalysisParameter(stimSet, "MyNum", var = 1)
 End
 
 // test parameter handling with analysis parameter check and help function

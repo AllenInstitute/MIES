@@ -6,10 +6,10 @@ static Function SC_SetControls1_Setter(device)
 	string device
 
 	Make/FREE/T payload = {"Pre DAQ", "1"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "unknown_ctrl", wv=payload)
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "group_DataAcq_ClampMode", wv=payload)
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "valdisp_DataAcq_SweepsActiveSet", wv=payload)
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Title_DataAcq_Bridge", wv=payload)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "unknown_ctrl", wv=payload)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "group_DataAcq_ClampMode", wv=payload)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "valdisp_DataAcq_SweepsActiveSet", wv=payload)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Title_DataAcq_Bridge", wv=payload)
 End
 
 // ignores invalid control
@@ -43,7 +43,7 @@ End
 static Function SC_SetControls2_Setter(device)
 	string device
 
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", str="myValue")
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", str="myValue")
 End
 
 // complains on wrong parameter type (string)
@@ -76,7 +76,7 @@ End
 static Function SC_SetControls2a_Setter(device)
 	string device
 
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", var = 1)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", var = 1)
 End
 
 // complains on wrong parameter type (numeric)
@@ -110,7 +110,7 @@ static Function SC_SetControls2b_Setter(device)
 	string device
 
 	Make/FREE wv
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
 End
 
 // complains on wrong parameter type (numeric wave)
@@ -144,7 +144,7 @@ static Function SC_SetControls3_Setter(device)
 	string device
 
 	Make/FREE/T/N=3 wv
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
 End
 
 // invalid parameter wave size
@@ -178,7 +178,7 @@ static Function SC_SetControls3a_Setter(device)
 	string device
 
 	Make/FREE/T wv = {"Unknown", "1"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
 End
 
 // invalid event type (unknown)
@@ -212,7 +212,7 @@ static Function SC_SetControls3b_Setter(device)
 	string device
 
 	Make/FREE/T wv = {"Mid Sweep", "1"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
 End
 
 // invalid event type (mid sweep)
@@ -246,7 +246,7 @@ static Function SC_SetControls3c_Setter(device)
 	string device
 
 	Make/FREE/T wv = {"Generic", "1"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
 End
 
 // invalid event type (generic)
@@ -280,7 +280,7 @@ static Function SC_SetControls4_Setter(device)
 	string device
 
 	Make/FREE/T wv = {"Pre Sweep", "1"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
 End
 
 // unchangeable control in other event than pre DAQ
@@ -314,7 +314,7 @@ static Function SC_SetControls5_Setter(device)
 	string device
 
 	Make/FREE/T wv = {"Post Sweep", "0"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcqHS_00", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcqHS_00", wv = wv)
 End
 
 // hidden control is ignored
@@ -348,25 +348,25 @@ static Function SC_SetControls6_Setter(device)
 
 	Make/FREE/T/N=2 wv
 	wv[] = {"Pre DAQ", "0"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq1_RepeatAcq", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq1_RepeatAcq", wv = wv)
 
 	wv[] = {"Pre DAQ", "1"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_Settings_UseDoublePrec", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_Settings_UseDoublePrec", wv = wv)
 
 	wv[] = {"Pre Set", "47"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_TPBaselinePerc", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_TPBaselinePerc", wv = wv)
 
 	wv[] = {"Pre Sweep", "4"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Popup_Settings_SampIntMult", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Popup_Settings_SampIntMult", wv = wv)
 
 	wv[] = {"Post Sweep", "abcd efgh"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_Comment", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_Comment", wv = wv)
 
 	wv[] = {"Post Set", "10"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "setvar_DataAcq_OnsetDelayUser", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "setvar_DataAcq_OnsetDelayUser", wv = wv)
 
 	wv[] = {"Post DAQ", "0"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
 End
 
 // works with different controls
@@ -410,10 +410,10 @@ static Function SC_SetControls7_Setter(device)
 
 	Make/FREE/T/N=4 wv
 	wv[] = {"PRE daq", "2", "post DAQ", "1"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_SetRepeats", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_SetRepeats", wv = wv)
 
 	wv[] = {"Pre DAQ", "1"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq1_RepeatAcq", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq1_RepeatAcq", wv = wv)
 End
 
 // works with event/data tuples and also accepts incorrect casing for the event names
@@ -448,7 +448,7 @@ static Function SC_SetControls8_Setter(device)
 
 	Make/FREE/T/N=2 wv
 	wv[] = {"Post DAQ", "abcdefgh"}
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "NB", wv = wv)
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "NB", wv = wv)
 End
 
 static Function SC_SetControls8_Setter2(device)

@@ -707,7 +707,7 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 
 	LOG_AddEntry(PACKAGE_MIES, "start")
 
-	stimsets = ReturnListOfAllStimSetsFromAllChannelTypes()
+	stimsets = ST_GetStimsetList()
 
 	if(IsEmpty(stimsets))
 		print "No stimsets found for NWB export"
@@ -872,7 +872,7 @@ Function NWB_PrepareExport(nwbVersion)
 
 	if(createdNewNWBFile)
 		NWB_ExportAllData(nwbVersion, keepFileOpen = 1)
-		stimsets = ReturnListOfAllStimSetsFromAllChannelTypes()
+		stimsets = ST_GetStimsetList()
 		NWB_AppendStimset(nwbVersion, locationID, stimsets, GetNoCompression())
 	endif
 
@@ -1450,6 +1450,11 @@ static Function NWB_LoadStimset(locationID, stimset, overwrite, [verbose])
 
 	// load stimsets with parameter waves
 	stimsetType = GetStimSetType(stimset)
+
+	if(stimsetType == CHANNEL_TYPE_UNKNOWN)
+		return 1
+	endif
+
 	DFREF paramDFR = GetSetParamFolder(stimsetType)
 
 	// convert stimset name to upper case
@@ -1618,7 +1623,7 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 	HDF5CloseGroup/Z groupID
 	H5_CloseFile(fileID)
 
-	WBP_UpdateDaEphysStimulusSetPopups()
+	DAP_UpdateDaEphysStimulusSetPopups()
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 

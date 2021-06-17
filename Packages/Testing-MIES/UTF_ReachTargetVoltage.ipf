@@ -74,8 +74,8 @@ static Function RTV_WorksWithIndexing_Setter(device)
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = -70)
 
-	WBP_AddAnalysisParameter("StimulusSetA_DA_0", "EnableIndexing", var=1)
-	WBP_AddAnalysisParameter("StimulusSetA_DA_0", "IndexingEndStimsetAllIC", str="StimulusSetB_DA_0")
+	AFH_AddAnalysisParameter("StimulusSetA_DA_0", "EnableIndexing", var=1)
+	AFH_AddAnalysisParameter("StimulusSetA_DA_0", "IndexingEndStimsetAllIC", str="StimulusSetB_DA_0")
 
 	PGC_SetAndActivateControl(device, GetPanelControl(!HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
 End

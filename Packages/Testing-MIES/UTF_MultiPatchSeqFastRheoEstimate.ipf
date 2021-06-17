@@ -682,8 +682,8 @@ End
 static Function AddAnalysisParamsDAScale_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScale", var=1)
-	WBP_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScaleFactor", var=1.5)
+	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScale", var=1)
+	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScaleFactor", var=1.5)
 End
 
 // one test with PostDAQDAScale and PostDAQDAScaleFactor analysis parameters
@@ -898,7 +898,7 @@ End
 static Function AddAnalysisParamsMaxDa_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "MaximumDAScale", var=205)
+	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "MaximumDAScale", var=205)
 End
 
 // one test with range exceeded and MaximumDAScale analysis parameter
@@ -1001,9 +1001,9 @@ End
 static Function AddAnalysisParamsMinRheo_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScale", var=1)
-	WBP_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScaleMinOffset", var=100)
-	WBP_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScaleFactor", var=1.5)
+	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScale", var=1)
+	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScaleMinOffset", var=100)
+	AFH_AddAnalysisParameter("MSQ_FastRheoEst_DA_0", "PostDAQDAScaleFactor", var=1.5)
 End
 
 // Using MinOffset and a scale factor

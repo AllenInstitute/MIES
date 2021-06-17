@@ -146,10 +146,10 @@ End
 
 static Function PS_CR1_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // BBAA but with zero value which results in PSQ_CR_RERUN
@@ -203,10 +203,10 @@ End
 
 static Function PS_CR2_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -259,10 +259,10 @@ End
 
 static Function PS_CR3_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -315,10 +315,10 @@ End
 
 static Function PS_CR4_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -396,10 +396,10 @@ End
 
 static Function PS_CR5_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -476,10 +476,10 @@ End
 
 static Function PS_CR6_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -556,10 +556,10 @@ End
 
 static Function PS_CR7_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -633,10 +633,10 @@ End
 
 static Function PS_CR8_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -710,10 +710,10 @@ End
 
 static Function PS_CR9_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // Enough passing sweeps but not enough with the same DAScale
@@ -793,10 +793,10 @@ End
 
 static Function PS_CR10_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 End
 
 // Early abort as not enough sweeps with the same DASCale value pass
@@ -872,13 +872,13 @@ End
 
 static Function PS_CR11_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -935,13 +935,13 @@ End
 
 static Function PS_CR12_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -995,13 +995,13 @@ End
 
 static Function PS_CR13_IGNORE(string device)
 
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
-	WBP_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "DAScaleModifier", var=1.2)
 End
 
 // Early abort as not enough sweeps with the same DASCale value pass

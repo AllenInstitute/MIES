@@ -77,7 +77,7 @@
 ///
 /// For some analysis functions it is beneficial to send in additional data
 /// depending on the stimset. This is supported by adding parameters and their
-/// values via WBP_AddAnalysisParameter() to the stimset, or using the
+/// values via AFH_AddAnalysisParameter() to the stimset, or using the
 /// Wavebuilder GUI, and then querying them with the help of @ref
 /// AnalysisFunctionParameterHelpers. The parameters are stored serialized in
 /// the `WPT` wave, see GetWaveBuilderWaveTextParam() for the exact format. See
@@ -396,7 +396,7 @@ Function StimParamGUI()
 	string StimSetList, stimSet
 	variable Vm1, Scale, sweeps, ITI
 
-	StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
+	StimSetList = ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC)
 	stimSet = STIM_SET_LOCAL
 	Vm1 = VM1_LOCAL
 	Scale = SCALE_LOCAL

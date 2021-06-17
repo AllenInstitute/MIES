@@ -3451,25 +3451,35 @@ Function/WAVE GetWaveBuilderWaveParam()
 	if(WaveExists(wv))
 		UpgradeWaveParam(wv)
 	else
-		Make/D/N=(86, 100, EPOCH_TYPES_TOTAL_NUMBER) dfr:WP/Wave=wvDouble
-		WAVE wv = wvDouble
-
-		// noise low/high pass filter to off
-		wv[20][][EPOCH_TYPE_NOISE] = 0
-		wv[22][][EPOCH_TYPE_NOISE] = 0
-
-		// noise filter order
-		wv[26][][EPOCH_TYPE_NOISE] = 6
-
-		// per epoch RNG seed
-		wv[39][][] = 1
-
-		// noise type
-		wv[54][][EPOCH_TYPE_NOISE] = 0
-
-		AddDimLabelsToWP(wv)
-		SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
+		WAVE wv = GetWaveBuilderWaveParamAsFree()
+		MoveWave wv, dfr:WP
 	endif
+
+	return wv
+End
+
+/// @brief Return a free wave version of GetWaveBuilderWaveParam()
+///
+/// @sa GetWaveBuilderWaveParam()
+Function/WAVE GetWaveBuilderWaveParamAsFree()
+
+	Make/D/N=(86, 100, EPOCH_TYPES_TOTAL_NUMBER)/FREE wv
+
+	// noise low/high pass filter to off
+	wv[20][][EPOCH_TYPE_NOISE] = 0
+	wv[22][][EPOCH_TYPE_NOISE] = 0
+
+	// noise filter order
+	wv[26][][EPOCH_TYPE_NOISE] = 6
+
+	// per epoch RNG seed
+	wv[39][][] = 1
+
+	// noise type
+	wv[54][][EPOCH_TYPE_NOISE] = 0
+
+	AddDimLabelsToWP(wv)
+	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
 
 	return wv
 End
@@ -3513,7 +3523,7 @@ Function UpgradeWaveTextParam(wv)
 
 	// upgrade analysis parmeters
 	// we need to URL encode the string/textwave entries, this is done by
-	// WBP_AddAnalysisParameterIntoWPT, and that also takes care of moving it
+	// WB_AddAnalysisParameterIntoWPT, and that also takes care of moving it
 	// into the right place
 	if(WaveVersionIsSmaller(wv, 10))
 		params = wv[10][%Set][INDEP_EPOCH_TYPE]
@@ -3525,16 +3535,16 @@ Function UpgradeWaveTextParam(wv)
 			type = AFH_GetAnalysisParamType(name, params)
 			strswitch(type)
 				case "string":
-					WBP_AddAnalysisParameterIntoWPT(wv, name, str = AFH_GetAnalysisParamTextual(name, params, percentDecoded = 0))
+					WB_AddAnalysisParameterIntoWPT(wv, name, str = AFH_GetAnalysisParamTextual(name, params, percentDecoded = 0))
 					break
 				case "textwave":
-					WBP_AddAnalysisParameterIntoWPT(wv, name, wv = AFH_GetAnalysisParamTextWave(name, params, percentDecoded = 0))
+					WB_AddAnalysisParameterIntoWPT(wv, name, wv = AFH_GetAnalysisParamTextWave(name, params, percentDecoded = 0))
 					break
 				case "variable":
-					WBP_AddAnalysisParameterIntoWPT(wv, name, var = AFH_GetAnalysisParamNumerical(name, params))
+					WB_AddAnalysisParameterIntoWPT(wv, name, var = AFH_GetAnalysisParamNumerical(name, params))
 					break
 				case "wave":
-					WBP_AddAnalysisParameterIntoWPT(wv, name, wv = AFH_GetAnalysisParamWave(name, params))
+					WB_AddAnalysisParameterIntoWPT(wv, name, wv = AFH_GetAnalysisParamWave(name, params))
 					break
 				default:
 					ASSERT(0, "Unknown type")
@@ -3611,18 +3621,18 @@ End
 /// Rows:
 /// -  0: Name of the custom wave for #EPOCH_TYPE_CUSTOM (legacy format: wave
 ///       name only, current format: absolute path including the wave name)
-/// -  1: Analysis function, pre daq
-/// -  2: Analysis function, mid sweep
-/// -  3: Analysis function, post sweep
-/// -  4: Analysis function, post set
-/// -  5: Analysis function, post daq
+/// -  1: Analysis function, pre daq (deprecated)
+/// -  2: Analysis function, mid sweep (deprecated)
+/// -  3: Analysis function, post sweep (deprecated)
+/// -  4: Analysis function, post set (deprecated)
+/// -  5: Analysis function, post daq (deprecated)
 /// -  6: Formula
 /// -  7: Formula version: "[[:digit:]]+"
-/// -  8: Analysis function, pre sweep
+/// -  8: Analysis function, pre sweep (deprecated)
 /// -  9: Analysis function, generic
 /// - 10: Unused
 /// - 11-26: Explicit delta values. `;` separated list as long as the number of sweeps.
-/// - 27: Analysis function, pre set
+/// - 27: Analysis function, pre set (deprecated)
 /// - 28: Explicit delta value for "Inter trial interval"
 /// - 29: Analysis function parameters. See below for a detailed explanation.
 /// - 30-50: unused
@@ -3668,10 +3678,20 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 	if(WaveExists(wv))
 		UpgradeWaveTextParam(wv)
 	else
-		Make/N=(51, 100, EPOCH_TYPES_TOTAL_NUMBER)/T dfr:WPT/Wave=wv
-		AddDimLabelsToWPT(wv)
-		SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
+		WAVE/T wv = GetWaveBuilderWaveTextParamAsFree()
+		MoveWave wv, dfr:WPT
 	endif
+
+	return wv
+End
+
+/// @brief Return a free wave version of GetWaveBuilderWaveTextParam()
+///
+/// @sa GetWaveBuilderWaveTextParam()
+Function/WAVE GetWaveBuilderWaveTextParamAsFree()
+	Make/FREE/N=(51, 100, EPOCH_TYPES_TOTAL_NUMBER)/T wv
+	AddDimLabelsToWPT(wv)
+	SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
 
 	return wv
 End
@@ -3742,14 +3762,25 @@ Function/Wave GetSegmentTypeWave()
 	if(WaveExists(wv))
 		UpgradeSegWvType(wv)
 	else
-		Make/N=102/D dfr:SegWvType/Wave=wvDouble
-		WAVE wv = wvDouble
-
-		wv[100] = 1
-		wv[101] = 1
-		AddDimLabelsToSegWvType(wv)
-		SetWaveVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION)
+		WAVE wv = GetSegmentTypeWaveAsFree()
+		MoveWave wv, dfr:SegWvType
 	endif
+
+	return wv
+End
+
+/// @brief Return a free wave version of GetSegmentTypeWave()
+///
+/// @sa GetSegmentTypeWave()
+Function/Wave GetSegmentTypeWaveAsFree()
+
+	Make/N=102/D/FREE wv
+
+	wv[100] = 1
+	wv[101] = 1
+
+	AddDimLabelsToSegWvType(wv)
+	SetWaveVersion(wv, SEGWVTYPE_WAVE_LAYOUT_VERSION)
 
 	return wv
 End
@@ -3834,6 +3865,52 @@ Function/Wave GetSegmentWave([duration])
 	SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT, "ms", SegmentWave
 
 	return SegmentWave
+End
+
+Function/WAVE GetEpochParameterNames()
+
+	DFREF dfr = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv = epochParameterNames
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	/// Generated code, see WBP_RegenerateEpochParameterNamesCode
+	/// @{
+	Make/T/FREE st_0 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op"}
+	Make/T/FREE st_1 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op"}
+	Make/T/FREE st_2 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Build resolution (index)", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "High pass filter cut off", "High pass filter cut off delta", "High pass filter cut off dme", "High pass filter cut off ldel", "High pass filter cut off op", "Low pass filter cut off", "Low pass filter cut off delta", "Low pass filter cut off dme", "Low pass filter cut off ldel", "Low pass filter cut off op", "Noise filter order", "Noise filter order delta", "Noise filter order dme", "Noise filter order ldel", "Noise filter order op", "Noise Type: White, Pink, Brown", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Random Seed", "Reseed RNG for each epoch", "Reseed RNG for each step"}
+	Make/T/FREE st_3 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Chirp end frequency", "Chirp end frequency delta", "Chirp end frequency dme", "Chirp end frequency ldel", "Chirp end frequency op", "Chirp type: Log or sin", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op", "Trigonometric function Sin/Cos"}
+	Make/T/FREE st_4 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op"}
+	Make/T/FREE st_5 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Duration type: User/Automatic", "Number of pulses", "Number of pulses delta", "Number of pulses dme", "Number of pulses ldel", "Number of pulses op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Poisson distribution true/false", "PT: First Mixed Frequency", "PT: First Mixed Frequency delta", "PT: First Mixed Frequency dme", "PT: First Mixed Frequency ldel", "PT: First Mixed Frequency op", "PT: Last Mixed Frequency", "PT: Last Mixed Frequency delta", "PT: Last Mixed Frequency dme", "PT: Last Mixed Frequency ldel", "PT: Last Mixed Frequency op", "PT: Mixed Frequency", "PT: Shuffle", "Pulse train type (index)", "Random Seed", "Reseed RNG for each epoch", "Reseed RNG for each step", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op", "Train pulse duration", "Train pulse duration delta", "Train pulse duration dme", "Train pulse duration ldel", "Train pulse duration op"}
+	Make/T/FREE st_6 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "PSC exp decay time 1/2", "PSC exp decay time 1/2 delta", "PSC exp decay time 1/2 dme", "PSC exp decay time 1/2 ldel", "PSC exp decay time 1/2 op", "PSC exp decay time 2/2", "PSC exp decay time 2/2 delta", "PSC exp decay time 2/2 dme", "PSC exp decay time 2/2 ldel", "PSC exp decay time 2/2 op", "PSC exp rise time", "PSC exp rise time delta", "PSC exp rise time dme", "PSC exp rise time ldel", "PSC exp rise time op", "PSC ratio decay times", "PSC ratio decay times delta", "PSC ratio decay times dme", "PSC ratio decay times ldel", "PSC ratio decay times op"}
+	Make/T/FREE st_7 = {"Custom epoch wave name", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op"}
+	Make/T/FREE st_8 = {"Combine epoch formula"}
+	/// @}
+
+	Make/FREE sizes = {DimSize(st_0, ROWS), DimSize(st_1, ROWS), DimSize(st_2, ROWS), DimSize(st_3, ROWS), DimSize(st_4, ROWS), DimSize(st_5, ROWS), DimSize(st_6, ROWS), DimSize(st_7, ROWS), DimSize(st_8, ROWS)}
+
+	Redimension/N=(WaveMax(sizes)) st_0, st_1, st_2, st_3, st_4, st_5, st_6, st_7, st_8
+
+	Concatenate/FREE/T {st_0, st_1, st_2, st_3, st_4, st_5, st_6, st_7, st_8}, wv
+
+	MatrixTranspose wv
+
+	MoveWave wv, dfr:epochParameterNames
+
+	SetDimLabel ROWS, -1, $("Epoch type")        , wv
+	SetDimLabel ROWS,  0, $("Square pulse")      , wv
+	SetDimLabel ROWS,  1, $("Ramp")              , wv
+	SetDimLabel ROWS,  2, $("Noise")             , wv
+	SetDimLabel ROWS,  3, $("Sin")               , wv
+	SetDimLabel ROWS,  4, $("Saw tooth")         , wv
+	SetDimLabel ROWS,  5, $("Pulse train")       , wv
+	SetDimLabel ROWS,  6, $("PSC")               , wv
+	SetDimLabel ROWS,  7, $("Load custom wave")  , wv
+	SetDimLabel ROWS,  8, $("Combine")           , wv
+
+	return wv
 End
 
 /// @}

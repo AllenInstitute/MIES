@@ -254,15 +254,15 @@ End
 static Function SC_Test1_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -344,15 +344,15 @@ End
 static Function SC_Test2_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -438,15 +438,15 @@ End
 static Function SC_Test3_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -531,15 +531,15 @@ End
 static Function SC_Test4_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=60)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=60)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -629,15 +629,15 @@ End
 static Function SC_Test5_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -723,15 +723,15 @@ End
 static Function SC_Test6_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=3)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="*")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=3)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="*")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -817,15 +817,15 @@ End
 static Function SC_Test7_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=90)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=2.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=90)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=2)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -932,15 +932,15 @@ End
 static Function SC_Test8_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=2)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="*")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=3)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="*")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=2)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="*")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=3)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="*")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1062,15 +1062,15 @@ End
 static Function SC_Test9_IGNORE(device)
 	string device
 
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=3)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="*")
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
-	WBP_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleModifier", var=1.5)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleOperator", str="+")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MaxTrials", var=2)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionModifier", var=3)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "DAScaleSpikePositionOperator", str="*")
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "MinimumSpikePosition", var=50)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "AutoBiasBaselineModifier", var=10)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "FailedPulseLevel", var=1)
+	AFH_AddAnalysisParameter("SC_SpikeControl_DA_0", "IdealNumberOfSpikesPerPulse", var=1)
 End
 
 static Function SC_Test9_Pre_IGNORE(device)

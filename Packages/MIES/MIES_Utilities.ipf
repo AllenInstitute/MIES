@@ -2526,15 +2526,35 @@ End
 
 /// @brief Add a string prefix to each list item and
 /// return the new list
-threadsafe Function/S AddPrefixToEachListItem(prefix, list)
-	string prefix, list
-
+threadsafe Function/S AddPrefixToEachListItem(string prefix, string list, [string sep])
 	string result = ""
 	variable numEntries, i
 
-	numEntries = ItemsInList(list)
+	if(ParamIsDefault(sep))
+		sep = ";"
+	endif
+
+	numEntries = ItemsInList(list, sep)
 	for(i = 0; i < numEntries; i += 1)
-		result = AddListItem(prefix + StringFromList(i, list), result, ";", inf)
+		result = AddListItem(prefix + StringFromList(i, list, sep), result, sep, inf)
+	endfor
+
+	return result
+End
+
+/// @brief Add a string suffix to each list item and
+/// return the new list
+threadsafe Function/S AddSuffixToEachListItem(string suffix, string list, [string sep])
+	string result = ""
+	variable numEntries, i
+
+	if(ParamIsDefault(sep))
+		sep = ";"
+	endif
+
+	numEntries = ItemsInList(list, sep)
+	for(i = 0; i < numEntries; i += 1)
+		result = AddListItem(StringFromList(i, list, sep) + suffix, result, sep, inf)
 	endfor
 
 	return result
@@ -5823,4 +5843,23 @@ Function RenameDataFolderToUniqueName(string path, string suffix)
 	RenameDataFolder $path, $name
 	ASSERT_TS(!DataFolderExists(path), "Could not move it of the way.")
 	ASSERT_TS(DataFolderExists(folder), "Could not create it in the correct place.")
+End
+
+/// @brief Prepare wave for inline definition
+///
+/// Outputs a wave in a format so that it can be initialized
+/// with these contents in an Igor Pro procedure file.
+Function/S GetCodeForWaveContents(WAVE/T wv)
+
+	string list
+
+	ASSERT(DimSize(wv, COLS) <= 1, "Does only support 1D waves")
+	ASSERT(DimSize(wv, ROWS) > 0, "Does not support empty waves")
+
+	wv[] = "\"" + wv[p] + "\""
+
+	list = TextWaveToList(wv, ", ")
+	list = RemoveEnding(list, ", ")
+
+	return "{" + list + "}"
 End

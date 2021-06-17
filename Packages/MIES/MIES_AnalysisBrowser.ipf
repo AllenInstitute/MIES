@@ -2015,15 +2015,21 @@ static Function AB_LoadStimsetRAW(expFilePath, stimset, overwrite)
 	variable overwrite
 
 	string dataPath, data
-	variable numWavesLoaded
+	variable numWavesLoaded, channelType
 
 	WB_KillParameterWaves(stimset)
 	if(overwrite)
 		WB_KillStimset(stimset)
 	endif
 
+	channelType = GetStimSetType(stimset)
+
+	if(channeltype == CHANNEL_TYPE_UNKNOWN)
+		return 1
+	endif
+
 	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
-	DFREF setDFR = GetSetFolder(GetStimSetType(stimset))
+	DFREF setDFR = GetSetFolder(channelType)
 
 	WAVE/Z/SDFR=setDFR wv = $stimset
 	if(WaveExists(wv))
@@ -2066,6 +2072,11 @@ static Function AB_LoadStimsetTemplateWaves(expFilePath, stimset)
 	parameterWaves = AddListItem(WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE), parameterWaves)
 
 	channelType = GetStimSetType(stimset)
+
+	if(channeltype == CHANNEL_TYPE_UNKNOWN)
+		return 1
+	endif
+
 	dataPath = GetSetParamFolderAsString(channelType)
 
 	DFREF saveDFR = GetDataFolderDFR()

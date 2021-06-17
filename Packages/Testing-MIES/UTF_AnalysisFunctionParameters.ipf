@@ -45,7 +45,7 @@ static Function AbortsWithEmptyName()
 	CHECK_EMPTY_STR(params)
 
 	try
-		WBP_AddAnalysisParameter(stimSet, "", var = 123); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "", var = 123); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -67,7 +67,7 @@ static Function AbortsWithInvalidName1()
 	CHECK_EMPTY_STR(params)
 
 	try
-		WBP_AddAnalysisParameter(stimSet, "123", var = 123); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "123", var = 123); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -89,7 +89,7 @@ static Function AbortsWithInvalidName2()
 	CHECK_EMPTY_STR(params)
 
 	try
-		WBP_AddAnalysisParameter(stimSet, "a b", var = 123); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "a b", var = 123); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -111,7 +111,7 @@ static Function AbortsWithNoData()
 	CHECK_EMPTY_STR(params)
 
 	try
-		WBP_AddAnalysisParameter(stimSet, "ab"); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab"); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -133,7 +133,7 @@ static Function AbortsWithInvalidDataComb1()
 	CHECK_EMPTY_STR(params)
 
 	try
-		WBP_AddAnalysisParameter(stimSet, "ab", var = 123, str = "hi there!"); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", var = 123, str = "hi there!"); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -155,7 +155,7 @@ static Function AbortsWithInvalidDataComb2()
 	CHECK_EMPTY_STR(params)
 
 	try
-		WBP_AddAnalysisParameter(stimSet, "ab", var = 123, wv = {1, 2}); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", var = 123, wv = {1, 2}); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -177,7 +177,7 @@ static Function AbortsWithInvalidDataComb3()
 	CHECK_EMPTY_STR(params)
 
 	try
-		WBP_AddAnalysisParameter(stimSet, "ab", str = "hi there", wv = {1, 2}); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", str = "hi there", wv = {1, 2}); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -199,7 +199,7 @@ static Function AbortsWithInvalidDataComb4()
 	CHECK_EMPTY_STR(params)
 
 	try
-		WBP_AddAnalysisParameter(stimSet, "ab", str = "hi there", wv = {1, 2}); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", str = "hi there", wv = {1, 2}); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -221,7 +221,7 @@ static Function WorksWithPreviouslyInvalidContents()
 	CHECK_EMPTY_STR(params)
 
 	input = "; , = :|"
-	WBP_AddAnalysisParameter(stimSet, "ab", str = input)
+	AFH_AddAnalysisParameter(stimSet, "ab", str = input)
 
 	reference = WPT[29][%Set][INDEP_EPOCH_TYPE]
 	// URL encoded
@@ -242,7 +242,7 @@ static Function AbortsWithInvalidWaveType()
 
 	try
 		Make/WAVE wv
-		WBP_AddAnalysisParameter(stimSet, "ab", wv = wv); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", wv = wv); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -265,7 +265,7 @@ static Function AbortsWithEmptyWave()
 
 	try
 		Make/N=0 wv
-		WBP_AddAnalysisParameter(stimSet, "ab", wv = wv); AbortOnRTE
+		AFH_AddAnalysisParameter(stimSet, "ab", wv = wv); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -291,7 +291,7 @@ static Function AcceptsAllTextWaveContents()
 	Make/T/FREE refData = {"1", "2", "3", "|"}
 	refName   = "abcd"
 
-	WBP_AddAnalysisParameter(stimSet, refName, wv = refData)
+	AFH_AddAnalysisParameter(stimSet, refName, wv = refData)
 End
 
 static Function WorksWithVariable()
@@ -310,7 +310,7 @@ static Function WorksWithVariable()
 	refValue = 123
 	refName  = "ab"
 
-	WBP_AddAnalysisParameter(stimSet, refName, var = refValue)
+	AFH_AddAnalysisParameter(stimSet, refName, var = refValue)
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
@@ -341,7 +341,7 @@ static Function WorksWithString()
 	refString = "hi there"
 	refName   = "abc"
 
-	WBP_AddAnalysisParameter(stimSet, refName, str = refString)
+	AFH_AddAnalysisParameter(stimSet, refName, str = refString)
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
@@ -372,7 +372,7 @@ static Function WorksWithNumericWave()
 	Make/D/FREE refData = {1, 2, 3, 4}
 	refName   = "abcde"
 
-	WBP_AddAnalysisParameter(stimSet, refName, wv = refData)
+	AFH_AddAnalysisParameter(stimSet, refName, wv = refData)
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
@@ -404,7 +404,7 @@ static Function WorksWithTextWave()
 	Make/T/FREE refData = {"1", "2", "3", "hi_there"}
 	refName   = "abcdef"
 
-	WBP_AddAnalysisParameter(stimSet, refName, wv = refData)
+	AFH_AddAnalysisParameter(stimSet, refName, wv = refData)
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
@@ -433,9 +433,9 @@ static Function ReplacesDuplicateEntries()
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
-	WBP_AddAnalysisParameter(stimSet, "a1", str = "a1")
-	WBP_AddAnalysisParameter(stimSet, "a2", str = "a2")
-	WBP_AddAnalysisParameter(stimSet, "a1", str = "a11")
+	AFH_AddAnalysisParameter(stimSet, "a1", str = "a1")
+	AFH_AddAnalysisParameter(stimSet, "a2", str = "a2")
+	AFH_AddAnalysisParameter(stimSet, "a1", str = "a11")
 
 	params = WPT[29][%Set][INDEP_EPOCH_TYPE]
 

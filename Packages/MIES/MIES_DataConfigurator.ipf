@@ -886,8 +886,8 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		endif
 
 		// restarting DAQ via the stimset popup menues does not call DAP_CheckSettings()
-		// so the stimest must not exist here
-		if(!WaveExists(stimSet[i]))
+		// so the stimest must not exist here or it could be empty
+		if(!WaveExists(stimSet[i]) || DimSize(stimSet[i], ROWS) == 0)
 			Abort
 		endif
 

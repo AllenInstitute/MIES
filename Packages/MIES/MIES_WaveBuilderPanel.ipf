@@ -18,23 +18,23 @@ static StrConstant WaveBuilderGraph   = "WaveBuilder#WaveBuilderGraph"
 static StrConstant AnalysisParamGUI   = "WaveBuilder#AnalysisParamGUI"
 static StrConstant DEFAULT_SET_PREFIX = "StimulusSetA"
 
-static StrConstant SEGWVTYPE_CONTROL_REGEXP = ".*_S[[:digit:]]+"
-static StrConstant WP_CONTROL_REGEXP        = ".*_P[[:digit:]]+"
-static StrConstant WPT_CONTROL_REGEXP       = ".*_T[[:digit:]]+"
+static StrConstant SEGWVTYPE_CONTROL_REGEXP     = ".*_S[[:digit:]]+"
+static StrConstant WP_CONTROL_REGEXP            = ".*_P[[:digit:]]+"
+static StrConstant WPT_CONTROL_REGEXP           = ".*_T[[:digit:]]+"
+static StrConstant SEGWVTYPE_ALL_CONTROL_REGEXP = "^.*_ALL$"
 
 static Constant WBP_WAVETYPE_WP        = 0x1
 static Constant WBP_WAVETYPE_WPT       = 0x2
 static Constant WBP_WAVETYPE_SEGWVTYPE = 0x4
-
-// Equal to the indizes of the Wave Type popup menu
-static Constant  STIMULUS_TYPE_DA            = 1
-static Constant  STIMULUS_TYPE_TLL           = 2
 
 /// @name Parameters for WBP_TranslateControlContents()
 /// @{
 static Constant FROM_PANEL_TO_WAVE = 0x1
 static Constant FROM_WAVE_TO_PANEL = 0x2
 /// @}
+
+static StrConstant HIDDEN_CONTROLS_CUSTOM_COMBINE = "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_op_P70;popup_WaveBuilder_op_P71;popup_WaveBuilder_op_P72;setvar_explDeltaValues_T11;setvar_explDeltaValues_T12_DD02;setvar_explDeltaValues_T13"
+static StrConstant HIDDEN_CONTROLS_SQUARE_PULSE   = "popup_WaveBuilder_op_P71;setvar_explDeltaValues_T12_DD02"
 
 Function WB_OpenStimulusSetInWaveBuilder()
 
@@ -399,7 +399,7 @@ static Function WBP_UpdatePanelIfAllowed()
 			endif
 			break
 		case EPOCH_TYPE_COMBINE:
-			WB_UpdateEpochCombineList(WBP_GetOutputType())
+			WB_UpdateEpochCombineList(WBP_GetStimulusType())
 			break
 		default:
 			// nothing to do
@@ -438,7 +438,7 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 		row = WBP_ExtractRowNumberFromControl(control)
 		ASSERT(IsFinite(row), "Could not find row in: " + control)
 
-		if(GrepString(control, "^.*_ALL$"))
+		if(GrepString(control, SEGWVTYPE_ALL_CONTROL_REGEXP))
 			data = WPT[row][%Set][INDEP_EPOCH_TYPE]
 		else
 			data = WPT[row][segment][stimulusType]
@@ -497,9 +497,7 @@ End
 Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string setWaveToDelete, panelTitle, lockedDevices
-	string popupMenuSelectedItemsStart, popupMenuSelectedItemsEnd
-	variable i, numPanels, channelType
+	string setWaveToDelete
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -512,33 +510,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 				break
 			endif
 
-			lockedDevices = GetListOfLockedDevices()
-			if(!IsEmpty(lockedDevices))
-				numPanels = ItemsInList(lockedDevices)
-				for(i = 0; i < numPanels; i += 1)
-					panelTitle = StringFromList(i, lockedDevices)
-					if(StringMatch(SetWaveToDelete, CHANNEL_DA_SEARCH_STRING))
-						channelType = CHANNEL_TYPE_DAC
-					else
-						channelType = CHANNEL_TYPE_TTL
-					endif
-
-					if(!WindowExists(panelTitle))
-						WBP_DeleteSet()
-						continue
-					endif
-
-					popupMenuSelectedItemsStart = WBP_PopupMenuWaveNameList(panelTitle, channelType, CHANNEL_CONTROL_WAVE)
-					popupMenuSelectedItemsEnd = WBP_PopupMenuWaveNameList(panelTitle, channelType, CHANNEL_CONTROL_INDEX_END)
-					WBP_DeleteSet()
-					WBP_RestorePopupMenuSelection(panelTitle, channelType, CHANNEL_CONTROL_WAVE, popupMenuSelectedItemsStart)
-					WBP_RestorePopupMenuSelection(panelTitle, channelType, CHANNEL_CONTROL_INDEX_END, popupMenuSelectedItemsEnd)
-				endfor
-			else
-				WBP_DeleteSet()
-			endif
-
-			WBP_UpdateDaEphysStimulusSetPopups()
+			ST_RemoveStimSet(setWaveToDelete)
 
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
 			PopupMenu popup_WaveBuilder_SetList win=$panel, mode = 1
@@ -610,17 +582,16 @@ Function WBP_FinalTabHook(tca)
 		EnableControl(panel, "SetVar_WaveBuilder_P0")
 	endif
 
-	ShowControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_op_P70;popup_WaveBuilder_op_P71;popup_WaveBuilder_op_P72;setvar_explDeltaValues_T11;setvar_explDeltaValues_T12_DD02;setvar_explDeltaValues_T13")
+	ShowControls(tca.win, HIDDEN_CONTROLS_CUSTOM_COMBINE)
+	ShowControls(tca.win, HIDDEN_CONTROLS_SQUARE_PULSE)
 
 	switch(tca.tab)
 		case EPOCH_TYPE_CUSTOM:
-			HideControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_op_P70;popup_WaveBuilder_op_P71;popup_WaveBuilder_op_P72;setvar_explDeltaValues_T11;setvar_explDeltaValues_T12_DD02;setvar_explDeltaValues_T13")
-			break
 		case EPOCH_TYPE_COMBINE:
-			HideControls(tca.win, "SetVar_WaveBuilder_P0;SetVar_WaveBuilder_P1;SetVar_WaveBuilder_P2;SetVar_WaveBuilder_P3;SetVar_WB_DurDeltaMult_P52;SetVar_WB_AmpDeltaMult_P50;popup_WaveBuilder_op_P70;popup_WaveBuilder_op_P71;popup_WaveBuilder_op_P72;setvar_explDeltaValues_T11;setvar_explDeltaValues_T12_DD02;setvar_explDeltaValues_T13")
+			HideControls(tca.win, HIDDEN_CONTROLS_CUSTOM_COMBINE)
 			break
 		case EPOCH_TYPE_SQUARE_PULSE:
-			HideControls(tca.win, "popup_WaveBuilder_op_P71;setvar_explDeltaValues_T12_DD02;")
+			HideControls(tca.win, HIDDEN_CONTROLS_SQUARE_PULSE)
 			break
 	endswitch
 
@@ -632,39 +603,28 @@ End
 Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string setName, genericFunc, params, errorMessage
+	string basename, setName
+	variable stimulusType, setNumber, saveAsBuiltin, ret
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			setName = WBP_AssembleSetName()
+			basename = GetSetVariableString(panel, "setvar_WaveBuilder_baseName")
+			stimulusType = WBP_GetStimulusType()
+			setNumber = GetSetVariable(panel, "setvar_WaveBuilder_SetNumber")
+			saveAsBuiltin = GetCheckBoxState(panel, "check_allow_saving_builtin_nam")
 
-			if(WBP_IsBuiltinStimset(setName) && !GetCheckBoxState(panel, "check_allow_saving_builtin_nam"))
-				printf "The stimset %s can not be saved as it violates the naming scheme "       + \
-					   "for user stimsets. Check the checkbox above if you really want to save " + \
-					   "a builtin stimset.\r", setName
-				ControlWindowToFront()
+			WAVE SegWvType = GetSegmentTypeWave()
+			WAVE WP        = GetWaveBuilderWaveParam()
+			WAVE/T WPT     = GetWaveBuilderWaveTextParam()
+
+			setName = WB_SaveStimSet(baseName, stimulusType, SegWvType, WP, WPT, setNumber, saveAsBuiltin)
+
+			if(IsEmpty(setName))
 				break
 			endif
 
-			genericFunc = WBP_GetAnalysisGenericFunction()
-			params = WBP_GetAnalysisParameters()
-			errorMessage = AFH_CheckAnalysisParameter(genericFunc, params)
-
-			if(!IsEmpty(errorMessage))
-				printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"
-				print errorMessage
-				ControlWindowToFront()
-				break
-			endif
-
-			WBP_SaveSetParam(setName)
-
-			// propagate the existence of the new set
-			WBP_UpdateDaEphysStimulusSetPopups()
-			WB_UpdateEpochCombineList(WBP_GetOutputType())
-
-			WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
-			ASSERT(WaveExists(stimset), "Could not recreate stimset")
+			DAP_UpdateDaEphysStimulusSetPopups()
+			WB_UpdateEpochCombineList(stimulusType)
 
 			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", DEFAULT_SET_PREFIX)
 			WBP_LoadSet(NONE)
@@ -756,7 +716,7 @@ Function WBP_UpdateControlAndWave(control, [var, str])
 		case WBP_WAVETYPE_WPT:
 			WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-			if(GrepString(control, "^.*_ALL$"))
+			if(GrepString(control, SEGWVTYPE_ALL_CONTROL_REGEXP))
 				WPT[paramRow][%Set][INDEP_EPOCH_TYPE] = str
 			else
 				WPT[paramRow][epoch][stimulusType] = str
@@ -864,7 +824,7 @@ static Function WBP_ChangeWaveType()
 
 	stimulusType = WBP_GetStimulusType()
 
-	if(stimulusType == STIMULUS_TYPE_TLL)
+	if(stimulusType == CHANNEL_TYPE_TTL)
 		// recreate SegWvType with its defaults
 		KillOrMoveToTrash(wv=GetSegmentTypeWave())
 
@@ -877,7 +837,7 @@ static Function WBP_ChangeWaveType()
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P3", var = 0)
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P4", var = 0)
 		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P5", var = 0)
-	elseif(stimulusType == STIMULUS_TYPE_DA)
+	elseif(stimulusType == CHANNEL_TYPE_DAC)
 		SetVariable SetVar_WaveBuilder_P2 win =$panel, limits = {-inf,inf,1}
 		EnableControls(panel, list)
 	else
@@ -887,19 +847,8 @@ static Function WBP_ChangeWaveType()
 	WBP_UpdatePanelIfAllowed()
 End
 
-static Function WBP_GetStimulusType()
-
-	strswitch(GetPopupMenuString(panel, "popup_WaveBuilder_OutputType"))
-		case "TTL":
-			return STIMULUS_TYPE_TLL
-			break
-		case "DA":
-			return STIMULUS_TYPE_DA
-			break
-		default:
-			ASSERT(0, "unknown stimulus type")
-			break
-	endswitch
+Function WBP_GetStimulusType()
+	return WB_ParseStimulusType(GetPopupMenuString(panel, "popup_wavebuilder_outputtype"))
 End
 
 Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
@@ -974,72 +923,10 @@ Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
 	endswitch
 End
 
-/// @brief This function creates a string that is used to name the 2d output wave of the wavebuilder panel.
-///
-/// The naming is based on userinput to the wavebuilder panel
-static Function/S WBP_AssembleSetName([modName])
-	string modName
-	string AssembledBaseName = ""
-
-	variable maxLength = (MAX_OBJECT_NAME_LENGTH_IN_BYTES_SHORT - 1) / 2
-
-	ControlInfo/W=$panel setvar_WaveBuilder_baseName
-	if(ParamIsDefault(modName))
-		AssembledBaseName += s_value[0,maxLength]
-	else
-		AssembledBaseName += s_value[0,(maxLength - strlen(modName))]
-		AssembledBaseName += modName
-	endif
-	ControlInfo/W=$panel popup_WaveBuilder_OutputType
-	AssembledBaseName += "_" + s_value + "_"
-	ControlInfo/W=$panel setvar_WaveBuilder_SetNumber
-	AssembledBaseName += num2str(v_value)
-
-	return CleanupName(AssembledBaseName, 0)
-End
-
-/// @brief Split the full setname into its three parts: prefix, outputType and set number
-///
-/// Counterpart to WBP_AssembleSetName()
-static Function WBP_SplitSetName(setName, setPrefix, channelType, setNumber)
-	string setName
-	string &setPrefix
-	variable &channelType, &setNumber
-
-	string channelTypeString, setNumberString
-
-	SplitString/E="(.*)_(DA|TTL)_([[:digit:]]+)" setName, setPrefix, channelTypeString, setNumberString
-
-	ASSERT(V_flag == 3, "Invalid setName format")
-
-	channelType = !cmpstr(channelTypeString, "DA") ? CHANNEL_TYPE_DAC : CHANNEL_TYPE_TTL
-	setNumber   = str2num(setNumberString)
-End
-
-/// @brief Return the output type, one of #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
-Function WBP_GetOutputType()
-
-	variable outputType, idx
-	idx = GetPopupMenuIndex(panel, "popup_WaveBuilder_OutputType")
-
-	switch(idx)
-		case 0:
-			outputType = CHANNEL_TYPE_DAC
-			break
-		case 1:
-			outputType = CHANNEL_TYPE_TTL
-			break
-		default:
-			ASSERT(0, "unknown channelType")
-			break
-	endswitch
-
-	return outputType
-End
 
 Function/S WBP_ReturnListSavedSets()
 
-	string DAClist, TTLlist, searchString
+	string stimsetList, searchString
 
 	searchString = GetSetVariableString(panel, "setvar_WaveBuilder_search")
 
@@ -1047,10 +934,9 @@ Function/S WBP_ReturnListSavedSets()
 		searchString = "*"
 	endif
 
-	ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, searchString, WBstimSetList = DAClist)
-	ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, searchString, WBstimSetList = TTLlist)
+	ST_GetStimsetList(searchString = searchString, WBstimSetList = stimsetList)
 
-	return NONE + ";" + SortList(DAClist + TTLlist, ";", 16)
+	return NONE + ";" + stimsetList
 end
 
 /// @brief Return true if the given stimset is a builtin, false otherwise
@@ -1058,34 +944,6 @@ Function WBP_IsBuiltinStimset(setName)
 	string setName
 
 	return GrepString(setName, "^MIES_.*") || !CmpStr(setName, STIMSET_TP_WHILE_DAQ)
-End
-
-/// @brief Save the set parameter waves
-static Function WBP_SaveSetParam(setName)
-	string setName
-
-	string childStimsets
-	variable i
-
-	WAVE SegWvType = GetSegmentTypeWave()
-	WAVE WP        = GetWaveBuilderWaveParam()
-	WAVE WPT       = GetWaveBuilderWaveTextParam()
-
-	DFREF dfr = GetSetParamFolder(WBP_GetOutputType())
-
-	// avoid circle references of any order
-	childStimsets = WB_StimsetRecursion()
-	if(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
-		do
-			i += 1
-			setName = WBP_AssembleSetName(modName = "_" + num2str(i))
-		while(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
-		printf "Naming failure: Stimset can not reference itself. Saving with different name: \"%s\" to remove reference to itself.\r", setName
-	endif
-
-	Duplicate/O SegWvType , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
-	Duplicate/O WP	      , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
-	Duplicate/O WPT       , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
 End
 
 static Function WBP_LoadSet(setName)
@@ -1099,7 +957,7 @@ static Function WBP_LoadSet(setName)
 	SetCheckBoxState(panel, "check_PreventUpdate", 1)
 
 	if(cmpstr(setName, NONE))
-		WBP_SplitSetname(setName, setPrefix, channelType, setNumber)
+		WB_SplitStimsetName(setName, setPrefix, channelType, setNumber)
 
 		PGC_SetAndActivateControl(panel, "popup_WaveBuilder_OutputType", val = channelType)
 
@@ -1180,35 +1038,6 @@ static Function SetAnalysisFunctionIfFuncExists(win, ctrl, stimset, funcList, fu
 	endif
 
 	SetPopupMenuString(win, ctrl, entry)
-End
-
-static Function WBP_DeleteSet()
-
-	string WPName, WPTName, SegWvTypeName, setName
-
-	setName = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
-
-	WPName        = WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
-	WPTName       = WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
-	SegWvTypeName = WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
-
-	// makes sure that a set is selected
-	if(!CmpStr(setName, NONE))
-		return NaN
-	endif
-
-	if(StringMatch(setName, CHANNEL_TTL_SEARCH_STRING))
-		dfref paramDFR = GetWBSvdStimSetParamTTLPath()
-		dfref dfr      = GetWBSvdStimSetTTLPath()
-	else
-		dfref paramDFR = GetWBSvdStimSetParamDAPath()
-		dfref dfr      = GetWBSvdStimSetDAPath()
-	endif
-
-	KillOrMoveToTrash(wv=dfr:$SetName)
-	KillOrMoveToTrash(wv=paramDFR:$WPName)
-	KillOrMoveToTrash(wv=paramDFR:$WPTName)
-	KillOrMoveToTrash(wv=paramDFR:$SegWvTypeName)
 End
 
 static Function WBP_UpdateEpochControls()
@@ -1339,94 +1168,6 @@ Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
 	endswitch
 
 	return 0
-End
-
-/// @brief Update the popup menus and its `MenuExp` user data after stim set changes
-///
-/// @param panelTitle [optional, defaults to all locked devices] device
-Function WBP_UpdateDaEphysStimulusSetPopups([panelTitle])
-	string panelTitle
-
-	variable i, j, numPanels
-	string ctrlWave, ctrlIndexEnd, DAlist, TTLlist, listOfPanels
-
-	if(ParamIsDefault(panelTitle))
-		listOfPanels = GetListOfLockedDevices()
-
-		if(isEmpty(listOfPanels))
-			return NaN
-		endif
-	else
-		listOfPanels = panelTitle
-	endif
-
-	DEBUGPRINT("Updating", str=listOfPanels)
-
-	DAlist  = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
-	TTLlist = ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
-
-	numPanels = ItemsInList(listOfPanels)
-	for(i = 0; i < numPanels; i += 1)
-		panelTitle = StringFromList(i, listOfPanels)
-
-		if(!WindowExists(panelTitle))
-			continue
-		endif
-
-		for(j = CHANNEL_INDEX_ALL; j < NUM_DA_TTL_CHANNELS; j += 1)
-			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-			SetControlUserData(panelTitle, ctrlWave, "MenuExp", DAlist)
-			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", DAlist)
-
-			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-			SetControlUserData(panelTitle, ctrlWave, "MenuExp", TTLlist)
-			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", TTLlist)
-		endfor
-
-		DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
-	endfor
-End
-
-/// @brief Returns the names of the items in the popmenu controls in a list
-static Function/S WBP_PopupMenuWaveNameList(panelTitle, channelType, controlType)
-	string panelTitle
-	variable channelType, controlType
-
-	string ctrl, stimset
-	string list = ""
-	variable i
-
-	ASSERT(controlType == CHANNEL_CONTROL_WAVE || controlType == CHANNEL_CONTROL_INDEX_END, "Invalid controlType")
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, channelType, controlType)
-		stimset = GetPopupMenuString(panelTitle, ctrl)
-		list = AddListItem(stimset, list, ";", Inf)
-	endfor
-
-	return list
-End
-
-static Function WBP_RestorePopupMenuSelection(panelTitle, channelType, controlType, list)
-	variable channelType, controlType
-	string panelTitle, list
-
-	variable i, stimsetIndex
-	string ctrl, stimset
-
-	ASSERT(controlType == CHANNEL_CONTROL_WAVE || controlType == CHANNEL_CONTROL_INDEX_END, "Invalid controlType")
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl    = GetPanelControl(i, channelType, controlType)
-		stimset = GetPopupMenuString(panelTitle, ctrl)
-
-		if(cmpstr(stimset, StringFromList(i, list)) == 1 || isEmpty(stimset))
-			stimsetIndex = GetPopupMenuIndex(panelTitle, ctrl)
-			PGC_SetAndActivateControl(paneltitle, ctrl, val=(stimsetIndex - 1))
-		endif
-	endfor
 End
 
 Function WBP_CheckProc_PreventUpdate(cba) : CheckBoxControl
@@ -1596,24 +1337,18 @@ End
 
 static Function WBP_AnaFuncsToWPT()
 
-	string func
+	variable stimulusType
+	string analysisFunction
 
-	if(WBP_GetStimulusType() == STIMULUS_TYPE_TLL)
-		// don't store analysis functions for TTL
+	if(WBP_GetStimulusType() == CHANNEL_TYPE_TTL)
 		return NaN
 	endif
 
+	analysisFunction = GetPopupMenuString(panel, "popup_af_generic_S9")
+	stimulusType = WBP_GetStimulusType()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-	func = GetPopupMenuString(panel, "popup_af_generic_S9")
-	WPT[9][%Set][INDEP_EPOCH_TYPE] = SelectString(cmpstr(func, NONE), "", func)
-
-	// clear deprecated entries for single analysis function events
-	if(cmpstr(func, NONE))
-		WPT[1, 5][%Set][INDEP_EPOCH_TYPE] = ""
-		WPT[8][%Set][INDEP_EPOCH_TYPE]    = ""
-		WPT[27][%Set][INDEP_EPOCH_TYPE]   = ""
-	endif
+	WB_SetAnalysisFunctionGeneric(stimulusType, analysisFunction, WPT)
 
 	WBP_UpdateParameterWave()
 End
@@ -1966,85 +1701,6 @@ static Function [STRUCT RGBColor s] WBP_GetSweepColor(variable sweep)
 	[s] = GetTraceColor(20 - mod(sweep, 20))
 End
 
-/// @brief Add an analysis function parameter to the given stimset
-///
-/// This function adds the parameter to the `WPT` wave and checks that it is valid.
-///
-/// Exactly one of `var`/`str`/`wv` must be given.
-///
-/// @param stimset stimset name
-/// @param name    name of the parameter
-/// @param var     [optional] numeric parameter
-/// @param str     [optional] string parameter
-/// @param wv      [optional] wave parameter can be numeric or text
-Function WBP_AddAnalysisParameter(stimset, name, [var, str, wv])
-	string stimset, name
-	variable var
-	string str
-	WAVE wv
-
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimset)
-	ASSERT(WaveExists(WPT), "Missing stimset")
-
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
-
-	if(!ParamIsDefault(var))
-		return WBP_AddAnalysisParameterIntoWPT(WPT, name, var = var)
-	elseif(!ParamIsDefault(str))
-		return WBP_AddAnalysisParameterIntoWPT(WPT, name, str = str)
-	elseif(!ParamIsDefault(wv))
-		return WBP_AddAnalysisParameterIntoWPT(WPT, name, wv = wv)
-	endif
-End
-
-/// @brief Internal use only
-Function WBP_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
-	WAVE/T WPT
-	string name
-	variable var
-	string str
-	WAVE wv
-
-	string type, value, formattedString, params
-
-	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
-
-	if(!ParamIsDefault(var))
-		type = "variable"
-		// numbers never need URL encoding
-		value = num2str(var)
-	elseif(!ParamIsDefault(str))
-		type = "string"
-		value = URLEncode(str)
-	elseif(!ParamIsDefault(wv))
-		ASSERT(DimSize(wv, ROWS) > 0, "Expected non-empty wave")
-		if(IsTextWave(wv))
-			type  = "textwave"
-			Duplicate/T/FREE wv, wvText
-			wvText = UrlEncode(wvText)
-			value = TextWaveToList(wvText, "|")
-		else
-			type = "wave"
-			// numbers never need URL encoding
-			value = NumericWaveToList(wv, "|", format = "%.15g")
-		endif
-	endif
-
-	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	ASSERT(!GrepString(value, "[=:,;]+"), "Broken URL encoding. Written entry contains invalid characters (one of `=:,;`)")
-	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
-
-	params = WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
-
-#ifndef AUTOMATED_TESTING
-	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
-		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
-	endif
-#endif
-
-	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
-End
-
 /// @brief Delete the given analysis parameter
 ///
 /// @param name    name of the parameter
@@ -2297,16 +1953,16 @@ Function WBP_ButtonProc_AddParam(ba) : ButtonControl
 
 			strswitch(type)
 				case "variable":
-					WBP_AddAnalysisParameterIntoWPT(WPT, name, var = str2numSafe(value))
+					WB_AddAnalysisParameterIntoWPT(WPT, name, var = str2numSafe(value))
 					break
 				case "string":
-					WBP_AddAnalysisParameterIntoWPT(WPT, name, str = value)
+					WB_AddAnalysisParameterIntoWPT(WPT, name, str = value)
 					break
 				case "wave":
-					WBP_AddAnalysisParameterIntoWPT(WPT, name, wv = ListToNumericWave(value, ";"))
+					WB_AddAnalysisParameterIntoWPT(WPT, name, wv = ListToNumericWave(value, ";"))
 					break
 				case "textwave":
-					WBP_AddAnalysisParameterIntoWPT(WPT, name, wv = ListToTextWave(value, ";"))
+					WB_AddAnalysisParameterIntoWPT(WPT, name, wv = ListToTextWave(value, ";"))
 					break
 				default:
 					ASSERT(0, "invalid type")
@@ -2419,4 +2075,117 @@ Function WBP_ButtonProc_LoadSet(ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+/// @brief Function to regenerate code for GetEpochParameterNames()
+Function/S WBP_RegenerateEpochParameterNamesCode()
+	variable i, numEntries
+	string list, msg
+	string code = ""
+
+	for(i = 0; i < EPOCH_TYPES_TOTAL_NUMBER; i += 1)
+		WAVE names = WBP_ListControlsPerStimulusType(i)
+		list = GetCodeForWaveContents(names)
+		sprintf msg, "Make/T/FREE st_%d = %s\r", i, list
+		code += msg
+	endfor
+
+	return code
+End
+
+/// @brief Return a list of all parameter names of the given epochType
+static Function/WAVE WBP_ListControlsPerStimulusType(variable epochType)
+	string list, control, tab, hiddenControls
+	variable i, numEntries, tabNumber, row, index
+
+	WBP_CreateWaveBuilderPanel()
+
+	WAVE WP    = GetWaveBuilderWaveParam()
+	WAVE/T WPT = GetWaveBuilderWaveTextParam()
+
+	Make/FREE/T/N=(MINIMUM_WAVE_SIZE) names
+	SetNumberInWaveNote(names, NOTE_INDEX, 0)
+
+	list = ControlNameList(panel)
+
+	switch(epochType)
+		case EPOCH_TYPE_COMBINE:
+		case EPOCH_TYPE_CUSTOM:
+			hiddenControls = HIDDEN_CONTROLS_CUSTOM_COMBINE
+			break
+		case EPOCH_TYPE_SQUARE_PULSE:
+			hiddenControls = HIDDEN_CONTROLS_SQUARE_PULSE
+			break
+		default:
+			hiddenControls = ""
+			break
+	endswitch
+
+	list = RemoveFromList(hiddenControls, list)
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		control = StringFromList(i, list)
+
+		if(!GrepString(control, WP_CONTROL_REGEXP) && !GrepString(control, WPT_CONTROL_REGEXP))
+			continue
+		endif
+
+		if(GrepString(control, SEGWVTYPE_ALL_CONTROL_REGEXP))
+			continue
+		endif
+
+		tabNumber = str2num(GetUserData(panel, control, "tabnum"))
+
+		if(tabNumber != epochType && !IsNaN(tabNumber))
+			continue
+		endif
+
+		row = WBP_ExtractRowNumberFromControl(control)
+		ASSERT(IsFinite(row), "Could not find row in: " + control)
+
+		index = GetNumberFromWaveNote(names, NOTE_INDEX)
+		EnsureLargeEnoughWave(names, minimumSize = index)
+
+		if(GrepString(control, WP_CONTROL_REGEXP))
+			names[index] = GetDimLabel(WP, ROWS, row)
+		elseif(GrepString(control, WPT_CONTROL_REGEXP))
+			names[index] = GetDimLabel(WPT, ROWS, row)
+		endif
+
+		SetNumberInWaveNote(names, NOTE_INDEX, ++index)
+	endfor
+
+	Redimension/N=(index) names
+	Note/K names
+
+	// additional entries which are not covered by the usual naming scheme
+	if(epochType == EPOCH_TYPE_CUSTOM)
+		Make/FREE/T additional = {"Custom epoch wave name"}
+	else
+		Make/FREE/T/N=(0) additional
+	endif
+
+	Concatenate/FREE/NP=(ROWS) {names, additional}, all
+
+	WAVE/T unique = GetUniqueEntries(all)
+
+	Sort/LOC unique, unique
+
+	return unique
+End
+
+Function/S WBP_GetDeltaModes()
+
+	return WAVEBUILDER_DELTA_MODES
+End
+
+Function/S WBP_GetTriggerTypes()
+
+	return WAVEBUILDER_TRIGGER_TYPES
+End
+
+Function/S WBP_GetPulseTypes()
+
+	return PULSE_TYPES_STRINGS
 End

@@ -143,6 +143,10 @@ Function/Wave WB_GetWaveParamForSet(setName)
 
 	WAVE/Z/SDFR=dfr wv = $WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
 
+	if(WaveExists(wv))
+		UpgradeWaveParam(wv)
+	endif
+
 	return wv
 End
 
@@ -188,6 +192,10 @@ Function/Wave WB_GetSegWvTypeForSet(setName)
 	DFREF dfr = GetSetParamFolder(type)
 
 	WAVE/Z/SDFR=dfr wv = $WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
+
+	if(WaveExists(wv))
+		UpgradeSegWvType(wv)
+	endif
 
 	return wv
 End
@@ -237,8 +245,15 @@ End
 /// @brief Check if the stimset wave note has the latest version
 static Function WB_StimsetHasLatestNoteVersion(setName)
 	string setName
+	variable type
 
-	DFREF dfr = GetSetFolder(GetStimSetType(setName))
+	type = GetStimSetType(setName)
+
+	if(type == CHANNEL_TYPE_UNKNOWN)
+		return 0
+	endif
+
+	DFREF dfr = GetSetFolder(type)
 	WAVE/Z/SDFR=dfr stimSet = $setName
 	ASSERT(WaveExists(stimSet), "stimset must exist")
 
@@ -253,7 +268,7 @@ End
 static Function WB_ParameterWvsNewerThanStim(setName)
 	string setName
 
-	variable lastModStimSet, lastModWP, lastModWPT, lastModSegWvType
+	variable lastModStimSet, lastModWP, lastModWPT, lastModSegWvType, channelType
 	string msg, WPModCount, WPTModCount, SegWvTypeModCount
 
 	WAVE/Z WP        = WB_GetWaveParamForSet(setName)
@@ -272,7 +287,10 @@ static Function WB_ParameterWvsNewerThanStim(setName)
 		if(lastModWP > lastModStimSet || lastModWPT > lastModStimSet || lastModSegWvType > lastModStimSet)
 			return 1
 		elseif(lastModWP == lastModStimSet || lastModWPT == lastModStimSet || lastModSegWvType == lastModStimSet)
-			DFREF dfr = GetSetFolder(GetStimSetType(setName))
+			channelType = GetStimSetType(setName)
+			ASSERT(channelType != CHANNEL_TYPE_UNKNOWN, "Invalid channel type")
+
+			DFREF dfr = GetSetFolder(channelType)
 			WAVE/Z/SDFR=dfr stimSet = $setName
 			ASSERT(WaveExists(stimSet), "Unexpected missing wave")
 
@@ -351,8 +369,15 @@ End
 /// @return date of last modification as double precision Igor date/time value
 Function WB_GetLastModStimSet(setName)
 	string setname
+	variable channelType
 
-	DFREF dfr = GetSetFolder(GetStimSetType(setName))
+	channelType = GetStimSetType(setName)
+
+	if(channelType == CHANNEL_TYPE_UNKNOWN)
+		return 0
+	endif
+
+	DFREF dfr = GetSetFolder(channelType)
 	WAVE/Z/SDFR=dfr stimSet = $setName
 	if(!WaveExists(stimSet))
 		return 0
@@ -403,7 +428,7 @@ static Function/Wave WB_GetStimSet([setName])
 		WAVE WP        = GetWaveBuilderWaveParam()
 		WAVE/T WPT     = GetWaveBuilderWaveTextParam()
 		WAVE SegWvType = GetSegmentTypeWave()
-		channelType    = WBP_GetOutputType()
+		channelType    = WBP_GetStimulusType()
 
 		setName = ""
 	else
@@ -415,11 +440,9 @@ static Function/Wave WB_GetStimSet([setName])
 		if(!WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType))
 			return $""
 		endif
-
-		UpgradeWaveParam(WP)
-		UpgradeWaveTextParam(WPT)
-		UpgradeSegWvType(SegWvType)
 	endif
+
+	ASSERT(channelType != CHANNEL_TYPE_UNKNOWN, "Unexpected channel type")
 
 	// WB_AddDelta modifies the waves so we pass a copy instead
 	Duplicate/FREE WP, WPCopy
@@ -446,11 +469,12 @@ static Function/Wave WB_GetStimSet([setName])
 	WP[48][][] = WPCopy[48][q][r]
 	SegWvType[97] = SegWvTypeCopy[97]
 
+	Make/FREE/N=(lengthOf1DWaves, numSweeps) stimSet
+
 	if(lengthOf1DWaves == 0)
-		return $""
+		return stimSet
 	endif
 
-	Make/FREE/N=(lengthOf1DWaves, numSweeps) stimSet
 	FastOp stimSet = 0
 
 // note: here the stimset generation is coupled to the ITC minimum sample interval which is 200 kHz wheras for NI it is 500 kHz
@@ -1770,14 +1794,12 @@ End
 ///
 /// The rows are sorted by creationDate of the WP/stimset wave to try to keep
 /// the shorthands constants even when new stimsets are added.
-Function WB_UpdateEpochCombineList(channelType)
-	variable channelType
-
+Function WB_UpdateEpochCombineList(variable channelType)
 	string list, setPath, setParamPath, entry
 	variable numEntries, i
 
-	list = ReturnListOfAllStimSets(channelType, "*")
-	list = RemoveFromList("TestPulse", list)
+	list = ST_GetStimsetList(channelType = channelType)
+	list = RemoveFromList(STIMSET_TP_WHILE_DAQ, list)
 
 	numEntries = ItemsInList(list)
 
@@ -2054,9 +2076,6 @@ Function/WAVE WB_CustomWavesPathFromStimSet([stimsetList])
 			continue
 		endif
 
-		UpgradeSegWvType(SegWvType)
-		UpgradeWaveTextParam(WPT)
-
 		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
@@ -2077,7 +2096,7 @@ End
 /// do not try to upgrade when loading stimsets. The custom waves have to be loaded first.
 ///
 /// @returns a text wave with paths to custom waves.
-Function/WAVE WB_UpgradeCustomWaves([stimsetList])
+static Function/WAVE WB_UpgradeCustomWaves([stimsetList])
 	string stimsetList
 
 	variable channelType, numStimsets, numEpochs, i, j
@@ -2093,7 +2112,7 @@ Function/WAVE WB_UpgradeCustomWaves([stimsetList])
 		if(ParamIsDefault(stimsetList))
 			WAVE/Z/T WPT     = GetWaveBuilderWaveTextParam()
 			WAVE/Z SegWvType = GetSegmentTypeWave()
-			channelType    = WBP_GetOutputType()
+			channelType    = WBP_GetStimulusType()
 		else
 			stimset = StringFromList(i, stimsetList)
 			WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimSet)
@@ -2105,13 +2124,12 @@ Function/WAVE WB_UpgradeCustomWaves([stimsetList])
 			continue
 		endif
 
-		UpgradeSegWvType(SegWvType)
-		UpgradeWaveTextParam(WPT)
+		ASSERT(channelType != CHANNEL_TYPE_UNKNOWN, "Unexpected channel type")
 
 		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
-			if(SegWvType[j] == 7)
+			if(SegWvType[j] == EPOCH_TYPE_CUSTOM)
 				WB_UpgradecustomWaveInWPT(WPT, channelType, j)
 			endif
 		endfor
@@ -2147,7 +2165,6 @@ static Function/S WB_StimsetChildren([stimset])
 
 	ASSERT(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType), "Parameter Waves not found.")
 
-	UpgradeSegWvType(SegWvType)
 	ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "Dimension Label not found. Check for changed DimLabels in SegWave!")
 	numEpochs = SegWvType[%'Total number of epochs']
 
@@ -2284,8 +2301,15 @@ End
 /// @return 1 if stimset wave was found, 0 otherwise
 Function WB_StimsetExists(stimset)
 	string stimset
+	variable channelType
 
-	DFREF setDFR = GetSetFolder(GetStimSetType(stimset))
+	channelType = GetStimSetType(stimset)
+
+	if(channelType == CHANNEL_TYPE_UNKNOWN)
+		return 0
+	endif
+
+	DFREF setDFR = GetSetFolder(channelType)
 	WAVE/Z/SDFR=setDFR wv = $stimset
 
 	if(WaveExists(wv))
@@ -2304,30 +2328,38 @@ Function WB_KillParameterWaves(stimset)
 	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimset)
 
 	if(!WaveExists(WP) && !WaveExists(WPT) && !WaveExists(SegWvType))
-		return 1
+		return NaN
 	endif
 
 	KillOrMoveToTrash(wv=WP)
 	KillOrMoveToTrash(wv=WPT)
 	KillOrMoveToTrash(wv=SegWvType)
 
-	return 1
+	return NaN
 End
 
 /// @brief Kill (custom) stimset
 Function WB_KillStimset(stimset)
-   string stimset
+	string stimset
 
-   DFREF setDFR = GetSetFolder(GetStimSetType(stimset))
-   WAVE/Z/SDFR=setDFR wv = $stimset
+	variable channelType
 
-   if(!WaveExists(wv))
-	   return 1
-   endif
+	channelType = GetStimSetType(stimset)
 
-   KillOrMoveToTrash(wv=wv)
+	if(channelType == CHANNEL_TYPE_UNKNOWN)
+		return NaN
+	endif
 
-   return 1
+	DFREF setDFR = GetSetFolder(channelType)
+	WAVE/Z/SDFR=setDFR wv = $stimset
+
+	if(!WaveExists(wv))
+		return NaN
+	endif
+
+	KillOrMoveToTrash(wv=wv)
+
+	return NaN
 End
 
 /// @brief Determine if the stimset is third party or from MIES
@@ -2345,4 +2377,188 @@ Function WB_StimsetIsFromThirdParty(stimset)
 	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
 
 	return !WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType)
+End
+
+/// @brief Internal use only
+Function WB_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
+	WAVE/T WPT
+	string name
+	variable var
+	string str
+	WAVE wv
+
+	string type, value, formattedString, params
+
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
+
+	if(!ParamIsDefault(var))
+		type = "variable"
+		// numbers never need URL encoding
+		value = num2str(var)
+	elseif(!ParamIsDefault(str))
+		type = "string"
+		value = URLEncode(str)
+	elseif(!ParamIsDefault(wv))
+		ASSERT(DimSize(wv, ROWS) > 0, "Expected non-empty wave")
+		if(IsTextWave(wv))
+			type  = "textwave"
+			Duplicate/T/FREE wv, wvText
+			wvText = UrlEncode(wvText)
+			value = TextWaveToList(wvText, "|")
+		else
+			type = "wave"
+			// numbers never need URL encoding
+			value = NumericWaveToList(wv, "|", format = "%.15g")
+		endif
+	endif
+
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
+	ASSERT(!GrepString(value, "[=:,;]+"), "Broken URL encoding. Written entry contains invalid characters (one of `=:,;`)")
+	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
+
+	params = WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
+
+#ifndef AUTOMATED_TESTING
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
+		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
+	endif
+#endif
+
+	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
+End
+
+/// @brief Internal use only
+Function WB_SetAnalysisFunctionGeneric(variable stimulusType, string analysisFunction, WAVE/T WPT)
+	if(stimulusType != CHANNEL_TYPE_DAC)
+		// only store analysis functions for DAC
+		return 1
+	endif
+
+	WPT[9][%Set][INDEP_EPOCH_TYPE] = SelectString(cmpstr(analysisFunction, NONE), "", analysisFunction)
+
+	// clear deprecated entries for single analysis function events
+	if(cmpstr(analysisFunction, NONE))
+		WPT[1, 5][%Set][INDEP_EPOCH_TYPE] = ""
+		WPT[8][%Set][INDEP_EPOCH_TYPE]    = ""
+		WPT[27][%Set][INDEP_EPOCH_TYPE]   = ""
+	endif
+
+	return 0
+End
+
+Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType, WAVE WP, WAVE/T WPT, variable setNumber, variable saveAsBuiltin)
+	string setName, genericFunc, params, errorMessage, childStimsets
+	variable i
+
+	setName = WB_AssembleSetName(baseName, stimulusType, setNumber)
+
+	if(WBP_IsBuiltinStimset(setName) && !saveAsBuiltin)
+		printf "The stimset %s can not be saved as it violates the naming scheme for user stimsets.\r", setName
+		ControlWindowToFront()
+		return ""
+	endif
+
+	genericFunc = WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
+	params = WPT[%$("Analysis function params (encoded)")][%Set][INDEP_EPOCH_TYPE]
+
+	errorMessage = AFH_CheckAnalysisParameter(genericFunc, params)
+
+	if(!IsEmpty(errorMessage))
+		printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"
+		print errorMessage
+		ControlWindowToFront()
+		return ""
+	endif
+
+	DFREF dfr = GetSetParamFolder(stimulusType)
+
+	// avoid circle references of any order
+	childStimsets = WB_StimsetRecursion()
+	if(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
+		do
+			i += 1
+			setName = WB_AssembleSetName(basename, stimulusType, setNumber, suffix = "_" + num2str(i))
+		while(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
+		printf "Naming failure: Stimset can not reference itself. Saving with different name: \"%s\" to remove reference to itself.\r", setName
+	endif
+
+	Duplicate/O SegWvType, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
+	Duplicate/O WP, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
+	Duplicate/O WPT, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
+
+	// propagate the existence of the new set
+	DAP_UpdateDaEphysStimulusSetPopups()
+	WB_UpdateEpochCombineList(stimulusType)
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	ASSERT(WaveExists(stimset), "Could not recreate stimset")
+
+	return setName
+End
+
+Function/S WB_SerializeStimulusType(variable stimulusType)
+	switch(stimulusType)
+		case CHANNEL_TYPE_DAC:
+			return "DA"
+		case CHANNEL_TYPE_TTL:
+			return "TTL"
+		default:
+			ASSERT(0, "unknown stimulus type")
+	endswitch
+End
+
+Function WB_ParseStimulusType(string stimulusType)
+
+	strswitch(stimulusType)
+		case "DA":
+			return CHANNEL_TYPE_DAC
+		case "TTL":
+			return CHANNEL_TYPE_TTL
+		default:
+			ASSERT(0, "unknown stimulus type")
+	endswitch
+End
+
+/// @brief Return the name of a stimulus set build up from the passed parts
+Function/S WB_AssembleSetName(string basename, variable stimulusType, variable setNumber, [string suffix])
+	string result
+	variable maxLength
+
+	if(ParamIsDefault(suffix))
+		suffix = ""
+	endif
+
+	maxLength = (MAX_OBJECT_NAME_LENGTH_IN_BYTES_SHORT - 1) / 2
+
+	if(ParamIsDefault(suffix))
+		result = basename[0, maxLength]
+	else
+		result = basename[0, (maxLength - strlen(suffix))]
+		result += suffix
+	endif
+
+	result += "_" + WB_SerializeStimulusType(stimulusType) + "_" + num2str(setNumber)
+
+	return CleanupName(result, 0)
+End
+
+/// @brief Split the full setname into its three parts: prefix, stimulusType and set number
+///
+/// Counterpart to WB_AssembleSetName()
+Function WB_SplitStimsetName(string setName, string &setPrefix, variable &stimulusType, variable &setNumber)
+	string stimulusTypeString, setNumberString, setPrefixString
+
+	setNumber    = NaN
+	setPrefix    = ""
+	stimulusType = CHANNEL_TYPE_UNKNOWN
+
+	SplitString/E="(.*)_(DA|TTL)_([[:digit:]]+)" setName, setPrefixString, stimulusTypeString, setNumberString
+
+	if(V_flag != 3)
+		return NaN
+	endif
+
+	setNumber    = str2num(setNumberString)
+	setPrefix    = setPrefixString
+	stimulusType = WB_ParseStimulusType(stimulusTypeString)
 End

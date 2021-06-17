@@ -56,12 +56,12 @@ static Function IH_KillStimSets()
 
 	string list, path
 
-	ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, "*", WBstimSetList=list)
+	ST_GetStimsetList(channelType = CHANNEL_TYPE_DAC, WBstimSetList=list)
 	path = GetDataFolder(1, GetWBSvdStimSetDAPath())
 	list = AddPrefixToEachListItem(path, list)
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
 
-	ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, "*", WBstimSetList=list)
+	ST_GetStimsetList(channelType = CHANNEL_TYPE_TTL, WBstimSetList=list)
 	path = GetDataFolder(1, GetWBSvdStimSetTTLPath())
 	list = AddPrefixToEachListItem(path, list)
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
