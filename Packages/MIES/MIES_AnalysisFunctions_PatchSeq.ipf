@@ -72,6 +72,8 @@ static Constant PSQ_TARGETV_TEST   = 0x2
 
 static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
+static Constant PSQ_RHEOBASE_DURATION = 500
+
 /// @brief Settings structure filled by PSQ_GetPulseSettingsForType()
 static Structure PSQ_PulseSettings
 	variable prePulseChunkLength  // ms
@@ -977,22 +979,19 @@ End
 /// @brief Return a sweep number of an existing sweep matching the following conditions
 ///
 /// - Acquired with Rheobase analysis function
-/// - Sweep set was passing
-/// - Pulse duration was longer than 500ms
+/// - Set QC passed for this SCI
+/// - Pulse duration was longer than `duration`
+/// - Spiked
 ///
 /// And as usual we want the *last* matching sweep.
 ///
 /// @return existing sweep number or -1 in case no such sweep could be found
-static Function PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
-	string panelTitle
-	variable headstage
-
+static Function PSQ_GetLastPassingLongRHSweep(string panelTitle, variable headstage, variable duration)
 	string key
-	variable i, numEntries, sweepNo, sweepCol
+	variable i, j, setSweep, numSetSweeps, numEntries, sweepNo, setQC, numPassingSweeps
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-	// rheobase sweeps passing
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
 
@@ -1000,17 +999,41 @@ static Function PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
 		return -1
 	endif
 
-	// pulse duration
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1)
-
+	// sweeps hold all which have a Set QC entry
 	numEntries = DimSize(sweeps, ROWS)
 	for(i = numEntries - 1; i >= 0; i -= 1)
 		sweepNo = sweeps[i]
+
+		setQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+		if(!setQC)
+			// set QC failed
+			continue
+		endif
+
+		// check that the pulse duration was long enough
+		key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 		WAVE/Z setting = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
-		if(WaveExists(setting) && setting[headstage] > 500)
-			return sweepNo
+		if(!WaveExists(setting) || setting[headstage] < duration)
+			continue
 		endif
+
+		// now fetch all sweeps from that SCI
+		WAVE/Z setSweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+		ASSERT(WaveExists(setSweeps), "Passing set but without sweeps is implausible")
+
+		numSetSweeps = DimSize(setSweeps, ROWS)
+		for(j = numSetSweeps - 1; j >= 0; j -= 1)
+			setSweep = setSweeps[j]
+			key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
+			WAVE/Z spikeDetect = GetLastSetting(numericalValues, setSweep, key, UNKNOWN_MODE)
+
+			// and return the last spiking one
+			if(WaveExists(spikeDetect) && spikeDetect[headstage] == 1)
+				return setSweep
+			endif
+		endfor
 	endfor
 
 	return -1
@@ -1066,7 +1089,7 @@ Function PSQ_DS_GetDAScaleOffset(panelTitle, headstage, opMode)
 			return PSQ_DS_OFFSETSCALE_FAKE
 		endif
 
-		sweepNo = PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
+		sweepNo = PSQ_GetLastPassingLongRHSweep(panelTitle, headstage, PSQ_RHEOBASE_DURATION)
 		if(!IsValidSweepNumber(sweepNo))
 			return NaN
 		endif
