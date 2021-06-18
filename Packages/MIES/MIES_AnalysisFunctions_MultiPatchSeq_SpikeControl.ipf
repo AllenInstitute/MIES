@@ -942,6 +942,7 @@ Function SC_SpikeControl(panelTitle, s)
 
 			break
 		case PRE_SET_EVENT:
+			SetAnalysisFunctionVersion(panelTitle, SC_SPIKE_CONTROL, s.headstage, s.sweepNo)
 
 			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage, clampMode = I_CLAMP_MODE))
 				return NaN
