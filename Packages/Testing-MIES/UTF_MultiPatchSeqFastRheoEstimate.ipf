@@ -117,10 +117,7 @@ static Function MSQ_FRE1_REENTRY([str])
 	variable sweepNo
 	string lbl
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 19)
+	sweepNo = 19
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -187,7 +184,7 @@ static Function MSQ_FRE1_REENTRY([str])
 	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	CheckDashboard(str, {0, 0})
+	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -210,10 +207,7 @@ static Function MSQ_FRE2_REENTRY([str])
 	variable sweepNo
 	string lbl
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 19)
+	sweepNo = 19
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -282,7 +276,7 @@ static Function MSQ_FRE2_REENTRY([str])
 	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	CheckDashboard(str, {0, 0})
+	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -305,10 +299,7 @@ static Function MSQ_FRE3_REENTRY([str])
 	variable sweepNo
 	string lbl
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 19)
+	sweepNo = 19
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -375,7 +366,7 @@ static Function MSQ_FRE3_REENTRY([str])
 	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	CheckDashboard(str, {0, 0})
+	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -401,10 +392,7 @@ static Function MSQ_FRE4_REENTRY([str])
 	variable sweepNo
 	string lbl
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 19)
+	sweepNo = 19
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -473,7 +461,7 @@ static Function MSQ_FRE4_REENTRY([str])
 	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	CheckDashboard(str, {0, 0})
+	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -502,10 +490,7 @@ static Function MSQ_FRE5_REENTRY([str])
 	variable sweepNo
 	string lbl
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 8)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 7)
+	sweepNo = 7
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -577,7 +562,7 @@ static Function MSQ_FRE5_REENTRY([str])
 	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	CheckDashboard(str, {1, 1})
+	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
 static Function VClampOnSecondHS_IGNORE(device)
@@ -610,10 +595,7 @@ static Function MSQ_FRE6_REENTRY([str])
 	variable sweepNo
 	string lbl
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 8)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 7)
+	sweepNo = 7
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -676,7 +658,7 @@ static Function MSQ_FRE6_REENTRY([str])
 	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	CheckDashboard(str, {1, 1})
+	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
 static Function AddAnalysisParamsDAScale_IGNORE(device)
@@ -714,10 +696,7 @@ static Function MSQ_FRE7_REENTRY([str])
 	variable sweepNo
 	string lbl
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 8)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 7)
+	sweepNo = 7
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -789,7 +768,7 @@ static Function MSQ_FRE7_REENTRY([str])
 	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	CheckDashboard(str, {1, 1})
+	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
 // one test with PostDAQDAScale and PostDAQDAScaleFactor analysis parameters
@@ -817,10 +796,7 @@ static Function MSQ_FRE8_REENTRY([str])
 	variable sweepNo
 	string lbl
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 19)
+	sweepNo = 19
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -892,7 +868,7 @@ static Function MSQ_FRE8_REENTRY([str])
 	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	CheckDashboard(str, {0, 0})
+	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
 static Function AddAnalysisParamsMaxDa_IGNORE(device)
@@ -922,10 +898,7 @@ static Function MSQ_FRE9_REENTRY([str])
 	variable sweepNo
 	string lbl
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -995,7 +968,7 @@ static Function MSQ_FRE9_REENTRY([str])
 	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	CheckDashboard(str, {0, 0})
+	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
 static Function AddAnalysisParamsMinRheo_IGNORE(device)
@@ -1033,10 +1006,7 @@ static Function MSQ_FRE10_REENTRY([str])
 	variable sweepNo
 	string lbl
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 8)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 7)
+	sweepNo = 7
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -1108,5 +1078,5 @@ static Function MSQ_FRE10_REENTRY([str])
 	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	CheckDashboard(str, {1, 1})
+	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End

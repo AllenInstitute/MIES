@@ -816,7 +816,7 @@ Function CheckLBRowCache_IGNORE(string panelTitle)
 	endfor
 End
 
-Function CheckDashboard(string device, WAVE headstageQC)
+static Function CheckDashboard(string device, WAVE headstageQC)
 
 	string databrowser, bsPanel
 	variable numEntries, i, state
@@ -842,6 +842,16 @@ Function CheckDashboard(string device, WAVE headstageQC)
 		state = !cmpstr(listWave[i][%Result], DASHBOARD_PASSING_MESSAGE)
 		CHECK_EQUAL_VAR(state, headstageQC[i])
 	endfor
+End
+
+Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE headstageQC)
+
+	CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), sweepNo + 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	CHECK_EQUAL_VAR(sweepNo, sweepNo)
+
+	CheckDashboard(device, headstageQC)
 End
 
 Function AddLabnotebookEntries_IGNORE(s)

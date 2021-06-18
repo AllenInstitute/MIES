@@ -110,13 +110,9 @@ End
 
 static Function MSQ_DS1_REENTRY([str])
 	string str
-
 	variable sweepNo
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE/Z headstageActive = GetResults_IGNORE(sweepNo, str, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(headstageActive, {1, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
@@ -133,5 +129,5 @@ static Function MSQ_DS1_REENTRY([str])
 	WAVE/Z stimScale = GetResults_IGNORE(sweepNo, str, STIMSET_SCALE_FACTOR_KEY, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(stimScale, {33, 43, 53, 63, 73}, mode = WAVE_DATA)
 
-	CheckDashboard(str, setPass)
+	CommonAnalysisFunctionChecks(str, sweepNo, setPass)
 End
