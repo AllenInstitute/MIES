@@ -990,6 +990,20 @@ StrConstant PSQ_FMT_LBN_CR_SPIKE_CHECK     = "%s spike check"
 StrConstant PSQ_FMT_LBN_CR_SPIKE_PASS      = "%s spike QC"
 /// @}
 
+StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
+
+/// @name Analysis function versions
+/// @{
+Constant PSQ_CHIRP_VERSION         = 0
+Constant PSQ_DA_SCALE_VERSION      = 0
+Constant PSQ_RAMP_VERSION          = 0
+Constant PSQ_RHEOBASE_VERSION      = 0
+Constant PSQ_SQUARE_PULSE_VERSION  = 0
+Constant MSQ_FAST_RHEO_EST_VERSION = 0
+Constant MSQ_DA_SCALE_VERSION      = 0
+Constant SC_SPIKE_CONTROL_VERSION  = 0
+/// @}
+
 /// @name PatchSeq and MultiPatchSeq types of analysis functions
 /// @anchor SpecialAnalysisFunctionTypes
 ///

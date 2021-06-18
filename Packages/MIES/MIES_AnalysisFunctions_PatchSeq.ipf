@@ -57,6 +57,7 @@
 /// PSQ_FMT_LBN_CR_BOUNDS_STATE     Upper and Lower bounds state according to min/max pos.    Textual                  CR                       No                     No
 /// PSQ_FMT_LBN_CR_SPIKE_CHECK      Spike check was enabled/disabled                          Numerical                CR                       No                     No
 /// PSQ_FMT_LBN_CR_SPIKE_PASS       Pass/fail state of the spike search (No spikes → Pass)    Numerical                CR                       No                     Yes
+/// FMT_LBN_ANA_FUNC_VERSION        Integer version of the analysis function                  Numerical                All                      No                     Yes
 /// =============================== ========================================================= ======================== ======================== =====================  =====================
 ///
 /// \endrst
@@ -1428,6 +1429,8 @@ Function PSQ_DAScale(panelTitle, s)
 
 			// fallthrough-by-design
 		case PRE_SET_EVENT:
+			SetAnalysisFunctionVersion(panelTitle, PSQ_DA_SCALE, s.headstage, s.sweepNo)
+
 			DAScalesIndex[s.headstage] = 0
 
 			daScaleOffset = PSQ_DS_GetDAScaleOffset(panelTitle, s.headstage, opMode)
@@ -1914,6 +1917,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 			// fallthrough-by-design
 		case PRE_SET_EVENT:
+			SetAnalysisFunctionVersion(panelTitle, PSQ_SQUARE_PULSE, s.headstage, s.sweepNo)
 
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
@@ -2171,6 +2175,7 @@ Function PSQ_Rheobase(panelTitle, s)
 
 			// fallthrough-by-design
 		case PRE_SET_EVENT:
+			SetAnalysisFunctionVersion(panelTitle, PSQ_RHEOBASE, s.headstage, s.sweepNo)
 
 			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 4)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
@@ -2652,6 +2657,8 @@ Function PSQ_Ramp(panelTitle, s)
 
 			// fallthrough-by-design
 		case PRE_SET_EVENT:
+			SetAnalysisFunctionVersion(panelTitle, PSQ_RAMP, s.headstage, s.sweepNo)
+
 			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
@@ -3456,6 +3463,8 @@ Function PSQ_Chirp(panelTitle, s)
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
 		case PRE_SET_EVENT: // fallthrough-by-design
+			SetAnalysisFunctionVersion(panelTitle, PSQ_CHIRP, s.headstage, s.sweepNo)
+
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			WAVE textualValues   = GetLBTextualValues(panelTitle)
 

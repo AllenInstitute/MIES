@@ -7268,6 +7268,44 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 	endif
 End
 
+/// @brief Return the current version of the analysis functions
+Function GetAnalysisFunctionVersion(variable type)
+
+	switch(type)
+		// PSQ
+		case PSQ_CHIRP:
+			return PSQ_CHIRP_VERSION
+		case PSQ_DA_SCALE:
+			return PSQ_DA_SCALE_VERSION
+		case PSQ_RAMP:
+			return PSQ_RAMP_VERSION
+		case PSQ_RHEOBASE:
+			return PSQ_RHEOBASE_VERSION
+		case PSQ_SQUARE_PULSE:
+			return PSQ_SQUARE_PULSE_VERSION
+		// MSQ
+		case MSQ_FAST_RHEO_EST:
+			return MSQ_FAST_RHEO_EST_VERSION
+		case MSQ_DA_SCALE:
+			return MSQ_DA_SCALE_VERSION
+		case SC_SPIKE_CONTROL:
+			return SC_SPIKE_CONTROL_VERSION
+	endswitch
+
+	ASSERT(0, "Invalid type")
+End
+
+/// @brief Add a labnotebook entry denoting the analysis function version
+Function SetAnalysisFunctionVersion(string panelTitle, variable type, variable headstage, variable sweepNo)
+
+	string key
+
+	key = CreateAnaFuncLBNKey(type, FMT_LBN_ANA_FUNC_VERSION)
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[headstage] = GetAnalysisFunctionVersion(type)
+	ED_AddEntryToLabnotebook(panelTitle, key, values, overrideSweepNo = sweepNo, tolerance = 0.1)
+End
+
 /// @brief Return JSON text with default entries for upload
 ///
 /// Caller is responsible for releasing JSON text.
