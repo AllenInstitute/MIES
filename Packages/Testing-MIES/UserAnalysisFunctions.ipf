@@ -256,6 +256,22 @@ Function AbortPreDAQ(panelTitle, eventType, DAQDataWave, headStage, realDataLeng
 	return 1
 End
 
+Function StopPreSweepConfig_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType][s.headstage] += 1
+
+	if(s.eventType == PRE_SWEEP_CONFIG_EVENT)
+		return 1
+	endif
+
+	return NaN
+End
+
 Function StopMidSweep(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType

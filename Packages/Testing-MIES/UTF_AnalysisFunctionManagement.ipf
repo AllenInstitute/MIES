@@ -1958,6 +1958,40 @@ static Function AFT19_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
+// check that pre sweep config can abort
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function AFT19a([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, "AnaFuncPreSwCfg_DA_0", str)
+End
+
+static Function AFT19a_REENTRY([str])
+	string str
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_CONFIG_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[MID_SWEEP_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+End
+
 // check total ordering of events via timestamps
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function AFT20([str])
