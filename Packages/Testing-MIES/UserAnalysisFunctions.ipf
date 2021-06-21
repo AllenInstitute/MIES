@@ -88,7 +88,7 @@ Function ValidFunc_V2(panelTitle, eventType, DAQDataWave, headStage, realDataLen
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)), 1)
 	CHECK_EQUAL_VAR(headstage, 0)
 
-	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT)
+	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_CONFIG_EVENT)
 		CHECK_EQUAL_VAR(numType(realDataLength), 2)
 	elseif(GetHardWareType(panelTitle) == HARDWARE_ITC_DAC)
 		CHECK(realDataLength >= 0 && realDataLength < DimSize(DAQDataWave, ROWS))
@@ -181,7 +181,7 @@ Function preSet(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	anaFuncTracker[eventType][headstage] += 1
 End
 
-Function preSweep(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
+Function preSweepConfig(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
 	Wave DAQDataWave
@@ -291,7 +291,7 @@ Function ValidFunc_V3(panelTitle, s)
 
 	CHECK_WAVE(s.scaledDACWave, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 
-	if(s.eventType != PRE_DAQ_EVENT && s.eventType != PRE_SET_EVENT && s.eventType != POST_DAQ_EVENT)
+	if(s.eventType != PRE_DAQ_EVENT && s.eventType != PRE_SET_EVENT && s.eventType != PRE_SWEEP_CONFIG_EVENT && s.eventType != POST_DAQ_EVENT)
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
 				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, COLS), DimSize(s.rawDACWave, COLS))
@@ -315,12 +315,9 @@ Function ValidFunc_V3(panelTitle, s)
 	CHECK_EQUAL_VAR(numType(s.sweepsInSet), 0)
 	CHECK_EQUAL_VAR(strlen(s.params), 0)
 
-	if(s.eventType == PRE_DAQ_EVENT || s.eventType == PRE_SET_EVENT)
+	if(s.eventType == PRE_DAQ_EVENT || s.eventType == PRE_SET_EVENT || s.eventType == PRE_SWEEP_CONFIG_EVENT)
 		CHECK_EQUAL_VAR(numType(s.lastValidRowIndex), 2)
 		CHECK_EQUAL_VAR(numType(s.lastKnownRowIndex), 2)
-	elseif(s.eventType == PRE_SWEEP_EVENT)
-		CHECK_EQUAL_VAR(numType(s.lastKnownRowIndex), 2)
-		CHECK(s.lastValidRowIndex > 0)
 	elseif(s.eventType == MID_SWEEP_EVENT)
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
@@ -352,7 +349,7 @@ Function ValidFunc_V3(panelTitle, s)
 			CHECK_EQUAL_VAR(s.sweepNo, 0)
 			CHECK_WAVE(GetSweepWave(panelTitle, s.sweepNo), NULL_WAVE)
 			break
-		case PRE_SWEEP_EVENT:
+		case PRE_SWEEP_CONFIG_EVENT:
 		case PRE_SET_EVENT:
 		case MID_SWEEP_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT])
@@ -580,7 +577,7 @@ Function TrackActiveSetCount(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3& s
 
-	if(s.eventType != PRE_SWEEP_EVENT)
+	if(s.eventType != PRE_SWEEP_CONFIG_EVENT)
 		return NaN
 	endif
 
@@ -751,8 +748,8 @@ Function AcquisitionStateTrackingFunc(panelTitle, s)
 				expectedAcqState = AS_PRE_DAQ
 			endif
 			break
-		case PRE_SWEEP_EVENT:
-			expectedAcqState = AS_PRE_SWEEP
+		case PRE_SWEEP_CONFIG_EVENT:
+			expectedAcqState = AS_PRE_SWEEP_CONFIG
 			break
 		case MID_SWEEP_EVENT:
 			expectedAcqState = AS_MID_SWEEP

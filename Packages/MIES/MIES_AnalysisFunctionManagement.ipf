@@ -34,14 +34,14 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
 
-	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT)
+	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_CONFIG_EVENT)
 		realDataLength = NaN
 	else
 		realDataLength = stopCollectionPoint
 	endif
 
 	// use safe defaults
-	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_EVENT)
+	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_CONFIG_EVENT)
 		fifoPosition = NaN
 	endif
 
@@ -79,7 +79,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		// @todo Use AS_GetSweepNumber once acquisition state handling supports PRE/POST SET_EVENTS
 		switch(eventType)
 			case PRE_DAQ_EVENT:
-			case PRE_SWEEP_EVENT:
+			case PRE_SWEEP_CONFIG_EVENT:
 			case PRE_SET_EVENT:
 			case MID_SWEEP_EVENT: // fallthrough-by-design
 				sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
@@ -152,7 +152,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		sprintf msg, "Calling analysis function \"%s\" for event \"%s\" on headstage %d returned ret %g", func, StringFromList(eventType, EVENT_NAME_LIST), i, ret
 		DEBUGPRINT(msg)
 
-		if((eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT) && ret == 1)
+		if((eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_CONFIG_EVENT) && ret == 1)
 			return ret
 		elseif(eventType == MID_SWEEP_EVENT && (ret == ANALYSIS_FUNC_RET_REPURP_TIME || ret == ANALYSIS_FUNC_RET_EARLY_STOP))
 			return ret

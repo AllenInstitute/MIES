@@ -257,7 +257,7 @@ Structure AnalysisFunction_V3
 
 	/// last written row index in `rawDACWave`/`scaledDACWave` with already acquired data
 	///
-	/// Always `NaN` for #PRE_DAQ_EVENT/#PRE_SET_EVENT/#PRE_SWEEP_EVENT.
+	/// Always `NaN` for #PRE_DAQ_EVENT/#PRE_SET_EVENT/#PRE_SWEEP_CONFIG_EVENT.
 	variable lastKnownRowIndex
 
 	/// Potential *future* number of the sweep. Once the sweep is finished it will be

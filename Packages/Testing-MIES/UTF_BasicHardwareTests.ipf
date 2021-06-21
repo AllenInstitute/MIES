@@ -387,8 +387,8 @@ Function Events_Common(t)
 	t.events_HS1[t.numSweeps - 1][POST_DAQ_EVENT] = t.numSweeps - 1
 
 	// pre/post sweep always
-	t.events_HS0[][PRE_SWEEP_EVENT] = p
-	t.events_HS1[][PRE_SWEEP_EVENT] = p
+	t.events_HS0[][PRE_SWEEP_CONFIG_EVENT] = p
+	t.events_HS1[][PRE_SWEEP_CONFIG_EVENT] = p
 
 	t.events_HS0[][POST_SWEEP_EVENT] = p
 	t.events_HS1[][POST_SWEEP_EVENT] = p
@@ -1815,7 +1815,7 @@ Function SweepSkippingAdvanced_REENTRY([str])
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 2)
-	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 4)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_CONFIG_EVENT], 4)
 	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 4)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 2)
@@ -1956,7 +1956,7 @@ Function SkipSweepsBackDuringITI_REENTRY([str])
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 4)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_CONFIG_EVENT], 4)
 	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 4)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 1)
@@ -4518,12 +4518,12 @@ Function CheckAcquisitionStates(string str)
 				CheckLBNEntries_IGNORE(str, 1, i, missing = 1)
 				break
 			case AS_PRE_SWEEP_CONFIG:
-				CheckLBNEntries_IGNORE(str, 0, i, missing = 1)
-				CheckLBNEntries_IGNORE(str, 1, i, missing = 1)
-				break
-			case AS_PRE_SWEEP:
 				CheckLBNEntries_IGNORE(str, 0, i)
 				CheckLBNEntries_IGNORE(str, 1, i)
+				break
+			case AS_PRE_SWEEP:
+				CheckLBNEntries_IGNORE(str, 0, i, missing = 1)
+				CheckLBNEntries_IGNORE(str, 1, i, missing = 1)
 				break
 			case AS_MID_SWEEP:
 				CheckLBNEntries_IGNORE(str, 0, i)
