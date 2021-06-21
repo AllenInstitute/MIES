@@ -713,12 +713,11 @@ Function LoadStimsets()
 	NWB_LoadAllStimsets(filename = filename, overwrite = 1)
 End
 
-Function SaveStimsets(nwbVersion)
-	variable nwbVersion
+Function SaveStimsets()
 
 	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
 	DeleteFile filename
-	NWB_ExportAllStimsets(nwbVersion, overrideFilePath = filename)
+	NWB_ExportAllStimsets(2, overrideFilePath = filename)
 End
 
 Function StopAllBackgroundTasks()
