@@ -459,6 +459,13 @@ Function BSP_SetSweepBrowser(win)
 End
 
 /// @brief wrapper function for external calls
+Function BSP_IsSweepBrowser(win)
+	string win
+
+	return !cmpstr(BSP_GetBrowserType(win), BROWSERTYPE_SWEEPBROWSER)
+End
+
+/// @brief wrapper function for external calls
 Function BSP_IsDataBrowser(win)
 	string win
 
