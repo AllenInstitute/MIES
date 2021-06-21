@@ -792,3 +792,23 @@ Function AcquisitionStateTrackingFunc(panelTitle, s)
 
 	return 0
 End
+
+Function ModifyStimSet(string panelTitle, STRUCT AnalysisFunction_V3& s)
+
+	string stimset
+	variable var
+
+	stimset = "AnaFuncModStim_DA_0"
+
+	switch(s.eventType)
+		case PRE_SWEEP_CONFIG_EVENT:
+			if(s.sweepNo == 1)
+				var = ST_GetStimsetParameterAsVariable(stimset, "Duration", epochIndex = 0)
+				CHECK_EQUAL_VAR(5, var)
+				ST_SetStimsetParameter("AnaFuncModStim_DA_0", "Duration", epochIndex = 0, var = var + 1)
+			endif
+			break
+	endswitch
+
+	return 0
+End

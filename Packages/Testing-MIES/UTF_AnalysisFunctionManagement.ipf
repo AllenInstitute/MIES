@@ -2136,3 +2136,48 @@ static Function AFT22_REENTRY([str])
 	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, NULL_WAVE)
 End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function CanModifyStimsetInPreSweepConfig([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, "AnaFuncModStim*", str)
+End
+
+static Function CanModifyStimsetInPreSweepConfig_REENTRY([str])
+	string str
+
+	variable sweepNo, var
+	string key, stimset
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 1)
+
+	// stimset has modified duration
+	stimset = "AnaFuncModStim_DA_0"
+	var = ST_GetStimsetParameterAsVariable(stimset, "Duration", epochIndex = 0)
+	CHECK_EQUAL_VAR(var, 6)
+
+	// and the stimset checksum is different for both sweeps
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	WAVE/Z settings = GetLastSettingEachRAC(numericalValues, sweepNo, "Stim Wave Checksum", 0, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(settings, ROWS), 2)
+
+	WAVE/Z settingsUnique = GetUniqueEntries(settings)
+	CHECK_EQUAL_WAVES(settings, settingsUnique)
+
+	// and both sweeps have a different stimset cycle ID
+	WAVE/Z settings = GetLastSettingEachRAC(numericalValues, sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, 0, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(settings, ROWS), 2)
+
+	WAVE/Z settingsUnique = GetUniqueEntries(settings)
+	CHECK_EQUAL_WAVES(settings, settingsUnique)
+End
