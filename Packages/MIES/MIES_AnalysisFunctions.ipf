@@ -73,7 +73,7 @@
 ///
 /// \endrst
 ///
-/// @anchor AnalysisFunctionParameters Analayis function user parameters (V3 only)
+/// @anchor AnalysisFunctionParameters Analysis function user parameters (V3 only)
 ///
 /// For some analysis functions it is beneficial to send in additional data
 /// depending on the stimset. This is supported by adding parameters and their
