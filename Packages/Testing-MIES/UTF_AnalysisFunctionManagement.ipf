@@ -15,7 +15,7 @@ static Function ChangeAnalysisFunctions_IGNORE()
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "preDAQ"
 	wv[%$"Analysis pre set function"][%Set]    = "preSet"
-	wv[%$"Analysis pre sweep function"][%Set]  = "preSweep"
+	wv[%$"Analysis pre sweep function"][%Set]  = "preSweepConfig"
 	wv[%$"Analysis mid sweep function"][%Set]  = "midSweep"
 	wv[%$"Analysis post sweep function"][%Set] = "postSweep"
 	wv[%$"Analysis post set function"][%Set]   = "postSet"
@@ -1158,7 +1158,7 @@ static Function AFT11_REENTRY([str])
 	key = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
 	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
-	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"preSweep", "", "", "", "", "", "", "", ""})
+	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"preSweepConfig", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
 	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
