@@ -1055,8 +1055,8 @@ Function BSP_ScaleAxes(win)
 	graph      = GetMainWindow(win)
 	bsPanel    = BSP_GetPanel(win)
 	visXRange  = GetCheckBoxState(bsPanel, "check_Display_VisibleXrange")
-	equalY     = GetCheckBoxState(bsPanel, "check_Display_EqualYrange")
-	equalYIgn  = GetCheckBoxState(bsPanel, "check_Display_EqualYignore")
+	equalY     = GetCheckBoxState(bsPanel, "check_Display_EqualYrange") && !IsControlDisabled(bsPanel, "check_Display_EqualYrange")
+	equalYIgn  = GetCheckBoxState(bsPanel, "check_Display_EqualYignore") && !IsControlDisabled(bsPanel, "check_Display_EqualYignore")
 
 	ASSERT(visXRange + equalY + equalYIgn <= 1, "Only one scaling mode is allowed to be selected")
 
@@ -1117,6 +1117,18 @@ Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					else
 						DisableControl(bsPanel, "slider_BrowserSettings_dDAQ")
 					endif
+					break
+				case "check_BrowserSettings_VisEpochs":
+#if IgorVersion() >= 9.0
+					if(checked)
+						DisableControls(bsPanel, "check_Display_EqualYrange;check_Display_EqualYignore")
+					else
+						EnableControls(bsPanel, "check_Display_EqualYrange;check_Display_EqualYignore")
+					endif
+#else
+					print "Epoch visualization is an Igor Pro 9 only feature."
+					ControlWindowToFront()
+#endif
 					break
 				default:
 					if(StringMatch(ctrl, "check_channelSel_*"))
@@ -1430,3 +1442,154 @@ Function BSP_UnHideSettingsHistory(win)
 		SetWindow $settingsHistoryPanel hide=0, needUpdate=1
 	endif
 End
+
+#if IgorVersion() >= 9.0
+
+/// @brief Debug function to add traces with epoch information
+Function BSP_AddTracesForEpochs(string win)
+
+	variable i, j, k, numEntries, start_x, start_y, end_x, end_y, yOffset
+	variable headstage, yLevelOffset, level, idx, numTraces, numEpochs
+	variable sweepNumber
+	STRUCT RGBColor c
+	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name
+	string level_0_trace, level_1_trace, level_2_trace, level_3_trace
+
+	if(!BSP_IsDataBrowser(win) && !BSP_IsSweepBrowser(win))
+		printf "The current window is neither a databrowser nor a sweepbrowser windows.\r"
+		ControlWindowToFront()
+		return Nan
+	endif
+
+	DFREF dfr = GetEpochsVisualizationFolder(BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER))
+	RemoveTracesFromGraph(win, dfr = dfr)
+
+	WAVE/T/Z traceInfos = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "1"})
+
+	if(!WaveExists(traceInfos))
+		printf "Could not find any DA traces. Please enable them for display.\r"
+		ControlWindowToFront()
+		return NaN
+	endif
+
+	numTraces = DimSize(traceInfos, ROWS)
+	for(j = 0; j < numTraces; j += 1)
+		yaxis = traceInfos[j][%YAXIS]
+		xaxis = traceInfos[j][%XAXIS]
+
+		headstage   = str2num(traceInfos[j][%headstage])
+		sweepNumber = str2num(traceInfos[j][%sweepNumber])
+
+		WAVE/T textualValues = BSP_GetlBNWave(win, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
+
+		WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNumber, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+		WAVE/T epochs = ListToTextWaveMD(epochLBEntries[headstage], 2, rowSep = ":", colSep = ",")
+
+		sprintf name, "epochs_sweep%d_HS%d", sweepNumber, headstage
+
+		Duplicate/O/T epochs, dfr:$name/Wave=epochs
+
+		yLevelOffset = 10
+		yOffset = - yLevelOffset
+
+		numEpochs = DimSize(epochs, ROWS)
+
+		Make/FREE/N=(4) currentLevel, indexInLevel
+
+		sprintf levels_x_name, "levels_x_sweep%d_HS%d", sweepNumber, headstage
+		Make/O/N=(numEpochs * 3, 4, 2) dfr:$levels_x_name/WAVE=levels_x
+		levels_x = NaN
+
+		sprintf levels_y_name, "levels_y_sweep%d_HS%d", sweepNumber, headstage
+		Make/O/N=(numEpochs * 3, 4, 2) dfr:$levels_y_name/WAVE=levels_y
+		levels_y = NaN
+		SetStringInWaveNote(levels_y, "EpochInfo", GetWavesDataFolder(epochs, 2))
+
+		for(k = 0; k < numEpochs; k += 1)
+
+			start_x = str2num(epochs[k][0]) * 1000
+			end_x   = str2num(epochs[k][1]) * 1000
+
+			level = str2num(epochs[k][3])
+
+			start_y = yOffset - yLevelOffset * level  - 0.1 * yLevelOffset * currentLevel[level]
+			end_y = start_y
+
+			idx = indexInLevel[level]
+			levels_x[idx][level][0] = start_x
+			levels_x[idx + 1][level][0] = end_x
+			levels_x[idx + 2][level][0] = NaN
+			levels_x[idx, idx + 2][level][1] = k
+
+			levels_y[idx][level][0] = start_y
+			levels_y[idx + 1][level][0] = end_y
+			levels_y[idx + 2][level][0] = NaN
+			levels_y[idx, idx + 2][level][1] = k
+
+			indexInLevel[level] = idx + 3
+
+			currentLevel[level] += 1
+		endfor
+
+		sprintf level_0_trace, "level%d_x_sweep%d_HS%d", 0, sweepNumber, headstage
+		sprintf level_1_trace, "level%d_x_sweep%d_HS%d", 1, sweepNumber, headstage
+		sprintf level_2_trace, "level%d_x_sweep%d_HS%d", 2, sweepNumber, headstage
+		sprintf level_3_trace, "level%d_x_sweep%d_HS%d", 3, sweepNumber, headstage
+
+		AppendToGraph/W=$win/L=$yAxis levels_y[][0]/TN=$level_0_trace vs levels_x[][0]
+		AppendToGraph/W=$win/L=$yAxis levels_y[][1]/TN=$level_1_trace vs levels_x[][1]
+		AppendToGraph/W=$win/L=$yAxis levels_y[][2]/TN=$level_2_trace vs levels_x[][2]
+		AppendToGraph/W=$win/L=$yAxis levels_y[][3]/TN=$level_3_trace vs levels_x[][3]
+
+		[c] = GetTraceColor(0)
+		ModifyGraph/W=$win marker($level_0_trace)=10, mode($level_0_trace)=4, rgb($level_0_trace)=(c.red, c.green, c.blue)
+		[c] = GetTraceColor(1)
+		ModifyGraph/W=$win marker($level_1_trace)=10, mode($level_1_trace)=4, rgb($level_1_trace)=(c.red, c.green, c.blue)
+		[c] = GetTraceColor(2)
+		ModifyGraph/W=$win marker($level_2_trace)=10, mode($level_2_trace)=4, rgb($level_2_trace)=(c.red, c.green, c.blue)
+		[c] = GetTraceColor(3)
+		ModifyGraph/W=$win marker($level_3_trace)=10, mode($level_3_trace)=4, rgb($level_3_trace)=(c.red, c.green, c.blue)
+
+		SetWindow $win tooltipHook(hook) = BSP_EpochGraphToolTip
+
+		DoWindow/F $win
+		ShowTraceInfoTags()
+
+		SetAxis/W=$win/A
+	endfor
+End
+
+Function BSP_EpochGraphToolTip(s)
+	STRUCT WMTooltipHookStruct &s
+
+	variable idx, first, last
+	Variable hookResult = 0 // 0 tells Igor to use the standard tooltip
+
+	// traceName is set only for graphs and only if the mouse hovered near a trace
+	if (strlen(s.traceName) > 0)
+		s.tooltip = "a <-> b"
+		s.isHtml = 1
+		WAVE w = s.yWave // The trace's Y wave
+		if (WaveDims(w) > 2)
+			WAVE/T/Z epochs = $GetStringFromWaveNote(w, "EpochInfo")
+			ASSERT(WaveExists(epochs), "Missing epoch info")
+			hookResult = 1 // 1 tells Igor to use our custom tooltip
+			idx = w[s.row][s.column][1]
+			first = str2num(epochs[idx][0]) * 1000
+			last  = str2num(epochs[idx][1]) * 1000
+
+			s.tooltip = num2str(first) + "<->" + num2str(last) + "\n" + epochs[idx][2]
+		endif
+	endif
+
+	return hookResult
+End
+
+#else
+
+Function BSP_AddTracesForEpochs(string win)
+
+	BUG("Epoch visualization is an IP9-only feature")
+End
+
+#endif

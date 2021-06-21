@@ -827,6 +827,13 @@ Function/Wave GetEpochsWave(panelTitle)
 	return wv
 End
 
+/// @brief Return the folder for the epoch visualization waves
+///        below the sweepfolder/databrowser specific folder
+Function/DF GetEpochsVisualizationFolder(DFREF dfr)
+
+	return createDFWithAllParents(GetDataFolder(1, dfr) + "epochs")
+End
+
 /// @brief Return the DAQ config wave
 ///
 /// Rows:

@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(1268.25,51.5,1700.25,486.5)/K=1  as "DataBrowser"
+	Display /W=(989.25,136.25,1421.25,571.25)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel
 	Button button_BSP_open,title="<<",help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -823,10 +823,10 @@ Window DataBrowser() : Graph
 	Button button_TimeAlignment_Action,userdata(ResizeControlsInfo)=A"!!,G`!!#A.!!#=S!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	Button button_TimeAlignment_Action,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_TimeAlignment_Action,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_SB_axes_scaling,pos={28.00,246.00},size={285.00,51.00}
+	GroupBox group_SB_axes_scaling,pos={28.00,245.00},size={285.00,51.00}
 	GroupBox group_SB_axes_scaling,title="Axes Scaling",userdata(tabnum)="0"
 	GroupBox group_SB_axes_scaling,userdata(tabcontrol)="Settings"
-	GroupBox group_SB_axes_scaling,userdata(ResizeControlsInfo)=A"!!,CD!!#B0!!#BHJ,ho0z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_SB_axes_scaling,userdata(ResizeControlsInfo)=A"!!,CD!!#B/!!#BHJ,ho0z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_SB_axes_scaling,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_SB_axes_scaling,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Display_VisibleXrange,pos={40.00,270.00},size={41.00,15.00},proc=BSP_CheckProc_ChangedSetting
@@ -881,12 +881,12 @@ Window DataBrowser() : Graph
 	Button button_Calculation_RestoreData,userdata(ResizeControlsInfo)=A"!!,G'!!#Aa!!#?O!!#=#z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	Button button_Calculation_RestoreData,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_Calculation_RestoreData,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_BrowserSettings_Export,pos={82.00,333.00},size={99.00,24.00},proc=SB_ButtonProc_ExportTraces
+	Button button_BrowserSettings_Export,pos={90.00,377.00},size={99.00,24.00},proc=SB_ButtonProc_ExportTraces
 	Button button_BrowserSettings_Export,title="Export Traces"
 	Button button_BrowserSettings_Export,help={"Export the traces for further processing"}
 	Button button_BrowserSettings_Export,userdata(tabnum)="0"
 	Button button_BrowserSettings_Export,userdata(tabcontrol)="Settings"
-	Button button_BrowserSettings_Export,userdata(ResizeControlsInfo)=A"!!,E^!!#B`J,hpU!!#=#z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	Button button_BrowserSettings_Export,userdata(ResizeControlsInfo)=A"!!,En!!#C!J,hpU!!#=#z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	Button button_BrowserSettings_Export,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_BrowserSettings_Export,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	GroupBox group_timealignment,pos={28.00,87.00},size={285.00,99.00}
@@ -921,16 +921,16 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_splitTTL,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_splitTTL,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_splitTTL,value=0
-	PopupMenu popup_DB_lockedDevices,pos={24.00,303.00},size={205.00,19.00},bodyWidth=100,proc=DB_PopMenuProc_LockDBtoDevice
+	PopupMenu popup_DB_lockedDevices,pos={32.00,351.00},size={205.00,19.00},bodyWidth=100,proc=DB_PopMenuProc_LockDBtoDevice
 	PopupMenu popup_DB_lockedDevices,title="Device assignment:"
 	PopupMenu popup_DB_lockedDevices,help={"Select a data acquistion device to display data"}
 	PopupMenu popup_DB_lockedDevices,userdata(tabnum)="0"
 	PopupMenu popup_DB_lockedDevices,userdata(tabcontrol)="Settings"
 	PopupMenu popup_DB_lockedDevices,userdata(Config_RestorePriority)="0"
-	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)=A"!!,C$!!#BQJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)=A"!!,Cd!!#BiJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
 	GroupBox group_enable_sweepFormula,pos={5.00,25.00},size={388.00,50.00},disable=1
 	GroupBox group_enable_sweepFormula,title="SweepFormula",userdata(tabnum)="5"
 	GroupBox group_enable_sweepFormula,userdata(tabcontrol)="Settings"
@@ -1190,6 +1190,20 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_numberOfSpikes,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_numberOfSpikes,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_numberOfSpikes,limits={1,inf,1},value=_NUM:NaN
+	GroupBox group_epochs,pos={28.00,296.00},size={285.00,51.00},title="Epochs"
+	GroupBox group_epochs,userdata(tabnum)="0",userdata(tabcontrol)="Settings"
+	GroupBox group_epochs,userdata(ResizeControlsInfo)=A"!!,CD!!#BN!!#BHJ,ho0z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_epochs,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	GroupBox group_epochs,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_BrowserSettings_VisEpochs,pos={38.00,317.00},size={61.00,15.00},proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_BrowserSettings_VisEpochs,title="Visualize"
+	CheckBox check_BrowserSettings_VisEpochs,help={"Visualize epoch information with additional traces (Igor Pro 9 only)"}
+	CheckBox check_BrowserSettings_VisEpochs,userdata(tabnum)="0"
+	CheckBox check_BrowserSettings_VisEpochs,userdata(tabcontrol)="Settings"
+	CheckBox check_BrowserSettings_VisEpochs,userdata(ResizeControlsInfo)=A"!!,D'!!#BXJ,hoX!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_BrowserSettings_VisEpochs,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox check_BrowserSettings_VisEpochs,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_BrowserSettings_VisEpochs,value=0
 	DefineGuide UGVL={FL,15},UGVR={FR,-20},UGVT={FT,113},UGVB={FB,-50},enableBoxTop={FT,25}
 	DefineGuide enableBoxBottom={enableBoxTop,50},MainBoxBottom={FB,3},MainBoxTop={enableBoxBottom,10}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook

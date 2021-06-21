@@ -3575,6 +3575,10 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 
 	BSP_ScaleAxes(graph)
 
+	if(pps.visualizeEpochs)
+		BSP_AddTracesForEpochs(graph)
+	endif
+
 	[tgs] = BSP_GatherTiledGraphSettings(graph)
 	LayoutGraph(graph, tgs)
 End
@@ -3595,6 +3599,7 @@ static Function InitPostPlotSettings(win, pps)
 	pps.timeAlignLevel    = GetSetVariable(bsPanel, "setvar_TimeAlignment_LevelCross")
 	pps.timeAlignRefTrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
 	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
+	pps.visualizeEpochs   = GetCheckBoxState(bsPanel, "check_BrowserSettings_VisEpochs")
 End
 
 /// @brief Time Alignment for the BrowserSettingsPanel
