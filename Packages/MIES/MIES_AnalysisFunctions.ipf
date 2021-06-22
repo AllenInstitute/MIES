@@ -754,7 +754,7 @@ Function AdjustDAScale(panelTitle, eventType, DAQDataWave, headStage, realDataLe
 
 	CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
-	ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
+	ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "A")
 	ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
 
 	FitResistance(panelTitle)
@@ -1162,7 +1162,7 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 
 			CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
-			ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
+			ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "A")
 			ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
 
 			FitResistance(panelTitle, showPlot = 1)
