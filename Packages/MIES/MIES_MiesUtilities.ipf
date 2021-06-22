@@ -6870,6 +6870,10 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 			break
 	endswitch
 
+	if(!GrepString(formatString, "%s"))
+		return ""
+	endif
+
 	if(ParamIsDefault(chunk))
 		sprintf str, formatString, prefix
 	else
