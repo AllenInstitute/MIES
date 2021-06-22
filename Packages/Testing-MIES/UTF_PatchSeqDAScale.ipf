@@ -169,6 +169,8 @@ Function PS_DS_Sub1_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
@@ -232,6 +234,8 @@ Function PS_DS_Sub2_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
@@ -297,6 +301,8 @@ Function PS_DS_Sub3_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 4)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
@@ -364,6 +370,8 @@ Function PS_DS_Sub4_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 4)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
@@ -428,6 +436,8 @@ Function PS_DS_Sub5_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
@@ -496,6 +506,8 @@ Function PS_DS_Sub6_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 4)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
@@ -562,6 +574,8 @@ Function PS_DS_Sub7_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -30, -30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 6)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
@@ -633,6 +647,8 @@ Function PS_DS_Sub8_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -50, -50, -70, -70, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
@@ -707,6 +723,8 @@ Function PS_DS_Supra1_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
@@ -786,6 +804,8 @@ Function PS_DS_Supra2_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE * 20, PSQ_DS_OFFSETSCALE_FAKE * 40}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
@@ -867,6 +887,8 @@ Function PS_DS_Supra3_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40, PSQ_DS_OFFSETSCALE_FAKE + 60, PSQ_DS_OFFSETSCALE_FAKE + 80, PSQ_DS_OFFSETSCALE_FAKE + 100}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
+
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
@@ -946,6 +968,8 @@ Function PS_DS_Supra4_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40, PSQ_DS_OFFSETSCALE_FAKE + 60, PSQ_DS_OFFSETSCALE_FAKE + 80, PSQ_DS_OFFSETSCALE_FAKE + 100}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
@@ -1040,6 +1064,8 @@ Function PS_DS_Supra5_REENTRY([str])
 	// 4. last inside
 	// 5. last above
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
