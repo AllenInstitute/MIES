@@ -3419,17 +3419,16 @@ Function PSQ_Chirp(panelTitle, s)
 						return 1
 					endif
 
-					// these LBN entries predate CreateAnaFuncLBNKey(), so we use the hardcoded names
-					WAVE/Z deltaI = GetLastSetting(numericalValues, passingDaScaleSweep, LABNOTEBOOK_USER_PREFIX + "Delta I", UNKNOWN_MODE)
-					WAVE/Z deltaV = GetLastSetting(numericalValues, passingDaScaleSweep, LABNOTEBOOK_USER_PREFIX + "Delta V", UNKNOWN_MODE)
+					// predates CreateAnaFuncLBNKey(), so we have to use a hardcoded name
+					WAVE/Z resistanceFromFit = GetLastSetting(numericalValues, passingDaScaleSweep, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
 
-					if(!WaveExists(deltaI) || !WaveExists(deltaV))
-						printf "(%s): The Delta I/V labnotebook entries could not be found.\r", panelTitle
+					if(!WaveExists(resistanceFromFit))
+						printf "(%s): The Resistance labnotebook entry could not be found.\r", panelTitle
 						ControlWindowToFront()
 						return 1
 					endif
 
-					resistance = deltaV[s.headstage] / deltaI[s.headstage]
+					resistance = resistanceFromFit[s.headstage]
 				endif
 
 				sprintf msg, "Resistance: %g [Ohm]\r", resistance
