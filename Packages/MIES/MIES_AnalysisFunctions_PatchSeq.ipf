@@ -1045,13 +1045,13 @@ static Function PSQ_GetLastPassingDAScaleSub(panelTitle, headstage)
 	string panelTitle
 	variable headstage
 
-	variable numEntries, sweepNo, i
+	variable numEntries, sweepNo, i, setQC
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	WAVE textualValues = GetLBTextualValues(panelTitle)
 
-	// dascale sweeps passing
+	// PSQ_DaScale with set QC
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
 
@@ -1059,12 +1059,20 @@ static Function PSQ_GetLastPassingDAScaleSub(panelTitle, headstage)
 		return -1
 	endif
 
-	// check for subthreshold operation mode
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE, query = 1)
-
 	numEntries = DimSize(sweeps, ROWS)
 	for(i = numEntries - 1; i >= 0; i -= 1)
 		sweepNo = sweeps[i]
+
+		setQC = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+		if(!setQC)
+			// set QC failed
+			continue
+		endif
+
+		// check for subthreshold operation mode
+		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE, query = 1)
+
 		WAVE/T/Z setting = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 		if(WaveExists(setting) && !cmpstr(setting[INDEP_HEADSTAGE], PSQ_DS_SUB))
