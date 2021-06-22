@@ -1577,9 +1577,7 @@ Function PSQ_DAScale(panelTitle, s)
 					ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
 					ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
 
-					if(showPlot)
-						PlotResistanceGraph(panelTitle)
-					endif
+					FitResistance(panelTitle, showPlot = showPlot)
 
 				elseif(!cmpstr(opMode, PSQ_DS_SUPRA))
 					totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \

@@ -757,18 +757,22 @@ Function AdjustDAScale(panelTitle, eventType, DAQDataWave, headStage, realDataLe
 	ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
 	ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
 
-	PlotResistanceGraph(panelTitle)
+	FitResistance(panelTitle)
 End
 
 /// Plot the resistance of the sweeps of the same RA cycle
 ///
 /// Usually called by PSQ_AdjustDAScale().
-Function PlotResistanceGraph(panelTitle)
-	string panelTitle
-
+Function FitResistance(string panelTitle, [variable showPlot])
 	variable deltaVCol, DAScaleCol, i, j, sweepNo, idx, numEntries
 	variable lastWrittenSweep
 	string graph, textBoxString, trace
+
+	if(ParamIsDefault(showPlot))
+		showPlot = 1
+	else
+		showPlot = !!showPlot
+	endif
 
 	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 
@@ -867,7 +871,7 @@ Function PlotResistanceGraph(panelTitle)
 
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
-	if(!WindowExists(RESISTANCE_GRAPH))
+	if(!WindowExists(RESISTANCE_GRAPH) && showPlot)
 		Display/K=1/N=$RESISTANCE_GRAPH
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -1161,7 +1165,7 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 			ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
 			ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
 
-			PlotResistanceGraph(panelTitle)
+			FitResistance(panelTitle, showPlot = 1)
 
 			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
 			ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
