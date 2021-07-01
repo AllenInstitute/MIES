@@ -1354,6 +1354,12 @@ Function SetControlInEvent(panelTitle, s)
 			// check given event type
 			event = data[j]
 
+			// backwards compatibility
+			if(!cmpstr(event, "Pre Sweep"))
+				printf "(%s): The analysis parameter's %s event \"%s\" is deprecated. Please use the new name \"%s\" and see the documentation for it's slightly different properties.\r", panelTitle, guiElem, event, StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST)
+				event = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST)
+			endif
+
 			if(WhichListItem(event, EVENT_NAME_LIST, ";", 0, 0) == -1 || WhichListItem(event, "Mid Sweep;Generic", ";", 0, 0) != -1)
 				printf "(%s): The analysis parameter's %s event \"%s\" is invalid.\r", panelTitle, guiElem, event
 				ControlWindowToFront()
