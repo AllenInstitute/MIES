@@ -1737,7 +1737,7 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 30
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 31
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -2229,6 +2229,11 @@ End
 /// - 31: JSON config file: stimset nwb file path
 /// - 32: Igor Pro build
 /// - 33: Indexing End Stimset
+/// - 34: TTL Indexing End Stimset (hardware agnostic), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
+/// - 35: TTL Stimset wave note (hardware agnostic), same string list formatting
+/// - 36: TTL Stim Wave Checksum (hardware agnostic) URL-encoded payload, see [URL-encoding](https://en.wikipedia.org/wiki/Percent-encoding)
+///                                                  for background information, same string list formatting
+/// - 37: TTL Stim set length (hardware agnostic), same string list formatting
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
@@ -2247,9 +2252,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 34, 0) wv
+		Redimension/N=(-1, 38, 0) wv
 	else
-		Make/T/N=(1, 34) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 38) newDFR:$newName/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -2290,6 +2295,10 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][31] = "JSON config file: stimset nwb file path"
 	wv[0][32] = "Igor Pro build"
 	wv[0][33] = "Indexing End Stimset"
+	wv[0][34] = "TTL Indexing End Stimset"
+	wv[0][35] = "TTL Stimset wave note"
+	wv[0][36] = "TTL Stim Wave Checksum"
+	wv[0][37] = "TTL Stim set length"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
