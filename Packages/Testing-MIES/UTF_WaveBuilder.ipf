@@ -199,6 +199,9 @@ Function WB_CheckEpochParameters()
 	newCode = WBP_RegenerateEpochParameterNamesCode()
 	existingCode = ProcedureText("GetEpochParameterNames")
 
+	// remove Z_() functions calls for tracing
+	existingCode = GrepList(existingCode, "^Z_\(\d+,[[:space:]]\d+\)$", 1, "\r")
+
 	newCode = TrimString(newCode, 1)
 	existingCode = TrimString(existingCode, 1)
 
