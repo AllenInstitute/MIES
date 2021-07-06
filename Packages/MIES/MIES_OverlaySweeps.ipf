@@ -643,7 +643,7 @@ End
 static Function OVS_ChangeSweepSelection(win, choiceString)
 	string win, choiceString
 
-	variable i, j, numEntries, numLayers, offset, step
+	variable i, j, k, numEntries, numLayers, offset, step
 	string extPanel
 
 	ASSERT(OVS_IsActive(win), "Selecting sweeps is only supported if OVS is enabled")
@@ -682,8 +682,8 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 				endif
 
 				numEntries = DimSize(indizes, ROWS)
-				for(j = offset; j < numEntries; j += step)
-					listboxSelWave[indizes[j]][%Sweep] = listboxSelWave[p][q] | LISTBOX_CHECKBOX_SELECTED
+				for(k = offset; k < numEntries; k += step)
+					listboxSelWave[indizes[k]][%Sweep] = listboxSelWave[p][q] | LISTBOX_CHECKBOX_SELECTED
 				endfor
 			endfor
 		endfor
