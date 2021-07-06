@@ -21,6 +21,9 @@ Function/S AS_StateToString(variable acqState)
 		case AS_PRE_DAQ:
 			return "AS_PRE_DAQ"
 			break
+		case AS_PRE_SWEEP_CONFIG:
+			return "AS_PRE_SWEEP_CONFIG"
+			break
 		case AS_PRE_SWEEP:
 			return "AS_PRE_SWEEP"
 			break
@@ -90,6 +93,9 @@ Function AS_HandlePossibleTransition(string panelTitle, variable newAcqState, [v
 		case AS_PRE_DAQ:
 			return AFM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT)
 			break
+		case AS_PRE_SWEEP_CONFIG:
+			// do nothing
+			break
 		case AS_PRE_SWEEP:
 			return AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
 			break
@@ -146,6 +152,7 @@ Function AS_GetSweepNumber(string panelTitle)
 			ASSERT(0, "Can not query the sweep number without data acqisition running")
 			break
 		case AS_PRE_DAQ:
+		case AS_PRE_SWEEP_CONFIG:
 		case AS_PRE_SWEEP:
 		case AS_MID_SWEEP:  // fallthrough-by-design
 			sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")

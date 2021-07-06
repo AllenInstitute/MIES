@@ -66,6 +66,10 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 		if(AFM_CallAnalysisFunctions(panelTitle, PRE_SET_EVENT))
 			Abort
 		endif
+
+		if(AS_HandlePossibleTransition(panelTitle, AS_PRE_SWEEP_CONFIG))
+			Abort
+		endif
 	endif
 
 	// prevent crash in ITC XOP as it must not run if we resize the DAQDataWave

@@ -521,16 +521,19 @@ Constant HIDDEN_CONTROL_BIT  = 1
 /// reworked, see https://github.com/AllenInstitute/MIES/issues/658 and
 /// https://github.com/AllenInstitute/MIES/issues/39.
 ///
+/// The state values are serialized to the labnotebooks, so they must never change.
+///
 /// @{
-Constant AS_INACTIVE    = 0
-Constant AS_EARLY_CHECK = 1
-Constant AS_PRE_DAQ     = 2
-Constant AS_PRE_SWEEP   = 3
-Constant AS_MID_SWEEP   = 4
-Constant AS_POST_SWEEP  = 5
-Constant AS_ITI         = 6
-Constant AS_POST_DAQ    = 7
-Constant AS_NUM_STATES  = 8
+Constant AS_INACTIVE         = 0
+Constant AS_EARLY_CHECK      = 1
+Constant AS_PRE_DAQ          = 2
+Constant AS_PRE_SWEEP        = 3
+Constant AS_MID_SWEEP        = 4
+Constant AS_POST_SWEEP       = 5
+Constant AS_ITI              = 6
+Constant AS_POST_DAQ         = 7
+Constant AS_PRE_SWEEP_CONFIG = 8
+Constant AS_NUM_STATES       = 9
 /// @}
 
 /// @name Event types for analysis functions
