@@ -5786,7 +5786,7 @@ Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
 	DFREF dfr
 	variable skipUpdate
 
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	if(ParamIsDefault(skipUpdate))
 		skipUpdate = 0
@@ -5810,14 +5810,14 @@ Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
 		endif
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 3) wv
+		Redimension/N=(-1, -1, 7) wv
 	else
 		ASSERT(NUM_HEADSTAGES == NUM_DA_TTL_CHANNELS, "Unexpected channel count")
-		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 3) dfr:$newName/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 7) dfr:$newName/Wave=wv
 	endif
 
-	SetDimensionLabels(wv, "Stimset;TTLStimset;StimsetAndClampMode", LAYERS)
-	SetNumberInWaveNote(wv, "NeedsUpdate", 1)
+	SetDimensionLabels(wv, "Stimset;TTLStimset;DAStimsetAndClampMode;DAStimsetAndSetSweepCount;TTLStimsetAndSetSweepCount;DAStimsetAndSetCycleCount;TTLStimsetAndSetCycleCount", LAYERS)
+	SetNumberInWaveNote(wv, NOTE_NEEDS_UPDATE, 1)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	if(!skipUpdate)

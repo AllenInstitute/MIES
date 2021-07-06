@@ -71,31 +71,89 @@ Function/S OVS_GetSweepSelectionChoices(win)
 	if(!OVS_IsActive(win))
 		return NONE
 	endif
+
 	DFREF dfr = OVS_GetFolder(win)
 
 	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(win, dfr)
 
-	Duplicate/FREE/R=[][][0]/T sweepSelChoices, sweepSelecChoicesDAStimSets
+	Duplicate/FREE/R=[][][0]/T sweepSelChoices, DAStimSets
+	Redimension/N=(numpnts(DAStimSets)) DAStimSets
+	WAVE dupsRemovedDAStimSets = GetUniqueEntries(DAStimSets)
 
-	Make/FREE/T/N=0 dupsRemovedDAStimSets
-	FindDuplicates/Z/RT=dupsRemovedDAStimSets sweepSelecChoicesDAStimSets
+	Duplicate/FREE/R=[][][1]/T sweepSelChoices, TTLStimSets
+	Redimension/N=(numpnts(TTLStimSets)) TTLStimSets
+	WAVE dupsRemovedTTLStimSets = GetUniqueEntries(TTLStimSets)
 
-	Duplicate/FREE/R=[][][1]/T sweepSelChoices, sweepSelecChoicesTTLStimSets
+	Duplicate/FREE/R=[][][2]/T sweepSelChoices, ClampStimSets
+	Redimension/N=(numpnts(ClampStimSets)) ClampStimSets
+	WAVE dupsRemovedDAStimSetsClamp = GetUniqueEntries(ClampStimSets)
 
-	Make/FREE/T/N=0  dupsRemovedTTLStimSets
-	FindDuplicates/Z/RT=dupsRemovedTTLStimSets sweepSelecChoicesTTLStimSets
+	Duplicate/FREE/R=[][][3]/T sweepSelChoices, DAStimSetsSetSweepCount
+	Duplicate/FREE DAStimSetsSetSweepCount, DAStimSetsSetSweepCountPlain
+	Redimension/N=(numpnts(DAStimSetsSetSweepCountPlain)) DAStimSetsSetSweepCountPlain
+	WAVE dupsRemovedDAStimSetsSetSweepCount = GetUniqueEntries(DAStimSetsSetSweepCountPlain)
 
-	Duplicate/FREE/R=[][][2]/T sweepSelChoices, sweepSelecChoicesClamp
+	Duplicate/FREE/R=[][][4]/T sweepSelChoices, TTLStimSetsSetSweepCount
+	Duplicate/FREE TTLStimSetsSetSweepCount, TTLStimSetsSetSweepCountPlain
+	Redimension/N=(numpnts(TTLStimSetsSetSweepCountPlain)) TTLStimSetsSetSweepCountPlain
+	WAVE dupsRemovedTTLStimSetsSetSweepCount = GetUniqueEntries(TTLStimSetsSetSweepCountPlain)
 
-	Make/FREE/T/N=0 dupsRemovedStimSetsClamp
-	FindDuplicates/Z/RT=dupsRemovedStimSetsClamp sweepSelecChoicesClamp
+	Duplicate/FREE/R=[][][5]/T sweepSelChoices, DAStimSetsSetCycleCount
+	Redimension/N=(numpnts(DAStimSetsSetCycleCount)) DAStimSetsSetCycleCount
+	WAVE dupsRemovedDAStimSetsSetCycleCount = GetUniqueEntries(DAStimSetsSetCycleCount)
 
-	return NONE + ";All;\\M1(-;\\M1(DA Stimulus Sets;"             \
-				+ TextWaveToList(dupsRemovedDAStimSets, ";")       \
-				+ "\\M1(TTL Stimulus Sets;"                        \
-				+ TextWaveToList(dupsRemovedTTLStimSets, ";")      \
-				+ "\\M1(-;\\M1(DA Stimulus Sets and Clamp Mode;"   \
-				+ TextWaveToList(dupsRemovedStimSetsClamp, ";")
+	Duplicate/FREE/R=[][][6]/T sweepSelChoices, TTLStimSetsSetCycleCount
+	Redimension/N=(numpnts(TTLStimSetsSetCycleCount)) TTLStimSetsSetCycleCount
+	WAVE dupsRemovedTTLStimSetsSetCycleCount = GetUniqueEntries(TTLStimSetsSetCycleCount)
+
+	OVS_RemoveLowCountEntries(dupsRemovedDAStimSets, DAStimSetsSetSweepCount, dupsRemovedDAStimSetsSetSweepCount, dupsRemovedDAStimSetsSetCycleCount)
+	OVS_RemoveLowCountEntries(dupsRemovedTTLStimSets, TTLStimSetsSetSweepCount, dupsRemovedTTLStimSetsSetSweepCount, dupsRemovedTTLStimSetsSetCycleCount)
+
+	Sort/A=1 dupsRemovedDAStimSetsSetSweepCount, dupsRemovedDAStimSetsSetSweepCount
+	Sort/A=1 dupsRemovedTTLStimSetsSetCycleCount, dupsRemovedTTLStimSetsSetCycleCount
+
+	return NONE + ";All;\\M1(-;\\M1(DA Stimulus Sets;"                   \
+				+ TextWaveToList(dupsRemovedDAStimSets, ";")               \
+				+ "\\M1(TTL Stimulus Sets;"                                \
+				+ TextWaveToList(dupsRemovedTTLStimSets, ";")              \
+				+ "\\M1(-;\\M1(DA Stimulus Sets and Clamp Mode;"           \
+				+ TextWaveToList(dupsRemovedDAStimSetsClamp, ";")          \
+				+ "\\M1(-;\\M1(DA Stimulus Sets and Set Sweep Count;"      \
+				+ TextWaveToList(dupsRemovedDAStimSetsSetSweepCount, ";")  \
+				+ "\\M1(-;\\M1(TTL Stimulus Sets and Set Sweep Count;"     \
+				+ TextWaveToList(dupsRemovedTTLStimSetsSetSweepCount, ";") \
+				+ "\\M1(-;\\M1(DA Stimulus Sets and Set Cycle Count;"      \
+				+ TextWaveToList(dupsRemovedDAStimSetsSetCycleCount, ";")  \
+				+ "\\M1(-;\\M1(TTL Stimulus Sets and Set Cycle Count;"     \
+				+ TextWaveToList(dupsRemovedTTLStimSetsSetCycleCount, ";")
+End
+
+/// @brief Remove all stimsets which were only acquired once, disregaring RAC/SCI, this means we just look at all sweeps
+static Function OVS_RemoveLowCountEntries(WAVE/T stimsets, WAVE/T setSweepCounts, WAVE/T dupsRemovedSetSweepCounts, WAVE/T dupsRemovedSetCycleCounts)
+	variable numEntries, i, j
+	string stimset, entry
+
+	numEntries = DimSize(stimsets, ROWS)
+
+	for(i = 0; i < numEntries; i += 1)
+		stimset = stimsets[i]
+
+		if(IsEmpty(stimset))
+			continue
+		endif
+
+		for(j = 0; i < NUM_HEADSTAGES; i += 1)
+			// Find all stimulus sets with set sweep count == 0
+			entry = stimset + " (0)"
+			WAVE/Z indizes = FindIndizes(setSweepCounts, col = j, str = entry)
+
+			// only one match means this stimulus set was only acquired once
+			if(DimSize(indizes, ROWS) == 1)
+				RemoveTextWaveEntry1D(dupsRemovedSetSweepCounts, stimset, options = 1, all = 1)
+				RemoveTextWaveEntry1D(dupsRemovedSetCycleCounts, stimset, options = 1, all = 1)
+			endif
+		endfor
+	endfor
 End
 
 /// @brief Return the datafolder reference to the folder storing the listbox and selection wave
@@ -248,7 +306,29 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 			ASSERT(WaveExists(clampMode), "Labnotebook is too old.")
 		endif
 
-		sweepSelectionChoices[i][][%StimsetAndClampMode] = SelectString(IsFinite(clampMode[q]), "", stimsets[q] + " (" + ConvertAmplifierModeShortStr(clampMode[q]) + ")")
+		sweepSelectionChoices[i][][%DAStimsetAndClampMode] = SelectString(IsFinite(clampMode[q]), "", stimsets[q] + " (" + ConvertAmplifierModeShortStr(clampMode[q]) + ")")
+
+		WAVE/Z setSweepCount = GetLastSetting(allNumericalValues[i], sweeps[i], "Set Sweep Count", DATA_ACQUISITION_MODE)
+		ASSERT(WaveExists(setSweepCount), "Labnotebook is too old.")
+
+		sweepSelectionChoices[i][][%DAStimsetAndSetSweepCount] = SelectString(IsFinite(setSweepCount[q]), "", stimsets[q] + " (" + num2str(setSweepCount[q]) + ")")
+
+		WAVE/T/Z TTLsetSweepCount = GetTTLLabnotebookEntry(allTextualValues[i], LABNOTEBOOK_TTL_SETSWEEPCOUNTS, sweeps[i])
+		if(WaveExists(TTLsetSweepCount))
+			sweepSelectionChoices[i][][%TTLStimsetAndSetSweepCount] = SelectString(strlen(TTLsetSweepCount[q]) > 0, "", TTLStimsets[q] + " (" + TTLsetSweepCount[q] + ")")
+		endif
+
+		// present since 533f5864 (Add "Set Cycle count" to the numerical labnotebook, 2018-05-30)
+		WAVE/Z setCycleCount = GetLastSetting(allNumericalValues[i], sweeps[i], "Set Cycle Count", DATA_ACQUISITION_MODE)
+
+		if(WaveExists(setCycleCount))
+			sweepSelectionChoices[i][][%DAStimsetAndSetCycleCount] = SelectString(IsFinite(setCycleCount[q]), "", stimsets[q] + " (C" + num2str(setCycleCount[q]) + ")")
+		endif
+
+		WAVE/T/Z TTLsetCycleCount = GetTTLLabnotebookEntry(allTextualValues[i], LABNOTEBOOK_TTL_SETCYCLECOUNTS, sweeps[i])
+		if(WaveExists(TTLsetCycleCount))
+			sweepSelectionChoices[i][][%TTLStimsetAndSetCycleCount] = SelectString(strlen(TTLsetCycleCount[q]) > 0, "", TTLStimsets[q] + " (C" + TTLsetCycleCount[q] + ")")
+		endif
 	endfor
 
 	SetNumberInWaveNote(sweepSelectionChoices, NOTE_NEEDS_UPDATE, 0)
