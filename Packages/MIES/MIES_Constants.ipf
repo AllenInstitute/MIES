@@ -1588,3 +1588,11 @@ StrConstant EPOCH_SHORTNAME_USER_PREFIX = "U_"
 Constant SF_DM_NORMAL = 1
 Constant SF_DM_SUBWINDOWS = 2
 /// @}
+
+/// @name Parameters for GetTTLLabnotebookEntry()
+/// @anchor LabnotebookTTLNames
+///
+/// @{
+StrConstant LABNOTEBOOK_TTL_STIMSETS       = "stim sets"
+StrConstant LABNOTEBOOK_TTL_SETSWEEPCOUNTS = "set sweep counts"
+/// @}

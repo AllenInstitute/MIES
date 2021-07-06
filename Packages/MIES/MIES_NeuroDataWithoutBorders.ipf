@@ -986,7 +986,7 @@ static Function/S NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textual
 		stimsetList = AddListItem(name, stimsetList)
 	endfor
 
-	WAVE/Z/T ttlStimSets = GetTTLstimSets(textualValues, sweep)
+	WAVE/Z/T ttlStimSets = GetTTLLabnotebookEntry(textualValues, LABNOTEBOOK_TTL_STIMSETS, sweep)
 
 	// handle TTL channels
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
@@ -1170,7 +1170,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 	// introduced in db531d20 (DC_PlaceDataInITCDataWave: Document the digitizer hardware type, 2018-07-30)
 	// before that we only had ITC hardware
 	hardwareType = GetLastSettingIndep(s.numericalValues, s.sweep, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
-	WAVE/Z/T ttlStimsets = GetTTLStimSets(s.textualValues, s.sweep)
+	WAVE/Z/T ttlStimsets = GetTTLLabnotebookEntry(s.textualValues, LABNOTEBOOK_TTL_STIMSETS, s.sweep)
 
 	// i has the following meaning:
 	// - ITC hardware: hardware channel

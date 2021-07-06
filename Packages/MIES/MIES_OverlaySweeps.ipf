@@ -232,7 +232,7 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/T stimsets = GetLastSetting(allTextualValues[i], sweeps[i], STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 		sweepSelectionChoices[i][][%Stimset] = stimsets[q]
-		WAVE/T/Z TTLStimSets = GetTTLstimSets(allTextualValues[i], sweeps[i])
+		WAVE/T/Z TTLStimSets = GetTTLLabnotebookEntry(allTextualValues[i], LABNOTEBOOK_TTL_STIMSETS, sweeps[i])
 		if(WaveExists(TTLStimSets))
 			sweepSelectionChoices[i][][%TTLStimSet] = TTLStimSets[q]
 		else
