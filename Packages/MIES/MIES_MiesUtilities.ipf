@@ -4781,16 +4781,12 @@ End
 /// The indexing here is **hardware independent**.
 /// For ITC hardware the assertion "log(ttlBit)/log(2) == DAEphys TTL channel" holds.
 ///
-/// @param numericalValues Numerical labnotebook values
 /// @param textualValues   Text labnotebook values
 /// @param sweep           Sweep number
-threadsafe Function/WAVE GetTTLStimSets(numericalValues, textualValues, sweep)
-	WAVE numericalValues, textualValues
-	variable sweep
-
+threadsafe Function/WAVE GetTTLStimSets(WAVE/T textualValues, variable sweep)
 	variable index
 
-	index = GetIndexForHeadstageIndepData(numericalValues)
+	index = GetIndexForHeadstageIndepData(textualValues)
 
 	WAVE/T/Z ttlStimsets = GetLastSetting(textualValues, sweep, "TTL stim sets", DATA_ACQUISITION_MODE)
 	WAVE/T/Z ttlStimsetsRackZero = GetLastSetting(textualValues, sweep, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)

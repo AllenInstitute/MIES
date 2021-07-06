@@ -376,7 +376,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 	elseif(params.channelType == XOP_CHANNEL_TYPE_ADC && IsNaN(params.electrodeNumber)) // unassoc AD
 		stimulus_expected = "PLACEHOLDER"
 	elseif(params.channelType == XOP_CHANNEL_TYPE_TTL)
-		WAVE/T/Z TTLStimsets = GetTTLStimSets(numericalValues, textualValues, sweep)
+		WAVE/T/Z TTLStimsets = GetTTLStimSets(textualValues, sweep)
 		CHECK_WAVE(TTLStimsets, TEXT_WAVE)
 
 		if(IsNaN(params.ttlBit))

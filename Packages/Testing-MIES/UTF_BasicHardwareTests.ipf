@@ -2537,7 +2537,7 @@ Function UnassociatedChannelsAndTTLs_REENTRY([str])
 
 			WAVE TTLs = GetTTLListFromConfig(config)
 
-			WAVE/Z ttlStimSets = GetTTLstimSets(numericalValues, textualValues, j)
+			WAVE/Z ttlStimSets = GetTTLstimSets(textualValues, j)
 			CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "", "", ""})
 
 			switch(GetHardwareType(device))
