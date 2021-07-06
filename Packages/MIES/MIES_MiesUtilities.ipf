@@ -6393,7 +6393,8 @@ End
 ///
 /// Allows to search only the specified column for a value
 /// and returns all matching row indizes in a wave. By defaults only looks into the first layer
-/// for backward compatibility reasons.
+/// for backward compatibility reasons. When multiple layers are searched `startLayer`/`endLayer` the
+/// result contains matches from all layers, and this also means the resulting wave is still 1D.
 ///
 /// Exactly one of `var`/`str`/`prop` has to be given except for
 /// `prop == PROP_MATCHES_VAR_BIT_MASK` and `prop == PROP_NOT_MATCHES_VAR_BIT_MASK`
