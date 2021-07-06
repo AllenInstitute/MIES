@@ -243,7 +243,7 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 
 		if(!WaveExists(clampMode))
 			WAVE/Z clampMode = GetLastSetting(allNumericalValues[i], sweeps[i], "Operating Mode", DATA_ACQUISITION_MODE)
-			ASSERT(WaveExists(clampMode), "Labnotebook is too old for NWB export.")
+			ASSERT(WaveExists(clampMode), "Labnotebook is too old.")
 		endif
 
 		sweepSelectionChoices[i][][%StimsetAndClampMode] = SelectString(IsFinite(clampMode[q]), "", stimsets[q] + " (" + ConvertAmplifierModeShortStr(clampMode[q]) + ")")
