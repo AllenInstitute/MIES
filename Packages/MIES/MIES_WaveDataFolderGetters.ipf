@@ -6779,6 +6779,8 @@ Function/WAVE GetValidAcqStateTransitions()
 
 	wv[%AS_POST_DAQ][%AS_INACTIVE] = 1
 
+	SetWaveVersion(wv, versionOfNewWave)
+
 	return wv
 End
 
