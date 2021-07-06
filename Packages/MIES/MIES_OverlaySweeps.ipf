@@ -220,14 +220,18 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 
 	WAVE/Z sweeps = GetPlainSweepList(win)
 
-	numEntries = WaveExists(sweeps) ? DimSize(sweeps, ROWS) : 0
-
-	if(numEntries > 0)
-		WAVE/WAVE allNumericalValues = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES)
-		WAVE/WAVE allTextualValues   = BSP_GetLBNWave(win, LBN_TEXTUAL_VALUES)
+	if(!WaveExists(sweeps))
+		Redimension/N=(0, -1, -1, -1) sweepSelectionChoices
+		SetNumberInWaveNote(sweepSelectionChoices, NOTE_NEEDS_UPDATE, 0)
+		return NaN
 	endif
 
+	WAVE/WAVE allNumericalValues = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES)
+	WAVE/WAVE allTextualValues   = BSP_GetLBNWave(win, LBN_TEXTUAL_VALUES)
+
+	numEntries = DimSize(sweeps, ROWS)
 	Redimension/N=(numEntries, -1, -1, -1) sweepSelectionChoices
+	sweepSelectionChoices = ""
 
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/T stimsets = GetLastSetting(allTextualValues[i], sweeps[i], STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
@@ -235,8 +239,6 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 		WAVE/T/Z TTLStimSets = GetTTLLabnotebookEntry(allTextualValues[i], LABNOTEBOOK_TTL_STIMSETS, sweeps[i])
 		if(WaveExists(TTLStimSets))
 			sweepSelectionChoices[i][][%TTLStimSet] = TTLStimSets[q]
-		else
-			sweepSelectionChoices[i][][%TTLStimSet] = ""
 		endif
 
 		WAVE/Z clampMode = GetLastSetting(allNumericalValues[i], sweeps[i], "Clamp Mode", DATA_ACQUISITION_MODE)
