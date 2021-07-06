@@ -105,14 +105,14 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		AS_HandlePossibleTransition(panelTitle, AS_PRE_SWEEP)
-	endif
-
 	WAVE DAQDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
 
 	ASSERT(IsValidSweepAndConfig(DAQDataWave, DAQConfigWave), "Invalid sweep and config combination")
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		AS_HandlePossibleTransition(panelTitle, AS_PRE_SWEEP)
+	endif
 End
 
 static Function DC_UpdateHSProperties(panelTitle, ADCs)
