@@ -961,6 +961,8 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 
 Constant PSQ_CALC_METHOD_AVG = 0x1 // average
 Constant PSQ_CALC_METHOD_RMS = 0x2 // root-mean-square (rms)
+
+Constant PSQ_BL_FAILED = 1
 /// @}
 
 /// @name PatchSeq labnotebook constants

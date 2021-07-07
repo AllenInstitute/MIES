@@ -1766,7 +1766,7 @@ Function PSQ_DAScale(panelTitle, s)
 			// not last chunk: retry on next invocation
 			// last chunk: mark sweep as failed
 			if(i == numBaselineChunks - 1)
-				ret = 1
+				ret = PSQ_BL_FAILED
 				break
 			else
 				return NaN
@@ -2449,7 +2449,7 @@ Function PSQ_Rheobase(panelTitle, s)
 			// not last chunk: retry on next invocation
 			// last chunk: mark sweep as failed
 			if(i == numBaselineChunks - 1)
-				ret = 1
+				ret = PSQ_BL_FAILED
 				break
 			else
 				return NaN
@@ -2875,7 +2875,7 @@ Function PSQ_Ramp(panelTitle, s)
 				// not last chunk: retry on next invocation
 				// last chunk: mark sweep as failed
 				if(i == numBaselineChunks - 1)
-					ret = 1
+					ret = PSQ_BL_FAILED
 				endif
 
 				break
@@ -3723,7 +3723,7 @@ Function PSQ_Chirp(panelTitle, s)
 				// not last chunk: retry on next invocation
 				// last chunk: mark sweep as failed
 				if(i == numBaselineChunks - 1)
-					ret = 1
+					ret = PSQ_BL_FAILED
 				endif
 
 				break
