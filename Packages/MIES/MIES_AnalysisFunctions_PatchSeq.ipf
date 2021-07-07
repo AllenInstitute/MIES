@@ -216,6 +216,25 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, total
 	return durations
 End
 
+static Function PSQ_EvaluateBaselinePassed(string panelTitle, variable type, variable sweepNo, variable headstage, variable chunk, variable ret)
+	variable baselineQCPassed
+	string key, msg
+
+	baselineQCPassed = (ret == 0)
+
+	sprintf msg, "BL QC %s, last evaluated chunk %d returned with %g\r", ToPassFail(baselineQCPassed), chunk, ret
+	DEBUGPRINT(msg)
+
+	// document BL QC results
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+	result[headstage] = baselineQCPassed
+
+	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_BL_QC_PASS)
+	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+
+	return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
+End
+
 /// @brief Evaluate one chunk of the baseline
 ///
 /// @param panelTitle        device
@@ -1796,19 +1815,7 @@ Function PSQ_DAScale(panelTitle, s)
 		endif
 	endfor
 
-	baselineQCPassed = (ret == 0)
-
-	sprintf msg, "BL QC %s, last evaluated chunk %d returned with %g\r", ToPassFail(baselineQCPassed), i, ret
-	DEBUGPRINT(msg)
-
-	// document BL QC results
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-	result[s.headstage] = baselineQCPassed
-
-	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_BL_QC_PASS)
-	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
-
-	return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
+	return PSQ_EvaluateBaselinePassed(paneltitle, PSQ_DA_SCALE, s.sweepNo, s.headstage, i, ret)
 End
 
 /// @brief Return a list of required parameters
@@ -2479,19 +2486,7 @@ Function PSQ_Rheobase(panelTitle, s)
 		endif
 	endfor
 
-	baselineQCPassed = (ret == 0)
-
-	sprintf msg, "Baseline QC %s, last evaluated chunk %d returned with %g\r", ToPassFail(baselineQCPassed), i, ret
-	DEBUGPRINT(msg)
-
-	// document BL QC results
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-	result[s.headstage] = baselineQCPassed
-
-	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS)
-	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
-
-	return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
+	return PSQ_EvaluateBaselinePassed(paneltitle, PSQ_RHEOBASE, s.sweepNo, s.headstage, i, ret)
 End
 
 Function PSQ_GetFinalDAScaleFake()
@@ -2907,17 +2902,7 @@ Function PSQ_Ramp(panelTitle, s)
 		if(IsFinite(ret))
 			baselineQCPassed = (ret == 0)
 
-			sprintf msg, "Baseline QC/Sweep has %s, last evaluated chunk %d returned with %g\r", ToPassFail(baselineQCPassed), i, ret
-			DEBUGPRINT(msg)
-
-			// document BL QC results
 			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-			result[s.headstage] = baselineQCPassed
-
-			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_BL_QC_PASS)
-			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
-
-			result[] = NaN
 			result[INDEP_HEADSTAGE] = baselineQCPassed
 			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -2928,7 +2913,7 @@ Function PSQ_Ramp(panelTitle, s)
 			enoughSpikesFound = PSQ_FoundAtLeastOneSpike(panelTitle, s.sweepNo)
 
 			ASSERT(!baselineQCPassed || (baselineQCPassed && isFinite(enoughSpikesFound)), "We missed searching for a spike")
-			return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
+			return PSQ_EvaluateBaselinePassed(paneltitle, PSQ_RAMP, s.sweepNo, s.headstage, i, ret)
 		endif
 	endif
 End
@@ -3755,15 +3740,7 @@ Function PSQ_Chirp(panelTitle, s)
 		if(IsFinite(ret))
 			baselineQCPassed = (ret == 0)
 
-			sprintf msg, "BL QC %s, last evaluated chunk %d returned with %g", ToPassFail(baselineQCPassed), i, ret
-			DEBUGPRINT(msg)
-
-			// document BL QC results
-			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-			result[s.headstage] = baselineQCPassed
-
-			key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_BL_QC_PASS)
-			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+			PSQ_EvaluateBaselinePassed(panelTitle, PSQ_CHIRP, s.sweepNo, s.headstage, i, ret)
 		endif
 	endif
 
