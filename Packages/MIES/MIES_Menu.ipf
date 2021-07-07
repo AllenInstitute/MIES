@@ -31,7 +31,7 @@ Menu "Mies Panels"
 		"IVSCC control panel"                  , /Q, IVS_CreatePanel()
 	End
 	"-"
-	SubMenu "Neurodata Without Borders (NWB)/DANDI"
+	SubMenu "\\M0Neurodata Without Borders (NWB)/DANDI"
 		"Export all data into NWB"             , /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA)
 		"-"
 		"Export all data into NWBv1 (legacy)"  , /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA, nwbVersion = 1)
