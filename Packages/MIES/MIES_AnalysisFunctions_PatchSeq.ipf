@@ -235,6 +235,63 @@ static Function PSQ_EvaluateBaselinePassed(string panelTitle, variable type, var
 	return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
 End
 
+static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string panelTitle, variable type, STRUCT AnalysisFunction_V3 &s)
+
+	variable numBaselineChunks, i, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
+
+	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, type)
+
+	if(type == PSQ_CHIRP)
+		ASSERT(numBaselineChunks >= 3, "Unexpected number of baseline chunks")
+	endif
+
+	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
+
+	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
+	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
+
+	for(i = 0; i < numBaselineChunks; i += 1)
+
+		ret = PSQ_EvaluateBaselineProperties(panelTitle, s.scaledDACWave, type, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+
+		if(IsNaN(ret))
+			// NaN: not enough data for check
+
+			// last chunk was only partially present and so can never pass
+			if(i == numBaselineChunks - 1 && s.lastKnownRowIndex == s.lastValidRowIndex)
+				ret = PSQ_BL_FAILED
+			endif
+
+			break
+		elseif(ret)
+			// != 0: failed with special mid sweep return value (on first failure) or PSQ_BL_FAILED
+			if(i == 0)
+				// pre pulse baseline
+				// fail sweep
+				break
+			else
+				// post pulse baseline
+				// try next chunk
+				continue
+			endif
+		else
+			// 0: passed
+			if(i == 0)
+				// pre pulse baseline
+				// try next chunks
+				continue
+			else
+				// post baseline
+				// we're done!
+				break
+			endif
+		endif
+	endfor
+
+	return [ret, i]
+End
+
 /// @brief Evaluate one chunk of the baseline
 ///
 /// @param panelTitle        device
@@ -1379,15 +1436,15 @@ Function PSQ_DAScale(panelTitle, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	variable val, totalOnsetDelay, DAScale, baselineQCPassed
-	variable i, fifoInStimsetPoint, fifoInStimsetTime, numberOfSpikes
+	variable i, numberOfSpikes
 	variable index, ret, showPlot, V_AbortCode, V_FitError, err, enoughSweepsPassed
 	variable sweepPassed, setPassed, numSweepsPass, length, minLength
 	variable minimumSpikeCount, maximumSpikeCount, daScaleModifierParam
-	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks, multiplier
+	variable sweepsInSet, passesInSet, acquiredSweepsInSet, multiplier
 	string msg, stimset, key, opMode, offsetOp, textboxString, str
 	variable daScaleOffset = NaN
 	variable finalSlopePercent = NaN
-	variable daScaleModifier
+	variable daScaleModifier, chunk
 
 	WAVE/D/Z DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
 	opMode = AFH_GetAnalysisParamTextual("OperationMode", s.params)
@@ -1767,53 +1824,9 @@ Function PSQ_DAScale(panelTitle, s)
 		return NaN
 	endif
 
-	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
-					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
+	[ret, chunk] = PSQ_EvaluateBaselineChunks(panelTitle, PSQ_DA_SCALE, s)
 
-	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
-	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
-
-	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_DA_SCALE)
-
-	for(i = 0; i < numBaselineChunks; i += 1)
-
-		ret = PSQ_EvaluateBaselineProperties(panelTitle, s.scaledDACWave, PSQ_DA_SCALE, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
-
-		if(IsNaN(ret))
-			// NaN: not enough data for check
-
-			// last chunk was only partially present and so can never pass
-			if(i == numBaselineChunks - 1 && s.lastKnownRowIndex == s.lastValidRowIndex)
-				ret = PSQ_BL_FAILED
-			endif
-
-			break
-		elseif(ret)
-			// != 0: failed with special mid sweep return value (on first failure) or PSQ_BL_FAILED
-			if(i == 0)
-				// pre pulse baseline
-				// fail sweep
-				break
-			else
-				// post pulse baseline
-				// try next chunk
-				continue
-			endif
-		else
-			// 0: passed
-			if(i == 0)
-				// pre pulse baseline
-				// try next chunks
-				continue
-			else
-				// post baseline
-				// we're done!
-				break
-			endif
-		endif
-	endfor
-
-	return PSQ_EvaluateBaselinePassed(paneltitle, PSQ_DA_SCALE, s.sweepNo, s.headstage, i, ret)
+	return PSQ_EvaluateBaselinePassed(paneltitle, PSQ_DA_SCALE, s.sweepNo, s.headstage, chunk, ret)
 End
 
 /// @brief Return a list of required parameters
@@ -2130,8 +2143,8 @@ Function PSQ_Rheobase(panelTitle, s)
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed, diff
 	variable baselineQCPassed, finalDAScale, initialDAScale, stepSize, previousStepSize
-	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
-	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, multiplier
+	variable totalOnsetDelay
+	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, multiplier, chunk
 	string key, msg
 
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
@@ -2436,53 +2449,9 @@ Function PSQ_Rheobase(panelTitle, s)
 		return NaN
 	endif
 
-	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
-					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
+	[ret, chunk] = PSQ_EvaluateBaselineChunks(panelTitle, PSQ_RHEOBASE, s)
 
-	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
-	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
-
-	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_RHEOBASE)
-
-	for(i = 0; i < numBaselineChunks; i += 1)
-
-		ret = PSQ_EvaluateBaselineProperties(panelTitle, s.scaledDACWave, PSQ_RHEOBASE, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
-
-		if(IsNaN(ret))
-			// NaN: not enough data for check
-
-			// last chunk was only partially present and so can never pass
-			if(i == numBaselineChunks - 1 && s.lastKnownRowIndex == s.lastValidRowIndex)
-				ret = PSQ_BL_FAILED
-			endif
-
-			break
-		elseif(ret)
-			// != 0: failed with special mid sweep return value (on first failure) or PSQ_BL_FAILED
-			if(i == 0)
-				// pre pulse baseline
-				// fail sweep
-				break
-			else
-				// post pulse baseline
-				// try next chunk
-				continue
-			endif
-		else
-			// 0: passed
-			if(i == 0)
-				// pre pulse baseline
-				// try next chunks
-				continue
-			else
-				// post baseline
-				// we're done!
-				break
-			endif
-		endif
-	endfor
-
-	return PSQ_EvaluateBaselinePassed(paneltitle, PSQ_RHEOBASE, s.sweepNo, s.headstage, i, ret)
+	return PSQ_EvaluateBaselinePassed(paneltitle, PSQ_RHEOBASE, s.sweepNo, s.headstage, chunk, ret)
 End
 
 Function PSQ_GetFinalDAScaleFake()
@@ -2586,10 +2555,10 @@ Function PSQ_Ramp(panelTitle, s)
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
 	variable baselineQCPassed, finalDAScale, initialDAScale
-	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
+	variable lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength
 	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, enoughSpikesFound
-	variable pulseStart, pulseDuration, fifoPos, fifoOffset, numberOfSpikes, multiplier
+	variable pulseStart, pulseDuration, fifoPos, fifoOffset, numberOfSpikes, multiplier, chunk
 	string key, msg, stimset
 	string fifoname
 	variable hardwareType
@@ -2744,8 +2713,6 @@ Function PSQ_Ramp(panelTitle, s)
 	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
 
-	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_RAMP)
-
 	WAVE durations = PSQ_GetPulseDurations(panelTitle, PSQ_RAMP, s.sweepNo, totalOnsetDelay)
 	pulseStart     = PSQ_RA_BL_EVAL_RANGE
 	pulseDuration  = durations[s.headstage]
@@ -2856,43 +2823,7 @@ Function PSQ_Ramp(panelTitle, s)
 	endif
 
 	if(!baselineQCPassed)
-		for(i = 0; i < numBaselineChunks; i += 1)
-
-			ret = PSQ_EvaluateBaselineProperties(panelTitle, s.scaledDACWave, PSQ_RAMP, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
-
-			if(IsNaN(ret))
-				// NaN: not enough data for check
-
-				// last chunk was only partially present and so can never pass
-				if(i == numBaselineChunks - 1 && s.lastKnownRowIndex == s.lastValidRowIndex)
-					ret = PSQ_BL_FAILED
-				endif
-
-				break
-			elseif(ret)
-				// != 0: failed with special mid sweep return value (on first failure) or PSQ_BL_FAILED
-				if(i == 0)
-					// pre pulse baseline
-					// fail sweep
-					break
-				else
-					// post pulse baseline
-					// try next chunk
-					continue
-				endif
-			else
-				// 0: passed
-				if(i == 0)
-					// pre pulse baseline
-					// try next chunks
-					continue
-				else
-					// post baseline
-					// we're done!
-					break
-				endif
-			endif
-		endfor
+		[ret, chunk] = PSQ_EvaluateBaselineChunks(panelTitle, PSQ_RAMP, s)
 
 		if(IsFinite(ret))
 			baselineQCPassed = (ret == 0)
@@ -2908,7 +2839,7 @@ Function PSQ_Ramp(panelTitle, s)
 			enoughSpikesFound = PSQ_FoundAtLeastOneSpike(panelTitle, s.sweepNo)
 
 			ASSERT(!baselineQCPassed || (baselineQCPassed && isFinite(enoughSpikesFound)), "We missed searching for a spike")
-			return PSQ_EvaluateBaselinePassed(paneltitle, PSQ_RAMP, s.sweepNo, s.headstage, i, ret)
+			return PSQ_EvaluateBaselinePassed(paneltitle, PSQ_RAMP, s.sweepNo, s.headstage, chunk, ret)
 		endif
 	endif
 End
@@ -3390,10 +3321,10 @@ Function PSQ_Chirp(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	variable lowerRelativeBound, upperRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps
+	variable lowerRelativeBound, upperRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
-	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, numBaselineChunks, chirpStart, chirpDuration
+	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck
 	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed
 	string setName, key, msg, stimset, str, daScaleOperator
@@ -3690,51 +3621,12 @@ Function PSQ_Chirp(panelTitle, s)
 	endif
 
 	if(IsNaN(baselineQCPassed))
-		numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_CHIRP)
-		ASSERT(numBaselineChunks >= 3, "Unexpected number of baseline chunks")
-
-		for(i = 0; i < numBaselineChunks; i += 1)
-
-			ret = PSQ_EvaluateBaselineProperties(panelTitle, s.scaledDACWave, PSQ_CHIRP, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
-
-			if(IsNaN(ret))
-				// NaN: not enough data for check
-
-				// last chunk was only partially present and so can never pass
-				if(i == numBaselineChunks - 1 && s.lastKnownRowIndex == s.lastValidRowIndex)
-					ret = PSQ_BL_FAILED
-				endif
-
-				break
-			elseif(ret)
-				// != 0: failed with special mid sweep return value (on first failure) or PSQ_BL_FAILED
-				if(i == 0)
-					// pre pulse baseline
-					// fail sweep
-					break
-				else
-					// post pulse baseline
-					// try next chunk
-					continue
-				endif
-			else
-				// 0: passed
-				if(i == 0)
-					// pre pulse baseline
-					// try next chunks
-					continue
-				else
-					// post baseline
-					// we're done!
-					break
-				endif
-			endif
-		endfor
+		[ret, chunk] = PSQ_EvaluateBaselineChunks(panelTitle, PSQ_CHIRP, s)
 
 		if(IsFinite(ret))
 			baselineQCPassed = (ret == 0)
 
-			PSQ_EvaluateBaselinePassed(panelTitle, PSQ_CHIRP, s.sweepNo, s.headstage, i, ret)
+			PSQ_EvaluateBaselinePassed(panelTitle, PSQ_CHIRP, s.sweepNo, s.headstage, chunk, ret)
 		endif
 	endif
 
