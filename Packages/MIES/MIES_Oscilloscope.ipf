@@ -637,7 +637,7 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		// update a full pulse
 		for(i = 0; i < V_FIFOnchans; i += 1)
-			channel = str2num(StringByKey("NAME" + num2str(i), S_Info))
+			channel = NumberByKey("NAME" + num2str(i), S_Info)
 			WAVE NIChannel = NIDataWave[channel]
 			multithread OscilloscopeData[][channel] = NIChannel[p]
 			Multithread scaledDataWave[][] = OscilloscopeData
@@ -654,7 +654,7 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 		decFactor = GetNumberFromWaveNote(OscilloscopeData, "DecimationFactor")
 
 		for(i = 0; i < V_FIFOnchans; i += 1)
-			channel = str2num(StringByKey("NAME" + num2str(i), S_Info))
+			channel = NumberByKey("NAME" + num2str(i), S_Info)
 			WAVE NIChannel = NIDataWave[channel]
 
 			switch(decMethod)
