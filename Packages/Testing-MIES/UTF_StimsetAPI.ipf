@@ -1,4 +1,4 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=StimsetAPITests
@@ -13,6 +13,9 @@ static Function GetStimSetListWorks()
 
 	string list, ref
 	string thirdPartyStimSetList, WBstimSetList
+
+	// create STIMSET_TP_WHILE_DAQ to check that no duplicates are returned
+	GetTestPulse()
 
 	list = ST_GetStimsetList()
 	ref  = "Testpulse;"
