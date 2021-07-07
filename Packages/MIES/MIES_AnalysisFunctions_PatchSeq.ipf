@@ -247,7 +247,7 @@ End
 ///
 /// @return
 /// pre pulse baseline: 0 if the chunk passes, one of the possible @ref AnalysisFuncReturnTypesConstants values otherwise
-/// post pulse baseline: 0 if the chunk passes, NaN if it does not pass
+/// post pulse baseline: 0 if the chunk passes, PSQ_BL_FAILED if it does not pass
 static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay)
 	string panelTitle
 	WAVE scaledDACWave
@@ -484,7 +484,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			endif
 		elseif(baselineType == PSQ_BL_POST_PULSE)
 			if(!chunkPassed)
-				return NaN
+				return PSQ_BL_FAILED
 			else
 				return 0
 			endif
@@ -509,7 +509,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 		if(chunkPassed)
 			return 0
 		else
-			return NaN
+			return PSQ_BL_FAILED
 		endif
 	else
 		ASSERT(0, "unknown baseline type")
@@ -1781,17 +1781,15 @@ Function PSQ_DAScale(panelTitle, s)
 
 		if(IsNaN(ret))
 			// NaN: not enough data for check
-			//
-			// not last chunk: retry on next invocation
-			// last chunk: mark sweep as failed
-			if(i == numBaselineChunks - 1)
+
+			// last chunk was only partially present and so can never pass
+			if(i == numBaselineChunks - 1 && s.lastKnownRowIndex == s.lastValidRowIndex)
 				ret = PSQ_BL_FAILED
-				break
-			else
-				return NaN
 			endif
+
+			break
 		elseif(ret)
-			// != 0: failed with special mid sweep return value (on first failure)
+			// != 0: failed with special mid sweep return value (on first failure) or PSQ_BL_FAILED
 			if(i == 0)
 				// pre pulse baseline
 				// fail sweep
@@ -2452,17 +2450,15 @@ Function PSQ_Rheobase(panelTitle, s)
 
 		if(IsNaN(ret))
 			// NaN: not enough data for check
-			//
-			// not last chunk: retry on next invocation
-			// last chunk: mark sweep as failed
-			if(i == numBaselineChunks - 1)
+
+			// last chunk was only partially present and so can never pass
+			if(i == numBaselineChunks - 1 && s.lastKnownRowIndex == s.lastValidRowIndex)
 				ret = PSQ_BL_FAILED
-				break
-			else
-				return NaN
 			endif
+
+			break
 		elseif(ret)
-			// != 0: failed with special mid sweep return value (on first failure)
+			// != 0: failed with special mid sweep return value (on first failure) or PSQ_BL_FAILED
 			if(i == 0)
 				// pre pulse baseline
 				// fail sweep
@@ -2866,16 +2862,15 @@ Function PSQ_Ramp(panelTitle, s)
 
 			if(IsNaN(ret))
 				// NaN: not enough data for check
-				//
-				// not last chunk: retry on next invocation
-				// last chunk: mark sweep as failed
-				if(i == numBaselineChunks - 1)
+
+				// last chunk was only partially present and so can never pass
+				if(i == numBaselineChunks - 1 && s.lastKnownRowIndex == s.lastValidRowIndex)
 					ret = PSQ_BL_FAILED
 				endif
 
 				break
 			elseif(ret)
-				// != 0: failed with special mid sweep return value (on first failure)
+				// != 0: failed with special mid sweep return value (on first failure) or PSQ_BL_FAILED
 				if(i == 0)
 					// pre pulse baseline
 					// fail sweep
@@ -3704,16 +3699,15 @@ Function PSQ_Chirp(panelTitle, s)
 
 			if(IsNaN(ret))
 				// NaN: not enough data for check
-				//
-				// not last chunk: retry on next invocation
-				// last chunk: mark sweep as failed
-				if(i == numBaselineChunks - 1)
+
+				// last chunk was only partially present and so can never pass
+				if(i == numBaselineChunks - 1 && s.lastKnownRowIndex == s.lastValidRowIndex)
 					ret = PSQ_BL_FAILED
 				endif
 
 				break
 			elseif(ret)
-				// != 0: failed with special mid sweep return value (on first failure)
+				// != 0: failed with special mid sweep return value (on first failure) or PSQ_BL_FAILED
 				if(i == 0)
 					// pre pulse baseline
 					// fail sweep
