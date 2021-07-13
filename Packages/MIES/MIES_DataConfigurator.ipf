@@ -904,9 +904,6 @@ static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DataConfiguration
 	maxITIGlobal = maxITI
 	DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, NaN, NaN, var=maxITIGlobal)
 
-	WAVE/T epochWave = GetEpochsWave(panelTitle)
-	EP_SortEpochs(panelTitle)
-
 	// index guide:
 	// - numEntries: Number of active DACs
 	// - i: Zero-based index of the active DACS
@@ -972,10 +969,6 @@ static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DataConfiguration
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=s.setLength[i])
 		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=s.offsets[i])
 		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=s.regions[i])
-
-		Duplicate/FREE/RMD=[][][channel] epochWave, epochChannel
-		Redimension/N=(-1, -1, 0) epochChannel
-		DC_DocumentChannelProperty(panelTitle, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=TextWaveToList(epochChannel, ":", colSep = ",", stopOnEmpty = 1))
 	endfor
 
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, NaN, var=str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")))

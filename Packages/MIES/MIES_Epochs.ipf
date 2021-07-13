@@ -346,7 +346,7 @@ End
 
 /// @brief Sorts all epochs per channel in EpochsWave
 /// @param[in] panelTitle title of device panel
-Function EP_SortEpochs(panelTitle)
+static Function EP_SortEpochs(panelTitle)
 	string panelTitle
 
 	variable channel, channelCnt, epochCnt
@@ -432,4 +432,34 @@ static Function EP_AddEpoch(panelTitle, channel, epBegin, epEnd, epName, level[,
 	epochWave[i][%EndTime][channel] = endTimeStr
 	epochWave[i][%Name][channel] = epName
 	epochWave[i][%TreeLevel][channel] = num2str(level)
+End
+
+/// @brief Write the epoch info into the sweep settings wave
+///
+/// @param panelTitle device
+/// @param sweepWave  sweep wave
+/// @param configWave config wave
+Function EP_WriteEpochInfoIntoSweepSettings(string panelTitle, WAVE sweepWave, WAVE configWave)
+	variable i, numDACEntries, channel, headstage, acquiredTime
+	string entry
+
+	EP_SortEpochs(panelTitle)
+
+	WAVE DACList = GetDACListFromConfig(configWave)
+	numDACEntries = DimSize(DACList, ROWS)
+
+	WAVE channelClampMode = GetChannelClampMode(panelTitle)
+	Make/D/FREE/N=(numDACEntries) headstageDAC = channelClampMode[DACList[p]][%DAC][%Headstage]
+
+	WAVE/T epochsWave = GetEpochsWave(panelTitle)
+
+	for(i = 0; i < numDACEntries; i += 1)
+		channel = DACList[i]
+		headstage = headstageDAC[i]
+
+		Duplicate/FREE/RMD=[][][channel] epochsWave, epochChannel
+		Redimension/N=(-1, -1, 0) epochChannel
+		entry = TextWaveToList(epochChannel, ":", colSep = ",", stopOnEmpty = 1)
+		DC_DocumentChannelProperty(panelTitle, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=entry)
+	endfor
 End

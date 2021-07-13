@@ -51,6 +51,8 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 	SetSetVariable(panelTitle, "SetVar_Sweep", sweepNo + 1)
 	DAG_Update(panelTitle, "SetVar_Sweep", val = sweepNo + 1)
 
+	EP_WriteEpochInfoIntoSweepSettings(panelTitle, sweepWave, configWave)
+
 	// Add labnotebook entries for the acquired sweep
 	ED_createWaveNoteTags(panelTitle, sweepNo)
 
