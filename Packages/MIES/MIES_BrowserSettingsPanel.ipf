@@ -248,7 +248,7 @@ Function BSP_UnsetDynamicStartupSettingsOfDataBrowser(mainPanel)
 	PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = ""
 	ListBox list_of_ranges, win=$bsPanel, listWave=$"", selWave=$""
 	ListBox list_of_ranges1, win=$bsPanel, listWave=$"", selWave=$""
-	ListBox list_dashboard, win=$bsPanel, listWave=$"", colorWave=$"", selWave=$""
+	ListBox list_dashboard, win=$bsPanel, listWave=$"", colorWave=$"", selWave=$"", helpWave=$""
 End
 
 
