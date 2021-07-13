@@ -184,6 +184,7 @@ End
 #include "MIES_Debugging"
 #include "MIES_DebugPanel"
 #include "MIES_Downsample"
+#include "MIES_Epochs"
 #include "MIES_EnhancedWMRoutines"
 #include "MIES_ExperimentDocumentation"
 #include "MIES_ForeignFunctionInterface"
