@@ -4832,6 +4832,8 @@ End
 ///
 /// @param w 1D text wave
 /// @param[in] entry element content to compare
+///
+/// @return 0 if entry was found, 1 otherwise
 Function RemoveTextWaveEntry1D(w, entry)
 	WAVE/T w
 	string entry
@@ -4842,10 +4844,13 @@ Function RemoveTextWaveEntry1D(w, entry)
 
 	ASSERT(IsTextWave(w), "Input wave must be a text wave")
 
-	FindValue/TXOP=4/TEXT=entry w
+	FindValue/TXOP=4/TEXT=entry/RMD=[][0][0][0] w
 	if(V_Value >= 0)
 		DeletePoints V_Value, 1, w
+		return 0
 	endif
+
+	return 1
 End
 
 /// @brief Checks if a string ends with a specific suffix
