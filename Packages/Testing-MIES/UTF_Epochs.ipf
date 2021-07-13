@@ -348,8 +348,8 @@ static Function TestEpochsGeneric(device)
 	string device
 
 	variable numEntries, endTimeDAC, endTimeEpochs, samplingInterval
-	variable i
-	string epochStr
+	variable i, lastPoint
+	string list, epochStr
 
 	string sweeps, configs
 	variable sweepNo
@@ -403,7 +403,15 @@ static Function TestEpochsGeneric(device)
 	// further checks of data from LabNotebook Entries
 	WAVE/Z samplInt = GetLastSetting(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
 	samplingInterval = samplInt[INDEP_HEADSTAGE] * 1000
-	endTimeDAC = samplingInterval * DimSize(sweep, ROWS) / 1E6
+
+	FindValue/FNAN sweep
+	if(V_row >= 0)
+		lastPoint = V_row - 1
+	else
+		lastPoint = DimSize(sweep, ROWS)
+	endif
+
+	endTimeDAC = samplingInterval * lastPoint  / 1E6
 
 	WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	WAVE/T setNameLBEntries = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
@@ -427,8 +435,22 @@ static Function TestEpochsGeneric(device)
 		Redimension/N=(-1, 0) DAchannel
 
 		TestEpochsMonotony(epochChannel, DAchannel, i)
-	endfor
 
+		TestUnacquiredEpoch(sweep, epochChannel)
+	endfor
+End
+
+static Function TestUnacquiredEpoch(WAVE sweep, WAVE epochChannel)
+
+	FindValue/FNAN sweep
+
+	if(V_row == -1)
+		return NaN
+	endif
+
+	FindValue/TXOP=4/TEXT="Unacquired" epochChannel
+	CHECK(V_row >= 0)
+	CHECK_EQUAL_VAR(V_col, 2)
 End
 
 /// <------------- TESTS FOLLOW HERE ---------------------->

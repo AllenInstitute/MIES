@@ -32,6 +32,7 @@ static StrConstant EPOCH_SN_PULSETRAIN_PULSEAMP = "P"
 static StrConstant EPOCH_SN_PULSETRAIN_PULSEBASE = "B"
 static StrConstant EPOCH_SN_PULSETRAIN_PULSEBASETRAIL = "BT"
 static StrConstant EPOCH_SN_PULSETRAINBASETRAIL = "BT"
+static StrConstant EPOCH_SN_UNACQUIRED = "UA"
 
 /// @brief Clear the list of epochs
 Function EP_ClearEpochs(string panelTitle)
@@ -506,6 +507,16 @@ Function EP_WriteEpochInfoIntoSweepSettings(string panelTitle, WAVE sweepWave, W
 	variable i, numDACEntries, channel, headstage, acquiredTime
 	string entry
 
+	// all channels are acquired simultaneously we can just check if the last
+	// channel has NaN in the last element
+	if(IsNaN(sweepWave[inf][inf]))
+		FindValue/FNAN sweepWave
+		ASSERT(V_row >= 0, "Unexpected result")
+
+		acquiredTime = IndexToScale(sweepWave, max(V_row - 1, 0), ROWS) / 1e3
+		EP_AdaptEpochInfo(panelTitle, configWave, acquiredTime)
+	endif
+
 	EP_SortEpochs(panelTitle)
 
 	WAVE DACList = GetDACListFromConfig(configWave)
@@ -542,4 +553,62 @@ End
 Function/S EP_GetShortName(string name)
 
 	return StringByKey(EPOCH_SHORTNAME_KEY, name, SHORTNAMEKEY_SEP)
+End
+
+/// @brief Adapt epoch information
+///
+/// - Adjust epoch end time to the acquired time
+/// - Blanks out which are then too small or lie outside the acquired region
+/// - Add an unacquired epoch
+///
+/// @param panelTitle    device
+/// @param configWave    DAQ config wave
+/// @param acquiredTime  Last acquired time point [s]
+static Function EP_AdaptEpochInfo(string panelTitle, WAVE configWave, variable acquiredTime)
+	variable i, channel, epoch, numEntries, endTime, startTime, epochCnt
+	variable lastEnd = -inf
+
+	WAVE/T epochWave = GetEpochsWave(panelTitle)
+
+	numEntries = DimSize(configWave, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		if(configWave[i][%ChannelType] != XOP_CHANNEL_TYPE_DAC)
+			// no more DACs, we are done
+			break
+		endif
+
+		if(configWave[i][%DAQChannelType] != DAQ_CHANNEL_TYPE_DAQ)
+			// skip all other channel types
+			 continue
+		endif
+
+		channel = configWave[i][%ChannelNumber]
+
+		epochCnt = EP_GetEpochCount(panelTitle, channel)
+		ASSERT(epochCnt > 0, "Unexpected epoch count of zero")
+
+		for(epoch = 0; epoch < epochCnt; epoch += 1)
+			startTime = str2num(epochWave[epoch][%StartTime][channel])
+			endTime   = str2num(epochWave[epoch][%EndTime][channel])
+
+			lastEnd = max(endTime, lastEnd)
+
+			if(acquiredTime >= endTime)
+				continue
+			endif
+
+			if(acquiredTime < startTime || abs(acquiredTime - startTime) <= 10^(-EPOCHTIME_PRECISION))
+				// lies completely outside the acquired region
+				// mark it for deletion
+				epochWave[epoch][%StartTime][channel] = "NaN"
+				epochWave[epoch][%EndTime][channel]   = "NaN"
+			else
+				// epoch was cut off
+				epochWave[epoch][%EndTime][channel] = num2strHighPrec(acquiredTime, precision = EPOCHTIME_PRECISION)
+			endif
+		endfor
+
+		// Add unacquired epoch
+		EP_AddEpoch(panelTitle, channel, acquiredTime * 1e6 , lastEnd * 1e6, "Unacquired", EPOCH_SN_UNACQUIRED, 0)
+	endfor
 End
