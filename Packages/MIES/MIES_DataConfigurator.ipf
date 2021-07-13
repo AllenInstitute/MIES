@@ -1666,7 +1666,7 @@ End
 /// @param channelType    type of the channel
 /// @param var [optional] numeric value
 /// @param str [optional] string value
-static Function DC_DocumentChannelProperty(panelTitle, entry, headstage, channelNumber, channelType, [var, str])
+Function DC_DocumentChannelProperty(panelTitle, entry, headstage, channelNumber, channelType, [var, str])
 	string panelTitle, entry
 	variable headstage, channelNumber, channelType
 	variable var
