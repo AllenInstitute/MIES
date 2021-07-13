@@ -620,3 +620,18 @@ Function EP_EpochTest11_REENTRY([str])
 
 	TestEpochsGeneric(str)
 End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function EP_EpochTest12([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, "StimulusSetA_DA_0", "StimulusSetA_DA_0", analysisFunction = "StopMidSweep_V3")
+End
+
+Function EP_EpochTest12_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End

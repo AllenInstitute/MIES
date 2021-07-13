@@ -812,3 +812,13 @@ Function ModifyStimSet(string panelTitle, STRUCT AnalysisFunction_V3& s)
 
 	return 0
 End
+
+Function StopMidSweep_V3(string panelTitle, STRUCT AnalysisFunction_V3& s)
+
+	switch(s.eventType)
+		case MID_SWEEP_EVENT:
+			return ANALYSIS_FUNC_RET_EARLY_STOP
+	endswitch
+
+	return 0
+End
