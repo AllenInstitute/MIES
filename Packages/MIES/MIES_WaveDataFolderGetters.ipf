@@ -127,6 +127,8 @@ Function/Wave GetChanAmpAssignUnit(panelTitle)
 	SetDimLabel ROWS, 2, IC_DAUnit, wv
 	SetDimLabel ROWS, 3, IC_ADUnit, wv
 
+	SetWaveVersion(wv, versionOfNewWave)
+
 	return wv
 End
 
@@ -6778,6 +6780,8 @@ Function/WAVE GetValidAcqStateTransitions()
 	wv[%AS_ITI][%AS_POST_DAQ] = 1
 
 	wv[%AS_POST_DAQ][%AS_INACTIVE] = 1
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
