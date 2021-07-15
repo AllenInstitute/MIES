@@ -2547,3 +2547,27 @@ Function P_UpdatePressureType(panelTitle)
 	// Encode headstages without valid pressure settings
 	pressureType[] = P_ValidatePressureSetHeadstage(panelTitle, p) == 1 ? pressureType[p] : NaN
 End
+
+static Function/S P_PressureMethodToString(variable method)
+
+	switch(method)
+		case PRESSURE_METHOD_ATM:
+			return "Atmosphere"
+		case PRESSURE_METHOD_APPROACH:
+			return "Approach"
+		case PRESSURE_METHOD_SEAL:
+			return "Seal"
+		case PRESSURE_METHOD_BREAKIN:
+			return "Breakin"
+		case PRESSURE_METHOD_CLEAR:
+			return "Clear"
+		case PRESSURE_METHOD_MANUAL:
+			return "Manual"
+		default:
+			if(IsNaN(method))
+				return "None"
+			endif
+
+			ASSERT(0, "Unknown pressure method: " + num2str(method))
+	endswitch
+End
