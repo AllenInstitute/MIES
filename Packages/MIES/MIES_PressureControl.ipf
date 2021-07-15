@@ -152,7 +152,7 @@ static Function P_UpdateTPStorage(panelTitle, headStage)
 	string panelTitle
 	variable headstage
 
-	variable count
+	variable count, old, new
 
 	if(!P_ValidatePressureSetHeadstage(panelTitle, headStage) || !P_IsHSActiveAndInVClamp(panelTitle, headStage))
 		return NaN
@@ -169,9 +169,27 @@ static Function P_UpdateTPStorage(panelTitle, headStage)
 		return NaN
 	endif
 
-	TPStorage[count][headstage][%PressureChange] = (TPStorage[count - 1][headstage][%Pressure] == PressureDataWv[headStage][%RealTimePressure][0] ? NaN : PRESSURE_CHANGE)
+	old = P_FindLastSetEntry(TPStorage, count - 1, headstage, "Pressure")
+	new = PressureDataWv[headStage][%RealTimePressure][0]
 
+	TPStorage[count][headstage][%PressureChange] = (new == old ? NaN : PRESSURE_CHANGE)
 	TPStorage[count][headstage][%PressureMethod] = PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear]
+End
+
+/// @brief Return the last non-NaN entry from the wave's column `col` and layer `name`
+///        starting from the row `row` going to 0
+static Function P_FindLastSetEntry(WAVE wv, variable row, variable col, string name)
+
+	variable i, entry
+
+	for(i = row; i >= 0; i -= 1)
+		entry = wv[i][col][%$name]
+		if(!IsNaN(entry))
+			return entry
+		endif
+	endfor
+
+	return NaN
 End
 
 /// @brief Sets the pressure to atmospheric
