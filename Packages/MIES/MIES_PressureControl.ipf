@@ -152,13 +152,16 @@ static Function P_UpdateTPStorage(panelTitle, headStage)
 	string panelTitle
 	variable headstage
 
-	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	WAVE TPStorage      = GetTPStorage(panelTitle)
-	variable count      = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+	variable count
 
 	if(!P_ValidatePressureSetHeadstage(panelTitle, headStage) || !P_IsHSActiveAndInVClamp(panelTitle, headStage))
 		return NaN
 	endif
+
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	WAVE TPStorage      = GetTPStorage(panelTitle)
+
+	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 
 	TPStorage[count][headstage][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0]
 
