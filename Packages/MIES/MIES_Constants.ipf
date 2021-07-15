@@ -1549,3 +1549,5 @@ Constant LBN_NUMERICAL_VALUES = 0x2
 Constant LBN_TEXTUAL_KEYS     = 0x4
 Constant LBN_TEXTUAL_VALUES   = 0x8
 /// @}
+
+StrConstant PRESSURE_FILTER = "pressure:state"

@@ -165,7 +165,7 @@ static Function P_UpdateTPStorage(panelTitle, headStage)
 
 	TPStorage[count][headstage][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0]
 
-	if(count == 0) // don' record pressure change for first entry
+	if(count == 0) // don't record changes for first entry
 		return NaN
 	endif
 
@@ -174,6 +174,10 @@ static Function P_UpdateTPStorage(panelTitle, headStage)
 
 	TPStorage[count][headstage][%PressureChange] = (new == old ? NaN : PRESSURE_CHANGE)
 	TPStorage[count][headstage][%PressureMethod] = PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear]
+
+	old = P_FindLastSetEntry(TPStorage, count - 1, headstage, "PressureMethod")
+	new = TPStorage[count][headstage][%PressureMethod]
+	P_PublishPressureMethodChange(panelTitle, headstage, old, new)
 End
 
 /// @brief Return the last non-NaN entry from the wave's column `col` and layer `name`
@@ -190,6 +194,36 @@ static Function P_FindLastSetEntry(WAVE wv, variable row, variable col, string n
 	endfor
 
 	return NaN
+End
+
+static Function P_PublishPressureMethodChange(string panelTitle, variable headstage, variable oldMethod, variable newMethod)
+
+	variable jsonID, err
+	string payload
+
+	if(EqualValuesOrBothNaN(oldMethod, newMethod))
+		return NaN
+	endif
+
+	jsonID = FFI_GetJSONTemplate(panelTitle, headstage)
+	JSON_AddTreeObject(jsonID, "pressure method")
+	JSON_AddString(jsonID, "pressure method/old", P_PressureMethodToString(oldMethod))
+	JSON_AddString(jsonID, "pressure method/new", P_PressureMethodToString(newMethod))
+
+	payload = JSON_Dump(jsonID)
+	JSON_Release(jsonID)
+
+	try
+		ClearRTError()
+#if exists("zeromq_pub_send")
+		zeromq_pub_send(PRESSURE_FILTER, payload); AbortOnRTE
+#else
+		ASSERT(0, "ZeroMQ XOP not present")
+#endif
+	catch
+		err = ClearRTError()
+		BUG("Could not publish pressure method change " + num2str(err))
+	endtry
 End
 
 /// @brief Sets the pressure to atmospheric
