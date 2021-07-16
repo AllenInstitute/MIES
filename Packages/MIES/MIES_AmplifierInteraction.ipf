@@ -1629,7 +1629,7 @@ Function AI_FindConnectedAmps()
 
 	AxonTelegraphFindServers
 	WAVE telegraphServers = GetAmplifierTelegraphServers()
-	MDSort(telegraphServers, 0, keyColSecondary=1)
+	SortColumns/DIML/KNDX={0, 1} sortWaves={telegraphServers}
 
 	MCC_FindServers/Z=1
 
