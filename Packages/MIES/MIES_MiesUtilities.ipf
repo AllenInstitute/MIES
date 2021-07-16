@@ -2003,7 +2003,7 @@ threadsafe Function GetSamplingInterval(config)
 	Duplicate/D/R=[][2]/FREE config samplingInterval
 
 	// The sampling interval is the same for all channels
-	ASSERT_TS(WaveMax(samplingInterval) == WaveMin(samplingInterval),"Expected constant sample interval for all channels")
+	ASSERT_TS(IsConstant(samplingInterval, samplingInterval[0]), "Expected constant sample interval for all channels")
 	return samplingInterval[0]
 End
 
@@ -2016,7 +2016,7 @@ threadsafe Function GetDataOffset(config)
 	Duplicate/D/R=[][4]/FREE config, offsets
 
 	// The data offset is the same for all channels
-	ASSERT_TS(WaveMax(offsets) == WaveMin(offsets), "Expected constant data offset for all channels")
+	ASSERT_TS(IsConstant(offsets, offsets[0]), "Expected constant data offset for all channels")
 	return offsets[0]
 End
 
