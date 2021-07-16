@@ -2061,7 +2061,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 	variable flags, offset
 
 	string panelTitle, tempStr, device, filename, clkStr, wavegenStr, TTLStr, fifoName, errMsg
-	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize, err
+	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize, err, minimum, maximum
 
 	DEBUGPRINTSTACKINFO()
 
@@ -2119,9 +2119,10 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 					WAVE NIChannel = NIDataWave[i]
 					wavegenStr += GetWavesDataFolder(NIChannel, 2) + ","
 					wavegenStr += num2str(config[i][%ChannelNumber]) + ","
-					sprintf tempStr, "%10f", max(-10, WaveMin(NIChannel) - 0.001)
+					[minimum, maximum] = WaveMinAndMaxWrapper(NIChannel)
+					sprintf tempStr, "%10f", max(-10, minimum - 0.001)
 					wavegenStr += tempStr + ","
-					sprintf tempStr, "%10f", min(10, WaveMax(NIChannel) + 0.001)
+					sprintf tempStr, "%10f", min(10, maximum + 0.001)
 					wavegenStr += tempStr + ";"
 					break
 				case XOP_CHANNEL_TYPE_TTL:

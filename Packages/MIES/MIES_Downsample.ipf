@@ -300,10 +300,11 @@ End
 /// @brief Disable the equalize checkbox if all data waves have the same rate
 static Function ApplyConstantRateChanges(win)
 	string win
+	variable minimumRate, maximumRate
 
-	Wave rate = GetDownsampleRateWave()
-	variable minimumRate = WaveMin(rate)
-	variable maximumRate = WaveMax(rate)
+	WAVE rate = GetDownsampleRateWave()
+
+	[minimumRate, maximumRate] = WaveMinAndMaxWrapper(rate)
 
 	if(minimumRate == maximumRate)
 		DisableControl(win, checkbox_equalize)
@@ -351,8 +352,7 @@ Function/S GetPopupMenuRates()
 		return NONE
 	endif
 
-	maximum = WaveMax(rates)
-	minimum = WaveMin(rates)
+	[minimum, maximum] = WaveMinAndMaxWrapper(rates)
 
 	if(minimum == maximum)
 		return ExpandRateToList(panel, minimum, constantRates=1)

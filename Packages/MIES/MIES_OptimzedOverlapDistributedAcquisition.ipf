@@ -19,8 +19,10 @@ static Constant OOD_SIGNAL_THRESHOLD = 0.1
 static Function OOD_GetThresholdLevel(stimset)
 	WAVE stimset
 
-	variable minVal = WaveMin(stimset)
-	return minVal + (WaveMax(stimset) - minVal) * OOD_SIGNAL_THRESHOLD
+	variable minVal, maxVal
+
+	[minVal, maxVal] = WaveMinAndMaxWrapper(stimset)
+	return minVal + (maxVal - minVal) * OOD_SIGNAL_THRESHOLD
 End
 
 /// @brief retrieves regions with signal from a 1D data wave, used for stimsets
