@@ -21,7 +21,11 @@ static Constant TP_EVAL_POINT_OFFSET          = 5
 Function TP_CreateTPAvgBuffer(panelTitle)
 	string panelTitle
 
-	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
+	variable tpBufferSize
+
+	// tpBufSizeGlobal determines the number of TP cycles to average at end of TP_Delta
+	tpBufferSize = DAG_GetNumericalValue(panelTitle, "setvar_Settings_TPBuffer")
+
 	WAVE TPBaselineBuffer = GetGetBaselineBuffer(panelTitle)
 	WAVE TPInstBuffer = GetInstantaneousBuffer(panelTitle)
 	WAVE TPSSBuffer = GetSteadyStateBuffer(panelTitle)
@@ -40,7 +44,6 @@ Function TP_ReadTPSettingFromGUI(panelTitle)
 	NVAR AmplitudeVC = $GetTPAmplitudeVC(panelTitle)
 	NVAR AmplitudeIC = $GetTPAmplitudeIC(panelTitle)
 	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-	NVAR tpBufSizeGlobal = $GetTPBufferSizeGlobal(panelTitle)
 
 	pulseDuration = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPDuration")
 	// pulseDuration in ms, SampInt in microSec, test pulse mode ignores sample int multiplier for DAQ
@@ -51,8 +54,6 @@ Function TP_ReadTPSettingFromGUI(panelTitle)
 	AmplitudeVC = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitude")
 	AmplitudeIC = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 
-	// tpBufSizeGlobal determines the number of TP cycles to average at end of TP_Delta
-	tpBufSizeGlobal = DAG_GetNumericalValue(panelTitle, "setvar_Settings_TPBuffer")
 End
 
 /// @brief Return the total length of a single testpulse with baseline
@@ -159,7 +160,7 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 	string errmsg
 
 	variable i, j, bufSize
-	variable posMarker, posAsync
+	variable posMarker, posAsync, tpBufferSize
 	variable posBaseline, posSSRes, posInstRes
 
 	if(err)
@@ -215,7 +216,7 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 			KillOrMoveToTrash(wv=asyncBuffer)
 		endif
 
-		NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
+		tpBufferSize = DAG_GetNumericalValue(panelTitle, "setvar_Settings_TPBuffer")
 		if(tpBufferSize > 1)
 			DFREF dfr = GetDeviceTestPulse(panelTitle)
 			WAVE/SDFR=dfr TPBaselineBuffer, TPInstBuffer, TPSSBuffer

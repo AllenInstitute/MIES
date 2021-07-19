@@ -281,13 +281,6 @@ Function/S GetDAQDeviceID(panelTitle)
 	return GetNVARAsString(GetDevicePath(panelTitle), "deviceID", initialValue=NaN)
 End
 
-/// @brief Returns the absolute path to the testpulse averaging buffer size
-Function/S GetTPBufferSizeGlobal(panelTitle)
-	string panelTitle
-
-	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "n", initialValue=NaN)
-End
-
 /// @brief Returns the absolute path to the global variable `count` storing the
 ///        number of data acquisition cycles performed.
 ///
