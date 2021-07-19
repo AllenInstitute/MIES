@@ -21,12 +21,6 @@ static Constant TP_EVAL_POINT_OFFSET          = 5
 Function TP_CreateTPAvgBuffer(panelTitle)
 	string panelTitle
 
-	variable numADCs
-
-	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
-	numADCs = DimSize(ADCs, ROWS)
-
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 	WAVE TPBaselineBuffer = GetGetBaselineBuffer(panelTitle)
 	WAVE TPInstBuffer = GetInstantaneousBuffer(panelTitle)
