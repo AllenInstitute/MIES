@@ -222,7 +222,7 @@ Function TestAnalysisFunction_V3(panelTitle, s)
 			case "wave":
 				WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 				print wv
-			case "wave":
+			case "textwave":
 				WAVE/T/Z wvText = AFH_GetAnalysisParamTextWave(name, s.params)
 				print wvText
 				break
