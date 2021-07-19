@@ -144,8 +144,6 @@ Function AI_GetMCCScale(clampMode, func)
 				return 1e+3
 			case MCC_GETRSCOMPBANDWIDTH_FUNC:
 				return 1e-3
-			case MCC_GETWHOLECELLCOMPCAP_FUNC:
-				return 1e+12
 			case MCC_SETWHOLECELLCOMPRESIST_FUNC:
 				return 1e+6
 			case MCC_GETWHOLECELLCOMPRESIST_FUNC:
