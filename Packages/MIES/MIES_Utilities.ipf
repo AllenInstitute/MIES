@@ -16,6 +16,7 @@ static Constant PROPRIETARY_HEADER_SIZE = 320
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsFinite(var)
 	variable var
 
@@ -26,6 +27,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsNaN(var)
 	variable var
 
@@ -37,6 +39,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsNull(str)
 	string& str
 
@@ -49,6 +52,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsEmpty(string str)
 
 	return !(strlen(str) > 0)
@@ -72,6 +76,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 	string stracktrace, miesVersionStr, lockedDevicesStr, device
 	string stacktrace = ""
@@ -202,6 +207,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedOutput])
 	string stacktrace
 
@@ -262,6 +268,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 Function WindowExists(win)
 	string win
 
@@ -685,6 +692,7 @@ End
 ///
 /// @param[in] dfr data folder to test
 /// @returns one if dfr is valid and references an existing or free datafolder, zero otherwise
+/// UTF_NOINSTRUMENTATION
 threadsafe Function DataFolderExistsDFR(DFREF dfr)
 
 	return DataFolderRefStatus(dfr) != 0
@@ -703,6 +711,7 @@ End
 ///
 /// Includes fast handling of the common case that the datafolder exists.
 /// @returns reference to the datafolder
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/DF createDFWithAllParents(dataFolder)
 	string dataFolder
 
@@ -732,17 +741,20 @@ threadsafe Function/DF createDFWithAllParents(dataFolder)
 end
 
 /// @brief Returns one if var is an integer and zero otherwise
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsInteger(var)
 	variable var
 
 	return IsFinite(var) && trunc(var) == var
 End
 
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsEven(variable var)
 
 	return IsInteger(var) && mod(var, 2) == 0
 End
 
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsOdd(variable var)
 
 	return IsInteger(var) && mod(var, 2) != 0
@@ -1115,6 +1127,7 @@ End
 /// returns NaN if it could not be found
 ///
 /// The expected wave note format is: `key1:val1;key2:val2;`
+/// UTF_NOINSTRUMENTATION
 threadsafe Function GetNumberFromWaveNote(wv, key)
 	Wave wv
 	string key
@@ -3491,6 +3504,7 @@ threadsafe Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
 End
 
 /// @brief Return 1 if the wave is a text wave, zero otherwise
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsTextWave(wv)
 	WAVE wv
 
@@ -3498,6 +3512,7 @@ threadsafe Function IsTextWave(wv)
 End
 
 /// @brief Return 1 if the wave is a numeric wave, zero otherwise
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsNumericWave(wv)
 	WAVE wv
 
@@ -3505,6 +3520,7 @@ threadsafe Function IsNumericWave(wv)
 End
 
 /// @brief Return 1 if the wave is a wave reference wave, zero otherwise
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsWaveRefWave(wv)
 	WAVE wv
 
@@ -3512,6 +3528,7 @@ threadsafe Function IsWaveRefWave(wv)
 End
 
 /// @brief Return 1 if the wave is a floating point wave
+/// UTF_NOINSTRUMENTATION
 threadsafe Function IsFloatingPointWave(wv)
 	WAVE wv
 
@@ -5541,6 +5558,8 @@ End
 /// @param layer [optional, default = n/a] when param row, col and this set returns wv[row][col][layer] typed
 /// @param chunk [optional, default = n/a] when param row, col, layer and this set returns wv[row][layer][chunk] typed
 /// @returns untyped waveref of wv or typed wave ref of wv when indexed
+///
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/WAVE WaveRef(WAVE/Z w, [variable row, variable col, variable layer, variable chunk])
 
 	if(!WaveExists(w))

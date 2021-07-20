@@ -108,6 +108,7 @@ End
 /// and calls the setup custom worker function. With :cpp:func:`ASYNC_Start` numThreads :cpp:func:`ASYNC_Thread`
 /// functions will be started in their own thread. Each will run until the framework is
 /// stopped.
+/// UTF_NOINSTRUMENTATION
 threadsafe static Function ASYNC_Thread()
 
 	for(;;)
@@ -641,6 +642,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 threadsafe static Function IsFinite(var)
 	variable var
 
@@ -652,6 +654,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 threadsafe static Function IsEmpty(str)
 	string& str
 
@@ -663,6 +666,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 threadsafe static Function IsNaN(var)
 	variable var
 
@@ -674,6 +678,7 @@ End
 /// Unlike DataFolderExists() a dfref pointing to an empty ("") dataFolder is considered non-existing here.
 /// @returns one if dfr is valid and references an existing or free datafolder, zero otherwise
 /// Taken from http://www.igorexchange.com/node/2055
+/// UTF_NOINSTRUMENTATION
 threadsafe static Function DataFolderExistsDFR(dfr)
 	dfref dfr
 
@@ -743,6 +748,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 static Function ASSERT(var, errorMsg)
 	variable var
 	string errorMsg
@@ -800,6 +806,7 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
+/// UTF_NOINSTRUMENTATION
 threadsafe static Function ASSERT_TS(var, errorMsg)
 	variable var
 	string errorMsg
