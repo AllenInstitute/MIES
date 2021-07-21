@@ -4916,7 +4916,7 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string panelTitle)
 		endif
 	endfor
 
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+	for(i = 0; i < NUM_ASYNC_CHANNELS; i += 1)
 
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ASYNC)
 
