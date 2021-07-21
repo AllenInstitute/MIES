@@ -212,13 +212,13 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	graph = SCOPE_GetGraph(panelTitle)
 	scopeScaleMode = DAG_GetNumericalValue(panelTitle, "Popup_Settings_OsciUpdMode")
 
-	WAVE DAQConfigWave  = GetDAQConfigWave(panelTitle)
+	WAVE DAQConfigWave      = GetDAQConfigWave(panelTitle)
 	WAVE SSResistance       = GetSSResistanceWave(panelTitle)
 	WAVE InstResistance     = GetInstResistanceWave(panelTitle)
 	WAVE TPStorage          = GetTPStorage(panelTitle)
 	WAVE OscilloscopeData   = GetOscilloscopeWave(panelTitle)
 	WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
-	WAVE PressureData	= P_GetPressureDataWaveRef(panelTitle)
+	WAVE PressureData       = P_GetPressureDataWaveRef(panelTitle)
 
 	WAVE ADCmode = GetADCTypesFromConfig(DAQConfigWave)
 	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
@@ -366,18 +366,18 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 
 	if(showPowerSpectrum)
-			Label/W=$graph bottomPS "Frequency (\\U)"
-			SetAxis/W=$graph/A bottomPS
-			ModifyGraph/W=$graph freePos(bottomPS)=0
+		Label/W=$graph bottomPS "Frequency (\\U)"
+		SetAxis/W=$graph/A bottomPS
+		ModifyGraph/W=$graph freePos(bottomPS)=0
 	elseif(gotTPChan)
-			Label/W=$graph bottomTP "Time TP (\\U)"
-			sampInt = DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000
-			testPulseLength = ROVar(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) * sampInt
-			NVAR duration = $GetTestpulseDuration(panelTitle)
-			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-			cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
-			SetAxis/W=$graph bottomTP cutOff, testPulseLength - cutOff
-			ModifyGraph/W=$graph freePos(bottomTP)=0
+		Label/W=$graph bottomTP "Time TP (\\U)"
+		sampInt = DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000
+		testPulseLength = ROVar(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) * sampInt
+		NVAR duration = $GetTestpulseDuration(panelTitle)
+		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+		cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
+		SetAxis/W=$graph bottomTP cutOff, testPulseLength - cutOff
+		ModifyGraph/W=$graph freePos(bottomTP)=0
 	endif
 	if(gotDAQChan)
 		Label/W=$graph bottomDAQ "Time DAQ (\\U)"
