@@ -176,11 +176,6 @@ Retrieve device specific Current Clamp and Voltage Clamp amplitudes. The values
 are in ``pA`` and ``mV`` and can be set on the front panel in the tab
 "Data Acquisition". Default: -50 pA / 10 mV.
 
-.. code-block:: igorpro
-
-   NVAR/SDFR=dfr amplitudeICGlobal = amplitudeIC
-   NVAR/SDFR=dfr amplitudeVCGlobal = amplitudeVC
-
 Retrieve the column of the first ADC channel in OscilloscopeData wave,
 due to the DAC, ADC, TTL order it is 1 for one enabled head stage,
 2 for two enabled head stages a.s.o.
@@ -197,35 +192,15 @@ stage operates in current clamp or voltage clamp mode.
 
    WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 
-Duration of the test pulse (active time) in points.
-
-.. code-block:: igorpro
-
-   NVAR duration     = $GetTestpulseDuration(panelTitle)
-
 The test pulse is centered on a baseline, the baselineFrac is a number < 1, that
 defines the fraction in front and after the test pulse. Example: With a typical
 value of 0.25 for baselineFrac, the whole test pulse consists of parts of
 0.25_baseline + 0.5_testpulse + 0.25_baseline.
 
-.. code-block:: igorpro
-
-   NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-
-Length of the test pulse in points
-
-.. code-block:: igorpro
-
-   lengthTPInPoints  = TP_GetTestPulseLengthInPoints(panelTitle)
-
 Length of the buffer that stores previous results of ``BaselineSSAvg``,
 ``SSResistance`` and ``InstResistance`` for a running average. The running
 average is later applied by :cpp:func:`TP_CalculateAverage` if the size is > 1.
 The size is set on the front panel in the *Settings* tab.
-
-.. code-block:: igorpro
-
-   NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 
 The later resistance calculation is based on R = U / I. Since R is always
 positive, the sign of the local clamp current/voltage variables is removed.

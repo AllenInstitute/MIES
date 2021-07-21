@@ -209,6 +209,8 @@ Function TPM_BkrdTPFuncMD(s)
 		hardwareType = ActiveDeviceList[i][%HardwareType]
 		panelTitle = HW_GetMainDeviceName(hardwareType, deviceID)
 
+		WAVE TPSettingsCalc = GetTPsettingsCalculated(panelTitle)
+
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
 				// Pull data until end of FIFO, after BGTask finishes Graph shows only last update
@@ -302,8 +304,7 @@ Function TPM_BkrdTPFuncMD(s)
 
 			// extract the last fully completed chunk
 			// for ITC only the last complete TP is evaluated, all earlier TPs get discarded
-			tpLengthPoints = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
-			lastTP = trunc(fifoLatest / tpLengthPoints) - 1
+			lastTP = trunc(fifoLatest / TPSettingsCalc[%totalLengthPointsTP]) - 1
 
 			// Ensures that the new TP chunk isn't the same as the last one.
 			// This is required to keep the TP buffer in sync.

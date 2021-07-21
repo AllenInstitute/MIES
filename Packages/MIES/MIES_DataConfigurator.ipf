@@ -21,16 +21,10 @@ static Function DC_UpdateGlobals(panelTitle)
 	// @todo investigate if this is really required here
 	AFM_UpdateAnalysisFunctionWave(panelTitle)
 
-	TP_ReadTPSettingFromGUI(panelTitle)
+	TP_UpdateTPSettingsLBNWaves(panelTitle)
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	panelTitleG = panelTitle
-
-	NVAR tpLengthInPointsTP = $GetTestpulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
-	tpLengthInPointsTP = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
-
-	NVAR tpLengthInPointsDAQ = $GetTestpulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
-	tpLengthInPointsDAQ = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
 
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = 0
@@ -411,6 +405,7 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	WAVE scaledDataWave = GetScaledDataWave(panelTitle)
 	WAVE ITCDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 	WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
+	WAVE TPSettingsCalc = GetTPSettingsCalculated(panelTitle)
 
 	hardwareType = GetHardwareType(panelTitle)
 
@@ -428,7 +423,7 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	endswitch
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		tpLength = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
+		tpLength = TPSettingsCalc[%totalLengthPointsTP]
 		numRows = tpLength
 
 		decMethod = DECIMATION_NONE
@@ -1311,7 +1306,10 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string pa
 	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	s.hardwareType     = GetHardwareType(panelTitle)
 
-	s.baselineFrac        = ROVar(GetTestpulseBaselineFraction(panelTitle))
+	WAVE TPSettings     = GetTPSettings(panelTitle)
+	WAVE TPSettingsCalc = GetTPSettingsCalculated(panelTitle)
+
+	s.baselineFrac        = TPSettingsCalc[%baselineFrac]
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
 	WAVE s.statusHS       = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
@@ -1393,9 +1391,9 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string pa
 		if(IsFinite(headstage))
 			channelMode = ChannelClampMode[channel][%DAC][%ClampMode]
 			if(channelMode == V_CLAMP_MODE)
-				s.DACAmp[i][%TPAMP] = TPAmpVClamp
+				s.DACAmp[i][%TPAMP] = TPSettings[%amplitudeVC][INDEP_HEADSTAGE]
 			elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
-				s.DACAmp[i][%TPAMP] = TPAmpIClamp
+				s.DACAmp[i][%TPAMP] = TPSettings[%amplitudeIC][INDEP_HEADSTAGE]
 			else
 				ASSERT(0, "Unknown clamp mode")
 			endif

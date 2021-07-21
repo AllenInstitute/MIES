@@ -6904,3 +6904,155 @@ Function/WAVE GetYandXFormulas()
 
 	return wv
 End
+
+/// @brief Return the testpulse GUI settings
+///
+/// Rows:
+/// - Buffer size: Number of elements to average
+/// - Resistance tolerance: Tolerance for labnotebook change reporting of resistance values, see GetTPResults()
+/// - Baseline percentage:
+///       Fraction which the baseline occupies relative to the total
+///       testpulse length, before and after the pulse itself.
+/// - Pulse duration [ms]
+/// - Amplitude VC
+/// - Amplitude IC
+///
+/// Columns:
+/// - LABNOTEBOOK_LAYER_COUNT
+Function/WAVE GetTPSettings(string panelTitle)
+
+	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+
+	WAVE/Z/SDFR=dfr/D wv = settings
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// do upgrade
+	else
+		Make/N=(6, LABNOTEBOOK_LAYER_COUNT)/D dfr:settings/WAVE=wv
+		wv = NaN
+	endif
+
+	SetDimensionLabels(wv, "bufferSize;resistanceTol;baselinePerc;durationMS;amplitudeVC;amplitudeIC", ROWS)
+	DAP_TPSettingsToWave(panelTitle, wv)
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return the calculated/derived TP settings
+///
+/// The entries in this wave are only valid during DAQ/TP and are updated via DC_UpdateGlobals().
+Function/WAVE GetTPSettingsCalculated(string panelTitle)
+
+	variable versionOfNewWave = 1
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+
+	WAVE/Z/SDFR=dfr/D wv = settingsCalculated
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// do upgrade
+	else
+		Make/N=(7)/D dfr:settingsCalculated/WAVE=wv
+		wv = NaN
+	endif
+
+	SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ", ROWS)
+
+	return wv
+End
+
+static Constant TP_SETTINGS_WAVE_VERSION = 1
+
+/// @brief Returns a wave reference to the TP settings key wave
+///
+/// Rows:
+/// - 0: Parameter
+/// - 1: Units
+/// - 2: Tolerance Factor
+///
+/// Columns:
+/// - 0: TP Baseline Fraction
+/// - 1: TP Amplitude VC
+/// - 2: TP Amplitude IC
+/// - 3: TP Pulse Duration
+Function/WAVE GetTPSettingsLabnotebookKeyWave(string panelTitle)
+
+	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
+
+	DFREF dfr = GetDevSpecLabNBTempFolder(panelTitle)
+	WAVE/Z/SDFR=dfr/T wv = TPSettingsKeyWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 4) wv
+	else
+		Make/T/N=(3, 4) dfr:TPSettingsKeyWave/Wave=wv
+	endif
+
+	wv = ""
+
+	SetDimLabel 0, 0, Parameter, wv
+	SetDimLabel 0, 1, Units, wv
+	SetDimLabel 0, 2, Tolerance, wv
+
+	wv[%Parameter][0] = "TP Baseline Fraction" // fraction of total TP duration
+	wv[%Units][0]     = ""
+	wv[%Tolerance][0] = ""
+
+	wv[%Parameter][1] = "TP Amplitude VC"
+	wv[%Units][1]     = ""
+	wv[%Tolerance][1] = ""
+
+	wv[%Parameter][2] = "TP Amplitude IC"
+	wv[%Units][2]     = ""
+	wv[%Tolerance][2] = ""
+
+	wv[%Parameter][3] = "TP Pulse Duration"
+	wv[%Units][3]     = "ms"
+	wv[%Tolerance][3] = ""
+
+	return wv
+End
+
+/// @brief Get TP settings wave for the labnotebook
+///
+/// See GetTPSettingsLabnotebookKeyWave() for the dimension label description.
+Function/Wave GetTPSettingsLabnotebook(string panelTitle)
+
+	variable numCols
+	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
+
+	DFREF dfr = GetDevSpecLabNBTempFolder(panelTitle)
+	WAVE/Z/SDFR=dfr/D wv = TPSettings
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	WAVE/T keyWave = GetTPSettingsLabnotebookKeyWave(panelTitle)
+	numCols = DimSize(keyWave, COLS)
+
+	if(WaveExists(wv))
+		Redimension/D/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
+	else
+		Make/D/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) dfr:TPSettings/Wave=wv
+	endif
+
+	wv = NaN
+
+	SetSweepSettingsDimLabels(wv, keyWave)
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End

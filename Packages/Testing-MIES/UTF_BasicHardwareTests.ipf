@@ -3570,8 +3570,8 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	string device
 	variable expectedNumTPchannels
 
-	variable i, channel, numTPChan, numStored, numTP, tpLength
-	variable tresh, m, tpWidthInMS
+	variable i, channel, numTPChan, numStored, numTP
+	variable tresh, m, tpLength, pulseLengthMS
 
 	WAVE/Z TPStorage = GetTPStorage(device)
 	CHECK_WAVE(TPStorage, NORMAL_WAVE)
@@ -3584,9 +3584,10 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 
 	CHECK(!ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_TP + device, TP_WAIT_TIMEOUT))
 
-	tpLength = TP_GetTestPulseLengthInPoints(device, DATA_ACQUISITION_MODE)
+	WAVE TPSettingsCalculated = GetTPsettingsCalculated(device)
 
-	NVAR duration = $GetTestpulseDuration(device)
+	tpLength = TPSettingsCalculated[%totalLengthPointsDAQ]
+	pulseLengthMS = TPSettingsCalculated[%pulseLengthMS]
 
 	for(i = TP_SKIP_NUM_TPS_START; i < numTP; i += 1)
 
@@ -3607,9 +3608,7 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 			FindLevels/Q/D=levels/M=(TP_EDGE_EPSILON) singleTP, tresh
 
 			CHECK_EQUAL_VAR(2, V_LevelsFound)
-			tpWidthInMS = duration * DimDelta(singleTP, ROWS)
-
-			CHECK(abs(tpWidthInMS - levels[1] + levels[0]) < TP_WIDTH_EPSILON)
+			CHECK(abs(pulseLengthMS - levels[1] + levels[0]) < TP_WIDTH_EPSILON)
 
 		endfor
 	endfor
@@ -3718,16 +3717,18 @@ Function TPDuringDAQWithTTL_REENTRY([str])
 	WAVE/Z sweepWave = GetSweepWave(str, 0)
 	CHECK_WAVE(sweepWave, NORMAL_WAVE)
 
+	WAVE TPSettingsCalculated = GetTPSettingsCalculated(str)
+
 	// correct test pulse lengths calculated for both modes
 #if defined(TESTS_WITH_ITC18USB_HARDWARE)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, DATA_ACQUISITION_MODE)), 1000)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, TEST_PULSE_MODE)), 2000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsDAQ], 1000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsTP], 2000)
 #elif defined(TESTS_WITH_ITC1600_HARDWARE)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, DATA_ACQUISITION_MODE)), 1000)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, TEST_PULSE_MODE)), 2000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsDAQ], 1000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsTP], 2000)
 #elif defined(TESTS_WITH_NI_HARDWARE)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, DATA_ACQUISITION_MODE)), 5000)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, TEST_PULSE_MODE)), 5000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsDAQ], 5000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsTP], 5000)
 #endif
 
 	for(i = 0; i < 2; i += 1)

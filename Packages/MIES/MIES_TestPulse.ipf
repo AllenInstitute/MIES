@@ -36,26 +36,6 @@ Function TP_CreateTPAvgBuffer(panelTitle)
 	TPSSBuffer = NaN
 End
 
-Function TP_ReadTPSettingFromGUI(panelTitle)
-	string panelTitle
-
-	NVAR pulseDuration = $GetTPPulseDuration(panelTitle)
-	NVAR duration = $GetTestpulseDuration(panelTitle)
-	NVAR AmplitudeVC = $GetTPAmplitudeVC(panelTitle)
-	NVAR AmplitudeIC = $GetTPAmplitudeIC(panelTitle)
-	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-
-	pulseDuration = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPDuration")
-	// pulseDuration in ms, SampInt in microSec, test pulse mode ignores sample int multiplier for DAQ
-	duration = pulseDuration / (DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
-	baselineFrac = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
-
-	// need to deal with units here to ensure that resistance is calculated correctly
-	AmplitudeVC = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitude")
-	AmplitudeIC = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
-
-End
-
 /// @brief Return the total length of a single testpulse with baseline
 ///
 /// @param pulseDuration duration of the high portion of the testpulse in points or time
@@ -65,30 +45,6 @@ Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 
 	ASSERT(baselineFrac > 0 && baselineFrac < 0.5, "baselineFrac is out of range")
 	return pulseDuration / (1 - 2 * baselineFrac)
-End
-
-/// @brief Return the total length in points of a single testpulse with baseline, equal to one
-///        chunk for the MD case, in points for the real sampling interval type for the given mode.
-///
-/// See DAP_GetSampInt() for the difference regarding the modes
-/// Use GetTestpulseLengthInPoints() for fast access during DAQ/TP.
-///
-/// @param panelTitle device
-/// @param mode       one of @ref DataAcqModes
-Function TP_GetTestPulseLengthInPoints(panelTitle, mode)
-	string panelTitle
-	variable mode
-
-	NVAR duration = $GetTestpulseDuration(panelTitle)
-	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-
-	if(mode == TEST_PULSE_MODE)
-		return trunc(TP_CalculateTestPulseLength(duration, baselineFrac))
-	elseif(mode == DATA_ACQUISITION_MODE)
-		return trunc(TP_CalculateTestPulseLength(duration, baselineFrac) / DAP_GetSampInt(panelTitle, DATA_ACQUISITION_MODE) * DAP_GetSampInt(panelTitle, TEST_PULSE_MODE))
-	else
-		ASSERT(0, "Invalid mode")
-	endif
 End
 
 /// @brief Stores the given TP wave
@@ -835,16 +791,18 @@ Function TP_CreateTestPulseWave(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	variable length
+	variable length, baselineFrac
 
 	WAVE TestPulse = GetTestPulse()
+	WAVE TPSettingsCalc = GetTPsettingsCalculated(panelTitle)
 
-	length = ROVAR(GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP))
+	length = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%totalLengthPointsTP] : TPSettingsCalc[%totalLengthPointsDAQ]
 
 	Redimension/N=(length) TestPulse
 	FastOp TestPulse = 0
 
-	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+	baselineFrac = TPSettingsCalc[%baselineFrac]
+
 	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
 End
 
@@ -867,4 +825,36 @@ Function TP_SendToAnalysis(string panelTitle, STRUCT TPAnalysisInput &tpInput)
 	ASYNC_AddParam(threadDF, var=tpInput.measurementMarker)
 	ASYNC_AddParam(threadDF, var=tpInput.activeADCs)
 	ASYNC_Execute(threadDF)
+End
+
+/// @brief Update calculated and LBN TP waves
+///
+/// Calling this function before DAQ/TP allows to query calculated TP settings during DAQ/TP via GetTPSettingsCalculated().
+Function TP_UpdateTPSettingsLBNWaves(string panelTitle)
+	WAVE TPSettings = GetTPSettings(panelTitle)
+
+	WAVE calculated = GetTPSettingsCalculated(panelTitle)
+	calculated = NaN
+
+	// update the calculated values
+	calculated[%baselineFrac]         = TPSettings[%baselinePerc][INDEP_HEADSTAGE] / 100
+
+	calculated[%pulseLengthMS]        = TPSettings[%durationMS][INDEP_HEADSTAGE] // here for completeness
+	calculated[%pulseLengthPointsTP]  = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000))
+	calculated[%pulseLengthPointsDAQ] = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(panelTitle, DATA_ACQUISITION_MODE) / 1000))
+
+	calculated[%totalLengthMS]        = TP_CalculateTestPulseLength(calculated[%pulseLengthMS], calculated[%baselineFrac])
+	calculated[%totalLengthPointsTP]  = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsTP], calculated[%baselineFrac]))
+	calculated[%totalLengthPointsDAQ] = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsDAQ], calculated[%baselineFrac]))
+
+	// store the current TP settings for later LBN writing via ED_TPSettingsDocumentation()
+	KillOrMoveToTrash(wv=GetTPSettingsLabnotebook(panelTitle))
+	KillOrMoveToTrash(wv=GetTPSettingsLabnotebookKeyWave(panelTitle))
+
+	WAVE TPSettingsLBN  = GetTPSettingsLabnotebook(panelTitle)
+
+	TPSettingsLBN[0][%$"TP Baseline Fraction"][INDEP_HEADSTAGE] = calculated[%baselineFrac]
+	TPSettingsLBN[0][%$"TP Amplitude VC"][INDEP_HEADSTAGE]      = TPSettings[%amplitudeVC][INDEP_HEADSTAGE]
+	TPSettingsLBN[0][%$"TP Amplitude IC"][INDEP_HEADSTAGE]      = TPSettings[%amplitudeIC][INDEP_HEADSTAGE]
+	TPSettingsLBN[0][%$"TP Pulse Duration"][INDEP_HEADSTAGE]    = calculated[%pulseLengthMS]
 End

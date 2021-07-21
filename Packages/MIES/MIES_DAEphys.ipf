@@ -4069,16 +4069,7 @@ Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 			DAP_AbortIfUnlocked(panelTitle)
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 
-			// don't stop the testpulse if we are currently doing DAQ
-			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
-			if(dataAcqRunMode != DAQ_NOT_RUNNING)
-				DAP_UpdateOnsetDelay(panelTitle)
-				break
-			endif
-
-			TPState = TP_StopTestPulse(panelTitle)
-			DAP_UpdateOnsetDelay(panelTitle)
-			TP_RestartTestPulse(panelTitle, TPState)
+			DAP_TPGUISettingToWave(panelTitle, sva.ctrlName, sva.dval)
 			break
 	endswitch
 
@@ -4439,35 +4430,6 @@ Function DAP_CommentPanelHook(s)
 	endswitch
 
 	// return zero so that other hooks are called as well
-	return 0
-End
-
-Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
-
-	string panelTitle
-	variable TPState
-
-	switch( sva.eventCode )
-		case 1: // mouse up
-		case 2: // Enter key
-		case 3: // Live update
-
-			panelTitle = sva.win
-			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
-
-			// don't stop the testpulse if we are currently doing DAQ
-			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
-			if(dataAcqRunMode != DAQ_NOT_RUNNING)
-				break
-			endif
-
-			TPState = TP_StopTestPulse(panelTitle)
-			TP_RestartTestPulse(panelTitle, TPState)
-
-			break
-	endswitch
-
 	return 0
 End
 
@@ -4884,6 +4846,9 @@ Function DAP_LockDevice(string win)
 
 	DAP_UpdateSweepLimitsAndDisplay(panelTitleLocked, initial = 1)
 	DAP_AdaptPanelForDeviceSpecifics(panelTitleLocked)
+
+	WAVE TPSettings = GetTPSettings(panelTitleLocked)
+	DAP_TPSettingsToWave(panelTitleLocked, TPSettings)
 
 	LOG_AddEntry(PACKAGE_MIES, "locking", keys = {"device"}, values = {panelTitleLocked})
 End
@@ -5724,4 +5689,69 @@ Function DAP_DeleteStimulusSet(string setName, [string device])
 	WB_KillStimset(setName)
 
 	DAP_UpdateDaEphysStimulusSetPopups(panelTitle = device)
+End
+
+/// @brief Write all TP settings from the data acquisition/settings tab to the settings wave
+Function DAP_TPSettingsToWave(string panelTitle, WAVE TPSettings)
+
+	variable i, numEntries
+	string ctrl, lbl
+
+	Make/FREE/T genericControls = {"SetVar_DataAcq_TPDuration", "SetVar_DataAcq_TPBaselinePerc", "SetVar_DataAcq_TPAmplitude", "SetVar_DataAcq_TPAmplitudeIC", "setvar_Settings_TPBuffer", "setvar_Settings_TP_RTolerance"}
+
+	numEntries = DimSize(genericControls, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = genericControls[i]
+		lbl  = DAP_TPControlToLabel(ctrl)
+
+		TPSettings[%$lbl][INDEP_HEADSTAGE] = DAG_GetNumericalValue(panelTitle, ctrl)
+	endfor
+End
+
+/// @brief Convert the control name to a dimension label for GetTPSettings()
+static Function/S DAP_TPControlToLabel(string ctrl)
+
+	strswitch(ctrl)
+		case "SetVar_DataAcq_TPDuration":
+			return "durationMS"
+		case "SetVar_DataAcq_TPBaselinePerc":
+			return "baselinePerc"
+		case "SetVar_DataAcq_TPAmplitude":
+			return "amplitudeVC"
+		case "SetVar_DataAcq_TPAmplitudeIC":
+			return "amplitudeIC"
+		case "setvar_Settings_TPBuffer":
+			return "bufferSize"
+		case "setvar_Settings_TP_RTolerance":
+			return "resistanceTol"
+	endswitch
+
+	ASSERT(0, "invalid control")
+End
+
+/// @brief Write a new TP setting value to the wave
+static Function DAP_TPGUISettingToWave(string panelTitle, string ctrl, variable val)
+	string lbl
+	variable headstage, TPState
+
+	if(!cmpstr(ctrl, "SetVar_DataAcq_TPDuration") || !cmpstr(ctrl, "SetVar_DataAcq_TPBaselinePerc"))
+		DAP_UpdateOnsetDelay(panelTitle)
+	endif
+
+	// we only want to restart the testpulse if DAQ is not running
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	if(dataAcqRunMode == DAQ_NOT_RUNNING)
+		TPState = TP_StopTestPulse(panelTitle)
+	else
+		TPState = TEST_PULSE_NOT_RUNNING
+	endif
+
+	WAVE TPSettings = GetTPSettings(panelTitle)
+
+	lbl = DAP_TPControlToLabel(ctrl)
+	headstage = INDEP_HEADSTAGE
+
+	TPSettings[%$lbl][headstage] = val
+
+	TP_RestartTestPulse(panelTitle, TPState)
 End
