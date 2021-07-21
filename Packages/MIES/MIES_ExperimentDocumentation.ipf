@@ -735,7 +735,7 @@ End
 /// @brief Document the settings of the Testpulse
 ///
 /// The source type entry is not fixed. We want to document the testpulse
-/// settings during ITI and the testpulse settings for plaint test pulses.
+/// settings during ITI and the testpulse settings for plain test pulses.
 ///
 /// @param panelTitle      device
 /// @param sweepNo         sweep number
