@@ -732,6 +732,8 @@ Function DAP_EphysPanelStartUpSettings()
 	DisableControl(panelTitle, "button_Hardware_P_Disable")
 	EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
+	SetDrawLayer/K UserBack
+
 	SearchForInvalidControlProcs(panelTitle)
 
 	Execute/P/Z "DoWindow/R " + BASE_WINDOW_TITLE
