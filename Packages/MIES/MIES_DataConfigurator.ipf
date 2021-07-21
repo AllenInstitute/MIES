@@ -407,7 +407,6 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	WAVE ITCDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 	WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 
-	tpLength = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
 	hardwareType = GetHardwareType(panelTitle)
 
 	numADCs = DimSize(GetADCListFromConfig(config), ROWS)
@@ -424,6 +423,7 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	endswitch
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
+		tpLength = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
 		numRows = tpLength
 
 		decMethod = DECIMATION_NONE
@@ -439,6 +439,8 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 		endif
 
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		tpLength = NaN
+
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
 				numRows = DimSize(ITCDataWave, ROWS)
