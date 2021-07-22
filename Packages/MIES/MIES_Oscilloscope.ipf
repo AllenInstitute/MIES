@@ -699,8 +699,8 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 				Display/N=DAQDataWaveTPMD DAQDataWave[][1]
 			endif
 
-			Cursor/W=DAQDataWaveTPMD/H=2/P A DAQDataWave first
-			Cursor/W=DAQDataWaveTPMD/H=2/P B DAQDataWave last
+			Cursor/W=DAQDataWaveTPMD/H=2/P A $NameOfWave(DAQDataWave) first
+			Cursor/W=DAQDataWaveTPMD/H=2/P B $NameOfWave(DAQDataWave) last
 		endif
 #endif
 
