@@ -714,10 +714,6 @@ Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 	WAVE BaselineSSAvg = GetBaselineAverage(panelTitle)
 	WAVE SSResistance = GetSSResistanceWave(panelTitle)
 
-	if(!DimSize(baselineSSAvg, ROWS) || !DimSize(SSResistance, ROWS))
-		return NaN
-	endif
-
 	clampMode = DAG_GetHeadstageMode(panelTitle, headStage)
 
 	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE, "Headstage must be in VC/IC mode to use this function")

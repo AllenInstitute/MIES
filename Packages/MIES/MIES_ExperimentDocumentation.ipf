@@ -647,10 +647,6 @@ Function ED_TPDocumentation(panelTitle)
 	WAVE InstResistance = GetInstResistanceWave(panelTitle)
 	WAVE SSResistance = GetSSResistanceWave(panelTitle)
 
-	if(!DimSize(baselineSSAvg, ROWS) || !DimSize(InstResistance, ROWS) || !DimSize(SSResistance, ROWS))
-		return NaN
-	endif
-
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	Make/FREE/T/N=(3, 12) TPKeyWave
