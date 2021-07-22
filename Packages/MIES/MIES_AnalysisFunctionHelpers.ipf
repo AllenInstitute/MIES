@@ -46,7 +46,7 @@ End
 ///
 /// @return headstage or NaN (for non-associated channels)
 Function AFH_GetHeadstageFromDAC(panelTitle, DA)
-	string 	panelTitle
+	string panelTitle
 	variable DA
 
 	WAVE channelClampMode = GetChannelClampMode(panelTitle)

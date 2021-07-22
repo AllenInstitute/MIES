@@ -403,8 +403,8 @@ End
 /// If 200 ms have elapsed, or it is the first TP sweep,
 /// data from the input waves is transferred to the storage waves.
 static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now, tpMarker)
-	string 	panelTitle
-	wave 	BaselineSSAvg, InstResistance, SSResistance
+	string panelTitle
+	wave BaselineSSAvg, InstResistance, SSResistance
 	variable now, tpMarker
 
 	variable delta, i, ret, lastPressureCtrl, timestamp

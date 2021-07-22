@@ -2289,7 +2289,7 @@ End
 ///       the user pressure was acquired
 /// - 22: TPMarker unique number identifying this set of TPs
 Function/Wave GetTPStorage(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
 	variable versionOfNewWave = 12
@@ -2474,7 +2474,7 @@ End
 ///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetInstResistanceWave(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	variable version = 2
 
@@ -2513,7 +2513,7 @@ End
 ///
 /// Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
 Function/Wave GetBaselineAverage(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	variable version = 2
 
@@ -2552,7 +2552,7 @@ End
 ///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetSSResistanceWave(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	variable version = 2
 
@@ -2592,7 +2592,7 @@ End
 ///
 /// Unit: Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
 Function/Wave GetGetBaselineBuffer(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	variable version = 1
 
@@ -2630,7 +2630,7 @@ End
 ///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetInstantaneousBuffer(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	variable version = 1
 
@@ -2668,7 +2668,7 @@ End
 ///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetSteadyStateBuffer(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	variable version = 1
 
@@ -4033,7 +4033,7 @@ End
 
 /// @brief Creates device specific pressure folder - used to store data for pressure regulators
 Function/DF P_DeviceSpecificPressureDFRef(panelTitle)
-	string 	panelTitle
+	string panelTitle
 	return CreateDFWithAllParents(P_GetDevicePressureFolderAS(panelTitle))
 End
 
