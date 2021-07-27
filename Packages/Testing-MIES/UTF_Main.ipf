@@ -15,6 +15,7 @@
 #include "UTF_PGCSetAndActivateControl"
 #include "UTF_StimsetAPI"
 #include "UTF_SweepFormula"
+#include "UTF_Testpulse"
 #include "UTF_TraceUserData"
 #include "UTF_UpgradeDataFolderLocation"
 #include "UTF_UpgradeWaveLocationAndGetIt"
@@ -66,6 +67,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	list = AddListItem("UTF_Pressure.ipf", list, ";", inf)
 	list = AddListItem("UTF_StimsetAPI.ipf", list, ";", inf)
 	list = AddListItem("UTF_SweepFormula.ipf", list, ";", inf)
+	list = AddListItem("UTF_Testpulse.ipf", list, ";", inf)
 	list = AddListItem("UTF_TraceUserData.ipf", list, ";", inf)
 	list = AddListItem("UTF_UpgradeDataFolderLocation.ipf", list, ";", inf)
 	list = AddListItem("UTF_UpgradeWaveLocationAndGetIt.ipf", list, ";", inf)

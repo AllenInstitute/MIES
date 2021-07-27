@@ -638,13 +638,10 @@ Function ED_TPDocumentation(panelTitle)
 
 	variable sweepNo, RTolerance
 	variable i, j
+
 	WAVE hsProp = GetHSProperties(panelTitle)
 	WAVE TPSettings = GetTPsettings(panelTitle)
-
-	WAVE BaselineSSAvg = GetBaselineAverage(panelTitle)
-	WAVE InstResistance = GetInstResistanceWave(panelTitle)
-	WAVE SSResistance = GetSSResistanceWave(panelTitle)
-
+	WAVE TPResults = GetTPResults(panelTitle)
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	Make/FREE/T/N=(3, 12) TPKeyWave
@@ -692,8 +689,8 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = LABNOTEBOOK_NO_TOLERANCE
 
-	TPSettingsWave[0][2][0, NUM_HEADSTAGES - 1]  = InstResistance[r]
-	TPSettingsWave[0][3][0, NUM_HEADSTAGES - 1]  = SSResistance[r]
+	TPSettingsWave[0][2][0, NUM_HEADSTAGES - 1]  = TPResults[%ResistanceInst][r]
+	TPSettingsWave[0][3][0, NUM_HEADSTAGES - 1]  = TPResults[%ResistanceSteadyState][r]
 
 	TPSettingsWave[0][8][0, NUM_HEADSTAGES - 1] = statusHS[r]
 
@@ -717,8 +714,8 @@ Function ED_TPDocumentation(panelTitle)
 		TPSettingsWave[0][7][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN, selectAmp = 0)
 	endfor
 
-	TPSettingsWave[0][1][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? BaselineSSAvg[r] : NaN
-	TPSettingsWave[0][0][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == I_CLAMP_MODE ? BaselineSSAvg[r] : NaN
+	TPSettingsWave[0][1][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? TPResults[%BaselineSteadyState][r] : NaN
+	TPSettingsWave[0][0][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == I_CLAMP_MODE ? TPResults[%BaselineSteadyState][r] : NaN
 
 	TPSettingsWave[0][9][0, NUM_HEADSTAGES - 1]  = hsProp[r][%DAC]
 	TPSettingsWave[0][10][0, NUM_HEADSTAGES - 1] = hsProp[r][%ADC]

@@ -12,7 +12,7 @@
 static Constant SCOPE_TIMEAXIS_RESISTANCE_RANGE = 120
 static Constant SCOPE_GREEN                     = 26122
 static Constant SCOPE_BLUE                      = 39168
-static StrConstant RES_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%d], numMinSignDigits = 2)}\\]1\\K(0, 0, 0)"
+static StrConstant RES_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%%%s][%d], numMinSignDigits = 2)}\\]1\\K(0, 0, 0)"
 static Constant PRESSURE_SPECTRUM_PERCENT       = 0.05
 
 Function/S SCOPE_GetGraph(panelTitle)
@@ -213,13 +213,12 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	scopeScaleMode = DAG_GetNumericalValue(panelTitle, "Popup_Settings_OsciUpdMode")
 
 	WAVE DAQConfigWave      = GetDAQConfigWave(panelTitle)
-	WAVE SSResistance       = GetSSResistanceWave(panelTitle)
-	WAVE InstResistance     = GetInstResistanceWave(panelTitle)
 	WAVE TPStorage          = GetTPStorage(panelTitle)
 	WAVE OscilloscopeData   = GetOscilloscopeWave(panelTitle)
 	WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
 	WAVE PressureData       = P_GetPressureDataWaveRef(panelTitle)
 	WAVE TPSettings         = GetTPSettings(panelTitle)
+	WAVE TPResults          = GetTPResults(panelTitle)
 
 	WAVE ADCmode = GetADCTypesFromConfig(DAQConfigWave)
 	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
@@ -349,9 +348,9 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			endif
 
 			resPosPercY = 100 * (1 - ((YaxisHigh - YaxisLow) / 2 + YaxisLow))
-			sprintf str, RES_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue, GetWavesDataFolder(SSResistance, 2), headstage
+			sprintf str, RES_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue, GetWavesDataFolder(TPResults, 2), "ResistanceSteadyState", headstage
 			TextBox/W=$graph/A=RT/B=1/F=0/X=-10 /Y=(resPosPercY - 1) str
-			sprintf str, RES_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue, GetWavesDataFolder(InstResistance, 2), headstage
+			sprintf str, RES_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue, GetWavesDataFolder(TPResults, 2), "ResistanceInst", headstage
 			TextBox/W=$graph/A=RT/B=1/F=0/X=-10 /Y=(resPosPercY + 1) str
 
 		endif

@@ -42,7 +42,6 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 	variable dataAcqOrTP, multiDevice
 
 	variable numActiveChannels
-	variable gotTPChannels
 	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
 
 	if(ParamIsDefault(multiDevice))
@@ -99,11 +98,7 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 	ADChannelToMonitor = DimSize(GetDACListFromConfig(DAQConfigWave), ROWS)
 
-	gotTPChannels = GotTPChannelsOnADCs(paneltitle)
-
-	if(dataAcqOrTP == TEST_PULSE_MODE || gotTPChannels)
-		TP_CreateTPAvgBuffer(panelTitle)
-	endif
+	KillOrMoveToTrash(wv = GetTPResultsBuffer(panelTitle))
 
 	DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	SCOPE_CreateGraph(panelTitle, dataAcqOrTP)

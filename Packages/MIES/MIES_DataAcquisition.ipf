@@ -236,12 +236,11 @@ End
 
 /// @brief Handle automatic bias current injection
 ///
-/// @param panelTitle	locked panel with test pulse running occasionally
-/// @param BaselineSSAvg
-/// @param SSResistance
-Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+/// @param panelTitle Locked panel with test pulse running occasionally
+/// @param TPResults  Data from TP_ROAnalysis()
+Function DQ_ApplyAutoBias(panelTitle, TPResults)
 	string panelTitle
-	Wave BaselineSSAvg, SSResistance
+	Wave TPResults
 
 	variable headStage, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
 	variable resistance, maximumAutoBiasCurrent, lastInvocation, curTime
@@ -290,8 +289,8 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		targetVoltage    = ampSettings[%AutoBiasVcom][0][headStage] * 1e-3
 		targetVoltageTol = ampSettings[%AutoBiasVcomVariance][0][headStage] * 1e-3
 
-		resistance = SSResistance[headstage] * 1e6
-		setVoltage = BaselineSSAvg[headstage] * 1e-3
+		resistance = TPResults[%ResistanceSteadyState][headstage] * 1e6
+		setVoltage = TPResults[%BaselineSteadyState][headstage] * 1e-3
 
 		DEBUGPRINT("resistance[Ohm]=", var=resistance)
 		DEBUGPRINT("setVoltage[V]=", var=setVoltage)

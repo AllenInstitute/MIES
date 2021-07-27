@@ -2538,38 +2538,42 @@ Function/WAVE GetStoredTestPulseWave(panelTitle)
 	return wv
 End
 
-/// @brief Return the testpulse instantenous resistance wave
+/// @brief Return the testpulse results wave
 ///
-/// The rows have NUM_HEADSTAGES size and are initialized with NaN
+/// Rows:
+/// - Resistance Instantaneous: [MOhm]
+/// - Baseline Steady State: [mV] for IC, [pA] for VC
+/// - Resistance Steady State: [MOhm]
 ///
-/// Version 1:
-/// - stores number of headstages entrys, NaN when headstage not active
-/// Version 2:
-/// - upgraded precision to double
-///
-/// Unit: MOhm (1e6 Ohm)
-Function/Wave GetInstResistanceWave(panelTitle)
-	string panelTitle
-
-	variable version = 2
+/// Columns:
+/// - NUM_HEADSTAGES
+Function/Wave GetTPResults(string panelTitle)
+	variable version = 1
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = InstResistance
+	WAVE/D/Z/SDFR=dfr wv = results
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
-
 		return wv
-
 	elseif(WaveExists(wv))
-		// Unversioned wave stored only active headstages
-		Redimension/D/N=(NUM_HEADSTAGES) wv
-		wv = NaN
-
+		// do upgrade
 	else
-
-		Make/D/N=(NUM_HEADSTAGES) dfr:InstResistance/Wave=wv
+		Make/D/N=(3, NUM_HEADSTAGES) dfr:results/Wave=wv
 		wv = NaN
 
+		SetDimensionLabels(wv, "ResistanceInst;BaselineSteadyState;ResistanceSteadyState", ROWS)
+
+		// initialize with the old 1D waves
+		WAVE/D/Z/SDFR=dfr InstResistance, BaselineSSAvg, SSResistance
+
+		wv[%ResistanceInst][]        = WaveExists(InstResistance) ? InstResistance[q] : NaN
+		wv[%BaselineSteadyState][]   = WaveExists(BaselineSSAvg) ? BaselineSSAvg[q] : NaN
+		wv[%ResistanceSteadyState][] = WaveExists(SSResistance) ? SSResistance[q] : NaN
+
+		// and get rid of them
+		KillOrMoveToTrash(wv = InstResistance)
+		KillOrMoveToTrash(wv = BaselineSSAvg)
+		KillOrMoveToTrash(wv = SSResistance)
 	endif
 
 	SetWaveVersion(wv, version)
@@ -2577,194 +2581,33 @@ Function/Wave GetInstResistanceWave(panelTitle)
 	return wv
 End
 
-/// @brief Return the testpulse steady state average
+/// @brief Return the testpulse results buffer wave
 ///
-/// The rows have NUM_HEADSTAGES size and are initialized with NaN
-///
-/// Version 1:
-/// - stores number of headstages entrys, NaN when headstage not active
-/// Version 2:
-/// - upgraded precision to double
-///
-/// Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
-Function/Wave GetBaselineAverage(panelTitle)
-	string panelTitle
-
-	variable version = 2
-
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = BaselineSSAvg
-
-	if(ExistsWithCorrectLayoutVersion(wv, version))
-
-		return wv
-
-	elseif(WaveExists(wv))
-		// Unversioned wave stored only active headstages
-		Redimension/D/N=(NUM_HEADSTAGES) wv
-		wv = NaN
-
-	else
-
-		Make/D/N=(NUM_HEADSTAGES) dfr:BaselineSSAvg/Wave=wv
-		wv = NaN
-
-	endif
-
-	SetWaveVersion(wv, version)
-
-	return wv
-End
-
-/// @brief Return the testpulse steady state resistance wave
-///
-/// The rows have NUM_HEADSTAGES size and are initialized with NaN
-///
-/// Version 1:
-/// - stores number of headstages entrys, NaN when headstage not active
-/// Version 2:
-/// - upgraded precision to double
-///
-/// Unit: MOhm (1e6 Ohm)
-Function/Wave GetSSResistanceWave(panelTitle)
-	string panelTitle
-
-	variable version = 2
-
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = SSResistance
-
-	if(ExistsWithCorrectLayoutVersion(wv, version))
-
-		return wv
-
-	elseif(WaveExists(wv))
-		// Unversioned wave stored only active headstages
-		Redimension/D/N=(NUM_HEADSTAGES) wv
-		wv = NaN
-
-	else
-
-		Make/D/N=(NUM_HEADSTAGES) dfr:SSResistance/Wave=wv
-		wv = NaN
-
-	endif
-
-	SetWaveVersion(wv, version)
-
-	return wv
-End
-
-/// @brief Return the testpulse baseline running box average buffer
-///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-/// Currently the initialization and resize is done in TP_CreateTPAvgBuffer()
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
-///
-/// Version 1:
-/// - upgraded precision to double
-///
-/// Unit: Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
-Function/Wave GetGetBaselineBuffer(panelTitle)
+/// Same layout as GetTPResults() but as many layers as the buffer size.
+Function/Wave GetTPResultsBuffer(panelTitle)
 	string panelTitle
 
 	variable version = 1
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = TPBaselineBuffer
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = resultsBuffer
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
-
 		return wv
-
 	elseif(WaveExists(wv))
-
-		Redimension/D/N=(-1, -1) wv
-
+		// do upgrade
 	else
+		WAVE TPResults = GetTPResults(panelTitle)
+		WAVE TPSettings = GetTPSettings(panelTitle)
 
-		Make/D/N=(0, 0) dfr:TPBaselineBuffer/Wave=wv
+		Duplicate TPResults, dfr:resultsBuffer/WAVE=wv
+		Redimension/N=(-1, -1, TPSettings[%bufferSize][INDEP_HEADSTAGE]) wv
 
+		wv = NaN
 	endif
 
 	SetWaveVersion(wv, version)
-
-	return wv
-End
-
-/// @brief Return the testpulse instantaneous resistance running box average buffer
-///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-/// Currently the initialization and resize is done in TP_CreateTPAvgBuffer()
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
-///
-/// Version 1:
-/// - upgraded precision to double
-///
-/// Unit: MOhm (1e6 Ohm)
-Function/Wave GetInstantaneousBuffer(panelTitle)
-	string panelTitle
-
-	variable version = 1
-
-	dfref dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = TPInstBuffer
-
-	if(ExistsWithCorrectLayoutVersion(wv, version))
-
-		return wv
-
-	elseif(WaveExists(wv))
-
-		Redimension/D/N=(-1, -1) wv
-
-	else
-
-		Make/D/N=(0, 0) dfr:TPInstBuffer/Wave=wv
-
-	endif
-
-	SetWaveVersion(wv, version)
-
-	return wv
-End
-
-/// @brief Return the testpulse steady state resistance running box average buffer
-///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-/// Currently the initialization and resize is done in TP_CreateTPAvgBuffer()
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
-///
-/// Version 1:
-/// - upgraded precision to double
-///
-/// Unit: MOhm (1e6 Ohm)
-Function/Wave GetSteadyStateBuffer(panelTitle)
-	string panelTitle
-
-	variable version = 1
-
-	dfref dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = TPSSBuffer
-
-	if(ExistsWithCorrectLayoutVersion(wv, version))
-
-		return wv
-
-	elseif(WaveExists(wv))
-
-		Redimension/D/N=(-1, -1) wv
-
-	else
-
-		Make/D/N=(0, 0) dfr:TPSSBuffer/Wave=wv
-
-	endif
-
-	SetWaveVersion(wv, version)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
 End

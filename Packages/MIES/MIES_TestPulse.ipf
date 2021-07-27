@@ -18,24 +18,6 @@ static Constant TP_EVAL_POINT_OFFSET          = 5
 // comment in for debugging
 // #define TP_ANALYSIS_DEBUGGING
 
-Function TP_CreateTPAvgBuffer(panelTitle)
-	string panelTitle
-
-	variable tpBufferSize
-
-	// tpBufSizeGlobal determines the number of TP cycles to average at end of TP_Delta
-	tpBufferSize = DAG_GetNumericalValue(panelTitle, "setvar_Settings_TPBuffer")
-
-	WAVE TPBaselineBuffer = GetGetBaselineBuffer(panelTitle)
-	WAVE TPInstBuffer = GetInstantaneousBuffer(panelTitle)
-	WAVE TPSSBuffer = GetSteadyStateBuffer(panelTitle)
-
-	Redimension/N=(tpBufferSize, NUM_HEADSTAGES) TPBaselineBuffer, TPInstBuffer, TPSSBuffer
-	TPBaselineBuffer = NaN
-	TPInstBuffer = NaN
-	TPSSBuffer = NaN
-End
-
 /// @brief Return the total length of a single testpulse with baseline
 ///
 /// @param pulseDuration duration of the high portion of the testpulse in points or time
@@ -159,12 +141,12 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 	// got one set of results ready
 	if(asyncBuffer[i][posAsync][%REC_CHANNELS] == activeADCs)
 
-		WAVE BaselineSSAvg = GetBaselineAverage(panelTitle)
-		WAVE SSResistance = GetSSResistanceWave(panelTitle)
-		WAVE InstResistance = GetInstResistanceWave(panelTitle)
-		MultiThread BaselineSSAvg[] = asyncBuffer[i][posBaseline][p]
-		MultiThread SSResistance[] = asyncBuffer[i][posSSRes][p]
-		MultiThread InstResistance[] = asyncBuffer[i][posInstRes][p]
+		WAVE TPResults  = GetTPResults(panelTitle)
+		WAVE TPSettings = GetTPSettings(panelTitle)
+
+		MultiThread TPResults[%BaselineSteadyState][]   = asyncBuffer[i][posBaseline][q]
+		MultiThread TPResults[%ResistanceSteadyState][] = asyncBuffer[i][posSSRes][q]
+		MultiThread TPResults[%ResistanceInst][]        = asyncBuffer[i][posInstRes][q]
 
 		// Remove finished results from buffer
 		DeletePoints i, 1, asyncBuffer
@@ -172,18 +154,13 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 			KillOrMoveToTrash(wv=asyncBuffer)
 		endif
 
-		tpBufferSize = DAG_GetNumericalValue(panelTitle, "setvar_Settings_TPBuffer")
-		if(tpBufferSize > 1)
-			DFREF dfr = GetDeviceTestPulse(panelTitle)
-			WAVE/SDFR=dfr TPBaselineBuffer, TPInstBuffer, TPSSBuffer
-
-			TP_CalculateAverage(TPBaselineBuffer, BaselineSSAvg)
-			TP_CalculateAverage(TPInstBuffer, InstResistance)
-			TP_CalculateAverage(TPSSBuffer, SSResistance)
+		if(TPSettings[%bufferSize][INDEP_HEADSTAGE] > 1)
+			WAVE TPResultsBuffer = GetTPResultsBuffer(panelTitle)
+			TP_CalculateAverage(TPResultsBuffer, TPResults)
 		endif
 
-		TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now, marker)
-		DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+		TP_RecordTP(panelTitle, TPResults, now, marker)
+		DQ_ApplyAutoBias(panelTitle, TPResults)
 	endif
 
 End
@@ -303,54 +280,28 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	return dfrOut
 End
 
-/// @brief Calculates running average [box average] of single point data for all active channels
-///
-/// @param buffer 2D wave storing the values for the average, the rows are the box size, cols index the channels
-///
-/// @param dest 1D wave where rows index the channels, store the input data per channel
-///		  the number of rows of dest must match the number of columns of buffer
-///		  On return the content of dest is replaced with the averaged output data
-static Function TP_CalculateAverage(buffer, dest)
-	Wave buffer, dest
+/// @brief Calculates running average [box average] for all entries and all headstages
+static Function TP_CalculateAverage(WAVE TPResultsBuffer, WAVE TPResults)
+	variable numEntries, numLayers
 
-	variable i, j
-	variable numRows = DimSize(buffer, ROWS)
-	variable numCols = DimSize(buffer, COLS)
+	MatrixOp/FREE TPResultsBufferCopy = rotateLayers(TPResultsBuffer, 1)
+	TPResultsBuffer[][][]  = TPResultsBufferCopy[p][q][r]
+	TPResultsBuffer[][][0] = TPResults[p][q]
 
-	ASSERT(numCols == DimSize(dest, ROWS) , "Number of averaging buffer columns and 1D input wave size must have be the same")
+	numLayers  = DimSize(TPResultsBuffer, LAYERS)
+	numEntries = GetNumberFromWaveNote(TPResultsBuffer, NOTE_INDEX)
 
-	MatrixOp/O buffer = rotateRows(buffer, 1)
-	buffer[0][] = dest[q]
-
-	// find head stage (COL) with actual values, that we just wrote in ROW 0 above
-	for(j = 0; j < numCols; j += 1)
-		if(IsFinite(buffer[0][j]))
-			break
-		endif
-	endfor
-	ASSERT(j != numCols, "Average found no actual new value in any input row.")
-
-	// only remove NaNs if we actually have one
-	// as we append data to the front, the last row is a good point to check
-	if(IsFinite(buffer[numRows - 1][j]))
-		MatrixOp/O dest = sumCols(buffer)
-		dest /= numRows
-		Redimension/E=1/N=(numCols) dest
+	if(numEntries < numLayers)
+		numEntries += 1
+		SetNumberInWaveNote(TPResultsBuffer, NOTE_INDEX, numEntries)
+		Duplicate/FREE/RMD=[][][0, numEntries - 1] TPResultsBuffer, TPResultsBufferSub
+		MatrixOp/FREE results = sumBeams(TPResultsBufferSub) / numEntries
 	else
-		// FindValue/BinarySearch does not support searching for NaNs
-		// reported to WM on 2nd April 2015
-
-		// find first row with NaN in an 'active' column
-		for(i = 0; i < numRows; i += 1)
-			if(!IsFinite(buffer[i][j]))
-				break
-			endif
-		endfor
-		Duplicate/FREE/R=[0, i - 1][] buffer, filledBuffer
-		MatrixOp/O dest = sumCols(filledBuffer)
-		dest /= i
-		Redimension/E=1/N=(numCols) dest
+		ASSERT(numEntries == numLayers, "Unexpected number of entries/layers")
+		MatrixOp/FREE results = sumBeams(TPResultsBuffer) / numEntries
 	endif
+
+	TPResults[][] = results[p][q]
 End
 
 /// @brief Records values from  BaselineSSAvg, InstResistance, SSResistance into TPStorage at defined intervals.
@@ -359,9 +310,9 @@ End
 /// When the TP is initiated by any method, the TP storageWave should be empty
 /// If 200 ms have elapsed, or it is the first TP sweep,
 /// data from the input waves is transferred to the storage waves.
-static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now, tpMarker)
+static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 	string panelTitle
-	wave BaselineSSAvg, InstResistance, SSResistance
+	WAVE TPResults
 	variable now, tpMarker
 
 	variable delta, i, ret, lastPressureCtrl, timestamp
@@ -417,8 +368,8 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	timestamp = DateTimeInUTC()
 	TPStorage[count][][%TimeStampSinceIgorEpochUTC] = timestamp
 
-	TPStorage[count][][%PeakResistance]        = min(InstResistance[q], TP_MAX_VALID_RESISTANCE)
-	TPStorage[count][][%SteadyStateResistance] = min(SSResistance[q], TP_MAX_VALID_RESISTANCE)
+	TPStorage[count][][%PeakResistance]        = min(TPResults[%ResistanceInst][q], TP_MAX_VALID_RESISTANCE)
+	TPStorage[count][][%SteadyStateResistance] = min(TPResults[%ResistanceSteadyState][q], TP_MAX_VALID_RESISTANCE)
 	TPStorage[count][][%ValidState]            = TPStorage[count][q][%PeakResistance] < TP_MAX_VALID_RESISTANCE \
 															&& TPStorage[count][q][%SteadyStateResistance] < TP_MAX_VALID_RESISTANCE
 
@@ -427,8 +378,8 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	TPStorage[count][][%Headstage] = hsProp[q][%Enabled] ? q : NaN
 	TPStorage[count][][%ClampMode] = hsProp[q][%ClampMode]
 
-	TPStorage[count][][%Baseline_VC] = hsProp[q][%ClampMode] == V_CLAMP_MODE ? baselineSSAvg[q] : NaN
-	TPStorage[count][][%Baseline_IC] = hsProp[q][%ClampMode] == I_CLAMP_MODE ? baselineSSAvg[q] : NaN
+	TPStorage[count][][%Baseline_VC] = hsProp[q][%ClampMode] == V_CLAMP_MODE ? TPResults[%BaselineSteadyState][q] : NaN
+	TPStorage[count][][%Baseline_IC] = hsProp[q][%ClampMode] == I_CLAMP_MODE ? TPResults[%BaselineSteadyState][q] : NaN
 
 	TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 	TPStorage[count][][%TPMarker] = tpMarker
