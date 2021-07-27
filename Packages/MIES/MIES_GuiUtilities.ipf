@@ -452,16 +452,14 @@ Function SetPopupMenuIndex(win, control, index)
 End
 
 /// @brief Sets the popupmenu value
-Function SetPopupMenuVal(win, control, List)
-	string win, control
-	string List
+Function SetPopupMenuVal(string win, string control, string list)
 	string outputList
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
 	sprintf outputList, "\"%s\"" List
-	ASSERT(strlen(outputList) < MAX_COMMANDLINE_LENGTH, "Popop menu list is greater than MAX_COMMANDLINE_LENGTH characters")
+	ASSERT(strlen(outputList) < MAX_COMMANDLINE_LENGTH, "Popup menu list is greater than MAX_COMMANDLINE_LENGTH characters")
 	PopupMenu $control win=$win, value = #outputList
 End
 
