@@ -1530,3 +1530,10 @@ Constant DND_STIMSET_DANDI_SET = 107
 StrConstant WAVEBUILDER_DELTA_MODES = "None;Multiplier;Log;Squared;Power;Alternate;Explicit"
 
 StrConstant WAVEBUILDER_TRIGGER_TYPES = "Sin;Cos"
+
+/// @name Popup menu list types
+/// @anchor PopupMenuListTypes
+/// @{
+Constant POPUPMENULIST_TYPE_BUILTIN = 0x1 // COLORTABLEPOP, etc.
+Constant POPUPMENULIST_TYPE_OTHER   = 0x2 // everything else
+/// @}
