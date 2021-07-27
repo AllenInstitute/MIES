@@ -100,6 +100,7 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 	variable i, j, bufSize
 	variable posMarker, posAsync, tpBufferSize
 	variable posBaseline, posSSRes, posInstRes
+	variable posElevSS, posElevInst
 
 	if(err)
 		ASSERT(0, "RTError " + num2str(err) + " in TP_Analysis thread: " + errmsg)
@@ -120,6 +121,8 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 	posBaseline = FindDimLabel(asyncBuffer, COLS, "BASELINE")
 	posSSRes = FindDimLabel(asyncBuffer, COLS, "STEADYSTATERES")
 	posInstRes = FindDimLabel(asyncBuffer, COLS, "INSTANTRES")
+	posElevSS = FindDimLabel(asyncBuffer, COLS, "ELEVATED_SS")
+	posElevInst = FindDimLabel(asyncBuffer, COLS, "ELEVATED_INST")
 
 	FindValue/RMD=[][posAsync][posMarker, posMarker]/V=(marker)/T=0 asyncBuffer
 	i = V_Value >= 0 ? V_Row : bufSize
@@ -134,6 +137,8 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 	asyncBuffer[i][posBaseline][hsIndex] = inData[%BASELINE]
 	asyncBuffer[i][posSSRes][hsIndex] = inData[%STEADYSTATERES]
 	asyncBuffer[i][posInstRes][hsIndex] = inData[%INSTANTRES]
+	asyncBuffer[i][posElevSS][hsIndex] = inData[%ELEVATED_SS]
+	asyncBuffer[i][posElevInst][hsIndex] = inData[%ELEVATED_INST]
 
 	asyncBuffer[i][posAsync][%NOW] = now
 	asyncBuffer[i][posAsync][%REC_CHANNELS] += 1
@@ -147,6 +152,8 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 		MultiThread TPResults[%BaselineSteadyState][]   = asyncBuffer[i][posBaseline][q]
 		MultiThread TPResults[%ResistanceSteadyState][] = asyncBuffer[i][posSSRes][q]
 		MultiThread TPResults[%ResistanceInst][]        = asyncBuffer[i][posInstRes][q]
+		MultiThread TPResults[%ElevatedSteadyState][]   = asyncBuffer[i][posElevSS][q]
+		MultiThread TPResults[%ElevatedInst][]          = asyncBuffer[i][posElevInst][q]
 
 		// Remove finished results from buffer
 		DeletePoints i, 1, asyncBuffer
@@ -204,10 +211,14 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	// 0: base line level
 	// 1: steady state resistance
 	// 2: instantaneous resistance
-	Make/N=3/D dfrOut:outData/wave=outData
+	// 3: averaged elevated level (steady state)
+	// 4: avrraged elevated level (instantaneous)
+	Make/N=5/D dfrOut:outData/wave=outData
 	SetDimLabel ROWS, 0, BASELINE, outData
 	SetDimLabel ROWS, 1, STEADYSTATERES, outData
 	SetDimLabel ROWS, 2, INSTANTRES, outData
+	SetDimLabel ROWS, 3, ELEVATED_SS, outData
+	SetDimLabel ROWS, 4, ELEVATED_INST, outData
 
 	sampleInt = DimDelta(data, ROWS)
 	tpStartPoint = baseLineFrac * lengthTPInPoints
@@ -264,6 +275,8 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 		outData[2] = clampAmp / (avgInst - avgBaselineSS) * 1000
 	endif
 	outData[0] = avgBaselineSS
+	outData[3] = avgTPSS
+	outData[4] = avgInst
 
 #if defined(TP_ANALYSIS_DEBUGGING)
 	DEBUGPRINT_TS("IntRes: ", var = outData[2])

@@ -446,19 +446,27 @@ End
 /// Column 4: baseline position
 /// Column 5: steady state res position
 /// Column 6: instantaneous res position
-///   - Layers NUM_HEADSTAGES positions with value entries at hsIndex
+/// Column 7: average elevated level (steady state)
+/// Column 8: average elevated level (instantaneous)
+///
+/// Layers:
+/// - NUM_HEADSTAGES positions with value entries at hsIndex
 Function/Wave GetTPResultAsyncBuffer(panelTitle)
 	string panelTitle
+
+	variable versionOfNewWave = 1
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 
 	Wave/Z/SDFR=dfr/D wv = TPResultAsyncBuffer
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 9, -1) wv
+	else
+		Make/N=(0, 9, NUM_HEADSTAGES)/D dfr:TPResultAsyncBuffer/Wave=wv
 	endif
-
-	Make/N=(0, 7, NUM_HEADSTAGES)/D dfr:TPResultAsyncBuffer/Wave=wv
 
 	SetDimLabel COLS, 0, ASYNCDATA, wv
 	SetDimLabel COLS, 1, BASELINE, wv
@@ -467,9 +475,14 @@ Function/Wave GetTPResultAsyncBuffer(panelTitle)
 	SetDimLabel COLS, 4, BASELINE_POS, wv
 	SetDimLabel COLS, 5, STEADYSTATERES_POS, wv
 	SetDimLabel COLS, 6, INSTANTRES_POS, wv
+	SetDimLabel COLS, 7, ELEVATED_SS, wv
+	SetDimLabel COLS, 8, ELEVATED_INST, wv
+
 	SetDimLabel LAYERS, 0, MARKER, wv
 	SetDimLabel LAYERS, 1, REC_CHANNELS, wv
 	SetDimLabel LAYERS, 2, NOW, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
@@ -2544,11 +2557,13 @@ End
 /// - Resistance Instantaneous: [MOhm]
 /// - Baseline Steady State: [mV] for IC, [pA] for VC
 /// - Resistance Steady State: [MOhm]
+/// - Elevated Steady State: [mV] for IC, [pA] for VC
+/// - Elevated Instantaneous: [mV] for IC, [pA] for VC
 ///
 /// Columns:
 /// - NUM_HEADSTAGES
 Function/Wave GetTPResults(string panelTitle)
-	variable version = 1
+	variable version = 2
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE/D/Z/SDFR=dfr wv = results
@@ -2558,10 +2573,10 @@ Function/Wave GetTPResults(string panelTitle)
 	elseif(WaveExists(wv))
 		// do upgrade
 	else
-		Make/D/N=(3, NUM_HEADSTAGES) dfr:results/Wave=wv
+		Make/D/N=(5, NUM_HEADSTAGES) dfr:results/Wave=wv
 		wv = NaN
 
-		SetDimensionLabels(wv, "ResistanceInst;BaselineSteadyState;ResistanceSteadyState", ROWS)
+		SetDimensionLabels(wv, "ResistanceInst;BaselineSteadyState;ResistanceSteadyState;ElevatedSteadyState;ElevatedInst", ROWS)
 
 		// initialize with the old 1D waves
 		WAVE/D/Z/SDFR=dfr InstResistance, BaselineSSAvg, SSResistance
@@ -2587,7 +2602,7 @@ End
 Function/Wave GetTPResultsBuffer(panelTitle)
 	string panelTitle
 
-	variable version = 1
+	variable version = 2
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE/D/Z/SDFR=dfr wv = resultsBuffer
