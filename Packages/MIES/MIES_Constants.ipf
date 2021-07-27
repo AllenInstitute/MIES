@@ -622,7 +622,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 53
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 28
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 29
 Constant WAVEBUILDER_PANEL_VERSION        = 10
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 
@@ -1358,14 +1358,6 @@ Constant PEXT_SUBSPLIT_ALPHA = 1
 /// @anchor PEXT_SubMenuNameGeneration
 /// @{
 Constant PEXT_SUBNAMEGEN_DEFAULT = 0
-/// @}
-
-/// @name Lab notebook entry types
-/// @anchor LNBEntryTypes
-/// @{
-Constant LNB_TYPE_NONE = 0
-Constant LNB_TYPE_NUMERICAL = 1
-Constant LNB_TYPE_TEXTUAL = 2
 /// @}
 
 /// @brief Wave note key for the indexing helper JSON document

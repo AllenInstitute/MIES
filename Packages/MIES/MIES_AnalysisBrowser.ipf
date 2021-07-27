@@ -2503,6 +2503,7 @@ Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 				AD_Update(graph)
 				panel = BSP_GetSweepControlsPanel(graph)
 				PGC_SetAndActivateControl(panel, "button_SweepControl_PrevSweep")
+				LBV_SelectExperimentAndDevice(graph)
 			else
 				KillWindow $graph
 			endif
@@ -2945,4 +2946,20 @@ Function/S AB_GetAllDevicesForExperiment(string dataFolder)
 	DFREF dfr = GetAnalysisExpFolder(dataFolder)
 
 	return GetListOfDataFolders(dfr)
+End
+
+/// @brief Return all experiments the analysis browser knows about
+Function/S AB_GetAllExperiments()
+
+	variable i, index
+	string list = ""
+
+	WAVE/T map = GetAnalysisBrowserMap()
+	index = GetNumberFromWaveNote(map, NOTE_INDEX)
+
+	for(i = 0; i < index; i += 1)
+		list = AddListItem(map[i][%DataFolder], list, ";", Inf)
+	endfor
+
+	return list
 End

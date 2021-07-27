@@ -16,8 +16,6 @@ Menu "Mies Panels"
 	"-"
 	SubMenu "Analysis"
 		"Analysis Browser"                     , /Q, AB_OpenAnalysisBrowser()
-		"Labnotebook Browser"                  , /Q, LBN_OpenLabnotebookBrowser()
-		"TPStorage Browser"                    , /Q, LBN_OpenTPStorageBrowser()
 		"Open Downsample Panel"                , /Q, CreateDownsamplePanel()
 	End
 	"-"

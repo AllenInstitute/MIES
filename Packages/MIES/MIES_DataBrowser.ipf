@@ -20,7 +20,6 @@ Function/S DB_OpenDataBrowser()
 	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	BSP_SetDataBrowser(win)
 	BSP_InitPanel(win)
-	DB_DynamicSettingsHistory(win)
 
 	// immediately lock if we have only data from one device
 	devicesWithData = ListMatch(DB_GetAllDevicesWithData(), "!" + NONE)
@@ -60,7 +59,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	bsPanel = BSP_GetPanel(panelTitle)
 	scPanel = BSP_GetSweepControlsPanel(panelTitle)
-	shPanel = DB_GetSettingsHistoryPanel(panelTitle)
+	shPanel = LBV_GetSettingsHistoryPanel(panelTitle)
 
 	ASSERT(WindowExists(bsPanel) && WindowExists(scPanel) && WindowExists(shPanel), "BrowserSettings or SweepControl or SettingsHistory panel subwindow does not exist.")
 
@@ -80,16 +79,15 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	PGC_SetAndActivateControl(panelTitle, "button_BSP_open")
 	DB_ClearAllGraphs()
-	DB_ClearGraph(panelTitle)
+	LBV_ClearGraph(panelTitle)
 
 	Checkbox check_BrowserSettings_OVS WIN = $bsPanel, value= 0
 
 	BSP_InitPanel(panelTitle)
-	DB_DynamicSettingsHistory(panelTitle)
 
 	BSP_UnsetDynamicSweepControlOfDataBrowser(panelTitle)
 	BSP_UnsetDynamicStartupSettingsOfDataBrowser(panelTitle)
-	DB_UnsetDynamicSettingsHistory(panelTitle)
+	BSP_UnsetDynamicSettingsHistory(panelTitle)
 
 	// store current positions as reference
 	ResizeControlsPanel#SaveControlPositions(bsPanel, 0)
@@ -235,19 +233,6 @@ Function/S DB_GetMainGraph(win)
 	return GetMainWindow(win)
 End
 
-Function DB_UnHideSettingsHistory(win)
-	string win
-
-	string settingsHistoryPanel
-
-	ASSERT(WindowExists(GetMainWindow(win)), "HOST panel does not exist")
-
-	settingsHistoryPanel = DB_GetSettingsHistoryPanel(win)
-	if(WindowExists(settingsHistoryPanel))
-		SetWindow $settingsHistoryPanel hide=0, needUpdate=1
-	endif
-End
-
 Function/S DB_ClearAllGraphs()
 
 	string unlocked, locked, listOfGraphs
@@ -277,18 +262,6 @@ Function/S DB_ClearAllGraphs()
 	endfor
 End
 
-Function/S DB_GetSettingsHistoryPanel(win)
-	string win
-
-	return GetMainWindow(win) + "#" + EXT_PANEL_SETTINGSHISTORY
-End
-
-static Function/S DB_GetLabNoteBookGraph(win)
-	string win
-
-	return DB_GetSettingsHistoryPanel(win) + "#Labnotebook"
-End
-
 static Function/S DB_LockToDevice(win, device)
 	string win, device
 
@@ -299,6 +272,8 @@ static Function/S DB_LockToDevice(win, device)
 		newWindow = DATABROWSER_WINDOW_TITLE
 		print "Please choose a device assignment for the data browser"
 		ControlWindowToFront()
+		BSP_UnsetDynamicStartupSettingsOfDataBrowser(win)
+		BSP_UnsetDynamicSettingsHistory(win)
 	else
 		newWindow = "DB_" + device
 	endif
@@ -314,7 +289,7 @@ static Function/S DB_LockToDevice(win, device)
 	DB_SetUserData(newWindow, device)
 	if(windowExists(BSP_GetPanel(newWindow)) && BSP_HasBoundDevice(newWindow))
 		BSP_DynamicStartupSettings(newWindow)
-		DB_DynamicSettingsHistory(newWindow)
+		BSP_DynamicSettingsHistory(newWindow)
 		[first, last] = BSP_FirstAndLastSweepAcquired(newWindow)
 		DB_UpdateLastSweepControls(newWindow, first, last)
 	endif
@@ -473,21 +448,6 @@ Function DB_UpdateSweepPlot(win)
 	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
-
-static Function DB_ClearGraph(win)
-	string win
-
-	string graph = DB_GetLabNoteBookGraph(win)
-	if(!WindowExists(graph))
-		return 0
-	endif
-
-	RemoveTracesFromGraph(graph)
-	RemoveFreeAxisFromGraph(graph)
-	RemoveDrawLayers(graph)
-	UpdateLBGraphLegend(graph)
-End
-
 /// @brief Return the labnotebook waves
 ///
 /// The databrowser only knows about one experiment/device at a time
@@ -557,7 +517,7 @@ Function DB_UpdateToLastSweep(win)
 		PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
 	endif
 
-	DB_UpdateTagsForTextualLBNEntries(win, last)
+	LBV_UpdateTagsForTextualLBNEntries(win, last)
 End
 
 /// @brief procedure for the open button of the side panel
@@ -569,152 +529,11 @@ Function DB_ButtonProc_Panel(ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2: // mouse up
 			win = GetMainWindow(ba.win)
-			DB_UnHideSettingsHistory(win)
+			BSP_UnHideSettingsHistory(win)
 			break
 	endswitch
 
 	BSP_ButtonProc_Panel(ba)
-	return 0
-End
-
-/// @brief returns the combined keys from the numerical and textual MD key labnotebook waves as 1D text wave
-static Function/WAVE DB_GetLBKeys(mainPanel)
-	string mainPanel
-
-	variable s
-	variable existText, existNum
-
-	WAVE/Z/T textualKeys = GetLabNotebookKeys(DB_GetLBNWave(mainPanel, LBN_TEXTUAL_KEYS))
-	WAVE/Z/T numericalKeys = GetLabNotebookKeys(DB_GetLBNWave(mainPanel, LBN_NUMERICAL_KEYS))
-
-	existText = WaveExists(textualKeys)
-	existNum = WaveExists(numericalKeys)
-	if(existText && existNum)
-		s = DimSize(numericalKeys, ROWS)
-		Redimension/N=(s + DimSize(textualKeys, ROWS)) numericalKeys
-		numericalKeys[s, Inf] = textualKeys[p - s]
-		return numericalKeys
-	elseif(existText && !existNum)
-		return textualKeys
-	elseif(!existText && existNum)
-		return numericalKeys
-	endif
-
-	return $""
-End
-
-/// @brief Returns the list of LNB keys for the settings history window menu
-Function/WAVE DB_PopupExtGetLBKeys(panelTitle)
-	string panelTitle
-
-	string mainPanel = GetMainWindow(panelTitle)
-	if(BSP_HasBoundDevice(mainPanel))
-		WAVE/T/Z splittedMenu = PEXT_SplitToSubMenus(DB_GetLBKeys(mainPanel), method = PEXT_SUBSPLIT_ALPHA)
-		PEXT_GenerateSubMenuNames(splittedMenu)
-		return splittedMenu
-	endif
-
-	return $""
-End
-
-static Function DB_DynamicSettingsHistory(win)
-	string win
-
-	string mainPanel, shPanel
-
-	mainPanel = GetMainWindow(win)
-	shPanel = DB_GetSettingsHistoryPanel(win)
-	if(!WindowExists(shPanel))
-		return 0
-	endif
-
-	SetWindow $shPanel, hook(main)=DB_CloseSettingsHistoryHook
-End
-
-/// @brief Unsets all control properties that are set in DB_DynamicSettingsHistory
-static Function DB_UnsetDynamicSettingsHistory(win)
-	string win
-
-	string shPanel
-
-	shPanel = DB_GetSettingsHistoryPanel(win)
-	ASSERT(WindowExists(shPanel), "external SettingsHistory panel not found")
-	SetWindow $shPanel, hook(main)=$""
-End
-
-static Function DB_UpdateTagsForTextualLBNEntries(string databrowser, variable sweepNo)
-	string lbGraph, traceList, key, trace
-	variable i, numTraces
-
-	lbGraph = DB_GetLabNotebookGraph(databrowser)
-
-	WAVE textualValues = DB_GetLBNWave(databrowser, LBN_TEXTUAL_VALUES)
-	WAVE textualKeys   = DB_GetLBNWave(databrowser, LBN_TEXTUAL_KEYS)
-
-	traceList = TraceNameList(lbGraph, ";", 0 + 1)
-	numTraces = ItemsInList(traceList)
-
-	if(!numTraces)
-		return NaN
-	endif
-
-	for(i = 0; i < numTraces; i += 1)
-		trace = StringFromList(i, traceList)
-
-		if(!str2num(GetUserData(lbGraph, trace, "IsTextData")))
-			continue
-		endif
-
-		key = GetUserData(lbGraph, trace, "key")
-		ASSERT(!IsEmpty(key), "Missing key")
-		AddTagsForTextualLBNEntries(lbGraph, textualKeys, textualValues, key, firstSweep = sweepNo)
-	endfor
-End
-
-/// @brief panel close hook for settings history panel
-Function DB_CloseSettingsHistoryHook(s)
-	STRUCT WMWinHookStruct &s
-
-	string mainPanel, shPanel
-
-	switch(s.eventCode)
-		case 17: // killVote
-			mainPanel = GetMainWindow(s.winName)
-
-			if(!BSP_IsDataBrowser(mainPanel))
-				return 0
-			endif
-
-			shPanel = DB_GetSettingsHistoryPanel(mainPanel)
-
-			ASSERT(!cmpstr(s.winName, shPanel), "This hook is only available for Setting History Panel.")
-
-			SetWindow $s.winName hide=1
-
-			BSP_MainPanelButtonToggle(mainPanel, 1)
-
-			return 2 // don't kill window
-	endswitch
-
-	return 0
-End
-
-Function DB_ButtonProc_AutoScale(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string win, mainGraph, lbGraph
-
-	switch(ba.eventcode)
-		case 2: // mouse up
-			win     = ba.win
-			lbGraph = DB_GetLabNotebookGraph(win)
-
-			if(WindowExists(lbGraph))
-				SetAxis/A=2/W=$lbGraph
-			endif
-			break
-	endswitch
-
 	return 0
 End
 
@@ -728,39 +547,6 @@ Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 			mainPanel = GetMainWindow(pa.win)
 			DB_LockToDevice(mainPanel, pa.popStr)
 			break
-	endswitch
-
-	return 0
-End
-
-Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
-
-	string lbGraph, popStr, win, device
-	variable lnbType
-
-	switch(pa.eventCode)
-		case 2: // mouse up
-			win = pa.win
-			lbGraph = DB_GetLabNoteBookGraph(win)
-			popStr     = pa.popStr
-			if(!CmpStr(popStr, NONE))
-				break
-			endif
-
-			lnbType = DB_GetLNBKeyEntryType(win, popStr)
-			if(lnbType == LNB_TYPE_NUMERICAL)
-				WAVE values = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
-				WAVE keys = DB_GetLBNWave(win, LBN_NUMERICAL_KEYS)
-			elseif(lnbType == LNB_TYPE_TEXTUAL)
-				WAVE values = DB_GetLBNWave(win, LBN_TEXTUAL_VALUES)
-				WAVE keys = DB_GetLBNWave(win, LBN_TEXTUAL_KEYS)
-			else
-				ASSERT(0, "Unknown key in this labnotebook")
-			endif
-
-			AddTraceToLBGraph(lbGraph, keys, values, popStr)
-		break
 	endswitch
 
 	return 0
@@ -790,39 +576,6 @@ Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 	return 0
 End
 
-Function DB_ButtonProc_ClearGraph(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			DB_ClearGraph(ba.win)
-			break
-	endswitch
-
-	return 0
-End
-
-/// @brief Returns a type constant for the labnotebook entry
-/// @param[in] panelTitle panel title
-/// @param[in] key key of labnotebook entry
-/// @returns one of @sa LNBEntryTypes constants
-Function DB_GetLNBKeyEntryType(panelTitle, key)
-	string panelTitle, key
-
-	variable col
-
-   col = FindDimLabel(DB_GetLBNWave(panelTitle, LBN_NUMERICAL_VALUES), COLS, key)
-   if(col >= 0)
-	   return LNB_TYPE_NUMERICAL
-   endif
-   col = FindDimLabel(DB_GetLBNWave(panelTitle, LBN_TEXTUAL_VALUES), COLS, key)
-   if(col >= 0)
-	   return LNB_TYPE_TEXTUAL
-   endif
-
-	return LNB_TYPE_NONE
-End
-
 Function/S DB_GetAllDevicesWithData()
 
 	string list
@@ -831,29 +584,6 @@ Function/S DB_GetAllDevicesWithData()
 	list = AddListItem(RemoveEnding(list, ";"), GetListOfLockedDevices(), ";", inf)
 
 	return GetUniqueTextEntriesFromList(list)
-End
-
-Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string win, lbGraph
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			win = ba.win
-			if(!BSP_HasBoundDevice(win))
-				break
-			endif
-
-			WAVE numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
-			WAVE textualValues   = DB_GetLBNWave(win, LBN_TEXTUAL_VALUES)
-
-			lbGraph = DB_GetLabNoteBookGraph(win)
-			SwitchLBGraphXAxis(lbGraph, numericalValues, textualValues)
-			break
-	endswitch
-
-	return 0
 End
 
 /// @brief Adds traces of a sweep to the databrowser graph
