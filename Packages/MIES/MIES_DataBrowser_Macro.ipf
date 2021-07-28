@@ -938,6 +938,7 @@ Window DataBrowser() : Graph
 	GroupBox group_enable_sweepFormula,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#N3Bk1ctAStpcCh5qOGZ8U#zzzzzzzz"
 	GroupBox group_enable_sweepFormula,userdata(ResizeControlsInfo)+=A"zzz!!#N3Bk1ctAStpcCh5qOGX?=jFDl!rzzzzzzzzzz!!!"
 	SetVariable setvar_sweepFormula_parseResult,pos={135.00,555.00},size={255.00,18.00},disable=1
+	SetVariable setvar_sweepFormula_parseResult,help={"Error message of SweepFormula execution."}
 	SetVariable setvar_sweepFormula_parseResult,userdata(tabnum)="5"
 	SetVariable setvar_sweepFormula_parseResult,userdata(tabcontrol)="Settings"
 	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo)=A"!!,Fl!!#Co^]6`O!!#<Hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
