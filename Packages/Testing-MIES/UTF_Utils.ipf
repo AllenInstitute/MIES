@@ -5115,3 +5115,120 @@ Function ASTEA_WorksOnEmptyBoth()
 End
 
 /// @}
+
+/// GetSetUnion
+/// @{
+Function GSU_ExpectsSameWaveType()
+
+	Make/FREE/D data1
+	Make/FREE/R data2
+
+	try
+		WAVE/Z matches = GetSetIntersection(data1, data2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GSU_WorksWithFloat()
+
+	Make/FREE data1 = {1, 4.5, inf, -inf}
+	Make/FREE data2 = {1, 5, NaN, inf}
+
+	WAVE/Z union = GetSetUnion(data1, data2)
+	CHECK_WAVE(union, NUMERIC_WAVE)
+	Sort union, union
+
+	CHECK_EQUAL_WAVES({-inf, 1, 4.5, 5, inf, NaN}, union)
+End
+
+Function GSU_WorksWithTextAndIsCaseSensitiveByDefault()
+
+	Make/FREE/T data1 = {"ab", "cd", "ef"}
+	Make/FREE/T data2 = {"ab", "11", "", "", "CD"}
+
+	WAVE/Z union = GetSetUnion(data1, data2)
+	CHECK_WAVE(union, TEXT_WAVE)
+	Sort union, union
+
+	CHECK_EQUAL_TEXTWAVES({"","11","ab","CD", "cd", "ef"}, union)
+End
+
+Function GSU_WorksWithFirstEmpty()
+
+	Make/FREE/N=0 data1
+	Make/FREE data2 = {1, 1, 5, NaN, inf}
+
+	WAVE/Z union = GetSetUnion(data1, data2)
+	CHECK_WAVE(union, NUMERIC_WAVE)
+	Sort union, union
+
+	CHECK_EQUAL_WAVES({1, 5, inf, NaN}, union)
+End
+
+Function GSU_WorksWithSecondEmpty()
+
+	Make/FREE data1 = {1, 1, 5, NaN, inf}
+	Make/FREE/N=0 data2
+
+	WAVE/Z union = GetSetUnion(data1, data2)
+	CHECK_WAVE(union, NUMERIC_WAVE)
+	Sort union, union
+
+	CHECK_EQUAL_WAVES({1, 5, inf, NaN}, union)
+End
+
+Function GSU_WorksWithFirstEmptyText()
+
+	Make/FREE/N=0/T data1
+	Make/FREE/T data2 = {"ab", "cd", "ef", "ef"}
+
+	WAVE/Z union = GetSetUnion(data1, data2)
+	CHECK_WAVE(union, TEXT_WAVE)
+	Sort union, union
+
+	CHECK_EQUAL_TextWAVES({"ab", "cd", "ef"}, union)
+End
+
+Function GSU_WorksWithSecondEmptyText()
+
+	Make/FREE/T data1 = {"ab", "cd", "ef", "ef"}
+	Make/FREE/N=0/T data2
+
+	WAVE/Z union = GetSetUnion(data1, data2)
+	CHECK_WAVE(union, TEXT_WAVE)
+	Sort union, union
+
+	CHECK_EQUAL_TextWAVES({"ab", "cd", "ef"}, union)
+End
+
+Function GSU_WorksWithBothEqual()
+
+	Make/FREE data = {1, 5, inf, NaN}
+
+	WAVE/Z union = GetSetUnion(data, data)
+	CHECK_WAVE(union, NUMERIC_WAVE)
+
+	Sort union, union
+
+	CHECK_EQUAL_WAVES(data, union)
+End
+
+Function GSU_WorksWithBothEmptyAndEqual()
+
+	Make/FREE/N=0 data
+
+	WAVE/Z union = GetSetUnion(data, data)
+	CHECK_WAVE(union, NULL_WAVE)
+End
+
+Function GSU_WorksWithBothEmpty()
+
+	Make/FREE/N=0 data1, data2
+
+	WAVE/Z union = GetSetUnion(data1, data2)
+	CHECK_WAVE(union, NULL_WAVE)
+End
+
+/// @}
