@@ -6532,6 +6532,17 @@ Function/DF GetGraphUserDataFolderDFR()
 	return createDFWithAllParents(GetGraphUserDataFolderAsString())
 End
 
+static Function/S BuildGraphName(string graph)
+
+	return CleanupName(graph, 0) + "_wave"
+End
+
+/// @brief Return the path to the text wave for the graph user data as string
+Function/S GetGraphUserDataAsString(string graph)
+
+	return GetGraphUserDataFolderAsString() + ":" + BuildGraphName(graph)
+End
+
 /// @brief Return the text wave for the graph user data
 ///
 /// @param graph existing graph
@@ -6539,7 +6550,7 @@ Function/WAVE GetGraphUserData(string graph)
 
 	variable versionOfNewWave = 1
 	DFREF dfr = GetGraphUserDataFolderDFR()
-	string name = graph + "_wave"
+	string name = BuildGraphName(graph)
 	WAVE/T/Z/SDFR=dfr wv = $name
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
