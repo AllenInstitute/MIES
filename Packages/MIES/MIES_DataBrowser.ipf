@@ -998,7 +998,6 @@ Function DB_WindowHook(s)
 			try
 				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER); AbortOnRTE
 
-				KillWindow/Z $s.winName
 				KillOrMoveToTrash(dfr = dfr); AbortOnRTE
 			catch
 				ClearRTError()

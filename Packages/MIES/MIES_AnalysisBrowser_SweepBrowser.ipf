@@ -379,7 +379,6 @@ Function SB_SweepBrowserWindowHook(s)
 
 			DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 
-			KillWindow $graph
 			KillOrMoveToTrash(dfr = sweepBrowserDFR)
 			break
 		case 22: // mouse wheel
