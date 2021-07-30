@@ -5232,3 +5232,27 @@ Function GSU_WorksWithBothEmpty()
 End
 
 /// @}
+
+Function SICP_EnsureValidGUIs()
+
+	string panel
+
+	panel = DAP_CreateDAEphysPanel()
+	CHECK_EQUAL_VAR(SearchForInvalidControlProcs(panel), 0)
+
+	panel = WBP_CreateWaveBuilderPanel()
+	CHECK_EQUAL_VAR(SearchForInvalidControlProcs(panel), 0)
+
+	panel = DB_OpenDataBrowser()
+	CHECK_EQUAL_VAR(SearchForInvalidControlProcs(panel), 0)
+
+	panel = AB_OpenAnalysisBrowser()
+	CHECK_EQUAL_VAR(SearchForInvalidControlProcs(panel), 0)
+
+	IVS_CreatePanel()
+	panel = GetCurrentWindow()
+	CHECK_EQUAL_VAR(SearchForInvalidControlProcs(panel), 0)
+
+	panel = DP_OpenDebugPanel()
+	CHECK_EQUAL_VAR(SearchForInvalidControlProcs(panel), 0)
+End
