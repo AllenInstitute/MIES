@@ -124,7 +124,11 @@ static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
 	sweep     = str2num(sweepMap[mapIndex][%Sweep])
 	expFolder = sweepMap[mapIndex][%DataFolder]
 
-	WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
+	WAVE/Z numericalValues = GetAnalysLBNumericalValues(expFolder, device)
+
+	if(!WaveExists(numericalValues))
+		return $""
+	endif
 
 	return GetLastSetting(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
 End
@@ -309,11 +313,13 @@ Function SB_UpdateSweepPlot(win)
 
 		WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, index=mapIndex)
 
-		WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
-		DFREF sweepDFR       = GetAnalysisSweepPath(dataFolder, device)
+		WAVE/Z numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
+		ASSERT(WaveExists(numericalValues), "Missing labnotebook wave")
+		WAVE/Z textualValues = GetAnalysLBTextualValues(dataFolder, device)
+		ASSERT(WaveExists(textualValues), "Missing labnotebook wave")
 
+		DFREF sweepDFR  = GetAnalysisSweepPath(dataFolder, device)
 		WAVE configWave = GetAnalysisConfigWave(dataFolder, device, sweepNo)
-		WAVE textualValues = GetAnalysLBTextualValues(dataFolder, device)
 
 		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, \
 		                        axisLabelCache, traceIndex, experiment, sweepChannelSel)
@@ -596,8 +602,10 @@ Function SB_AddSweepToGraph(string win, variable index)
 	experiment = map[index][%FileName]
 	sweepNo    = str2num(map[index][%Sweep])
 
-	WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
-	WAVE textualValues   = GetAnalysLBTextualValues(dataFolder, device)
+	WAVE/Z numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
+	ASSERT(WaveExists(numericalValues), "Missing labnotebook wave")
+	WAVE/Z textualValues   = GetAnalysLBTextualValues(dataFolder, device)
+	ASSERT(WaveExists(textualValues), "Missing labnotebook wave")
 	DFREF sweepDFR       = GetAnalysisSweepPath(dataFolder, device)
 
 	[tgs] = BSP_GatherTiledGraphSettings(graph)

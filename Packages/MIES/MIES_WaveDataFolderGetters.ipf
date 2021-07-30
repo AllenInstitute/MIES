@@ -4782,13 +4782,7 @@ Function/WAVE GetAnalysLBNumericalValues(expFolder, device)
 	p.name    = "numericValues"
 	p.newName = newName
 
-	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	ASSERT(0, "Trying to access non existing numerical values labnotebook")
+	return UpgradeWaveLocationAndGetIt(p)
 End
 
 /// @brief Return the textual labnotebook keys in the analysis browser of a device and experiment pair
@@ -4802,13 +4796,7 @@ Function/WAVE GetAnalysLBTextualValues(expFolder, device)
 	p.name    = "textValues"
 	p.newName = newName
 
-	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	ASSERT(0, "Trying to access non existing textual values labnotebook")
+	return UpgradeWaveLocationAndGetIt(p)
 End
 
 /// @brief Return the numerical labnotebook keys in the analysis browser of a device and experiment pair
@@ -4822,13 +4810,7 @@ Function/WAVE GetAnalysLBNumericalKeys(expFolder, device)
 	p.name    = "numericKeys"
 	p.newName = newName
 
-	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	ASSERT(0, "Trying to access non existing numerical keys labnotebook")
+	return UpgradeWaveLocationAndGetIt(p)
 End
 
 /// @brief Return the textual labnotebook keys in the analysis browser of a device and experiment pair
@@ -4842,13 +4824,7 @@ Function/WAVE GetAnalysLBTextualKeys(expFolder, device)
 	p.name    = "textKeys"
 	p.newName = newName
 
-	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	ASSERT(0, "Trying to access non existing textual keys labnotebook")
+	return UpgradeWaveLocationAndGetIt(p)
 End
 
 /// @}
