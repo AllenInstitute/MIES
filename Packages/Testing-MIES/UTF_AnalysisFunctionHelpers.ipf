@@ -774,3 +774,54 @@ End
 
 /// END AFH_GetListOfAnalysisParams
 /// @}
+
+/// BEGIN AFH_GetHeadstageFromActiveADC
+/// @{
+
+Function HFAA_ChecksArgs()
+
+	try
+		AFH_GetHeadstageFromActiveADC({1}, 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) statusADC = NaN
+
+	try
+		AFH_GetHeadstageFromActiveADC(statusADC, -1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		AFH_GetHeadstageFromActiveADC(statusADC, NUM_AD_CHANNELS)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		AFH_GetHeadstageFromActiveADC(statusADC, 1.5)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function HFAA_Works()
+
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) statusADC = NaN
+
+	statusADC[2] = 3
+	statusADC[7] = 0
+
+	CHECK_EQUAL_VAR(AFH_GetHeadstageFromActiveADC(statusADC, 0), 2)
+	CHECK_EQUAL_VAR(AFH_GetHeadstageFromActiveADC(statusADC, 1), 7)
+	CHECK_EQUAL_VAR(AFH_GetHeadstageFromActiveADC(statusADC, 2), NaN)
+End
+
+/// END AFH_GetHeadstageFromActiveADC
+/// @}

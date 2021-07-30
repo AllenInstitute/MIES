@@ -882,3 +882,30 @@ Function AFH_AddAnalysisParameter(string setName, string name, [variable var, st
 		return WB_AddAnalysisParameterIntoWPT(WPT, name, wv = wv)
 	endif
 End
+
+/// @brief Return the headstage from the given active AD count
+///
+/// @param statusADC     channel status as returned by GetLastSetting()
+/// @param activeADCount running number of active ADC's, starting at zero
+///
+/// @return headstage in the range [0, NUM_HEADSTAGES], or NaN if nothing could be found
+Function AFH_GetHeadstageFromActiveADC(WAVE/Z statusADC, variable activeADCount)
+	variable i, s
+
+	ASSERT(DimSize(statusADC, ROWS) == LABNOTEBOOK_LAYER_COUNT, "Invalid number of rows")
+	ASSERT(activeADCount >= 0 && activeADCount < NUM_AD_CHANNELS && IsInteger(activeADCount), "Invalid activeADCount")
+
+	if(!WaveExists(statusADC))
+		return NaN
+	endif
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(IsFinite(statusADC[i]) && s == activeADCount)
+			return i
+		endif
+
+		s += IsFinite(statusADC[i])
+	endfor
+
+	return NaN
+End
