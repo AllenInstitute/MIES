@@ -140,12 +140,6 @@ static Function/WAVE ExtractLBColumn(values, col, suffix)
 		// we want to have a pure 1D wave without any columns or layers, this is currently not possible with Duplicate
 		Redimension/N=-1 singleColumn
 
-		// redimension has the odd behaviour to change a wave with zero rows to one with 1 row and then initializes that point to zero
-		// we need to fix that
-		if(DimSize(singleColumn, ROWS) == 1 && !IsTextWave(singleColumn))
-			singleColumn = NaN
-		endif
-
 		if(!cmpstr(colName, "TimeStamp"))
 			SetScale d, 0, 0, "dat" singleColumn
 		endif
