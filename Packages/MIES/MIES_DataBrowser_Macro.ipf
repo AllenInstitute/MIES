@@ -18,7 +18,7 @@ Window DataBrowser() : Graph
 	Button button_BSP_open,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_BSP_open,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,hook(TA_CURSOR_MOVED)=TimeAlignCursorMovedHook
-	SetWindow kwTopWin,hook(cleanup)=DB_SweepBrowserWindowHook
+	SetWindow kwTopWin,hook(cleanup)=DB_WindowHook
 	SetWindow kwTopWin,hook(traceUserDataCleanup)=TUD_RemoveUserDataWave
 	SetWindow kwTopWin,userdata(BROWSER)= "D"
 	SetWindow kwTopWin,userdata(DEVICE)= "- none -"

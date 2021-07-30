@@ -15,7 +15,7 @@ Function/S DB_OpenDataBrowser()
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
 
-	SetWindow $win, hook(cleanup)=DB_SweepBrowserWindowHook
+	SetWindow $win, hook(cleanup)=DB_WindowHook
 
 	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	BSP_SetDataBrowser(win)
@@ -988,7 +988,7 @@ Function/S DB_FindDataBrowser(panelTitle)
 	return ""
 End
 
-Function DB_SweepBrowserWindowHook(s)
+Function DB_WindowHook(s)
 	STRUCT WMWinHookStruct &s
 
 	string win
