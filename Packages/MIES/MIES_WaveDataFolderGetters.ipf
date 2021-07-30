@@ -1059,6 +1059,11 @@ Function/S GetDevSpecLabNBFolderAsString(panelTitle)
 	endswitch
 End
 
+Function/WAVE DAQ_LBN_GETTER_PROTO(string win)
+
+	ASSERT(0, "Can not call prototype")
+End
+
 /// @brief Returns a wave reference to the text labnotebook
 ///
 /// Rows:
@@ -4769,6 +4774,10 @@ Function/Wave GetAnalysisConfigWave(dataFolder, device, sweep)
 	SetDimLabel COLS, 2, timeMS, wv
 
 	return wv
+End
+
+Function/WAVE ANALYSIS_LBN_GETTER_PROTO(string expFolder, string device)
+	ASSERT(0, "Can not call prototype function")
 End
 
 /// @brief Return the numerical labnotebook values in the analysis browser of a device and experiment pair

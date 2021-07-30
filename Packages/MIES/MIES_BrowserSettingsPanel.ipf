@@ -1178,62 +1178,57 @@ Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	return 0
 End
 
-/// @brief Generic numerical values labnotebook getter
+/// @brief Generic getter for labnotebook waves.
 ///
-/// Returns a wave reference wave by default, or the requested labnotebook wave
-/// when `sweepNumber` is present.
-Function/WAVE BSP_GetNumericalValues(string win, [variable sweepNumber])
+/// Works with Databrowser/Sweepbrowser
+///
+/// @param win               panel
+/// @param type              One of @ref LabnotebookWaveTypes
+/// @param sweepNumber       [optional] sweep number
+/// @param selectedExpDevice [optional, defaults to off] return the labnotebook for the selected experiment/device combination
+Function/WAVE BSP_GetLBNWave(string win, variable type, [variable sweepNumber, variable selectedExpDevice])
+	string shPanel, device, dataFolder
 
-	if(BSP_IsDataBrowser(win))
-		// for all sweep numbers the same LBN
-		if(ParamIsDefault(sweepNumber))
-			WAVE/Z sweeps = GetPlainSweepList(win)
-
-			if(!WaveExists(sweeps))
-				return $""
-			endif
-
-			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) numericalValuesWave = DB_GetNumericalValues(win)
-			return numericalValuesWave
-		else
-			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number in sweeps() wave")
-			return DB_GetNumericalValues(win)
-		endif
+	if(ParamIsDefault(selectedExpDevice))
+		selectedExpDevice = 0
 	else
-		if(ParamIsDefault(sweepNumber))
-			return SB_GetNumericalValuesWaves(win)
-		else
-			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number in sweeps() wave")
-			return SB_GetNumericalValuesWaves(win, sweepNumber = sweepNumber)
-		endif
+		selectedExpDevice = !!selectedExpDevice
 	endif
-End
-
-/// @brief Generic textual values labnotebook getter
-///
-/// Returns a wave reference wave by default, or the requested labnotebook wave
-/// when `sweepNumber` is present.
-Function/WAVE BSP_GetTextualValues(string win, [variable sweepNumber])
 
 	if(BSP_IsDataBrowser(win))
 		// for all sweep numbers the same LBN
-		if(ParamIsDefault(sweepNumber))
+		if(ParamIsDefault(sweepNumber) && !selectedExpDevice)
 			WAVE/Z sweeps = GetPlainSweepList(win)
 
 			if(!WaveExists(sweeps))
 				return $""
 			endif
 
-			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) textualValuesWave = DB_GetTextualValues(win)
-			return textualValuesWave
+			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) waves = DB_GetLBNWave(win, type)
+			return waves
+		elseif(selectedExpDevice)
+			return DB_GetLBNWave(win, type)
+		elseif(!ParamIsDefault(sweepNumber))
+			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number")
+			return DB_GetLBNWave(win, type)
 		else
-			return DB_GetTextualValues(win)
+			ASSERT(0, "Invalid parameter combination")
 		endif
 	else
-		if(ParamIsDefault(sweepNumber))
-			return SB_GetTextualValuesWaves(win)
+		if(ParamIsDefault(sweepNumber) && !selectedExpDevice)
+			return SB_GetLBNWave(win, type)
+		elseif(selectedExpDevice)
+			shPanel = DB_GetSettingsHistoryPanel(win)
+
+			dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
+			device = GetPopupMenuString(shPanel, "popup_Device")
+
+			return SB_GetLBNWave(win, type, dataFolder = dataFolder, device = device)
+		elseif(!ParamIsDefault(sweepNumber))
+			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number")
+			return SB_GetLBNWave(win, type, sweepNumber = sweepNumber)
 		else
-			return SB_GetTextualValuesWaves(win, sweepNumber = sweepNumber)
+			ASSERT(0, "Invalid parameter combination")
 		endif
 	endif
 End

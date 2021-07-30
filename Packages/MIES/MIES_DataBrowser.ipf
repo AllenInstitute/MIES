@@ -426,8 +426,8 @@ Function DB_UpdateSweepPlot(win)
 
 	device = BSP_GetDevice(win)
 
-	WAVE numericalValues = DB_GetNumericalValues(win)
-	WAVE textualValues   = DB_GetTextualValues(win)
+	WAVE numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
+	WAVE textualValues   = DB_GetLBNWave(win, LBN_TEXTUAL_VALUES)
 
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(win, OVS_SWEEP_SELECTION_SWEEPNO)
 
@@ -488,48 +488,36 @@ static Function DB_ClearGraph(win)
 	UpdateLBGraphLegend(graph)
 End
 
-/// @brief returns the MD numeric labnotebook values wave associated with the device of win
-Function/WAVE DB_GetNumericalValues(win)
-	string win
-
+/// @brief Return the labnotebook waves
+///
+/// The databrowser only knows about one experiment/device at a time
+/// so we don't need to specify what we return further.
+///
+/// @param win  panel
+/// @param type One of @ref LabnotebookWaveTypes
+Function/WAVE DB_GetLBNWave(string win, variable type)
 	string device
+
+	switch(type)
+		case LBN_NUMERICAL_KEYS:
+			FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBNumericalKeys
+			break
+		case LBN_NUMERICAL_VALUES:
+			FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBNumericalValues
+			break
+		case LBN_TEXTUAL_KEYS:
+			FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBTextualKeys
+			break
+		case LBN_TEXTUAL_VALUES:
+			FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBTextualValues
+			break
+		default:
+			ASSERT(0, "Invalid type")
+	endswitch
 
 	device = BSP_GetDevice(win)
 
-	return GetLBNumericalValues(device)
-End
-
-/// @brief returns the MD textual labnotebook values wave associated with the device of win
-Function/WAVE DB_GetTextualValues(win)
-	string win
-
-	string device
-
-	device = BSP_GetDevice(win)
-
-	return GetLBTextualValues(device)
-End
-
-/// @brief returns the MD numeric labnotebook keys wave associated with the device of win
-static Function/WAVE DB_GetNumericalKeys(win)
-	string win
-
-	string device
-
-	device = BSP_GetDevice(win)
-
-	return GetLBNumericalKeys(device)
-End
-
-/// @brief returns the MD textual labnotebook keys wave associated with the device of win
-static Function/WAVE DB_GetTextualKeys(win)
-	string win
-
-	string device
-
-	device = BSP_GetDevice(win)
-
-	return GetLBTextualKeys(device)
+	return func(device)
 End
 
 Function DB_UpdateToLastSweep(win)
@@ -596,8 +584,9 @@ static Function/WAVE DB_GetLBKeys(mainPanel)
 	variable s
 	variable existText, existNum
 
-	WAVE/Z/T textualKeys = GetLabNotebookKeys(DB_GetTextualKeys(mainPanel))
-	WAVE/Z/T numericalKeys = GetLabNotebookKeys(DB_GetNumericalKeys(mainPanel))
+	WAVE/Z/T textualKeys = GetLabNotebookKeys(DB_GetLBNWave(mainPanel, LBN_TEXTUAL_KEYS))
+	WAVE/Z/T numericalKeys = GetLabNotebookKeys(DB_GetLBNWave(mainPanel, LBN_NUMERICAL_KEYS))
+
 	existText = WaveExists(textualKeys)
 	existNum = WaveExists(numericalKeys)
 	if(existText && existNum)
@@ -659,8 +648,8 @@ static Function DB_UpdateTagsForTextualLBNEntries(string databrowser, variable s
 
 	lbGraph = DB_GetLabNotebookGraph(databrowser)
 
-	WAVE/T textualValues = DB_GetTextualValues(databrowser)
-	WAVE/T textualKeys   = DB_GetTextualKeys(databrowser)
+	WAVE textualValues = DB_GetLBNWave(databrowser, LBN_TEXTUAL_VALUES)
+	WAVE textualKeys   = DB_GetLBNWave(databrowser, LBN_TEXTUAL_KEYS)
 
 	traceList = TraceNameList(lbGraph, ";", 0 + 1)
 	numTraces = ItemsInList(traceList)
@@ -761,11 +750,11 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 
 			lnbType = DB_GetLNBKeyEntryType(win, popStr)
 			if(lnbType == LNB_TYPE_NUMERICAL)
-				WAVE values = DB_GetNumericalValues(win)
-				WAVE keys   = DB_GetNumericalKeys(win)
+				WAVE values = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
+				WAVE keys = DB_GetLBNWave(win, LBN_NUMERICAL_KEYS)
 			elseif(lnbType == LNB_TYPE_TEXTUAL)
-				WAVE values = DB_GetTextualValues(win)
-				WAVE keys   = DB_GetTextualKeys(win)
+				WAVE values = DB_GetLBNWave(win, LBN_TEXTUAL_VALUES)
+				WAVE keys = DB_GetLBNWave(win, LBN_TEXTUAL_KEYS)
 			else
 				ASSERT(0, "Unknown key in this labnotebook")
 			endif
@@ -822,11 +811,11 @@ Function DB_GetLNBKeyEntryType(panelTitle, key)
 
 	variable col
 
-   col = FindDimLabel(DB_GetNumericalValues(panelTitle), COLS, key)
+   col = FindDimLabel(DB_GetLBNWave(panelTitle, LBN_NUMERICAL_VALUES), COLS, key)
    if(col >= 0)
 	   return LNB_TYPE_NUMERICAL
    endif
-   col = FindDimLabel(DB_GetTextualValues(panelTitle), COLS, key)
+   col = FindDimLabel(DB_GetLBNWave(panelTitle, LBN_TEXTUAL_VALUES), COLS, key)
    if(col >= 0)
 	   return LNB_TYPE_TEXTUAL
    endif
@@ -855,8 +844,9 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 			if(!BSP_HasBoundDevice(win))
 				break
 			endif
-			WAVE numericalValues = DB_GetNumericalValues(win)
-			WAVE textualValues   = DB_GetTextualValues(win)
+
+			WAVE numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
+			WAVE textualValues   = DB_GetLBNWave(win, LBN_TEXTUAL_VALUES)
 
 			lbGraph = DB_GetLabNoteBookGraph(win)
 			SwitchLBGraphXAxis(lbGraph, numericalValues, textualValues)
@@ -879,8 +869,8 @@ Function DB_AddSweepToGraph(string win, variable index[, STRUCT BufferedDrawInfo
 	graph  = GetMainWindow(win)
 	device = BSP_GetDevice(win)
 
-	WAVE numericalValues = DB_GetNumericalValues(win)
-	WAVE textualValues   = DB_GetTextualValues(win)
+	WAVE/Z numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
+	WAVE/Z textualValues   = DB_GetLBNWave(win, LBN_TEXTUAL_VALUES)
 
 	[tgs] = BSP_GatherTiledGraphSettings(graph)
 	[sweepNo, experiment] = OVS_GetSweepAndExperiment(win, index)
@@ -957,7 +947,7 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 	KillOrMoveToTrash(dfr = singleSweepDFR)
 	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 
-	WAVE numericalValues = DB_GetNumericalValues(win)
+	WAVE numericalValues = DB_GetLBNWave(win, LBN_NUMERICAL_VALUES)
 
 	SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, targetDFR=singleSweepDFR)
 End

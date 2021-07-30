@@ -1545,3 +1545,12 @@ Constant POPUPMENULIST_TYPE_OTHER   = 0x2 // everything else
 Constant LBT_LABNOTEBOOK = 0x1
 Constant LBT_TPSTORAGE   = 0x2
 /// @}
+
+/// @name Possible labnotebook wave types
+/// @anchor LabnotebookWaveTypes
+/// @{
+Constant LBN_NUMERICAL_KEYS   = 0x1
+Constant LBN_NUMERICAL_VALUES = 0x2
+Constant LBN_TEXTUAL_KEYS     = 0x4
+Constant LBN_TEXTUAL_VALUES   = 0x8
+/// @}

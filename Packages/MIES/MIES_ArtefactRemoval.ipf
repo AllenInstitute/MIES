@@ -382,7 +382,7 @@ Function AR_UpdateTracesIfReq(graph, sweepFolder, sweepNo)
 		return NaN
 	endif
 
-	WAVE numericalValues = BSP_GetNumericalValues(graph, sweepNumber = sweepNo)
+	WAVE numericalValues = BSP_GetLBNWave(panelTitle, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
 
 	DFREF singleSweepDFR = GetSingleSweepFolder(sweepFolder, sweepNo)
 	WAVE ranges = AR_ComputeRanges(singleSweepDFR, sweepNo, numericalValues)
