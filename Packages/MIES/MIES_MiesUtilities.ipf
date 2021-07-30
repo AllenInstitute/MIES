@@ -87,78 +87,133 @@ Function HorizExpandWithVisX()
 	GetMarquee/K/W=$graph
 End
 
-/// @brief Extract the date/time column of the labnotebook values wave
-Function/WAVE ExtractLBColumnTimeStamp(values)
-	WAVE values
+/// @brief Return the logbook type, one of @ref LogbookTypes
+Function GetLogbookType(WAVE wv)
 
-	return ExtractLBColumn(values, 1, "Dat")
+	return GrepString(NameOfWave(wv), TP_STORAGE_REGEXP) == 1 ? LBT_TPSTORAGE : LBT_LABNOTEBOOK
 End
 
-/// @brief Extract the sweep number column of the labnotebook values wave
-Function/WAVE ExtractLBColumnSweep(values)
-	WAVE values
+/// @brief Extract a date/time slice of the logbook wave
+Function/WAVE ExtractLogbookSliceTimeStamp(WAVE logbook)
 
-	return ExtractLBColumn(values, 0, "Sweep")
+	variable colOrLayer, logbookType
+
+	logbookType = GetLogbookType(logbook)
+
+	switch(logbookType)
+		case LBT_LABNOTEBOOK:
+			colOrLayer = 1
+			break
+		case LBT_TPSTORAGE:
+			colOrLayer = FindDimLabel(logbook, LAYERS, "TimeStampSinceIgorEpochUTC")
+			break
+		default:
+			ASSERT(0, "Invalid logbook type")
+	endswitch
+
+	return ExtractLogbookSlice(logbook, logbookType, colOrLayer, "Dat")
 End
 
-/// @brief Extract a column of the labnotebook values wave and makes it empty
-Function/WAVE ExtractLBColumnEmpty(values)
-	WAVE values
+/// @brief Extract the delta time slice of the logbook wave
+Function/WAVE ExtractLogbookSliceDeltaTime(WAVE logbook)
 
-	WAVE wv = ExtractLBColumn(values, 0, "Null")
+	variable colOrLayer, logbookType
+
+	logbookType = GetLogbookType(logbook)
+
+	switch(logbookType)
+		case LBT_LABNOTEBOOK:
+			ASSERT(0, "Unsupported")
+			break
+		case LBT_TPSTORAGE:
+			colOrLayer = FindDimLabel(logbook, LAYERS, "DeltaTime")
+			break
+		default:
+			ASSERT(0, "Invalid logbook type")
+	endswitch
+
+	return ExtractLogbookSlice(logbook, logbookType, colOrLayer, "DeltaTime")
+End
+
+/// @brief Extract the sweep number slice of the labnotebook values wave
+Function/WAVE ExtractLogbookSliceSweep(WAVE values)
+
+	return ExtractLogbookSlice(values, GetLogbookType(values), 0, "Sweep")
+End
+
+/// @brief Extract a slice of the logbook wave and makes it empty
+Function/WAVE ExtractLogbookSliceEmpty(WAVE values)
+
+	WAVE wv = ExtractLogbookSlice(values, GetLogbookType(values), 0, "Null")
 	wv = 0
 
 	return wv
 End
 
-/// @brief Extract a single column of the labnotebook values wave
+/// @brief Extract a single column/layer of the labnotebook/TPStorage values wave
 ///
 /// This is useful if you want to plot values against e.g time and let
 /// Igor do the formatting of the date/time values.
 /// Always returns a numerical wave.
-static Function/WAVE ExtractLBColumn(values, col, suffix)
-	WAVE values
-	variable col
-	string suffix
-
-	string name, colName
-	variable nextRowIndex
+static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, variable colOrLayer, string suffix)
+	string name, entryName
+	variable nextRowIndex, col, layer
 
 	// we can't use the GetDevSpecLabNBTempFolder getter as we are
 	// called from the analysisbrowser as well.
-	DFREF dfr = createDFWithAllParents(GetWavesDataFolder(values, 1) + "Temp")
-	colName = GetDimLabel(values, COLS, col)
-	ASSERT(!isEmpty(colName), "colName must not be empty")
-	name = NameOfWave(values) + suffix
-	WAVE/Z/SDFR=dfr singleColumn = $name
+	DFREF dfr = createDFWithAllParents(GetWavesDataFolder(logbook, 1) + "Temp")
 
-	nextRowIndex = GetNumberFromWaveNote(values, NOTE_INDEX)
+	switch(logbookType)
+		case LBT_LABNOTEBOOK:
+			entryName = GetDimLabel(logbook, COLS, colOrLayer)
+			col   = colOrLayer
+			layer = -1
+			break
+		case LBT_TPSTORAGE:
+			entryName = GetDimLabel(logbook, LAYERS, colOrLayer)
+			col   = -1
+			layer = colOrLayer
+			break
+		default:
+			ASSERT(0, "Invalid logbook type")
+	endswitch
 
-	if(!WaveExists(singleColumn) || DimSize(singleColumn, ROWS) != DimSize(values, ROWS) || DimSize(singleColumn, ROWS) < nextRowIndex || (nextRowIndex > 0 && !IsFinite(singleColumn[nextRowIndex - 1])))
-		KillOrMoveToTrash(wv=singleColumn)
-		Duplicate/O/R=[0, DimSize(values, ROWS)][col][-1][-1] values, dfr:$name/Wave=singleColumn
+	ASSERT(!isEmpty(entryName), "entryName must not be empty")
+	name = NameOfWave(logbook) + CleanupName(suffix, 0)
+	WAVE/Z/SDFR=dfr slice = $name
+
+	nextRowIndex = GetNumberFromWaveNote(logbook, NOTE_INDEX)
+
+	if(!WaveExists(slice)                                           \
+	   || DimSize(slice, ROWS) != DimSize(logbook, ROWS)            \
+	   || DimSize(slice, ROWS) < nextRowIndex                       \
+	   || (nextRowIndex > 0 && !IsFinite(slice[nextRowIndex - 1])))
+
+		KillOrMoveToTrash(wv=slice)
+		Duplicate/O/R=[0, DimSize(logbook, ROWS)][col][layer][-1] logbook, dfr:$name/Wave=slice
+
 		// we want to have a pure 1D wave without any columns or layers, this is currently not possible with Duplicate
-		Redimension/N=-1 singleColumn
+		Redimension/N=-1 slice
 
-		if(!cmpstr(colName, "TimeStamp"))
-			SetScale d, 0, 0, "dat" singleColumn
+		if(!cmpstr(entryName, "TimeStamp") || !cmpstr(entryName, "TimeStampSinceIgorEpochUTC"))
+			SetScale d, 0, 0, "dat" slice
 		endif
 
-		SetDimLabel ROWS, -1, $colName, singleColumn
+		SetDimLabel ROWS, -1, $entryName, slice
 	endif
 
-	SetNumberInWaveNote(singleColumn, NOTE_INDEX, nextRowIndex)
+	SetNumberInWaveNote(slice, NOTE_INDEX, nextRowIndex)
 
-	if(IsTextWave(singleColumn))
-		WAVE/T singleColumnFree = MakeWaveFree(singleColumn)
-		Make/O/D/N=(DimSize(singleColumnFree, ROWS), DimSize(singleColumnFree, COLS), DimSize(singleColumnFree, LAYERS), DimSize(singleColumnFree, CHUNKS)) dfr:$name/Wave=singleColumnFromText
-		CopyScales singleColumnFree, singleColumnFromText
-		Note/K singleColumnFromText, note(singleColumnFree)
-		singleColumnFromText = str2num(singleColumnFree)
-		return singleColumnFromText
+	if(IsTextWave(slice))
+		WAVE/T sliceFree = MakeWaveFree(slice)
+		Make/O/D/N=(DimSize(sliceFree, ROWS), DimSize(sliceFree, COLS), DimSize(sliceFree, LAYERS), DimSize(sliceFree, CHUNKS)) dfr:$name/Wave=sliceFromText
+		CopyScales sliceFree, sliceFromText
+		Note/K sliceFromText, note(sliceFree)
+		sliceFromText = str2num(sliceFree)
+		return sliceFromText
 	endif
 
-	return singleColumn
+	return slice
 End
 
 /// @brief Return a list of the AD channels from the DAQ config
@@ -3371,7 +3426,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 		return NaN
 	endif
 
-	WAVE valuesDat = ExtractLBColumnTimeStamp(values)
+	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
 
 	isTimeAxis = CheckIfXAxisIsTime(graph)
 	isTextData = IsTextWave(values)
@@ -3380,8 +3435,8 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 	axis = GetNextFreeAxisName(graph, VERT_AXIS_BASE_NAME)
 
 	if(IsTextData)
-		WAVE valuesNull  = ExtractLBColumnEmpty(values)
-		WAVE valuesSweep = ExtractLBColumnSweep(values)
+		WAVE valuesNull  = ExtractLogbookSliceEmpty(values)
+		WAVE valuesSweep = ExtractLogbookSliceSweep(values)
 	endif
 
 	for(i = 0; i < LABNOTEBOOK_LAYER_COUNT; i += 1)
@@ -3467,8 +3522,8 @@ Function AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/T values, s
 		return NaN
 	endif
 
-	WAVE valuesSweep = ExtractLBColumnSweep(values)
-	WAVE valuesDat = ExtractLBColumnTimeStamp(values)
+	WAVE valuesSweep = ExtractLogbookSliceSweep(values)
+	WAVE valuesDat   = ExtractLogbookSliceTimeStamp(values)
 
 	isTimeAxis = CheckIfXAxisIsTime(graph)
 	sweepCol   = GetSweepColumn(values)
@@ -3532,10 +3587,10 @@ Function SwitchLBGraphXAxis(graph, numericalValues, textualValues)
 		return NaN
 	endif
 
-	WAVE numericalValuesDat     = ExtractLBColumnTimeStamp(numericalValues)
+	WAVE numericalValuesDat     = ExtractLogbookSliceTimeStamp(numericalValues)
 	WAVE/Z numericalValuesSweep = $""
-	WAVE textualValuesDat        = ExtractLBColumnTimeStamp(textualValues)
-	WAVE textualValuesSweep      = ExtractLBColumnSweep(textualValues)
+	WAVE textualValuesDat       = ExtractLogbookSliceTimeStamp(textualValues)
+	WAVE textualValuesSweep     = ExtractLogbookSliceSweep(textualValues)
 
 	isTimeAxis = CheckIfXAxisIsTime(graph)
 	sweepCol   = GetSweepColumn(numericalValues)

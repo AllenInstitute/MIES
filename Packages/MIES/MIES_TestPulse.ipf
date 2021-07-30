@@ -490,6 +490,10 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 
 	TP_AnalyzeTP(panelTitle, TPStorage, count)
 
+	WAVE TPStorageDat = ExtractLogbookSliceTimeStamp(TPStorage)
+	EnsureLargeEnoughWave(TPStorageDat, minimumSize=count, dimension=ROWS, initialValue=NaN)
+	TPStorageDat[count][] = TPStorage[count][q][%TimeStampSinceIgorEpochUTC]
+
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
 End
 

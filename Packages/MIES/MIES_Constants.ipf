@@ -1538,3 +1538,10 @@ StrConstant WAVEBUILDER_TRIGGER_TYPES = "Sin;Cos"
 Constant POPUPMENULIST_TYPE_BUILTIN = 0x1 // COLORTABLEPOP, etc.
 Constant POPUPMENULIST_TYPE_OTHER   = 0x2 // everything else
 /// @}
+
+/// @name Possible log book types
+/// @anchor LogbookTypes
+/// @{
+Constant LBT_LABNOTEBOOK = 0x1
+Constant LBT_TPSTORAGE   = 0x2
+/// @}
