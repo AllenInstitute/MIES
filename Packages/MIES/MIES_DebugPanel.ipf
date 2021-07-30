@@ -143,6 +143,8 @@ Function DP_WindowHook(s)
 			SetCheckBoxState(PANEL, "check_debug_mode",  debugMode == 1)
 			break
 	endswitch
+
+	return 0
 End
 
 Function DP_CheckProc_Debug(cba) : CheckBoxControl
