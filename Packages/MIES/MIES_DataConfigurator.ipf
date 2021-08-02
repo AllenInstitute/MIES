@@ -2455,7 +2455,7 @@ static Function DC_SortEpochs(panelTitle)
 			col1 = FindDimLabel(epochChannel, COLS, "EndTime")
 			col2 = FindDimLabel(epochChannel, COLS, "TreeLevel")
 			ASSERT(col0 >= 0 && col1 >= 0 && col2 >= 0, "Column in epochChannel wave not found")
-			MDSort(epochChannel, col0, keyColSecondary = col1, keyColTertiary = col2)
+			SortColumns/DIML/KNDX={col0, col1, col2} sortWaves={epochChannel}
 			epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
 			epochWave[, epochCnt - 1][][channel] = epochChannel[p][q]
 		endif
