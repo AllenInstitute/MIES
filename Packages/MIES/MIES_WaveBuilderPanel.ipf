@@ -284,8 +284,7 @@ static Function WBP_DisplaySetInPanel()
 		ModifyGraph/W=$waveBuilderGraph rgb($trace) = (s.red, s.green, s.blue)
 	endfor
 
-	maxYValue = WaveMax(displayData)
-	minYValue = WaveMin(displayData)
+	[minYValue, maxYValue] = WaveMinAndMaxWrapper(displayData)
 
 	if(maxYValue == minYValue)
 		maxYValue = 1e-12

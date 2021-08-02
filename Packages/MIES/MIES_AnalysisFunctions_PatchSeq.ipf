@@ -817,8 +817,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		last  = searchEnd
 	else
 		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_DAC, config = config)
-		minVal = WaveMin(singleDA, offset, inf)
-		maxVal = WaveMax(singleDA, offset, inf)
+		[minVal, maxVal] = WaveMinAndMaxWrapper(singleDA, x1 = offset, x2 = inf)
 
 		if(minVal == 0 && maxVal == 0)
 			if(type == PSQ_SQUARE_PULSE)

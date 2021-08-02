@@ -389,7 +389,7 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 	variable col, val, forwardORBackward, entrySourceType
 	variable &first, &last
 
-	variable numRows, i, sourceTypeCol
+	variable numRows, i, sourceTypeCol, firstRow, lastRow
 
 	first = NaN
 	last  = NaN
@@ -410,7 +410,8 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 		sourceTypeCol = FindDimLabel(wv, COLS, "EntrySourceType")
 
 		if(sourceTypeCol >= 0) // labnotebook has a entrySourceType column
-			WAVE/Z indizesSourceType = FindIndizes(wv, col=sourceTypeCol, var=entrySourceType, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting))
+			[firstRow, lastRow] = WaveMinAndMaxWrapper(indizesSetting)
+			WAVE/Z indizesSourceType = FindIndizes(wv, col=sourceTypeCol, var=entrySourceType, startRow = firstRow, endRow = lastRow)
 
 			// we don't have an entry source type in the labnotebook set
 			// throw away entries which are obviously from a different (guessed) entry source type
@@ -419,7 +420,7 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 
 					// "TP Peak Resistance" introduced in 666d761a (TP documenting is implemented using David Reid's documenting functions, 2014-07-28)
 					if(FindDimLabel(wv, COLS, "TP Peak Resistance") >= 0)
-						WAVE/Z indizesDefinitlyTP = FindIndizes(wv, colLabel="TP Peak Resistance", prop=PROP_NON_EMPTY, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting), startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
+						WAVE/Z indizesDefinitlyTP = FindIndizes(wv, colLabel="TP Peak Resistance", prop=PROP_NON_EMPTY, startRow = firstRow, endRow = lastRow, startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
 						if(WaveExists(indizesDefinitlyTP) && WaveExists(indizesSetting))
 							WAVE/Z indizesSettingRemoved = GetSetDifference(indizesSetting, indizesDefinitlyTP)
 							WAVE/Z indizesSetting = indizesSettingRemoved
@@ -428,7 +429,7 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 
 					// "TP Baseline Fraction" introduced in 4f4649a2 (Document the testpulse settings in the labnotebook, 2015-07-28)
 					if(FindDimLabel(wv, COLS, "TP Baseline Fraction") >= 0)
-						WAVE/Z indizesDefinitlyTP = FindIndizes(wv, colLabel="TP Baseline Fraction", prop=PROP_NON_EMPTY, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting), startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
+						WAVE/Z indizesDefinitlyTP = FindIndizes(wv, colLabel="TP Baseline Fraction", prop=PROP_NON_EMPTY, startRow = firstRow, endRow = lastRow, startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
 						if(WaveExists(indizesDefinitlyTP) && WaveExists(indizesSetting))
 							WAVE/Z indizesSettingRemoved = GetSetDifference(indizesSetting, indizesDefinitlyTP)
 							WAVE/Z indizesSetting = indizesSettingRemoved
@@ -2002,7 +2003,7 @@ threadsafe Function GetSamplingInterval(config)
 	Duplicate/D/R=[][2]/FREE config samplingInterval
 
 	// The sampling interval is the same for all channels
-	ASSERT_TS(WaveMax(samplingInterval) == WaveMin(samplingInterval),"Expected constant sample interval for all channels")
+	ASSERT_TS(IsConstant(samplingInterval, samplingInterval[0]), "Expected constant sample interval for all channels")
 	return samplingInterval[0]
 End
 
@@ -2015,7 +2016,7 @@ threadsafe Function GetDataOffset(config)
 	Duplicate/D/R=[][4]/FREE config, offsets
 
 	// The data offset is the same for all channels
-	ASSERT_TS(WaveMax(offsets) == WaveMin(offsets), "Expected constant data offset for all channels")
+	ASSERT_TS(IsConstant(offsets, offsets[0]), "Expected constant data offset for all channels")
 	return offsets[0]
 End
 
@@ -6115,8 +6116,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		first = totalOnsetDelay
 		last  = IndexToScale(DA, DimSize(DA, ROWS) - 1, ROWS)
 
-		low  = WaveMin(DA, first, last)
-		high = WaveMax(DA, first, last)
+		[low, high] = WaveMinAndMaxWrapper(DA, x1 = first, x2 = last)
 
 		level = low + 0.1 * (high - low)
 

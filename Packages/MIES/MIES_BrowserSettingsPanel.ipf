@@ -982,7 +982,7 @@ Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, statusHS, numericalV
 
 	variable numADCs, numDACs, i
 
-	if(WaveMin(channelSel) == 1 && WaveMax(channelSel) == 1)
+	if(IsConstant(channelSel, channelSel[0]))
 		return NaN
 	endif
 

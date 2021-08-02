@@ -1391,7 +1391,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		// dDAQ requires that all stimsets have the same length, so store the stim set length
 		// also headstage independent
 		ASSERT(!distributedDAQOptOv, "Unexpected oodDAQ mode")
-		ASSERT(WaveMin(setLength) == WaveMax(setLength), "Unexpected varying stim set length")
+		ASSERT(IsConstant(setLength, setLength[0]), "Unexpected varying stim set length")
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, NaN, var=setLength[0])
 	endif
 
