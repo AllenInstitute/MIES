@@ -539,13 +539,13 @@ Constant AS_NUM_STATES       = 9
 /// @name Event types for analysis functions
 /// @anchor EVENT_TYPE_ANALYSIS_FUNCTIONS
 /// @{
-Constant PRE_DAQ_EVENT    = 0
-Constant MID_SWEEP_EVENT  = 1
-Constant POST_SWEEP_EVENT = 2
-Constant POST_SET_EVENT   = 3
-Constant POST_DAQ_EVENT   = 4
-Constant PRE_SWEEP_EVENT  = 5
-Constant PRE_SET_EVENT    = 7
+Constant PRE_DAQ_EVENT          = 0
+Constant MID_SWEEP_EVENT        = 1
+Constant POST_SWEEP_EVENT       = 2
+Constant POST_SET_EVENT         = 3
+Constant POST_DAQ_EVENT         = 4
+Constant PRE_SWEEP_CONFIG_EVENT = 5
+Constant PRE_SET_EVENT          = 7
 /// @}
 
 Constant GENERIC_EVENT = 6 ///< Only used for internal bookkeeping. Never
@@ -562,10 +562,10 @@ StrConstant ANALYSIS_FUNCTION_PARAMS_LBN = "Function params (encoded)"
 StrConstant ANALYSIS_FUNCTION_PARAMS_STIMSET = "Function params (encoded)"
 
 /// Human readable names for @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
-StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ;Pre Sweep;Generic;Pre Set"
+StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ;Pre Sweep Config;Generic;Pre Set"
 
 /// Labnotebook entries
-StrConstant EVENT_NAME_LIST_LBN = "Pre DAQ function;Mid Sweep function;Post Sweep function;Post Set function;Post DAQ function;Pre Sweep function;Generic function;Pre Set function"
+StrConstant EVENT_NAME_LIST_LBN = "Pre DAQ function;Mid Sweep function;Post Sweep function;Post Set function;Post DAQ function;Pre Sweep Config function;Generic function;Pre Set function"
 
 /// List of valid analysis function types
 /// @anchor AnalysisFunctionParameterTypes

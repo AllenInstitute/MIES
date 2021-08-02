@@ -483,3 +483,40 @@ static Function SC_SetControls8_REENTRY([str])
 	actual = GetNotebookText(str + "#UserComments#NB")
 	CHECK_EQUAL_STR(expected, actual)
 End
+
+static Function SC_SetControls9_Setter(device)
+	string device
+
+	Make/FREE/T/N=2 wv
+
+	wv[] = {"Pre Sweep", "47"}
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_TPBaselinePerc", wv = wv)
+
+	wv[] = {"Pre Sweep Config", "10"}
+	AFH_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "setvar_DataAcq_OnsetDelayUser", wv = wv)
+End
+
+// supports "Pre Sweep" (old) and "Pre Sweep Config" (new)
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function SC_SetControls9([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AnalysisFunctionTesting#AcquireData(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = SC_SetControls9_Setter)
+End
+
+static Function SC_SetControls9_REENTRY([str])
+	string str
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_DataAcq_TPBaselinePerc"), 47)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "setvar_DataAcq_OnsetDelayUser"), 10)
+End

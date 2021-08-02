@@ -1056,7 +1056,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[3][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SET_EVENT, EVENT_NAME_LIST), str=WPT[4][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[5][%Set][INDEP_EPOCH_TYPE])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[8][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST), str=WPT[8][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(GENERIC_EVENT, EVENT_NAME_LIST), str=WPT[9][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST), str=WPT[27][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, ANALYSIS_FUNCTION_PARAMS_STIMSET, str=WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE])

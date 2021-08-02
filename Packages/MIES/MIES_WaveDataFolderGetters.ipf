@@ -2209,7 +2209,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][7]  = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
 	wv[0][8]  = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
 	wv[0][9]  = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	wv[0][10] = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
+	wv[0][10] = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST_LBN)
 	wv[0][11] = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 	wv[0][12] = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
 	wv[0][13] = ANALYSIS_FUNCTION_PARAMS_LBN
@@ -3522,6 +3522,7 @@ static Function AddDimLabelsToWPT(wv)
 	SetDimLabel ROWS, 5 , $("Analysis post DAQ function")    , wv
 	SetDimLabel ROWS, 6 , $("Combine epoch formula")         , wv
 	SetDimLabel ROWS, 7 , $("Combine epoch formula version") , wv
+	// not renamed as this is v1/v2 only and therefore deprecated already
 	SetDimLabel ROWS, 8 , $("Analysis pre sweep function")   , wv
 	SetDimLabel ROWS, 9 , $("Analysis function (generic)")   , wv
 	// empty: was "Analysis function params"

@@ -22,25 +22,25 @@
 ///    :width: 300 px
 ///    :align: center
 ///
-/// =========== ============================================== ===============================================================
-/// Event        Description                                    Specialities
-/// =========== ============================================== ===============================================================
-/// Pre DAQ      Before any DAQ occurs                          Called before the settings are validated completely, only the
-///                                                             analysis parameters are validated if present. With Indexing ON,
-///                                                             only the analysis function of the first stimset will receive
-///                                                             that event.
-/// Mid Sweep    Each time when new data is polled              Available for background DAQ only.
-///                                                             Will always be called at least once and
-///                                                             also with the full stimset acquired.
-/// Pre Sweep    Immediately before the sweep starts            None
-/// Pre Set      Before a new set starts                        None
-/// Post Sweep   After each sweep (before possible ITI pause)   None
-/// Post Set     After a *full* set has been acquired           This event is not always reached as the user might not acquire
-///                                                             all steps of a set. With indexing, locked and unlocked, only
-///                                                             the post set events for fully acquired stimsets are reached.
-/// Post DAQ     After DAQ has finished and before potential    None
-///              "TP after DAQ"
-/// =========== ============================================== ===============================================================
+/// =================== ============================================== ===============================================================
+/// Event                Description                                    Specialities
+/// =================== ============================================== ===============================================================
+/// Pre DAQ              Before any DAQ occurs                          Called before the settings are validated completely, only the
+///                                                                     analysis parameters are validated if present. With Indexing ON,
+///                                                                     only the analysis function of the first stimset will receive
+///                                                                     that event.
+/// Mid Sweep            Each time when new data is polled              Available for background DAQ only.
+///                                                                     Will always be called at least once and
+///                                                                     also with the full stimset acquired.
+/// Pre Sweep Config     Before the sweep is configured                 None
+/// Pre Set              Before a new set starts                        None
+/// Post Sweep           After each sweep (before possible ITI pause)   None
+/// Post Set             After a *full* set has been acquired           This event is not always reached as the user might not acquire
+///                                                                     all steps of a set. With indexing, locked and unlocked, only
+///                                                                     the post set events for fully acquired stimsets are reached.
+/// Post DAQ             After DAQ has finished and before potential    None
+///                      "TP after DAQ"
+/// =================== ============================================== ===============================================================
 ///
 /// \endrst
 ///
@@ -60,20 +60,21 @@
 ///
 /// \rst
 ///
-/// ======================================== ============= ============================================================================================
-/// Value                                    Event Types   Action
-/// ======================================== ============= ============================================================================================
-/// NaN                                      All           Nothing
-/// 0                                        All           Nothing
-/// 1                                        Pre DAQ       DAQ is prevented to start
-/// 1                                        Pre Set       DAQ is stopped
-/// :cpp:var:`ANALYSIS_FUNC_RET_REPURP_TIME` Mid Sweep     Current sweep is immediately stopped. Left over time is repurposed for ITI.
-/// :cpp:var:`ANALYSIS_FUNC_RET_EARLY_STOP`  Mid Sweep     Current sweep is immediately stopped without honouring the left over time in a special way.
-/// ======================================== ============= ============================================================================================
+/// ======================================== ================= ============================================================================================
+/// Value                                    Event Types       Action
+/// ======================================== ================= ============================================================================================
+/// NaN                                      All               Nothing
+/// 0                                        All               Nothing
+/// 1                                        Pre DAQ           DAQ is prevented to start
+/// 1                                        Pre Set           DAQ is stopped
+/// 1                                        Pre Sweep Config  DAQ is stopped
+/// :cpp:var:`ANALYSIS_FUNC_RET_REPURP_TIME` Mid Sweep         Current sweep is immediately stopped. Left over time is repurposed for ITI.
+/// :cpp:var:`ANALYSIS_FUNC_RET_EARLY_STOP`  Mid Sweep         Current sweep is immediately stopped without honouring the left over time in a special way.
+/// ======================================== ================= ============================================================================================
 ///
 /// \endrst
 ///
-/// @anchor AnalysisFunctionParameters Analayis function user parameters (V3 only)
+/// @anchor AnalysisFunctionParameters Analysis function user parameters (V3 only)
 ///
 /// For some analysis functions it is beneficial to send in additional data
 /// depending on the stimset. This is supported by adding parameters and their
@@ -237,8 +238,9 @@ Function TestAnalysisFunction_V3(panelTitle, s)
 			// code
 			// can also return with != 0, see @ref AnalysisFunction_V3DescriptionTable
 			break
-		case PRE_SWEEP_EVENT:
+		case PRE_SWEEP_CONFIG_EVENT:
 			// code
+			// can also return with != 0, see @ref AnalysisFunction_V3DescriptionTable
 			break
 		case PRE_SET_EVENT:
 			// code
@@ -1351,6 +1353,12 @@ Function SetControlInEvent(panelTitle, s)
 
 			// check given event type
 			event = data[j]
+
+			// backwards compatibility
+			if(!cmpstr(event, "Pre Sweep"))
+				printf "(%s): The analysis parameter's %s event \"%s\" is deprecated. Please use the new name \"%s\" and see the documentation for it's slightly different properties.\r", panelTitle, guiElem, event, StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST)
+				event = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST)
+			endif
 
 			if(WhichListItem(event, EVENT_NAME_LIST, ";", 0, 0) == -1 || WhichListItem(event, "Mid Sweep;Generic", ";", 0, 0) != -1)
 				printf "(%s): The analysis parameter's %s event \"%s\" is invalid.\r", panelTitle, guiElem, event

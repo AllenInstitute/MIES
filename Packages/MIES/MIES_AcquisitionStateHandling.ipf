@@ -94,10 +94,10 @@ Function AS_HandlePossibleTransition(string panelTitle, variable newAcqState, [v
 			return AFM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT)
 			break
 		case AS_PRE_SWEEP_CONFIG:
-			// do nothing
+			return AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_CONFIG_EVENT)
 			break
 		case AS_PRE_SWEEP:
-			return AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
+			// nothing to do
 			break
 		case AS_MID_SWEEP:
 			if(oldAcqState == AS_MID_SWEEP)
