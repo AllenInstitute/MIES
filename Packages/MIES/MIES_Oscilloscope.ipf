@@ -624,7 +624,7 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 	string panelTitle
 	variable dataAcqOrTP, deviceID, fifoPos
 
-	variable i, channel, decMethod, decFactor
+	variable i, channel, decMethod, decFactor, gain, numCols
 	string fifoName
 
 	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
@@ -637,7 +637,7 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		// update a full pulse
 		for(i = 0; i < V_FIFOnchans; i += 1)
-			channel = str2num(StringByKey("NAME" + num2str(i), S_Info))
+			channel = NumberByKey("NAME" + num2str(i), S_Info)
 			WAVE NIChannel = NIDataWave[channel]
 			multithread OscilloscopeData[][channel] = NIChannel[p]
 			Multithread scaledDataWave[][] = OscilloscopeData
@@ -648,13 +648,19 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
 
 		WAVE allGain = SWS_GetChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)
-		Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][] = WaveRef(NIDataWave[q])[p] / allGain[q]
+		numCols = DimSize(scaledDataWave, COLS)
+		for(i = 0; i < numCols; i += 1)
+			WAVE NIChannel = NIDataWave[i]
+
+			gain = allGain[i]
+			Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][i] = NIChannel[p] / gain
+		endfor
 
 		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
 		decFactor = GetNumberFromWaveNote(OscilloscopeData, "DecimationFactor")
 
 		for(i = 0; i < V_FIFOnchans; i += 1)
-			channel = str2num(StringByKey("NAME" + num2str(i), S_Info))
+			channel = NumberByKey("NAME" + num2str(i), S_Info)
 			WAVE NIChannel = NIDataWave[channel]
 
 			switch(decMethod)

@@ -231,6 +231,10 @@ Function/S ST_GetStimsetList([variable channelType, string searchString, string 
 		DFREF dfr = GetSetFolder(channelType)
 
 		list = GetListOfObjects(dfr, searchString, exprType = MATCH_WILDCARD)
+
+		// remove testpulse as it is not always present, and will be added later on
+		list = RemoveFromList(STIMSET_TP_WHILE_DAQ, list, ";")
+
 		listThirdParty = GetListDifference(list, listInternal)
 
 		if(!ParamIsDefault(WBstimSetList))
