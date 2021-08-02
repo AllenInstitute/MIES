@@ -6681,7 +6681,7 @@ End
 /// and the new states in the columns. Every valid transition has a 1 in it.
 Function/WAVE GetValidAcqStateTransitions()
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	DFREF dfr = GetMiesPath()
 
 	string name = "validAcqStateTransitions"
@@ -6690,7 +6690,7 @@ Function/WAVE GetValidAcqStateTransitions()
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		// handle upgrade
+		Redimension/N=(AS_NUM_STATES, AS_NUM_STATES) wv
 	else
 		Make/R/N=(AS_NUM_STATES, AS_NUM_STATES) dfr:$name/WAVE=wv
 	endif
@@ -6709,9 +6709,12 @@ Function/WAVE GetValidAcqStateTransitions()
 	wv[%AS_EARLY_CHECK][%AS_PRE_DAQ] = 1
 	wv[%AS_EARLY_CHECK][%AS_INACTIVE] = 1
 
-	wv[%AS_PRE_DAQ][%AS_PRE_SWEEP] = 1
+	wv[%AS_PRE_DAQ][%AS_PRE_SWEEP_CONFIG] = 1
 	wv[%AS_PRE_DAQ][%AS_INACTIVE] = 1
 	wv[%AS_PRE_DAQ][%AS_POST_DAQ] = 1
+
+	wv[%AS_PRE_SWEEP_CONFIG][%AS_PRE_SWEEP] = 1
+	wv[%AS_PRE_SWEEP_CONFIG][%AS_POST_DAQ] = 1
 
 	wv[%AS_PRE_SWEEP][%AS_MID_SWEEP] = 1
 
@@ -6721,7 +6724,7 @@ Function/WAVE GetValidAcqStateTransitions()
 	wv[%AS_POST_SWEEP][%AS_ITI] = 1
 	wv[%AS_POST_SWEEP][%AS_POST_DAQ] = 1
 
-	wv[%AS_ITI][%AS_PRE_SWEEP] = 1
+	wv[%AS_ITI][%AS_PRE_SWEEP_CONFIG] = 1
 	wv[%AS_ITI][%AS_POST_DAQ] = 1
 
 	wv[%AS_POST_DAQ][%AS_INACTIVE] = 1

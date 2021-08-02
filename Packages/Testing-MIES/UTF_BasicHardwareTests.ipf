@@ -4531,6 +4531,10 @@ Function CheckAcquisitionStates(string str)
 				CheckLBNEntries_IGNORE(str, 0, i)
 				CheckLBNEntries_IGNORE(str, 1, i, missing = 1)
 				break
+			case AS_PRE_SWEEP_CONFIG:
+				CheckLBNEntries_IGNORE(str, 0, i, missing = 1)
+				CheckLBNEntries_IGNORE(str, 1, i, missing = 1)
+				break
 			case AS_PRE_SWEEP:
 				CheckLBNEntries_IGNORE(str, 0, i)
 				CheckLBNEntries_IGNORE(str, 1, i)

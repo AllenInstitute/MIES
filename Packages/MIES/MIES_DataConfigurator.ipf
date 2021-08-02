@@ -66,6 +66,10 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 		if(AFM_CallAnalysisFunctions(panelTitle, PRE_SET_EVENT))
 			Abort
 		endif
+
+		if(AS_HandlePossibleTransition(panelTitle, AS_PRE_SWEEP_CONFIG))
+			Abort
+		endif
 	endif
 
 	// prevent crash in ITC XOP as it must not run if we resize the DAQDataWave
@@ -105,14 +109,14 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		AS_HandlePossibleTransition(panelTitle, AS_PRE_SWEEP)
-	endif
-
 	WAVE DAQDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
 	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
 
 	ASSERT(IsValidSweepAndConfig(DAQDataWave, DAQConfigWave), "Invalid sweep and config combination")
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		AS_HandlePossibleTransition(panelTitle, AS_PRE_SWEEP)
+	endif
 End
 
 static Function DC_UpdateHSProperties(panelTitle, ADCs)
