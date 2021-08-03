@@ -62,6 +62,7 @@ Menu "Mies Panels"
 		"Clear package settings"                   , /Q, MEN_ClearPackageSettings()
 		"Upload log files"                         , /Q, UploadLogFiles()
 		SubMenu "Panels"
+			"Reset and store AnalysisBrowser"           , /Q, AB_BrowserStartupSettings()
 			"Reset and store DA_EPHYS"                  , /Q, DAP_EphysPanelStartUpSettings()
 			"Reset and store DataBrowser"               , /Q, DB_ResetAndStoreCurrentDBPanel()
 			"Reset and store Wavebuilder"               , /Q, WBP_StartupSettings()
