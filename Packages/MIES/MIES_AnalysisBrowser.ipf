@@ -2324,6 +2324,8 @@ Function/S AB_OpenAnalysisBrowser()
 
 	AddVersionToPanel(panel, ANALYSISBROWSER_PANEL_VERSION)
 
+	ListBox list_experiment_contents,win=$panel,listWave=list,selWave=sel
+
 	NVAR JSONid = $GetSettingsJSONid()
 	directory = JSON_GetString(jsonID, "/analysisbrowser/directory")
 	SetSetVariableString(panel, "setvar_baseFolder", directory)
@@ -2451,6 +2453,8 @@ Function AB_BrowserStartupSettings()
 
 	SearchForInvalidControlProcs(panel)
 	print "Do not forget to increase ANALYSISBROWSER_PANEL_VERSION."
+
+	ListBox list_experiment_contents,win=$panel,listWave=$"",selWave=$""
 
 	Execute/P/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
