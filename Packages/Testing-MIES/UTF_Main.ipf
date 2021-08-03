@@ -6,6 +6,7 @@
 #include "unit-testing"
 
 #include "UTF_AnalysisFunctionHelpers"
+#include "UTF_Macros"
 #include "UTF_PGCSetAndActivateControl"
 #include "UTF_UpgradeWaveLocationAndGetIt"
 #include "UTF_UpgradeDataFolderLocation"
@@ -58,6 +59,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	list = AddListItem("UTF_AsynFrameworkTest.ipf", list, ";", inf)
 	list = AddListItem("UTF_Configuration.ipf", list, ";", inf)
 	list = AddListItem("UTF_Labnotebook.ipf", list, ";", inf)
+	list = AddListItem("UTF_Macros.ipf", list, ";", inf)
 	list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", inf)
 	list = AddListItem("UTF_StimsetAPI.ipf", list, ";", inf)
 	list = AddListItem("UTF_SweepFormula.ipf", list, ";", inf)
