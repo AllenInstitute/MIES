@@ -2343,7 +2343,7 @@ End
 
 Window AnalysisBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(27,669,1169,1230)
+	NewPanel /K=1 /W=(188,790,1330,1351)
 	SetDrawLayer UserBack
 	DrawLine 5,185,105,185
 	DrawLine 5,248,105,248
@@ -2367,8 +2367,7 @@ Window AnalysisBrowser() : Panel
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo)=A"!!,FS!!#>:!!#E8^]6b&z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	ListBox list_experiment_contents,listWave=root:MIES:Analysis:expBrowserList
-	ListBox list_experiment_contents,selWave=root:MIES:Analysis:expBrowserSel,mode=4
+	ListBox list_experiment_contents,mode=4
 	ListBox list_experiment_contents,widths={40,322,65,21,94,57,50,77,159,63,42,42}
 	ListBox list_experiment_contents,userColumnResize=1
 	Button button_select_same_stim_sets,pos={5.00,80.00},size={100.00,40.00},proc=AB_ButtonProc_SelectStimSets
