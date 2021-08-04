@@ -54,7 +54,26 @@ Function/WAVE FFI_ReturnTPValues()
 	return acqStorageWave
 End
 
+/// @brief Get a template for publishing messages
+///
+/// Publishers in MIES should in general supply additional information like device/sweep number/timestamp.
+/// This function allows to autofill these entries.
+Function FFI_GetJSONTemplate(string panelTitle, variable headstage)
+	variable jsonID
+
+	jsonID = JSON_New()
+	JSON_AddTreeObject(jsonID, "")
+	JSON_AddString(jsonID, "device", panelTitle)
+	JSON_AddVariable(jsonID, "headstage", headstage)
+	JSON_AddString(jsonID, "timestamp", GetISO8601TimeStamp())
+	JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(panelTitle))
+
+	return jsonID
+End
+
 /// @brief Return a text wave with all available message filters for Publisher/Subscriber ZeroMQ sockets
+///
+/// @sa FFI_GetJSONTemplate
 Function/WAVE FFI_GetAvailableMessageFilters()
 
 	Make/FREE/T wv = {ZeroMQ_HEARTBEAT, IVS_PUB_FILTER}
