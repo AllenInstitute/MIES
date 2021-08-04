@@ -5,22 +5,24 @@
 #include "MIES_Include", optional
 #include "unit-testing"
 
+// keep sorted
 #include "UTF_AnalysisFunctionHelpers"
-#include "UTF_PGCSetAndActivateControl"
-#include "UTF_UpgradeWaveLocationAndGetIt"
-#include "UTF_UpgradeDataFolderLocation"
-#include "UTF_Utils"
-#include "UTF_Labnotebook"
-#include "UTF_WaveBuilder"
-#include "UTF_WaveBuilderRegression"
-#include "UTF_WaveVersioning"
 #include "UTF_AsynFrameworkTest"
+#include "UTF_Configuration"
+#include "UTF_HelperFunctions"
+#include "UTF_Labnotebook"
+#include "UTF_Macros"
+#include "UTF_PGCSetAndActivateControl"
 #include "UTF_StimsetAPI"
 #include "UTF_SweepFormula"
 #include "UTF_TraceUserData"
-#include "UTF_Configuration"
-#include "UTF_HelperFunctions"
+#include "UTF_UpgradeDataFolderLocation"
+#include "UTF_UpgradeWaveLocationAndGetIt"
+#include "UTF_Utils"
 #include "UTF_WaveAveraging"
+#include "UTF_WaveBuilder"
+#include "UTF_WaveBuilderRegression"
+#include "UTF_WaveVersioning"
 
 // include examples here so that these are compile tested as well
 #include "example-stimulus-set-api"
@@ -58,6 +60,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	list = AddListItem("UTF_AsynFrameworkTest.ipf", list, ";", inf)
 	list = AddListItem("UTF_Configuration.ipf", list, ";", inf)
 	list = AddListItem("UTF_Labnotebook.ipf", list, ";", inf)
+	list = AddListItem("UTF_Macros.ipf", list, ";", inf)
 	list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", inf)
 	list = AddListItem("UTF_StimsetAPI.ipf", list, ";", inf)
 	list = AddListItem("UTF_SweepFormula.ipf", list, ";", inf)
