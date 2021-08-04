@@ -1118,6 +1118,20 @@ Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
 						DisableControl(bsPanel, "slider_BrowserSettings_dDAQ")
 					endif
 					break
+				case "check_BrowserSettings_DAC":
+					if(checked)
+						EnableControl(bsPanel, "check_BrowserSettings_VisEpochs")
+					else
+						DisableControl(bsPanel, "check_BrowserSettings_VisEpochs")
+					endif
+					break
+				case "check_BrowserSettings_TTL":
+					if(checked)
+						EnableControl(bsPanel, "check_BrowserSettings_splitTTL")
+					else
+						DisableControl(bsPanel, "check_BrowserSettings_splitTTL")
+					endif
+					break
 				case "check_BrowserSettings_VisEpochs":
 #if IgorVersion() >= 9.0
 					if(checked)
