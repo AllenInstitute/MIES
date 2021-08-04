@@ -941,8 +941,8 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			Make/D/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outD = NaN
 			Make/T/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outT
 			for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
-				WAVE numericalValues = BSP_GetNumericalValues(graph, sweepNumber = sweeps[i])
-				WAVE textualValues = BSP_GetTextualValues(graph, sweepNumber = sweeps[i])
+				WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweeps[i])
+				WAVE textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweeps[i])
 
 				for(j = 0; j <  DimSize(activeChannels, ROWS); j += 1)
 					[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], str, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
@@ -1460,7 +1460,7 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 
 	// search sweeps for active channels
 	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
-		WAVE numericalValues = BSP_GetNumericalValues(graph, sweepNumber = sweeps[i])
+		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweeps[i])
 
 		for(j = 0; j < DimSize(channels, ROWS); j += 1)
 			channelType = channels[j][0]

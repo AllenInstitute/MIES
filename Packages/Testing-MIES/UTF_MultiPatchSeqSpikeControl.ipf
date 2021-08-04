@@ -74,7 +74,7 @@ Function TuneBrowser_IGNORE()
 	variable i, numEntries
 
 	databrowser = DB_FindDataBrowser("ITC18USB_DEV_0")
-	settingsHistoryPanel = DB_GetSettingsHistoryPanel(databrowser)
+	settingsHistoryPanel = LBV_GetSettingsHistoryPanel(databrowser)
 
 	PGC_SetAndActivateControl(settingsHistoryPanel, "button_clearlabnotebookgraph")
 
@@ -99,17 +99,17 @@ Function TuneBrowser_IGNORE()
 	numEntries = DimSize(keys, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		pa.popStr = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, keys[i], query = 1)
-		DB_PopMenuProc_LabNotebook(pa)
+		LBV_PopMenuProc_LabNotebook(pa)
 	endfor
 
 	pa.popStr = STIMSET_SCALE_FACTOR_KEY
-	DB_PopMenuProc_LabNotebook(pa)
+	LBV_PopMenuProc_LabNotebook(pa)
 
 	pa.popStr = "Set sweep count"
-	DB_PopMenuProc_LabNotebook(pa)
+	LBV_PopMenuProc_LabNotebook(pa)
 
 	pa.popStr = "Autobias Vcom"
-	DB_PopMenuProc_LabNotebook(pa)
+	LBV_PopMenuProc_LabNotebook(pa)
 End
 
 static Constant INDEP_EACH_SCI   = 0x01

@@ -452,17 +452,23 @@ Function SetPopupMenuIndex(win, control, index)
 End
 
 /// @brief Sets the popupmenu value
-Function SetPopupMenuVal(win, control, List)
-	string win, control
-	string List
-	string outputList
+Function SetPopupMenuVal(string win, string control, [string list, string func])
+	string output, allEntries
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
-	sprintf outputList, "\"%s\"" List
-	ASSERT(strlen(outputList) < MAX_COMMANDLINE_LENGTH, "Popop menu list is greater than MAX_COMMANDLINE_LENGTH characters")
-	PopupMenu $control win=$win, value = #outputList
+
+	if(!ParamIsDefault(list))
+		sprintf output, "\"%s\"" List
+		ASSERT(strlen(output) < MAX_COMMANDLINE_LENGTH, "Popup menu list is greater than MAX_COMMANDLINE_LENGTH characters")
+	elseif(!ParamIsDefault(func))
+		output = func
+		allEntries = GetPopupMenuList(func, POPUPMENULIST_TYPE_OTHER)
+		ASSERT(!IsEmpty(allEntries), "func does not generate a non-empty string list.")
+	endif
+
+	PopupMenu $control win=$win, value=#output
 End
 
 /// @brief Sets the popupmenu string
@@ -2103,4 +2109,70 @@ Function AccelerateModLineSizeTraces(string graph, WAVE/T w, variable h, variabl
 			endswitch
 		while(h)
 	endif
+End
+
+/// @brief Return the value and type of the popupmenu list
+///
+/// @retval value extracted string with the contents of `value` from the recreation macro
+/// @retval type  popup menu list type, one of @ref PopupMenuListTypes
+Function [string value, variable type] ParsePopupMenuValue(string recMacro)
+
+	string listOrFunc, path, cmd, builtinPopupMenu
+
+	SplitString/E="\\s*,\\s*value\\s*=\\s*(.*)$" recMacro, listOrFunc
+	if(V_Flag != 1)
+		Bug("Could not find popupmenu \"value\" entry")
+		return ["", NaN]
+	endif
+
+	listOrFunc = trimstring(listOrFunc, 1)
+
+	// unescape quotes
+	listOrFunc = ReplaceString("\\\"", listOrFunc, "\"")
+
+	// misc cleanup
+	listOrFunc = RemovePrefix(listOrFunc, start = "#")
+	listOrFunc = RemovePrefix(listOrFunc, start = "\"")
+	listOrFunc = RemoveEnding(listOrFunc, "\"")
+
+	SplitString/E="^\"\*([A-Z]{1,})\*\"$" listOrFunc, builtinPopupMenu
+
+	if(V_flag == 1)
+		return [builtinPopupMenu, POPUPMENULIST_TYPE_BUILTIN]
+	endif
+
+	return [listOrFunc, POPUPMENULIST_TYPE_OTHER]
+End
+
+/// @brief Return the popupmenu list entries
+///
+/// @param value String with a list or function (what you enter with PopupMenu value=\#XXX)
+/// @param type  One of @ref PopupMenuListTypes
+Function/S GetPopupMenuList(string value, variable type)
+	string path, cmd
+
+	switch(type)
+		case POPUPMENULIST_TYPE_BUILTIN:
+			strswitch(value)
+				case "COLORTABLEPOP":
+					return CTabList()
+				default:
+					ASSERT(0, "Not implemented")
+			endswitch
+		case POPUPMENULIST_TYPE_OTHER:
+			path = GetTemporaryString()
+
+			sprintf cmd, "%s = %s", path, value
+			Execute/Z/Q cmd
+
+			if(V_Flag)
+				Bug("Execute returned an error :(")
+				return ""
+			endif
+
+			SVAR str = $path
+			return str
+		default:
+			ASSERT(0, "Missing popup menu list type")
+	endswitch
 End

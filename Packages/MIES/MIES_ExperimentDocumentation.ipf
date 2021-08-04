@@ -71,11 +71,11 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 	timestamp = num2strHighPrec(DateTimeInUTC(), precision = 3)
 	textualValues[rowIndex][2][] = timestamp
 
-	WAVE textualValuesDat = ExtractLBColumnTimeStamp(textualValues)
+	WAVE textualValuesDat = ExtractLogbookSliceTimeStamp(textualValues)
 	EnsureLargeEnoughWave(textualValuesDat, minimumSize=rowIndex, dimension=ROWS)
 	textualValuesDat[rowIndex] = str2num(textualValues[rowIndex][1])
 
-	WAVE textualValuesSweep = ExtractLBColumnSweep(textualValues)
+	WAVE textualValuesSweep = ExtractLogbookSliceSweep(textualValues)
 	EnsureLargeEnoughWave(textualValuesSweep, minimumSize=rowIndex, dimension=ROWS)
 	textualValuesSweep[rowIndex] = str2num(textualValues[rowIndex][0])
 
@@ -130,7 +130,7 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 	timestamp = DateTimeInUTC()
 	numericalValues[rowIndex][2][] = timestamp
 
-	WAVE numericalValuesDat = ExtractLBColumnTimeStamp(numericalValues)
+	WAVE numericalValuesDat = ExtractLogbookSliceTimeStamp(numericalValues)
 	EnsureLargeEnoughWave(numericalValuesDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
 	numericalValuesDat[rowIndex] = numericalValues[rowIndex][1]
 

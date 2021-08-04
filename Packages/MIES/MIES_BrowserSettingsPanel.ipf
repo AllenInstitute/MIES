@@ -77,8 +77,14 @@ End
 Function BSP_InitPanel(mainPanel)
 	string mainPanel
 
+	string graph
+
 	BSP_DynamicSweepControls(mainPanel)
 	BSP_DynamicStartupSettings(mainPanel)
+	BSP_DynamicSettingsHistory(mainPanel)
+
+	graph = LBV_GetLabNoteBookGraph(mainPanel)
+	TUD_Init(graph)
 End
 
 /// @brief UnHides BrowserSettings side Panel
@@ -174,7 +180,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	string mainPanel
 
 	variable sweepNo
-	string bsPanel
+	string bsPanel, shPanel, experiments, devices
 
 	bsPanel = BSP_GetPanel(mainPanel)
 
@@ -205,6 +211,21 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	BSP_UpdateHelpNotebook(mainPanel)
 
 	SetWindow $bsPanel, hook(sweepFormula)=BSP_SweepFormulaHook
+
+	shPanel = LBV_GetSettingsHistoryPanel(mainPanel)
+
+	if(BSP_IsDataBrowser(mainPanel))
+		SetPopupMenuVal(shPanel, "popup_Device", list = NONE)
+		SetPopupMenuVal(shPanel, "popup_Experiment", list = NONE)
+		DisableControls(shPanel, "popup_Device;popup_Experiment")
+
+		SetPopupMenuIndex(shPanel, "popup_Device", 0)
+		SetPopupMenuIndex(shPanel, "popup_Experiment", 0)
+	else
+		SetPopupMenuVal(shPanel, "popup_Device", func = "LBV_GetAllDevicesForExperiment(\"" + shPanel + "\")")
+		SetPopupMenuVal(shPanel, "popup_Experiment", func = "LBV_GetExperiments(\"" + shPanel + "\")")
+		EnableControls(shPanel, "popup_Device;popup_Experiment")
+	endif
 End
 
 /// @brief Hook function for the Sweep Formula Notebook
@@ -237,7 +258,7 @@ End
 Function BSP_UnsetDynamicStartupSettingsOfDataBrowser(mainPanel)
 	string mainPanel
 
-	string bsPanel
+	string bsPanel, shPanel
 
 	ASSERT(BSP_IsDataBrowser(mainPanel), "Browser window is not of type DataBrowser")
 	bsPanel = BSP_GetPanel(mainPanel)
@@ -249,6 +270,12 @@ Function BSP_UnsetDynamicStartupSettingsOfDataBrowser(mainPanel)
 	ListBox list_of_ranges, win=$bsPanel, listWave=$"", selWave=$""
 	ListBox list_of_ranges1, win=$bsPanel, listWave=$"", selWave=$""
 	ListBox list_dashboard, win=$bsPanel, listWave=$"", colorWave=$"", selWave=$"", helpWave=$""
+
+	shPanel = LBV_GetSettingsHistoryPanel(mainPanel)
+
+	SetPopupMenuVal(shPanel, "popup_Device", list = NONE)
+	SetPopupMenuVal(shPanel, "popup_Experiment", list = NONE)
+	EnableControls(shPanel, "popup_Device;popup_Experiment")
 End
 
 
@@ -402,21 +429,16 @@ End
 ///
 /// @param win 	name of external panel or main window
 /// @param type One of #BROWSERTYPE_DATABROWSER or #BROWSERTYPE_SWEEPBROWSER
-static Function/S BSP_SetBrowserType(win, type)
-	string win, type
-
-	string mainPanel, settingsHistoryPanel
+static Function/S BSP_SetBrowserType(string win, string type)
+	string mainPanel
 
 	mainPanel = GetMainWindow(win)
 	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER) = type
+
 	if(!CmpStr(type, BROWSERTYPE_SWEEPBROWSER))
 		DoWindow/T $mainPanel, SWEEPBROWSER_WINDOW_TITLE
-		settingsHistoryPanel = DB_GetSettingsHistoryPanel(mainPanel)
-		if(WindowExists(settingsHistoryPanel))
-			KillWindows(settingsHistoryPanel)
-		endif
 	elseif(!CmpStr(type, BROWSERTYPE_DATABROWSER))
 		DoWindow/T $mainPanel, DATABROWSER_WINDOW_TITLE
 	endif
@@ -1178,62 +1200,61 @@ Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	return 0
 End
 
-/// @brief Generic numerical values labnotebook getter
+/// @brief Generic getter for labnotebook waves.
 ///
-/// Returns a wave reference wave by default, or the requested labnotebook wave
-/// when `sweepNumber` is present.
-Function/WAVE BSP_GetNumericalValues(string win, [variable sweepNumber])
+/// Works with Databrowser/Sweepbrowser
+///
+/// @param win               panel
+/// @param type              One of @ref LabnotebookWaveTypes
+/// @param sweepNumber       [optional] sweep number
+/// @param selectedExpDevice [optional, defaults to off] return the labnotebook for the selected experiment/device combination
+Function/WAVE BSP_GetLBNWave(string win, variable type, [variable sweepNumber, variable selectedExpDevice])
+	string shPanel, device, dataFolder
 
-	if(BSP_IsDataBrowser(win))
-		// for all sweep numbers the same LBN
-		if(ParamIsDefault(sweepNumber))
-			WAVE/Z sweeps = GetPlainSweepList(win)
-
-			if(!WaveExists(sweeps))
-				return $""
-			endif
-
-			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) numericalValuesWave = DB_GetNumericalValues(win)
-			return numericalValuesWave
-		else
-			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number in sweeps() wave")
-			return DB_GetNumericalValues(win)
-		endif
+	if(ParamIsDefault(selectedExpDevice))
+		selectedExpDevice = 0
 	else
-		if(ParamIsDefault(sweepNumber))
-			return SB_GetNumericalValuesWaves(win)
-		else
-			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number in sweeps() wave")
-			return SB_GetNumericalValuesWaves(win, sweepNumber = sweepNumber)
-		endif
+		selectedExpDevice = !!selectedExpDevice
 	endif
-End
-
-/// @brief Generic textual values labnotebook getter
-///
-/// Returns a wave reference wave by default, or the requested labnotebook wave
-/// when `sweepNumber` is present.
-Function/WAVE BSP_GetTextualValues(string win, [variable sweepNumber])
 
 	if(BSP_IsDataBrowser(win))
 		// for all sweep numbers the same LBN
-		if(ParamIsDefault(sweepNumber))
+		if(ParamIsDefault(sweepNumber) && !selectedExpDevice)
 			WAVE/Z sweeps = GetPlainSweepList(win)
 
 			if(!WaveExists(sweeps))
 				return $""
 			endif
 
-			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) textualValuesWave = DB_GetTextualValues(win)
-			return textualValuesWave
+			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) waves = DB_GetLBNWave(win, type)
+			return waves
+		elseif(selectedExpDevice)
+			return DB_GetLBNWave(win, type)
+		elseif(!ParamIsDefault(sweepNumber))
+			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number")
+			return DB_GetLBNWave(win, type)
 		else
-			return DB_GetTextualValues(win)
+			ASSERT(0, "Invalid parameter combination")
 		endif
 	else
-		if(ParamIsDefault(sweepNumber))
-			return SB_GetTextualValuesWaves(win)
+		if(ParamIsDefault(sweepNumber) && !selectedExpDevice)
+			return SB_GetLBNWave(win, type)
+		elseif(selectedExpDevice)
+			shPanel = LBV_GetSettingsHistoryPanel(win)
+
+			dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
+			device = GetPopupMenuString(shPanel, "popup_Device")
+
+			if(!cmpstr(dataFolder, NONE) || !cmpstr(device, NONE))
+				return $""
+			endif
+
+			return SB_GetLBNWave(win, type, dataFolder = dataFolder, device = device)
+		elseif(!ParamIsDefault(sweepNumber))
+			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number")
+			return SB_GetLBNWave(win, type, sweepNumber = sweepNumber)
 		else
-			return SB_GetTextualValuesWaves(win, sweepNumber = sweepNumber)
+			ASSERT(0, "Invalid parameter combination")
 		endif
 	endif
 End
@@ -1369,4 +1390,36 @@ Function BSP_UpdateSweepNote(win)
 
 	lbPanel = BSP_GetNotebookSubWindow(win)
 	ReplaceNotebookText(lbPanel, sweepNote)
+End
+
+Function BSP_DynamicSettingsHistory(string win)
+	string shPanel
+
+	shPanel = LBV_GetSettingsHistoryPanel(win)
+
+	SetWindow $shPanel, hook(main)=DB_CloseSettingsHistoryHook
+End
+
+/// @brief Unsets all control properties that are set in DB_DynamicSettingsHistory
+Function BSP_UnsetDynamicSettingsHistory(win)
+	string win
+
+	string shPanel
+
+	shPanel = LBV_GetSettingsHistoryPanel(win)
+	ASSERT(WindowExists(shPanel), "external SettingsHistory panel not found")
+	SetWindow $shPanel, hook(main)=$""
+End
+
+Function BSP_UnHideSettingsHistory(win)
+	string win
+
+	string settingsHistoryPanel
+
+	ASSERT(WindowExists(GetMainWindow(win)), "HOST panel does not exist")
+
+	settingsHistoryPanel = LBV_GetSettingsHistoryPanel(win)
+	if(WindowExists(settingsHistoryPanel))
+		SetWindow $settingsHistoryPanel hide=0, needUpdate=1
+	endif
 End

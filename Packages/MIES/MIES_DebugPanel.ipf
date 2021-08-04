@@ -45,13 +45,13 @@ Function DP_DebuggingEnabledForCaller()
 	return DP_DebuggingEnabledForFile(callerFile)
 End
 
-Function DP_OpenDebugPanel()
+Function/S DP_OpenDebugPanel()
 
 	variable debugMode
 
 	DoWindow/F $PANEL
 	if(V_Flag)
-		return NaN
+		return panel
 	endif
 
 	Execute PANEL + "()"
@@ -64,6 +64,8 @@ Function DP_OpenDebugPanel()
 	debugMode = QuerySetIgorOption("DEBUGGING_ENABLED", globalSymbol = 1)
 	SetCheckBoxState(PANEL, "check_debug_mode",  debugMode == 1)
 	// we can't readout the ITC XOP debugging state
+
+	return panel
 End
 
 Window DP_DebugPanel() : Panel
@@ -141,6 +143,8 @@ Function DP_WindowHook(s)
 			SetCheckBoxState(PANEL, "check_debug_mode",  debugMode == 1)
 			break
 	endswitch
+
+	return 0
 End
 
 Function DP_CheckProc_Debug(cba) : CheckBoxControl

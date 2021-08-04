@@ -1059,6 +1059,11 @@ Function/S GetDevSpecLabNBFolderAsString(panelTitle)
 	endswitch
 End
 
+Function/WAVE DAQ_LBN_GETTER_PROTO(string win)
+
+	ASSERT(0, "Can not call prototype")
+End
+
 /// @brief Returns a wave reference to the text labnotebook
 ///
 /// Rows:
@@ -4771,6 +4776,10 @@ Function/Wave GetAnalysisConfigWave(dataFolder, device, sweep)
 	return wv
 End
 
+Function/WAVE ANALYSIS_LBN_GETTER_PROTO(string expFolder, string device)
+	ASSERT(0, "Can not call prototype function")
+End
+
 /// @brief Return the numerical labnotebook values in the analysis browser of a device and experiment pair
 Function/WAVE GetAnalysLBNumericalValues(expFolder, device)
 	string expFolder, device
@@ -4782,13 +4791,7 @@ Function/WAVE GetAnalysLBNumericalValues(expFolder, device)
 	p.name    = "numericValues"
 	p.newName = newName
 
-	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	ASSERT(0, "Trying to access non existing numerical values labnotebook")
+	return UpgradeWaveLocationAndGetIt(p)
 End
 
 /// @brief Return the textual labnotebook keys in the analysis browser of a device and experiment pair
@@ -4802,13 +4805,7 @@ Function/WAVE GetAnalysLBTextualValues(expFolder, device)
 	p.name    = "textValues"
 	p.newName = newName
 
-	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	ASSERT(0, "Trying to access non existing textual values labnotebook")
+	return UpgradeWaveLocationAndGetIt(p)
 End
 
 /// @brief Return the numerical labnotebook keys in the analysis browser of a device and experiment pair
@@ -4822,13 +4819,7 @@ Function/WAVE GetAnalysLBNumericalKeys(expFolder, device)
 	p.name    = "numericKeys"
 	p.newName = newName
 
-	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	ASSERT(0, "Trying to access non existing numerical keys labnotebook")
+	return UpgradeWaveLocationAndGetIt(p)
 End
 
 /// @brief Return the textual labnotebook keys in the analysis browser of a device and experiment pair
@@ -4842,13 +4833,7 @@ Function/WAVE GetAnalysLBTextualKeys(expFolder, device)
 	p.name    = "textKeys"
 	p.newName = newName
 
-	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	ASSERT(0, "Trying to access non existing textual keys labnotebook")
+	return UpgradeWaveLocationAndGetIt(p)
 End
 
 /// @}
@@ -6547,6 +6532,17 @@ Function/DF GetGraphUserDataFolderDFR()
 	return createDFWithAllParents(GetGraphUserDataFolderAsString())
 End
 
+static Function/S BuildGraphName(string graph)
+
+	return CleanupName(graph, 0) + "_wave"
+End
+
+/// @brief Return the path to the text wave for the graph user data as string
+Function/S GetGraphUserDataAsString(string graph)
+
+	return GetGraphUserDataFolderAsString() + ":" + BuildGraphName(graph)
+End
+
 /// @brief Return the text wave for the graph user data
 ///
 /// @param graph existing graph
@@ -6554,7 +6550,7 @@ Function/WAVE GetGraphUserData(string graph)
 
 	variable versionOfNewWave = 1
 	DFREF dfr = GetGraphUserDataFolderDFR()
-	string name = graph + "_wave"
+	string name = BuildGraphName(graph)
 	WAVE/T/Z/SDFR=dfr wv = $name
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))

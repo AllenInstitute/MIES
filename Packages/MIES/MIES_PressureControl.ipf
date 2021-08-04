@@ -2300,8 +2300,8 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(ba) : ButtonControl
 				endif
 			endfor
 
-			SetPopupMenuVal(ba.win, "popup_Settings_Pressure_dev", filteredList)
-			SetPopupMenuVal(ba.win, "popup_Settings_UserPressure", filteredList)
+			SetPopupMenuVal(ba.win, "popup_Settings_Pressure_dev", list = filteredList)
+			SetPopupMenuVal(ba.win, "popup_Settings_UserPressure", list = filteredList)
 			break
 	endswitch
 

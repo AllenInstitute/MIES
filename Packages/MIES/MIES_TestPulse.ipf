@@ -12,7 +12,6 @@
 static Constant TP_MAX_VALID_RESISTANCE       = 3000 ///< Units MOhm
 static Constant TP_TPSTORAGE_EVAL_INTERVAL    = 0.18
 static Constant TP_FIT_POINTS                 = 5
-static Constant TP_DIMENSION_SCALING_INTERVAL = 18  ///< [s]
 static Constant TP_PRESSURE_INTERVAL          = 0.090  ///< [s]
 static Constant TP_EVAL_POINT_OFFSET          = 5
 
@@ -491,25 +490,9 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 
 	TP_AnalyzeTP(panelTitle, TPStorage, count)
 
-	// not all rows have the unit seconds, but with
-	// setting up a seconds scale, commands like
-	// Display TPStorage[][0][%PeakResistance]
-	// show the correct units for the bottom axis
-	if((now - lastRescaling) > TP_DIMENSION_SCALING_INTERVAL)
-
-		if(!count) // initial estimate
-			WAVE DAQDataWave = GetDAQDataWave(panelTitle, TEST_PULSE_MODE)
-			delta = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) * DimDelta(DAQDataWave, ROWS) / 1000
-		else
-			delta = TPStorage[count][0][%DeltaTimeInSeconds] / count
-		endif
-
-		DEBUGPRINT("Old delta: ", var=DimDelta(TPStorage, ROWS))
-		SetScale/P x, 0.0, delta, "s", TPStorage
-		DEBUGPRINT("New delta: ", var=delta)
-
-		SetNumberInWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC, now, format="%.06f")
-	endif
+	WAVE TPStorageDat = ExtractLogbookSliceTimeStamp(TPStorage)
+	EnsureLargeEnoughWave(TPStorageDat, minimumSize=count, dimension=ROWS, initialValue=NaN)
+	TPStorageDat[count][] = TPStorage[count][q][%TimeStampSinceIgorEpochUTC]
 
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
 End

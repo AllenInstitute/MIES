@@ -3656,6 +3656,57 @@ Function GetMarkerSkip(numPoints, numMarkers)
 	return trunc(limit(numPoints / numMarkers, 1, 2^15 - 1))
 End
 
+/// @brief Return a wave of the union of all entries from both waves with duplicates removed.
+///
+/// Given {1, 2, 10} and {2, 5, 11} this will return {1, 2, 5, 10, 11}.
+/// The order of the returned entries is not defined.
+///
+/// @todo IP9 make it threadsafe
+Function/WAVE GetSetUnion(WAVE wave1, WAVE wave2)
+	variable type, wave1Points, wave2Points, totalPoints
+
+	ASSERT_TS((IsNumericWave(wave1) && IsNumericWave(wave2))                   \
+	          || (IsTextWave(wave1) && IsTextWave(wave2)), "Invalid wave type")
+
+	type = WaveType(wave1)
+	ASSERT_TS(type == WaveType(wave2), "Wave type mismatch")
+
+	wave1Points = numpnts(wave1)
+	wave2Points = numpnts(wave2)
+
+	totalPoints = wave1Points + wave2Points
+
+	if(totalPoints == 0)
+		return $""
+	endif
+
+	if(WaveRefsEqual(wave1, wave2))
+		Duplicate/FREE wave1, result
+		return GetUniqueEntries(result)
+	endif
+
+	if(IsNumericWave(wave1))
+		Concatenate/NP/FREE {wave1, wave2}, result
+	else
+		WAVE/T wave1Text = wave1
+		WAVE/T wave2Text = wave2
+
+		Make/T/N=(totalPoints)/FREE resultText
+
+		if(wave1Points > 0)
+			Multithread/NT=(totalPoints < 1024) resultText[0, wave1Points - 1] = wave1Text[p]
+		endif
+
+		if(wave2Points > 0)
+			Multithread/NT=(totalPoints < 1024) resultText[wave1Points, inf] = wave2Text[p - wave1Points]
+		endif
+
+		WAVE result = resultText
+	endif
+
+	return GetUniqueEntries(result)
+End
+
 /// @brief Return a wave were all elements which are in both wave1 and wave2 have been removed from wave1
 ///
 /// @sa GetListDifference for string lists
@@ -5478,10 +5529,16 @@ threadsafe Function/WAVE WaveRef(WAVE/Z w, [variable row, variable col, variable
 End
 
 /// @brief Grep the given regular expression in the text wave
-Function/WAVE GrepTextWave(Wave/T in, string regexp)
+Function/WAVE GrepTextWave(Wave/T in, string regexp, [variable invert])
+
+	if(ParamIsDefault(invert))
+		invert = 0
+	else
+		invert = !!invert
+	endif
 
 	Make/FREE/T/N=0 result
-	Grep/E=regexp in as result
+	Grep/E={regexp, invert} in as result
 
 	if(DimSize(result, ROWS) == 0)
 		return $""

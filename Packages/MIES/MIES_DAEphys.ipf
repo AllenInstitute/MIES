@@ -630,7 +630,7 @@ Function DAP_EphysPanelStartUpSettings()
 
 	// defaults are also hardcoded in P_GetPressureDataWaveRef
 	// and P_PressureDataTxtWaveRef
-	SetPopupMenuVal(panelTitle, "popup_Settings_Pressure_dev", NONE)
+	SetPopupMenuVal(panelTitle, "popup_Settings_Pressure_dev", list = NONE)
 	SetPopupMenuIndex(panelTitle, "popup_Settings_Pressure_dev", 0)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_DA", 0)
 	SetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_AD", 0)

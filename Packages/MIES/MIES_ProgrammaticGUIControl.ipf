@@ -9,13 +9,6 @@
 /// @file MIES_ProgrammaticGUIControl.ipf
 /// @brief __PGC__ Control GUI controls from code
 
-/// @name Popup menu list types
-/// @anchor PopupMenuListTypes
-/// @{
-static Constant PGC_POPUPMENULIST_TYPE_BUILTIN = 0x1 // COLORTABLEPOP, etc.
-static Constant PGC_POPUPMENULIST_TYPE_OTHER   = 0x2 // everything else
-/// @}
-
 /// @brief Bring all tabs which hold the control to the front (recursively).
 ///
 /// Requires that these are managed by `ACL_TabUtilities.ipf`.
@@ -61,71 +54,6 @@ static Function PGC_ShowControlInTab(win, control)
 
 		PGC_SetAndActivateControl(win, tabs[i][1], val = tab, switchTab = 0)
 	endfor
-End
-
-/// @brief Return the value and type of the popupmenu list
-///
-/// @retval value extracted string with the contents of `value` from the recreation macro
-/// @retval type  popup menu list type, one of @ref PopupMenuListTypes
-static Function [string value, variable type] PGC_ParsePopupMenuValue(string recMacro)
-
-	string listOrFunc, path, cmd, builtinPopupMenu
-
-	SplitString/E="\\s*,\\s*value\\s*=\\s*(.*)$" recMacro, listOrFunc
-	if(V_Flag != 1)
-		Bug("Could not find popupmenu \"value\" entry")
-		return ["", NaN]
-	endif
-
-	listOrFunc = trimstring(listOrFunc, 1)
-
-	// unescape quotes
-	listOrFunc = ReplaceString("\\\"", listOrFunc, "\"")
-
-	// misc cleanup
-	listOrFunc = RemovePrefix(listOrFunc, start = "#")
-	listOrFunc = RemovePrefix(listOrFunc, start = "\"")
-	listOrFunc = RemoveEnding(listOrFunc, "\"")
-
-	SplitString/E="^\"\*([A-Z]{1,})\*\"$" listOrFunc, builtinPopupMenu
-
-	if(V_flag == 1)
-		return [builtinPopupMenu, PGC_POPUPMENULIST_TYPE_BUILTIN]
-	endif
-
-	return [listOrFunc, PGC_POPUPMENULIST_TYPE_OTHER]
-End
-
-/// @brief Return the popupmenu list entries
-static Function/S PGC_GetPopupMenuList(string value, variable type)
-	string recMacro
-
-	string path, cmd
-
-	switch(type)
-		case PGC_POPUPMENULIST_TYPE_BUILTIN:
-			strswitch(value)
-				case "COLORTABLEPOP":
-					return CTabList()
-				default:
-					ASSERT(0, "Not implemented")
-			endswitch
-		case PGC_POPUPMENULIST_TYPE_OTHER:
-			path = GetTemporaryString()
-
-			sprintf cmd, "%s = %s", path, value
-			Execute/Z/Q cmd
-
-			if(V_Flag)
-				Bug("Execute returned an error :(")
-				return ""
-			endif
-
-			SVAR str = $path
-			return str
-		default:
-			ASSERT(0, "Missing popup menu list type")
-	endswitch
 End
 
 static Function/S PGC_GetProcAndCheckParamType(recMacro)
@@ -275,19 +203,19 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 		case CONTROL_TYPE_POPUPMENU:
 			ASSERT(ParamIsDefault(val) + ParamIsDefault(str) == 1, "Needs an argument")
 
-			[popupMenuValue, popupMenuType] = PGC_ParsePopupMenuValue(S_recreation)
+			[popupMenuValue, popupMenuType] = ParsePopupMenuValue(S_recreation)
 
 			if(!ParamIsDefault(val))
 				ASSERT(val >= 0,"Invalid index")
 				PopupMenu $control win=$win, mode=(val + 1)
 			elseif(!ParamIsDefault(str))
 				switch(popupMenuType)
-					case PGC_POPUPMENULIST_TYPE_BUILTIN:
+					case POPUPMENULIST_TYPE_BUILTIN:
 						// popmatch does not work with these
-						popupMenuList = PGC_GetPopupMenuList(popupMenuValue, popupMenuType)
+						popupMenuList = GetPopupMenuList(popupMenuValue, popupMenuType)
 						PopupMenu $control win=$win, mode=(WhichListItem(str, popupMenuList) + 1)
 						break
-					case PGC_POPUPMENULIST_TYPE_OTHER:
+					case POPUPMENULIST_TYPE_OTHER:
 						str = SetPopupMenuString(win, control, str)
 						break
 					default:
@@ -305,7 +233,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			pa.eventCode = 2
 
 			if(isEmpty(popupMenuList))
-				popupMenuList = PGC_GetPopupMenuList(popupMenuValue, popupMenuType)
+				popupMenuList = GetPopupMenuList(popupMenuValue, popupMenuType)
 			endif
 
 			if(!ParamIsDefault(val))

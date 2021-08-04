@@ -622,7 +622,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 53
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 28
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 29
 Constant WAVEBUILDER_PANEL_VERSION        = 10
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 
@@ -1192,6 +1192,7 @@ Constant SWEEP_ENTRY   = 0x2
 Constant EPOCH_ENTRY   = 0x4
 Constant STIMSET_ENTRY = 0x8
 /// @}
+
 /// Especially interesting for PXP consumers like the analysis browser.
 Constant EXPERIMENT_VERSION = 2
 
@@ -1359,14 +1360,6 @@ Constant PEXT_SUBSPLIT_ALPHA = 1
 Constant PEXT_SUBNAMEGEN_DEFAULT = 0
 /// @}
 
-/// @name Lab notebook entry types
-/// @anchor LNBEntryTypes
-/// @{
-Constant LNB_TYPE_NONE = 0
-Constant LNB_TYPE_NUMERICAL = 1
-Constant LNB_TYPE_TEXTUAL = 2
-/// @}
-
 /// @brief Wave note key for the indexing helper JSON document
 StrConstant TUD_INDEX_JSON = "INDEX_JSON"
 
@@ -1530,3 +1523,26 @@ Constant DND_STIMSET_DANDI_SET = 107
 StrConstant WAVEBUILDER_DELTA_MODES = "None;Multiplier;Log;Squared;Power;Alternate;Explicit"
 
 StrConstant WAVEBUILDER_TRIGGER_TYPES = "Sin;Cos"
+
+/// @name Popup menu list types
+/// @anchor PopupMenuListTypes
+/// @{
+Constant POPUPMENULIST_TYPE_BUILTIN = 0x1 // COLORTABLEPOP, etc.
+Constant POPUPMENULIST_TYPE_OTHER   = 0x2 // everything else
+/// @}
+
+/// @name Possible log book types
+/// @anchor LogbookTypes
+/// @{
+Constant LBT_LABNOTEBOOK = 0x1
+Constant LBT_TPSTORAGE   = 0x2
+/// @}
+
+/// @name Possible labnotebook wave types
+/// @anchor LabnotebookWaveTypes
+/// @{
+Constant LBN_NUMERICAL_KEYS   = 0x1
+Constant LBN_NUMERICAL_VALUES = 0x2
+Constant LBN_TEXTUAL_KEYS     = 0x4
+Constant LBN_TEXTUAL_VALUES   = 0x8
+/// @}

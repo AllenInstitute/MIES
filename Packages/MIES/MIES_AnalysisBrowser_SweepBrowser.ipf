@@ -124,7 +124,11 @@ static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
 	sweep     = str2num(sweepMap[mapIndex][%Sweep])
 	expFolder = sweepMap[mapIndex][%DataFolder]
 
-	WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
+	WAVE/Z numericalValues = GetAnalysLBNumericalValues(expFolder, device)
+
+	if(!WaveExists(numericalValues))
+		return $""
+	endif
 
 	return GetLastSetting(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
 End
@@ -309,11 +313,13 @@ Function SB_UpdateSweepPlot(win)
 
 		WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, index=mapIndex)
 
-		WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
-		DFREF sweepDFR       = GetAnalysisSweepPath(dataFolder, device)
+		WAVE/Z numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
+		ASSERT(WaveExists(numericalValues), "Missing labnotebook wave")
+		WAVE/Z textualValues = GetAnalysLBTextualValues(dataFolder, device)
+		ASSERT(WaveExists(textualValues), "Missing labnotebook wave")
 
+		DFREF sweepDFR  = GetAnalysisSweepPath(dataFolder, device)
 		WAVE configWave = GetAnalysisConfigWave(dataFolder, device, sweepNo)
-		WAVE textualValues = GetAnalysLBTextualValues(dataFolder, device)
 
 		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, \
 		                        axisLabelCache, traceIndex, experiment, sweepChannelSel)
@@ -373,7 +379,6 @@ Function SB_SweepBrowserWindowHook(s)
 
 			DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 
-			KillWindow $graph
 			KillOrMoveToTrash(dfr = sweepBrowserDFR)
 			break
 		case 22: // mouse wheel
@@ -482,20 +487,46 @@ Function/WAVE SB_GetPlainSweepList(win)
 	return sweeps
 End
 
-/// @brief Return a wave with numerical value labnotebook waves
+/// @brief Generic getter for the labnotebook waves
 ///
-/// If `sweepNumber` is present the labnotebook wave is returned, otherwise a
-/// wave reference wave is returned.
+/// Use case 1:
+/// - No optional parameters given: Returns a wave reference wave with all labnotebook waves from all displayed sweeps, ordered by index
 ///
-/// @param win         SweepBrowser data window
-/// @param sweepNumber [optional, default: all] return the labnotebook only for a specific sweep
-Function/WAVE SB_GetNumericalValuesWaves(win, [sweepNumber])
-	string win
-	variable sweepNumber
+/// Use case 2:
+/// - sweepNumber given: Return the labnotebook wave of that sweep only
+///
+/// Use case 3:
+/// - dataFolder and device given: Return the labnotebook for the given nwb/pxp data folder and device combination
+///
+/// @param win         panel
+/// @param type        One of @ref LabnotebookWaveTypes
+/// @param sweepNumber [optional] sweep number
+/// @param dataFolder  [optional] nwb/pxp data folder (aka experiment)
+/// @param device      [optional] device of the experiment
+///
+/// @return valid labnotebook wave or a null wave in case it does not exist
+Function/WAVE SB_GetLBNWave(string win, variable type, [variable sweepNumber, string dataFolder, string device])
 
 	variable numRows
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
+
+	switch(type)
+		case LBN_NUMERICAL_KEYS:
+			FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBNumericalKeys
+			break
+		case LBN_NUMERICAL_VALUES:
+			FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBNumericalValues
+			break
+		case LBN_TEXTUAL_KEYS:
+			FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBTextualKeys
+			break
+		case LBN_TEXTUAL_VALUES:
+			FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBTextualValues
+			break
+		default:
+			ASSERT(0, "Invalid type")
+	endswitch
 
 	if(!ParamIsDefault(sweepNumber))
 		WAVE/Z indices = FindIndizes(map, colLabel = "Sweep", var = sweepNumber)
@@ -503,43 +534,20 @@ Function/WAVE SB_GetNumericalValuesWaves(win, [sweepNumber])
 			return $""
 		endif
 
-		return GetAnalysLBNumericalValues(map[indices[0]][%DataFolder], map[indices[0]][%Device])
+		return func(map[indices[0]][%DataFolder], map[indices[0]][%Device])
+	elseif(!ParamIsDefault(dataFolder) && !ParamIsDefault(device))
+		return func(dataFolder, device)
 	endif
 
 	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
-	Make/WAVE/FREE/N=(numRows) allNumericalValues = GetAnalysLBNumericalValues(map[p][%DataFolder], map[p][%Device])
 
-	return allNumericalValues
-End
-
-/// @brief Return a wave with numerical value numerical waves
-///
-/// If `sweepNumber` is present the labnotebook wave is returned, otherwise a
-/// wave reference wave is returned.
-///
-/// @param win         SweepBrowser data window
-/// @param sweepNumber [optional, default: all] return the labnotebook only for a specific sweep
-Function/WAVE SB_GetTextualValuesWaves(win, [sweepNumber])
-	string win
-	variable sweepNumber
-
-	variable numRows
-
-	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
-
-	if(!ParamIsDefault(sweepNumber))
-		WAVE/Z indices = FindIndizes(map, colLabel = "Sweep", var = sweepNumber)
-		if(!WaveExists(indices))
-			return $""
-		endif
-
-		return GetAnalysLBNumericalValues(map[indices[0]][%DataFolder], map[indices[0]][%Device])
+	if(!numRows)
+		return $""
 	endif
 
-	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
-	Make/WAVE/FREE/N=(numRows) allTextualValues = GetAnalysLBTextualValues(map[p][%DataFolder], map[p][%Device])
+	Make/WAVE/FREE/N=(numRows) waves = func(map[p][%DataFolder], map[p][%Device])
 
-	return allTextualValues
+	return waves
 End
 
 Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
@@ -596,8 +604,10 @@ Function SB_AddSweepToGraph(string win, variable index)
 	experiment = map[index][%FileName]
 	sweepNo    = str2num(map[index][%Sweep])
 
-	WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
-	WAVE textualValues   = GetAnalysLBTextualValues(dataFolder, device)
+	WAVE/Z numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
+	ASSERT(WaveExists(numericalValues), "Missing labnotebook wave")
+	WAVE/Z textualValues   = GetAnalysLBTextualValues(dataFolder, device)
+	ASSERT(WaveExists(textualValues), "Missing labnotebook wave")
 	DFREF sweepDFR       = GetAnalysisSweepPath(dataFolder, device)
 
 	[tgs] = BSP_GatherTiledGraphSettings(graph)

@@ -8,6 +8,10 @@
 
 /// @file MIES_TraceUserData.ipf
 /// @brief This file holds helper functions to work with our own trace user data handling
+///
+/// It works by storing the trace user data in one wave per graph. It is cleaned up when the graph is killed.
+/// For subwindows the window hook responsible for cleaning up is attached to the top-most parent as only that is
+/// receiving window hook events.
 
 /// @brief Window hook for clearing the user data of the attached graph
 Function TUD_RemoveUserDataWave(s)
@@ -25,9 +29,35 @@ Function TUD_RemoveUserDataWave(s)
 End
 
 /// @brief Clear the user data wave and release the indexing JSON document
+///
+/// Works recursively on all child windows and calls TUD_ClearImpl on each graph.
 Function TUD_Clear(string graph)
+	string windows, win
+	variable numEntries, i
 
-	variable jsonID, index, i, numEntries
+	windows = GetAllWindows(graph)
+
+	numEntries = ItemsInList(windows)
+	for(i = 0; i < numEntries; i += 1)
+		win = StringFromList(i, windows)
+
+		if(WinType(win) != 1) // graph
+			continue
+		endif
+
+		TUD_ClearImpl(win)
+	endfor
+End
+
+static Function TUD_ClearImpl(string graph)
+
+	variable jsonID, index, i, numEntries, numWindows
+	string windows, win
+
+	if(!TUD_GraphIsManaged(graph))
+		// nothing to do
+		return NaN
+	endif
 
 	WAVE/T graphUserData = GetGraphUserData(graph)
 
@@ -201,6 +231,12 @@ Function TUD_SetUserDataFromWaves(string graph, string trace, WAVE/T keys, WAVE/
 	multithread graphUserData[row][first, last] = values[q - first]
 End
 
+static Function TUD_GraphIsManaged(string graph)
+	string path = GetGraphUserDataAsString(graph)
+
+	return WaveExists($path)
+End
+
 /// @brief Return the number of traces in the user data
 Function TUD_GetTraceCount(string graph)
 
@@ -227,8 +263,12 @@ End
 /// with TUD_Clear() and the window is gone, this function can be used to reattach
 /// the cleanup hook to the newly created graph.
 Function TUD_Init(string graph)
+	string win
+
 	ASSERT(WinType(graph) == 1, "Expected graph")
-	SetWindow $graph, hook(traceUserDataCleanup) = TUD_RemoveUserDataWave
+
+	win = GetMainWindow(graph)
+	SetWindow $win, hook(traceUserDataCleanup) = TUD_RemoveUserDataWave
 End
 
 static Function TUD_AddTrace(variable jsonID, WAVE/T graphUserData, string trace)

@@ -11,9 +11,6 @@
 /// @file MIES_MiesUtilities.ipf
 /// @brief This file holds utility functions which need to know about MIES internals.
 
-static StrConstant LABNOTEBOOK_BOTTOM_AXIS_TIME  = "Timestamp (a. u.)"
-static StrConstant LABNOTEBOOK_BOTTOM_AXIS_SWEEP = "Sweep Number (a. u.)"
-
 static Constant ADC_SLOT_MULTIPLIER = 4
 static Constant NUM_CHANNEL_TYPES   = 3
 
@@ -87,84 +84,133 @@ Function HorizExpandWithVisX()
 	GetMarquee/K/W=$graph
 End
 
-/// @brief Extract the date/time column of the labnotebook values wave
-Function/WAVE ExtractLBColumnTimeStamp(values)
-	WAVE values
+/// @brief Return the logbook type, one of @ref LogbookTypes
+Function GetLogbookType(WAVE wv)
 
-	return ExtractLBColumn(values, 1, "Dat")
+	return GrepString(NameOfWave(wv), TP_STORAGE_REGEXP) == 1 ? LBT_TPSTORAGE : LBT_LABNOTEBOOK
 End
 
-/// @brief Extract the sweep number column of the labnotebook values wave
-Function/WAVE ExtractLBColumnSweep(values)
-	WAVE values
+/// @brief Extract a date/time slice of the logbook wave
+Function/WAVE ExtractLogbookSliceTimeStamp(WAVE logbook)
 
-	return ExtractLBColumn(values, 0, "Sweep")
+	variable colOrLayer, logbookType
+
+	logbookType = GetLogbookType(logbook)
+
+	switch(logbookType)
+		case LBT_LABNOTEBOOK:
+			colOrLayer = 1
+			break
+		case LBT_TPSTORAGE:
+			colOrLayer = FindDimLabel(logbook, LAYERS, "TimeStampSinceIgorEpochUTC")
+			break
+		default:
+			ASSERT(0, "Invalid logbook type")
+	endswitch
+
+	return ExtractLogbookSlice(logbook, logbookType, colOrLayer, "Dat")
 End
 
-/// @brief Extract a column of the labnotebook values wave and makes it empty
-Function/WAVE ExtractLBColumnEmpty(values)
-	WAVE values
+/// @brief Extract the delta time slice of the logbook wave
+Function/WAVE ExtractLogbookSliceDeltaTime(WAVE logbook)
 
-	WAVE wv = ExtractLBColumn(values, 0, "Null")
+	variable colOrLayer, logbookType
+
+	logbookType = GetLogbookType(logbook)
+
+	switch(logbookType)
+		case LBT_LABNOTEBOOK:
+			ASSERT(0, "Unsupported")
+			break
+		case LBT_TPSTORAGE:
+			colOrLayer = FindDimLabel(logbook, LAYERS, "DeltaTime")
+			break
+		default:
+			ASSERT(0, "Invalid logbook type")
+	endswitch
+
+	return ExtractLogbookSlice(logbook, logbookType, colOrLayer, "DeltaTime")
+End
+
+/// @brief Extract the sweep number slice of the labnotebook values wave
+Function/WAVE ExtractLogbookSliceSweep(WAVE values)
+
+	return ExtractLogbookSlice(values, GetLogbookType(values), 0, "Sweep")
+End
+
+/// @brief Extract a slice of the logbook wave and makes it empty
+Function/WAVE ExtractLogbookSliceEmpty(WAVE values)
+
+	WAVE wv = ExtractLogbookSlice(values, GetLogbookType(values), 0, "Null")
 	wv = 0
 
 	return wv
 End
 
-/// @brief Extract a single column of the labnotebook values wave
+/// @brief Extract a single column/layer of the labnotebook/TPStorage values wave
 ///
 /// This is useful if you want to plot values against e.g time and let
 /// Igor do the formatting of the date/time values.
 /// Always returns a numerical wave.
-static Function/WAVE ExtractLBColumn(values, col, suffix)
-	WAVE values
-	variable col
-	string suffix
-
-	string name, colName
-	variable nextRowIndex
+static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, variable colOrLayer, string suffix)
+	string name, entryName
+	variable nextRowIndex, col, layer
 
 	// we can't use the GetDevSpecLabNBTempFolder getter as we are
 	// called from the analysisbrowser as well.
-	DFREF dfr = createDFWithAllParents(GetWavesDataFolder(values, 1) + "Temp")
-	colName = GetDimLabel(values, COLS, col)
-	ASSERT(!isEmpty(colName), "colName must not be empty")
-	name = NameOfWave(values) + suffix
-	WAVE/Z/SDFR=dfr singleColumn = $name
+	DFREF dfr = createDFWithAllParents(GetWavesDataFolder(logbook, 1) + "Temp")
 
-	nextRowIndex = GetNumberFromWaveNote(values, NOTE_INDEX)
+	switch(logbookType)
+		case LBT_LABNOTEBOOK:
+			entryName = GetDimLabel(logbook, COLS, colOrLayer)
+			col   = colOrLayer
+			layer = -1
+			break
+		case LBT_TPSTORAGE:
+			entryName = GetDimLabel(logbook, LAYERS, colOrLayer)
+			col   = -1
+			layer = colOrLayer
+			break
+		default:
+			ASSERT(0, "Invalid logbook type")
+	endswitch
 
-	if(!WaveExists(singleColumn) || DimSize(singleColumn, ROWS) != DimSize(values, ROWS) || DimSize(singleColumn, ROWS) < nextRowIndex || (nextRowIndex > 0 && !IsFinite(singleColumn[nextRowIndex - 1])))
-		KillOrMoveToTrash(wv=singleColumn)
-		Duplicate/O/R=[0, DimSize(values, ROWS)][col][-1][-1] values, dfr:$name/Wave=singleColumn
+	ASSERT(!isEmpty(entryName), "entryName must not be empty")
+	name = NameOfWave(logbook) + CleanupName(suffix, 0)
+	WAVE/Z/SDFR=dfr slice = $name
+
+	nextRowIndex = GetNumberFromWaveNote(logbook, NOTE_INDEX)
+
+	if(!WaveExists(slice)                                           \
+	   || DimSize(slice, ROWS) != DimSize(logbook, ROWS)            \
+	   || DimSize(slice, ROWS) < nextRowIndex                       \
+	   || (nextRowIndex > 0 && !IsFinite(slice[nextRowIndex - 1])))
+
+		KillOrMoveToTrash(wv=slice)
+		Duplicate/O/R=[0, DimSize(logbook, ROWS)][col][layer][-1] logbook, dfr:$name/Wave=slice
+
 		// we want to have a pure 1D wave without any columns or layers, this is currently not possible with Duplicate
-		Redimension/N=-1 singleColumn
+		Redimension/N=-1 slice
 
-		// redimension has the odd behaviour to change a wave with zero rows to one with 1 row and then initializes that point to zero
-		// we need to fix that
-		if(DimSize(singleColumn, ROWS) == 1 && !IsTextWave(singleColumn))
-			singleColumn = NaN
+		if(!cmpstr(entryName, "TimeStamp") || !cmpstr(entryName, "TimeStampSinceIgorEpochUTC"))
+			SetScale d, 0, 0, "dat" slice
 		endif
 
-		if(!cmpstr(colName, "TimeStamp"))
-			SetScale d, 0, 0, "dat" singleColumn
-		endif
-
-		SetDimLabel ROWS, -1, $colName, singleColumn
+		SetDimLabel ROWS, -1, $entryName, slice
 	endif
 
-	SetNumberInWaveNote(singleColumn, NOTE_INDEX, nextRowIndex)
+	SetNumberInWaveNote(slice, NOTE_INDEX, nextRowIndex)
 
-	if(IsTextWave(singleColumn))
-		WAVE/T singleColumnFree = MakeWaveFree(singleColumn)
-		Make/O/D/N=(DimSize(singleColumnFree, ROWS), DimSize(singleColumnFree, COLS), DimSize(singleColumnFree, LAYERS), DimSize(singleColumnFree, CHUNKS)) dfr:$name/Wave=singleColumnFromText
-		CopyScales singleColumnFree, singleColumnFromText
-		Note/K singleColumnFromText, note(singleColumnFree)
-		singleColumnFromText = str2num(singleColumnFree)
-		return singleColumnFromText
+	if(IsTextWave(slice))
+		WAVE/T sliceFree = MakeWaveFree(slice)
+		Make/O/D/N=(DimSize(sliceFree, ROWS), DimSize(sliceFree, COLS), DimSize(sliceFree, LAYERS), DimSize(sliceFree, CHUNKS)) dfr:$name/Wave=sliceFromText
+		CopyScales sliceFree, sliceFromText
+		Note/K sliceFromText, note(sliceFree)
+		sliceFromText = str2num(sliceFree)
+		return sliceFromText
 	endif
 
-	return singleColumn
+	return slice
 End
 
 /// @brief Return a list of the AD channels from the DAQ config
@@ -3049,65 +3095,6 @@ Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [string chann
 	[s] = GetTraceColor(colorIndex)
 End
 
-/// @brief Return a wave with all keys in the labnotebook key wave
-Function/WAVE GetLabNotebookKeys(keyWave)
-	WAVE/Z/T keyWave
-
-	variable numCols
-
-	if(!WaveExists(keyWave))
-		return $""
-	endif
-
-	numCols = DimSize(keyWave, COLS) - INITIAL_KEY_WAVE_COL_COUNT
-	if(numCols <= 0)
-		return $""
-	endif
-
-	Make/FREE/T/N=(numCols) keys
-	keys[] = keyWave[%Parameter][INITIAL_KEY_WAVE_COL_COUNT + p]
-
-	return keys
-End
-
-/// @brief Return a sorted wave with all keys in the labnotebook key wave
-Function/WAVE GetLabNotebookSortedKeys(keyWave)
-	WAVE/Z/T keyWave
-
-	if(!WaveExists(keyWave))
-		return $""
-	endif
-
-	WAVE/Z/T keys = GetLabNotebookKeys(keyWave)
-	if(!WaveExists(keys))
-		return $""
-	endif
-
-	Sort/A keys, keys
-
-	return keys
-End
-
-/// @brief Check if the x wave belonging to the first trace in the
-/// graph has a date/time scale. Returns false if no traces have been found.
-Function CheckIfXAxisIsTime(graph)
-	string graph
-
-	string list, trace, dataUnits
-
-	list = TraceNameList(graph, ";", 0 + 1)
-
-	// default is sweep axis
-	if(isEmpty(list))
-		return 0
-	endif
-
-	trace = StringFromList(0, list)
-	dataUnits = WaveUnits(XWaveRefFromTrace(graph, trace), -1)
-
-	return !cmpstr(dataUnits, "dat")
-End
-
 /// @brief Queries the parameter and unit from a labnotebook key wave
 ///
 /// @param[in]  keyWave   labnotebook key wave
@@ -3149,20 +3136,6 @@ threadsafe Function GetKeyWaveParameterAndUnit(keyWave, key, parameter, unit, co
 	unit      = keyWave[%Units][col]
 
 	return 0
-End
-
-/// @brief Set the appropriate label for the bottom axis of the graph created by CreateTiledChannelGraph
-///
-/// Assumes that wave data units are equal for all traces
-Function SetLabNotebookBottomLabel(graph, isTimeAxis)
-	string graph
-	variable isTimeAxis
-
-	if(isTimeAxis)
-		Label/W=$graph bottom LABNOTEBOOK_BOTTOM_AXIS_TIME
-	else
-		Label/W=$graph bottom LABNOTEBOOK_BOTTOM_AXIS_SWEEP
-	endif
 End
 
 /// @brief Space the matching axis in an equal manner
@@ -3287,303 +3260,6 @@ Function EquallySpaceAxisPA(string graph, string allAxes, string distAxes, [vari
 			endif
 		endfor
 	endif
-End
-
-
-/// @brief Update the legend in the labnotebook graph
-///
-/// Passing traceList is required if you just added traces
-/// to the graph as these can not be immediately queried using
-/// `TraceNameList` as that would require an `DoUpdate` call before.
-///
-/// Assumes that the traceList displays information from the labnotebook. All entries
-/// with indizes equal or higher than #NUM_HEADSTAGES will be labeled as `all` denoting that
-/// the information is headstage independent and therefore valid for all headstages.
-///
-/// @param graph       name of the graph
-/// @param traceList   list of traces in the graph
-Function UpdateLBGraphLegend(graph, [traceList])
-	string graph, traceList
-
-	string str, trace, header
-	variable numEntries, i
-
-	if(!windowExists(graph))
-		return NaN
-	endif
-
-	if(FindListItem("text0", AnnotationList(graph)) == -1)
-		return NaN
-	endif
-
-	if(ParamIsDefault(traceList) || ItemsInList(traceList) == 0)
-		TextBox/C/W=$graph/N=text0/F=0 ""
-		return NaN
-	endif
-
-	header = "\\JCHeadstage\r"
-	str = ""
-
-	numEntries = ItemsInList(traceList)
-	for(i = 0 ; i < numEntries; i += 1)
-		trace = StringFromList(i, traceList)
-
-		if(str2num(GetUserData(graph, trace, "IsTextData")))
-			continue
-		endif
-
-		str += "\\s(" + PossiblyQuoteName(trace) + ") "
-
-		if(i < NUM_HEADSTAGES)
-			str += num2str(i + 1)
-		else
-			str += "all"
-		endif
-
-		if(mod(i, 2))
-			str += "\r"
-		endif
-	endfor
-
-	if(IsEmpty(str))
-		return NaN
-	endif
-
-	str = RemoveEnding(header + str, "\r")
-	TextBox/C/W=$graph/N=text0/F=2 str
-End
-
-/// @brief Add a trace to the labnotebook graph
-///
-/// @param graph  name of the graph
-/// @param keys   labnotebook keys wave (numerical or text)
-/// @param values labnotebook values wave (numerical or text)
-/// @param key    name of the key to add
-Function AddTraceToLBGraph(graph, keys, values, key)
-	string graph
-	WAVE values, keys
-	string key
-
-	string unit, lbl, axis, trace, text, tagString, tmp
-	string traceList = ""
-	variable i, j, row, col, numRows, sweepCol, marker
-	variable isTimeAxis, isTextData, xPos
-	STRUCT RGBColor s
-
-	WAVE/T/Z traces
-	[traces, lbl, unit, col] = GetPropertiesForLabnotebookEntry(keys, key)
-
-	if(!WaveExists(traces))
-		return NaN
-	endif
-
-	WAVE valuesDat = ExtractLBColumnTimeStamp(values)
-
-	isTimeAxis = CheckIfXAxisIsTime(graph)
-	isTextData = IsTextWave(values)
-	sweepCol   = GetSweepColumn(values)
-
-	axis = GetNextFreeAxisName(graph, VERT_AXIS_BASE_NAME)
-
-	if(IsTextData)
-		WAVE valuesNull  = ExtractLBColumnEmpty(values)
-		WAVE valuesSweep = ExtractLBColumnSweep(values)
-	endif
-
-	for(i = 0; i < LABNOTEBOOK_LAYER_COUNT; i += 1)
-		trace = traces[i]
-		traceList = AddListItem(trace, traceList, ";", inf)
-
-		if(isTextData)
-			if(isTimeAxis)
-				AppendToGraph/W=$graph/L=$axis valuesNull/TN=$trace vs valuesDat
-			else
-				AppendToGraph/W=$graph/L=$axis valuesNull/TN=$trace vs valuesSweep
-			endif
-
-			ModifyGraph/W=$graph nticks($axis)=0, axRGB($axis)=(65535,65535,65535)
-		else
-			if(isTimeAxis)
-				AppendToGraph/W=$graph/L=$axis values[][col][i]/TN=$trace vs valuesDat
-			else
-				AppendToGraph/W=$graph/L=$axis values[][col][i]/TN=$trace vs values[][sweepCol][0]
-			endif
-		endif
-
-		ModifyGraph/W=$graph userData($trace)={key, USERDATA_MODIFYGRAPH_REPLACE, key}
-		ModifyGraph/W=$graph userData($trace)={IsTextData, USERDATA_MODIFYGRAPH_REPLACE, num2str(isTextData)}
-
-		[s] = GetHeadstageColor(i)
-		marker = i == 0 ? 39 : i
-		ModifyGraph/W=$graph rgb($trace)=(s.red, s.green, s.blue, IsTextData ? 0 : inf), marker($trace)=marker
-		SetAxis/W=$graph/A=2 $axis
-
-		// we only need one trace, all the info is in the tag
-		if(isTextData)
-			break
-		endif
-	endfor
-
-	if(isTextData)
-		WAVE/T valuesText = values
-		AddTagsForTextualLBNEntries(graph, keys, valuesText, key)
-	endif
-
-	if(!isEmpty(unit))
-		lbl += "\r(" + unit + ")"
-	endif
-
-	Label/W=$graph $axis lbl
-
-	ModifyGraph/W=$graph lblPosMode = 1, standoff($axis) = 0, freePos($axis) = 0
-	ModifyGraph/W=$graph mode = 3
-	ModifyGraph/W=$graph nticks(bottom) = 10, manTick(bottom) = {0,1,0,0}, manMinor(bottom) = {0,50}
-
-	if(!cmpstr(unit, LABNOTEBOOK_BINARY_UNIT))
-		ModifyGraph/W=$graph manTick($axis)={0,1,0,0}, manMinor($axis)={0,50}, zapTZ($axis)=1
-	endif
-
-	SetLabNotebookBottomLabel(graph, isTimeAxis)
-	EquallySpaceAxis(graph, axisRegExp=VERT_AXIS_BASE_NAME + ".*")
-	UpdateLBGraphLegend(graph, traceList=traceList)
-End
-
-Function [WAVE/T/Z traces, string name, string unit, variable col] GetPropertiesForLabnotebookEntry(WAVE/T keys, string key)
-
-	if(GetKeyWaveParameterAndUnit(keys, key, name, unit, col))
-		return [$"", "", "", NaN]
-	endif
-
-	name = LineBreakingIntoPar(name)
-
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/T traces = CleanupName(name[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - 5] + " (" + num2str(p + 1) + ")", 0) // +1 because the headstage number is 1-based
-
-	return [traces, name, unit, col]
-End
-
-Function AddTagsForTextualLBNEntries(string graph, WAVE/T keys, WAVE/T values, string key, [variable firstSweep])
-	variable i, j, numRows, numEntries, isTimeAxis, col, sweepCol, firstRow
-	string tagString, tmp, text, unit, lbl, name
-	STRUCT RGBColor s
-
-	WAVE/T/Z traces
-	[traces, lbl, unit, col] = GetPropertiesForLabnotebookEntry(keys, key)
-
-	if(!WaveExists(traces))
-		return NaN
-	endif
-
-	WAVE valuesSweep = ExtractLBColumnSweep(values)
-	WAVE valuesDat = ExtractLBColumnTimeStamp(values)
-
-	isTimeAxis = CheckIfXAxisIsTime(graph)
-	sweepCol   = GetSweepColumn(values)
-
-	if(isTimeAxis)
-		WAVE xPos = valuesSweep
-	else
-		WAVE xPos = valuesDat
-	endif
-
-	numRows    = GetNumberFromWaveNote(values, NOTE_INDEX)
-	numEntries = DimSize(values, LAYERS)
-
-	if(ParamIsDefault(firstSweep))
-		firstRow = 0
-	else
-		FindValue/V=(firstSweep) valuesSweep
-		firstRow = V_value
-	endif
-
-	for(i = firstRow; i < numRows; i += 1)
-		if(!IsFinite(xPos[i]))
-			continue
-		endif
-
-		tagString = ""
-		for(j = 0; j < LABNOTEBOOK_LAYER_COUNT; j += 1)
-			text = values[i][col][j]
-
-			if(IsEmpty(text))
-				continue
-			endif
-
-			[s] = GetHeadstageColor(j)
-			sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", s.red, s.green, s.blue, j + 1
-			text = ReplaceString("\\", text, "\\\\")
-			tagString = tagString + tmp + text + "\r"
-		endfor
-
-		if(IsEmpty(tagString))
-			continue
-		endif
-
-		name = traces[0] + "_" + num2str(i)
-
-		Tag/C/N=$name/W=$graph/F=0/L=0/X=0.00/Y=0.00/O=90 $traces[0], i, RemoveEnding(tagString, "\r")
-	endfor
-End
-
-/// @brief Switch the labnotebook graph x axis type (time <-> sweep numbers)
-Function SwitchLBGraphXAxis(graph, numericalValues, textualValues)
-	string graph
-	WAVE numericalValues, textualValues
-
-	string trace, dataUnits, list, wvName
-	variable i, numEntries, isTimeAxis, sweepCol, isTextData
-
-	list = TraceNameList(graph, ";", 0 + 1)
-
-	if(isEmpty(list))
-		return NaN
-	endif
-
-	WAVE numericalValuesDat     = ExtractLBColumnTimeStamp(numericalValues)
-	WAVE/Z numericalValuesSweep = $""
-	WAVE textualValuesDat        = ExtractLBColumnTimeStamp(textualValues)
-	WAVE textualValuesSweep      = ExtractLBColumnSweep(textualValues)
-
-	isTimeAxis = CheckIfXAxisIsTime(graph)
-	sweepCol   = GetSweepColumn(numericalValues)
-
-	numEntries = ItemsInList(list)
-	for(i = 0; i < numEntries; i += 1)
-		trace = StringFromList(i, list)
-
-		// instance does not matter as all instances use the same xwave
-		wvName = StringByKey("XWAVE", TraceInfo(graph, trace, 0))
-
-		isTextData = StringMatch(wvName, "textualValues*")
-
-		if(isTextData)
-			WAVE valuesSweep = textualValuesSweep
-			WAVE valuesDat   = textualValuesDat
-		else
-			WAVE/Z valuesSweep = $""
-			WAVE valuesDat     = numericalValuesDat
-		endif
-
-		// change from timestamps to sweepNums
-		if(isTimeAxis)
-			if(isTextData)
-				ReplaceWave/W=$graph/X trace=$trace, valuesSweep
-			else
-				ReplaceWave/W=$graph/X trace=$trace, numericalValues[][sweepCol][0]
-			endif
-		else // other direction
-			ReplaceWave/W=$graph/X trace=$trace, valuesDat
-		endif
-	endfor
-
-	SetLabNotebookBottomLabel(graph, !isTimeAxis)
-
-	// autoscale all axis after a switch
-	list = AxisList(graph)
-
-	numEntries = ItemsInList(list)
-	for(i = 0; i < numEntries; i += 1)
-		SetAxis/W=$graph/A $StringFromList(i, list)
-	endfor
 End
 
 /// @brief Save the current experiment under a new name and clear all/some data

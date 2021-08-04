@@ -32,7 +32,7 @@ Function KillGraphAndCheckEmptyUserData_IGNORE(string graph, WAVE/T graphUserDat
 
 	variable modCount = WaveModCount(graphUserData)
 
-	KillWindow $graph
+	KillWindow $GetMainWindow(graph)
 	DoUpdate
 
 	CHECK(!WindowExists(graph))
@@ -65,6 +65,25 @@ Function ClearsWaveOnKillWindow()
 
 	// check that the window hook is reattached with TUD_Init()
 	KillGraphAndCheckEmptyUserData_IGNORE(graph, graphUserData)
+End
+
+// Test: TUD_Clear
+Function ClearsWaveOnKillWindowRecursively()
+
+	string panel, subGraph
+
+	// and now with a subwindow which has a graph
+	NewPanel
+	panel = S_name
+	Display/HOST=$panel
+	subGraph = panel + "#" + S_name
+
+	WAVE/T/Z graphUserData = GetGraphUserData(subGraph)
+
+	TUD_Init(subGraph)
+	TUD_SetUserData(subGraph, "trace1", "efgh", "ijkl")
+
+	KillGraphAndCheckEmptyUserData_IGNORE(subGraph, graphUserData)
 End
 
 // Test: TUD_SetUserData
