@@ -6989,7 +6989,7 @@ Function UploadLogFiles()
 End
 
 /// @brief Update the logging template used by the ZeroMQ-XOP
-Function/S UpdateZeroMQXOPLoggingTemplate()
+Function UpdateZeroMQXOPLoggingTemplate()
 	variable JSONid
 	string str
 
@@ -7006,8 +7006,6 @@ Function/S UpdateZeroMQXOPLoggingTemplate()
 	DEBUGPRINT("ZeroMQ XOP is not present")
 
 #endif
-
-	return str
 End
 
 /// @brief Return the disc location of the (possibly non-existing) ZeroMQ-XOP logfile
