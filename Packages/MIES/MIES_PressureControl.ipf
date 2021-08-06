@@ -152,23 +152,78 @@ static Function P_UpdateTPStorage(panelTitle, headStage)
 	string panelTitle
 	variable headstage
 
-	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	WAVE TPStorage      = GetTPStorage(panelTitle)
-	variable count      = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+	variable count, old, new
 
 	if(!P_ValidatePressureSetHeadstage(panelTitle, headStage) || !P_IsHSActiveAndInVClamp(panelTitle, headStage))
 		return NaN
 	endif
 
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+	WAVE TPStorage      = GetTPStorage(panelTitle)
+
+	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+
 	TPStorage[count][headstage][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0]
 
-	if(count == 0) // don' record pressure change for first entry
+	if(count == 0) // don't record changes for first entry
 		return NaN
 	endif
 
-	TPStorage[count][headstage][%PressureChange] = (TPStorage[count - 1][headstage][%Pressure] == PressureDataWv[headStage][%RealTimePressure][0] ? NaN : PRESSURE_CHANGE)
+	old = P_FindLastSetEntry(TPStorage, count - 1, headstage, "Pressure")
+	new = PressureDataWv[headStage][%RealTimePressure][0]
 
+	TPStorage[count][headstage][%PressureChange] = (new == old ? NaN : PRESSURE_CHANGE)
 	TPStorage[count][headstage][%PressureMethod] = PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear]
+
+	old = P_FindLastSetEntry(TPStorage, count - 1, headstage, "PressureMethod")
+	new = TPStorage[count][headstage][%PressureMethod]
+	P_PublishPressureMethodChange(panelTitle, headstage, old, new)
+End
+
+/// @brief Return the last non-NaN entry from the wave's column `col` and layer `name`
+///        starting from the row `row` going to 0
+static Function P_FindLastSetEntry(WAVE wv, variable row, variable col, string name)
+
+	variable i, entry
+
+	for(i = row; i >= 0; i -= 1)
+		entry = wv[i][col][%$name]
+		if(!IsNaN(entry))
+			return entry
+		endif
+	endfor
+
+	return NaN
+End
+
+static Function P_PublishPressureMethodChange(string panelTitle, variable headstage, variable oldMethod, variable newMethod)
+
+	variable jsonID, err
+	string payload
+
+	if(EqualValuesOrBothNaN(oldMethod, newMethod))
+		return NaN
+	endif
+
+	jsonID = FFI_GetJSONTemplate(panelTitle, headstage)
+	JSON_AddTreeObject(jsonID, "pressure method")
+	JSON_AddString(jsonID, "pressure method/old", P_PressureMethodToString(oldMethod))
+	JSON_AddString(jsonID, "pressure method/new", P_PressureMethodToString(newMethod))
+
+	payload = JSON_Dump(jsonID)
+	JSON_Release(jsonID)
+
+	try
+		ClearRTError()
+#if exists("zeromq_pub_send")
+		zeromq_pub_send(PRESSURE_FILTER, payload); AbortOnRTE
+#else
+		ASSERT(0, "ZeroMQ XOP not present")
+#endif
+	catch
+		err = ClearRTError()
+		BUG("Could not publish pressure method change " + num2str(err))
+	endtry
 End
 
 /// @brief Sets the pressure to atmospheric
@@ -2546,4 +2601,28 @@ Function P_UpdatePressureType(panelTitle)
 	pressureType[headstage] = P_GetUserAccess(panelTitle, headstage, pressureDataWv[headstage][0]) == ACCESS_USER ? PRESSURE_TYPE_USER : PressureType[headstage]
 	// Encode headstages without valid pressure settings
 	pressureType[] = P_ValidatePressureSetHeadstage(panelTitle, p) == 1 ? pressureType[p] : NaN
+End
+
+static Function/S P_PressureMethodToString(variable method)
+
+	switch(method)
+		case PRESSURE_METHOD_ATM:
+			return "Atmosphere"
+		case PRESSURE_METHOD_APPROACH:
+			return "Approach"
+		case PRESSURE_METHOD_SEAL:
+			return "Seal"
+		case PRESSURE_METHOD_BREAKIN:
+			return "Breakin"
+		case PRESSURE_METHOD_CLEAR:
+			return "Clear"
+		case PRESSURE_METHOD_MANUAL:
+			return "Manual"
+		default:
+			if(IsNaN(method))
+				return "None"
+			endif
+
+			ASSERT(0, "Unknown pressure method: " + num2str(method))
+	endswitch
 End

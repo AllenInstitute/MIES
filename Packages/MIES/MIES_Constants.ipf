@@ -737,6 +737,9 @@ StrConstant ANALYSISBROWSER_FILE_TYPE_NWBV2 = "NWBv2"
 Constant MAIN_THREAD = 0
 
 /// @name Available pressure modes for P_SetPressureMode()
+///
+/// See P_PressureMethodToString() for getting a string representation.
+///
 /// @anchor PressureModeConstants
 /// @{
 Constant PRESSURE_METHOD_ATM      = -1
@@ -1546,3 +1549,5 @@ Constant LBN_NUMERICAL_VALUES = 0x2
 Constant LBN_TEXTUAL_KEYS     = 0x4
 Constant LBN_TEXTUAL_VALUES   = 0x8
 /// @}
+
+StrConstant PRESSURE_FILTER = "pressure:state"
