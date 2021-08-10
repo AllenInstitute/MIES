@@ -10,6 +10,10 @@
 /// @brief __DC__ Handle preparations before data acquisition or
 /// test pulse related to the DAQ data and config waves
 
+static Structure DC_WriteTTLParams
+	variable numDACEntries, numADCEntries, onsetDelay, hardwareType, decimationFactor, dataAcqOrTP
+EndStructure
+
 /// @brief Update global variables used by the Testpulse or DAQ
 ///
 /// @param panelTitle device
@@ -1417,43 +1421,14 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	endfor
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		// reset to the default value without distributedDAQ
-		startOffset = onSetDelay
-		ttlIndex = numDACEntries + numADCEntries
-		switch(hardwareType)
-			case HARDWARE_NI_DAC:
-				WAVE/WAVE TTLWaveNI = GetTTLWave(panelTitle)
-				DC_NI_MakeTTLWave(panelTitle)
-				for(i = 0; i < DimSize(config, ROWS); i += 1)
-					if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
-						WAVE NIChannel = NIDataWave[ttlIndex]
-						WAVE TTLWaveSingle = TTLWaveNI[config[i][%ChannelNumber]]
-						singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, panelTitle, DATA_ACQUISITION_MODE)
-						MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] = \
-						limit(TTLWaveSingle[trunc(decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
-						ttlIndex += 1
-					endif
-				endfor
-				break
-			case HARDWARE_ITC_DAC:
-				WAVE TTLWaveITC = GetTTLWave(panelTitle)
-				// Place TTL waves into ITCDataWave
-				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ZERO))
-					DC_ITC_MakeTTLWave(panelTitle, RACK_ZERO)
-					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
-					MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
-					limit(TTLWaveITC[trunc(decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
-					ttlIndex += 1
-				endif
-
-				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ONE))
-					DC_ITC_MakeTTLWave(panelTitle, RACK_ONE)
-					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
-					MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
-					limit(TTLWaveITC[trunc(decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
-				endif
-				break
-		endswitch
+		STRUCT DC_WriteTTLParams ttlParams
+		ttlParams.dataAcqOrTP      = dataAcqOrTP
+		ttlParams.decimationFactor = decimationFactor
+		ttlParams.hardwareType     = hardwareType
+		ttlParams.onsetDelay       = onsetDelay
+		ttlParams.numADCEntries    = numADCEntries
+		ttlParams.numDACEntries    = numDACEntries
+		DC_WriteTTLIntoDAQDataWave(panelTitle, ttlParams)
 	endif
 
 	[ret, row, column] = DC_CheckIfDataWaveHasBorderVals(panelTitle, dataAcqOrTP)
@@ -1463,6 +1438,57 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		ControlWindowToFront()
 		Abort
 	endif
+End
+
+static Function DC_WriteTTLIntoDAQDataWave(string panelTitle, STRUCT DC_WriteTTLParams &s)
+	variable i, startOffset, ttlIndex, singleSetLength
+
+	// reset to the default value without distributedDAQ
+	startOffset = s.onSetDelay
+	ttlIndex = s.numDACEntries + s.numADCEntries
+
+	WAVE config = GetDAQConfigWave(panelTitle)
+
+	switch(s.hardwareType)
+		case HARDWARE_NI_DAC:
+			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, s.dataAcqOrTP)
+
+			WAVE/WAVE TTLWaveNI = GetTTLWave(panelTitle)
+			DC_NI_MakeTTLWave(panelTitle)
+
+			for(i = 0; i < DimSize(config, ROWS); i += 1)
+				if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
+					WAVE NIChannel = NIDataWave[ttlIndex]
+					WAVE TTLWaveSingle = TTLWaveNI[config[i][%ChannelNumber]]
+					singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, panelTitle, DATA_ACQUISITION_MODE)
+					MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] = \
+					limit(TTLWaveSingle[trunc(s.decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
+					ttlIndex += 1
+				endif
+			endfor
+			break
+		case HARDWARE_ITC_DAC:
+			WAVE ITCDataWave = GetDAQDataWave(panelTitle, s.dataAcqOrTP)
+
+			WAVE TTLWaveITC = GetTTLWave(panelTitle)
+
+			// Place TTL waves into ITCDataWave
+			if(DC_AreTTLsInRackChecked(panelTitle, RACK_ZERO))
+				DC_ITC_MakeTTLWave(panelTitle, RACK_ZERO)
+				singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
+				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
+				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+				ttlIndex += 1
+			endif
+
+			if(DC_AreTTLsInRackChecked(panelTitle, RACK_ONE))
+				DC_ITC_MakeTTLWave(panelTitle, RACK_ONE)
+				singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
+				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
+				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+			endif
+			break
+	endswitch
 End
 
 /// @brief Document hardware type/name/serial number into the labnotebook
