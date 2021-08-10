@@ -1449,6 +1449,12 @@ static Function DC_WriteTTLIntoDAQDataWave(string panelTitle, STRUCT DC_WriteTTL
 
 	WAVE config = GetDAQConfigWave(panelTitle)
 
+	WAVE TTLList = GetTTLListFromConfig(config)
+
+	if(DimSize(TTLList, ROWS) == 0)
+		return NaN
+	endif
+
 	switch(s.hardwareType)
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, s.dataAcqOrTP)
