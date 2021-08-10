@@ -1441,7 +1441,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 End
 
 static Function DC_WriteTTLIntoDAQDataWave(string panelTitle, STRUCT DC_WriteTTLParams &s)
-	variable i, startOffset, ttlIndex, singleSetLength
+	variable i, startOffset, ttlIndex, singleSetLength, numRows
 
 	// reset to the default value without distributedDAQ
 	startOffset = s.onSetDelay
@@ -1456,7 +1456,8 @@ static Function DC_WriteTTLIntoDAQDataWave(string panelTitle, STRUCT DC_WriteTTL
 			WAVE/WAVE TTLWaveNI = GetTTLWave(panelTitle)
 			DC_NI_MakeTTLWave(panelTitle)
 
-			for(i = 0; i < DimSize(config, ROWS); i += 1)
+			numRows = DimSize(config, ROWS)
+			for(i = 0; i < numRows; i += 1)
 				if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
 					WAVE NIChannel = NIDataWave[ttlIndex]
 					WAVE TTLWaveSingle = TTLWaveNI[config[i][%ChannelNumber]]
