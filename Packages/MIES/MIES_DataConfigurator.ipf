@@ -32,6 +32,12 @@ Structure DC_CollectEpochInfoParams
 	WAVE/T regions
 EndStructure
 
+static Structure DC_FillSetEventFlagParams
+	variable numDACEntries
+	WAVE DACList, setColumn
+	WAVE/T setName
+EndStructure
+
 /// @brief Update global variables used by the Testpulse or DAQ
 ///
 /// @param panelTitle device
@@ -845,15 +851,10 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
 	WAVE statusHS         = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
-	WAVE setEventFlag = GetSetEventFlag(panelTitle)
-	WAVE DAGain       = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
-	WAVE config       = GetDAQConfigWave(panelTitle)
-	WAVE DACList      = GetDACListFromConfig(config)
-	WAVE ADCList      = GetADCListFromConfig(config)
-
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		setEventFlag = 0
-	endif
+	WAVE DAGain  = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
+	WAVE config  = GetDAQConfigWave(panelTitle)
+	WAVE DACList = GetDACListFromConfig(config)
+	WAVE ADCList = GetADCListFromConfig(config)
 
 	numDACEntries = DimSize(DACList, ROWS)
 	Make/D/FREE/N=(numDACEntries) insertStart, setLength, setColumn, headstageDAC, setCycleCount
@@ -959,10 +960,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 			endif
 		else
 			ASSERT(0, "unknown mode")
-		endif
-
-		if(dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-			setEventFlag[channel][] = (setColumn[i] + 1 == IDX_NumberOfSweepsInSet(setName[i]))
 		endif
 	endfor
 
@@ -1296,6 +1293,15 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_WriteTTLIntoDAQDataWave(panelTitle, ttlParams)
 	endif
 
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		STRUCT DC_FillSetEventFlagParams setEventFlagParams
+		setEventFlagParams.numDACEntries  = numDACEntries
+		WAVE setEventFlagParams.DACList   = DACList
+		WAVE setEventFlagParams.setColumn = setColumn
+		WAVE/T setEventFlagParams.setName = setName
+		DC_FillSetEventFlag(panelTitle, setEventFlagParams)
+	endif
+
 	[ret, row, column] = DC_CheckIfDataWaveHasBorderVals(panelTitle, dataAcqOrTP)
 
 	if(ret)
@@ -1545,6 +1551,23 @@ static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DC_PrepareLBNEntr
 		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, channel, XOP_CHANNEL_TYPE_ADC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
 
 		DC_DocumentChannelProperty(panelTitle, "AD ChannelType", headstage, channel, XOP_CHANNEL_TYPE_ADC, var = config[s.numDACEntries + i][%DAQChannelType])
+	endfor
+End
+
+static Function DC_FillSetEventFlag(string panelTitle, STRUCT DC_FillSetEventFlagParams &s)
+	variable i, channel
+
+	WAVE config = GetDAQConfigWave(panelTitle)
+
+	WAVE setEventFlag = GetSetEventFlag(panelTitle)
+	setEventFlag = 0
+
+	for(i = 0; i < s.numDACEntries; i += 1)
+		channel = s.DACList[i]
+
+		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
+			setEventFlag[channel][] = (s.setColumn[i] + 1 == IDX_NumberOfSweepsInSet(s.setName[i]))
+		endif
 	endfor
 End
 
