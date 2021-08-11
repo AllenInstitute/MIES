@@ -53,6 +53,9 @@ static Function DC_UpdateGlobals(panelTitle)
 
 	NVAR tpLengthInPointsDAQ = $GetTestpulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
 	tpLengthInPointsDAQ = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
+
+	NVAR fifoPosition = $GetFifoPosition(panelTitle)
+	fifoPosition = 0
 End
 
 /// @brief Prepare test pulse/data acquisition
@@ -1029,9 +1032,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLength)
-
-	NVAR fifoPosition = $GetFifoPosition(panelTitle)
-	fifoPosition = 0
 
 	ClearRTError()
 
