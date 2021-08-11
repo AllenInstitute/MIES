@@ -44,6 +44,12 @@ static Structure DC_FillDAQDataWaveForTPParams
 	variable baselineFrac
 EndStructure
 
+static Structure DC_FillDAQDataWaveForDAQParams
+	variable hardwareType, numActiveChannels, samplingInterval, numDACEntries, decimationFactor, globalTPInsert
+	WAVE DACList, headstageDAC, DACAmp, DAGain, setLength, setColumn, insertStart
+	WAVE/WAVE stimSet
+EndStructure
+
 /// @brief Update global variables used by the Testpulse or DAQ
 ///
 /// @param panelTitle device
@@ -827,11 +833,11 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	string ctrl, str, list, key
 	variable setCycleCountLocal, val, singleSetLength, samplingInterval
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength
-	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
+	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, terminationDelay
-	variable decimationFactor, cutoff, row, column
+	variable decimationFactor, row, column
 	variable multiplier, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, headstage
-	variable lastValidRow, channel, tpAmp, DAScale, stimsetCol, startOffset, ret
+	variable channel, DAScale, stimsetCol, startOffset, ret
 
 	globalTPInsert        = DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP")
 	scalingZero           = DAG_GetNumericalValue(panelTitle,  "check_Settings_ScalingZero")
@@ -1051,97 +1057,22 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		fillTPParams.baselinefrac      = baselinefrac
 		DC_FillDAQDataWaveForTP(panelTitle, fillTPParams)
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-
-		WAVE/Z ITCDataWave
-		WAVE/WAVE/Z NIDataWave
-
-		[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, hardwareType, numActiveChannels, \
-		                                                     samplingInterval, dataAcqOrTP)
-
-		for(i = 0; i < numDACEntries; i += 1)
-			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
-				// TP wave does not need to be decimated, it has already correct size reg. sample rate
-				tpAmp = DACAmp[i][%TPAMP] * DAGain[i]
-				ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
-				switch(hardwareType)
-					case HARDWARE_ITC_DAC:
-						Multithread ITCDataWave[][i] =                    \
-						limit(                                            \
-						      tpAmp * testPulse[mod(p, testPulseLength)], \
-						      SIGNED_INT_16BIT_MIN,                       \
-						      SIGNED_INT_16BIT_MAX); AbortOnRTE
-						cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
-						if(cutOff > 0)
-							ITCDataWave[DimSize(ITCDataWave, ROWS) - cutOff, *][i] = 0
-						endif
-						break
-					case HARDWARE_NI_DAC:
-						WAVE NIChannel = NIDataWave[i]
-						Multithread NIChannel[] =                         \
-						limit(                                            \
-						      tpAmp * testPulse[mod(p, testPulseLength)], \
-						      NI_DAC_MIN,                                 \
-						      NI_DAC_MAX); AbortOnRTE
-						cutOff = mod(DimSize(NIChannel, ROWS), testPulseLength)
-						if(cutOff > 0)
-							NIChannel[DimSize(NIChannel, ROWS) - cutOff, *] = 0
-						endif
-						break
-				endswitch
-			elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-				channel = DACList[i]
-				headstage = headstageDAC[i]
-				tpAmp = DACAmp[i][%TPAMP] * DAGain[i]
-				DAScale = DACAmp[i][%DASCALE] * DAGain[i]
-				WAVE singleStimSet = stimSet[i]
-				singleSetLength = setLength[i]
-				stimsetCol = setColumn[i]
-				startOffset = insertStart[i]
-
-				switch(hardwareType)
-					case HARDWARE_ITC_DAC:
-						Multithread ITCDataWave[startOffset, startOffset + singleSetLength - 1][i] =     \
-						limit(                                                                           \
-						      DAScale * singleStimSet[decimationFactor * (p - startOffset)][stimsetCol], \
-						      SIGNED_INT_16BIT_MIN,                                                      \
-						      SIGNED_INT_16BIT_MAX); AbortOnRTE
-
-						if(globalTPInsert)
-							// space in ITCDataWave for the testpulse is allocated via an automatic increase
-							// of the onset delay
-							MultiThread ITCDataWave[0, testPulseLength - 1][i] =                        \
-							limit(tpAmp * testPulse[p], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
-						endif
-						break
-					case HARDWARE_NI_DAC:
-						// for an index step of 1 in NIChannel, singleStimSet steps decimationFactor
-						// for an index step of 1 in singleStimset, NIChannel steps 1 / decimationFactor
-						// for decimationFactor < 1 and indexing NIChannel to DimSize(NIChannel, ROWS) - 1 (as implemented here),
-						// singleStimset would be indexed to DimSize(singleStimSet, ROWS) - decimationFactor
-						// this leads to an invalid index if decimationFactor is <= 0.5 (due to the way Igor handles nD wave indexing)
-						// it is solved here by limiting the index of singleStimSet to the last valid integer index
-						// for the case of decimationFactor >= 1 there is no issue since index DimSize(singleStimSet, ROWS) - decimationFactor is valid
-						// for ITC decimationFactor is always >= 1 since the stimSets are generated for the ITC max. sample rate
-						WAVE NIChannel = NIDataWave[i]
-						lastValidRow = DimSize(singleStimSet, ROWS) - 1
-						MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                                  \
-						limit(                                                                                                   \
-						      DAScale * singleStimSet[limit(decimationFactor * (p - startOffset), 0, lastValidRow)][stimsetCol], \
-						      NI_DAC_MIN,                                                                                        \
-						      NI_DAC_MAX); AbortOnRTE
-
-						if(globalTPInsert)
-							// space in ITCDataWave for the testpulse is allocated via an automatic increase
-							// of the onset delay
-							MultiThread NIChannel[0, testPulseLength - 1] = \
-							limit(tpAmp * testPulse[p], NI_DAC_MIN, NI_DAC_MAX); AbortOnRTE
-						endif
-						break
-				endswitch
-			else
-				ASSERT(0, "Unknown DAC channel type")
-			endif
-		endfor
+		STRUCT DC_FillDAQDataWaveForDAQParams fillDAQParams
+		fillDAQParams.hardwareType      = hardwareType
+		fillDAQParams.numActiveChannels = numActiveChannels
+		fillDAQParams.samplingInterval  = samplingInterval
+		fillDAQParams.numDACEntries     = numDACEntries
+		fillDAQParams.decimationFactor  = decimationFactor
+		fillDAQParams.globalTPInsert    = globalTPInsert
+		WAVE fillDAQParams.DACList      = DACList
+		WAVE fillDAQParams.headstageDAC = headstageDAC
+		WAVE fillDAQParams.DACAmp       = DACAmp
+		WAVE fillDAQParams.DAGain       = DAGain
+		WAVE fillDAQParams.setLength    = setLength
+		WAVE fillDAQParams.setColumn    = setColumn
+		WAVE fillDAQParams.insertStart  = insertStart
+		WAVE/WAVE fillDAQParams.stimSet = stimSet
+		DC_FillDAQDataWaveForDAQ(panelTitle, fillDAQParams)
 	endif
 
 	if(!WaveExists(regions))
@@ -1597,6 +1528,107 @@ static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DC_FillDAQData
 				break
 		endswitch
 	endif
+End
+
+static Function DC_FillDAQDataWaveForDAQ(string panelTitle, STRUCT DC_FillDAQDataWaveForDAQParams &s)
+	variable i, tpAmp, cutOff, channel, headstage, DAScale, singleSetLength, stimsetCol, startOffset, testPulseLength
+	variable lastValidRow
+
+	WAVE testPulse = GetTestPulse()
+	testPulseLength = DimSize(testPulse, ROWS)
+
+	WAVE/Z ITCDataWave
+	WAVE/WAVE/Z NIDataWave
+
+	WAVE config = GetDAQConfigWave(panelTitle)
+
+	[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, s.hardwareType, s.numActiveChannels, \
+														 s.samplingInterval, DATA_ACQUISITION_MODE)
+
+	for(i = 0; i < s.numDACEntries; i += 1)
+		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
+			// TP wave does not need to be decimated, it has already correct size reg. sample rate
+			tpAmp = s.DACAmp[i][%TPAMP] * s.DAGain[i]
+			ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+			switch(s.hardwareType)
+				case HARDWARE_ITC_DAC:
+					Multithread ITCDataWave[][i] =                    \
+					limit(                                            \
+						  tpAmp * testPulse[mod(p, testPulseLength)], \
+						  SIGNED_INT_16BIT_MIN,                       \
+						  SIGNED_INT_16BIT_MAX); AbortOnRTE
+					cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
+					if(cutOff > 0)
+						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutOff, *][i] = 0
+					endif
+					break
+				case HARDWARE_NI_DAC:
+					WAVE NIChannel = NIDataWave[i]
+					Multithread NIChannel[] =                         \
+					limit(                                            \
+						  tpAmp * testPulse[mod(p, testPulseLength)], \
+						  NI_DAC_MIN,                                 \
+						  NI_DAC_MAX); AbortOnRTE
+					cutOff = mod(DimSize(NIChannel, ROWS), testPulseLength)
+					if(cutOff > 0)
+						NIChannel[DimSize(NIChannel, ROWS) - cutOff, *] = 0
+					endif
+					break
+			endswitch
+		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
+			channel = s.DACList[i]
+			headstage = s.headstageDAC[i]
+			tpAmp = s.DACAmp[i][%TPAMP] * s.DAGain[i]
+			DAScale = s.DACAmp[i][%DASCALE] * s.DAGain[i]
+			WAVE singleStimSet = s.stimSet[i]
+			singleSetLength = s.setLength[i]
+			stimsetCol = s.setColumn[i]
+			startOffset = s.insertStart[i]
+
+			switch(s.hardwareType)
+				case HARDWARE_ITC_DAC:
+					Multithread ITCDataWave[startOffset, startOffset + singleSetLength - 1][i] =       \
+					limit(                                                                             \
+						  DAScale * singleStimSet[s.decimationFactor * (p - startOffset)][stimsetCol], \
+						  SIGNED_INT_16BIT_MIN,                                                        \
+						  SIGNED_INT_16BIT_MAX); AbortOnRTE
+
+					if(s.globalTPInsert)
+						// space in ITCDataWave for the testpulse is allocated via an automatic increase
+						// of the onset delay
+						MultiThread ITCDataWave[0, testPulseLength - 1][i] =                        \
+						limit(tpAmp * testPulse[p], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+					endif
+					break
+				case HARDWARE_NI_DAC:
+					// for an index step of 1 in NIChannel, singleStimSet steps decimationFactor
+					// for an index step of 1 in singleStimset, NIChannel steps 1 / decimationFactor
+					// for decimationFactor < 1 and indexing NIChannel to DimSize(NIChannel, ROWS) - 1 (as implemented here),
+					// singleStimset would be indexed to DimSize(singleStimSet, ROWS) - decimationFactor
+					// this leads to an invalid index if decimationFactor is <= 0.5 (due to the way Igor handles nD wave indexing)
+					// it is solved here by limiting the index of singleStimSet to the last valid integer index
+					// for the case of decimationFactor >= 1 there is no issue since index DimSize(singleStimSet, ROWS) - decimationFactor is valid
+					// for ITC decimationFactor is always >= 1 since the stimSets are generated for the ITC max. sample rate
+					WAVE NIChannel = NIDataWave[i]
+					lastValidRow = DimSize(singleStimSet, ROWS) - 1
+					MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                                    \
+					limit(                                                                                                     \
+						  DAScale * singleStimSet[limit(s.decimationFactor * (p - startOffset), 0, lastValidRow)][stimsetCol], \
+						  NI_DAC_MIN,                                                                                          \
+						  NI_DAC_MAX); AbortOnRTE
+
+					if(s.globalTPInsert)
+						// space in ITCDataWave for the testpulse is allocated via an automatic increase
+						// of the onset delay
+						MultiThread NIChannel[0, testPulseLength - 1] = \
+						limit(tpAmp * testPulse[p], NI_DAC_MIN, NI_DAC_MAX); AbortOnRTE
+					endif
+					break
+			endswitch
+		else
+			ASSERT(0, "Unknown DAC channel type")
+		endif
+	endfor
 End
 
 /// @brief Document hardware type/name/serial number into the labnotebook
