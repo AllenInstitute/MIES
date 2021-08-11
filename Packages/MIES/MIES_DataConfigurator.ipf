@@ -38,6 +38,12 @@ static Structure DC_FillSetEventFlagParams
 	WAVE/T setName
 EndStructure
 
+static Structure DC_FillDAQDataWaveForTPParams
+	variable numDACEntries, numADCEntries, numActiveChannels, multiDevice, hardwareType, samplingInterval
+	WAVE insertStart, setColumn, DAGain, DACAmp
+	variable baselineFrac
+EndStructure
+
 /// @brief Update global variables used by the Testpulse or DAQ
 ///
 /// @param panelTitle device
@@ -1030,110 +1036,20 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 
 	ClearRTError()
 
-	// varies per DAC:
-	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
-	// setName, setColumn, headstageDAC
-	//
-	// constant:
-	// decimationFactor, testPulseLength, baselineFrac
-	//
-	// we only have to fill in the DA channels
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		ASSERT(sum(insertStart) == 0, "Unexpected insert start value")
-		ASSERT(sum(setColumn) == 0, "Unexpected setColumn value")
-		ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
-		ASSERT(numADCEntries > 0, "Number of ADCs can not be zero")
-		ASSERT(numDACEntries > 0, "Number of DACs can not be zero")
-
-		struct HardwareDataTPInput s
-		s.hardwareType = hardwareType
-		s.numDACs = numDACEntries
-		s.numActiveChannels = numActiveChannels
-		s.numberOfRows = DC_CalculateDAQDataWaveLength(panelTitle, TEST_PULSE_MODE)
-		s.samplingInterval = samplingInterval
-		WAVE s.DAGain = DAGain
-		Duplicate/FREE/RMD=[][FindDimLabel(DACAmp, COLS, "TPAMP")] DACAmp, DACAmpTP
-		WAVE s.DACAmpTP = DACAmpTP
-		s.testPulseLength = testPulseLength
-		s.baseLineFrac = baselineFrac
-
-		key = CA_HardwareDataTPKey(s)
-
-		WAVE/Z result = CA_TryFetchingEntryFromCache(key)
-
-		if(WaveExists(result))
-			WAVE DAQDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
-
-			if(!cmpstr(GetStringFromWaveNote(DAQDataWave, TP_PROPERTIES_HASH), key))
-				// clear the AD data only
-				switch(hardwareType)
-					case HARDWARE_ITC_DAC:
-						WAVE/W ITCDataWave = DAQDataWave
-						Multithread ITCDataWave[][numDACEntries, numDACEntries + numADCEntries - 1] = 0
-						break
-					case HARDWARE_NI_DAC:
-						WAVE/WAVE NIDataWave = DAQDataWave
-						for(i = 0; i < numADCEntries; i += 1)
-							WAVE NIChannel = NIDataWave[numDACEntries + i]
-							FastOp NIChannel = 0
-						endfor
-						break
-				endswitch
-			else
-				if(IsWaveRefWave(DAQDataWave))
-					WAVE/WAVE DAQDataWaveRef = DAQDataWave
-					Redimension/N=(numActiveChannels) DAQDataWaveRef
-					DAQDataWaveRef[] = GetNIDAQChannelWave(panelTitle, p)
-				endif
-				SetStringInWaveNote(result, TP_PROPERTIES_HASH, key)
-				MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
-			endif
-		else
-			WAVE/Z ITCDataWave
-			WAVE/WAVE/Z NIDataWave
-
-			[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, hardwareType, numActiveChannels, \
-			                                                     samplingInterval, dataAcqOrTP)
-
-			switch(hardwareType)
-				case HARDWARE_ITC_DAC:
-					if(multiDevice)
-						Multithread ITCDataWave[][0, numDACEntries - 1] =                           \
-						limit(                                                                      \
-						      (DAGain[q] * DACAmp[q][%TPAMP]) * testPulse[mod(p, testPulseLength)], \
-						      SIGNED_INT_16BIT_MIN,                                                 \
-						      SIGNED_INT_16BIT_MAX); AbortOnRTE
-						cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
-						if(cutOff > 0)
-							ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numDACEntries - 1] = 0
-						endif
-					else
-						Multithread ITCDataWave[0, testPulseLength - 1][0, numDACEntries - 1] = \
-						limit(                                                                  \
-						      DAGain[q] * DACAmp[q][%TPAMP] * testPulse[p],                     \
-						      SIGNED_INT_16BIT_MIN,                                             \
-						      SIGNED_INT_16BIT_MAX); AbortOnRTE
-					endif
-
-					SetStringInWaveNote(ITCDataWave, TP_PROPERTIES_HASH, key)
-					CA_StoreEntryIntoCache(key, ITCDataWave)
-					break
-				case HARDWARE_NI_DAC:
-					for(i = 0;i < numDACEntries; i += 1)
-						WAVE NIChannel = NIDataWave[i]
-						tpAmp = DACAmp[i][%TPAMP] * DAGain[i]
-						Multithread NIChannel[0, testPulseLength - 1] = \
-						limit(                                          \
-						      tpAmp * testPulse[p],                     \
-						      NI_DAC_MIN,                               \
-						      NI_DAC_MAX); AbortOnRTE
-					endfor
-
-					SetStringInWaveNote(NIDataWave, TP_PROPERTIES_HASH, key)
-					CA_StoreEntryIntoCache(key, NIDataWave)
-					break
-			endswitch
-		endif
+		STRUCT DC_FillDAQDataWaveForTPParams fillTPParams
+		fillTPParams.numDACEntries     = numDACEntries
+		fillTPParams.numADCEntries     = numADCEntries
+		fillTPParams.numActiveChannels = numActiveChannels
+		fillTPParams.multiDevice       = multiDevice
+		fillTPParams.hardwareType      = hardwareType
+		fillTPParams.samplingInterval  = samplingInterval
+		fillTPParams.insertStart       = insertStart
+		fillTPParams.setColumn         = setColumn
+		fillTPParams.DAGain            = DAGain
+		fillTPParams.DACAmp            = DACAmp
+		fillTPParams.baselinefrac      = baselinefrac
+		DC_FillDAQDataWaveForTP(panelTitle, fillTPParams)
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 
 		WAVE/Z ITCDataWave
@@ -1569,6 +1485,118 @@ static Function DC_FillSetEventFlag(string panelTitle, STRUCT DC_FillSetEventFla
 			setEventFlag[channel][] = (s.setColumn[i] + 1 == IDX_NumberOfSweepsInSet(s.setName[i]))
 		endif
 	endfor
+End
+
+static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DC_FillDAQDataWaveForTPParams &s)
+	variable testPulseLength, cutOff, i, tpAmp
+	string key
+
+	WAVE testPulse = GetTestPulse()
+	testPulseLength = DimSize(testPulse, ROWS)
+
+	// varies per DAC:
+	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
+	// setName, setColumn, headstageDAC
+	//
+	// constant:
+	// decimationFactor, testPulseLength, baselineFrac
+	//
+	// we only have to fill in the DA channels
+	ASSERT(sum(s.insertStart) == 0, "Unexpected insert start value")
+	ASSERT(sum(s.setColumn) == 0, "Unexpected setColumn value")
+	ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+	ASSERT(s.numADCEntries > 0, "Number of ADCs can not be zero")
+	ASSERT(s.numDACEntries > 0, "Number of DACs can not be zero")
+
+	struct HardwareDataTPInput cacheParams
+	cacheParams.hardwareType = s.hardwareType
+	cacheParams.numDACs = s.numDACEntries
+	cacheParams.numActiveChannels = s.numActiveChannels
+	cacheParams.numberOfRows = DC_CalculateDAQDataWaveLength(panelTitle, TEST_PULSE_MODE)
+	cacheParams.samplingInterval = s.samplingInterval
+	WAVE cacheParams.DAGain = s.DAGain
+	Duplicate/FREE/RMD=[][FindDimLabel(s.DACAmp, COLS, "TPAMP")] s.DACAmp, DACAmpTP
+	WAVE cacheParams.DACAmpTP = DACAmpTP
+	cacheParams.testPulseLength = testPulseLength
+	cacheParams.baseLineFrac = s.baselineFrac
+
+	key = CA_HardwareDataTPKey(cacheParams)
+
+	WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+
+	if(WaveExists(result))
+		WAVE DAQDataWave = GetDAQDataWave(panelTitle, TEST_PULSE_MODE)
+
+		if(!cmpstr(GetStringFromWaveNote(DAQDataWave, TP_PROPERTIES_HASH), key))
+			// clear the AD data only
+			switch(s.hardwareType)
+				case HARDWARE_ITC_DAC:
+					WAVE/W ITCDataWave = DAQDataWave
+					Multithread ITCDataWave[][s.numDACEntries, s.numDACEntries + s.numADCEntries - 1] = 0
+					break
+				case HARDWARE_NI_DAC:
+					WAVE/WAVE NIDataWave = DAQDataWave
+					for(i = 0; i < s.numADCEntries; i += 1)
+						WAVE NIChannel = NIDataWave[s.numDACEntries + i]
+						FastOp NIChannel = 0
+					endfor
+					break
+			endswitch
+		else
+			if(IsWaveRefWave(DAQDataWave))
+				WAVE/WAVE DAQDataWaveRef = DAQDataWave
+				Redimension/N=(s.numActiveChannels) DAQDataWaveRef
+				DAQDataWaveRef[] = GetNIDAQChannelWave(panelTitle, p)
+			endif
+			SetStringInWaveNote(result, TP_PROPERTIES_HASH, key)
+			MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
+		endif
+	else
+		WAVE/Z ITCDataWave
+		WAVE/WAVE/Z NIDataWave
+
+		[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, s.hardwareType, s.numActiveChannels, \
+															 s.samplingInterval, TEST_PULSE_MODE)
+
+		switch(s.hardwareType)
+			case HARDWARE_ITC_DAC:
+				if(s.multiDevice)
+					Multithread ITCDataWave[][0, s.numDACEntries - 1] =                             \
+					limit(                                                                          \
+						  (s.DAGain[q] * s.DACAmp[q][%TPAMP]) * testPulse[mod(p, testPulseLength)], \
+						  SIGNED_INT_16BIT_MIN,                                                     \
+						  SIGNED_INT_16BIT_MAX); AbortOnRTE
+					cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
+					if(cutOff > 0)
+						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, s.numDACEntries - 1] = 0
+					endif
+				else
+					Multithread ITCDataWave[0, testPulseLength - 1][0, s.numDACEntries - 1] = \
+					limit(                                                                    \
+						  s.DAGain[q] * s.DACAmp[q][%TPAMP] * testPulse[p],                   \
+						  SIGNED_INT_16BIT_MIN,                                               \
+						  SIGNED_INT_16BIT_MAX); AbortOnRTE
+				endif
+
+				SetStringInWaveNote(ITCDataWave, TP_PROPERTIES_HASH, key)
+				CA_StoreEntryIntoCache(key, ITCDataWave)
+				break
+			case HARDWARE_NI_DAC:
+				for(i = 0;i < s.numDACEntries; i += 1)
+					WAVE NIChannel = NIDataWave[i]
+					tpAmp = s.DACAmp[i][%TPAMP] * s.DAGain[i]
+					Multithread NIChannel[0, testPulseLength - 1] = \
+					limit(                                          \
+						  tpAmp * testPulse[p],                     \
+						  NI_DAC_MIN,                               \
+						  NI_DAC_MAX); AbortOnRTE
+				endfor
+
+				SetStringInWaveNote(NIDataWave, TP_PROPERTIES_HASH, key)
+				CA_StoreEntryIntoCache(key, NIDataWave)
+				break
+		endswitch
+	endif
 End
 
 /// @brief Document hardware type/name/serial number into the labnotebook
