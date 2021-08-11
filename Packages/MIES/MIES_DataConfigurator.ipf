@@ -1391,6 +1391,7 @@ static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DC_PrepareLBNEntr
 	maxITIGlobal = maxITI
 	DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, NaN, NaN, var=maxITIGlobal)
 
+	WAVE/T epochWave = GetEpochsWave(panelTitle)
 	DC_SortEpochs(panelTitle)
 
 	// index guide:
@@ -1459,7 +1460,6 @@ static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DC_PrepareLBNEntr
 		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=s.offsets[i])
 		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=s.regions[i])
 
-		WAVE/T epochWave = GetEpochsWave(panelTitle)
 		Duplicate/FREE/RMD=[][][channel] epochWave, epochChannel
 		Redimension/N=(-1, -1, 0) epochChannel
 		DC_DocumentChannelProperty(panelTitle, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=TextWaveToList(epochChannel, ":", colSep = ",", stopOnEmpty = 1))
