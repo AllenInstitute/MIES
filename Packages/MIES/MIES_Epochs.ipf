@@ -14,9 +14,9 @@ static StrConstant STIMSETKEYNAME_SEP = "="
 
 /// @brief Fill the epoch wave with epochs before DAQ/TP
 ///
-/// @param panelTitle                device
-/// @param DC_CollectEpochInfoParams struct holding all input
-Function EP_CollectEpochInfo(string panelTitle, STRUCT DC_CollectEpochInfoParams &s)
+/// @param panelTitle device
+/// @param s          struct holding all input
+Function EP_CollectEpochInfo(string panelTitle, STRUCT DataConfigurationResult &s)
 	variable i, channel, headstage, singleSetLength, epochOffset, epochBegin, epochEnd
 	variable stimsetCol, startOffset, stopCollectionPoint
 

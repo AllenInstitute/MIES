@@ -426,3 +426,113 @@ threadsafe Function [STRUCT NWBAsyncParameters s] NWB_ASYNC_DeserializeStruct(DF
 	WAVE/T s.textualKeys = ASYNC_FetchWave(threadDFR, "textualKeys")
 	ChangeWaveLock(s.textualKeys, 1)
 End
+
+/// @brief Structure to hold the result of data configuration from DC_GetConfiguration()
+Structure DataConfigurationResult
+	/// Various GUI settings
+	/// @{
+	variable globalTPInsert
+	variable scalingZero
+	variable indexingLocked
+	variable indexing
+	variable distributedDAQ
+	variable distributedDAQOptOv
+	variable distributedDAQOptPre
+	variable distributedDAQOptPost
+	variable multiDevice
+	WAVE statusHS
+	/// @}
+
+	/// What type of operation is done.
+	/// Either DAQ(`DATA_ACQUISITION_MODE`) or TP(`TEST_PULSE_MODE`)
+	variable dataAcqOrTP
+
+	/// @sa GetTestpulseBaselineFraction()
+	/// TODO remove
+	variable baselineFrac
+
+	/// @sa DC_GetDecimationFactor()
+	variable decimationFactor
+
+	/// Number of DAC's, always larger than 0.
+	variable numDACEntries
+
+	/// Number of ADC's, always larger than 0.
+	variable numADCEntries
+
+	/// Number of TTLs, can be zero.
+	variable numTTLEntries
+
+	/// Sum of numDACEntries/numADCEntries/numTTLEntries
+	variable numActiveChannels
+
+	/// One of @ref HardwareDACTypeConstants
+	variable hardwareType
+
+	/// @sa DAP_GetSampInt()
+	variable samplingInterval
+
+	/// @name Various delays
+	/// Either from the GUI or derived from DC_ReturnTotalLengthIncrease()
+	/// @{
+	variable onsetDelayUser
+	variable onsetDelayAuto
+	variable onsetDelay ///< Sum of onsetDelayUser and onsetDelayAuto
+	variable distributedDAQDelay
+	variable terminationDelay
+	/// @}
+
+	/// @sa GetTestPulse()
+	WAVE testPulse
+
+	/// Length of the DataConfigurationResult::testPulse wave in points
+	variable testPulseLength
+
+	/// oodDAQ optimization results, see @ref OOdDAQParams_Output
+	/// @{
+	WAVE offsets
+	WAVE/T regions
+	/// @}
+
+	/// @sa SWS_GetChannelGains() with `GAIN_BEFORE_DAQ`
+	WAVE DAGain
+
+	/// List of active channels per type
+	/// @{
+	WAVE DACList
+	WAVE ADCList
+	WAVE TTLList
+	/// @}
+
+	/// All waves here use active channel indexing like DataConfigurationResult::DACList
+	/// and can thus be all indexed together.
+	/// @{
+	/// @sa GetDACAmplitudes()
+	WAVE/D DACAmp
+
+	/// Stimulus set name
+	WAVE/T setName
+
+	/// Stimulus set wave (2D)
+	WAVE/WAVE stimSet
+
+	/// @sa DC_CalculateStimsetLength()
+	WAVE/D setLength
+
+	/// Headstage of DAC if associated, `NaN` iff unassociated
+	WAVE/D headstageDAC
+
+	/// @sa DC_CalculateChannelColumnNo()
+	/// @{
+	WAVE/D setColumn
+	WAVE/D setCycleCount
+	/// @}
+
+	/// Offset in points where the stimulus set starts in the DAQ data wave
+	WAVE/D insertStart
+	/// @}
+
+	/// Headstage of ADC if associated, `NaN` iff unassociated
+	/// Uses active channel indexing like DataConfigurationResult::ADCList
+	WAVE/D headstageADC
+EndStructure

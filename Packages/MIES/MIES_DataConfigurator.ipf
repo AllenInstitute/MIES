@@ -10,90 +10,6 @@
 /// @brief __DC__ Handle preparations before data acquisition or
 /// test pulse related to the DAQ data and config waves
 
-static Structure DC_WriteTTLParams
-	variable numDACEntries, numADCEntries, onsetDelay, hardwareType, decimationFactor, dataAcqOrTP
-EndStructure
-
-static Structure DC_PrepareLBNEntryParams
-	variable distributedDAQ, distributedDAQOptOv, numDACEntries, numADCEntries, dataAcqOrTP, samplingInterval, hardwareType
-	WAVE/WAVE stimSet
-	WAVE setColumn, setCycleCount
-	WAVE DACList, ADCList, headstageDAC, headstageADC, DACAmp, setLength, offsets, statusHS
-	WAVE/T setName, regions
-EndStructure
-
-// TODO unify param structs
-Structure DC_CollectEpochInfoParams
-	variable numDACEntries, onsetDelayUser, onsetDelayAuto, onsetDelay, distributedDAQ, distributedDAQOptOv
-	variable globalTPInsert, distributedDAQDelay, samplingInterval, terminationDelay, dataAcqOrTP
-	WAVE headstageDAC, insertStart, DACList, statusHS, setLength, setColumn, offsets, DACAmp
-	variable baselineFrac, testPulseLength
-	WAVE/WAVE stimSet
-	WAVE/T regions
-EndStructure
-
-static Structure DC_FillSetEventFlagParams
-	variable numDACEntries
-	WAVE DACList, setColumn
-	WAVE/T setName
-EndStructure
-
-static Structure DC_FillDAQDataWaveForTPParams
-	variable numDACEntries, numADCEntries, numActiveChannels, multiDevice, hardwareType, samplingInterval
-	WAVE insertStart, setColumn, DAGain, DACAmp
-	variable baselineFrac
-EndStructure
-
-static Structure DC_FillDAQDataWaveForDAQParams
-	variable hardwareType, numActiveChannels, samplingInterval, numDACEntries, decimationFactor, globalTPInsert
-	WAVE DACList, headstageDAC, DACAmp, DAGain, setLength, setColumn, insertStart
-	WAVE/WAVE stimSet
-EndStructure
-
-static Structure DC_FillConfiguratorStruct
-	variable globalTPInsert
-	variable scalingZero
-	variable indexingLocked
-	variable indexing
-	variable distributedDAQ
-	variable distributedDAQOptOv
-	variable distributedDAQOptPre
-	variable distributedDAQOptPost
-	variable decimationFactor
-	variable baselineFrac
-	WAVE statusHS
-	WAVE DAGain
-	WAVE DACList
-	WAVE ADCList
-	// TTLList
-	variable numDACEntries
-	variable numADCEntries
-	// numTTLs
-	WAVE/D DACAmp
-	WAVE/T setName
-	WAVE/WAVE stimSet
-	WAVE/D headstageDAC
-	WAVE/D headstageADC
-	WAVE/D setColumn
-	WAVE/D setCycleCount
-	variable dataAcqOrTP
-	variable numActiveChannels
-	variable multiDevice
-	WAVE/D setLength
-	variable hardwareType
-	variable samplingInterval
-	WAVE/D insertStart
-	variable onsetDelayUser
-	variable onsetDelayAuto
-	variable onsetDelay
-	variable distributedDAQDelay
-	variable terminationDelay
-	WAVE offsets
-	variable testPulseLength
-	WAVE/T regions
-	WAVE testPulse
-EndStructure
-
 /// @brief Update global variables used by the Testpulse or DAQ
 ///
 /// @param panelTitle device
@@ -874,8 +790,8 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 
 	variable ret, row, column
 
-	STRUCT DC_FillConfiguratorStruct s
-	[s] = DC_FillConfigurator(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
+	STRUCT DataConfigurationResult s
+	[s] = DC_GetConfiguration(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, s.dataAcqOrTP, s.setLength)
@@ -883,106 +799,17 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	ClearRTError()
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		STRUCT DC_FillDAQDataWaveForTPParams fillTPParams
-		fillTPParams.numDACEntries     = s.numDACEntries
-		fillTPParams.numADCEntries     = s.numADCEntries
-		fillTPParams.numActiveChannels = s.numActiveChannels
-		fillTPParams.multiDevice       = s.multiDevice
-		fillTPParams.hardwareType      = s.hardwareType
-		fillTPParams.samplingInterval  = s.samplingInterval
-		fillTPParams.insertStart       = s.insertStart
-		fillTPParams.setColumn         = s.setColumn
-		fillTPParams.DAGain            = s.DAGain
-		fillTPParams.DACAmp            = s.DACAmp
-		fillTPParams.baselinefrac      = s.baselinefrac
-		DC_FillDAQDataWaveForTP(panelTitle, fillTPParams)
+		DC_FillDAQDataWaveForTP(panelTitle, s)
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		STRUCT DC_FillDAQDataWaveForDAQParams fillDAQParams
-		fillDAQParams.hardwareType      = s.hardwareType
-		fillDAQParams.numActiveChannels = s.numActiveChannels
-		fillDAQParams.samplingInterval  = s.samplingInterval
-		fillDAQParams.numDACEntries     = s.numDACEntries
-		fillDAQParams.decimationFactor  = s.decimationFactor
-		fillDAQParams.globalTPInsert    = s.globalTPInsert
-		WAVE fillDAQParams.DACList      = s.DACList
-		WAVE fillDAQParams.headstageDAC = s.headstageDAC
-		WAVE fillDAQParams.DACAmp       = s.DACAmp
-		WAVE fillDAQParams.DAGain       = s.DAGain
-		WAVE fillDAQParams.setLength    = s.setLength
-		WAVE fillDAQParams.setColumn    = s.setColumn
-		WAVE fillDAQParams.insertStart  = s.insertStart
-		WAVE/WAVE fillDAQParams.stimSet = s.stimSet
-		DC_FillDAQDataWaveForDAQ(panelTitle, fillDAQParams)
+		DC_FillDAQDataWaveForDAQ(panelTitle, s)
 	endif
 
-	STRUCT DC_CollectEpochInfoParams epochParams
-	epochParams.numDACEntries       = s.numDACEntries
-	epochParams.onsetDelayUser      = s.onsetDelayUser
-	epochParams.onsetDelayAuto      = s.onsetDelayAuto
-	epochParams.onSetDelay          = s.onSetDelay
-	epochParams.distributedDAQ      = s.distributedDAQ
-	epochParams.distributedDAQOptOv = s.distributedDAQOptOv
-	epochParams.globalTPInsert      = s.globalTPInsert
-	epochParams.distributedDAQDelay = s.distributedDAQDelay
-	epochParams.samplingInterval    = s.samplingInterval
-	epochParams.terminationDelay    = s.terminationDelay
-	epochParams.dataAcqOrTP         = s.dataAcqOrTP
-	WAVE epochParams.headstageDAC   = s.headstageDAC
-	WAVE epochParams.insertStart    = s.insertStart
-	WAVE epochParams.DACList        = s.DACList
-	WAVE epochParams.statusHS       = s.statusHS
-	WAVE epochParams.setLength      = s.setLength
-	WAVE epochParams.setColumn      = s.setColumn
-	WAVE epochParams.offsets        = s.offsets
-	WAVE epochParams.DACAmp         = s.DACAmp
-	epochParams.baselineFrac        = s.baselineFrac
-	epochParams.testPulseLength     = s.testPulseLength
-	WAVE/WAVE epochParams.stimSet   = s.stimSet
-	WAVE/T epochParams.regions      = s.regions
-	EP_CollectEpochInfo(panelTitle, epochParams)
-
-	STRUCT DC_PrepareLBNEntryParams prepLBNParams
-	prepLBNParams.distributedDAQ      = s.distributedDAQ
-	prepLBNParams.distributedDAQOptOv = s.distributedDAQOptOv
-	prepLBNParams.numDACEntries       = s.numDACEntries
-	prepLBNParams.numADCEntries       = s.numADCEntries
-	prepLBNParams.dataAcqOrTP         = s.dataAcqOrTP
-	prepLBNParams.samplingInterval    = s.samplingInterval
-	prepLBNParams.hardwareType        = s.hardwareType
-	WAVE/WAVE prepLBNParams.stimSet   = s.stimSet
-	WAVE prepLBNParams.setColumn      = s.setColumn
-	WAVE prepLBNParams.setCycleCount  = s.setCycleCount
-	WAVE prepLBNParams.DACList        = s.DACList
-	WAVE prepLBNParams.ADCList        = s.ADCList
-	WAVE prepLBNParams.headstageDAC   = s.headstageDAC
-	WAVE prepLBNParams.headstageADC   = s.headstageADC
-	WAVE prepLBNParams.DACAmp         = s.DACAmp
-	WAVE prepLBNParams.setLength      = s.setLength
-	WAVE prepLBNParams.offsets        = s.offsets
-	WAVE prepLBNParams.statusHS       = s.statusHS
-	WAVE/T prepLBNParams.setName      = s.setName
-	WAVE/T prepLBNParams.regions      = s.regions
-
-	DC_PrepareLBNEntries(panelTitle, prepLBNParams)
+	EP_CollectEpochInfo(panelTitle, s)
+	DC_PrepareLBNEntries(panelTitle, s)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		STRUCT DC_WriteTTLParams ttlParams
-		ttlParams.dataAcqOrTP      = s.dataAcqOrTP
-		ttlParams.decimationFactor = s.decimationFactor
-		ttlParams.hardwareType     = s.hardwareType
-		ttlParams.onsetDelay       = s.onsetDelay
-		ttlParams.numADCEntries    = s.numADCEntries
-		ttlParams.numDACEntries    = s.numDACEntries
-		DC_WriteTTLIntoDAQDataWave(panelTitle, ttlParams)
-	endif
-
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		STRUCT DC_FillSetEventFlagParams setEventFlagParams
-		setEventFlagParams.numDACEntries  = s.numDACEntries
-		WAVE setEventFlagParams.DACList   = s.DACList
-		WAVE setEventFlagParams.setColumn = s.setColumn
-		WAVE/T setEventFlagParams.setName = s.setName
-		DC_FillSetEventFlag(panelTitle, setEventFlagParams)
+		DC_WriteTTLIntoDAQDataWave(panelTitle, s)
+		DC_FillSetEventFlag(panelTitle, s)
 	endif
 
 	[ret, row, column] = DC_CheckIfDataWaveHasBorderVals(panelTitle, dataAcqOrTP)
@@ -994,7 +821,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	endif
 End
 
-static Function DC_WriteTTLIntoDAQDataWave(string panelTitle, STRUCT DC_WriteTTLParams &s)
+static Function DC_WriteTTLIntoDAQDataWave(string panelTitle, STRUCT DataConfigurationResult &s)
 	variable i, startOffset, ttlIndex, singleSetLength, numRows
 
 	// reset to the default value without distributedDAQ
@@ -1052,7 +879,7 @@ static Function DC_WriteTTLIntoDAQDataWave(string panelTitle, STRUCT DC_WriteTTL
 	endswitch
 End
 
-static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DC_PrepareLBNEntryParams &s)
+static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DataConfigurationResult &s)
 	variable i, j, maxITI, channel, headstage, setChecksum, fingerprint, stimsetCycleID, isoodDAQMember
 	string func, ctrl, str
 
@@ -1236,7 +1063,7 @@ static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DC_PrepareLBNEntr
 	endfor
 End
 
-static Function DC_FillSetEventFlag(string panelTitle, STRUCT DC_FillSetEventFlagParams &s)
+static Function DC_FillSetEventFlag(string panelTitle, STRUCT DataConfigurationResult &s)
 	variable i, channel
 
 	WAVE config = GetDAQConfigWave(panelTitle)
@@ -1253,7 +1080,7 @@ static Function DC_FillSetEventFlag(string panelTitle, STRUCT DC_FillSetEventFla
 	endfor
 End
 
-static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DC_FillDAQDataWaveForTPParams &s)
+static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DataConfigurationResult &s)
 	variable testPulseLength, cutOff, i, tpAmp
 	string key
 
@@ -1365,7 +1192,7 @@ static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DC_FillDAQData
 	endif
 End
 
-static Function DC_FillDAQDataWaveForDAQ(string panelTitle, STRUCT DC_FillDAQDataWaveForDAQParams &s)
+static Function DC_FillDAQDataWaveForDAQ(string panelTitle, STRUCT DataConfigurationResult &s)
 	variable i, tpAmp, cutOff, channel, headstage, DAScale, singleSetLength, stimsetCol, startOffset, testPulseLength
 	variable lastValidRow
 
@@ -1466,7 +1293,7 @@ static Function DC_FillDAQDataWaveForDAQ(string panelTitle, STRUCT DC_FillDAQDat
 	endfor
 End
 
-static Function [STRUCT DC_FillConfiguratorStruct s] DC_FillConfigurator(string panelTitle, variable numActiveChannels, variable dataAcqOrTP, variable multiDevice)
+static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string panelTitle, variable numActiveChannels, variable dataAcqOrTP, variable multiDevice)
 	variable TPAmpVClamp, TPAmpIClamp, powerSpectrum, channel, headstage, channelMode
 	variable onsetDelayUserLocal, onsetDelayAutoLocal, terminationDelayLocal, distributedDAQDelayLocal
 	variable scalingZero, indexingLocked, indexing
@@ -1505,6 +1332,9 @@ static Function [STRUCT DC_FillConfiguratorStruct s] DC_FillConfigurator(string 
 	WAVE config  = GetDAQConfigWave(panelTitle)
 	WAVE s.DACList = GetDACListFromConfig(config)
 	WAVE s.ADCList = GetADCListFromConfig(config)
+	WAVE s.TTLList = GetTTLListFromConfig(config)
+
+	s.numTTLEntries = DimSize(s.DACList, ROWS)
 
 	s.numDACEntries = DimSize(s.DACList, ROWS)
 	Make/D/FREE/N=(s.numDACEntries) s.insertStart, s.setLength, s.setColumn, s.headstageDAC, s.setCycleCount
