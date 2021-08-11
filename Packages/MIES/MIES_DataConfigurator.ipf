@@ -18,7 +18,7 @@ static Structure DC_PrepareLBNEntryParams
 	variable distributedDAQ, distributedDAQOptOv, numDACEntries, numADCEntries, dataAcqOrTP, samplingInterval, hardwareType
 	WAVE/WAVE stimSet
 	WAVE setColumn, setCycleCount
-	WAVE DACList, ADCList, headstageDAC, DACAmp, setLength, offsets, statusHS
+	WAVE DACList, ADCList, headstageDAC, headstageADC, DACAmp, setLength, offsets, statusHS
 	WAVE/T setName, regions
 EndStructure
 
@@ -855,11 +855,15 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	Make/T/FREE/N=(numDACEntries) setName
 	Make/WAVE/FREE/N=(numDACEntries) stimSet
 
+	numADCEntries = DimSize(ADCList, ROWS)
+	Make/D/FREE/N=(numADCEntries) headstageADC
+
 	WAVE testPulse = GetTestPulse()
 	// test pulse length is calculated for dataAcqOrTP
 	testPulseLength = DimSize(testPulse, ROWS)
 
 	headstageDAC[] = channelClampMode[DACList[p]][%DAC][%Headstage]
+	headstageADC[] = channelClampMode[ADCList[p]][%ADC][%Headstage]
 
 	// index guide:
 	// - numEntries: Number of active DACs
@@ -1041,8 +1045,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = 0
-
-	numADCEntries = DimSize(ADCList, ROWS)
 
 	ClearRTError()
 
@@ -1281,6 +1283,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	WAVE prepLBNParams.DACList = DACList
 	WAVE prepLBNParams.ADCList = ADCList
 	WAVE prepLBNParams.headstageDAC = headstageDAC
+	WAVE prepLBNParams.headstageADC = headstageADC
 	WAVE prepLBNParams.DACAmp = DACAmp
 	WAVE prepLBNParams.setLength = setLength
 	WAVE prepLBNParams.offsets = offsets
@@ -1537,12 +1540,9 @@ static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DC_PrepareLBNEntr
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, NaN, var=s.setLength[0])
 	endif
 
-	// TODO create headstageADC in caller
-	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
-
 	for(i = 0; i < s.numADCEntries; i += 1)
 		channel = s.ADCList[i]
-		headstage = channelClampMode[channel][%ADC][%Headstage]
+		headstage = s.headstageADC[i]
 
 		DC_DocumentChannelProperty(panelTitle, "ADC", headstage, channel, XOP_CHANNEL_TYPE_ADC, var=channel)
 
