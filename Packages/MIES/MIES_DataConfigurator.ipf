@@ -22,6 +22,15 @@ static Structure DC_PrepareLBNEntryParams
 	WAVE/T setName, regions
 EndStructure
 
+static Structure DC_CollectEpochInfoParams
+	variable numDACEntries, onsetDelayUser, onsetDelayAuto, onsetDelay, distributedDAQ, distributedDAQOptOv
+	variable globalTPInsert, distributedDAQDelay, samplingInterval, terminationDelay, dataAcqOrTP
+	WAVE headstageDAC, insertStart, DACList, statusHS, setLength, setColumn, offsets, DACAmp
+	variable baselineFrac, testPulseLength
+	WAVE/WAVE stimSet
+	WAVE/T regions
+EndStructure
+
 /// @brief Update global variables used by the Testpulse or DAQ
 ///
 /// @param panelTitle device
@@ -807,7 +816,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	variable decimationFactor, cutoff, row, column
 	variable multiplier, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, headstage
 	variable lastValidRow, channel, tpAmp, DAScale, stimsetCol, startOffset, ret
-	variable epochBegin, epochEnd, epochOffset
 
 	globalTPInsert        = DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP")
 	scalingZero           = DAG_GetNumericalValue(panelTitle,  "check_Settings_ScalingZero")
@@ -840,8 +848,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	WAVE config               = GetDAQConfigWave(panelTitle)
 	WAVE DACList              = GetDACListFromConfig(config)
 	WAVE ADCList              = GetADCListFromConfig(config)
-	WAVE/T epochsWave         = GetEpochsWave(panelTitle)
-	epochsWave = ""
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		setEventFlag = 0
@@ -1010,34 +1016,14 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		insertStart[] = 0
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		Duplicate/FREE insertStart, epochIndexer
-		WAVE/T epochWave = GetEpochsWave(panelTitle)
-
 		DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUser, onsetDelayAuto=onsetDelayAuto, terminationDelay=terminationDelay, distributedDAQDelay=distributedDAQDelay)
-		// epoch for onsetDelayAuto is assumed to be a globalTPInsert which is added as epoch below when the DA wave is filled
-		if(onsetDelayUser)
-			epochBegin = onsetDelayAuto * samplingInterval
-			epochEnd = epochBegin + onsetDelayUser * samplingInterval
-			epochIndexer[] = DC_AddEpoch(panelTitle, DACList[p], epochBegin, epochEnd, EPOCH_BASELINE_REGION_KEY, 0)
-		endif
 
 		onsetDelay = onsetDelayUser + onsetDelayAuto
 		if(distributedDAQ)
 			insertStart[] = onsetDelay + (sum(statusHS, 0, headstageDAC[p]) - 1) * (distributedDAQDelay + setLength[p])
-
-			epochBegin = onsetDelay * samplingInterval
-			epochIndexer[] = insertStart[p] * samplingInterval
-			epochIndexer[] = epochBegin != epochIndexer[p] ? DC_AddEpoch(panelTitle, DACList[p], epochBegin, epochIndexer[p], EPOCH_BASELINE_REGION_KEY, 0) : 0
-
 		else
 			insertStart[] = onsetDelay
 		endif
-
-		if(terminationDelay)
-			epochIndexer[] = (insertStart[p] + setLength[p]) * samplingInterval
-			epochIndexer[] = DC_AddEpoch(panelTitle, DACList[p], epochIndexer[p], epochIndexer[p] + terminationDelay * samplingInterval, EPOCH_BASELINE_REGION_KEY, 0)
-		endif
-
 	endif
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
@@ -1200,23 +1186,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 				stimsetCol = setColumn[i]
 				startOffset = insertStart[i]
 
-				epochBegin = startOffset * samplingInterval
-				if(distributedDAQOptOv && offsets[i] > 0)
-					epochOffset = offsets[i] * 1000
-					DC_AddEpoch(panelTitle, channel, epochBegin, epochBegin + epochOffset, EPOCH_BASELINE_REGION_KEY, 0)
-					DC_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin + epochOffset, singleSetLength * samplingInterval - epochOffset, stimsetCol, DACAmp[i][%DASCALE])
-				else
-					DC_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin, singleSetLength * samplingInterval, stimsetCol, DACAmp[i][%DASCALE])
-				endif
-				if(distributedDAQOptOv)
-					DC_AddEpochsFromOodDAQRegions(panelTitle, channel, regions[i], epochBegin)
-				endif
-				// if dDAQ is on then channels 0 to numEntries - 1 have a trailing base line
-				epochBegin = startOffset + singleSetLength + terminationDelay
-				if(stopCollectionPoint > epochBegin)
-					DC_AddEpoch(panelTitle, channel, epochBegin * samplingInterval, stopCollectionPoint * samplingInterval, EPOCH_BASELINE_REGION_KEY, 0)
-				endif
-
 				switch(hardwareType)
 					case HARDWARE_ITC_DAC:
 						Multithread ITCDataWave[startOffset, startOffset + singleSetLength - 1][i] =     \
@@ -1228,7 +1197,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 						if(globalTPInsert)
 							// space in ITCDataWave for the testpulse is allocated via an automatic increase
 							// of the onset delay
-							DC_AddEpochsFromTP(panelTitle, channel, baselinefrac, testPulseLength * samplingInterval, 0, "Inserted TP", DACAmp[i][%TPAMP])
 							MultiThread ITCDataWave[0, testPulseLength - 1][i] =                        \
 							limit(tpAmp * testPulse[p], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 						endif
@@ -1253,7 +1221,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 						if(globalTPInsert)
 							// space in ITCDataWave for the testpulse is allocated via an automatic increase
 							// of the onset delay
-							DC_AddEpochsFromTP(panelTitle, channel, baselinefrac, testPulseLength * samplingInterval, 0, "Inserted TP", DACAmp[i][%TPAMP])
 							MultiThread NIChannel[0, testPulseLength - 1] = \
 							limit(tpAmp * testPulse[p], NI_DAC_MIN, NI_DAC_MAX); AbortOnRTE
 						endif
@@ -1268,6 +1235,32 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	if(!WaveExists(regions))
 		Make/FREE/T/N=(numDACEntries) regions
 	endif
+
+	STRUCT DC_CollectEpochInfoParams epochParams
+	epochParams.numDACEntries       = numDACEntries
+	epochParams.onsetDelayUser      = onsetDelayUser
+	epochParams.onsetDelayAuto      = onsetDelayAuto
+	epochParams.onSetDelay          = onSetDelay
+	epochParams.distributedDAQ      = distributedDAQ
+	epochParams.distributedDAQOptOv = distributedDAQOptOv
+	epochParams.globalTPInsert      = globalTPInsert
+	epochParams.distributedDAQDelay = distributedDAQDelay
+	epochParams.samplingInterval    = samplingInterval
+	epochParams.terminationDelay    = terminationDelay
+	epochParams.dataAcqOrTP         = dataAcqOrTP
+	WAVE epochParams.headstageDAC   = headstageDAC
+	WAVE epochParams.insertStart    = insertStart
+	WAVE epochParams.DACList        = DACList
+	WAVE epochParams.statusHS       = statusHS
+	WAVE epochParams.setLength      = setLength
+	WAVE epochParams.setColumn      = setColumn
+	WAVE epochParams.offsets        = offsets
+	WAVE epochParams.DACAmp         = DACAmp
+	epochParams.baselineFrac        = baselineFrac
+	epochParams.testPulseLength     = testPulseLength
+	WAVE/WAVE epochParams.stimSet   = stimSet
+	WAVE/T epochParams.regions      = regions
+	DC_CollectEpochInfo(panelTitle, epochParams)
 
 	STRUCT DC_PrepareLBNEntryParams prepLBNParams
 	prepLBNParams.distributedDAQ = distributedDAQ
@@ -1553,6 +1546,77 @@ static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DC_PrepareLBNEntr
 		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, channel, XOP_CHANNEL_TYPE_ADC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
 
 		DC_DocumentChannelProperty(panelTitle, "AD ChannelType", headstage, channel, XOP_CHANNEL_TYPE_ADC, var = config[s.numDACEntries + i][%DAQChannelType])
+	endfor
+End
+
+static Function DC_CollectEpochInfo(string panelTitle, STRUCT DC_CollectEpochInfoParams &s)
+	variable i, channel, headstage, singleSetLength, epochOffset, epochBegin, epochEnd
+	variable stimsetCol, startOffset, stopCollectionPoint
+
+	WAVE/T epochWave = GetEpochsWave(panelTitle)
+	epochWave = ""
+
+	if(s.dataAcqOrTP != DATA_ACQUISITION_MODE)
+		// nothing to do after clearing epochWave
+		return NaN
+	endif
+
+	WAVE config = GetDAQConfigWave(panelTitle)
+
+	stopCollectionPoint = ROVar(GetStopCollectionPoint(panelTitle))
+
+	Duplicate/FREE s.insertStart, epochIndexer
+
+	// epoch for onsetDelayAuto is assumed to be a globalTPInsert which is added as epoch below
+	if(s.onsetDelayUser)
+		epochBegin = s.onsetDelayAuto * s.samplingInterval
+		epochEnd = epochBegin + s.onsetDelayUser * s.samplingInterval
+		epochIndexer[] = DC_AddEpoch(panelTitle, s.DACList[p], epochBegin, epochEnd, EPOCH_BASELINE_REGION_KEY, 0)
+	endif
+
+	if(s.distributedDAQ)
+		epochBegin = s.onsetDelay * s.samplingInterval
+		epochIndexer[] = s.insertStart[p] * s.samplingInterval
+		epochIndexer[] = epochBegin != epochIndexer[p] ? DC_AddEpoch(panelTitle, s.DACList[p], epochBegin, epochIndexer[p], EPOCH_BASELINE_REGION_KEY, 0) : 0
+	endif
+
+	if(s.terminationDelay)
+		epochIndexer[] = (s.insertStart[p] + s.setLength[p]) * s.samplingInterval
+		epochIndexer[] = DC_AddEpoch(panelTitle, s.DACList[p], epochIndexer[p], epochIndexer[p] + s.terminationDelay * s.samplingInterval, EPOCH_BASELINE_REGION_KEY, 0)
+	endif
+
+	for(i = 0; i < s.numDACEntries; i += 1)
+		channel = s.DACList[i]
+		headstage = s.headstageDAC[i]
+		WAVE singleStimSet = s.stimSet[i]
+		singleSetLength = s.setLength[i]
+		stimsetCol = s.setColumn[i]
+		startOffset = s.insertStart[i]
+
+		epochBegin = startOffset * s.samplingInterval
+		if(s.distributedDAQOptOv && s.offsets[i] > 0)
+			epochOffset = s.offsets[i] * 1000
+			DC_AddEpoch(panelTitle, channel, epochBegin, epochBegin + epochOffset, EPOCH_BASELINE_REGION_KEY, 0)
+			DC_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin + epochOffset, singleSetLength * s.samplingInterval - epochOffset, stimsetCol, s.DACAmp[i][%DASCALE])
+		else
+			DC_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin, singleSetLength * s.samplingInterval, stimsetCol, s.DACAmp[i][%DASCALE])
+		endif
+
+		if(s.distributedDAQOptOv)
+			DC_AddEpochsFromOodDAQRegions(panelTitle, channel, s.regions[i], epochBegin)
+		endif
+
+		// if dDAQ is on then channels 0 to numEntries - 1 have a trailing base line
+		epochBegin = startOffset + singleSetLength + s.terminationDelay
+		if(stopCollectionPoint > epochBegin)
+			DC_AddEpoch(panelTitle, channel, epochBegin * s.samplingInterval, stopCollectionPoint * s.samplingInterval, EPOCH_BASELINE_REGION_KEY, 0)
+		endif
+
+		if(s.globalTPInsert)
+			// space in ITCDataWave for the testpulse is allocated via an automatic increase
+			// of the onset delay
+			DC_AddEpochsFromTP(panelTitle, channel, s.baselinefrac, s.testPulseLength * s.samplingInterval, 0, "Inserted TP", s.DACAmp[i][%TPAMP])
+		endif
 	endfor
 End
 
