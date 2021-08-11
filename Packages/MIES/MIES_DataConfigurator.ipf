@@ -845,13 +845,11 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
 	WAVE statusHS         = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
-	WAVE sweepDataLNB         = GetSweepSettingsWave(panelTitle)
-	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(panelTitle)
-	WAVE setEventFlag         = GetSetEventFlag(panelTitle)
-	WAVE DAGain               = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
-	WAVE config               = GetDAQConfigWave(panelTitle)
-	WAVE DACList              = GetDACListFromConfig(config)
-	WAVE ADCList              = GetADCListFromConfig(config)
+	WAVE setEventFlag = GetSetEventFlag(panelTitle)
+	WAVE DAGain       = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
+	WAVE config       = GetDAQConfigWave(panelTitle)
+	WAVE DACList      = GetDACListFromConfig(config)
+	WAVE ADCList      = GetADCListFromConfig(config)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		setEventFlag = 0
