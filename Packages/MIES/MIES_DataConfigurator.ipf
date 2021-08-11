@@ -14,6 +14,14 @@ static Structure DC_WriteTTLParams
 	variable numDACEntries, numADCEntries, onsetDelay, hardwareType, decimationFactor, dataAcqOrTP
 EndStructure
 
+static Structure DC_PrepareLBNEntryParams
+	variable distributedDAQ, distributedDAQOptOv, numDACEntries, numADCEntries, dataAcqOrTP, samplingInterval, hardwareType
+	WAVE/WAVE stimSet
+	WAVE setColumn, setCycleCount
+	WAVE DACList, ADCList, headstageDAC, DACAmp, setLength, offsets, statusHS
+	WAVE/T setName, regions
+EndStructure
+
 /// @brief Update global variables used by the Testpulse or DAQ
 ///
 /// @param panelTitle device
@@ -790,15 +798,15 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	variable numActiveChannels, dataAcqOrTP, multiDevice
 
 	variable i, j
-	variable numDACEntries, numADCEntries, ttlIndex, setChecksum, stimsetCycleID, fingerprint, hardwareType, maxITI
-	string ctrl, str, list, func, key
-	variable setCycleCount, val, singleSetLength, samplingInterval
-	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
+	variable numDACEntries, numADCEntries, ttlIndex, hardwareType
+	string ctrl, str, list, key
+	variable setCycleCountLocal, val, singleSetLength, samplingInterval
+	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, terminationDelay
 	variable decimationFactor, cutoff, row, column
 	variable multiplier, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, headstage
-	variable lastValidRow, isoodDAQMember, channel, tpAmp, DAScale, stimsetCol, startOffset, ret
+	variable lastValidRow, channel, tpAmp, DAScale, stimsetCol, startOffset, ret
 	variable epochBegin, epochEnd, epochOffset
 
 	globalTPInsert        = DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP")
@@ -819,7 +827,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	samplingInterval      = DAP_GetSampInt(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
 	WAVE/T allSetNames    = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	WAVE/T allIndexingEndSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 	hardwareType          = GetHardwareType(panelTitle)
 
 	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
@@ -828,8 +835,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 
 	WAVE sweepDataLNB         = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(panelTitle)
-	WAVE/T cellElectrodeNames = GetCellElectrodeNames(panelTitle)
-	WAVE/T analysisFunctions  = GetAnalysisFunctionStorage(panelTitle)
 	WAVE setEventFlag         = GetSetEventFlag(panelTitle)
 	WAVE DAGain               = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
 	WAVE config               = GetDAQConfigWave(panelTitle)
@@ -843,23 +848,16 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	endif
 
 	numDACEntries = DimSize(DACList, ROWS)
-	Make/D/FREE/N=(numDACEntries) insertStart, setLength, setColumn, headstageDAC
+	Make/D/FREE/N=(numDACEntries) insertStart, setLength, setColumn, headstageDAC, setCycleCount
 	Make/D/FREE/N=(numDACEntries, 2) DACAmp
 	SetDimLabel COLS, 0, DASCALE, DACAmp
 	SetDimLabel COLS, 1, TPAMP, DACAmp
 	Make/T/FREE/N=(numDACEntries) setName
 	Make/WAVE/FREE/N=(numDACEntries) stimSet
 
-	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		ASSERT(IsFinite(raCycleID), "Uninitialized raCycleID detected")
-	endif
-
 	WAVE testPulse = GetTestPulse()
 	// test pulse length is calculated for dataAcqOrTP
 	testPulseLength = DimSize(testPulse, ROWS)
-
-	DC_DocumentChannelProperty(panelTitle, RA_ACQ_CYCLE_ID_KEY, INDEP_HEADSTAGE, NaN, NaN, var=raCycleID)
 
 	headstageDAC[] = channelClampMode[DACList[p]][%DAC][%Headstage]
 
@@ -884,8 +882,6 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 				ASSERT(0, "Unknown DAQ Channel Type")
 			endif
 
-			DC_DocumentChannelProperty(panelTitle, "Indexing End Stimset", headstage, channel, XOP_CHANNEL_TYPE_DAC, str = allIndexingEndSetNames[channel])
-
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
 
 			setName[i] = LowerStr(STIMSET_TP_WHILE_DAQ)
@@ -908,11 +904,10 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 			setColumn[i] = 0
 		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 			// only call DC_CalculateChannelColumnNo for real data acquisition
-			[ret, setCycleCount] = DC_CalculateChannelColumnNo(panelTitle, setName[i], channel, CHANNEL_TYPE_DAC)
-			setColumn[i] = ret
+			[ret, setCycleCountLocal] = DC_CalculateChannelColumnNo(panelTitle, setName[i], channel, CHANNEL_TYPE_DAC)
+			setColumn[i]     = ret
+			setCycleCount[i] = setCycleCountLocal
 		endif
-
-		maxITI = max(maxITI, WB_GetITI(stimSet[i], setColumn[i]))
 
 		if(IsFinite(headstage))
 			channelMode = ChannelClampMode[channel][%DAC][%ClampMode]
@@ -935,7 +930,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 				// checks if user wants to set scaling to 0 on sets that have already cycled once
-				if(scalingZero && (indexingLocked || !indexing) && setCycleCount > 0)
+				if(scalingZero && (indexingLocked || !indexing) && setCycleCount[i] > 0)
 					DACAmp[i][%DASCALE] = 0
 				endif
 
@@ -954,61 +949,10 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 			ASSERT(0, "unknown mode")
 		endif
 
-		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=channel)
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
-		DC_DocumentChannelProperty(panelTitle, "DA ChannelType", headstage, channel, XOP_CHANNEL_TYPE_DAC, var = config[i][%DAQChannelType])
-
-		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=setName[i])
-		DC_DocumentChannelProperty(panelTitle, STIMSET_WAVE_NOTE_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=NormalizeToEOL(RemoveEnding(note(stimSet[i]), "\r"), "\n"))
-
-		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
-			if(IsFinite(headstage)) // associated channel
-				func = analysisFunctions[headstage][j]
-			else
-				func = ""
-			endif
-
-			DC_DocumentChannelProperty(panelTitle, StringFromList(j, EVENT_NAME_LIST_LBN), headstage, channel, XOP_CHANNEL_TYPE_DAC, str=func)
-		endfor
-
-		if(IsFinite(headstage)) // associated channel
-			str = analysisFunctions[headstage][ANALYSIS_FUNCTION_PARAMS]
-		else
-			str = ""
-		endif
-
-		DC_DocumentChannelProperty(panelTitle, ANALYSIS_FUNCTION_PARAMS_LBN, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=str)
-
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
-
-		DC_DocumentChannelProperty(panelTitle, STIMSET_SCALE_FACTOR_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var = dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ ? DACAmp[i][%DASCALE] : DACAmp[i][%TPAMP])
-		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setColumn[i])
-		DC_DocumentChannelProperty(panelTitle, "Electrode", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=cellElectrodeNames[headstage])
-		DC_DocumentChannelProperty(panelTitle, "Set Cycle Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setCycleCount)
-
-		setChecksum = WB_GetStimsetChecksum(stimSet[i], setName[i], dataAcqOrTP)
-		DC_DocumentChannelProperty(panelTitle, "Stim Wave Checksum", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setChecksum)
-
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, setName[i], setCycleCount, setChecksum, dataAcqOrTP)
-			stimsetCycleID = DC_GetStimsetAcqCycleID(panelTitle, fingerprint, channel)
-
 			setEventFlag[channel][] = (setColumn[i] + 1 == IDX_NumberOfSweepsInSet(setName[i]))
-			DC_DocumentChannelProperty(panelTitle, STIMSET_ACQ_CYCLE_ID_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var=stimsetCycleID)
-		endif
-
-		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-			isoodDAQMember = (distributedDAQOptOv && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ && IsFinite(headstage))
-			DC_DocumentChannelProperty(panelTitle, "oodDAQ member", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=isoodDAQMember)
 		endif
 	endfor
-
-	NVAR maxITIGlobal = $GetMaxIntertrialInterval(panelTitle)
-	ASSERT(IsFinite(maxITI), "Invalid maxITI")
-	maxITIGlobal = maxITI
-	DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, NaN, NaN, var=maxITIGlobal)
 
 	// for distributedDAQOptOv create temporary reduced input waves holding DAQ types channels only (removing TP typed channels from TPwhileDAQ), put results back to unreduced waves
 	if(distributedDAQOptOv && dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -1319,106 +1263,32 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		endfor
 	endif
 
-	DC_SortEpochs(panelTitle)
-
 	if(!WaveExists(regions))
 		Make/FREE/T/N=(numDACEntries) regions
 	endif
 
-	for(i = 0; i < numDACEntries; i += 1)
-		channel = DACList[i]
-		headstage = headstageDAC[i]
-		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setLength[i])
-		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=offsets[i])
-		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=regions[i])
+	STRUCT DC_PrepareLBNEntryParams prepLBNParams
+	prepLBNParams.distributedDAQ = distributedDAQ
+	prepLBNParams.distributedDAQOptOv = distributedDAQOptOv
+	prepLBNParams.numDACEntries = numDACEntries
+	prepLBNParams.numADCEntries = numADCEntries
+	prepLBNParams.dataAcqOrTP = dataAcqOrTP
+	prepLBNParams.samplingInterval = samplingInterval
+	prepLBNParams.hardwareType = hardwareType
+	WAVE/WAVE prepLBNParams.stimSet = stimSet
+	WAVE prepLBNParams.setColumn = setColumn
+	WAVE prepLBNParams.setCycleCount = setCycleCount
+	WAVE prepLBNParams.DACList = DACList
+	WAVE prepLBNParams.ADCList = ADCList
+	WAVE prepLBNParams.headstageDAC = headstageDAC
+	WAVE prepLBNParams.DACAmp = DACAmp
+	WAVE prepLBNParams.setLength = setLength
+	WAVE prepLBNParams.offsets = offsets
+	WAVE prepLBNParams.statusHS = statusHS
+	WAVE/T prepLBNParams.setName = setName
+	WAVE/T prepLBNParams.regions = regions
 
-		WAVE/T epochWave = GetEpochsWave(panelTitle)
-		Duplicate/FREE/RMD=[][][channel] epochWave, epochChannel
-		Redimension/N=(-1, -1, 0) epochChannel
-		DC_DocumentChannelProperty(panelTitle, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=TextWaveToList(epochChannel, ":", colSep = ",", stopOnEmpty = 1))
-	endfor
-
-	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, NaN, var=str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")))
-	DC_DocumentChannelProperty(panelTitle, "Fixed frequency acquisition", INDEP_HEADSTAGE, NaN, NaN, var=str2numSafe(DAG_GetTextualValue(panelTitle, "Popup_Settings_FixedFreq")))
-	DC_DocumentChannelProperty(panelTitle, "Sampling interval", INDEP_HEADSTAGE, NaN, NaN, var=samplingInterval * 1e-3)
-
-	DC_DocumentChannelProperty(panelTitle, "Delay onset user", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser"))
-	DC_DocumentChannelProperty(panelTitle, "Delay onset auto", INDEP_HEADSTAGE, NaN, NaN, var=GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto"))
-	DC_DocumentChannelProperty(panelTitle, "Delay termination", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_TerminationDelay"))
-	DC_DocumentChannelProperty(panelTitle, "Delay distributed DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_dDAQDelay"))
-	DC_DocumentChannelProperty(panelTitle, "oodDAQ Pre Feature", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Setvar_DataAcq_dDAQOptOvPre"))
-	DC_DocumentChannelProperty(panelTitle, "oodDAQ Post Feature", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Setvar_DataAcq_dDAQOptOvPost"))
-	DC_DocumentChannelProperty(panelTitle, "oodDAQ Resolution", INDEP_HEADSTAGE, NaN, NaN, var=WAVEBUILDER_MIN_SAMPINT)
-
-	DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, NaN, NaN, var=GlobalTPInsert)
-	DC_DocumentChannelProperty(panelTitle, "Distributed DAQ", INDEP_HEADSTAGE, NaN, NaN, var=distributedDAQ)
-	DC_DocumentChannelProperty(panelTitle, "Optimized Overlap dDAQ", INDEP_HEADSTAGE, NaN, NaN, var=distributedDAQOptOv)
-	DC_DocumentChannelProperty(panelTitle, "Repeat Sets", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_SetRepeats"))
-	DC_DocumentChannelProperty(panelTitle, "Scaling zero", INDEP_HEADSTAGE, NaN, NaN, var=scalingZero)
-	DC_DocumentChannelProperty(panelTitle, "Indexing", INDEP_HEADSTAGE, NaN, NaN, var=indexing)
-	DC_DocumentChannelProperty(panelTitle, "Locked indexing", INDEP_HEADSTAGE, NaN, NaN, var=indexingLocked)
-	DC_DocumentChannelProperty(panelTitle, "Repeated Acquisition", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-	DC_DocumentChannelProperty(panelTitle, "Random Repeated Acquisition", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_DataAcq_RepAcqRandom"))
-	DC_DocumentChannelProperty(panelTitle, "Multi Device mode", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
-	DC_DocumentChannelProperty(panelTitle, "Background Testpulse", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_BkgTP"))
-	DC_DocumentChannelProperty(panelTitle, "Background DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"))
-	DC_DocumentChannelProperty(panelTitle, "TP buffer size", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_Settings_TPBuffer"))
-	DC_DocumentChannelProperty(panelTitle, "TP during ITI", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP"))
-	DC_DocumentChannelProperty(panelTitle, "Amplifier change via I=0", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_AmpIEQZstep"))
-	DC_DocumentChannelProperty(panelTitle, "Skip analysis functions", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs"))
-	DC_DocumentChannelProperty(panelTitle, "Repeat sweep on async alarm", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_AlarmAutoRepeat"))
-	DC_DocumentChannelProperty(panelTitle, "Autobias %", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_Settings_AutoBiasPerc"))
-	DC_DocumentChannelProperty(panelTitle, "Autobias interval", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_Settings_AutoBiasInt"))
-
-	DC_DocumentHardwareProperties(panelTitle, hardwareType)
-
-	if(DeviceCanLead(panelTitle))
-		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
-		DC_DocumentChannelProperty(panelTitle, "Follower Device", INDEP_HEADSTAGE, NaN, NaN, str=listOfFollowerDevices)
-	endif
-
-	DC_DocumentChannelProperty(panelTitle, "MIES version", INDEP_HEADSTAGE, NaN, NaN, str=GetMIESVersionAsString())
-	DC_DocumentChannelProperty(panelTitle, "Igor Pro version", INDEP_HEADSTAGE, NaN, NaN, str=GetIgorProVersion())
-	DC_DocumentChannelProperty(panelTitle, "Igor Pro build", INDEP_HEADSTAGE, NaN, NaN, str=GetIgorProBuildVersion())
-	DC_DocumentChannelProperty(panelTitle, "Igor Pro bitness", INDEP_HEADSTAGE, NaN, NaN, var=GetArchitectureBits())
-	DC_DocumentChannelProperty(panelTitle, "JSON config file: path", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_SOURCEFILE_PATH))
-	DC_DocumentChannelProperty(panelTitle, "JSON config file: SHA-256 hash", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_SOURCEFILE_HASH))
-	DC_DocumentChannelProperty(panelTitle, "JSON config file: stimset nwb file path", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_STIMSET_NWB_PATH))
-	DC_DocumentChannelProperty(panelTitle, "TP after DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ"))
-
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-
-		DC_DocumentChannelProperty(panelTitle, "Headstage Active", i, NaN, NaN, var=statusHS[i])
-
-		if(!statusHS[i])
-			continue
-		endif
-
-		DC_DocumentChannelProperty(panelTitle, "Clamp Mode", i, NaN, NaN, var=DAG_GetHeadstageMode(panelTitle, i))
-	endfor
-
-	if(distributedDAQ)
-		// dDAQ requires that all stimsets have the same length, so store the stim set length
-		// also headstage independent
-		ASSERT(!distributedDAQOptOv, "Unexpected oodDAQ mode")
-		ASSERT(IsConstant(setLength, setLength[0]), "Unexpected varying stim set length")
-		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, NaN, var=setLength[0])
-	endif
-
-	for(i = 0; i < numADCEntries; i += 1)
-		channel = ADCList[i]
-		headstage = channelClampMode[channel][%ADC][%Headstage]
-
-		DC_DocumentChannelProperty(panelTitle, "ADC", headstage, channel, XOP_CHANNEL_TYPE_ADC, var=channel)
-
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-		DC_DocumentChannelProperty(panelTitle, "AD Gain", headstage, channel, XOP_CHANNEL_TYPE_ADC, var=DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
-
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, channel, XOP_CHANNEL_TYPE_ADC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
-
-		DC_DocumentChannelProperty(panelTitle, "AD ChannelType", headstage, channel, XOP_CHANNEL_TYPE_ADC, var = config[numDACEntries + i][%DAQChannelType])
-	endfor
+	DC_PrepareLBNEntries(panelTitle, prepLBNParams)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		STRUCT DC_WriteTTLParams ttlParams
@@ -1496,6 +1366,194 @@ static Function DC_WriteTTLIntoDAQDataWave(string panelTitle, STRUCT DC_WriteTTL
 			endif
 			break
 	endswitch
+End
+
+static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DC_PrepareLBNEntryParams &s)
+	variable i, j, maxITI, channel, headstage, setChecksum, fingerprint, stimsetCycleID, isoodDAQMember
+	string func, ctrl, str
+
+	WAVE config = GetDAQConfigWave(panelTitle)
+
+	WAVE/T allIndexingEndSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+	WAVE/T cellElectrodeNames = GetCellElectrodeNames(panelTitle)
+	WAVE/T analysisFunctions  = GetAnalysisFunctionStorage(panelTitle)
+
+	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
+	if(s.dataAcqOrTP == DATA_ACQUISITION_MODE)
+		ASSERT(IsFinite(raCycleID), "Uninitialized raCycleID detected")
+	endif
+
+	DC_DocumentChannelProperty(panelTitle, RA_ACQ_CYCLE_ID_KEY, INDEP_HEADSTAGE, NaN, NaN, var=raCycleID)
+
+	// get maximum ITI from all DACs
+	for(i = 0; i < s.numDACEntries; i += 1)
+		maxITI = max(maxITI, WB_GetITI(s.stimSet[i], s.setColumn[i]))
+	endfor
+
+	NVAR maxITIGlobal = $GetMaxIntertrialInterval(panelTitle)
+	ASSERT(IsFinite(maxITI), "Invalid maxITI")
+	maxITIGlobal = maxITI
+	DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, NaN, NaN, var=maxITIGlobal)
+
+	DC_SortEpochs(panelTitle)
+
+	// index guide:
+	// - numEntries: Number of active DACs
+	// - i: Zero-based index of the active DACS
+	// - channel: DA channel number
+
+	for(i = 0; i < s.numDACEntries; i += 1)
+		channel = s.DACList[i]
+		headstage = s.headstageDAC[i]
+
+		if(s.dataAcqOrTP == DATA_ACQUISITION_MODE)
+			DC_DocumentChannelProperty(panelTitle, "Indexing End Stimset", headstage, channel, XOP_CHANNEL_TYPE_DAC, str = allIndexingEndSetNames[channel])
+		endif
+
+		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
+			if(IsFinite(headstage)) // associated channel
+				func = analysisFunctions[headstage][j]
+			else
+				func = ""
+			endif
+
+			DC_DocumentChannelProperty(panelTitle, StringFromList(j, EVENT_NAME_LIST_LBN), headstage, channel, XOP_CHANNEL_TYPE_DAC, str=func)
+		endfor
+
+		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=channel)
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
+		DC_DocumentChannelProperty(panelTitle, "DA ChannelType", headstage, channel, XOP_CHANNEL_TYPE_DAC, var = config[i][%DAQChannelType])
+
+		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=s.setName[i])
+		DC_DocumentChannelProperty(panelTitle, STIMSET_WAVE_NOTE_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=NormalizeToEOL(RemoveEnding(note(s.stimSet[i]), "\r"), "\n"))
+
+		if(IsFinite(headstage)) // associated channel
+			str = analysisFunctions[headstage][ANALYSIS_FUNCTION_PARAMS]
+		else
+			str = ""
+		endif
+
+		DC_DocumentChannelProperty(panelTitle, ANALYSIS_FUNCTION_PARAMS_LBN, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=str)
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
+
+		DC_DocumentChannelProperty(panelTitle, STIMSET_SCALE_FACTOR_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var = s.dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ ? s.DACAmp[i][%DASCALE] : s.DACAmp[i][%TPAMP])
+		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=s.setColumn[i])
+		DC_DocumentChannelProperty(panelTitle, "Electrode", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=cellElectrodeNames[headstage])
+		DC_DocumentChannelProperty(panelTitle, "Set Cycle Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=s.setCycleCount[i])
+
+		setChecksum = WB_GetStimsetChecksum(s.stimSet[i], s.setName[i], s.dataAcqOrTP)
+		DC_DocumentChannelProperty(panelTitle, "Stim Wave Checksum", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setChecksum)
+
+		if(s.dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
+			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, s.setName[i], s.setCycleCount[i], setChecksum, s.dataAcqOrTP)
+			stimsetCycleID = DC_GetStimsetAcqCycleID(panelTitle, fingerprint, channel)
+
+			DC_DocumentChannelProperty(panelTitle, STIMSET_ACQ_CYCLE_ID_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var=stimsetCycleID)
+		endif
+
+		if(s.dataAcqOrTP == DATA_ACQUISITION_MODE)
+			isoodDAQMember = (s.distributedDAQOptOv && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ && IsFinite(headstage))
+			DC_DocumentChannelProperty(panelTitle, "oodDAQ member", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=isoodDAQMember)
+		endif
+
+		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=s.setLength[i])
+		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=s.offsets[i])
+		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=s.regions[i])
+
+		WAVE/T epochWave = GetEpochsWave(panelTitle)
+		Duplicate/FREE/RMD=[][][channel] epochWave, epochChannel
+		Redimension/N=(-1, -1, 0) epochChannel
+		DC_DocumentChannelProperty(panelTitle, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=TextWaveToList(epochChannel, ":", colSep = ",", stopOnEmpty = 1))
+	endfor
+
+	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, NaN, var=str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")))
+	DC_DocumentChannelProperty(panelTitle, "Fixed frequency acquisition", INDEP_HEADSTAGE, NaN, NaN, var=str2numSafe(DAG_GetTextualValue(panelTitle, "Popup_Settings_FixedFreq")))
+	DC_DocumentChannelProperty(panelTitle, "Sampling interval", INDEP_HEADSTAGE, NaN, NaN, var=s.samplingInterval * 1e-3)
+
+	DC_DocumentChannelProperty(panelTitle, "Delay onset user", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser"))
+	DC_DocumentChannelProperty(panelTitle, "Delay onset auto", INDEP_HEADSTAGE, NaN, NaN, var=GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto"))
+	DC_DocumentChannelProperty(panelTitle, "Delay termination", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_TerminationDelay"))
+
+	DC_DocumentChannelProperty(panelTitle, "Delay distributed DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_dDAQDelay"))
+	DC_DocumentChannelProperty(panelTitle, "oodDAQ Pre Feature", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Setvar_DataAcq_dDAQOptOvPre"))
+	DC_DocumentChannelProperty(panelTitle, "oodDAQ Post Feature", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Setvar_DataAcq_dDAQOptOvPost"))
+	DC_DocumentChannelProperty(panelTitle, "oodDAQ Resolution", INDEP_HEADSTAGE, NaN, NaN, var=WAVEBUILDER_MIN_SAMPINT)
+
+	DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP"))
+	DC_DocumentChannelProperty(panelTitle, "Distributed DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_DistribDaq"))
+	DC_DocumentChannelProperty(panelTitle, "Optimized Overlap dDAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_dDAQOptOv"))
+	DC_DocumentChannelProperty(panelTitle, "Repeat Sets", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_SetRepeats"))
+	DC_DocumentChannelProperty(panelTitle, "Scaling zero", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle,  "check_Settings_ScalingZero"))
+	DC_DocumentChannelProperty(panelTitle, "Indexing", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
+	DC_DocumentChannelProperty(panelTitle, "Locked indexing", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
+	DC_DocumentChannelProperty(panelTitle, "Repeated Acquisition", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	DC_DocumentChannelProperty(panelTitle, "Random Repeated Acquisition", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_DataAcq_RepAcqRandom"))
+	DC_DocumentChannelProperty(panelTitle, "Multi Device mode", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
+	DC_DocumentChannelProperty(panelTitle, "Background Testpulse", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_BkgTP"))
+	DC_DocumentChannelProperty(panelTitle, "Background DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"))
+	DC_DocumentChannelProperty(panelTitle, "TP buffer size", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_Settings_TPBuffer"))
+	DC_DocumentChannelProperty(panelTitle, "TP during ITI", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP"))
+	DC_DocumentChannelProperty(panelTitle, "Amplifier change via I=0", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_AmpIEQZstep"))
+	DC_DocumentChannelProperty(panelTitle, "Skip analysis functions", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs"))
+	DC_DocumentChannelProperty(panelTitle, "Repeat sweep on async alarm", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_AlarmAutoRepeat"))
+	DC_DocumentChannelProperty(panelTitle, "Autobias %", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_Settings_AutoBiasPerc"))
+	DC_DocumentChannelProperty(panelTitle, "Autobias interval", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_Settings_AutoBiasInt"))
+
+	DC_DocumentHardwareProperties(panelTitle, s.hardwareType)
+
+	if(DeviceCanLead(panelTitle))
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+		DC_DocumentChannelProperty(panelTitle, "Follower Device", INDEP_HEADSTAGE, NaN, NaN, str=listOfFollowerDevices)
+	endif
+
+	DC_DocumentChannelProperty(panelTitle, "MIES version", INDEP_HEADSTAGE, NaN, NaN, str=GetMIESVersionAsString())
+	DC_DocumentChannelProperty(panelTitle, "Igor Pro version", INDEP_HEADSTAGE, NaN, NaN, str=GetIgorProVersion())
+	DC_DocumentChannelProperty(panelTitle, "Igor Pro build", INDEP_HEADSTAGE, NaN, NaN, str=GetIgorProBuildVersion())
+	DC_DocumentChannelProperty(panelTitle, "Igor Pro bitness", INDEP_HEADSTAGE, NaN, NaN, var=GetArchitectureBits())
+	DC_DocumentChannelProperty(panelTitle, "JSON config file: path", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_SOURCEFILE_PATH))
+	DC_DocumentChannelProperty(panelTitle, "JSON config file: SHA-256 hash", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_SOURCEFILE_HASH))
+	DC_DocumentChannelProperty(panelTitle, "JSON config file: stimset nwb file path", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_STIMSET_NWB_PATH))
+	DC_DocumentChannelProperty(panelTitle, "TP after DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ"))
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		DC_DocumentChannelProperty(panelTitle, "Headstage Active", i, NaN, NaN, var=s.statusHS[i])
+
+		if(!s.statusHS[i])
+			continue
+		endif
+
+		DC_DocumentChannelProperty(panelTitle, "Clamp Mode", i, NaN, NaN, var=DAG_GetHeadstageMode(panelTitle, i))
+	endfor
+
+	if(s.distributedDAQ)
+		// dDAQ requires that all stimsets have the same length, so store the stim set length
+		// also headstage independent
+		ASSERT(!s.distributedDAQOptOv, "Unexpected oodDAQ mode")
+		ASSERT(IsConstant(s.setLength, s.setLength[0]), "Unexpected varying stim set length")
+		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, NaN, var=s.setLength[0])
+	endif
+
+	// TODO create headstageADC in caller
+	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
+
+	for(i = 0; i < s.numADCEntries; i += 1)
+		channel = s.ADCList[i]
+		headstage = channelClampMode[channel][%ADC][%Headstage]
+
+		DC_DocumentChannelProperty(panelTitle, "ADC", headstage, channel, XOP_CHANNEL_TYPE_ADC, var=channel)
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+		DC_DocumentChannelProperty(panelTitle, "AD Gain", headstage, channel, XOP_CHANNEL_TYPE_ADC, var=DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, channel, XOP_CHANNEL_TYPE_ADC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
+
+		DC_DocumentChannelProperty(panelTitle, "AD ChannelType", headstage, channel, XOP_CHANNEL_TYPE_ADC, var = config[s.numDACEntries + i][%DAQChannelType])
+	endfor
 End
 
 /// @brief Document hardware type/name/serial number into the labnotebook
