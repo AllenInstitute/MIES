@@ -1493,6 +1493,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string pa
 		Duplicate/FREE s.setLength, setMode
 		setMode[] = config[p][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP ? TEST_PULSE_MODE : DATA_ACQUISITION_MODE
 		s.setLength[] = DC_CalculateStimsetLength(s.stimSet[p], panelTitle, setMode[p])
+		WaveClear setMode
 	endif
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
