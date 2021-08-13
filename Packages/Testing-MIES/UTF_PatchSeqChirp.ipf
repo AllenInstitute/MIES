@@ -177,10 +177,7 @@ static Function PS_CR1_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -198,7 +195,7 @@ static Function PS_CR1_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {0}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR2_IGNORE(string device)
@@ -234,10 +231,7 @@ static Function PS_CR2_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -254,7 +248,7 @@ static Function PS_CR2_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR3_IGNORE(string device)
@@ -290,10 +284,7 @@ static Function PS_CR3_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -310,7 +301,7 @@ static Function PS_CR3_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR4_IGNORE(string device)
@@ -371,10 +362,7 @@ static Function PS_CR4_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 6)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 5)
+	sweepNo = 5
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -391,7 +379,7 @@ static Function PS_CR4_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 41, 41, 42, 42, 42}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR5_IGNORE(string device)
@@ -451,10 +439,7 @@ static Function PS_CR5_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 6)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 5)
+	sweepNo = 5
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -471,7 +456,7 @@ static Function PS_CR5_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 49, 49, 38, 38, 38}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR6_IGNORE(string device)
@@ -531,10 +516,7 @@ static Function PS_CR6_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 6)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 5)
+	sweepNo = 5
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -551,7 +533,7 @@ static Function PS_CR6_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 60, 60, 40, 40, 40}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR7_IGNORE(string device)
@@ -608,10 +590,7 @@ static Function PS_CR7_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -628,7 +607,7 @@ static Function PS_CR7_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR8_IGNORE(string device)
@@ -685,10 +664,7 @@ static Function PS_CR8_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -705,7 +681,7 @@ static Function PS_CR8_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR9_IGNORE(string device)
@@ -768,10 +744,7 @@ static Function PS_CR9_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 6)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 5)
+	sweepNo = 5
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -788,7 +761,7 @@ static Function PS_CR9_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30, 17, 23, 23}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR10_IGNORE(string device)
@@ -847,10 +820,7 @@ static Function PS_CR10_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -867,7 +837,7 @@ static Function PS_CR10_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 17, 17, 23}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR11_IGNORE(string device)
@@ -909,10 +879,7 @@ static Function PS_CR11_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -930,7 +897,7 @@ static Function PS_CR11_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {1}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR12_IGNORE(string device)
@@ -970,10 +937,7 @@ static Function PS_CR12_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -990,7 +954,7 @@ static Function PS_CR12_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 30, 30}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End
 
 static Function PS_CR13_IGNORE(string device)
@@ -1038,10 +1002,7 @@ static Function PS_CR13_REENTRY([str])
 	variable sweepNo, setPassed
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -1058,5 +1019,5 @@ static Function PS_CR13_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 31, 31, 31, 32}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
-	CheckDashboard(str, lbnEntries[%setPass])
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End

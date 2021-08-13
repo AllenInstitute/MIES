@@ -1,4 +1,4 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestSquarePulse
@@ -104,10 +104,7 @@ static Function PS_SP1_REENTRY([str])
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 19)
+	sweepNo = 19
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -140,7 +137,7 @@ static Function PS_SP1_REENTRY([str])
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
-	CheckDashboard(str, {setPassed})
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -163,10 +160,7 @@ static Function PS_SP2_REENTRY([str])
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 19)
+	sweepNo = 19
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -199,7 +193,7 @@ static Function PS_SP2_REENTRY([str])
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
-	CheckDashboard(str, {setPassed})
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -222,10 +216,7 @@ static Function PS_SP3_REENTRY([str])
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 19)
+	sweepNo = 19
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -258,7 +249,7 @@ static Function PS_SP3_REENTRY([str])
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
-	CheckDashboard(str, {setPassed})
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -281,10 +272,7 @@ static Function PS_SP4_REENTRY([str])
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 20)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 19)
+	sweepNo = 19
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -317,7 +305,7 @@ static Function PS_SP4_REENTRY([str])
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, NaN, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
-	CheckDashboard(str, {setPassed})
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -341,10 +329,7 @@ static Function PS_SP5_REENTRY([str])
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 4)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 3)
+	sweepNo = 3
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -377,7 +362,7 @@ static Function PS_SP5_REENTRY([str])
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
-	CheckDashboard(str, {setPassed})
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -401,10 +386,7 @@ static Function PS_SP6_REENTRY([str])
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -438,7 +420,7 @@ static Function PS_SP6_REENTRY([str])
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {-50e-12, NaN, NaN, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
-	CheckDashboard(str, {setPassed})
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -460,10 +442,7 @@ static Function PS_SP7_REENTRY([str])
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -497,5 +476,5 @@ static Function PS_SP7_REENTRY([str])
 	WAVE/Z stepSizes = GetDAScaleStepSize_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(stepSizes, {-50e-12, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
-	CheckDashboard(str, {setPassed})
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
