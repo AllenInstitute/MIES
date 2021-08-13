@@ -824,17 +824,15 @@ End
 static Function DC_WriteTTLIntoDAQDataWave(string panelTitle, STRUCT DataConfigurationResult &s)
 	variable i, startOffset, ttlIndex, singleSetLength, numRows
 
+	if(s.numTTLEntries == 0)
+		return NaN
+	endif
+
 	// reset to the default value without distributedDAQ
 	startOffset = s.onSetDelay
 	ttlIndex = s.numDACEntries + s.numADCEntries
 
 	WAVE config = GetDAQConfigWave(panelTitle)
-
-	WAVE TTLList = GetTTLListFromConfig(config)
-
-	if(DimSize(TTLList, ROWS) == 0)
-		return NaN
-	endif
 
 	switch(s.hardwareType)
 		case HARDWARE_NI_DAC:
