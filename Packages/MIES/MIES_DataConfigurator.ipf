@@ -1338,12 +1338,8 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string pa
 
 	s.numDACEntries = DimSize(s.DACList, ROWS)
 	Make/D/FREE/N=(s.numDACEntries) s.insertStart, s.setLength, s.setColumn, s.headstageDAC, s.setCycleCount
-
-	Make/D/FREE/N=(s.numDACEntries, 2) s.DACAmp
-	SetDimLabel COLS, 0, DASCALE, s.DACAmp
-	SetDimLabel COLS, 1, TPAMP, s.DACAmp
-
 	Make/T/FREE/N=(s.numDACEntries) s.setName
+
 	// @todo IP9-only: Remove workaround once this is fixed upstream
 	Make/WAVE/FREE/N=(s.numDACEntries) stimSetLocal
 	WAVE/WAVE s.stimSet = stimSetLocal
@@ -1358,6 +1354,8 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string pa
 
 	s.headstageDAC[] = channelClampMode[s.DACList[p]][%DAC][%Headstage]
 	s.headstageADC[] = channelClampMode[s.ADCList[p]][%ADC][%Headstage]
+
+	WAVE/D s.DACAmp = GetDACAmplitudes(s.numDACEntries)
 
 	// index guide:
 	// - numEntries: Number of active DACs
