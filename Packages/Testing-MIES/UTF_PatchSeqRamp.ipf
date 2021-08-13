@@ -1,4 +1,4 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestRamp
@@ -161,10 +161,7 @@ static Function PS_RA1_REENTRY([str])
 
 	variable sweepNo, i, numEntries, DAScale, onsetDelay
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -205,7 +202,7 @@ static Function PS_RA1_REENTRY([str])
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(durations, {15000, 15000}, mode = WAVE_DATA, tol = 1)
 
-	CheckDashboard(str, setPassed)
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // we don't test the BL QC code path here anymore
@@ -230,10 +227,7 @@ static Function PS_RA2_REENTRY([str])
 
 	variable sweepNo, i, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -260,7 +254,7 @@ static Function PS_RA2_REENTRY([str])
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(durations, {15000, 15000, 15000}, mode = WAVE_DATA, tol = 1)
 
-	CheckDashboard(str, setPassed)
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -283,10 +277,7 @@ static Function PS_RA3_REENTRY([str])
 
 	variable sweepNo, i, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -315,7 +306,7 @@ static Function PS_RA3_REENTRY([str])
 	CHECK(durations[1] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[1] < SPIKE_POSITION_TEST_DELAY_MS)
 	CHECK(durations[2] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[2] < SPIKE_POSITION_TEST_DELAY_MS)
 
-	CheckDashboard(str, setPassed)
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -338,10 +329,7 @@ static Function PS_RA4_REENTRY([str])
 
 	variable sweepNo, i, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -370,7 +358,7 @@ static Function PS_RA4_REENTRY([str])
 	CHECK_CLOSE_VAR(durations[1], 15000, tol = 1)
 	CHECK_CLOSE_VAR(durations[2], 15000, tol = 1)
 
-	CheckDashboard(str, setPassed)
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -393,10 +381,7 @@ static Function PS_RA5_REENTRY([str])
 
 	variable sweepNo, i, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -425,7 +410,7 @@ static Function PS_RA5_REENTRY([str])
 	CHECK(durations[1] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE)
 	CHECK(durations[2] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[2] < SPIKE_POSITION_TEST_DELAY_MS)
 
-	CheckDashboard(str, setPassed)
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -448,10 +433,7 @@ static Function PS_RA6_REENTRY([str])
 
 	variable sweepNo, i, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -480,5 +462,5 @@ static Function PS_RA6_REENTRY([str])
 	CHECK(durations[1] > 15000 - PSQ_RA_BL_EVAL_RANGE)
 	CHECK(durations[2] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[2] < SPIKE_POSITION_TEST_DELAY_MS)
 
-	CheckDashboard(str, setPassed)
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End

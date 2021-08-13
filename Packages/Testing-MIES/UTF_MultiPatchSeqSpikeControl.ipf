@@ -289,10 +289,7 @@ static Function SC_Test1_REENTRY([str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 4)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 3)
+	sweepNo = 3
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -338,7 +335,7 @@ static Function SC_Test1_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0, 0, 0}, mode = WAVE_DATA)
 
-	CheckDashboard(str, {0, 0})
+	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
 static Function SC_Test2_IGNORE(device)
@@ -380,10 +377,7 @@ static Function SC_Test2_REENTRY([str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, spikePos
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -432,7 +426,7 @@ static Function SC_Test2_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
 
-	CheckDashboard(str, {1, 1})
+	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
 static Function SC_Test3_IGNORE(device)
@@ -474,10 +468,7 @@ static Function SC_Test3_REENTRY([str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, spikePos
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -525,7 +516,7 @@ static Function SC_Test3_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
 
-	CheckDashboard(str, {1, 1})
+	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
 static Function SC_Test4_IGNORE(device)
@@ -567,10 +558,7 @@ static Function SC_Test4_REENTRY([str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, spikePos
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -623,7 +611,7 @@ static Function SC_Test4_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
 
-	CheckDashboard(str, {1, 1})
+	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
 static Function SC_Test5_IGNORE(device)
@@ -666,10 +654,7 @@ static Function SC_Test5_REENTRY([str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, spikePos
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 4)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 3)
+	sweepNo = 3
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -717,7 +702,7 @@ static Function SC_Test5_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 10, 20, 30}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 10, 20, 30}, mode = WAVE_DATA)
 
-	CheckDashboard(str, {0, 0})
+	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
 static Function SC_Test6_IGNORE(device)
@@ -759,10 +744,7 @@ static Function SC_Test6_REENTRY([str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, spikePos
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -811,7 +793,7 @@ static Function SC_Test6_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0}, mode = WAVE_DATA)
 
-	CheckDashboard(str, {1, 1})
+	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
 static Function SC_Test7_IGNORE(device)
@@ -867,10 +849,7 @@ static Function SC_Test7_REENTRY([str])
 	string spikeCounts_sweep0, spikeCounts_sweep1, spikeCounts_sweep2, spikeCounts_sweep3
 	string spikePos_sweep0, spikePos_sweep1, spikePos_sweep2, spikePos_sweep3
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 4)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 3)
+	sweepNo = 3
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -925,7 +904,7 @@ static Function SC_Test7_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0, 0, 0}, mode = WAVE_DATA)
 
-	CheckDashboard(str, {0, 0})
+	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
 
@@ -993,10 +972,7 @@ static Function SC_Test8_REENTRY([str])
 	string spikeCounts_sweep0, spikeCounts_sweep1, spikeCounts_sweep2, spikeCounts_sweep3
 	string spikePos_sweep0, spikePos_sweep1, spikePos_sweep2, spikePos_sweep3
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 4)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 3)
+	sweepNo = 3
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -1056,7 +1032,7 @@ static Function SC_Test8_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0, 0, 0}, mode = WAVE_DATA)
 
-	CheckDashboard(str, {1, 1})
+	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End
 
 static Function SC_Test9_IGNORE(device)
@@ -1105,10 +1081,7 @@ static Function SC_Test9_REENTRY([str])
 	variable sweepNo, autobiasV
 	string lbl, failedPulses, spikeCounts, spikePos
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
 
@@ -1154,5 +1127,5 @@ static Function SC_Test9_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%autoBiasV_HS1], NULL_WAVE)
 
-	CheckDashboard(str, {1, 1})
+	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
 End

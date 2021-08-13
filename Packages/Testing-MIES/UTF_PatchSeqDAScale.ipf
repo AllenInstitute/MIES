@@ -1,4 +1,4 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestDAScale
@@ -127,10 +127,7 @@ Function PS_DS_Sub1_REENTRY([str])
 
 	variable sweepNo, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -172,7 +169,9 @@ Function PS_DS_Sub1_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
-	CheckDashboard(str, setPassed)
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -194,10 +193,7 @@ Function PS_DS_Sub2_REENTRY([str])
 
 	variable sweepNo, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -239,7 +235,9 @@ Function PS_DS_Sub2_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
-	CheckDashboard(str, setPassed)
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -262,10 +260,7 @@ Function PS_DS_Sub3_REENTRY([str])
 
 	variable sweepNo, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -307,7 +302,9 @@ Function PS_DS_Sub3_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
-	CheckDashboard(str, setPassed)
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 4)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -331,10 +328,7 @@ Function PS_DS_Sub4_REENTRY([str])
 
 	variable sweepNo, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -375,6 +369,10 @@ Function PS_DS_Sub4_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 4)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -397,10 +395,7 @@ Function PS_DS_Sub5_REENTRY([str])
 
 	variable sweepNo, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -441,6 +436,10 @@ Function PS_DS_Sub5_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -465,10 +464,7 @@ Function PS_DS_Sub6_REENTRY([str])
 	variable sweepNo, numEntries
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -510,7 +506,9 @@ Function PS_DS_Sub6_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
-	CheckDashboard(str, setPassed)
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 4)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -535,10 +533,7 @@ Function PS_DS_Sub7_REENTRY([str])
 	variable sweepNo, numEntries
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 7)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 6)
+	sweepNo = 6
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -580,7 +575,9 @@ Function PS_DS_Sub7_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
-	CheckDashboard(str, setPassed)
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 6)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -609,10 +606,7 @@ Function PS_DS_Sub8_REENTRY([str])
 	variable sweepNo, numEntries
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 9)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 8)
+	sweepNo = 8
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -654,7 +648,9 @@ Function PS_DS_Sub8_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
-	CheckDashboard(str, setPassed)
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 8)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // The decision logic *without* FinalSlopePercent is the same as for Sub, only the plotting is different
@@ -684,10 +680,7 @@ Function PS_DS_Supra1_REENTRY([str])
 	variable sweepNo, numEntries
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -731,7 +724,9 @@ Function PS_DS_Supra1_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
-	CheckDashboard(str, setPassed)
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 Function PS_SetOffsetOp_IGNORE(device)
@@ -766,10 +761,7 @@ Function PS_DS_Supra2_REENTRY([str])
 
 	variable sweepNo, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -813,7 +805,9 @@ Function PS_DS_Supra2_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE * 20, PSQ_DS_OFFSETSCALE_FAKE * 40}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
-	CheckDashboard(str, setPassed)
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // FinalSlopePercent present but not reached
@@ -849,10 +843,7 @@ Function PS_DS_Supra3_REENTRY([str])
 
 	variable sweepNo, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -896,7 +887,9 @@ Function PS_DS_Supra3_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40, PSQ_DS_OFFSETSCALE_FAKE + 60, PSQ_DS_OFFSETSCALE_FAKE + 80, PSQ_DS_OFFSETSCALE_FAKE + 100}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
-	CheckDashboard(str, setPassed)
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 // FinalSlopePercent present and reached
@@ -932,10 +925,7 @@ Function PS_DS_Supra4_REENTRY([str])
 
 	variable sweepNo,  numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -979,7 +969,9 @@ Function PS_DS_Supra4_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40, PSQ_DS_OFFSETSCALE_FAKE + 60, PSQ_DS_OFFSETSCALE_FAKE + 80, PSQ_DS_OFFSETSCALE_FAKE + 100}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
-	CheckDashboard(str, setPassed)
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
 
 static Constant DAScaleModifierPerc = 25
@@ -1019,10 +1011,7 @@ Function PS_DS_Supra5_REENTRY([str])
 
 	variable sweepNo,  numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 4)
+	sweepNo = 4
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -1076,5 +1065,7 @@ Function PS_DS_Supra5_REENTRY([str])
 	// 5. last above
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 
-	CheckDashboard(str, setPassed)
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End

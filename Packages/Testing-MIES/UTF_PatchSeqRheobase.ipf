@@ -3,6 +3,8 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=PatchSeqTestRheobase
 
+static Constant PSQ_RHEOBASE_TEST_DURATION = 2
+
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(s, finalDAScaleFake, device)
 	STRUCT DAQSettings& s
@@ -134,10 +136,7 @@ static Function PS_RB1_REENTRY([str])
 	variable stepSize
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 15)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 14)
+	sweepNo = 14
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
@@ -188,7 +187,9 @@ static Function PS_RB1_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
-	CheckDashboard(str, {setPassed})
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // we don't test the BL QC code path here anymore
@@ -217,10 +218,7 @@ static Function PS_RB2_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 6)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 5)
+	sweepNo = 5
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -257,7 +255,9 @@ static Function PS_RB2_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
-	CheckDashboard(str, {setPassed})
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -284,10 +284,7 @@ static Function PS_RB3_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 6)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 5)
+	sweepNo = 5
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -324,7 +321,9 @@ static Function PS_RB3_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
-	CheckDashboard(str, {setPassed})
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -351,10 +350,7 @@ static Function PS_RB4_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -391,7 +387,9 @@ static Function PS_RB4_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
-	CheckDashboard(str, {setPassed})
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 0)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -418,10 +416,7 @@ static Function PS_RB5_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -458,7 +453,9 @@ static Function PS_RB5_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
-	CheckDashboard(str, {setPassed})
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -485,10 +482,7 @@ static Function PS_RB6_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -525,7 +519,9 @@ static Function PS_RB6_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
-	CheckDashboard(str, {setPassed})
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 2)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -553,10 +549,7 @@ static Function PS_RB7_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 8)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 7)
+	sweepNo = 7
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -592,7 +585,9 @@ static Function PS_RB7_REENTRY([str])
 	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
 
-	CheckDashboard(str, {setPassed})
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -623,10 +618,7 @@ static Function PS_RB8_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 4)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 3)
+	sweepNo = 3
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -669,7 +661,9 @@ static Function PS_RB8_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
-	CheckDashboard(str, {setPassed})
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 3)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_LARGE stepsize
@@ -698,10 +692,7 @@ static Function PS_RB9_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	sweepNo = 2
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -743,7 +734,9 @@ static Function PS_RB9_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
-	CheckDashboard(str, {setPassed})
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 2)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_SMALL stepsize
@@ -772,10 +765,7 @@ static Function PS_RB10_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
-
-	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 1)
+	sweepNo = 1
 
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -815,5 +805,7 @@ static Function PS_RB10_REENTRY([str])
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {1}, mode = WAVE_DATA, tol = 0.01)
 
-	CheckDashboard(str, {setPassed})
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End

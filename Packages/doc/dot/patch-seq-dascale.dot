@@ -47,15 +47,15 @@ digraph G {
 	"Check if no TTL channels are active" -> "Stimset is large enough";
 	"All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable" -> "Get OperationMode"	[label=Yes];
 	"All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable" -> Abort	[label=No];
-	"Get OperationMode" -> "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms"	[label=Supra];
+	"Get OperationMode" -> "Look for a rheobase sweep with passing set QC,\n pulse duration longer than 500ms\n and having spiked"	[label=Supra];
 	"Get OperationMode" -> "Use the DAScale values\nfrom the analysis parameters"	[label=Sub];
 	"Check if only one headstage is active" -> "All checks passed";
 	"Stimset is large enough" -> "Check if mode is IC";
 	"Check if mode is IC" -> "Check if only one headstage is active";
 	"All checks passed" -> Abort	[label=No];
 	"All checks passed" -> "Use first DAScale value"	[label=Yes];
-	"Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms" -> Abort	[label="Not found"];
-	"Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters"	[label=Found];
+	"Look for a rheobase sweep with passing set QC,\n pulse duration longer than 500ms\n and having spiked" -> Abort	[label="Not found"];
+	"Look for a rheobase sweep with passing set QC,\n pulse duration longer than 500ms\n and having spiked" -> "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters"	[label=Found];
 	"Last Sweep passed?" -> "Check if the Set can still pass"	[label=No];
 	"Last Sweep passed?" -> "Get OperationMode [3]"	[label=Yes];
 	"Check if $NUM_DA_SCALES\nsweeps passed from RA cycle" -> "Skip to end of active set"	[label=Yes];

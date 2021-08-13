@@ -43,6 +43,7 @@
 /// MSQ_FMT_LBN_RERUN_TRIAL          Number of repetitions of given stimulus set sweep due to relevant    Numerical   SC            No      Yes        No          No                No
 ///                                  QC failures (spike count or baseline)
 /// MSQ_FMT_LBN_RERUN_TRIAL_EXC      Number of repetitions was exceeded for that stimulus sweep set count Numerical   SC            No      Yes        No          No                No
+/// FMT_LBN_ANA_FUNC_VERSION         Integer version of the analysis function                             Numerical   All           No      Yes        No          No                No
 /// ================================ ==================================================================== =========== ============= ======= ========== =========== ================ =================
 ///
 /// \endrst
@@ -937,6 +938,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 
 			break
 		case PRE_SET_EVENT:
+			SetAnalysisFunctionVersion(panelTitle, MSQ_FAST_RHEO_EST, s.headstage, s.sweepNo)
 
 			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				break
@@ -1431,6 +1433,7 @@ Function MSQ_DAScale(panelTitle, s)
 
 			break
 		case PRE_SET_EVENT:
+			SetAnalysisFunctionVersion(panelTitle, MSQ_DA_SCALE, s.headstage, s.sweepNo)
 
 			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
 				return NaN

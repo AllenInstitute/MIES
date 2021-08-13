@@ -866,7 +866,7 @@ Function CheckLBRowCache_IGNORE(string panelTitle)
 	endfor
 End
 
-Function CheckDashboard(string device, WAVE headstageQC)
+static Function CheckDashboard(string device, WAVE headstageQC)
 
 	string databrowser, bsPanel
 	variable numEntries, i, state
@@ -892,6 +892,63 @@ Function CheckDashboard(string device, WAVE headstageQC)
 		state = !cmpstr(listWave[i][%Result], DASHBOARD_PASSING_MESSAGE)
 		CHECK_EQUAL_VAR(state, headstageQC[i])
 	endfor
+End
+
+static Function CheckAnaFuncVersion(string device, variable type)
+	string key
+	variable refVersion, version, sweepNo, i, idx
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	key = CreateAnaFuncLBNKey(type, FMT_LBN_ANA_FUNC_VERSION, query = 1)
+	sweepNo = 0
+
+	// check that at least one headstage has the desired analysis function version set
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		WAVE/Z versions = GetLastSettingSCI(numericalValues, sweepNo, key, i, UNKNOWN_MODE)
+		if(!WaveExists(versions))
+			continue
+		endif
+
+		refVersion = GetAnalysisFunctionVersion(type)
+		idx = GetRowIndex(versions, val = refVersion)
+		CHECK(idx >= 0)
+		return NaN
+	endfor
+
+	FAIL()
+End
+
+Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE headstageQC)
+	string key
+	variable type
+
+	CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), sweepNo + 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	CHECK_EQUAL_VAR(sweepNo, sweepNo)
+
+	WAVE textualValues = GetLBTextualValues(device)
+	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
+
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(anaFuncs, TEXT_WAVE)
+
+	Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
+
+	// map invalid analysis function value to NaN
+	anaFuncTypes[] = (anaFuncTypes[p] == INVALID_ANALYSIS_FUNCTION) ? NaN : anaFuncTypes[p]
+
+	WAVE/Z anaFuncTypesWoNaN = ZapNaNs(anaFuncTypes)
+	CHECK_WAVE(anaFuncTypesWoNaN, NUMERIC_WAVE)
+
+	WAVE/Z uniqueAnaFuncTypes = GetUniqueEntries(anaFuncTypesWoNaN)
+	CHECK_WAVE(uniqueAnaFuncTypes, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(uniqueAnaFuncTypes, ROWS), 1)
+
+	type = uniqueAnaFuncTypes[0]
+
+	CheckAnaFuncVersion(device, type)
+	CheckDashboard(device, headstageQC)
 End
 
 Function AddLabnotebookEntries_IGNORE(s)
