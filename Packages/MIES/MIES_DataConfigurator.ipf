@@ -1079,11 +1079,8 @@ static Function DC_FillSetEventFlag(string panelTitle, STRUCT DataConfigurationR
 End
 
 static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DataConfigurationResult &s)
-	variable testPulseLength, cutOff, i, tpAmp
+	variable cutOff, i, tpAmp
 	string key
-
-	WAVE testPulse = GetTestPulse()
-	testPulseLength = DimSize(testPulse, ROWS)
 
 	// varies per DAC:
 	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
@@ -1095,7 +1092,7 @@ static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DataConfigurat
 	// we only have to fill in the DA channels
 	ASSERT(sum(s.insertStart) == 0, "Unexpected insert start value")
 	ASSERT(sum(s.setColumn) == 0, "Unexpected setColumn value")
-	ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+	ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
 	ASSERT(s.numADCEntries > 0, "Number of ADCs can not be zero")
 	ASSERT(s.numDACEntries > 0, "Number of DACs can not be zero")
 
@@ -1108,7 +1105,7 @@ static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DataConfigurat
 	WAVE cacheParams.DAGain = s.DAGain
 	Duplicate/FREE/RMD=[][FindDimLabel(s.DACAmp, COLS, "TPAMP")] s.DACAmp, DACAmpTP
 	WAVE cacheParams.DACAmpTP = DACAmpTP
-	cacheParams.testPulseLength = testPulseLength
+	cacheParams.testPulseLength = s.testPulseLength
 	cacheParams.baseLineFrac = s.baselineFrac
 
 	key = CA_HardwareDataTPKey(cacheParams)
@@ -1152,20 +1149,20 @@ static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DataConfigurat
 		switch(s.hardwareType)
 			case HARDWARE_ITC_DAC:
 				if(s.multiDevice)
-					Multithread ITCDataWave[][0, s.numDACEntries - 1] =                             \
-					limit(                                                                          \
-						  (s.DAGain[q] * s.DACAmp[q][%TPAMP]) * testPulse[mod(p, testPulseLength)], \
-						  SIGNED_INT_16BIT_MIN,                                                     \
+					Multithread ITCDataWave[][0, s.numDACEntries - 1] =                                 \
+					limit(                                                                              \
+						  (s.DAGain[q] * s.DACAmp[q][%TPAMP]) * s.testPulse[mod(p, s.testPulseLength)], \
+						  SIGNED_INT_16BIT_MIN,                                                         \
 						  SIGNED_INT_16BIT_MAX); AbortOnRTE
-					cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
+					cutOff = mod(DimSize(ITCDataWave, ROWS), s.testPulseLength)
 					if(cutOff > 0)
 						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, s.numDACEntries - 1] = 0
 					endif
 				else
-					Multithread ITCDataWave[0, testPulseLength - 1][0, s.numDACEntries - 1] = \
-					limit(                                                                    \
-						  s.DAGain[q] * s.DACAmp[q][%TPAMP] * testPulse[p],                   \
-						  SIGNED_INT_16BIT_MIN,                                               \
+					Multithread ITCDataWave[0, s.testPulseLength - 1][0, s.numDACEntries - 1] = \
+					limit(                                                                      \
+						  s.DAGain[q] * s.DACAmp[q][%TPAMP] * s.testPulse[p],                   \
+						  SIGNED_INT_16BIT_MIN,                                                 \
 						  SIGNED_INT_16BIT_MAX); AbortOnRTE
 				endif
 
@@ -1176,9 +1173,9 @@ static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DataConfigurat
 				for(i = 0;i < s.numDACEntries; i += 1)
 					WAVE NIChannel = NIDataWave[i]
 					tpAmp = s.DACAmp[i][%TPAMP] * s.DAGain[i]
-					Multithread NIChannel[0, testPulseLength - 1] = \
+					Multithread NIChannel[0, s.testPulseLength - 1] = \
 					limit(                                          \
-						  tpAmp * testPulse[p],                     \
+						  tpAmp * s.testPulse[p],                     \
 						  NI_DAC_MIN,                               \
 						  NI_DAC_MAX); AbortOnRTE
 				endfor
@@ -1191,11 +1188,8 @@ static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DataConfigurat
 End
 
 static Function DC_FillDAQDataWaveForDAQ(string panelTitle, STRUCT DataConfigurationResult &s)
-	variable i, tpAmp, cutOff, channel, headstage, DAScale, singleSetLength, stimsetCol, startOffset, testPulseLength
+	variable i, tpAmp, cutOff, channel, headstage, DAScale, singleSetLength, stimsetCol, startOffset
 	variable lastValidRow
-
-	WAVE testPulse = GetTestPulse()
-	testPulseLength = DimSize(testPulse, ROWS)
 
 	WAVE/Z ITCDataWave
 	WAVE/WAVE/Z NIDataWave
@@ -1209,15 +1203,15 @@ static Function DC_FillDAQDataWaveForDAQ(string panelTitle, STRUCT DataConfigura
 		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
 			// TP wave does not need to be decimated, it has already correct size reg. sample rate
 			tpAmp = s.DACAmp[i][%TPAMP] * s.DAGain[i]
-			ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+			ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
 			switch(s.hardwareType)
 				case HARDWARE_ITC_DAC:
 					Multithread ITCDataWave[][i] =                    \
 					limit(                                            \
-						  tpAmp * testPulse[mod(p, testPulseLength)], \
+						  tpAmp * s.testPulse[mod(p, s.testPulseLength)], \
 						  SIGNED_INT_16BIT_MIN,                       \
 						  SIGNED_INT_16BIT_MAX); AbortOnRTE
-					cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
+					cutOff = mod(DimSize(ITCDataWave, ROWS), s.testPulseLength)
 					if(cutOff > 0)
 						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutOff, *][i] = 0
 					endif
@@ -1226,10 +1220,10 @@ static Function DC_FillDAQDataWaveForDAQ(string panelTitle, STRUCT DataConfigura
 					WAVE NIChannel = NIDataWave[i]
 					Multithread NIChannel[] =                         \
 					limit(                                            \
-						  tpAmp * testPulse[mod(p, testPulseLength)], \
+						  tpAmp * s.testPulse[mod(p, s.testPulseLength)], \
 						  NI_DAC_MIN,                                 \
 						  NI_DAC_MAX); AbortOnRTE
-					cutOff = mod(DimSize(NIChannel, ROWS), testPulseLength)
+					cutOff = mod(DimSize(NIChannel, ROWS), s.testPulseLength)
 					if(cutOff > 0)
 						NIChannel[DimSize(NIChannel, ROWS) - cutOff, *] = 0
 					endif
@@ -1256,8 +1250,8 @@ static Function DC_FillDAQDataWaveForDAQ(string panelTitle, STRUCT DataConfigura
 					if(s.globalTPInsert)
 						// space in ITCDataWave for the testpulse is allocated via an automatic increase
 						// of the onset delay
-						MultiThread ITCDataWave[0, testPulseLength - 1][i] =                        \
-						limit(tpAmp * testPulse[p], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+						MultiThread ITCDataWave[0, s.testPulseLength - 1][i] =                        \
+						limit(tpAmp * s.testPulse[p], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 					endif
 					break
 				case HARDWARE_NI_DAC:
@@ -1280,8 +1274,8 @@ static Function DC_FillDAQDataWaveForDAQ(string panelTitle, STRUCT DataConfigura
 					if(s.globalTPInsert)
 						// space in ITCDataWave for the testpulse is allocated via an automatic increase
 						// of the onset delay
-						MultiThread NIChannel[0, testPulseLength - 1] = \
-						limit(tpAmp * testPulse[p], NI_DAC_MIN, NI_DAC_MAX); AbortOnRTE
+						MultiThread NIChannel[0, s.testPulseLength - 1] = \
+						limit(tpAmp * s.testPulse[p], NI_DAC_MIN, NI_DAC_MAX); AbortOnRTE
 					endif
 					break
 			endswitch
