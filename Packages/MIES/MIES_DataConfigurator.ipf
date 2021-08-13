@@ -1544,13 +1544,13 @@ static Function [STRUCT DC_FillConfiguratorStruct s] DC_FillConfigurator(string 
 			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 				s.stimSet[i] = WB_CreateAndGetStimSet(s.setName[i])
 			elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
-				s.stimSet[i] = GetTestPulse()
+				s.stimSet[i] = s.testPulse
 			else
 				ASSERT(0, "Unknown DAQ Channel Type")
 			endif
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
 			s.setName[i] = LowerStr(STIMSET_TP_WHILE_DAQ)
-			s.stimSet[i] = GetTestPulse()
+			s.stimSet[i] = s.testPulse
 		else
 			ASSERT(0, "unknown mode")
 		endif
