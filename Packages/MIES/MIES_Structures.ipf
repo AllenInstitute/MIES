@@ -224,6 +224,7 @@ Structure OOdDAQParams
 	///@}
 
 	///@name Output
+	/// @anchor OOdDAQParams_Output
 	///@{
 	WAVE offsets               ///< Result of the optimization in points
 	WAVE/T regions             ///< List of the form `%begin-%end;...` which denotes the x-coordinates of
