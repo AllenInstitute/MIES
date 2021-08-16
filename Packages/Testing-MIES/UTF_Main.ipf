@@ -23,6 +23,7 @@
 #include "UTF_WaveBuilder"
 #include "UTF_WaveBuilderRegression"
 #include "UTF_WaveVersioning"
+#include "UTF_Pressure"
 
 // include examples here so that these are compile tested as well
 #include "example-stimulus-set-api"
@@ -62,6 +63,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	list = AddListItem("UTF_Labnotebook.ipf", list, ";", inf)
 	list = AddListItem("UTF_Macros.ipf", list, ";", inf)
 	list = AddListItem("UTF_PGCSetAndActivateControl.ipf", list, ";", inf)
+	list = AddListItem("UTF_Pressure.ipf", list, ";", inf)
 	list = AddListItem("UTF_StimsetAPI.ipf", list, ";", inf)
 	list = AddListItem("UTF_SweepFormula.ipf", list, ";", inf)
 	list = AddListItem("UTF_TraceUserData.ipf", list, ";", inf)
