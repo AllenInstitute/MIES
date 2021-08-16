@@ -76,7 +76,7 @@ End
 /// @sa FFI_GetJSONTemplate
 Function/WAVE FFI_GetAvailableMessageFilters()
 
-	Make/FREE/T wv = {ZeroMQ_HEARTBEAT, IVS_PUB_FILTER, PRESSURE_FILTER}
+	Make/FREE/T wv = {ZeroMQ_HEARTBEAT, IVS_PUB_FILTER, PRESSURE_STATE_FILTER}
 
 	Note/K wv "Heartbeat is sent every 5 seconds."
 

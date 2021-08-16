@@ -216,7 +216,7 @@ static Function P_PublishPressureMethodChange(string panelTitle, variable headst
 	try
 		ClearRTError()
 #if exists("zeromq_pub_send")
-		zeromq_pub_send(PRESSURE_FILTER, payload); AbortOnRTE
+		zeromq_pub_send(PRESSURE_STATE_FILTER, payload); AbortOnRTE
 #else
 		ASSERT(0, "ZeroMQ XOP not present")
 #endif
