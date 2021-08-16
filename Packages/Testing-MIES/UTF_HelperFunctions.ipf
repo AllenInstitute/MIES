@@ -56,3 +56,21 @@ Function AdditionalExperimentCleanup()
 	NVAR bugCount = $GetBugCount()
 	KillVariables bugCount
 End
+
+Function WaitForPubSubHeartbeat()
+	variable i, foundHeart
+	string msg, filter
+
+	// wait until we get the first heartbeat
+	for(i = 0; i < 200; i += 1)
+		msg = zeromq_sub_recv(filter)
+		if(!cmpstr(filter, ZEROMQ_HEARTBEAT))
+			PASS()
+			return NaN
+		endif
+
+		Sleep/S 0.1
+	endfor
+
+	FAIL()
+End

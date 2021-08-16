@@ -21,23 +21,12 @@ End
 
 Function CheckThatPublishingWorks()
 	string msg, filter, expected, actual
-	variable found, i, jsonID, foundHeart
+	variable found, i, jsonID
 
 	zeromq_sub_add_filter("")
 	zeromq_sub_connect("tcp://127.0.0.1:" + num2str(ZEROMQ_BIND_PUB_PORT))
 
-	// wait until we get the first heartbeat
-	for(i = 0; i < 200; i += 1)
-		msg = zeromq_sub_recv(filter)
-		if(!cmpstr(filter, ZeroMQ_HEARTBEAT))
-			foundHeart += 1
-			break
-		endif
-
-		Sleep/S 0.1
-	endfor
-
-	CHECK(foundHeart > 0)
+	WaitForPubSubHeartbeat()
 
 	MIES_IVSCC#IVS_PublishQCState(123, "some text")
 
