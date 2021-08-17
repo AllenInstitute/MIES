@@ -54,3 +54,36 @@ static Function CheckPressureStatePublishing()
 
 	JSON_Release(jsonID)
 End
+
+static Function CheckPressureSealPublishing()
+	string device, msg, filter, expected, actual
+	variable headstage, i, jsonID, value
+
+	WaitForPubSubHeartbeat()
+
+	device = "my_device"
+	headstage = 0
+
+	MIES_P#P_PublishSealedState(device, headstage)
+
+	for(i = 0; i < 100; i += 1)
+		msg = zeromq_sub_recv(filter)
+
+		if(!cmpstr(filter, PRESSURE_SEALED_FILTER))
+			break
+		endif
+
+		Sleep/S 0.1
+	endfor
+
+	expected = PRESSURE_SEALED_FILTER
+	actual   = filter
+	CHECK_EQUAL_STR(actual, expected)
+
+	jsonID = JSON_Parse(msg)
+
+	value = JSON_GetVariable(jsonID, "/sealed")
+	CHECK_EQUAL_VAR(value, 1)
+
+	JSON_Release(jsonID)
+End
