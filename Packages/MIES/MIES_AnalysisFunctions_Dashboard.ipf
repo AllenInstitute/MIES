@@ -548,6 +548,7 @@ static Function/S AD_GetChirpFailMsg(numericalValues, sweepNo, headstage)
 		WAVE DAScales = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, headstage, DATA_ACQUISITION_MODE)
 		ASSERT(DimSize(sweepPass, ROWS) == DimSize(DAScales, ROWS), "Unexpected sizes")
 
+		numEntries = DimSize(sweepPass, ROWS)
 		for(i = 0; i < numEntries; i += 1)
 			sprintf str, "%g:%d, ", DAScales[i], sweepPass[i]
 
