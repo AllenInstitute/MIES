@@ -961,6 +961,8 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 
 Constant PSQ_CALC_METHOD_AVG = 0x1 // average
 Constant PSQ_CALC_METHOD_RMS = 0x2 // root-mean-square (rms)
+
+Constant PSQ_BL_FAILED = 1
 /// @}
 
 /// @name PatchSeq labnotebook constants
@@ -1006,10 +1008,10 @@ StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
 
 /// @name Analysis function versions
 /// @{
-Constant PSQ_CHIRP_VERSION         = 0
-Constant PSQ_DA_SCALE_VERSION      = 0
-Constant PSQ_RAMP_VERSION          = 0
-Constant PSQ_RHEOBASE_VERSION      = 0
+Constant PSQ_CHIRP_VERSION         = 1
+Constant PSQ_DA_SCALE_VERSION      = 1
+Constant PSQ_RAMP_VERSION          = 1
+Constant PSQ_RHEOBASE_VERSION      = 1
 Constant PSQ_SQUARE_PULSE_VERSION  = 0
 Constant MSQ_FAST_RHEO_EST_VERSION = 0
 Constant MSQ_DA_SCALE_VERSION      = 0
