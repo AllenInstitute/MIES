@@ -175,6 +175,9 @@ Function DAP_EphysPanelStartUpSettings()
 	// remove tools
 	HideTools/W=$panelTitle/A
 
+	// reset all device dependent controls
+	DAP_AdaptPanelForDeviceSpecifics(panelTitle, forceEnable = 1)
+
 	SetWindow $panelTitle, userData(panelVersion) = ""
 	SetWindow $panelTitle, userdata(Config_FileName) = ""
 	SetWindow $panelTitle, userdata(Config_FileHash) = ""
@@ -728,6 +731,8 @@ Function DAP_EphysPanelStartUpSettings()
 	EnableControl(panelTitle, "button_Hardware_P_Enable")
 	DisableControl(panelTitle, "button_Hardware_P_Disable")
 	EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+
+	SetDrawLayer/K UserBack
 
 	SearchForInvalidControlProcs(panelTitle)
 
@@ -4870,23 +4875,35 @@ Function DAP_LockDevice(string win)
 	LOG_AddEntry(PACKAGE_MIES, "locking", keys = {"device"}, values = {panelTitleLocked})
 End
 
-static Function DAP_AdaptPanelForDeviceSpecifics(string panelTitle)
+static Function DAP_AdaptPanelForDeviceSpecifics(string panelTitle, [variable forceEnable])
 
 	variable i
 	string controls
 
-	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
+	if(ParamIsDefault(forceEnable))
+#ifdef EVIL_KITTEN_EATING_MODE
+		forceEnable = 1
+#else
+		forceEnable = 0
+#endif
+	else
+		forceEnable = !!forceEnable
+	endif
+
+	if(forceEnable)
+		WAVE/Z deviceInfo = $""
+	else
+		WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
+	endif
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_DAC)
 
-		if(i < deviceInfo[%DA])
+		if(forceEnable || i < deviceInfo[%DA])
 			EnableControls(panelTitle, controls)
 		else
-#ifndef EVIL_KITTEN_EATING_MODE
 			DisableControls(panelTitle, controls)
-#endif
 		endif
 	endfor
 
@@ -4894,12 +4911,10 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string panelTitle)
 
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ADC)
 
-		if(i < deviceInfo[%AD])
+		if(forceEnable || i < deviceInfo[%AD])
 			EnableControls(panelTitle, controls)
 		else
-#ifndef EVIL_KITTEN_EATING_MODE
 			DisableControls(panelTitle, controls)
-#endif
 		endif
 	endfor
 
@@ -4907,25 +4922,21 @@ static Function DAP_AdaptPanelForDeviceSpecifics(string panelTitle)
 
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_TTL)
 
-		if(i < deviceInfo[%TTL])
+		if(forceEnable || i < deviceInfo[%TTL])
 			EnableControls(panelTitle, controls)
 		else
-#ifndef EVIL_KITTEN_EATING_MODE
 			DisableControls(panelTitle, controls)
-#endif
 		endif
 	endfor
 
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+	for(i = 0; i < NUM_ASYNC_CHANNELS; i += 1)
 
 		controls = DAP_GetControlsForChannelIndex(i, CHANNEL_TYPE_ASYNC)
 
-		if(i < deviceInfo[%TTL])
+		if(forceEnable || i < deviceInfo[%TTL])
 			EnableControls(panelTitle, controls)
 		else
-#ifndef EVIL_KITTEN_EATING_MODE
 			DisableControls(panelTitle, controls)
-#endif
 		endif
 	endfor
 End

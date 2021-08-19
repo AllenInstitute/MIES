@@ -681,7 +681,7 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 	string panelTitle
 	variable headstage
 
-	variable i, col
+	variable i
 	// Ensure that data in BaselineSSAvg is up to date by verifying that TP is active
 	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulse") || IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
 
@@ -713,10 +713,6 @@ Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 
 	WAVE BaselineSSAvg = GetBaselineAverage(panelTitle)
 	WAVE SSResistance = GetSSResistanceWave(panelTitle)
-
-	if(!DimSize(baselineSSAvg, ROWS) || !DimSize(SSResistance, ROWS))
-		return NaN
-	endif
 
 	clampMode = DAG_GetHeadstageMode(panelTitle, headStage)
 

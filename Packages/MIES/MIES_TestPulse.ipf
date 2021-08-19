@@ -21,12 +21,6 @@ static Constant TP_EVAL_POINT_OFFSET          = 5
 Function TP_CreateTPAvgBuffer(panelTitle)
 	string panelTitle
 
-	variable numADCs
-
-	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
-	numADCs = DimSize(ADCs, ROWS)
-
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 	WAVE TPBaselineBuffer = GetGetBaselineBuffer(panelTitle)
 	WAVE TPInstBuffer = GetInstantaneousBuffer(panelTitle)
@@ -409,8 +403,8 @@ End
 /// If 200 ms have elapsed, or it is the first TP sweep,
 /// data from the input waves is transferred to the storage waves.
 static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now, tpMarker)
-	string 	panelTitle
-	wave 	BaselineSSAvg, InstResistance, SSResistance
+	string panelTitle
+	wave BaselineSSAvg, InstResistance, SSResistance
 	variable now, tpMarker
 
 	variable delta, i, ret, lastPressureCtrl, timestamp

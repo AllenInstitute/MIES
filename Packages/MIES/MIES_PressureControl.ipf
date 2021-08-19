@@ -454,10 +454,13 @@ static Function P_ApplyNegV(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	WAVE 	PressureDataWv 	= P_GetPressureDataWaveRef(panelTitle)
-	variable resistance 		=  PressureDataWv[headStage][%LastResistanceValue]
-	variable vCom 			= SEAL_POTENTIAL
-	variable	lastVcom = PressureDataWv[headStage][%LastVcom]
+	variable resistance, vCom, lastVcom
+
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+
+	resistance = PressureDataWv[headStage][%LastResistanceValue]
+	vCom       = SEAL_POTENTIAL
+	lastVcom   = PressureDataWv[headStage][%LastVcom]
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_SendToAllAmp")) // ensure that vCom is being updated on headstage associated amplifier (not all amplifiers).
 		PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp",val = CHECKBOX_UNSELECTED)
