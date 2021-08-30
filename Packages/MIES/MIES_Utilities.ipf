@@ -3422,11 +3422,13 @@ End
 
 /// @brief Check if a name for an object adheres to the strict naming rules
 ///
-/// @see `DisplayHelpTopic "ObjectName"`
-threadsafe Function IsValidObjectName(name)
-	string name
+/// @see `DisplayHelpTopic "Standard Object Names"`
+threadsafe Function IsValidObjectName(string name)
+	return NameChecker(name, 0)
+End
 
-	return !cmpstr(name, CleanupName(name, 0, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
+threadsafe static Function NameChecker(string name, variable liberal)
+	return !cmpstr(name, CleanupName(name, !!liberal, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
 End
 
 /// @brief Find an integer `x` which is larger than `a` but the
