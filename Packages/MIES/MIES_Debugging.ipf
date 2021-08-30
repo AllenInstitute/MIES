@@ -551,6 +551,96 @@ Function GetSizeOfAllWavesInExperiment()
 	Edit/K=1 root:list
 End
 
+/// @brief Check that all stored waves (permanent and free) adhere to the liberal naming rules.
+///
+/// These are only enforced since IP9 beta9 or later.
+///
+/// @return Number of waves not matching
+Function CheckAllDimensionLabels()
+	string msg, path
+	variable i, numWaves, failures
+
+	WAVE/T allWaves = ListToTextWave(GetListOfObjects($"root:", ".*", fullPath=1, recursive=1), ";")
+	WAVE/T allWavesUnique = GetUniqueEntries(allWaves)
+	WaveClear allWaves
+
+	numWaves = DimSize(allWavesUnique, ROWS)
+	for(i = 0; i < numWaves; i += 1)
+		path = allWavesUnique[i]
+		WAVE wv = $path
+		msg = CheckDimensionLabels(wv)
+
+		if(!IsEmpty(msg))
+			printf "Wave %s:\r", path
+			print msg
+			failures += 1
+		endif
+	endfor
+
+	return failures
+End
+
+threadsafe static Function/S CheckDimensionLabels(WAVE/Z wv)
+	variable i, numDims, j, size, numMatches, numEntries, idx
+	string entry
+	string msg = ""
+	string text = ""
+
+	if(!WaveExists(wv))
+		return msg
+	endif
+
+	numDims = WaveDims(wv)
+
+	for(i = 0; i < numDims; i += 1)
+		size = DimSize(wv, i)
+
+		Make/FREE/T/N=(size + 1) lbls
+		Multithread lbls[] = GetDimLabel(wv, i, p - 1)
+		Make/FREE/N=(size + 1) valid
+		Multithread valid[] = IsValidLiberalObjectName(lbls[p])
+
+		FindValue/UOFV/V=0 valid
+
+		if(V_Value >= 0)
+			WAVE/Z indizes = FindIndizes(valid, col = 0, var = 0)
+			numMatches = WaveExists(indizes) ? DimSize(indizes, ROWS) : 0
+
+			for(j = 0; j < numMatches; j += 1)
+				sprintf text, "dimension %d, element %d, label %s\r", i, indizes[j], lbls[indizes[j]]
+				msg += text
+			endfor
+		endif
+	endfor
+
+	// call recursively if it is a wave reference wave
+	if(IsWaveRefWave(wv))
+		WAVE/WAVE waveRef = wv
+		// use a linearized index to check all holded waves
+		numEntries = numpnts(waveRef)
+		Make/FREE/T/N=(numEntries) results
+		Multithread results[] = CheckDimensionLabels(waveRef[p])
+
+		if(HasOneValidEntry(results))
+			WAVE/Z indizes = FindIndizes(results, col = 0, prop = PROP_NON_EMPTY)
+			numMatches = WaveExists(indizes) ? DimSize(indizes, ROWS) : 0
+
+			for(i = 0; i < numMatches; i += 1)
+				idx = indizes[i]
+				entry = results[idx]
+
+				if(IsEmpty(entry))
+					continue
+				endif
+
+				sprintf text, "Wave ref wave has wave with the following invalid dimension label (invalid linear index %d): %s", idx, entry
+			endfor
+		endif
+	endif
+
+	return msg
+End
+
 // see tools/functionprofiling.sh
 Function DEBUG_STOREFUNCTION()
 	string funcName = GetRTStackInfo(2)
