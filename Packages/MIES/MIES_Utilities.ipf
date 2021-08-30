@@ -3427,6 +3427,13 @@ threadsafe Function IsValidObjectName(string name)
 	return NameChecker(name, 0)
 End
 
+/// @brief Check if a name for an object adheres to the liberal naming rules
+///
+/// @see `DisplayHelpTopic "Liberal Object Names"`
+threadsafe Function IsValidLiberalObjectName(string name)
+	return NameChecker(name, 1)
+End
+
 threadsafe static Function NameChecker(string name, variable liberal)
 	return !cmpstr(name, CleanupName(name, !!liberal, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
 End
