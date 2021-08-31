@@ -28,6 +28,7 @@ LICENSE whitespace=cr-at-eol
 .git*                 export-ignore
 *.sh                  export-ignore
 tools                 export-ignore
+Packages/*/tools     -export-ignore
 Packages/Testing-MIES export-ignore
 Packages/Arduino/*zip export-ignore
 Packages/Arduino/*exe export-ignore
