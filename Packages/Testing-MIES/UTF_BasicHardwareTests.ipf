@@ -4357,7 +4357,7 @@ Function AsyncAcquisitionLBN_REENTRY([str])
 	var = GetLastSettingIndep(numericalValues, 0, "Async Alarm  2 Max", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(var, 0.5)
 
-	var = GetLastSettingIndep(numericalValues, 0, "Async AD 2: myTitle", DATA_ACQUISITION_MODE)
+	var = GetLastSettingIndep(numericalValues, 0, "Async AD 2 [myTitle]", DATA_ACQUISITION_MODE)
 	CHECK(var >= 0)
 
 	readStr = GetLastSettingTextIndep(textualValues, 0, "Async AD2 Title", DATA_ACQUISITION_MODE)

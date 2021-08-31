@@ -1687,7 +1687,7 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 31
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 32
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -2174,9 +2174,9 @@ End
 /// - 26: Digitizer Hardware Name
 /// - 27: Digitizer Serial Numbers
 /// - 28: Epochs
-/// - 29: JSON config file: path (`|` separated list of full file paths)
-/// - 30: JSON config file: SHA-256 hash (`|` separated list of hashes)
-/// - 31: JSON config file: stimset nwb file path
+/// - 29: JSON config file [path] (`|` separated list of full file paths)
+/// - 30: JSON config file [SHA-256 hash] (`|` separated list of hashes)
+/// - 31: JSON config file [stimset nwb file path]
 /// - 32: Igor Pro build
 /// - 33: Indexing End Stimset
 /// - 34: TTL Indexing End Stimset (hardware agnostic), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
@@ -2240,9 +2240,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][26] = "Digitizer Hardware Name"
 	wv[0][27] = "Digitizer Serial Numbers"
 	wv[0][28] = EPOCHS_ENTRY_KEY
-	wv[0][29] = "JSON config file: path"
-	wv[0][30] = "JSON config file: SHA-256 hash"
-	wv[0][31] = "JSON config file: stimset nwb file path"
+	wv[0][29] = "JSON config file [path]"
+	wv[0][30] = "JSON config file [SHA-256 hash]"
+	wv[0][31] = "JSON config file [stimset nwb file path]"
 	wv[0][32] = "Igor Pro build"
 	wv[0][33] = "Indexing End Stimset"
 	wv[0][34] = "TTL Indexing End Stimset"
@@ -3927,7 +3927,7 @@ End
 /// - 2: Async Alarm $Channel OnOff
 /// - 3: Async Alarm $Channel Min
 /// - 4: Async Alarm  $Channel Max
-/// - 5: Async AD $Channel
+/// - 5: Async AD $Channel [$Title]
 Function/Wave GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, string title, string unit)
 	string prefix
 
@@ -3967,7 +3967,7 @@ Function/Wave GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, strin
 	wv[%Units][4]     = ""
 	wv[%Tolerance][4] = ".001"
 
-	sprintf prefix, "Async AD %d: %s", channel, title
+	sprintf prefix, "Async AD %d [%s]", channel, title
 
 	wv[%Parameter][5] = prefix
 	wv[%Units][5]     = unit
