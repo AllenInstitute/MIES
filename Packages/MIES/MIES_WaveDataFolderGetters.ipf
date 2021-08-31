@@ -1126,6 +1126,7 @@ End
 /// - Addition of fourth column "EntrySourceType"
 /// - Fix unit and tolerance of "Repeat Sets"
 /// - Reapplying the dimension labels as the old ones were cut off after 31 bytes
+/// - Making dimension labels valid liberal object names
 static Function UpgradeLabNotebook(panelTitle)
 	string panelTitle
 
@@ -1314,6 +1315,39 @@ static Function UpgradeLabNotebook(panelTitle)
 		DEBUGPRINT("Upgraded textual labnotebook to hold acquisition state column")
 	endif
 	// END acquisition state
+
+	// BEGIN IP9 dimension labels
+	if(WaveVersionIsSmaller(numericalKeys, 49))
+		numericalKeys[%Parameter][] = FixInvalidLabnotebookKey(numericalKeys[%Parameter][q])
+		LBN_SetDimensionLabels(numericalKeys, numericalValues)
+	endif
+
+	if(WaveVersionIsSmaller(textualKeys, 49))
+		textualKeys[%Parameter][] = FixInvalidLabnotebookKey(textualKeys[%Parameter][q])
+		LBN_SetDimensionLabels(textualKeys, textualValues)
+	endif
+	// END IP9 dimension labels
+End
+
+static Function/S FixInvalidLabnotebookKey(string name)
+	string first, last, result
+
+	if(strsearch(name, ":", 0) < 0)
+		// fixup unknown user labnotebook keys which are now invalid
+		return CleanupName(name, 1)
+	endif
+
+	// some common names are now invalid too,
+	// these are changed from `A: B` to `A [B]`.
+
+	SplitString/E="([^:]+):[[:space:]]*(.+)" name, first, last
+
+	if(V_Flag == 2)
+		sprintf result, "%s [%s]", trimstring(first), trimstring(last)
+		return result
+	endif
+
+	return CleanupName(name, 1)
 End
 
 /// @brief Return a wave reference to the text labnotebook keys
