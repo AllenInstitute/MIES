@@ -1687,7 +1687,7 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 31
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 32
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -2184,6 +2184,9 @@ End
 /// - 36: TTL Stim Wave Checksum (hardware agnostic) URL-encoded payload, see [URL-encoding](https://en.wikipedia.org/wiki/Percent-encoding)
 ///                                                  for background information, same string list formatting
 /// - 37: TTL Stim set length (hardware agnostic), same string list formatting
+/// - 38: TTL rack zero set cycle counts (ITC hardware)
+/// - 39: TTL rack one set cycle counts (ITC hardware)
+/// - 40: TTL set cycle counts (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
@@ -2202,9 +2205,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 38, 0) wv
+		Redimension/N=(-1, 41, 0) wv
 	else
-		Make/T/N=(1, 38) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 41) newDFR:$newName/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -2249,6 +2252,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][35] = "TTL Stimset wave note"
 	wv[0][36] = "TTL Stim Wave Checksum"
 	wv[0][37] = "TTL Stim set length"
+	wv[0][38] = "TTL rack zero set cycle counts"
+	wv[0][39] = "TTL rack one set cycle counts"
+	wv[0][40] = "TTL set cycle counts"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
