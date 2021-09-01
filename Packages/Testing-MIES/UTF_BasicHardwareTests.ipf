@@ -2467,7 +2467,7 @@ End
 
 // Using unassociated channels works
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function UnassociatedChannels([str])
+Function UnassociatedChannelsAndTTLs([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -2475,7 +2475,7 @@ Function UnassociatedChannels([str])
 	AcquireData(s, str, preAcquireFunc = EnableUnassocChannels_IGNORE)
 End
 
-Function UnassociatedChannels_REENTRY([str])
+Function UnassociatedChannelsAndTTLs_REENTRY([str])
 	string str
 
 	string device, sweeps, configs, unit, expectedStr
