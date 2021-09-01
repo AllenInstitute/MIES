@@ -6773,3 +6773,21 @@ Function/WAVE GetDandiDialogWave(WAVE props)
 
 	return data
 End
+
+/// @brief Return a free wave with the DAC amplitudes
+///
+/// Rows:
+/// - One for each *active* DAC
+///
+/// Columns:
+///  - `DASCALE`:  DA Scale from the DAEphys GUI
+///  - `TPAMP`:    Testpulse amplitude (clamp mode dependent)
+Function/WAVE GetDACAmplitudes(variable numDACEntries)
+
+	Make/D/FREE/N=(numDACEntries, 2) wv
+
+	SetDimLabel COLS, 0, DASCALE, wv
+	SetDimLabel COLS, 1, TPAMP, wv
+
+	return wv
+End

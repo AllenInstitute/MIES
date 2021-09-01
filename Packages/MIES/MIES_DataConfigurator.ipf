@@ -31,6 +31,9 @@ static Function DC_UpdateGlobals(panelTitle)
 
 	NVAR tpLengthInPointsDAQ = $GetTestpulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
 	tpLengthInPointsDAQ = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
+
+	NVAR fifoPosition = $GetFifoPosition(panelTitle)
+	fifoPosition = 0
 End
 
 /// @brief Prepare test pulse/data acquisition
@@ -785,178 +788,137 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	string panelTitle
 	variable numActiveChannels, dataAcqOrTP, multiDevice
 
-	variable i, j
-	variable numDACEntries, numADCEntries, ttlIndex, setChecksum, stimsetCycleID, fingerprint, hardwareType, maxITI
-	string ctrl, str, list, func, key
-	variable setCycleCount, val, singleSetLength, samplingInterval
-	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
-	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
-	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, terminationDelay
-	variable decimationFactor, cutoff, row, column
-	variable multiplier, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, headstage
-	variable lastValidRow, isoodDAQMember, channel, tpAmp, DAScale, stimsetCol, startOffset, ret
-	variable epochBegin, epochEnd, epochOffset
+	variable ret, row, column
 
-	globalTPInsert        = DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP")
-	scalingZero           = DAG_GetNumericalValue(panelTitle,  "check_Settings_ScalingZero")
-	indexingLocked        = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked")
-	indexing              = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
-	distributedDAQ        = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_DistribDaq")
-	distributedDAQOptOv   = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_dDAQOptOv")
-	distributedDAQOptPre  = DAG_GetNumericalValue(panelTitle, "Setvar_DataAcq_dDAQOptOvPre")
-	distributedDAQOptPost = DAG_GetNumericalValue(panelTitle, "Setvar_DataAcq_dDAQOptOvPost")
-	TPAmpVClamp           = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitude")
-	TPAmpIClamp           = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
-	powerSpectrum         = DAG_GetNumericalValue(panelTitle, "check_settings_show_power")
+	STRUCT DataConfigurationResult s
+	[s] = DC_GetConfiguration(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 
-	// MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
-	// whereas the source data generated waves for ITC min sample rate are at 200 kHz
-	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
-	samplingInterval      = DAP_GetSampInt(panelTitle, dataAcqOrTP)
-	multiplier            = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
-	WAVE/T allSetNames    = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	WAVE/T allIndexingEndSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-	hardwareType          = GetHardwareType(panelTitle)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, s.dataAcqOrTP, s.setLength)
 
-	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
-	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
-	WAVE statusHS         = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	ClearRTError()
 
-	WAVE sweepDataLNB         = GetSweepSettingsWave(panelTitle)
-	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(panelTitle)
-	WAVE/T cellElectrodeNames = GetCellElectrodeNames(panelTitle)
-	WAVE/T analysisFunctions  = GetAnalysisFunctionStorage(panelTitle)
-	WAVE setEventFlag         = GetSetEventFlag(panelTitle)
-	WAVE DAGain               = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
-	WAVE config               = GetDAQConfigWave(panelTitle)
-	WAVE DACList              = GetDACListFromConfig(config)
-	WAVE ADCList              = GetADCListFromConfig(config)
-	WAVE/T epochsWave         = GetEpochsWave(panelTitle)
-	epochsWave = ""
-
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		setEventFlag = 0
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		DC_FillDAQDataWaveForTP(panelTitle, s)
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		DC_FillDAQDataWaveForDAQ(panelTitle, s)
 	endif
 
-	numDACEntries = DimSize(DACList, ROWS)
-	Make/D/FREE/N=(numDACEntries) insertStart, setLength, setColumn, headstageDAC
-	Make/D/FREE/N=(numDACEntries, 2) DACAmp
-	SetDimLabel COLS, 0, DASCALE, DACAmp
-	SetDimLabel COLS, 1, TPAMP, DACAmp
-	Make/T/FREE/N=(numDACEntries) setName
-	Make/WAVE/FREE/N=(numDACEntries) stimSet
+	EP_CollectEpochInfo(panelTitle, s)
+	DC_PrepareLBNEntries(panelTitle, s)
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		DC_WriteTTLIntoDAQDataWave(panelTitle, s)
+		DC_FillSetEventFlag(panelTitle, s)
+	endif
+
+	[ret, row, column] = DC_CheckIfDataWaveHasBorderVals(panelTitle, dataAcqOrTP)
+
+	if(ret)
+		printf "Error writing into DataWave in %s mode: The values at [%g, %g] are out of range. Maybe the DA/AD Gain needs adjustment?\r", SelectString(dataAcqOrTP, "DATA_ACQUISITION", "TestPulse"), row, column
+		ControlWindowToFront()
+		Abort
+	endif
+End
+
+static Function DC_WriteTTLIntoDAQDataWave(string panelTitle, STRUCT DataConfigurationResult &s)
+	variable i, startOffset, ttlIndex, singleSetLength, numRows
+
+	if(s.numTTLEntries == 0)
+		return NaN
+	endif
+
+	// reset to the default value without distributedDAQ
+	startOffset = s.onSetDelay
+	ttlIndex = s.numDACEntries + s.numADCEntries
+
+	WAVE config = GetDAQConfigWave(panelTitle)
+
+	switch(s.hardwareType)
+		case HARDWARE_NI_DAC:
+			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, s.dataAcqOrTP)
+
+			WAVE/WAVE TTLWaveNI = GetTTLWave(panelTitle)
+			DC_NI_MakeTTLWave(panelTitle)
+
+			numRows = DimSize(config, ROWS)
+			for(i = 0; i < numRows; i += 1)
+				if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
+					WAVE NIChannel = NIDataWave[ttlIndex]
+					WAVE TTLWaveSingle = TTLWaveNI[config[i][%ChannelNumber]]
+					singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, panelTitle, DATA_ACQUISITION_MODE)
+					MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] = \
+					limit(TTLWaveSingle[trunc(s.decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
+					ttlIndex += 1
+				endif
+			endfor
+			break
+		case HARDWARE_ITC_DAC:
+			WAVE ITCDataWave = GetDAQDataWave(panelTitle, s.dataAcqOrTP)
+
+			WAVE TTLWaveITC = GetTTLWave(panelTitle)
+
+			// Place TTL waves into ITCDataWave
+			if(DC_AreTTLsInRackChecked(panelTitle, RACK_ZERO))
+				DC_ITC_MakeTTLWave(panelTitle, RACK_ZERO)
+				singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
+				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
+				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+				ttlIndex += 1
+			endif
+
+			if(DC_AreTTLsInRackChecked(panelTitle, RACK_ONE))
+				DC_ITC_MakeTTLWave(panelTitle, RACK_ONE)
+				singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
+				MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
+				limit(TTLWaveITC[trunc(s.decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+			endif
+			break
+	endswitch
+End
+
+static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DataConfigurationResult &s)
+	variable i, j, maxITI, channel, headstage, setChecksum, fingerprint, stimsetCycleID, isoodDAQMember
+	string func, ctrl, str
+
+	WAVE config = GetDAQConfigWave(panelTitle)
+
+	WAVE/T allIndexingEndSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+	WAVE/T cellElectrodeNames = GetCellElectrodeNames(panelTitle)
+	WAVE/T analysisFunctions  = GetAnalysisFunctionStorage(panelTitle)
 
 	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+	if(s.dataAcqOrTP == DATA_ACQUISITION_MODE)
 		ASSERT(IsFinite(raCycleID), "Uninitialized raCycleID detected")
 	endif
 
-	WAVE testPulse = GetTestPulse()
-	// test pulse length is calculated for dataAcqOrTP
-	testPulseLength = DimSize(testPulse, ROWS)
-
 	DC_DocumentChannelProperty(panelTitle, RA_ACQ_CYCLE_ID_KEY, INDEP_HEADSTAGE, NaN, NaN, var=raCycleID)
 
-	headstageDAC[] = channelClampMode[DACList[p]][%DAC][%Headstage]
+	// get maximum ITI from all DACs
+	for(i = 0; i < s.numDACEntries; i += 1)
+		maxITI = max(maxITI, WB_GetITI(s.stimSet[i], s.setColumn[i]))
+	endfor
+
+	NVAR maxITIGlobal = $GetMaxIntertrialInterval(panelTitle)
+	ASSERT(IsFinite(maxITI), "Invalid maxITI")
+	maxITIGlobal = maxITI
+	DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, NaN, NaN, var=maxITIGlobal)
+
+	WAVE/T epochWave = GetEpochsWave(panelTitle)
+	EP_SortEpochs(panelTitle)
 
 	// index guide:
 	// - numEntries: Number of active DACs
 	// - i: Zero-based index of the active DACS
 	// - channel: DA channel number
 
-	for(i = 0; i < numDACEntries; i += 1)
-		channel = DACList[i]
-		headstage = headstageDAC[i]
+	for(i = 0; i < s.numDACEntries; i += 1)
+		channel = s.DACList[i]
+		headstage = s.headstageDAC[i]
 
-		// Setup stimset name for logging and stimset, for tp mode and tp channels stimset references the tp wave
-		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-
-			setName[i] = allSetNames[channel]
-			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-				stimSet[i] = WB_CreateAndGetStimSet(setName[i])
-			elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
-				stimSet[i] = GetTestPulse()
-			else
-				ASSERT(0, "Unknown DAQ Channel Type")
-			endif
-
+		if(s.dataAcqOrTP == DATA_ACQUISITION_MODE)
 			DC_DocumentChannelProperty(panelTitle, "Indexing End Stimset", headstage, channel, XOP_CHANNEL_TYPE_DAC, str = allIndexingEndSetNames[channel])
-
-		elseif(dataAcqOrTP == TEST_PULSE_MODE)
-
-			setName[i] = LowerStr(STIMSET_TP_WHILE_DAQ)
-			stimSet[i] = GetTestPulse()
-
-		else
-			ASSERT(0, "unknown mode")
 		endif
-
-		// restarting DAQ via the stimset popup menues does not call DAP_CheckSettings()
-		// so the stimest must not exist here or it could be empty
-		if(!WaveExists(stimSet[i]) || DimSize(stimSet[i], ROWS) == 0)
-			Abort
-		endif
-
-		if(dataAcqOrTP == TEST_PULSE_MODE)
-			setColumn[i] = 0
-		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
-			// DATA_ACQUISITION_MODE cases
-			setColumn[i] = 0
-		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-			// only call DC_CalculateChannelColumnNo for real data acquisition
-			[ret, setCycleCount] = DC_CalculateChannelColumnNo(panelTitle, setName[i], channel, CHANNEL_TYPE_DAC)
-			setColumn[i] = ret
-		endif
-
-		maxITI = max(maxITI, WB_GetITI(stimSet[i], setColumn[i]))
-
-		if(IsFinite(headstage))
-			channelMode = ChannelClampMode[channel][%DAC][%ClampMode]
-			if(channelMode == V_CLAMP_MODE)
-				DACAmp[i][%TPAMP] = TPAmpVClamp
-			elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
-				DACAmp[i][%TPAMP] = TPAmpIClamp
-			else
-				ASSERT(0, "Unknown clamp mode")
-			endif
-		else // unassoc channel
-			channelMode = NaN
-			DACAmp[i][%TPAMP] = 0.0
-		endif
-
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-		DACAmp[i][%DASCALE] = DAG_GetNumericalValue(panelTitle, ctrl, index = channel)
-
-		// DA Scale and TP Amplitude tuning for special cases
-		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-				// checks if user wants to set scaling to 0 on sets that have already cycled once
-				if(scalingZero && (indexingLocked || !indexing) && setCycleCount > 0)
-					DACAmp[i][%DASCALE] = 0
-				endif
-
-				if(channelMode == I_EQUAL_ZERO_MODE)
-					DACAmp[i][%DASCALE] = 0
-					DACAmp[i][%TPAMP] = 0
-				endif
-			elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
-				// do nothing
-			endif
-		elseif(dataAcqOrTP == TEST_PULSE_MODE)
-			if(powerSpectrum)
-				DACAmp[i][%TPAMP] = 0
-			endif
-		else
-			ASSERT(0, "unknown mode")
-		endif
-
-		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=channel)
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
-		DC_DocumentChannelProperty(panelTitle, "DA ChannelType", headstage, channel, XOP_CHANNEL_TYPE_DAC, var = config[i][%DAQChannelType])
-
-		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=setName[i])
-		DC_DocumentChannelProperty(panelTitle, STIMSET_WAVE_NOTE_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=NormalizeToEOL(RemoveEnding(note(stimSet[i]), "\r"), "\n"))
 
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
 			if(IsFinite(headstage)) // associated channel
@@ -967,6 +929,14 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 
 			DC_DocumentChannelProperty(panelTitle, StringFromList(j, EVENT_NAME_LIST_LBN), headstage, channel, XOP_CHANNEL_TYPE_DAC, str=func)
 		endfor
+
+		DC_DocumentChannelProperty(panelTitle, "DAC", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=channel)
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
+		DC_DocumentChannelProperty(panelTitle, "DA ChannelType", headstage, channel, XOP_CHANNEL_TYPE_DAC, var = config[i][%DAQChannelType])
+
+		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=s.setName[i])
+		DC_DocumentChannelProperty(panelTitle, STIMSET_WAVE_NOTE_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=NormalizeToEOL(RemoveEnding(note(s.stimSet[i]), "\r"), "\n"))
 
 		if(IsFinite(headstage)) // associated channel
 			str = analysisFunctions[headstage][ANALYSIS_FUNCTION_PARAMS]
@@ -979,356 +949,30 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
 
-		DC_DocumentChannelProperty(panelTitle, STIMSET_SCALE_FACTOR_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var = dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ ? DACAmp[i][%DASCALE] : DACAmp[i][%TPAMP])
-		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setColumn[i])
+		DC_DocumentChannelProperty(panelTitle, STIMSET_SCALE_FACTOR_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var = s.dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ ? s.DACAmp[i][%DASCALE] : s.DACAmp[i][%TPAMP])
+		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=s.setColumn[i])
 		DC_DocumentChannelProperty(panelTitle, "Electrode", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=cellElectrodeNames[headstage])
-		DC_DocumentChannelProperty(panelTitle, "Set Cycle Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setCycleCount)
+		DC_DocumentChannelProperty(panelTitle, "Set Cycle Count", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=s.setCycleCount[i])
 
-		setChecksum = WB_GetStimsetChecksum(stimSet[i], setName[i], dataAcqOrTP)
+		setChecksum = WB_GetStimsetChecksum(s.stimSet[i], s.setName[i], s.dataAcqOrTP)
 		DC_DocumentChannelProperty(panelTitle, "Stim Wave Checksum", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setChecksum)
 
-		if(dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, setName[i], setCycleCount, setChecksum, dataAcqOrTP)
+		if(s.dataAcqOrTP == DATA_ACQUISITION_MODE && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
+			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, s.setName[i], s.setCycleCount[i], setChecksum, s.dataAcqOrTP)
 			stimsetCycleID = DC_GetStimsetAcqCycleID(panelTitle, fingerprint, channel)
 
-			setEventFlag[channel][] = (setColumn[i] + 1 == IDX_NumberOfSweepsInSet(setName[i]))
 			DC_DocumentChannelProperty(panelTitle, STIMSET_ACQ_CYCLE_ID_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, var=stimsetCycleID)
 		endif
 
-		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-			isoodDAQMember = (distributedDAQOptOv && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ && IsFinite(headstage))
+		if(s.dataAcqOrTP == DATA_ACQUISITION_MODE)
+			isoodDAQMember = (s.distributedDAQOptOv && config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ && IsFinite(headstage))
 			DC_DocumentChannelProperty(panelTitle, "oodDAQ member", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=isoodDAQMember)
 		endif
-	endfor
 
-	NVAR maxITIGlobal = $GetMaxIntertrialInterval(panelTitle)
-	ASSERT(IsFinite(maxITI), "Invalid maxITI")
-	maxITIGlobal = maxITI
-	DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, NaN, NaN, var=maxITIGlobal)
+		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=s.setLength[i])
+		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=s.offsets[i])
+		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=s.regions[i])
 
-	// for distributedDAQOptOv create temporary reduced input waves holding DAQ types channels only (removing TP typed channels from TPwhileDAQ), put results back to unreduced waves
-	if(distributedDAQOptOv && dataAcqOrTP == DATA_ACQUISITION_MODE)
-		Duplicate/FREE/WAVE stimSet, reducedStimSet
-		Duplicate/FREE setColumn, reducedSetColumn, iTemp
-
-		j = 0
-		for(i = 0; i < numDACEntries; i += 1)
-			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-				reducedStimSet[j] = stimSet[i]
-				reducedSetColumn[j] = setColumn[i]
-				iTemp[j] = i
-				j += 1
-			endif
-		endfor
-		Redimension/N=(j) reducedStimSet, reducedSetColumn
-
-		STRUCT OOdDAQParams params
-		InitOOdDAQParams(params, reducedStimSet, reducedSetColumn, distributedDAQOptPre, distributedDAQOptPost)
-		WAVE/WAVE reducedStimSet = OOD_GetResultWaves(panelTitle, params)
-		WAVE reducedOffsets = params.offsets
-		WAVE/T reducedRegions = params.regions
-
-		Make/FREE/N=(numDACEntries) offsets = 0
-		Make/FREE/T/N=(numDACEntries) regions
-
-		j = DimSize(reducedStimSet, ROWS)
-		for(i = 0; i < j; i += 1)
-			stimSet[iTemp[i]] = reducedStimSet[i]
-			setColumn[iTemp[i]] = reducedSetColumn[i]
-			offsets[iTemp[i]] = reducedOffsets[i]
-			regions[iTemp[i]] = reducedRegions[i]
-		endfor
-	endif
-
-	if(!WaveExists(offsets))
-		Make/FREE/N=(numDACEntries) offsets = 0
-	else
-		offsets[] *= WAVEBUILDER_MIN_SAMPINT
-	endif
-
-	// when DC_CalculateStimsetLength is called with dataAcqOrTP = DATA_ACQUISITION_MODE decimationFactor is considered
-	if(dataAcqOrTP == TEST_PULSE_MODE)
-		setLength[] = DC_CalculateStimsetLength(stimSet[p], panelTitle, TEST_PULSE_MODE)
-	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		Duplicate/FREE setLength, setMode
-		setMode[] = config[p][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP ? TEST_PULSE_MODE : DATA_ACQUISITION_MODE
-		setLength[] = DC_CalculateStimsetLength(stimSet[p], panelTitle, setMode[p])
-	endif
-
-	if(dataAcqOrTP == TEST_PULSE_MODE)
-		insertStart[] = 0
-	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		Duplicate/FREE insertStart, epochIndexer
-		WAVE/T epochWave = GetEpochsWave(panelTitle)
-
-		DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUser, onsetDelayAuto=onsetDelayAuto, terminationDelay=terminationDelay, distributedDAQDelay=distributedDAQDelay)
-		// epoch for onsetDelayAuto is assumed to be a globalTPInsert which is added as epoch below when the DA wave is filled
-		if(onsetDelayUser)
-			epochBegin = onsetDelayAuto * samplingInterval
-			epochEnd = epochBegin + onsetDelayUser * samplingInterval
-			epochIndexer[] = DC_AddEpoch(panelTitle, DACList[p], epochBegin, epochEnd, EPOCH_BASELINE_REGION_KEY, 0)
-		endif
-
-		onsetDelay = onsetDelayUser + onsetDelayAuto
-		if(distributedDAQ)
-			insertStart[] = onsetDelay + (sum(statusHS, 0, headstageDAC[p]) - 1) * (distributedDAQDelay + setLength[p])
-
-			epochBegin = onsetDelay * samplingInterval
-			epochIndexer[] = insertStart[p] * samplingInterval
-			epochIndexer[] = epochBegin != epochIndexer[p] ? DC_AddEpoch(panelTitle, DACList[p], epochBegin, epochIndexer[p], EPOCH_BASELINE_REGION_KEY, 0) : 0
-
-		else
-			insertStart[] = onsetDelay
-		endif
-
-		if(terminationDelay)
-			epochIndexer[] = (insertStart[p] + setLength[p]) * samplingInterval
-			epochIndexer[] = DC_AddEpoch(panelTitle, DACList[p], epochIndexer[p], epochIndexer[p] + terminationDelay * samplingInterval, EPOCH_BASELINE_REGION_KEY, 0)
-		endif
-
-	endif
-
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLength)
-
-	NVAR fifoPosition = $GetFifoPosition(panelTitle)
-	fifoPosition = 0
-
-	numADCEntries = DimSize(ADCList, ROWS)
-
-	ClearRTError()
-
-	// varies per DAC:
-	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
-	// setName, setColumn, headstageDAC
-	//
-	// constant:
-	// decimationFactor, testPulseLength, baselineFrac
-	//
-	// we only have to fill in the DA channels
-	if(dataAcqOrTP == TEST_PULSE_MODE)
-		ASSERT(sum(insertStart) == 0, "Unexpected insert start value")
-		ASSERT(sum(setColumn) == 0, "Unexpected setColumn value")
-		ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
-		ASSERT(numADCEntries > 0, "Number of ADCs can not be zero")
-		ASSERT(numDACEntries > 0, "Number of DACs can not be zero")
-
-		struct HardwareDataTPInput s
-		s.hardwareType = hardwareType
-		s.numDACs = numDACEntries
-		s.numActiveChannels = numActiveChannels
-		s.numberOfRows = DC_CalculateDAQDataWaveLength(panelTitle, TEST_PULSE_MODE)
-		s.samplingInterval = samplingInterval
-		WAVE s.DAGain = DAGain
-		Duplicate/FREE/RMD=[][FindDimLabel(DACAmp, COLS, "TPAMP")] DACAmp, DACAmpTP
-		WAVE s.DACAmpTP = DACAmpTP
-		s.testPulseLength = testPulseLength
-		s.baseLineFrac = baselineFrac
-
-		key = CA_HardwareDataTPKey(s)
-
-		WAVE/Z result = CA_TryFetchingEntryFromCache(key)
-
-		if(WaveExists(result))
-			WAVE DAQDataWave = GetDAQDataWave(panelTitle, dataAcqOrTP)
-
-			if(!cmpstr(GetStringFromWaveNote(DAQDataWave, TP_PROPERTIES_HASH), key))
-				// clear the AD data only
-				switch(hardwareType)
-					case HARDWARE_ITC_DAC:
-						WAVE/W ITCDataWave = DAQDataWave
-						Multithread ITCDataWave[][numDACEntries, numDACEntries + numADCEntries - 1] = 0
-						break
-					case HARDWARE_NI_DAC:
-						WAVE/WAVE NIDataWave = DAQDataWave
-						for(i = 0; i < numADCEntries; i += 1)
-							WAVE NIChannel = NIDataWave[numDACEntries + i]
-							FastOp NIChannel = 0
-						endfor
-						break
-				endswitch
-			else
-				if(IsWaveRefWave(DAQDataWave))
-					WAVE/WAVE DAQDataWaveRef = DAQDataWave
-					Redimension/N=(numActiveChannels) DAQDataWaveRef
-					DAQDataWaveRef[] = GetNIDAQChannelWave(panelTitle, p)
-				endif
-				SetStringInWaveNote(result, TP_PROPERTIES_HASH, key)
-				MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
-			endif
-		else
-			WAVE/Z ITCDataWave
-			WAVE/WAVE/Z NIDataWave
-
-			[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, hardwareType, numActiveChannels, \
-			                                                     samplingInterval, dataAcqOrTP)
-
-			switch(hardwareType)
-				case HARDWARE_ITC_DAC:
-					if(multiDevice)
-						Multithread ITCDataWave[][0, numDACEntries - 1] =                           \
-						limit(                                                                      \
-						      (DAGain[q] * DACAmp[q][%TPAMP]) * testPulse[mod(p, testPulseLength)], \
-						      SIGNED_INT_16BIT_MIN,                                                 \
-						      SIGNED_INT_16BIT_MAX); AbortOnRTE
-						cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
-						if(cutOff > 0)
-							ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numDACEntries - 1] = 0
-						endif
-					else
-						Multithread ITCDataWave[0, testPulseLength - 1][0, numDACEntries - 1] = \
-						limit(                                                                  \
-						      DAGain[q] * DACAmp[q][%TPAMP] * testPulse[p],                     \
-						      SIGNED_INT_16BIT_MIN,                                             \
-						      SIGNED_INT_16BIT_MAX); AbortOnRTE
-					endif
-
-					SetStringInWaveNote(ITCDataWave, TP_PROPERTIES_HASH, key)
-					CA_StoreEntryIntoCache(key, ITCDataWave)
-					break
-				case HARDWARE_NI_DAC:
-					for(i = 0;i < numDACEntries; i += 1)
-						WAVE NIChannel = NIDataWave[i]
-						tpAmp = DACAmp[i][%TPAMP] * DAGain[i]
-						Multithread NIChannel[0, testPulseLength - 1] = \
-						limit(                                          \
-						      tpAmp * testPulse[p],                     \
-						      NI_DAC_MIN,                               \
-						      NI_DAC_MAX); AbortOnRTE
-					endfor
-
-					SetStringInWaveNote(NIDataWave, TP_PROPERTIES_HASH, key)
-					CA_StoreEntryIntoCache(key, NIDataWave)
-					break
-			endswitch
-		endif
-	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-
-		WAVE/Z ITCDataWave
-		WAVE/WAVE/Z NIDataWave
-
-		[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, hardwareType, numActiveChannels, \
-		                                                     samplingInterval, dataAcqOrTP)
-
-		for(i = 0; i < numDACEntries; i += 1)
-			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
-				// TP wave does not need to be decimated, it has already correct size reg. sample rate
-				tpAmp = DACAmp[i][%TPAMP] * DAGain[i]
-				ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
-				switch(hardwareType)
-					case HARDWARE_ITC_DAC:
-						Multithread ITCDataWave[][i] =                    \
-						limit(                                            \
-						      tpAmp * testPulse[mod(p, testPulseLength)], \
-						      SIGNED_INT_16BIT_MIN,                       \
-						      SIGNED_INT_16BIT_MAX); AbortOnRTE
-						cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
-						if(cutOff > 0)
-							ITCDataWave[DimSize(ITCDataWave, ROWS) - cutOff, *][i] = 0
-						endif
-						break
-					case HARDWARE_NI_DAC:
-						WAVE NIChannel = NIDataWave[i]
-						Multithread NIChannel[] =                         \
-						limit(                                            \
-						      tpAmp * testPulse[mod(p, testPulseLength)], \
-						      NI_DAC_MIN,                                 \
-						      NI_DAC_MAX); AbortOnRTE
-						cutOff = mod(DimSize(NIChannel, ROWS), testPulseLength)
-						if(cutOff > 0)
-							NIChannel[DimSize(NIChannel, ROWS) - cutOff, *] = 0
-						endif
-						break
-				endswitch
-			elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
-				channel = DACList[i]
-				headstage = headstageDAC[i]
-				tpAmp = DACAmp[i][%TPAMP] * DAGain[i]
-				DAScale = DACAmp[i][%DASCALE] * DAGain[i]
-				WAVE singleStimSet = stimSet[i]
-				singleSetLength = setLength[i]
-				stimsetCol = setColumn[i]
-				startOffset = insertStart[i]
-
-				epochBegin = startOffset * samplingInterval
-				if(distributedDAQOptOv && offsets[i] > 0)
-					epochOffset = offsets[i] * 1000
-					DC_AddEpoch(panelTitle, channel, epochBegin, epochBegin + epochOffset, EPOCH_BASELINE_REGION_KEY, 0)
-					DC_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin + epochOffset, singleSetLength * samplingInterval - epochOffset, stimsetCol, DACAmp[i][%DASCALE])
-				else
-					DC_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin, singleSetLength * samplingInterval, stimsetCol, DACAmp[i][%DASCALE])
-				endif
-				if(distributedDAQOptOv)
-					DC_AddEpochsFromOodDAQRegions(panelTitle, channel, regions[i], epochBegin)
-				endif
-				// if dDAQ is on then channels 0 to numEntries - 1 have a trailing base line
-				epochBegin = startOffset + singleSetLength + terminationDelay
-				if(stopCollectionPoint > epochBegin)
-					DC_AddEpoch(panelTitle, channel, epochBegin * samplingInterval, stopCollectionPoint * samplingInterval, EPOCH_BASELINE_REGION_KEY, 0)
-				endif
-
-				switch(hardwareType)
-					case HARDWARE_ITC_DAC:
-						Multithread ITCDataWave[startOffset, startOffset + singleSetLength - 1][i] =     \
-						limit(                                                                           \
-						      DAScale * singleStimSet[decimationFactor * (p - startOffset)][stimsetCol], \
-						      SIGNED_INT_16BIT_MIN,                                                      \
-						      SIGNED_INT_16BIT_MAX); AbortOnRTE
-
-						if(globalTPInsert)
-							// space in ITCDataWave for the testpulse is allocated via an automatic increase
-							// of the onset delay
-							DC_AddEpochsFromTP(panelTitle, channel, baselinefrac, testPulseLength * samplingInterval, 0, "Inserted TP", DACAmp[i][%TPAMP])
-							MultiThread ITCDataWave[0, testPulseLength - 1][i] =                        \
-							limit(tpAmp * testPulse[p], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
-						endif
-						break
-					case HARDWARE_NI_DAC:
-						// for an index step of 1 in NIChannel, singleStimSet steps decimationFactor
-						// for an index step of 1 in singleStimset, NIChannel steps 1 / decimationFactor
-						// for decimationFactor < 1 and indexing NIChannel to DimSize(NIChannel, ROWS) - 1 (as implemented here),
-						// singleStimset would be indexed to DimSize(singleStimSet, ROWS) - decimationFactor
-						// this leads to an invalid index if decimationFactor is <= 0.5 (due to the way Igor handles nD wave indexing)
-						// it is solved here by limiting the index of singleStimSet to the last valid integer index
-						// for the case of decimationFactor >= 1 there is no issue since index DimSize(singleStimSet, ROWS) - decimationFactor is valid
-						// for ITC decimationFactor is always >= 1 since the stimSets are generated for the ITC max. sample rate
-						WAVE NIChannel = NIDataWave[i]
-						lastValidRow = DimSize(singleStimSet, ROWS) - 1
-						MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                                  \
-						limit(                                                                                                   \
-						      DAScale * singleStimSet[limit(decimationFactor * (p - startOffset), 0, lastValidRow)][stimsetCol], \
-						      NI_DAC_MIN,                                                                                        \
-						      NI_DAC_MAX); AbortOnRTE
-
-						if(globalTPInsert)
-							// space in ITCDataWave for the testpulse is allocated via an automatic increase
-							// of the onset delay
-							DC_AddEpochsFromTP(panelTitle, channel, baselinefrac, testPulseLength * samplingInterval, 0, "Inserted TP", DACAmp[i][%TPAMP])
-							MultiThread NIChannel[0, testPulseLength - 1] = \
-							limit(tpAmp * testPulse[p], NI_DAC_MIN, NI_DAC_MAX); AbortOnRTE
-						endif
-						break
-				endswitch
-			else
-				ASSERT(0, "Unknown DAC channel type")
-			endif
-		endfor
-	endif
-
-	DC_SortEpochs(panelTitle)
-
-	if(!WaveExists(regions))
-		Make/FREE/T/N=(numDACEntries) regions
-	endif
-
-	for(i = 0; i < numDACEntries; i += 1)
-		channel = DACList[i]
-		headstage = headstageDAC[i]
-		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=setLength[i])
-		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstage, channel, XOP_CHANNEL_TYPE_DAC, var=offsets[i])
-		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstage, channel, XOP_CHANNEL_TYPE_DAC, str=regions[i])
-
-		WAVE/T epochWave = GetEpochsWave(panelTitle)
 		Duplicate/FREE/RMD=[][][channel] epochWave, epochChannel
 		Redimension/N=(-1, -1, 0) epochChannel
 		DC_DocumentChannelProperty(panelTitle, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=TextWaveToList(epochChannel, ":", colSep = ",", stopOnEmpty = 1))
@@ -1336,7 +980,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, NaN, var=str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")))
 	DC_DocumentChannelProperty(panelTitle, "Fixed frequency acquisition", INDEP_HEADSTAGE, NaN, NaN, var=str2numSafe(DAG_GetTextualValue(panelTitle, "Popup_Settings_FixedFreq")))
-	DC_DocumentChannelProperty(panelTitle, "Sampling interval", INDEP_HEADSTAGE, NaN, NaN, var=samplingInterval * 1e-3)
+	DC_DocumentChannelProperty(panelTitle, "Sampling interval", INDEP_HEADSTAGE, NaN, NaN, var=s.samplingInterval * 1e-3)
 
 	DC_DocumentChannelProperty(panelTitle, "Delay onset user", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser"))
 	DC_DocumentChannelProperty(panelTitle, "Delay onset auto", INDEP_HEADSTAGE, NaN, NaN, var=GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto"))
@@ -1346,13 +990,13 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	DC_DocumentChannelProperty(panelTitle, "oodDAQ Post Feature", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Setvar_DataAcq_dDAQOptOvPost"))
 	DC_DocumentChannelProperty(panelTitle, "oodDAQ Resolution", INDEP_HEADSTAGE, NaN, NaN, var=WAVEBUILDER_MIN_SAMPINT)
 
-	DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, NaN, NaN, var=GlobalTPInsert)
-	DC_DocumentChannelProperty(panelTitle, "Distributed DAQ", INDEP_HEADSTAGE, NaN, NaN, var=distributedDAQ)
-	DC_DocumentChannelProperty(panelTitle, "Optimized Overlap dDAQ", INDEP_HEADSTAGE, NaN, NaN, var=distributedDAQOptOv)
+	DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP"))
+	DC_DocumentChannelProperty(panelTitle, "Distributed DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_DistribDaq"))
+	DC_DocumentChannelProperty(panelTitle, "Optimized Overlap dDAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_dDAQOptOv"))
 	DC_DocumentChannelProperty(panelTitle, "Repeat Sets", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_SetRepeats"))
-	DC_DocumentChannelProperty(panelTitle, "Scaling zero", INDEP_HEADSTAGE, NaN, NaN, var=scalingZero)
-	DC_DocumentChannelProperty(panelTitle, "Indexing", INDEP_HEADSTAGE, NaN, NaN, var=indexing)
-	DC_DocumentChannelProperty(panelTitle, "Locked indexing", INDEP_HEADSTAGE, NaN, NaN, var=indexingLocked)
+	DC_DocumentChannelProperty(panelTitle, "Scaling zero", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle,  "check_Settings_ScalingZero"))
+	DC_DocumentChannelProperty(panelTitle, "Indexing", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
+	DC_DocumentChannelProperty(panelTitle, "Locked indexing", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
 	DC_DocumentChannelProperty(panelTitle, "Repeated Acquisition", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 	DC_DocumentChannelProperty(panelTitle, "Random Repeated Acquisition", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_DataAcq_RepAcqRandom"))
 	DC_DocumentChannelProperty(panelTitle, "Multi Device mode", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
@@ -1366,7 +1010,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	DC_DocumentChannelProperty(panelTitle, "Autobias %", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_Settings_AutoBiasPerc"))
 	DC_DocumentChannelProperty(panelTitle, "Autobias interval", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_Settings_AutoBiasInt"))
 
-	DC_DocumentHardwareProperties(panelTitle, hardwareType)
+	DC_DocumentHardwareProperties(panelTitle, s.hardwareType)
 
 	if(DeviceCanLead(panelTitle))
 		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
@@ -1384,26 +1028,26 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-		DC_DocumentChannelProperty(panelTitle, "Headstage Active", i, NaN, NaN, var=statusHS[i])
+		DC_DocumentChannelProperty(panelTitle, "Headstage Active", i, NaN, NaN, var=s.statusHS[i])
 
-		if(!statusHS[i])
+		if(!s.statusHS[i])
 			continue
 		endif
 
 		DC_DocumentChannelProperty(panelTitle, "Clamp Mode", i, NaN, NaN, var=DAG_GetHeadstageMode(panelTitle, i))
 	endfor
 
-	if(distributedDAQ)
+	if(s.distributedDAQ)
 		// dDAQ requires that all stimsets have the same length, so store the stim set length
 		// also headstage independent
-		ASSERT(!distributedDAQOptOv, "Unexpected oodDAQ mode")
-		ASSERT(IsConstant(setLength, setLength[0]), "Unexpected varying stim set length")
-		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, NaN, var=setLength[0])
+		ASSERT(!s.distributedDAQOptOv, "Unexpected oodDAQ mode")
+		ASSERT(IsConstant(s.setLength, s.setLength[0]), "Unexpected varying stim set length")
+		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, NaN, var=s.setLength[0])
 	endif
 
-	for(i = 0; i < numADCEntries; i += 1)
-		channel = ADCList[i]
-		headstage = channelClampMode[channel][%ADC][%Headstage]
+	for(i = 0; i < s.numADCEntries; i += 1)
+		channel = s.ADCList[i]
+		headstage = s.headstageADC[i]
 
 		DC_DocumentChannelProperty(panelTitle, "ADC", headstage, channel, XOP_CHANNEL_TYPE_ADC, var=channel)
 
@@ -1413,55 +1057,453 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, channel, XOP_CHANNEL_TYPE_ADC, str=DAG_GetTextualValue(panelTitle, ctrl, index = channel))
 
-		DC_DocumentChannelProperty(panelTitle, "AD ChannelType", headstage, channel, XOP_CHANNEL_TYPE_ADC, var = config[numDACEntries + i][%DAQChannelType])
+		DC_DocumentChannelProperty(panelTitle, "AD ChannelType", headstage, channel, XOP_CHANNEL_TYPE_ADC, var = config[s.numDACEntries + i][%DAQChannelType])
 	endfor
+End
 
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		// reset to the default value without distributedDAQ
-		startOffset = onSetDelay
-		ttlIndex = numDACEntries + numADCEntries
-		switch(hardwareType)
-			case HARDWARE_NI_DAC:
-				WAVE/WAVE TTLWaveNI = GetTTLWave(panelTitle)
-				DC_NI_MakeTTLWave(panelTitle)
-				for(i = 0; i < DimSize(config, ROWS); i += 1)
-					if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
-						WAVE NIChannel = NIDataWave[ttlIndex]
-						WAVE TTLWaveSingle = TTLWaveNI[config[i][%ChannelNumber]]
-						singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, panelTitle, DATA_ACQUISITION_MODE)
-						MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] = \
-						limit(TTLWaveSingle[trunc(decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
-						ttlIndex += 1
-					endif
-				endfor
-				break
+static Function DC_FillSetEventFlag(string panelTitle, STRUCT DataConfigurationResult &s)
+	variable i, channel
+
+	WAVE config = GetDAQConfigWave(panelTitle)
+
+	WAVE setEventFlag = GetSetEventFlag(panelTitle)
+	setEventFlag = 0
+
+	for(i = 0; i < s.numDACEntries; i += 1)
+		channel = s.DACList[i]
+
+		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
+			setEventFlag[channel][] = (s.setColumn[i] + 1 == IDX_NumberOfSweepsInSet(s.setName[i]))
+		endif
+	endfor
+End
+
+static Function DC_FillDAQDataWaveForTP(string panelTitle, STRUCT DataConfigurationResult &s)
+	variable cutOff, i, tpAmp
+	string key
+
+	// varies per DAC:
+	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
+	// setName, setColumn, headstageDAC
+	//
+	// constant:
+	// decimationFactor, testPulseLength, baselineFrac
+	//
+	// we only have to fill in the DA channels
+	ASSERT(sum(s.insertStart) == 0, "Unexpected insert start value")
+	ASSERT(sum(s.setColumn) == 0, "Unexpected setColumn value")
+	ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+	ASSERT(s.numADCEntries > 0, "Number of ADCs can not be zero")
+	ASSERT(s.numDACEntries > 0, "Number of DACs can not be zero")
+
+	struct HardwareDataTPInput cacheParams
+	cacheParams.hardwareType = s.hardwareType
+	cacheParams.numDACs = s.numDACEntries
+	cacheParams.numActiveChannels = s.numActiveChannels
+	cacheParams.numberOfRows = DC_CalculateDAQDataWaveLength(panelTitle, TEST_PULSE_MODE)
+	cacheParams.samplingInterval = s.samplingInterval
+	WAVE cacheParams.DAGain = s.DAGain
+	Duplicate/FREE/RMD=[][FindDimLabel(s.DACAmp, COLS, "TPAMP")] s.DACAmp, DACAmpTP
+	WAVE cacheParams.DACAmpTP = DACAmpTP
+	cacheParams.testPulseLength = s.testPulseLength
+	cacheParams.baseLineFrac = s.baselineFrac
+
+	key = CA_HardwareDataTPKey(cacheParams)
+
+	WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+
+	if(WaveExists(result))
+		WAVE DAQDataWave = GetDAQDataWave(panelTitle, TEST_PULSE_MODE)
+
+		if(!cmpstr(GetStringFromWaveNote(DAQDataWave, TP_PROPERTIES_HASH), key))
+			// clear the AD data only
+			switch(s.hardwareType)
+				case HARDWARE_ITC_DAC:
+					WAVE/W ITCDataWave = DAQDataWave
+					Multithread ITCDataWave[][s.numDACEntries, s.numDACEntries + s.numADCEntries - 1] = 0
+					break
+				case HARDWARE_NI_DAC:
+					WAVE/WAVE NIDataWave = DAQDataWave
+					for(i = 0; i < s.numADCEntries; i += 1)
+						WAVE NIChannel = NIDataWave[s.numDACEntries + i]
+						FastOp NIChannel = 0
+					endfor
+					break
+			endswitch
+		else
+			if(IsWaveRefWave(DAQDataWave))
+				WAVE/WAVE DAQDataWaveRef = DAQDataWave
+				Redimension/N=(s.numActiveChannels) DAQDataWaveRef
+				DAQDataWaveRef[] = GetNIDAQChannelWave(panelTitle, p)
+			endif
+			SetStringInWaveNote(result, TP_PROPERTIES_HASH, key)
+			MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
+		endif
+	else
+		WAVE/Z ITCDataWave
+		WAVE/WAVE/Z NIDataWave
+
+		[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, s.hardwareType, s.numActiveChannels, \
+															 s.samplingInterval, TEST_PULSE_MODE)
+
+		switch(s.hardwareType)
 			case HARDWARE_ITC_DAC:
-				WAVE TTLWaveITC = GetTTLWave(panelTitle)
-				// Place TTL waves into ITCDataWave
-				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ZERO))
-					DC_ITC_MakeTTLWave(panelTitle, RACK_ZERO)
-					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
-					MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
-					limit(TTLWaveITC[trunc(decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
-					ttlIndex += 1
+				if(s.multiDevice)
+					Multithread ITCDataWave[][0, s.numDACEntries - 1] =                                 \
+					limit(                                                                              \
+						  (s.DAGain[q] * s.DACAmp[q][%TPAMP]) * s.testPulse[mod(p, s.testPulseLength)], \
+						  SIGNED_INT_16BIT_MIN,                                                         \
+						  SIGNED_INT_16BIT_MAX); AbortOnRTE
+					cutOff = mod(DimSize(ITCDataWave, ROWS), s.testPulseLength)
+					if(cutOff > 0)
+						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, s.numDACEntries - 1] = 0
+					endif
+				else
+					Multithread ITCDataWave[0, s.testPulseLength - 1][0, s.numDACEntries - 1] = \
+					limit(                                                                      \
+						  s.DAGain[q] * s.DACAmp[q][%TPAMP] * s.testPulse[p],                   \
+						  SIGNED_INT_16BIT_MIN,                                                 \
+						  SIGNED_INT_16BIT_MAX); AbortOnRTE
 				endif
 
-				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ONE))
-					DC_ITC_MakeTTLWave(panelTitle, RACK_ONE)
-					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
-					MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
-					limit(TTLWaveITC[trunc(decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
-				endif
+				SetStringInWaveNote(ITCDataWave, TP_PROPERTIES_HASH, key)
+				CA_StoreEntryIntoCache(key, ITCDataWave)
+				break
+			case HARDWARE_NI_DAC:
+				for(i = 0;i < s.numDACEntries; i += 1)
+					WAVE NIChannel = NIDataWave[i]
+					tpAmp = s.DACAmp[i][%TPAMP] * s.DAGain[i]
+					Multithread NIChannel[0, s.testPulseLength - 1] = \
+					limit(                                          \
+						  tpAmp * s.testPulse[p],                     \
+						  NI_DAC_MIN,                               \
+						  NI_DAC_MAX); AbortOnRTE
+				endfor
+
+				SetStringInWaveNote(NIDataWave, TP_PROPERTIES_HASH, key)
+				CA_StoreEntryIntoCache(key, NIDataWave)
 				break
 		endswitch
 	endif
+End
 
-	[ret, row, column] = DC_CheckIfDataWaveHasBorderVals(panelTitle, dataAcqOrTP)
+static Function DC_FillDAQDataWaveForDAQ(string panelTitle, STRUCT DataConfigurationResult &s)
+	variable i, tpAmp, cutOff, channel, headstage, DAScale, singleSetLength, stimsetCol, startOffset
+	variable lastValidRow
 
-	if(ret)
-		printf "Error writing into DataWave in %s mode: The values at [%g, %g] are out of range. Maybe the DA/AD Gain needs adjustment?\r", SelectString(dataAcqOrTP, "DATA_ACQUISITION", "TestPulse"), row, column
-		ControlWindowToFront()
-		Abort
+	WAVE/Z ITCDataWave
+	WAVE/WAVE/Z NIDataWave
+
+	WAVE config = GetDAQConfigWave(panelTitle)
+
+	[ITCDataWave, NIDataWave] = DC_MakeAndGetDAQDataWave(panelTitle, s.hardwareType, s.numActiveChannels, \
+														 s.samplingInterval, DATA_ACQUISITION_MODE)
+
+	for(i = 0; i < s.numDACEntries; i += 1)
+		if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
+			// TP wave does not need to be decimated, it has already correct size reg. sample rate
+			tpAmp = s.DACAmp[i][%TPAMP] * s.DAGain[i]
+			ASSERT(DimSize(s.testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
+			switch(s.hardwareType)
+				case HARDWARE_ITC_DAC:
+					Multithread ITCDataWave[][i] =                    \
+					limit(                                            \
+						  tpAmp * s.testPulse[mod(p, s.testPulseLength)], \
+						  SIGNED_INT_16BIT_MIN,                       \
+						  SIGNED_INT_16BIT_MAX); AbortOnRTE
+					cutOff = mod(DimSize(ITCDataWave, ROWS), s.testPulseLength)
+					if(cutOff > 0)
+						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutOff, *][i] = 0
+					endif
+					break
+				case HARDWARE_NI_DAC:
+					WAVE NIChannel = NIDataWave[i]
+					Multithread NIChannel[] =                         \
+					limit(                                            \
+						  tpAmp * s.testPulse[mod(p, s.testPulseLength)], \
+						  NI_DAC_MIN,                                 \
+						  NI_DAC_MAX); AbortOnRTE
+					cutOff = mod(DimSize(NIChannel, ROWS), s.testPulseLength)
+					if(cutOff > 0)
+						NIChannel[DimSize(NIChannel, ROWS) - cutOff, *] = 0
+					endif
+					break
+			endswitch
+		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
+			channel = s.DACList[i]
+			headstage = s.headstageDAC[i]
+			tpAmp = s.DACAmp[i][%TPAMP] * s.DAGain[i]
+			DAScale = s.DACAmp[i][%DASCALE] * s.DAGain[i]
+			WAVE singleStimSet = s.stimSet[i]
+			singleSetLength = s.setLength[i]
+			stimsetCol = s.setColumn[i]
+			startOffset = s.insertStart[i]
+
+			switch(s.hardwareType)
+				case HARDWARE_ITC_DAC:
+					Multithread ITCDataWave[startOffset, startOffset + singleSetLength - 1][i] =       \
+					limit(                                                                             \
+						  DAScale * singleStimSet[s.decimationFactor * (p - startOffset)][stimsetCol], \
+						  SIGNED_INT_16BIT_MIN,                                                        \
+						  SIGNED_INT_16BIT_MAX); AbortOnRTE
+
+					if(s.globalTPInsert)
+						// space in ITCDataWave for the testpulse is allocated via an automatic increase
+						// of the onset delay
+						MultiThread ITCDataWave[0, s.testPulseLength - 1][i] =                        \
+						limit(tpAmp * s.testPulse[p], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+					endif
+					break
+				case HARDWARE_NI_DAC:
+					// for an index step of 1 in NIChannel, singleStimSet steps decimationFactor
+					// for an index step of 1 in singleStimset, NIChannel steps 1 / decimationFactor
+					// for decimationFactor < 1 and indexing NIChannel to DimSize(NIChannel, ROWS) - 1 (as implemented here),
+					// singleStimset would be indexed to DimSize(singleStimSet, ROWS) - decimationFactor
+					// this leads to an invalid index if decimationFactor is <= 0.5 (due to the way Igor handles nD wave indexing)
+					// it is solved here by limiting the index of singleStimSet to the last valid integer index
+					// for the case of decimationFactor >= 1 there is no issue since index DimSize(singleStimSet, ROWS) - decimationFactor is valid
+					// for ITC decimationFactor is always >= 1 since the stimSets are generated for the ITC max. sample rate
+					WAVE NIChannel = NIDataWave[i]
+					lastValidRow = DimSize(singleStimSet, ROWS) - 1
+					MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                                    \
+					limit(                                                                                                     \
+						  DAScale * singleStimSet[limit(s.decimationFactor * (p - startOffset), 0, lastValidRow)][stimsetCol], \
+						  NI_DAC_MIN,                                                                                          \
+						  NI_DAC_MAX); AbortOnRTE
+
+					if(s.globalTPInsert)
+						// space in ITCDataWave for the testpulse is allocated via an automatic increase
+						// of the onset delay
+						MultiThread NIChannel[0, s.testPulseLength - 1] = \
+						limit(tpAmp * s.testPulse[p], NI_DAC_MIN, NI_DAC_MAX); AbortOnRTE
+					endif
+					break
+			endswitch
+		else
+			ASSERT(0, "Unknown DAC channel type")
+		endif
+	endfor
+End
+
+static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string panelTitle, variable numActiveChannels, variable dataAcqOrTP, variable multiDevice)
+	variable TPAmpVClamp, TPAmpIClamp, powerSpectrum, channel, headstage, channelMode
+	variable onsetDelayUserLocal, onsetDelayAutoLocal, terminationDelayLocal, distributedDAQDelayLocal
+	variable scalingZero, indexingLocked, indexing
+	variable i, j, ret, setCycleCountLocal
+	string ctrl
+
+	// pass parameters into returned struct
+	s.numActiveChannels = numActiveChannels
+	s.dataAcqOrTP       = dataAcqOrTP
+	s.multiDevice       = multiDevice
+
+	s.globalTPInsert        = DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP")
+	scalingZero             = DAG_GetNumericalValue(panelTitle,  "check_Settings_ScalingZero")
+	indexingLocked          = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked")
+	indexing                = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
+	s.distributedDAQ        = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_DistribDaq")
+	s.distributedDAQOptOv   = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_dDAQOptOv")
+	s.distributedDAQOptPre  = DAG_GetNumericalValue(panelTitle, "Setvar_DataAcq_dDAQOptOvPre")
+	s.distributedDAQOptPost = DAG_GetNumericalValue(panelTitle, "Setvar_DataAcq_dDAQOptOvPost")
+	TPAmpVClamp             = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitude")
+	TPAmpIClamp             = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+	powerSpectrum           = DAG_GetNumericalValue(panelTitle, "check_settings_show_power")
+
+	// MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
+	// whereas the source data generated waves for ITC min sample rate are at 200 kHz
+	s.decimationFactor = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
+	s.samplingInterval = DAP_GetSampInt(panelTitle, dataAcqOrTP)
+	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	s.hardwareType     = GetHardwareType(panelTitle)
+
+	s.baselineFrac        = ROVar(GetTestpulseBaselineFraction(panelTitle))
+	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
+	WAVE s.statusHS       = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	WAVE s.DAGain  = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
+	WAVE config  = GetDAQConfigWave(panelTitle)
+	WAVE s.DACList = GetDACListFromConfig(config)
+	WAVE s.ADCList = GetADCListFromConfig(config)
+	WAVE s.TTLList = GetTTLListFromConfig(config)
+
+	s.numTTLEntries = DimSize(s.DACList, ROWS)
+
+	s.numDACEntries = DimSize(s.DACList, ROWS)
+	Make/D/FREE/N=(s.numDACEntries) s.insertStart, s.setLength, s.setColumn, s.headstageDAC, s.setCycleCount
+	Make/T/FREE/N=(s.numDACEntries) s.setName
+
+	// @todo IP9-only: Remove workaround once this is fixed upstream
+	Make/WAVE/FREE/N=(s.numDACEntries) stimSetLocal
+	WAVE/WAVE s.stimSet = stimSetLocal
+
+	s.numADCEntries = DimSize(s.ADCList, ROWS)
+	Make/D/FREE/N=(s.numADCEntries) s.headstageADC
+
+	WAVE s.testPulse = GetTestPulse()
+
+	// test pulse length is calculated for dataAcqOrTP
+	s.testPulseLength = DimSize(s.testPulse, ROWS)
+
+	s.headstageDAC[] = channelClampMode[s.DACList[p]][%DAC][%Headstage]
+	s.headstageADC[] = channelClampMode[s.ADCList[p]][%ADC][%Headstage]
+
+	WAVE/D s.DACAmp = GetDACAmplitudes(s.numDACEntries)
+
+	// index guide:
+	// - numEntries: Number of active DACs
+	// - i: Zero-based index of the active DACS
+	// - channel: DA channel number
+
+	for(i = 0; i < s.numDACEntries; i += 1)
+		channel = s.DACList[i]
+		headstage = s.headstageDAC[i]
+
+		// Setup stimset name for logging and stimset, for tp mode and tp channels stimset references the tp wave
+		if(s.dataAcqOrTP == DATA_ACQUISITION_MODE)
+			s.setName[i] = allSetNames[channel]
+			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
+				s.stimSet[i] = WB_CreateAndGetStimSet(s.setName[i])
+			elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
+				s.stimSet[i] = s.testPulse
+			else
+				ASSERT(0, "Unknown DAQ Channel Type")
+			endif
+		elseif(dataAcqOrTP == TEST_PULSE_MODE)
+			s.setName[i] = LowerStr(STIMSET_TP_WHILE_DAQ)
+			s.stimSet[i] = s.testPulse
+		else
+			ASSERT(0, "unknown mode")
+		endif
+
+		// restarting DAQ via the stimset popup menues does not call DAP_CheckSettings()
+		// so the stimest must not exist here or it could be empty
+		if(!WaveExists(s.stimSet[i]) || DimSize(s.stimSet[i], ROWS) == 0)
+			Abort
+		endif
+
+		if(dataAcqOrTP == TEST_PULSE_MODE)
+			s.setColumn[i] = 0
+		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
+			// DATA_ACQUISITION_MODE cases
+			s.setColumn[i] = 0
+		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
+			// only call DC_CalculateChannelColumnNo for real data acquisition
+			[ret, setCycleCountLocal] = DC_CalculateChannelColumnNo(panelTitle, s.setName[i], channel, CHANNEL_TYPE_DAC)
+			s.setColumn[i]     = ret
+			s.setCycleCount[i] = setCycleCountLocal
+		endif
+
+		if(IsFinite(headstage))
+			channelMode = ChannelClampMode[channel][%DAC][%ClampMode]
+			if(channelMode == V_CLAMP_MODE)
+				s.DACAmp[i][%TPAMP] = TPAmpVClamp
+			elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
+				s.DACAmp[i][%TPAMP] = TPAmpIClamp
+			else
+				ASSERT(0, "Unknown clamp mode")
+			endif
+		else // unassoc channel
+			channelMode = NaN
+			s.DACAmp[i][%TPAMP] = 0.0
+		endif
+
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		s.DACAmp[i][%DASCALE] = DAG_GetNumericalValue(panelTitle, ctrl, index = channel)
+
+		// DA Scale and TP Amplitude tuning for special cases
+		if(s.dataAcqOrTP == DATA_ACQUISITION_MODE)
+			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
+				// checks if user wants to set scaling to 0 on sets that have already cycled once
+				if(scalingZero && (indexingLocked || !indexing) && s.setCycleCount[i] > 0)
+					s.DACAmp[i][%DASCALE] = 0
+				endif
+
+				if(channelMode == I_EQUAL_ZERO_MODE)
+					s.DACAmp[i][%DASCALE] = 0
+					s.DACAmp[i][%TPAMP] = 0
+				endif
+			elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
+				// do nothing
+			endif
+		elseif(dataAcqOrTP == TEST_PULSE_MODE)
+			if(powerSpectrum)
+				s.DACAmp[i][%TPAMP] = 0
+			endif
+		else
+			ASSERT(0, "unknown mode")
+		endif
+	endfor
+
+	// for distributedDAQOptOv create temporary reduced input waves holding DAQ types channels only (removing TP typed channels from TPwhileDAQ), put results back to unreduced waves
+	if(s.distributedDAQOptOv && s.dataAcqOrTP == DATA_ACQUISITION_MODE)
+		Duplicate/FREE/WAVE s.stimSet, reducedStimSet
+		Duplicate/FREE s.setColumn, reducedSetColumn, iTemp
+
+		j = 0
+		for(i = 0; i < s.numDACEntries; i += 1)
+			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
+				reducedStimSet[j] = s.stimSet[i]
+				reducedSetColumn[j] = s.setColumn[i]
+				iTemp[j] = i
+				j += 1
+			endif
+		endfor
+		Redimension/N=(j) reducedStimSet, reducedSetColumn
+
+		STRUCT OOdDAQParams params
+		InitOOdDAQParams(params, reducedStimSet, reducedSetColumn, s.distributedDAQOptPre, s.distributedDAQOptPost)
+		WAVE/WAVE reducedStimSet = OOD_GetResultWaves(panelTitle, params)
+		WAVE reducedOffsets = params.offsets
+		WAVE/T reducedRegions = params.regions
+
+		Make/FREE/N=(s.numDACEntries) s.offsets = 0
+		Make/FREE/T/N=(s.numDACEntries) s.regions
+
+		j = DimSize(reducedStimSet, ROWS)
+		for(i = 0; i < j; i += 1)
+			s.stimSet[iTemp[i]] = reducedStimSet[i]
+			s.setColumn[iTemp[i]] = reducedSetColumn[i]
+			s.offsets[iTemp[i]] = reducedOffsets[i]
+			s.regions[iTemp[i]] = reducedRegions[i]
+		endfor
+	endif
+
+	if(!WaveExists(s.offsets))
+		Make/FREE/N=(s.numDACEntries) s.offsets = 0
+	else
+		s.offsets[] *= WAVEBUILDER_MIN_SAMPINT
+	endif
+
+	if(!WaveExists(s.regions))
+		Make/FREE/T/N=(s.numDACEntries) s.regions
+	endif
+
+	// when DC_CalculateStimsetLength is called with dataAcqOrTP = DATA_ACQUISITION_MODE decimationFactor is considered
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		s.setLength[] = DC_CalculateStimsetLength(s.stimSet[p], panelTitle, TEST_PULSE_MODE)
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		Duplicate/FREE s.setLength, setMode
+		setMode[] = config[p][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP ? TEST_PULSE_MODE : DATA_ACQUISITION_MODE
+		s.setLength[] = DC_CalculateStimsetLength(s.stimSet[p], panelTitle, setMode[p])
+		WaveClear setMode
+	endif
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		s.insertStart[] = 0
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUserLocal, onsetDelayAuto=onsetDelayAutoLocal, terminationDelay=terminationDelayLocal, distributedDAQDelay=distributedDAQDelayLocal)
+
+		s.onsetDelayUser      = onsetDelayUserLocal
+		s.onsetDelayAuto      = onsetDelayAutoLocal
+		s.terminationDelay    = terminationDelayLocal
+		s.distributedDAQDelay = distributedDAQDelayLocal
+
+		s.onsetDelay = s.onsetDelayUser + s.onsetDelayAuto
+		if(s.distributedDAQ)
+			s.insertStart[] = s.onsetDelay + (sum(s.statusHS, 0, s.headstageDAC[p]) - 1) * (s.distributedDAQDelay + s.setLength[p])
+		else
+			s.insertStart[] = s.onsetDelay
+		endif
 	endif
 End
 
@@ -2229,357 +2271,3 @@ Function DC_EpochGraphToolTip(s)
 End
 
 #endif
-
-/// @brief Adds four epochs for a test pulse and three sub epochs for test pulse components
-/// @param[in] panelTitle      title of device panel
-/// @param[in] channel         number of DA channel
-/// @param[in] baselinefrac    base line fraction of testpulse
-/// @param[in] testPulseLength test pulse length in micro seconds
-/// @param[in] offset          start time of test pulse in micro seconds
-/// @param[in] name            name of test pulse (e.g. Inserted TP)
-/// @param[in] amplitude       amplitude of the TP in the DA wave without gain
-static Function DC_AddEpochsFromTP(panelTitle, channel, baselinefrac, testPulseLength, offset, name, amplitude)
-	string panelTitle
-	variable channel
-	variable baselinefrac, testPulseLength
-	variable offset
-	string name
-	variable amplitude
-
-	variable epochBegin
-	variable epochEnd
-	string epochName, epochSubName
-
-	// main TP range
-	epochBegin = offset
-	epochEnd = epochBegin + testPulseLength
-	epochName = AddListItem("Test Pulse", name, EPOCHNAME_SEP, Inf)
-	DC_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epochName, 0)
-
-	// TP sub ranges
-	epochBegin = baselineFrac * testPulseLength + offset
-	epochEnd = (1 - baselineFrac) * testPulseLength + offset
-	epochSubName = AddListItem("pulse", epochName, EPOCHNAME_SEP, Inf)
-	epochSubName = ReplaceNumberByKey("Amplitude", epochSubName, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	DC_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epochSubName, 1)
-
-	epochBegin = offset
-	epochEnd = epochBegin + baselineFrac * testPulseLength
-	DC_AddEpoch(panelTitle, channel, epochBegin, epochEnd, EPOCH_BASELINE_REGION_KEY, 1)
-
-	epochBegin = (1 - baselineFrac) * testPulseLength + offset
-	epochEnd = testPulseLength + offset
-	DC_AddEpoch(panelTitle, channel, epochBegin, epochEnd, EPOCH_BASELINE_REGION_KEY, 1)
-End
-
-/// @brief Adds epochs for oodDAQ regions
-/// @param[in] panelTitle    title of device panel
-/// @param[in] channel       number of DA channel
-/// @param[in] oodDAQRegions string containing list of oodDAQ regions as %d-%d;...
-/// @param[in] stimsetBegin offset time in micro seconds where stim set begins
-static Function DC_AddEpochsFromOodDAQRegions(panelTitle, channel, oodDAQRegions, stimsetBegin)
-	string panelTitle
-	variable channel
-	string oodDAQRegions
-	variable stimsetBegin
-
-	variable numRegions
-	WAVE/T regions = ListToTextWave(oodDAQRegions, ";")
-	numRegions = DimSize(regions, ROWS)
-	if(numRegions)
-		Make/FREE/N=(numRegions) epochIndexer
-		epochIndexer[] = DC_AddEpoch(panelTitle, channel, str2num(StringFromList(0, regions[p], "-")) * 1E3 + stimsetBegin, str2num(StringFromList(1, regions[p], "-")) * 1E3 + stimsetBegin, EPOCH_OODDAQ_REGION_KEY + "=" + num2str(p), 2)
-	endif
-End
-
-static StrConstant EPOCHNAME_SEP = ";"
-static StrConstant STIMSETKEYNAME_SEP = "="
-
-/// @brief Adds epochs for a stimset and sub epochs for stimset components
-/// currently adds also sub sub epochs for pulse train components
-/// @param[in] panelTitle   title of device panel
-/// @param[in] channel      number of DA channel
-/// @param[in] stimset      stimset wave
-/// @param[in] stimsetBegin offset time in micro seconds where stim set begins
-/// @param[in] setLength    length of stimset in micro seconds
-/// @param[in] sweep        number of sweep
-/// @param[in] scale        scale factor between the stimsets internal amplitude to the DA wave without gain
-static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimsetBegin, setLength, sweep, scale)
-	string panelTitle
-	variable channel
-	WAVE stimset
-	variable stimsetBegin, setLength, sweep, scale
-
-	variable stimsetEnd, stimsetEndLogical
-	variable epochBegin, epochEnd, subEpochBegin, subEpochEnd
-	string epSweepName, epSubName, epSubSubName, epSpecifier
-	variable epochCount, totalDuration, poissonDistribution
-	variable epochNr, pulseNr, numPulses, epochType, flipping, pulseToPulseLength, stimEpochAmplitude, amplitude
-	variable pulseDuration
-	variable subsubEpochBegin, subsubEpochEnd
-	string type, startTimesList
-	string stimNote = note(stimset)
-
-	stimsetEnd = stimsetBegin + setLength
-	DC_AddEpoch(panelTitle, channel, stimsetBegin, stimsetEnd, "Stimset", 0)
-
-	epochCount = WB_GetWaveNoteEntryAsNumber(stimNote, STIMSET_ENTRY, key="Epoch Count")
-
-	Make/FREE/D/N=(epochCount) duration, sweepOffset
-
-	duration[] = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, key="Duration", sweep=sweep, epoch=p)
-	duration *= 1000
-	totalDuration = sum(duration)
-
-	ASSERT(IsFinite(totalDuration), "Expected finite totalDuration")
-	ASSERT(IsFinite(stimsetBegin), "Expected finite stimsetBegin")
-	stimsetEndLogical = stimsetBegin + totalDuration
-
-	if(epochCount > 1)
-		sweepOffset[0] = 0
-		sweepOffset[1,] = sweepOffset[p - 1] + duration[p - 1]
-	endif
-
-	flipping = WB_GetWaveNoteEntryAsNumber(stimNote, STIMSET_ENTRY, key = "Flip")
-
-	epSweepName = ""
-
-	for(epochNr = 0; epochNr < epochCount; epochNr += 1)
-		type = WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, key="Type", sweep=sweep, epoch=epochNr)
-		epochType = WB_ToEpochType(type)
-		stimEpochAmplitude = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, key="Amplitude", sweep=sweep, epoch=epochNr)
-		amplitude = scale * stimEpochAmplitude
-		if(flipping)
-			// in case of oodDAQ cutOff stimsetEndLogical can be greater than stimsetEnd, thus epochEnd can be greater than stimsetEnd
-			epochEnd = stimsetEndLogical - sweepOffset[epochNr]
-			epochBegin = epochEnd - duration[epochNr]
-		else
-			epochBegin = sweepOffset[epochNr] + stimsetBegin
-			epochEnd = epochBegin + duration[epochNr]
-		endif
-
-		if(epochBegin >= stimsetEnd)
-			// sweep epoch starts beyond stimset end
-			DEBUGPRINT("Warning: Epoch starts after Stimset end.")
-			continue
-		endif
-
-		poissonDistribution = !CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epochNr, key = "Poisson distribution"), "True")
-
-		epSubName = ReplaceNumberByKey("Epoch", epSweepName, epochNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		epSubName = ReplaceStringByKey("Type", epSubName, type, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		epSubName = ReplaceNumberByKey("Amplitude", epSubName, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		if(epochType == EPOCH_TYPE_PULSE_TRAIN)
-			if(!CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epochNr, key = "Mixed frequency"), "True"))
-				epSpecifier = "Mixed frequency"
-			elseif(poissonDistribution)
-				epSpecifier = "Poisson distribution"
-			endif
-			if(!CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, key="Mixed frequency shuffle", sweep=sweep, epoch=epochNr), "True"))
-				epSpecifier += " shuffled"
-			endif
-		else
-			epSpecifier = ""
-		endif
-		if(!isEmpty(epSpecifier))
-			epSubName = ReplaceStringByKey("Details", epSubName, epSpecifier, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		endif
-
-		DC_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epSubName, 1, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
-
-		// Add Sub Sub Epochs
-		if(epochType == EPOCH_TYPE_PULSE_TRAIN)
-			WAVE startTimes = WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epochNr, pulseToPulseLength)
-			startTimes *= 1000
-			numPulses = DimSize(startTimes, ROWS)
-			if(numPulses)
-				Duplicate/FREE startTimes, ptp
-				ptp[] = pulseToPulseLength ? pulseToPulseLength * 1000 : startTimes[p] - startTimes[limit(p - 1, 0, Inf)]
-				pulseDuration = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, key="Pulse duration", sweep=sweep, epoch=epochNr)
-				pulseDuration *= 1000
-
-				// with flipping we iterate the pulses from large to small time points
-
-				for(pulseNr = 0; pulseNr < numPulses; pulseNr += 1)
-					if(flipping)
-						// shift all flipped pulse intervalls by pulseDuration to the left, except the rightmost with pulseNr 0
-						if(!pulseNr)
-							subEpochBegin = epochEnd - startTimes[0] - pulseDuration
-							// assign left over time after the last pulse to that pulse
-							subEpochEnd = epochEnd
-						else
-							subEpochEnd = epochEnd - startTimes[pulseNr - 1] - pulseDuration
-							subEpochBegin = pulseNr + 1 == numPulses ? epochBegin : subEpochEnd - ptp[pulseNr]
-						endif
-
-					else
-						subEpochBegin = epochBegin + startTimes[pulseNr]
-						subEpochEnd = pulseNr + 1 == numPulses ? epochEnd : subEpochBegin + ptp[pulseNr + 1]
-					endif
-
-					if(subEpochBegin >= epochEnd || subEpochEnd <= epochBegin)
-						DEBUGPRINT("Warning: sub epoch of pulse starts after epoch end or ends before epoch start.")
-					elseif(subEpochBegin >= stimsetEnd || subEpochEnd <= stimsetBegin)
-						DEBUGPRINT("Warning: sub epoch of pulse starts after stimset end or ends before stimset start.")
-					else
-						subEpochBegin = limit(subEpochBegin, epochBegin, Inf)
-						subEpochEnd = limit(subEpochEnd, -Inf, epochEnd)
-
-						// baseline before leftmost/rightmost pulse?
-						if(((pulseNr == numPulses - 1 && flipping) || (!pulseNr && !flipping)) \
-						   && subEpochBegin > epochBegin && subEpochBegin > stimsetBegin)
-							DC_AddEpoch(panelTitle, channel, epochBegin, subEpochBegin, EPOCH_BASELINE_REGION_KEY, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
-						endif
-
-						epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-						DC_AddEpoch(panelTitle, channel, subEpochBegin, subEpochEnd, epSubSubName, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
-
-						// active
-						subsubEpochBegin = subEpochBegin
-
-						// normally we never have a trailing baseline with pulse train except when poission distribution
-						// is used. So we can only assign the left over time to pulse active if we are not in this
-						// special case.
-						if(!poissonDistribution && (pulseNr == (flipping ? 0 : numPulses - 1)))
-							subsubEpochEnd = subEpochEnd
-						else
-							subsubEpochEnd = subEpochBegin + pulseDuration
-						endif
-
-						if(subsubEpochBegin >= subEpochEnd || subsubEpochEnd <= subEpochBegin)
-							DEBUGPRINT("Warning: sub sub epoch of active pulse starts after stimset end or ends before stimset start.")
-						else
-							subsubEpochBegin = limit(subsubEpochBegin, subEpochBegin, Inf)
-							subsubEpochEnd = limit(subsubEpochEnd, -Inf, subEpochEnd)
-
-							epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-							epSubSubName = epSubSubName + "Active"
-							DC_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubName, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
-
-							// baseline
-							subsubEpochBegin = subsubEpochEnd
-							subsubEpochEnd   = subEpochEnd
-
-							if(subsubEpochBegin >= stimsetEnd || subsubEpochEnd <= stimsetBegin)
-								DEBUGPRINT("Warning: sub sub epoch of pulse active starts after stimset end or ends before stimset start.")
-							elseif(subsubEpochBegin >= subsubEpochEnd)
-								DEBUGPRINT("Warning: sub sub epoch of pulse baseline is not present.")
-							else
-								epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-								epSubSubName = RemoveByKey("Amplitude", epSubSubName, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-								epSubSubName = epSubSubName + "Baseline"
-								DC_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubName, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
-							endif
-						endif
-					endif
-				endfor
-			else
-				DC_AddEpoch(panelTitle, channel, epochBegin, epochEnd, EPOCH_BASELINE_REGION_KEY, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
-			endif
-		else
-			// Epoch details on other types not implemented yet
-		endif
-
-	endfor
-
-	// stimsets with multiple sweeps where each sweep has a different length (due to delta mechanism)
-	// result in 2D stimset waves where all sweeps have the same length
-	// therefore we must add a baseline epoch after all defined epochs
-	if(stimsetEnd > stimsetEndLogical)
-		DC_AddEpoch(panelTitle, channel, stimsetEndLogical, stimsetEnd, EPOCH_BASELINE_REGION_KEY, 1)
-	endif
-End
-
-/// Epoch times are saved in s, so 7 digits are 0.1 microseconds precision
-/// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.
-static Constant EPOCHTIME_PRECISION = 7
-
-/// @brief Sorts all epochs per channel in EpochsWave
-/// @param[in] panelTitle title of device panel
-static Function DC_SortEpochs(panelTitle)
-	string panelTitle
-
-	variable channel, channelCnt, epochCnt
-	variable col0, col1, col2
-	WAVE/T epochWave = GetEpochsWave(panelTitle)
-	channelCnt = DimSize(epochWave, LAYERS)
-	for(channel = 0; channel < channelCnt; channel += 1)
-		epochCnt = DC_GetEpochCount(panelTitle, channel)
-		if(epochCnt)
-			Duplicate/FREE/T/RMD=[, epochCnt - 1][][channel] epochWave, epochChannel
-			Redimension/N=(-1, -1, 0) epochChannel
-			epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
-			col0 = FindDimLabel(epochChannel, COLS, "StartTime")
-			col1 = FindDimLabel(epochChannel, COLS, "EndTime")
-			col2 = FindDimLabel(epochChannel, COLS, "TreeLevel")
-			ASSERT(col0 >= 0 && col1 >= 0 && col2 >= 0, "Column in epochChannel wave not found")
-			SortColumns/DIML/KNDX={col0, col1, col2} sortWaves={epochChannel}
-			epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
-			epochWave[, epochCnt - 1][][channel] = epochChannel[p][q]
-		endif
-	endfor
-
-End
-
-/// @brief Returns the number of epoch in the epochsWave for the given channel
-/// @param[in] panelTitle title of device panel
-/// @param[in] channel    number of DA channel
-/// @return number of epochs for channel
-static Function DC_GetEpochCount(panelTitle, channel)
-	string panelTitle
-	variable channel
-
-	WAVE/T epochWave = GetEpochsWave(panelTitle)
-	FindValue/Z/RMD=[][][channel]/TXOP=4/TEXT="" epochWave
-	return V_row == -1 ? DimSize(epochWave, ROWS) : V_row
-End
-
-/// @brief Adds a epoch to the epochsWave
-/// @param[in] panelTitle title of device panel
-/// @param[in] channel    number of DA channel
-/// @param[in] epBegin    start time of the epoch in micro seconds
-/// @param[in] epEnd      end time of the epoch in micro seconds
-/// @param[in] epName     name of the epoch
-/// @param[in] level      level of epoch
-/// @param[in] lowerlimit [optional, default = -Inf] epBegin is limited between lowerlimit and Inf, epEnd must be > this limit
-/// @param[in] upperlimit [optional, default = Inf] epEnd is limited between -Inf and upperlimit, epBegin must be < this limit
-static Function DC_AddEpoch(panelTitle, channel, epBegin, epEnd, epName, level[, lowerlimit, upperlimit])
-	string panelTitle
-	variable channel
-	variable epBegin, epEnd
-	string epName
-	variable level
-	variable lowerlimit, upperlimit
-
-	WAVE/T epochWave = GetEpochsWave(panelTitle)
-	variable i, j, numEpochs, pos
-	string entry, startTimeStr, endTimeStr
-
-	lowerlimit = ParamIsDefault(lowerlimit) ? -Inf : lowerlimit
-	upperlimit = ParamIsDefault(upperlimit) ? Inf : upperlimit
-
-	ASSERT(!isNull(epName), "Epoch name is null")
-	ASSERT(!isEmpty(epName), "Epoch name is empty")
-	ASSERT(epBegin <= epEnd, "Epoch end is < epoch begin")
-	ASSERT(epBegin < upperlimit, "Epoch begin is greater than upper limit")
-	ASSERT(epEnd > lowerlimit, "Epoch end lesser than lower limit")
-
-	epBegin = limit(epBegin, lowerlimit, Inf)
-	epEnd = limit(epEnd, -Inf, upperlimit)
-
-	i = DC_GetEpochCount(panelTitle, channel)
-	EnsureLargeEnoughWave(epochWave, minimumSize = i + 1, dimension = ROWS)
-
-	startTimeStr = num2strHighPrec(epBegin / 1E6, precision = EPOCHTIME_PRECISION)
-	endTimeStr = num2strHighPrec(epEnd / 1E6, precision = EPOCHTIME_PRECISION)
-
-	if(!cmpstr(startTimeStr, endTimeStr))
-		// don't add single point epochs
-		return NaN
-	endif
-
-	epochWave[i][%StartTime][channel] = startTimeStr
-	epochWave[i][%EndTime][channel] = endTimeStr
-	epochWave[i][%Name][channel] = epName
-	epochWave[i][%TreeLevel][channel] = num2str(level)
-End
