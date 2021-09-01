@@ -67,7 +67,7 @@ Function AD_Update(win)
 	if(numEntries > 0)
 		selWave[][][%foreColors] = AD_GetColorForResultMessage(listWave[p][%Result])
 
-		helpWave[] = "Result: " + listWave[p][%Result]
+		helpWave[] = "Result:\r" + listWave[p][%Result]
 
 		EnableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	else
