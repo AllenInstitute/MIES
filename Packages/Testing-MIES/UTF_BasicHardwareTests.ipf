@@ -4901,3 +4901,55 @@ Function CheckPulseInfoGathering_REENTRY([string str])
 	// check total number of pulses
 	CHECK_EQUAL_VAR(DimSize(pulseInfos, ROWS), 60)
 End
+
+Function CheckCalculatedTPEntries_IGNORE(string device)
+	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = "2")
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
+End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckCalculatedTPEntries([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc = CheckCalculatedTPEntries_IGNORE)
+End
+
+Function CheckCalculatedTPEntries_REENTRY([string str])
+	variable samplingInterval, samplingIntervalMult, sweepNo
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	sweepNo = 0
+	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	samplingIntervalMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval Multiplier", DATA_ACQUISITION_MODE)
+
+	CHECK_EQUAL_VAR(samplingIntervalMult, 2)
+
+	WAVE calculated = GetTPSettingsCalculated(str)
+
+	CHECK_EQUAL_VAR(calculated[%baselineFrac], 0.25)
+
+	CHECK_EQUAL_VAR(calculated[%pulseLengthMS], 10)
+	CHECK_EQUAL_VAR(calculated[%totalLengthMS], 20)
+
+#if defined(TESTS_WITH_ITC18USB_HARDWARE)
+	CHECK_EQUAL_VAR(samplingInterval, 0.02)
+
+	// sampling interval multiplier is ignored for TP
+	CHECK_EQUAL_VAR(calculated[%pulseLengthPointsTP], 10 / 0.01)
+	CHECK_EQUAL_VAR(calculated[%totalLengthPointsTP], 20 / 0.01)
+
+	CHECK_EQUAL_VAR(calculated[%pulseLengthPointsDAQ], 10 / 0.02)
+	CHECK_EQUAL_VAR(calculated[%totalLengthPointsDAQ], 20 / 0.02)
+#elif defined(TESTS_WITH_NI_HARDWARE)
+	CHECK_EQUAL_VAR(samplingInterval, 0.008)
+
+	// sampling interval multiplier is ignored for TP
+	CHECK_EQUAL_VAR(calculated[%pulseLengthPointsTP], 10 / 0.004)
+	CHECK_EQUAL_VAR(calculated[%totalLengthPointsTP], 20 / 0.004)
+
+	CHECK_EQUAL_VAR(calculated[%pulseLengthPointsDAQ], 10 / 0.008)
+	CHECK_EQUAL_VAR(calculated[%totalLengthPointsDAQ], 20 / 0.008)
+#endif
+End
