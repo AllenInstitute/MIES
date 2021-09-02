@@ -5122,7 +5122,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	endif
 
 	if(!ParamIsDefault(dfr))
-		WAVE candidates = ConvertListOfWaves(GetListOfObjects(dfr, ".*", fullpath=1))
+		WAVE/WAVE candidates = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullpath=1))
 	endif
 
 	remove_all_traces = ParamIsDefault(trace) && ParamIsDefault(wv) && ParamIsDefault(dfr)
