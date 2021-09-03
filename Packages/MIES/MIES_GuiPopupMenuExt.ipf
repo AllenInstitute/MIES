@@ -120,7 +120,7 @@ static StrConstant MENUNAME_UNUSED = "*** bug, report to dev ***"
 static StrConstant MENU_DISABLE_SPECIAL = "\\M0"
 static StrConstant LSEP = ";"
 
-/// @brief Menu definition templates for up to 10 sub menus.
+/// @brief Menu definition templates for up to MAX_SUBMENUS sub menus.
 ///        The constant MAX_SUBMENUS stores the number of these definitions
 ///        and must be updated if more definitions are added.
 ///
