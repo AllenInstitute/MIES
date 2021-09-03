@@ -1319,7 +1319,7 @@ Function IsWaveDisplayedOnGraph(win, [wv, dfr])
 			return 0
 		endif
 
-		WAVE candidates = ConvertListOfWaves(GetListOfObjects(dfr, ".*", fullpath=1))
+		WAVE/WAVE candidates = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullpath=1))
 		numWaves = DimSize(candidates, ROWS)
 	endif
 
@@ -1865,25 +1865,6 @@ threadsafe Function GetRowIndex(wv, [val, str, refWave])
 	endif
 
 	return NaN
-End
-
-/// @brief Converts a list of strings referencing waves with full paths to a wave of wave references
-///
-/// It is assumed that all created wave references refer to an *existing* wave
-Function/WAVE ConvertListOfWaves(list)
-	string list
-
-	variable i, numEntries
-	numEntries = ItemsInList(list)
-	MAKE/FREE/WAVE/N=(numEntries) waves
-
-	for(i = 0; i < numEntries; i += 1)
-		WAVE/Z wv = $StringFromList(i, list)
-		ASSERT(WaveExists(wv), "The wave does not exist")
-		waves[i] = wv
-	endfor
-
-	return waves
 End
 
 /// @brief return a subset of the input list

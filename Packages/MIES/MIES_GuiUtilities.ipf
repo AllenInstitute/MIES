@@ -2176,3 +2176,17 @@ Function/S GetPopupMenuList(string value, variable type)
 			ASSERT(0, "Missing popup menu list type")
 	endswitch
 End
+
+#if IgorVersion() >= 9.0
+
+/// @brief Enable show trace info tags for the current top graph
+Function ShowTraceInfoTags()
+
+	DoIgorMenu/C "Graph", "Show Trace Info Tags"
+
+	if(cmpStr(S_value,"Hide Trace Info Tags"))
+		DoIgorMenu/OVRD "Graph", "Show Trace Info Tags"
+	endif
+End
+
+#endif

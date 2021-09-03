@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(1268.25,51.5,1700.25,486.5)/K=1  as "DataBrowser"
+	Display /W=(392.25,446,824.25,881)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel
 	Button button_BSP_open,title="<<",help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -76,17 +76,47 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=1/W=(399,0,0,585)  as " "
 	ModifyPanel fixedSize=0
+	GroupBox group_dDAQ,pos={320.00,27.00},size={70.00,323.00}
+	GroupBox group_dDAQ,userdata(ResizeControlsInfo)=A"!!,H[!!#=;!!#?E!!#B[J,fQL!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_dDAQ,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	GroupBox group_dDAQ,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	GroupBox group_dDAQ,userdata(tabnum)="0",userdata(tabcontrol)="Settings"
+	Slider slider_BrowserSettings_dDAQ,pos={326.00,59.00},size={56.00,278.00},disable=2,proc=BSP_SliderProc_ChangedSetting
+	Slider slider_BrowserSettings_dDAQ,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
+	Slider slider_BrowserSettings_dDAQ,userdata(tabnum)="0"
+	Slider slider_BrowserSettings_dDAQ,userdata(tabcontrol)="Settings"
+	Slider slider_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)=A"!!,H^!!#?%!!#>n!!#BEz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	Slider slider_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Slider slider_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Slider slider_BrowserSettings_dDAQ,limits={-1,7,1},value=-1
+	GroupBox group_SB_axes_scaling,pos={28.00,245.00},size={285.00,51.00}
+	GroupBox group_SB_axes_scaling,title="Axes Scaling",userdata(tabnum)="0"
+	GroupBox group_SB_axes_scaling,userdata(tabcontrol)="Settings"
+	GroupBox group_SB_axes_scaling,userdata(ResizeControlsInfo)=A"!!,CD!!#B/!!#BHJ,ho0z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_SB_axes_scaling,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	GroupBox group_SB_axes_scaling,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	GroupBox group_calc,pos={28.00,195.00},size={288.00,51.00},userdata(tabnum)="0"
+	GroupBox group_calc,userdata(tabcontrol)="Settings"
+	GroupBox group_calc,userdata(ResizeControlsInfo)=A"!!,CD!!#AR!!#BJ!!#>Zz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_calc,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	GroupBox group_calc,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	GroupBox group_timealignment,pos={28.00,87.00},size={285.00,99.00}
+	GroupBox group_timealignment,title="Time Alignment",userdata(tabnum)="0"
+	GroupBox group_timealignment,userdata(tabcontrol)="Settings"
+	GroupBox group_timealignment,userdata(ResizeControlsInfo)=A"!!,CD!!#?g!!#BHJ,hpUz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_timealignment,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	GroupBox group_timealignment,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	GroupBox group_channels,pos={30.00,27.00},size={284.00,59.00}
+	GroupBox group_channels,userdata(tabnum)="0",userdata(tabcontrol)="Settings"
+	GroupBox group_channels,userdata(ResizeControlsInfo)=A"!!,CT!!#=;!!#BH!!#?%z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_channels,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	GroupBox group_channels,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	GroupBox group_properties_sweepFormula,pos={5.00,85.00},size={388.00,499.00},disable=1
 	GroupBox group_properties_sweepFormula,userdata(tabnum)="5"
 	GroupBox group_properties_sweepFormula,userdata(tabcontrol)="Settings"
 	GroupBox group_properties_sweepFormula,userdata(ResizeControlsInfo)=A"!!,?X!!#?c!!#C'!!#C^J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	GroupBox group_properties_sweepFormula,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#N3Bk1ct9jqaR6>q*JDf>[Vzzzzzzzz"
 	GroupBox group_properties_sweepFormula,userdata(ResizeControlsInfo)+=A"zzz!!#N3Bk1ct9jqaR6>q*8Dfg)>D#aP9zzzzzzzzzz!!!"
-	GroupBox group_calc,pos={28.00,195.00},size={288.00,51.00},userdata(tabnum)="0"
-	GroupBox group_calc,userdata(tabcontrol)="Settings"
-	GroupBox group_calc,userdata(ResizeControlsInfo)=A"!!,CD!!#AR!!#BJ!!#>Zz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
-	GroupBox group_calc,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	GroupBox group_calc,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TabControl Settings,pos={0.00,0.00},size={400.00,21.00},proc=ACL_DisplayTab
 	TabControl Settings,help={"Main navigation tab"},userdata(currenttab)="0"
 	TabControl Settings,userdata(finalhook)="BSP_MainTabControlFinal"
@@ -709,15 +739,15 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_PA,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_PA,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_PA,value=0
-	CheckBox check_BrowserSettings_DAC,pos={28.00,36.00},size={32.00,15.00},proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_BrowserSettings_DAC,pos={36.00,36.00},size={32.00,15.00},proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_BrowserSettings_DAC,title="DA"
 	CheckBox check_BrowserSettings_DAC,help={"Display the DA channel data"}
 	CheckBox check_BrowserSettings_DAC,userdata(tabnum)="0"
 	CheckBox check_BrowserSettings_DAC,userdata(tabcontrol)="Settings"
-	CheckBox check_BrowserSettings_DAC,userdata(ResizeControlsInfo)=A"!!,CD!!#=s!!#=c!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_BrowserSettings_DAC,userdata(ResizeControlsInfo)=A"!!,Ct!!#=s!!#=c!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_DAC,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_DAC,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_BrowserSettings_DAC,value=0
+	CheckBox check_BrowserSettings_DAC,userdata(Config_RestorePriority)="10",value=0
 	CheckBox check_BrowserSettings_ADC,pos={91.00,36.00},size={32.00,15.00},proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_BrowserSettings_ADC,title="AD",help={"Display the AD channels"}
 	CheckBox check_BrowserSettings_ADC,userdata(tabnum)="0"
@@ -725,7 +755,7 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_ADC,userdata(ResizeControlsInfo)=A"!!,Ep!!#=s!!#=c!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_ADC,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_ADC,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_BrowserSettings_ADC,value=1
+	CheckBox check_BrowserSettings_ADC,userdata(Config_RestorePriority)="10",value=1
 	CheckBox check_BrowserSettings_TTL,pos={148.00,36.00},size={34.00,15.00},proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_BrowserSettings_TTL,title="TTL",help={"Display the TTL channels"}
 	CheckBox check_BrowserSettings_TTL,userdata(tabnum)="0"
@@ -733,40 +763,41 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_TTL,userdata(ResizeControlsInfo)=A"!!,G$!!#=s!!#=k!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_TTL,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_TTL,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_BrowserSettings_TTL,value=0
-	CheckBox check_BrowserSettings_OChan,pos={28.00,60.00},size={65.00,15.00},proc=BSP_CheckProc_ChangedSetting
-	CheckBox check_BrowserSettings_OChan,title="Channels"
+	CheckBox check_BrowserSettings_TTL,userdata(Config_RestorePriority)="10",value=0
+	CheckBox check_BrowserSettings_OChan,pos={202.00,36.00},size={106.00,15.00},proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_BrowserSettings_OChan,title="Overlay channels"
 	CheckBox check_BrowserSettings_OChan,help={"Overlay the data from multiple channels in one graph"}
 	CheckBox check_BrowserSettings_OChan,userdata(tabnum)="0"
 	CheckBox check_BrowserSettings_OChan,userdata(tabcontrol)="Settings"
-	CheckBox check_BrowserSettings_OChan,userdata(ResizeControlsInfo)=A"!!,CD!!#?)!!#?;!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_BrowserSettings_OChan,userdata(ResizeControlsInfo)=A"!!,GZ!!#=s!!#@8!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_OChan,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_OChan,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_OChan,value=0
-	CheckBox check_BrowserSettings_dDAQ,pos={148.00,60.00},size={48.00,15.00},proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_BrowserSettings_dDAQ,pos={330.00,35.00},size={48.00,15.00},proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_BrowserSettings_dDAQ,title="dDAQ"
 	CheckBox check_BrowserSettings_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
 	CheckBox check_BrowserSettings_dDAQ,userdata(tabnum)="0"
 	CheckBox check_BrowserSettings_dDAQ,userdata(tabcontrol)="Settings"
-	CheckBox check_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)=A"!!,G$!!#?)!!#>N!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)=A"!!,H`!!#=o!!#>N!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_BrowserSettings_dDAQ,userdata(Config_RestorePriority)="10"
 	CheckBox check_BrowserSettings_dDAQ,value=0
-	CheckBox check_Calculation_ZeroTraces,pos={40.00,219.00},size={75.00,15.00},proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_Calculation_ZeroTraces,pos={143.00,200.00},size={75.00,15.00},proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_Calculation_ZeroTraces,title="Zero Traces"
 	CheckBox check_Calculation_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_Calculation_ZeroTraces,userdata(tabnum)="0"
 	CheckBox check_Calculation_ZeroTraces,userdata(tabcontrol)="Settings"
-	CheckBox check_Calculation_ZeroTraces,userdata(ResizeControlsInfo)=A"!!,D/!!#Aj!!#?O!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_Calculation_ZeroTraces,userdata(ResizeControlsInfo)=A"!!,Ft!!#AW!!#?O!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_Calculation_ZeroTraces,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Calculation_ZeroTraces,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Calculation_ZeroTraces,value=0
-	CheckBox check_Calculation_AverageTraces,pos={40.00,198.00},size={94.00,15.00},proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_Calculation_AverageTraces,pos={40.00,199.00},size={94.00,15.00},proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_Calculation_AverageTraces,title="Average Traces"
 	CheckBox check_Calculation_AverageTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_Calculation_AverageTraces,userdata(tabnum)="0"
 	CheckBox check_Calculation_AverageTraces,userdata(tabcontrol)="Settings"
-	CheckBox check_Calculation_AverageTraces,userdata(ResizeControlsInfo)=A"!!,D/!!#AU!!#?u!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_Calculation_AverageTraces,userdata(ResizeControlsInfo)=A"!!,D/!!#AV!!#?u!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_Calculation_AverageTraces,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Calculation_AverageTraces,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Calculation_AverageTraces,value=0
@@ -778,7 +809,7 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_TA,userdata(ResizeControlsInfo)=A"!!,G*!!#@B!!#>Z!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_TA,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_TA,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_BrowserSettings_TA,value=0
+	CheckBox check_BrowserSettings_TA,userdata(Config_RestorePriority)="10",value=0
 	CheckBox check_ovs_clear_on_new_ra_cycle,pos={235.00,161.00},size={111.00,15.00},disable=3
 	CheckBox check_ovs_clear_on_new_ra_cycle,title="Clear on new RAC"
 	CheckBox check_ovs_clear_on_new_ra_cycle,help={"Clear the list of overlayed sweeps when a new repeated acquisition cycle has begun."}
@@ -805,6 +836,7 @@ Window DataBrowser() : Graph
 	PopupMenu popup_TimeAlignment_Mode,userdata(ResizeControlsInfo)=A"!!,C\\!!#@k!!#@s!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_TimeAlignment_Mode,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_TimeAlignment_Mode,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu popup_TimeAlignment_Mode,userdata(Config_RestorePriority)="20"
 	PopupMenu popup_TimeAlignment_Mode,mode=1,popvalue="Level (Raising)",value=#"\"Level (Raising);Level (Falling);Min;Max\""
 	SetVariable setvar_TimeAlignment_LevelCross,pos={187.00,135.00},size={48.00,18.00},disable=2,proc=BSP_TimeAlignmentLevel
 	SetVariable setvar_TimeAlignment_LevelCross,title="Level"
@@ -814,6 +846,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(ResizeControlsInfo)=A"!!,GK!!#@k!!#>N!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_TimeAlignment_LevelCross,userdata(Config_RestorePriority)="20"
 	SetVariable setvar_TimeAlignment_LevelCross,limits={-inf,inf,0},value=_NUM:0
 	Button button_TimeAlignment_Action,pos={208.00,159.00},size={30.00,18.00},disable=2,proc=BSP_DoTimeAlignment
 	Button button_TimeAlignment_Action,title="Do!"
@@ -823,12 +856,7 @@ Window DataBrowser() : Graph
 	Button button_TimeAlignment_Action,userdata(ResizeControlsInfo)=A"!!,G`!!#A.!!#=S!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	Button button_TimeAlignment_Action,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_TimeAlignment_Action,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_SB_axes_scaling,pos={28.00,246.00},size={285.00,51.00}
-	GroupBox group_SB_axes_scaling,title="Axes Scaling",userdata(tabnum)="0"
-	GroupBox group_SB_axes_scaling,userdata(tabcontrol)="Settings"
-	GroupBox group_SB_axes_scaling,userdata(ResizeControlsInfo)=A"!!,CD!!#B0!!#BHJ,ho0z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
-	GroupBox group_SB_axes_scaling,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	GroupBox group_SB_axes_scaling,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_TimeAlignment_Action,userdata(Config_RestorePriority)="20"
 	CheckBox check_Display_VisibleXrange,pos={40.00,270.00},size={41.00,15.00},proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_Display_VisibleXrange,title="Vis X"
 	CheckBox check_Display_VisibleXrange,help={"Scale the y axis to the visible x data range"}
@@ -872,65 +900,53 @@ Window DataBrowser() : Graph
 	PopupMenu popup_TimeAlignment_Master,userdata(ResizeControlsInfo)=A"!!,D?!!#A.!!#@j!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_TimeAlignment_Master,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_TimeAlignment_Master,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu popup_TimeAlignment_Master,userdata(Config_RestorePriority)="20"
 	PopupMenu popup_TimeAlignment_Master,mode=1,popvalue="AD0",value=#"\"\""
-	Button button_Calculation_RestoreData,pos={151.00,210.00},size={75.00,24.00},proc=BSP_ButtonProc_RestoreData
+	Button button_Calculation_RestoreData,pos={231.00,208.00},size={75.00,24.00},proc=BSP_ButtonProc_RestoreData
 	Button button_Calculation_RestoreData,title="Restore"
 	Button button_Calculation_RestoreData,help={"Restore the data in its pristine state without any modifications"}
 	Button button_Calculation_RestoreData,userdata(tabnum)="0"
 	Button button_Calculation_RestoreData,userdata(tabcontrol)="Settings"
-	Button button_Calculation_RestoreData,userdata(ResizeControlsInfo)=A"!!,G'!!#Aa!!#?O!!#=#z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	Button button_Calculation_RestoreData,userdata(ResizeControlsInfo)=A"!!,H\"!!#A_!!#?O!!#=#z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	Button button_Calculation_RestoreData,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_Calculation_RestoreData,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_BrowserSettings_Export,pos={82.00,333.00},size={99.00,24.00},proc=SB_ButtonProc_ExportTraces
+	Button button_BrowserSettings_Export,pos={90.00,327.00},size={99.00,24.00},proc=SB_ButtonProc_ExportTraces
 	Button button_BrowserSettings_Export,title="Export Traces"
 	Button button_BrowserSettings_Export,help={"Export the traces for further processing"}
 	Button button_BrowserSettings_Export,userdata(tabnum)="0"
 	Button button_BrowserSettings_Export,userdata(tabcontrol)="Settings"
-	Button button_BrowserSettings_Export,userdata(ResizeControlsInfo)=A"!!,E^!!#B`J,hpU!!#=#z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	Button button_BrowserSettings_Export,userdata(ResizeControlsInfo)=A"!!,En!!#B]J,hpU!!#=#z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	Button button_BrowserSettings_Export,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_BrowserSettings_Export,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_timealignment,pos={28.00,87.00},size={285.00,99.00}
-	GroupBox group_timealignment,title="Time Alignment",userdata(tabnum)="0"
-	GroupBox group_timealignment,userdata(tabcontrol)="Settings"
-	GroupBox group_timealignment,userdata(ResizeControlsInfo)=A"!!,CD!!#?g!!#BHJ,hpUz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
-	GroupBox group_timealignment,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	GroupBox group_timealignment,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Slider slider_BrowserSettings_dDAQ,pos={316.00,36.00},size={56.00,300.00},disable=2,proc=BSP_SliderProc_ChangedSetting
-	Slider slider_BrowserSettings_dDAQ,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
-	Slider slider_BrowserSettings_dDAQ,userdata(tabnum)="0"
-	Slider slider_BrowserSettings_dDAQ,userdata(tabcontrol)="Settings"
-	Slider slider_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)=A"!!,HY!!#=s!!#>n!!#BPz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
-	Slider slider_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	Slider slider_BrowserSettings_dDAQ,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Slider slider_BrowserSettings_dDAQ,limits={-1,7,1},value=-1
-	CheckBox check_SweepControl_HideSweep,pos={253.00,60.00},size={41.00,15.00},proc=BSP_CheckProc_ChangedSetting
-	CheckBox check_SweepControl_HideSweep,title="Hide"
+	CheckBox check_SweepControl_HideSweep,pos={39.00,219.00},size={112.00,15.00},proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_SweepControl_HideSweep,title="Hide sweep Traces"
 	CheckBox check_SweepControl_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
 	CheckBox check_SweepControl_HideSweep,userdata(tabnum)="0"
 	CheckBox check_SweepControl_HideSweep,userdata(tabcontrol)="Settings"
-	CheckBox check_SweepControl_HideSweep,userdata(ResizeControlsInfo)=A"!!,H8!!#?)!!#>2!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_SweepControl_HideSweep,userdata(ResizeControlsInfo)=A"!!,D+!!#Aj!!#@D!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_SweepControl_HideSweep,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_SweepControl_HideSweep,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_SweepControl_HideSweep,value=0
-	CheckBox check_BrowserSettings_splitTTL,pos={253.00,36.00},size={58.00,15.00},proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_BrowserSettings_splitTTL,pos={148.00,56.00},size={58.00,15.00},disable=2,proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_BrowserSettings_splitTTL,title="sep. TTL"
 	CheckBox check_BrowserSettings_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabnum)="0"
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabcontrol)="Settings"
-	CheckBox check_BrowserSettings_splitTTL,userdata(ResizeControlsInfo)=A"!!,H8!!#=s!!#?!!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_BrowserSettings_splitTTL,userdata(ResizeControlsInfo)=A"!!,G$!!#>n!!#?!!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_splitTTL,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_splitTTL,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_BrowserSettings_splitTTL,userdata(Config_RestorePriority)="20"
 	CheckBox check_BrowserSettings_splitTTL,value=0
-	PopupMenu popup_DB_lockedDevices,pos={24.00,303.00},size={205.00,19.00},bodyWidth=100,proc=DB_PopMenuProc_LockDBtoDevice
+	PopupMenu popup_DB_lockedDevices,pos={32.00,301.00},size={205.00,19.00},bodyWidth=100,proc=DB_PopMenuProc_LockDBtoDevice
 	PopupMenu popup_DB_lockedDevices,title="Device assignment:"
 	PopupMenu popup_DB_lockedDevices,help={"Select a data acquistion device to display data"}
 	PopupMenu popup_DB_lockedDevices,userdata(tabnum)="0"
 	PopupMenu popup_DB_lockedDevices,userdata(tabcontrol)="Settings"
 	PopupMenu popup_DB_lockedDevices,userdata(Config_RestorePriority)="0"
-	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)=A"!!,C$!!#BQJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)=A"!!,Cd!!#BPJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
 	GroupBox group_enable_sweepFormula,pos={5.00,25.00},size={388.00,50.00},disable=1
 	GroupBox group_enable_sweepFormula,title="SweepFormula",userdata(tabnum)="5"
 	GroupBox group_enable_sweepFormula,userdata(tabcontrol)="Settings"
@@ -1190,6 +1206,16 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_numberOfSpikes,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_numberOfSpikes,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_numberOfSpikes,limits={1,inf,1},value=_NUM:NaN
+	CheckBox check_BrowserSettings_VisEpochs,pos={37.00,56.00},size={102.00,15.00},disable=2,proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_BrowserSettings_VisEpochs,title="Visualize Epochs"
+	CheckBox check_BrowserSettings_VisEpochs,help={"Visualize epoch information with additional traces (Igor Pro 9 only). Requires DA channels displayed."}
+	CheckBox check_BrowserSettings_VisEpochs,userdata(tabnum)="0"
+	CheckBox check_BrowserSettings_VisEpochs,userdata(tabcontrol)="Settings"
+	CheckBox check_BrowserSettings_VisEpochs,userdata(ResizeControlsInfo)=A"!!,D#!!#>n!!#@0!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_BrowserSettings_VisEpochs,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox check_BrowserSettings_VisEpochs,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_BrowserSettings_VisEpochs,userdata(Config_RestorePriority)="20"
+	CheckBox check_BrowserSettings_VisEpochs,value=0
 	DefineGuide UGVL={FL,15},UGVR={FR,-20},UGVT={FT,113},UGVB={FB,-50},enableBoxTop={FT,25}
 	DefineGuide enableBoxBottom={enableBoxTop,50},MainBoxBottom={FB,3},MainBoxTop={enableBoxBottom,10}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook

@@ -3575,6 +3575,10 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 
 	BSP_ScaleAxes(graph)
 
+	if(pps.visualizeEpochs)
+		BSP_AddTracesForEpochs(graph)
+	endif
+
 	[tgs] = BSP_GatherTiledGraphSettings(graph)
 	LayoutGraph(graph, tgs)
 End
@@ -3595,6 +3599,7 @@ static Function InitPostPlotSettings(win, pps)
 	pps.timeAlignLevel    = GetSetVariable(bsPanel, "setvar_TimeAlignment_LevelCross")
 	pps.timeAlignRefTrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
 	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
+	pps.visualizeEpochs   = GetCheckBoxState(bsPanel, "check_BrowserSettings_VisEpochs")
 End
 
 /// @brief Time Alignment for the BrowserSettingsPanel
@@ -5089,25 +5094,19 @@ End
 /// @brief Remove traces from a graph and optionally try to kill their waves
 ///
 /// @param graph                            graph
-/// @param kill [optional, default: false]  try to kill the wave after it has been removed
 /// @param trace [optional, default: all]   remove the given trace only
 /// @param wv [optional, default: ignored]  remove all traces which stem from the given wave
 /// @param dfr [optional, default: ignored] remove all traces which stem from one of the waves in dfr
 ///
 /// Only one of trace/wv/dfr may be supplied.
-Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
+Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 	string graph
-	variable kill
 	string trace
 	WAVE/Z wv
 	DFREF dfr
 
-	variable i, numEntries, tryKillingTheWave, numOptArgs, remove_all_traces, debugOnError
+	variable i, numEntries, numOptArgs, remove_all_traces, debugOnError
 	string traceList, refTrace
-
-	if(ParamIsDefault(kill))
-		kill = 0
-	endif
 
 	numOptArgs = ParamIsDefault(trace) + ParamIsDefault(wv) + ParamIsDefault(dfr)
 	ASSERT(numOptArgs == 3 || numOptArgs == 2, "Can only accept one of the trace/wv/dfr parameters")
@@ -5117,13 +5116,13 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	endif
 
 	if(!ParamIsDefault(dfr))
-		WAVE candidates = ConvertListOfWaves(GetListOfObjects(dfr, ".*", fullpath=1))
+		WAVE/WAVE candidates = ListToWaveRefWave(GetListOfObjects(dfr, ".*", fullpath=1))
 	endif
 
 	remove_all_traces = ParamIsDefault(trace) && ParamIsDefault(wv) && ParamIsDefault(dfr)
 
 	// remove without calling TraceNameList or TraceNameToWaveRef
-	if(!kill && remove_all_traces)
+	if(remove_all_traces)
 #if IgorVersion() >= 9.0
 		RemoveFromGraph/ALL/W=$graph
 		return NaN
@@ -5153,29 +5152,20 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 
 		if(remove_all_traces)
 			RemoveFromGraph/W=$graph $refTrace
-			tryKillingTheWave = 1
 		elseif(!ParamIsDefault(trace))
 			if(!cmpstr(refTrace, trace))
 				RemoveFromGraph/W=$graph $refTrace
-				tryKillingTheWave = 1
 			endif
 		elseif(!ParamIsDefault(wv))
 			if(WaveRefsEqual(refWave, wv))
 				RemoveFromGraph/W=$graph $refTrace
-				tryKillingTheWave = 1
 			endif
 		elseif(!ParamIsDefault(dfr))
 			if(GetRowIndex(candidates, refWave=refWave) >= 0)
 				RemoveFromGraph/W=$graph $refTrace
-				tryKillingTheWave = 1
 			endif
 		endif
 
-		if(kill && tryKillingTheWave)
-			KillOrMoveToTrash(wv=refWave)
-		endif
-
-		tryKillingTheWave = 0
 	endfor
 
 	return NaN

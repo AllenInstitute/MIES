@@ -101,6 +101,11 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	SetWindow $panelTitle, userdata(Config_FileHash) = ""
 	SetWindow $panelTitle, userdata(PulseAverageSettings) = ""
 
+	// invalidate hooks
+#if IgorVersion() >= 9.00
+	SetWindow $panelTitle,tooltiphook(hook)=$""
+#endif
+
 	// static defaults for SweepControl subwindow
 	PopupMenu Popup_SweepControl_Selector WIN = $scPanel, mode=1,popvalue=" ", value= #"\" \""
 	CheckBox check_SweepControl_AutoUpdate WIN = $scPanel, value= 1
@@ -191,6 +196,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_BrowserSettings_DAC WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_ADC WIN = $bsPanel, value= 1
 	CheckBox check_BrowserSettings_TTL WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_splitTTL WIN = $bsPanel, value= 0,disable=DISABLE_CONTROL_BIT
 	CheckBox check_BrowserSettings_OChan WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_dDAQ WIN = $bsPanel, value= 0
 	CheckBox check_Calculation_ZeroTraces WIN = $bsPanel, value= 0
@@ -201,15 +207,16 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	PopupMenu popup_TimeAlignment_Mode WIN = $bsPanel, mode=1, popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
 	SetVariable setvar_TimeAlignment_LevelCross WIN = $bsPanel, value= _NUM:0
 	CheckBox check_Display_VisibleXrange WIN = $bsPanel, value= 0
-	CheckBox check_Display_EqualYrange WIN = $bsPanel, value= 0
-	CheckBox check_Display_EqualYignore WIN = $bsPanel, value= 0
+	CheckBox check_Display_EqualYrange WIN = $bsPanel, value= 0, disable=0
+	CheckBox check_Display_EqualYignore WIN = $bsPanel, value= 0, disable=0
 	SetVariable setvar_Display_EqualYlevel WIN = $bsPanel, value= _NUM:0
-	Slider slider_BrowserSettings_dDAQ WIN = $bsPanel, value= -1
+	Slider slider_BrowserSettings_dDAQ WIN = $bsPanel, value= -1,disable=DISABLE_CONTROL_BIT
 	CheckBox check_SweepControl_HideSweep WIN = $bsPanel, value= 0
-	CheckBox check_BrowserSettings_splitTTL WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_DB_Passed WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_DB_Failed WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_SF WIN = $bsPanel, value= 0
+
+	CheckBox check_BrowserSettings_VisEpochs WIN = $bsPanel, value=0,disable=DISABLE_CONTROL_BIT
 
 	sfFormula = BSP_GetSFFormula(panelTitle)
 	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps()\r)")

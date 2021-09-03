@@ -37,6 +37,8 @@ Structure PostPlotSettings
 	variable timeAlignLevel
 	/// @}
 
+	variable visualizeEpochs
+
 	STRUCT PulseAverageSettings pulseAverSett
 EndStructure
 
