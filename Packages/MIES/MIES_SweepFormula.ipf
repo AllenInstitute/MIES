@@ -81,6 +81,16 @@ static StrConstant SF_OP_DATA = "data"
 static StrConstant SF_OP_LABNOTEBOOK = "labnotebook"
 static StrConstant SF_OP_WAVE = "wave"
 static StrConstant SF_OP_FINDLEVEL = "findlevel"
+static StrConstant SF_OP_EPOCHS = "epochs"
+
+static StrConstant SF_OP_EPOCHS_TYPE_RANGE = "range"
+static StrConstant SF_OP_EPOCHS_TYPE_NAME = "name"
+static StrConstant SF_OP_EPOCHS_TYPE_TREELEVEL = "treelevel"
+
+static Constant EPOCHS_TYPE_INVALID = -1
+static Constant EPOCHS_TYPE_RANGE = 0
+static Constant EPOCHS_TYPE_NAME = 1
+static Constant EPOCHS_TYPE_TREELEVEL = 2
 
 static Function/S SF_StringifyState(variable state)
 
@@ -498,6 +508,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	String graph
 
 	Variable i, j, numIndices, JSONtype, mode, zero, numArgs
+	variable index
 	string info, msg, str
 
 	if(ParamIsDefault(jsonPath))
@@ -595,6 +606,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 		case SF_OP_LABNOTEBOOK:
 		case SF_OP_WAVE:
 		case SF_OP_FINDLEVEL:
+		case SF_OP_EPOCHS:
 			break
 		default:
 			WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
@@ -727,6 +739,10 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			CopyScales wv, out
 			SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "dx", out
 			break
+		case SF_OP_EPOCHS:
+			WAVE out = SF_EpochsOperation(jsonId, jsonPath, graph)
+			break
+
 		case SF_OP_AREA:
 			WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
 			SF_ASSERT(DimSize(wv, ROWS) > 1, "Can not integrate single point waves")
@@ -969,7 +985,6 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			WaveClear channels
 
 			WAVE/Z settings
-			Variable index
 
 			Make/D/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outD = NaN
 			Make/T/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outT
@@ -1702,4 +1717,128 @@ Function SF_TabProc_Formula(tca) : TabControl
 	endswitch
 
 	return 0
+End
+
+static Function/WAVE SF_EpochsOperation(variable jsonId, string jsonPath, string graph)
+
+	variable numArgs, i, j, epType, sweepCnt, activeChannelCnt, outCnt, index, found
+	string str
+
+	// epochs(array sweeps, array channels, string shortName, [string type])
+	// returns 2xN wave for type = range except for a single range result
+	numArgs = JSON_GetArraySize(jsonID, jsonPath)
+	SF_ASSERT(numArgs >= 3, "epochs requires at least 3 arguments")
+	SF_ASSERT(numArgs <= 4, "epochs requires at most 4 arguments")
+
+	WAVE epochSweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	SF_ASSERT(DimSize(epochSweeps, COLS) < 2, "sweeps must be one-dimensional.")
+	SF_ASSERT(IsNumericWave(epochSweeps), "sweeps parameter must be numeric")
+
+	WAVE epochChannels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	SF_ASSERT(DimSize(epochChannels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
+	SF_ASSERT(IsNumericWave(epochChannels), "channels parameter must be numeric")
+
+	WAVE/T epochName = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+	SF_ASSERT(DimSize(epochName, ROWS) == 1, "Too many input values for parameter name")
+	SF_ASSERT(IsTextWave(epochName), "name parameter must be textual")
+
+	if(numArgs == 4)
+		WAVE/T epochType = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/3", graph = graph)
+		SF_ASSERT(DimSize(epochType, ROWS) == 1, "Too many input values for parameter type")
+		SF_ASSERT(IsTextWave(epochType), "type parameter must be textual")
+		strswitch(epochType[0])
+			case SF_OP_EPOCHS_TYPE_RANGE:
+				epType = EPOCHS_TYPE_RANGE
+				break
+			case SF_OP_EPOCHS_TYPE_NAME:
+				epType = EPOCHS_TYPE_NAME
+				break
+			case SF_OP_EPOCHS_TYPE_TREELEVEL:
+				epType = EPOCHS_TYPE_TREELEVEL
+				break
+			default:
+				epType = EPOCHS_TYPE_INVALID
+				break
+		endswitch
+
+		SF_ASSERT(epType != EPOCHS_TYPE_INVALID, "type must be either " + SF_OP_EPOCHS_TYPE_RANGE + ", " + SF_OP_EPOCHS_TYPE_NAME + " or " + SF_OP_EPOCHS_TYPE_TREELEVEL)
+	else
+		epType = EPOCHS_TYPE_RANGE
+	endif
+
+	WAVE activeChannels = SF_GetActiveChannelNumbers(graph, epochChannels, epochSweeps, DATA_ACQUISITION_MODE)
+
+	sweepCnt = DimSize(epochSweeps, ROWS)
+	activeChannelCnt = DimSize(activeChannels, ROWS)
+
+	if(epType == EPOCHS_TYPE_NAME)
+		Make/T/FREE/N=(activeChannelCnt * sweepCnt) outNames
+		WAVE out = outNames
+	elseif(epType == EPOCHS_TYPE_TREELEVEL)
+		Make/D/FREE/N=(activeChannelCnt * sweepCnt) outTreeLevel
+		MultiThread outTreeLevel = NaN
+		WAVE out = outTreeLevel
+	else
+		Make/D/FREE/N=(2, activeChannelCnt * sweepCnt) outRange
+		MultiThread outRange = NaN
+		WAVE out = outRange
+	endif
+
+	WAVE/Z settings
+
+	outCnt = 0
+	for(i = 0; i < sweepCnt; i += 1)
+		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = epochSweeps[i])
+		WAVE textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = epochSweeps[i])
+
+		for(j = 0; j <  activeChannelCnt; j += 1)
+			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, epochSweeps[i], EPOCHS_ENTRY_KEY, activeChannels[j][%channelNumber], activeChannels[j][%channelType], DATA_ACQUISITION_MODE)
+
+			if(WaveExists(settings))
+				WAVE/T settingsT = settings
+				str = settingsT[index]
+				if(!IsEmpty(str))
+					WAVE/T epochInfo = EP_EpochStrToWave(str)
+					FindValue/RMD=[][EPOCH_COL_NAME]/TXOP=4/TEXT=epochName[0] epochInfo
+					if(V_Value >= 0)
+						SF_EpochsSetOutValues(epType, out, outCnt, name=epochInfo[V_Row][EPOCH_COL_NAME], treeLevel=epochInfo[V_Row][EPOCH_COL_TREELEVEL], startTime=epochInfo[V_Row][EPOCH_COL_STARTTIME], endTime=epochInfo[V_Row][EPOCH_COL_ENDTIME])
+						found = 1
+					endif
+				endif
+			endif
+			outCnt +=1
+		endfor
+	endfor
+
+	SF_ASSERT(found, "No fitting epoch found.")
+
+	if(epType == EPOCHS_TYPE_NAME || epType == EPOCHS_TYPE_TREELEVEL)
+		Redimension/N=(outCnt) out
+	else
+		if(outCnt == 1)
+			Redimension/N=(2) out
+		else
+			Redimension/N=(-1, outCnt) out
+		endif
+	endif
+
+	return out
+End
+
+static Function SF_EpochsSetOutValues(variable epType, WAVE out, variable outCnt[, string name, string treeLevel, string startTime, string endtime])
+
+	if(epType == EPOCHS_TYPE_NAME)
+		ASSERT(!ParamIsDefault(name), "name expected")
+		ASSERT(!IsNull(name), "Epoch name can not be null")
+		WAVE/T outNames = out
+		outNames[outCnt] = name
+	elseif(epType == EPOCHS_TYPE_TREELEVEL)
+		ASSERT(!ParamIsDefault(treeLevel), "treeLevel expected")
+		out[outCnt] = str2num(treeLevel)
+	else
+		ASSERT(!ParamIsDefault(startTime), "startTime expected")
+		ASSERT(!ParamIsDefault(endTime), "endTime expected")
+		out[0][outCnt] = str2num(startTime) * 1E3
+		out[1][outCnt] = str2num(endTime) * 1E3
+	endif
 End

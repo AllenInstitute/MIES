@@ -465,3 +465,15 @@ Function EP_WriteEpochInfoIntoSweepSettings(string panelTitle, WAVE sweepWave, W
 
 	DC_DocumentChannelProperty(panelTitle, "Epochs Version", INDEP_HEADSTAGE, NaN, NaN, var=SWEEP_EPOCH_VERSION)
 End
+
+/// @brief Converts a string containing epoch information in the format that is stored in the Labnotebook
+///        to a 2D epoch wave @sa GetEpochsWave
+///
+/// @param[in] epochStr string with epoch information in the format as stored in the labnotebook
+/// @returns 2D text wave with epoch information, use EPOCH_COL_ constants for column access
+Function/WAVE EP_EpochStrToWave(string epochStr)
+
+	ASSERT(!IsEmpty(epochStr), "No information in epochStr")
+	WAVE/T epochWave = ListToTextWaveMD(epochStr, 2, rowSep = ":", colSep = ",")
+	return epochWave
+End
