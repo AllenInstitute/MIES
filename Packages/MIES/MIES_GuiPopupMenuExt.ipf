@@ -420,6 +420,8 @@ End
 ///        This is called on each menu click/compilation for all dynamic defined Menus
 ///        where PEXT_PopupMenuItems is used.
 ///
+/// Callled very often (MAX_SUBMENUS^2/2).
+///
 /// @param subMenuNr number of current sub menu
 Function/S PEXT_PopupMenuItems(subMenuNr)
 	variable subMenuNr
