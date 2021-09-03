@@ -112,7 +112,7 @@
 /// e.g. Balalaika, Cembalo -> B .. C -> Bal .. C (because Alu were three letters)
 
 static Constant NUM_SUBENTRIES = 30
-static Constant MAX_SUBMENUS = 10
+static Constant MAX_SUBMENUS = 12
 static StrConstant WAVE_NOTE_PROCNAME = "PROC"
 static StrConstant WAVE_NOTE_WINDOWNAME = "WINNAME"
 static StrConstant WAVE_NOTE_CTRLNAME = "CTRLNAME"
@@ -314,6 +314,81 @@ Menu "PopupExt10", contextualmenu, dynamic
 	End
 	SubMenu PEXT_SubMenuName(9)
 		PEXT_PopupMenuItems(9), /Q, ;
+	End
+End
+
+Menu "PopupExt11", contextualmenu, dynamic
+	SubMenu PEXT_SubMenuName(0)
+		PEXT_PopupMenuItems(0), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(1)
+		PEXT_PopupMenuItems(1), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(2)
+		PEXT_PopupMenuItems(2), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(3)
+		PEXT_PopupMenuItems(3), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(4)
+		PEXT_PopupMenuItems(4), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(5)
+		PEXT_PopupMenuItems(5), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(6)
+		PEXT_PopupMenuItems(6), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(7)
+		PEXT_PopupMenuItems(7), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(8)
+		PEXT_PopupMenuItems(8), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(9)
+		PEXT_PopupMenuItems(9), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(10)
+		PEXT_PopupMenuItems(10), /Q, ;
+	End
+End
+
+Menu "PopupExt12", contextualmenu, dynamic
+	SubMenu PEXT_SubMenuName(0)
+		PEXT_PopupMenuItems(0), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(1)
+		PEXT_PopupMenuItems(1), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(2)
+		PEXT_PopupMenuItems(2), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(3)
+		PEXT_PopupMenuItems(3), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(4)
+		PEXT_PopupMenuItems(4), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(5)
+		PEXT_PopupMenuItems(5), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(6)
+		PEXT_PopupMenuItems(6), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(7)
+		PEXT_PopupMenuItems(7), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(8)
+		PEXT_PopupMenuItems(8), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(9)
+		PEXT_PopupMenuItems(9), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(10)
+		PEXT_PopupMenuItems(10), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(11)
+		PEXT_PopupMenuItems(11), /Q, ;
 	End
 End
 
