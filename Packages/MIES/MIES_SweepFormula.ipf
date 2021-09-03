@@ -1320,12 +1320,12 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 		for(j = 0; j < DimSize(channels, ROWS); j += 1)
 			if(channelType != channels[j][%channelType])
 				channelType = channels[j][%channelType]
-				WAVE channelTypeIndex = FindIndizes(traces, colLabel = "channelType", str = StringFromList(channelType, XOP_CHANNEL_NAMES))
+				WAVE/Z channelTypeIndex = FindIndizes(traces, colLabel = "channelType", str = StringFromList(channelType, XOP_CHANNEL_NAMES))
 			endif
 			if(!WaveExists(channelTypeIndex))
 				continue
 			endif
-			WAVE channelNumberIndex = FindIndizes(traces, colLabel = "channelNumber", var = channels[j][%channelNumber])
+			WAVE/Z channelNumberIndex = FindIndizes(traces, colLabel = "channelNumber", var = channels[j][%channelNumber])
 			if(!WaveExists(channelNumberIndex))
 				continue
 			endif
