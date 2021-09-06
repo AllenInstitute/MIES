@@ -459,7 +459,7 @@ Function EP_WriteEpochInfoIntoSweepSettings(string panelTitle, WAVE sweepWave, W
 
 		Duplicate/FREE/RMD=[][][channel] epochsWave, epochChannel
 		Redimension/N=(-1, -1, 0) epochChannel
-		entry = TextWaveToList(epochChannel, ":", colSep = ",", stopOnEmpty = 1)
+		entry = TextWaveToList(epochChannel, EPOCH_LIST_ROW_SEP, colSep = EPOCH_LIST_COL_SEP, stopOnEmpty = 1)
 		DC_DocumentChannelProperty(panelTitle, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=entry)
 	endfor
 
@@ -474,6 +474,6 @@ End
 Function/WAVE EP_EpochStrToWave(string epochStr)
 
 	ASSERT(!IsEmpty(epochStr), "No information in epochStr")
-	WAVE/T epochWave = ListToTextWaveMD(epochStr, 2, rowSep = ":", colSep = ",")
+	WAVE/T epochWave = ListToTextWaveMD(epochStr, 2, rowSep = EPOCH_LIST_ROW_SEP, colSep = EPOCH_LIST_COL_SEP)
 	return epochWave
 End
