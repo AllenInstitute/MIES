@@ -111,8 +111,7 @@
 /// If in the previous sub menu the number of letters determined for the last menu item is higher then for the first name component the higher amount is taken:
 /// e.g. Balalaika, Cembalo -> B .. C -> Bal .. C (because Alu were three letters)
 
-static Constant NUM_SUBENTRIES = 30
-static Constant MAX_SUBMENUS = 10
+static Constant MAX_SUBMENUS = 12
 static StrConstant WAVE_NOTE_PROCNAME = "PROC"
 static StrConstant WAVE_NOTE_WINDOWNAME = "WINNAME"
 static StrConstant WAVE_NOTE_CTRLNAME = "CTRLNAME"
@@ -120,7 +119,7 @@ static StrConstant MENUNAME_UNUSED = "*** bug, report to dev ***"
 static StrConstant MENU_DISABLE_SPECIAL = "\\M0"
 static StrConstant LSEP = ";"
 
-/// @brief Menu definition templates for up to 10 sub menus.
+/// @brief Menu definition templates for up to MAX_SUBMENUS sub menus.
 ///        The constant MAX_SUBMENUS stores the number of these definitions
 ///        and must be updated if more definitions are added.
 ///
@@ -317,6 +316,81 @@ Menu "PopupExt10", contextualmenu, dynamic
 	End
 End
 
+Menu "PopupExt11", contextualmenu, dynamic
+	SubMenu PEXT_SubMenuName(0)
+		PEXT_PopupMenuItems(0), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(1)
+		PEXT_PopupMenuItems(1), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(2)
+		PEXT_PopupMenuItems(2), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(3)
+		PEXT_PopupMenuItems(3), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(4)
+		PEXT_PopupMenuItems(4), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(5)
+		PEXT_PopupMenuItems(5), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(6)
+		PEXT_PopupMenuItems(6), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(7)
+		PEXT_PopupMenuItems(7), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(8)
+		PEXT_PopupMenuItems(8), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(9)
+		PEXT_PopupMenuItems(9), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(10)
+		PEXT_PopupMenuItems(10), /Q, ;
+	End
+End
+
+Menu "PopupExt12", contextualmenu, dynamic
+	SubMenu PEXT_SubMenuName(0)
+		PEXT_PopupMenuItems(0), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(1)
+		PEXT_PopupMenuItems(1), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(2)
+		PEXT_PopupMenuItems(2), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(3)
+		PEXT_PopupMenuItems(3), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(4)
+		PEXT_PopupMenuItems(4), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(5)
+		PEXT_PopupMenuItems(5), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(6)
+		PEXT_PopupMenuItems(6), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(7)
+		PEXT_PopupMenuItems(7), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(8)
+		PEXT_PopupMenuItems(8), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(9)
+		PEXT_PopupMenuItems(9), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(10)
+		PEXT_PopupMenuItems(10), /Q, ;
+	End
+	SubMenu PEXT_SubMenuName(11)
+		PEXT_PopupMenuItems(11), /Q, ;
+	End
+End
+
 /// @brief Returns sub menu names for all PEXT sub menus
 ///        This is called on each menu click/compilation for all dynamic defined Menus
 ///        where PEXT_SubMenuName is used.
@@ -345,6 +419,8 @@ End
 /// @brief Returns menu items for all PEXT menus
 ///        This is called on each menu click/compilation for all dynamic defined Menus
 ///        where PEXT_PopupMenuItems is used.
+///
+/// Callled very often (MAX_SUBMENUS^2/2).
 ///
 /// @param subMenuNr number of current sub menu
 Function/S PEXT_PopupMenuItems(subMenuNr)
@@ -502,7 +578,7 @@ Function/WAVE PEXT_SplitToSubMenus(menuList[, method])
 	WAVE/T/Z menuList
 	variable method
 
-	variable subMenuCnt, beginitem, endItem, i, j
+	variable subMenuCnt, beginitem, endItem, i, j, numPerSubEntry
 	variable numItems, remainItems, menuPos, subIndex, subMenuLength
 	string begEntry, endEntry, checkEntry
 
@@ -510,18 +586,24 @@ Function/WAVE PEXT_SplitToSubMenus(menuList[, method])
 		return $""
 	endif
 
+	numItems = DimSize(menuList, ROWS)
+
+	// we have up to MAX_SUBMENUS submenues
+	// - more submenues with fewer entries are better than only a few ones with many entries
+	numPerSubEntry = ceil(numItems / MAX_SUBMENUS / 10) * 10
+
 	method = ParamIsDefault(method) ? PEXT_SUBSPLIT_DEFAULT : method
 
 	if(method == PEXT_SUBSPLIT_DEFAULT)
 		Sort/A menuList, menuList
-		subMenuCnt = trunc(DimSize(menuList, ROWS) / NUM_SUBENTRIES) + 1
+		subMenuCnt = trunc(DimSize(menuList, ROWS) / numPerSubEntry) + 1
 		subMenuCnt = subMenuCnt > MAX_SUBMENUS ? MAX_SUBMENUS : subMenuCnt
 
 		Make/FREE/T/N=(subMenuCnt) splitMenu
 
 		for(i = 0; i < subMenuCnt; i++)
-			beginItem = i * NUM_SUBENTRIES
-			endItem = i == subMenuCnt - 1 ? DimSize(menuList, ROWS) - 1 : beginItem + NUM_SUBENTRIES - 1
+			beginItem = i * numPerSubEntry
+			endItem = i == subMenuCnt - 1 ? DimSize(menuList, ROWS) - 1 : beginItem + numPerSubEntry - 1
 
 			for(j = beginitem; j < enditem; j++)
 				splitMenu[i] = AddListItem(menuList[j], splitMenu[i], ";", Inf)
@@ -531,19 +613,18 @@ Function/WAVE PEXT_SplitToSubMenus(menuList[, method])
 	elseif(method == PEXT_SUBSPLIT_ALPHA)
 		Sort/A menuList, menuList
 
-		numItems = DimSize(menuList, ROWS)
 		Make/FREE/T/N=(MAX_SUBMENUS) splitMenu
 		do
 			remainItems = DimSize(menuList, ROWS) - menuPos
-			if(remainItems < NUM_SUBENTRIES || subIndex == MAX_SUBMENUS - 1)
+			if(remainItems < numPerSubEntry || subIndex == MAX_SUBMENUS - 1)
 				subMenuLength = remainItems
 			else
 				begEntry = menuList[menuPos]
-				endEntry = menuList[menuPos + NUM_SUBENTRIES - 1]
+				endEntry = menuList[menuPos + numPerSubEntry - 1]
 				if(!CmpStr(begEntry[0], endEntry[0]))
-					subMenuLength = NUM_SUBENTRIES
+					subMenuLength = numPerSubEntry
 				else
-					subMenuLength = NUM_SUBENTRIES - 1
+					subMenuLength = numPerSubEntry - 1
 					do
 						subMenuLength--
 						checkEntry = menuList[menuPos + subMenuLength]
