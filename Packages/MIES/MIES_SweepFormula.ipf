@@ -507,9 +507,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	String jsonPath
 	String graph
 
-	Variable i, j, numIndices, JSONtype, mode, zero, numArgs
-	variable index
-	string info, msg, str
+	Variable JSONType, i
 
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
@@ -593,529 +591,102 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	SF_ASSERT(DimSize(operations, ROWS) == 1, "Only one operation is allowed")
 	jsonPath += "/" + SF_EscapeJsonPath(operations[0])
 	SF_ASSERT(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.")
-	strswitch(operations[0])
-		case SF_OP_CURSORS:
-		case SF_OP_SWEEPS:
-			WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
-			break
-		case SF_OP_AREA:
-		case SF_OP_SETSCALE:
-		case SF_OP_BUTTERWORTH:
-		case SF_OP_CHANNELS:
-		case SF_OP_DATA:
-		case SF_OP_LABNOTEBOOK:
-		case SF_OP_WAVE:
-		case SF_OP_FINDLEVEL:
-		case SF_OP_EPOCHS:
-			break
-		default:
-			WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	endswitch
 
 	/// @name SweepFormulaOperations
 	/// @{
 	strswitch(LowerStr(operations[0]))
 		case SF_OP_MINUS:
-			if(DimSize(wv, ROWS) == 1)
-				MatrixOP/FREE out = sumCols((-1) * wv)^t
-			else
-				MatrixOP/FREE out = (row(wv, 0) + sumCols((-1) * subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
-			endif
-			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-			SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
-			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+			WAVE out = SF_OperationMinus(jsonId, jsonPath, graph)
 			break
 		case SF_OP_PLUS:
-			MatrixOP/FREE out = sumCols(wv)^t
-			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-			SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
-			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+			WAVE out = SF_OperationPlus(jsonId, jsonPath, graph)
 			break
 		case SF_OP_DIV: // division
-			SF_ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
-			MatrixOP/FREE out = (row(wv, 0) / productCols(subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
-			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-			SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
-			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+			WAVE out = SF_OperationDiv(jsonId, jsonPath, graph)
 			break
 		case SF_OP_MULT:
-			MatrixOP/FREE out = productCols(wv)^t
-			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-			SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
-			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+			WAVE out = SF_OperationMult(jsonId, jsonPath, graph)
 			break
 		case SF_OP_RANGE:
-			/// range (start[, stop[, step]])
 		case SF_OP_RANGESHORT:
-			SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
-			SF_ASSERT(DimSize(wv, COLS) <= 1, "Unhandled dimension")
-			if(DimSize(wv, ROWS) == 3)
-				Make/N=(ceil(abs((wv[0] - wv[1]) / wv[2])))/FREE out = wv[0] + p * wv[2]
-			elseif(DimSize(wv, ROWS) == 2)
-				Make/N=(abs(trunc(wv[0])-trunc(wv[1])))/FREE out = wv[0] + p
-			elseif(DimSize(wv, ROWS) == 1)
-				Make/N=(abs(trunc(wv[0])))/FREE out = p
-			else
-				SF_ASSERT(0, "Operation accepts 2-3 operands")
-			endif
+			WAVE out = SF_OperationRange(jsonId, jsonPath, graph)
 			break
 		case SF_OP_MIN:
-			SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			if(DimSize(wv, LAYERS) > 1)
-				i = DimSize(wv, COLS)
-				j = DimSize(wv, LAYERS)
-				Redimension/E=1/N=(-1, i * j, 0) wv
-				MatrixOP/FREE out = minCols(wv)
-				Redimension/E=1/N=(i, j) out
-			else
-				MatrixOP/FREE out = minCols(wv)^t
-			endif
-			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+			WAVE out = SF_OperationMin(jsonId, jsonPath, graph)
 			break
 		case SF_OP_MAX:
-			SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			if(DimSize(wv, LAYERS) > 1)
-				i = DimSize(wv, COLS)
-				j = DimSize(wv, LAYERS)
-				Redimension/E=1/N=(-1, i * j, 0) wv
-				MatrixOP/FREE out = maxCols(wv)
-				Redimension/E=1/N=(i, j) out
-			else
-				MatrixOP/FREE out = maxCols(wv)^t
-			endif
-			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+			WAVE out = SF_OperationMax(jsonId, jsonPath, graph)
 			break
 		case SF_OP_AVG:
 		case SF_OP_MEAN:
-			SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			if(DimSize(wv, LAYERS) > 1)
-				i = DimSize(wv, COLS)
-				j = DimSize(wv, LAYERS)
-				Redimension/E=1/N=(-1, i * j, 0) wv
-				MatrixOP/FREE out = averageCols(wv)
-				Redimension/E=1/N=(i, j) out
-			else
-				MatrixOP/FREE out = averageCols(wv)^t
-			endif
-			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+			WAVE out = SF_OperationAvg(jsonId, jsonPath, graph)
 			break
 		case SF_OP_RMS:
-			SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
-			SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			MatrixOP/FREE out = sqrt(averageCols(magsqr(wv)))^t
-			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			WAVE out = SF_OperationRMS(jsonId, jsonPath, graph)
 			break
 		case SF_OP_VARIANCE:
-			SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
-			SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			MatrixOP/FREE out = (sumCols(magSqr(wv - rowRepeat(averageCols(wv), numRows(wv))))/(numRows(wv) - 1))^t
-			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			WAVE out = SF_OperationVariance(jsonId, jsonPath, graph)
 			break
 		case SF_OP_STDEV:
-			SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
-			SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			MatrixOP/FREE out = (sqrt(sumCols(powR(wv - rowRepeat(averageCols(wv), numRows(wv)), 2))/(numRows(wv) - 1)))^t
-			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			WAVE out = SF_OperationStdev(jsonId, jsonPath, graph)
 			break
 		case SF_OP_DERIVATIVE:
-			Make/FREE out
-			SF_ASSERT(DimSize(wv, ROWS) > 1, "Can not differentiate single point waves")
-			Differentiate/DIM=(ROWS) wv/D=out
-			CopyScales wv, out
-			SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "d/dx", out
+			WAVE out = SF_OperationDerivative(jsonId, jsonPath, graph)
 			break
 		case SF_OP_INTEGRATE:
-			Make/FREE out
-			SF_ASSERT(DimSize(wv, ROWS) > 1, "Can not integrate single point waves")
-			Integrate/METH=1/DIM=(ROWS) wv/D=out
-			CopyScales wv, out
-			SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "dx", out
+			WAVE out = SF_OperationIntegrate(jsonId, jsonPath, graph)
 			break
 		case SF_OP_EPOCHS:
-			WAVE out = SF_EpochsOperation(jsonId, jsonPath, graph)
+			WAVE out = SF_OperationEpochs(jsonId, jsonPath, graph)
 			break
-
 		case SF_OP_AREA:
-			WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-			SF_ASSERT(DimSize(wv, ROWS) > 1, "Can not integrate single point waves")
-
-			numArgs = JSON_GetArraySize(jsonID, jsonPath)
-			if(numArgs == 1)
-				zero = 1
-			else
-				SF_ASSERT(numArgs == 2, "area requires at most 2 arguments")
-				WAVE zeroWave = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
-				SF_ASSERT(DimSize(zeroWave, ROWS) == 1, "Too many input values for parameter zero")
-				SF_ASSERT(IsNumericWave(zeroWave), "zero parameter must be numeric")
-				zero = !!zeroWave[0]
-			endif
-
-			if(zero)
-				Differentiate/DIM=0/EP=1 wv
-				Integrate/DIM=0 wv
-			endif
-
-			Make/FREE out_integrate
-			Integrate/METH=1/DIM=(ROWS) wv/D=out_integrate
-			Make/FREE/N=(max(1, DimSize(out_integrate, COLS)), DimSize(out_integrate, LAYERS)) out = out_integrate[DimSize(wv, ROWS) - 1][p][q]
+			WAVE out = SF_OperationArea(jsonId, jsonPath, graph)
 			break
 		case SF_OP_BUTTERWORTH:
-			/// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
-			SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 4, "The butterworth filter requires 4 arguments")
-			WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-			WAVE lowPassCutoff = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
-			SF_ASSERT(DimSize(lowPassCutoff, ROWS) == 1, "Too many input values for parameter lowPassCutoff")
-			SF_ASSERT(IsNumericWave(lowPassCutoff), "lowPassCutoff parameter must be numeric")
-			WAVE highPassCutoff = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
-			SF_ASSERT(DimSize(highPassCutoff, ROWS) == 1, "Too many input values for parameter highPassCutoff")
-			SF_ASSERT(IsNumericWave(highPassCutoff), "highPassCutoff parameter must be numeric")
-			WAVE order = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
-			SF_ASSERT(DimSize(order, ROWS) == 1, "Too many input values for parameter order")
-			SF_ASSERT(IsNumericWave(order), "order parameter must be numeric")
-			FilterIIR/HI=(highPassCutoff[0] / WAVEBUILDER_MIN_SAMPINT_HZ)/LO=(lowPassCutoff[0] / WAVEBUILDER_MIN_SAMPINT_HZ)/ORD=(order[0])/DIM=(ROWS) data
-			SF_ASSERT(V_flag == 0, "FilterIIR returned error")
-			WAVE out = data
+			WAVE out = SF_OperationButterworth(jsonId, jsonPath, graph)
 			break
 		case SF_OP_TIME:
 		case SF_OP_XVALUES:
-			Make/FREE/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) out = DimOffset(wv, ROWS) + p * DimDelta(wv, ROWS)
+			WAVE out = SF_OperationXValues(jsonId, jsonPath, graph)
 			break
 		case SF_OP_TEXT:
-			Make/FREE/T/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) outT = num2str(wv[p][q][r][s])
-			CopyScales wv outT
-			WAVE out = outT
+			WAVE out = SF_OperationText(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SETSCALE:
-			/// `setscale(data, [dim, [dimOffset, [dimDelta[, unit]]]])`
-			numIndices = JSON_GetArraySize(jsonID, jsonPath)
-			SF_ASSERT(numIndices < 6, "Maximum number of arguments exceeded.")
-			SF_ASSERT(numIndices > 1, "At least two arguments.")
-			WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-			WAVE/T dimension = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
-			SF_ASSERT(DimSize(dimension, ROWS) == 1 && GrepString(dimension[0], "[x,y,z,t]") , "undefined input for dimension")
-
-			if(numIndices >= 3)
-				WAVE offset = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
-				SF_ASSERT(DimSize(offset, ROWS) == 1, "wrong usage of argument")
-			else
-				Make/FREE/N=1 offset  = {0}
-			endif
-			if(numIndices >= 4)
-				WAVE delta = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
-				SF_ASSERT(DimSize(delta, ROWS) == 1, "wrong usage of argument")
-			else
-				Make/FREE/N=1 delta = {1}
-			endif
-			if(numIndices == 5)
-				WAVE/T unit = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/4")
-				SF_ASSERT(DimSize(unit, ROWS) == 1, "wrong usage of argument")
-			else
-				Make/FREE/N=1/T unit = {""}
-			endif
-
-			strswitch(dimension[0])
-				case "x":
-					SetScale/P x, offset[0], delta[0], unit[0], data
-					ASSERT(DimDelta(data, ROWS) == delta[0], "Encountered Igor Bug.")
-					break
-				case "y":
-					SetScale/P y, offset[0], delta[0], unit[0], data
-					ASSERT(DimDelta(data, COLS) == delta[0], "Encountered Igor Bug.")
-					break
-				case "z":
-					SetScale/P z, offset[0], delta[0], unit[0], data
-					ASSERT(DimDelta(data, LAYERS) == delta[0], "Encountered Igor Bug.")
-					break
-				case "t":
-					SetScale/P t, offset[0], delta[0], unit[0], data
-					ASSERT(DimDelta(data, CHUNKS) == delta[0], "Encountered Igor Bug.")
-					break
-			endswitch
-			WAVE out = data
+			WAVE out = SF_OperationSetScale(jsonId, jsonPath, graph)
 			break
 		case SF_OP_WAVE:
-			SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 1, "First argument is wave")
-			WAVE/T wavelocation = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0")
-			WAVE out = $(wavelocation[0])
+			WAVE out = SF_OperationWave(jsonId, jsonPath, graph)
 			break
 		case SF_OP_MERGE:
-			SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
-			SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			MatrixOP/FREE transposed = wv^T
-			Extract/FREE transposed, out, (p < (JSON_GetType(jsonID, jsonPath + "/" + num2str(q)) != JSON_ARRAY ? 1 : JSON_GetArraySize(jsonID, jsonPath + "/" + num2str(q))))
-			SetScale/P x, 0, 1, "", out
+			WAVE out = SF_OperationMerge(jsonId, jsonPath, graph)
 			break
 		case SF_OP_CHANNELS:
-			/// `channels([str name]+)` converts a named channel from string to numbers.
-			///
-			/// returns [[channelName, channelNumber]+]
-			String channelName, channelNumber
-			String regExp = "^(?i)(" + ReplaceString(";", XOP_CHANNEL_NAMES, "|") + ")([0-9]+)?$"
-			numIndices = JSON_GetArraySize(jsonID, jsonPath)
-
-			Make/N=(numIndices, 2)/FREE out = NaN
-			SetDimLabel COLS, 0, channelType, out
-			SetDimLabel COLS, 1, channelNumber, out
-			for(i = 0; i < numIndices; i += 1)
-				JSONtype = JSON_GetType(jsonID, jsonPath + "/" + num2str(i))
-				channelName = ""
-				if(JSONtype == JSON_NUMERIC)
-					out[i][%channelNumber] = JSON_GetVariable(jsonID, jsonPath + "/" + num2str(i))
-				elseif(JSONtype == JSON_STRING)
-					SplitString/E=regExp JSON_GetString(jsonID, jsonPath + "/" + num2str(i)), channelName, channelNumber
-					if(V_flag == 0)
-						continue
-					endif
-					out[i][%channelNumber] = str2num(channelNumber)
-				endif
-				SF_ASSERT(!isFinite(out[i][%channelNumber]) || out[i][%channelNumber] < NUM_MAX_CHANNELS, "Maximum Number Of Channels exceeded.")
-				out[i][%channelType] = WhichListItem(channelName, XOP_CHANNEL_NAMES, ";", 0, 0)
-			endfor
-			out[][] = out[p][q] < 0 ? NaN : out[p][q]
+			WAVE out = SF_OperationChannels(jsonId, jsonPath, graph)
 			break
 		case SF_OP_SWEEPS:
-			/// `sweeps([str type])`
-			///  @p type: `|displayed|all`
-			///           displayed (default): get (selected) sweeps
-			///           al:                  get all possible sweeps
-			SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) <= 1, "Function requires 1 argument at most.")
-			SF_ASSERT(!ParamIsDefault(graph) && !IsEmpty(graph), "Graph not specified.")
-
-			JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
-			if(JSONtype == JSON_NULL)
-				wvT[0] = "displayed"
-			endif
-
-			strswitch(wvT[0])
-				case "all":
-					WAVE out = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
-					break
-				case "displayed":
-					WAVE/T/Z sweepNumbers = GetSweepUserData(graph, "sweepNumber")
-					if(WaveExists(sweepNumbers))
-						Make/N=(DimSize(sweepNumbers, ROWS))/FREE sweepNumbersNumeric = str2num(sweepNumbers[p])
-						WAVE out = GetUniqueEntries(sweepNumbersNumeric)
-					endif
-					break
-				default:
-					SF_ASSERT(0, "Undefined argument")
-			endswitch
-
-			if(!WaveExists(out))
-				Make/N=1/FREE out = {NaN} // simulates [null]
-			endif
+			WAVE out = SF_OperationSweeps(jsonId, jsonPath, graph)
 			break
 		case SF_OP_DATA:
-			/// `data(array range,array channels,array sweeps)`
-			///
-			/// returns [[sweeps][channel]] for all [sweeps] in list sweepNumbers, grouped by channels
-			SF_ASSERT(!ParamIsDefault(graph) && !IsEmpty(graph), "Graph for extracting sweeps not specified.")
-
-			WAVE range = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-			SF_ASSERT(DimSize(range, ROWS) == 2, "A range is of the form [rangeStart, rangeEnd].")
-			range[][][] = !IsNaN(range[p][q][r]) ? range[p][q][r] : (p == 0 ? -1 : 1) * inf
-
-			WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
-			SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
-
-			WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
-			SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
-
-			WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, DATA_ACQUISITION_MODE)
-			WaveClear channels
-
-			WAVE/Z out = SF_GetSweepForFormula(graph, range, activeChannels, sweeps)
-			if(!WaveExists(out))
-				DebugPrint("Call to SF_GetSweepForFormula returned no results")
-				Make/FREE/N=1 out = {NaN}
-				break
-			endif
-
+			WAVE out = SF_OperationData(jsonId, jsonPath, graph)
 			break
 		case SF_OP_LABNOTEBOOK:
-			/// `labnotebook(string key, array channels, array sweeps [, string entrySourceType])`
-			///
-			/// return lab notebook @p key for all @p sweeps that belong to the channels @p channels
-			SF_ASSERT(!ParamIsDefault(graph) && !IsEmpty(graph), "Graph not specified.")
-
-			numIndices = JSON_GetArraySize(jsonID, jsonPath)
-			SF_ASSERT(numIndices <= 4, "Maximum number of arguments exceeded.")
-			SF_ASSERT(numIndices >= 3, "At least three arguments are required.")
-
-			JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
-			SF_ASSERT(JSONtype == JSON_STRING, "first parameter needs to be a string labnotebook key")
-			str = JSON_GetString(jsonID, jsonPath + "/0")
-
-			WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
-			SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
-
-			WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
-			SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
-
-			mode = DATA_ACQUISITION_MODE
-			if(numIndices == 4)
-				JSONtype = JSON_GetType(jsonID, jsonPath + "/3")
-				SF_ASSERT(JSONtype == JSON_STRING, "Last parameter needs to be a string.")
-				strswitch(JSON_GetString(jsonID, jsonPath + "/3"))
-					case "UNKNOWN_MODE":
-						mode = UNKNOWN_MODE
-						break
-					case "DATA_ACQUISITION_MODE":
-						break
-					case "TEST_PULSE_MODE":
-						mode = TEST_PULSE_MODE
-						break
-					case "NUMBER_OF_LBN_DAQ_MODES":
-						mode = NUMBER_OF_LBN_DAQ_MODES
-						break
-					default:
-						SF_ASSERT(0, "Undefined labnotebook mode. Use one in group DataAcqModes")
-				endswitch
-			endif
-
-			WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, mode)
-			WaveClear channels
-
-			WAVE/Z settings
-
-			Make/D/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outD = NaN
-			Make/T/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outT
-			for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
-				WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweeps[i])
-				WAVE textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweeps[i])
-
-				for(j = 0; j <  DimSize(activeChannels, ROWS); j += 1)
-					[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], str, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
-					if(!WaveExists(settings))
-						continue
-					endif
-					if(IsNumericWave(settings))
-						outD[i][j] = settings[index]
-						WAVE out = outD
-					elseif(IsTextWave(settings))
-						WAVE/T settingsT = settings
-						outT[i][j] = settingsT[index]
-						WAVE out = outT
-					endif
-				endfor
-			endfor
-
-			if(!WaveExists(out))
-				DebugPrint("labnotebook entry not found.")
-				Make/FREE/N=1 out = {NaN}
-				break
-			endif
-
-			for(i = 0; i < DimSize(activeChannels, ROWS); i += 1)
-				str = StringFromList(activeChannels[i][%channelType], XOP_CHANNEL_NAMES) + num2istr(activeChannels[i][%channelNumber])
-				SetDimLabel COLS, i, $str, out
-			endfor
+			WAVE out = SF_OperationLabnotebook(jsonId, jsonPath, graph)
 			break
 		case SF_OP_LOG: // JSON logic debug operation
-			print wv[0]
-			WAVE out = wv
+			WAVE out = SF_OperationLog(jsonId, jsonPath, graph)
 			break
 		case SF_OP_LOG10: // decadic logarithm
-			SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
-			SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			MatrixOP/FREE out = log(wv)
-			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			WAVE out = SF_OperationLog10(jsonId, jsonPath, graph)
 			break
 		case SF_OP_CURSORS:
-			Make/FREE/N=(DimSize(wvT, ROWS)) out = NaN
-			for(i = 0; i < DimSize(wvT, ROWS); i += 1)
-				SF_ASSERT(GrepString(wvT[i], "^(?i)[A-J]$"), "Invalid Cursor Name")
-				if(ParamIsDefault(graph))
-					out[i] = xcsr($wvT[i])
-				else
-					info = CsrInfo($wvT[i], graph)
-					if(IsEmpty(info))
-						continue
-					endif
-					out[i] = xcsr($wvT[i], graph)
-				endif
-			endfor
+			WAVE out = SF_OperationCursors(jsonId, jsonPath, graph)
 			break
 		case SF_OP_FINDLEVEL:
-			// findlevel(data, level, [edge])
-			numIndices = JSON_GetArraySize(jsonID, jsonPath)
-			SF_ASSERT(numIndices <=3, "Maximum number of arguments exceeded.")
-			SF_ASSERT(numIndices > 1, "At least two arguments.")
-			WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-			WAVE level = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
-			SF_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
-			SF_ASSERT(IsNumericWave(level), "level parameter must be numeric")
-			if(numIndices == 3)
-				WAVE edge = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
-				SF_ASSERT(DimSize(edge, ROWS) == 1, "Too many input values for parameter level")
-				SF_ASSERT(IsNumericWave(edge), "level parameter must be numeric")
-			else
-				Make/FREE edge = {0}
-			endif
-
-			WAVE out = FindLevelWrapper(data, level[0], edge[0], FINDLEVEL_MODE_SINGLE)
+			WAVE out = SF_OperationFindLevel(jsonId, jsonPath, graph)
 			break
 		case SF_OP_APFREQUENCY:
-			// apfrequency(data, [frequency calculation method], [spike detection crossing level])
-			numIndices = JSON_GetArraySize(jsonID, jsonPath)
-			SF_ASSERT(numIndices <=3, "Maximum number of arguments exceeded.")
-			SF_ASSERT(numIndices >= 1, "At least one argument.")
-
-			WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-			if(numIndices == 3)
-				WAVE level = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
-				SF_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
-				SF_ASSERT(IsNumericWave(level), "level parameter must be numeric")
-			else
-				Make/FREE/N=1 level = {0}
-			endif
-
-			if(numIndices >= 2)
-				WAVE method = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
-				SF_ASSERT(DimSize(method, ROWS) == 1, "Too many input values for parameter method")
-				SF_ASSERT(IsNumericWave(method), "method parameter must be numeric.")
-				SF_ASSERT(method[0] == SF_APFREQUENCY_FULL || method[0] == SF_APFREQUENCY_INSTANTANEOUS ||  method[0] == SF_APFREQUENCY_APCOUNT, "method parameter is invalid")
-			else
-				Make/FREE method = {SF_APFREQUENCY_FULL}
-			endif
-
-			WAVE levels = FindLevelWrapper(data, level[0], FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI)
-			variable numSets = DimSize(levels, ROWS)
-			Make/FREE/N=(numSets) levelPerSet = str2num(GetDimLabel(levels, ROWS, p))
-
-			// @todo we assume that the x-axis of data has a ms scale for FULL/INSTANTANEOUS
-			switch(method[0])
-				case SF_APFREQUENCY_FULL:
-					Make/N=(numSets)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS)) * 1e3
-					break
-				case SF_APFREQUENCY_INSTANTANEOUS:
-					Make/N=(numSets)/D/FREE outD
-
-					for(i = 0; i < numSets; i += 1)
-						if(levelPerSet[i] <= 1)
-							outD[i] = 0
-						else
-							Make/FREE/D/N=(levelPerSet[i] - 1) distances
-							distances[0, levelPerSet[i] - 2] = levels[i][p + 1] - levels[i][p]
-							outD[i] = 1.0 / Mean(distances) * 1e3
-						endif
-					endfor
-					break
-				case SF_APFREQUENCY_APCOUNT:
-					Make/N=(numSets)/D/FREE outD = levelPerSet[p]
-					break
-			endswitch
-
-			WAVE out = outD
-
+			WAVE out = SF_OperationApFrequency(jsonId, jsonPath, graph)
 			break
 		default:
 			SF_ASSERT(0, "Undefined Operation")
@@ -1719,7 +1290,7 @@ Function SF_TabProc_Formula(tca) : TabControl
 	return 0
 End
 
-static Function/WAVE SF_EpochsOperation(variable jsonId, string jsonPath, string graph)
+static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs, i, j, epType, sweepCnt, activeChannelCnt, outCnt, index, found
 	string str
@@ -1841,4 +1412,630 @@ static Function SF_EpochsSetOutValues(variable epType, WAVE out, variable outCnt
 		out[0][outCnt] = str2num(startTime) * 1E3
 		out[1][outCnt] = str2num(endTime) * 1E3
 	endif
+End
+
+static Function/WAVE SF_OperationMinus(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	if(DimSize(wv, ROWS) == 1)
+		MatrixOP/FREE out = sumCols((-1) * wv)^t
+	else
+		MatrixOP/FREE out = (row(wv, 0) + sumCols((-1) * subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
+	endif
+	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
+	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	return out
+End
+
+static Function/WAVE SF_OperationPlus(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	MatrixOP/FREE out = sumCols(wv)^t
+	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
+	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	return out
+End
+
+static Function/WAVE SF_OperationDiv(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	SF_ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
+	MatrixOP/FREE out = (row(wv, 0) / productCols(subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
+	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
+	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	return out
+End
+
+static Function/WAVE SF_OperationMult(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	MatrixOP/FREE out = productCols(wv)^t
+	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+	SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
+	Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+	return out
+End
+
+/// range (start[, stop[, step]])
+static Function/WAVE SF_OperationRange(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+	SF_ASSERT(DimSize(wv, COLS) <= 1, "Unhandled dimension")
+	if(DimSize(wv, ROWS) == 3)
+		Make/N=(ceil(abs((wv[0] - wv[1]) / wv[2])))/FREE out = wv[0] + p * wv[2]
+	elseif(DimSize(wv, ROWS) == 2)
+		Make/N=(abs(trunc(wv[0])-trunc(wv[1])))/FREE out = wv[0] + p
+	elseif(DimSize(wv, ROWS) == 1)
+		Make/N=(abs(trunc(wv[0])))/FREE out = p
+	else
+		SF_ASSERT(0, "Operation accepts 2-3 operands")
+	endif
+	return out
+End
+
+static Function/WAVE SF_OperationMin(variable jsonId, string jsonPath, string graph)
+
+	variable i, j
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+	if(DimSize(wv, LAYERS) > 1)
+		i = DimSize(wv, COLS)
+		j = DimSize(wv, LAYERS)
+		Redimension/E=1/N=(-1, i * j, 0) wv
+		MatrixOP/FREE out = minCols(wv)
+		Redimension/E=1/N=(i, j) out
+	else
+		MatrixOP/FREE out = minCols(wv)^t
+	endif
+	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+	return out
+End
+
+static Function/WAVE SF_OperationMax(variable jsonId, string jsonPath, string graph)
+
+	variable i, j
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+	if(DimSize(wv, LAYERS) > 1)
+		i = DimSize(wv, COLS)
+		j = DimSize(wv, LAYERS)
+		Redimension/E=1/N=(-1, i * j, 0) wv
+		MatrixOP/FREE out = maxCols(wv)
+		Redimension/E=1/N=(i, j) out
+	else
+		MatrixOP/FREE out = maxCols(wv)^t
+	endif
+	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+	return out
+End
+
+static Function/WAVE SF_OperationAvg(variable jsonId, string jsonPath, string graph)
+
+	variable i, j
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+	if(DimSize(wv, LAYERS) > 1)
+		i = DimSize(wv, COLS)
+		j = DimSize(wv, LAYERS)
+		Redimension/E=1/N=(-1, i * j, 0) wv
+		MatrixOP/FREE out = averageCols(wv)
+		Redimension/E=1/N=(i, j) out
+	else
+		MatrixOP/FREE out = averageCols(wv)^t
+	endif
+	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+	return out
+End
+
+static Function/WAVE SF_OperationRMS(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+	MatrixOP/FREE out = sqrt(averageCols(magsqr(wv)))^t
+	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	return out
+End
+
+static Function/WAVE SF_OperationVariance(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+	MatrixOP/FREE out = (sumCols(magSqr(wv - rowRepeat(averageCols(wv), numRows(wv))))/(numRows(wv) - 1))^t
+	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	return out
+End
+
+
+static Function/WAVE SF_OperationStdev(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+	MatrixOP/FREE out = (sqrt(sumCols(powR(wv - rowRepeat(averageCols(wv), numRows(wv)), 2))/(numRows(wv) - 1)))^t
+	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+	return out
+End
+
+static Function/WAVE SF_OperationDerivative(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	Make/FREE out
+	SF_ASSERT(DimSize(wv, ROWS) > 1, "Can not differentiate single point waves")
+	Differentiate/DIM=(ROWS) wv/D=out
+	CopyScales wv, out
+	SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "d/dx", out
+	return out
+End
+
+static Function/WAVE SF_OperationIntegrate(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	Make/FREE out
+	SF_ASSERT(DimSize(wv, ROWS) > 1, "Can not integrate single point waves")
+	Integrate/METH=1/DIM=(ROWS) wv/D=out
+	CopyScales wv, out
+	SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "dx", out
+	return out
+End
+
+static Function/WAVE SF_OperationArea(variable jsonId, string jsonPath, string graph)
+
+	variable zero,numArgs
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	SF_ASSERT(DimSize(wv, ROWS) > 1, "Can not integrate single point waves")
+
+	numArgs = JSON_GetArraySize(jsonID, jsonPath)
+	if(numArgs == 1)
+		zero = 1
+	else
+		SF_ASSERT(numArgs == 2, "area requires at most 2 arguments")
+		WAVE zeroWave = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+		SF_ASSERT(DimSize(zeroWave, ROWS) == 1, "Too many input values for parameter zero")
+		SF_ASSERT(IsNumericWave(zeroWave), "zero parameter must be numeric")
+		zero = !!zeroWave[0]
+	endif
+
+	if(zero)
+		Differentiate/DIM=0/EP=1 wv
+		Integrate/DIM=0 wv
+	endif
+
+	Make/FREE out_integrate
+	Integrate/METH=1/DIM=(ROWS) wv/D=out_integrate
+	Make/FREE/N=(max(1, DimSize(out_integrate, COLS)), DimSize(out_integrate, LAYERS)) out = out_integrate[DimSize(wv, ROWS) - 1][p][q]
+	return out
+End
+
+static Function/WAVE SF_OperationButterworth(variable jsonId, string jsonPath, string graph)
+
+	/// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
+	SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 4, "The butterworth filter requires 4 arguments")
+	WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	WAVE lowPassCutoff = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+	SF_ASSERT(DimSize(lowPassCutoff, ROWS) == 1, "Too many input values for parameter lowPassCutoff")
+	SF_ASSERT(IsNumericWave(lowPassCutoff), "lowPassCutoff parameter must be numeric")
+	WAVE highPassCutoff = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
+	SF_ASSERT(DimSize(highPassCutoff, ROWS) == 1, "Too many input values for parameter highPassCutoff")
+	SF_ASSERT(IsNumericWave(highPassCutoff), "highPassCutoff parameter must be numeric")
+	WAVE order = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
+	SF_ASSERT(DimSize(order, ROWS) == 1, "Too many input values for parameter order")
+	SF_ASSERT(IsNumericWave(order), "order parameter must be numeric")
+	FilterIIR/HI=(highPassCutoff[0] / WAVEBUILDER_MIN_SAMPINT_HZ)/LO=(lowPassCutoff[0] / WAVEBUILDER_MIN_SAMPINT_HZ)/ORD=(order[0])/DIM=(ROWS) data
+	SF_ASSERT(V_flag == 0, "FilterIIR returned error")
+
+	return data
+End
+
+static Function/WAVE SF_OperationXValues(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	Make/FREE/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) out = DimOffset(wv, ROWS) + p * DimDelta(wv, ROWS)
+	return out
+End
+
+static Function/WAVE SF_OperationText(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	Make/FREE/T/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) outT = num2str(wv[p][q][r][s])
+	CopyScales wv outT
+	return outT
+End
+
+static Function/WAVE SF_OperationSetScale(variable jsonId, string jsonPath, string graph)
+
+	variable numIndices
+
+	/// `setscale(data, [dim, [dimOffset, [dimDelta[, unit]]]])`
+	numIndices = JSON_GetArraySize(jsonID, jsonPath)
+	SF_ASSERT(numIndices < 6, "Maximum number of arguments exceeded.")
+	SF_ASSERT(numIndices > 1, "At least two arguments.")
+	WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	WAVE/T dimension = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+	SF_ASSERT(DimSize(dimension, ROWS) == 1 && GrepString(dimension[0], "[x,y,z,t]") , "undefined input for dimension")
+
+	if(numIndices >= 3)
+		WAVE offset = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
+		SF_ASSERT(DimSize(offset, ROWS) == 1, "wrong usage of argument")
+	else
+		Make/FREE/N=1 offset  = {0}
+	endif
+	if(numIndices >= 4)
+		WAVE delta = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
+		SF_ASSERT(DimSize(delta, ROWS) == 1, "wrong usage of argument")
+	else
+		Make/FREE/N=1 delta = {1}
+	endif
+	if(numIndices == 5)
+		WAVE/T unit = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/4")
+		SF_ASSERT(DimSize(unit, ROWS) == 1, "wrong usage of argument")
+	else
+		Make/FREE/N=1/T unit = {""}
+	endif
+
+	strswitch(dimension[0])
+		case "x":
+			SetScale/P x, offset[0], delta[0], unit[0], data
+			ASSERT(DimDelta(data, ROWS) == delta[0], "Encountered Igor Bug.")
+			break
+		case "y":
+			SetScale/P y, offset[0], delta[0], unit[0], data
+			ASSERT(DimDelta(data, COLS) == delta[0], "Encountered Igor Bug.")
+			break
+		case "z":
+			SetScale/P z, offset[0], delta[0], unit[0], data
+			ASSERT(DimDelta(data, LAYERS) == delta[0], "Encountered Igor Bug.")
+			break
+		case "t":
+			SetScale/P t, offset[0], delta[0], unit[0], data
+			ASSERT(DimDelta(data, CHUNKS) == delta[0], "Encountered Igor Bug.")
+			break
+	endswitch
+
+	return data
+End
+
+static Function/WAVE SF_OperationWave(variable jsonId, string jsonPath, string graph)
+
+	SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 1, "First argument is wave")
+	WAVE/T wavelocation = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0")
+
+	return $(wavelocation[0])
+End
+
+static Function/WAVE SF_OperationMerge(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+	MatrixOP/FREE transposed = wv^T
+	Extract/FREE transposed, out, (p < (JSON_GetType(jsonID, jsonPath + "/" + num2str(q)) != JSON_ARRAY ? 1 : JSON_GetArraySize(jsonID, jsonPath + "/" + num2str(q))))
+	SetScale/P x, 0, 1, "", out
+	return out
+End
+
+
+/// `channels([str name]+)` converts a named channel from string to numbers.
+///
+/// returns [[channelName, channelNumber]+]
+static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, string graph)
+
+	variable numIndices, i, JSONtype
+	string channelName, channelNumber
+	string regExp = "^(?i)(" + ReplaceString(";", XOP_CHANNEL_NAMES, "|") + ")([0-9]+)?$"
+
+	numIndices = JSON_GetArraySize(jsonID, jsonPath)
+
+	Make/N=(numIndices, 2)/FREE out = NaN
+	SetDimLabel COLS, 0, channelType, out
+	SetDimLabel COLS, 1, channelNumber, out
+	for(i = 0; i < numIndices; i += 1)
+		JSONtype = JSON_GetType(jsonID, jsonPath + "/" + num2str(i))
+		channelName = ""
+		if(JSONtype == JSON_NUMERIC)
+			out[i][%channelNumber] = JSON_GetVariable(jsonID, jsonPath + "/" + num2str(i))
+		elseif(JSONtype == JSON_STRING)
+			SplitString/E=regExp JSON_GetString(jsonID, jsonPath + "/" + num2str(i)), channelName, channelNumber
+			if(V_flag == 0)
+				continue
+			endif
+			out[i][%channelNumber] = str2num(channelNumber)
+		endif
+		SF_ASSERT(!isFinite(out[i][%channelNumber]) || out[i][%channelNumber] < NUM_MAX_CHANNELS, "Maximum Number Of Channels exceeded.")
+		out[i][%channelType] = WhichListItem(channelName, XOP_CHANNEL_NAMES, ";", 0, 0)
+	endfor
+	out[][] = out[p][q] < 0 ? NaN : out[p][q]
+
+	return out
+End
+
+/// `sweeps([str type])`
+///  @p type: `|displayed|all`
+///           displayed (default): get (selected) sweeps
+///           all:                  get all possible sweeps
+static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string graph)
+
+	SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) <= 1, "Function requires 1 argument at most.")
+	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
+
+	if(JSON_GetType(jsonID, jsonPath + "/0") == JSON_NULL)
+		Make/FREE/T wvT = {"displayed"}
+	else
+		WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
+	endif
+
+	strswitch(wvT[0])
+		case "all":
+			WAVE out = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
+			break
+		case "displayed":
+			WAVE/T/Z sweepNumbers = GetSweepUserData(graph, "sweepNumber")
+			if(WaveExists(sweepNumbers))
+				Make/N=(DimSize(sweepNumbers, ROWS))/FREE sweepNumbersNumeric = str2num(sweepNumbers[p])
+				WAVE out = GetUniqueEntries(sweepNumbersNumeric)
+			endif
+			break
+		default:
+			SF_ASSERT(0, "Undefined argument")
+	endswitch
+
+	if(!WaveExists(out))
+		Make/N=1/FREE out = {NaN} // simulates [null]
+	endif
+
+	return out
+End
+
+/// `data(array range,array channels,array sweeps)`
+///
+/// returns [[sweeps][channel]] for all [sweeps] in list sweepNumbers, grouped by channels
+static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string graph)
+
+	SF_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
+
+	WAVE range = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	SF_ASSERT(DimSize(range, ROWS) == 2, "A range is of the form [rangeStart, rangeEnd].")
+	range[][][] = !IsNaN(range[p][q][r]) ? range[p][q][r] : (p == 0 ? -1 : 1) * inf
+
+	WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
+
+	WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+
+	WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, DATA_ACQUISITION_MODE)
+
+	WAVE/Z out = SF_GetSweepForFormula(graph, range, activeChannels, sweeps)
+	if(!WaveExists(out))
+		DebugPrint("Call to SF_GetSweepForFormula returned no results")
+		Make/FREE/N=1 out = {NaN}
+	endif
+
+	return out
+End
+
+/// `labnotebook(string key, array channels, array sweeps [, string entrySourceType])`
+///
+/// return lab notebook @p key for all @p sweeps that belong to the channels @p channels
+static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, string graph)
+
+	variable numIndices, i, j, mode, JSONtype, index
+	string str
+
+	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
+
+	numIndices = JSON_GetArraySize(jsonID, jsonPath)
+	SF_ASSERT(numIndices <= 4, "Maximum number of arguments exceeded.")
+	SF_ASSERT(numIndices >= 3, "At least three arguments are required.")
+
+	JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
+	SF_ASSERT(JSONtype == JSON_STRING, "first parameter needs to be a string labnotebook key")
+	str = JSON_GetString(jsonID, jsonPath + "/0")
+
+	WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
+
+	WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+
+	mode = DATA_ACQUISITION_MODE
+	if(numIndices == 4)
+		JSONtype = JSON_GetType(jsonID, jsonPath + "/3")
+		SF_ASSERT(JSONtype == JSON_STRING, "Last parameter needs to be a string.")
+		strswitch(JSON_GetString(jsonID, jsonPath + "/3"))
+			case "UNKNOWN_MODE":
+				mode = UNKNOWN_MODE
+				break
+			case "DATA_ACQUISITION_MODE":
+				break
+			case "TEST_PULSE_MODE":
+				mode = TEST_PULSE_MODE
+				break
+			case "NUMBER_OF_LBN_DAQ_MODES":
+				mode = NUMBER_OF_LBN_DAQ_MODES
+				break
+			default:
+				SF_ASSERT(0, "Undefined labnotebook mode. Use one in group DataAcqModes")
+		endswitch
+	endif
+
+	WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, mode)
+
+	WAVE/Z settings
+
+	Make/D/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outD = NaN
+	Make/T/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outT
+	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
+		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweeps[i])
+		WAVE textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweeps[i])
+
+		for(j = 0; j <  DimSize(activeChannels, ROWS); j += 1)
+			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], str, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
+			if(!WaveExists(settings))
+				continue
+			endif
+			if(IsNumericWave(settings))
+				outD[i][j] = settings[index]
+				WAVE out = outD
+			elseif(IsTextWave(settings))
+				WAVE/T settingsT = settings
+				outT[i][j] = settingsT[index]
+				WAVE out = outT
+			endif
+		endfor
+	endfor
+
+	if(!WaveExists(out))
+		DebugPrint("labnotebook entry not found.")
+		Make/FREE/N=1 out = {NaN}
+		return out
+	endif
+
+	for(i = 0; i < DimSize(activeChannels, ROWS); i += 1)
+		str = StringFromList(activeChannels[i][%channelType], XOP_CHANNEL_NAMES) + num2istr(activeChannels[i][%channelNumber])
+		SetDimLabel COLS, i, $str, out
+	endfor
+
+	return out
+End
+
+static Function/WAVE SF_OperationLog(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	print wv[0]
+
+	return wv
+End
+
+static Function/WAVE SF_OperationLog10(variable jsonId, string jsonPath, string graph)
+
+	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+	MatrixOP/FREE out = log(wv)
+	SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+
+	return out
+End
+
+static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, string graph)
+
+	variable i
+	string info
+
+	WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
+	Make/FREE/N=(DimSize(wvT, ROWS)) out = NaN
+	for(i = 0; i < DimSize(wvT, ROWS); i += 1)
+		SF_ASSERT(GrepString(wvT[i], "^(?i)[A-J]$"), "Invalid Cursor Name")
+		if(IsEmpty(graph))
+			out[i] = xcsr($wvT[i])
+		else
+			info = CsrInfo($wvT[i], graph)
+			if(IsEmpty(info))
+				continue
+			endif
+			out[i] = xcsr($wvT[i], graph)
+		endif
+	endfor
+
+	return out
+End
+
+// findlevel(data, level, [edge])
+static Function/WAVE SF_OperationFindLevel(variable jsonId, string jsonPath, string graph)
+
+	variable numIndices
+
+	numIndices = JSON_GetArraySize(jsonID, jsonPath)
+	SF_ASSERT(numIndices <=3, "Maximum number of arguments exceeded.")
+	SF_ASSERT(numIndices > 1, "At least two arguments.")
+	WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	WAVE level = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+	SF_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
+	SF_ASSERT(IsNumericWave(level), "level parameter must be numeric")
+	if(numIndices == 3)
+		WAVE edge = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
+		SF_ASSERT(DimSize(edge, ROWS) == 1, "Too many input values for parameter level")
+		SF_ASSERT(IsNumericWave(edge), "level parameter must be numeric")
+	else
+		Make/FREE edge = {0}
+	endif
+
+	WAVE out = FindLevelWrapper(data, level[0], edge[0], FINDLEVEL_MODE_SINGLE)
+
+	return out
+End
+
+// apfrequency(data, [frequency calculation method], [spike detection crossing level])
+static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, string graph)
+
+	variable numIndices, i
+
+	numIndices = JSON_GetArraySize(jsonID, jsonPath)
+	SF_ASSERT(numIndices <=3, "Maximum number of arguments exceeded.")
+	SF_ASSERT(numIndices >= 1, "At least one argument.")
+
+	WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	if(numIndices == 3)
+		WAVE level = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+		SF_ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
+		SF_ASSERT(IsNumericWave(level), "level parameter must be numeric")
+	else
+		Make/FREE/N=1 level = {0}
+	endif
+
+	if(numIndices >= 2)
+		WAVE method = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+		SF_ASSERT(DimSize(method, ROWS) == 1, "Too many input values for parameter method")
+		SF_ASSERT(IsNumericWave(method), "method parameter must be numeric.")
+		SF_ASSERT(method[0] == SF_APFREQUENCY_FULL || method[0] == SF_APFREQUENCY_INSTANTANEOUS ||  method[0] == SF_APFREQUENCY_APCOUNT, "method parameter is invalid")
+	else
+		Make/FREE method = {SF_APFREQUENCY_FULL}
+	endif
+
+	WAVE levels = FindLevelWrapper(data, level[0], FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI)
+	variable numSets = DimSize(levels, ROWS)
+	Make/FREE/N=(numSets) levelPerSet = str2num(GetDimLabel(levels, ROWS, p))
+
+	// @todo we assume that the x-axis of data has a ms scale for FULL/INSTANTANEOUS
+	switch(method[0])
+		case SF_APFREQUENCY_FULL:
+			Make/N=(numSets)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS)) * 1e3
+			break
+		case SF_APFREQUENCY_INSTANTANEOUS:
+			Make/N=(numSets)/D/FREE outD
+
+			for(i = 0; i < numSets; i += 1)
+				if(levelPerSet[i] <= 1)
+					outD[i] = 0
+				else
+					Make/FREE/D/N=(levelPerSet[i] - 1) distances
+					distances[0, levelPerSet[i] - 2] = levels[i][p + 1] - levels[i][p]
+					outD[i] = 1.0 / Mean(distances) * 1e3
+				endif
+			endfor
+			break
+		case SF_APFREQUENCY_APCOUNT:
+			Make/N=(numSets)/D/FREE outD = levelPerSet[p]
+			break
+	endswitch
+
+	return outD
 End
