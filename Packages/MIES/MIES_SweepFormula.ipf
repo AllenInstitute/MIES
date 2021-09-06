@@ -1292,7 +1292,7 @@ End
 
 static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs, i, j, epType, sweepCnt, activeChannelCnt, outCnt, index, found
+	variable numArgs, i, j, k, epType, sweepCnt, activeChannelCnt, outCnt, index, found, numEpochs
 	string str
 
 	// epochs(array sweeps, array channels, string shortName, [string type])
@@ -1370,9 +1370,16 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 				str = settingsT[index]
 				if(!IsEmpty(str))
 					WAVE/T epochInfo = EP_EpochStrToWave(str)
-					FindValue/RMD=[][EPOCH_COL_NAME]/TXOP=4/TEXT=epochName[0] epochInfo
+					numEpochs = DimSize(epochInfo, ROWS)
+					Make/FREE/N=(numEpochs)/T epNames
+					for(k = 0; k < numEpochs; k += 1)
+						str = EP_GetShortName(epochInfo, k)
+						epNames[k] = SelectString(IsEmpty(str), str,epochInfo[k][EPOCH_COL_NAME])
+					endfor
+
+					FindValue/TXOP=4/TEXT=epochName[0] epNames
 					if(V_Value >= 0)
-						SF_EpochsSetOutValues(epType, out, outCnt, name=epochInfo[V_Row][EPOCH_COL_NAME], treeLevel=epochInfo[V_Row][EPOCH_COL_TREELEVEL], startTime=epochInfo[V_Row][EPOCH_COL_STARTTIME], endTime=epochInfo[V_Row][EPOCH_COL_ENDTIME])
+						SF_EpochsSetOutValues(epType, out, outCnt, name=epochInfo[V_Value][EPOCH_COL_NAME], treeLevel=epochInfo[V_Value][EPOCH_COL_TREELEVEL], startTime=epochInfo[V_Value][EPOCH_COL_STARTTIME], endTime=epochInfo[V_Value][EPOCH_COL_ENDTIME])
 						found = 1
 					endif
 				endif
