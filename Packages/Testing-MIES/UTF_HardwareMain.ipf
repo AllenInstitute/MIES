@@ -285,6 +285,8 @@ Function TEST_CASE_END_OVERRIDE(name)
 		NVAR acqState = $GetAcquisitionState(dev)
 		CHECK_EQUAL_VAR(acqState, AS_INACTIVE)
 
+		CheckEpochs(dev)
+
 		if(WhichListItem(name, LIST_OF_TESTS_WITH_SWEEP_ROLLBACK) == -1)
 			// ascending sweep numbers in both labnotebooks
 			WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
@@ -348,6 +350,70 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 #endif
 
+End
+
+/// @brief Checks epochs for consistency
+///        - all epochs must have a short name
+///        - no duplicate short names allowed
+static Function CheckEpochs(string dev)
+
+	variable sweepCnt, i, j, k, index, channelTypeCount, channelCnt
+	string str
+
+	WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+
+	if(!WaveExists(sweeps))
+		PASS()
+		return NaN
+	endif
+
+	Make/D/FREE channelTypes = {XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_TYPE_DAC} // note: XOP_CHANNEL_TYPE_TTL not supported by GetLastSettingChannel
+	channelTypeCount = DimSize(channelTypes, ROWS)
+
+	WAVE numericalValues = GetLBNumericalValues(dev)
+	WAVE textualValues = GetLBTextualValues(dev)
+
+	sweepCnt = DimSize(sweeps, ROWS)
+
+	WAVE/Z settings
+	for(i = 0; i < sweepCnt; i += 1)
+		for(j = 0; j <  channelTypeCount; j += 1)
+			channelCnt = GetNumberFromType(var=channelTypes[j])
+			for(k = 0; k <  channelCnt; k += 1)
+				[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], EPOCHS_ENTRY_KEY, k, channelTypes[j], DATA_ACQUISITION_MODE)
+
+				if(WaveExists(settings))
+					WAVE/T settingsT = settings
+					str = settingsT[index]
+					if(!IsEmpty(str))
+						WAVE/T epochInfo = EP_EpochStrToWave(str)
+						Make/FREE/N=(DimSize(epochInfo, ROWS))/T epNames = EP_GetShortName(epochInfo[p][EPOCH_COL_NAME])
+						// All Epochs should have short names
+						FindValue/TXOP=4/TEXT="" epNames
+						CHECK_EQUAL_VAR(V_Value, -1)
+						// No duplicate short names should exist
+						FindDuplicates/FREE/DT=dupsWave epNames
+						CHECK_EQUAL_VAR(DimSize(dupsWave, ROWS), 0)
+					endif
+				endif
+
+			endfor
+		endfor
+	endfor
+
+	channelCnt = GetNumberFromType(var=XOP_CHANNEL_TYPE_DAC)
+	for(i = 0; i < sweepCnt; i += 1)
+		for(j = 0; j <  channelCnt; j += 1)
+			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], EPOCHS_ENTRY_KEY, j, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+			if(WaveExists(settings))
+				WAVE/T settingsT = settings
+				str = settingsT[index]
+				CHECK(!IsEmpty(str))
+			endif
+		endfor
+	endfor
+
+	PASS()
 End
 
 /// @brief Register the function `<testcase>_REENTRY`
