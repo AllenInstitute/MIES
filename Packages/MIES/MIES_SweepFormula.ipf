@@ -385,7 +385,7 @@ Function SF_FormulaParser(formula, [indentLevel])
 					action = SF_ACTION_COLLECT
 					break
 				default:
-					SF_Assert(0, "Encountered undefined transition " + num2str(state))
+					SF_Assert(0, "Encountered undefined transition " + num2istr(state))
 			endswitch
 			lastState = state
 		endif
@@ -407,7 +407,7 @@ Function SF_FormulaParser(formula, [indentLevel])
 				tempPath = jsonPath
 				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
 					JSON_AddObjects(jsonID, jsonPath)
-					tempPath += "/" + num2str(JSON_GetArraySize(jsonID, jsonPath) - 1)
+					tempPath += "/" + num2istr(JSON_GetArraySize(jsonID, jsonPath) - 1)
 				endif
 				tempPath += "/"
 				parenthesisStart = strsearch(buffer, "(", 0, 0)
@@ -454,7 +454,7 @@ Function SF_FormulaParser(formula, [indentLevel])
 			case SF_ACTION_CALCULATION:
 				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
 					JSON_AddObjects(jsonID, jsonPath) // prepare for decent
-					jsonPath += "/" + num2str(JSON_GetArraySize(jsonID, jsonPath) - 1)
+					jsonPath += "/" + num2istr(JSON_GetArraySize(jsonID, jsonPath) - 1)
 				endif
 				jsonPath += "/" + SF_EscapeJsonPath(token)
 			case SF_ACTION_ARRAYELEMENT:
@@ -534,7 +534,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 		return outT
 	elseif(JSONtype == JSON_ARRAY)
 		WAVE topArraySize = JSON_GetMaxArraySize(jsonID, jsonPath)
-		Make/FREE/N=(topArraySize[0])/B types = JSON_GetType(jsonID, jsonPath + "/" + num2str(p))
+		Make/FREE/N=(topArraySize[0])/B types = JSON_GetType(jsonID, jsonPath + "/" + num2istr(p))
 
 		if(topArraySize[0] != 0 && types[0] == JSON_STRING)
 			SF_ASSERT(DimSize(topArraySize, ROWS) <= 1, "Text Waves Must Be 1-dimensional.")
@@ -553,12 +553,12 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 
 		EXTRACT/FREE/INDX types, indices, (types[p] == JSON_OBJECT) || (types[p] == JSON_ARRAY)
 		if(DimSize(indices, ROWS) == 1 && DimSize(out, ROWS) == 1)
-			return SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2str(indices[0]), graph = graph)
+			return SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2istr(indices[0]), graph = graph)
 		endif
 		for(i = 0; i < DimSize(indices, ROWS); i += 1)
-			WAVE element = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2str(indices[i]), graph = graph)
+			WAVE element = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2istr(indices[i]), graph = graph)
 			if(DimSize(element, CHUNKS) > 1)
-				DebugPrint("Merging Chunks To Layers for object: " + jsonPath + "/" + num2str(indices[i]))
+				DebugPrint("Merging Chunks To Layers for object: " + jsonPath + "/" + num2istr(indices[i]))
 				Redimension/N=(-1, -1, max(1, DimSize(element, LAYERS)) * DimSize(element, CHUNKS), 0)/E=1 element
 			endif
 			topArraySize[1,*] = max(topArraySize[p], DimSize(element, p - 1))
@@ -1661,7 +1661,7 @@ End
 static Function/WAVE SF_OperationText(variable jsonId, string jsonPath, string graph)
 
 	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-	Make/FREE/T/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) outT = num2str(wv[p][q][r][s])
+	Make/FREE/T/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) outT = num2strHighPrec(wv[p][q][r][s], precision=7)
 	CopyScales wv outT
 	return outT
 End
@@ -1733,7 +1733,7 @@ static Function/WAVE SF_OperationMerge(variable jsonId, string jsonPath, string 
 	SF_ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 	SF_ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 	MatrixOP/FREE transposed = wv^T
-	Extract/FREE transposed, out, (p < (JSON_GetType(jsonID, jsonPath + "/" + num2str(q)) != JSON_ARRAY ? 1 : JSON_GetArraySize(jsonID, jsonPath + "/" + num2str(q))))
+	Extract/FREE transposed, out, (p < (JSON_GetType(jsonID, jsonPath + "/" + num2istr(q)) != JSON_ARRAY ? 1 : JSON_GetArraySize(jsonID, jsonPath + "/" + num2istr(q))))
 	SetScale/P x, 0, 1, "", out
 	return out
 End
@@ -1754,12 +1754,12 @@ static Function/WAVE SF_OperationChannels(variable jsonId, string jsonPath, stri
 	SetDimLabel COLS, 0, channelType, out
 	SetDimLabel COLS, 1, channelNumber, out
 	for(i = 0; i < numIndices; i += 1)
-		JSONtype = JSON_GetType(jsonID, jsonPath + "/" + num2str(i))
+		JSONtype = JSON_GetType(jsonID, jsonPath + "/" + num2istr(i))
 		channelName = ""
 		if(JSONtype == JSON_NUMERIC)
-			out[i][%channelNumber] = JSON_GetVariable(jsonID, jsonPath + "/" + num2str(i))
+			out[i][%channelNumber] = JSON_GetVariable(jsonID, jsonPath + "/" + num2istr(i))
 		elseif(JSONtype == JSON_STRING)
-			SplitString/E=regExp JSON_GetString(jsonID, jsonPath + "/" + num2str(i)), channelName, channelNumber
+			SplitString/E=regExp JSON_GetString(jsonID, jsonPath + "/" + num2istr(i)), channelName, channelNumber
 			if(V_flag == 0)
 				continue
 			endif
