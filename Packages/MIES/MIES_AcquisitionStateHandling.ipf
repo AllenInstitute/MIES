@@ -149,8 +149,8 @@ Function AS_GetSweepNumber(string panelTitle)
 	switch(acqState)
 		case AS_INACTIVE:
 		case AS_EARLY_CHECK:
-			ASSERT(0, "Can not query the sweep number without data acqisition running")
-			break
+			// early return as this is not a valid sweep number
+			return NaN
 		case AS_PRE_DAQ:
 		case AS_PRE_SWEEP_CONFIG:
 		case AS_PRE_SWEEP:

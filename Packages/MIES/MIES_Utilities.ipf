@@ -699,7 +699,7 @@ threadsafe Function/DF createDFWithAllParents(dataFolder)
 	string dataFolder
 
 	variable i, numItems
-	string partialPath
+	string partialPath, component
 	DFREF dfr = $dataFolder
 
 	if(DataFolderRefStatus(dfr))
@@ -711,8 +711,10 @@ threadsafe Function/DF createDFWithAllParents(dataFolder)
 	// i=1 because we want to skip root, as this exists always
 	numItems = ItemsInList(dataFolder,":")
 	for(i=1; i < numItems ; i+=1)
-		partialPath += ":"
-		partialPath += StringFromList(i,dataFolder,":")
+		component = StringFromList(i,dataFolder,":")
+		ASSERT_TS(IsValidObjectName(component), "dataFolder must follow strict object naming rules.")
+
+		partialPath += ":" + component
 		if(!DataFolderExists(partialPath))
 			NewDataFolder $partialPath
 		endif

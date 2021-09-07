@@ -196,6 +196,22 @@ static Function P_FindLastSetEntry(WAVE wv, variable row, variable col, string n
 	return NaN
 End
 
+static Function P_AddSealedEntryToTPStorage(string panelTitle, variable headstage)
+	variable count
+
+	if(!P_ValidatePressureSetHeadstage(panelTitle, headstage) || !P_IsHSActiveAndInVClamp(panelTitle, headstage))
+		return NaN
+	endif
+
+	WAVE TPStorage = GetTPStorage(panelTitle)
+
+	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+
+	TPStorage[count][headstage][%CellState] = TPSTORAGE_SEALED
+
+	SetNumberInWaveNote(TPStorage, NOTE_INDEX, ++count)
+End
+
 static Function P_PublishPressureMethodChange(string panelTitle, variable headstage, variable oldMethod, variable newMethod)
 
 	variable jsonID, err
@@ -216,13 +232,36 @@ static Function P_PublishPressureMethodChange(string panelTitle, variable headst
 	try
 		ClearRTError()
 #if exists("zeromq_pub_send")
-		zeromq_pub_send(PRESSURE_FILTER, payload); AbortOnRTE
+		zeromq_pub_send(PRESSURE_STATE_FILTER, payload); AbortOnRTE
 #else
 		ASSERT(0, "ZeroMQ XOP not present")
 #endif
 	catch
 		err = ClearRTError()
 		BUG("Could not publish pressure method change " + num2str(err))
+	endtry
+End
+
+static Function P_PublishSealedState(string panelTitle, variable headstage)
+	variable jsonID, err
+	string payload
+
+	jsonID = FFI_GetJSONTemplate(panelTitle, headstage)
+	JSON_AddBoolean(jsonID, "/sealed", 1)
+
+	payload = JSON_Dump(jsonID)
+	JSON_Release(jsonID)
+
+	try
+		ClearRTError()
+#if exists("zeromq_pub_send")
+		zeromq_pub_send(PRESSURE_SEALED_FILTER, payload); AbortOnRTE
+#else
+		ASSERT(0, "ZeroMQ XOP not present")
+#endif
+	catch
+		err = ClearRTError()
+		BUG("Could not publish pressure seal state " + num2str(err))
 	endtry
 End
 
@@ -306,6 +345,8 @@ static Function P_MethodSeal(panelTitle, headStage)
 		// apply holding potential of SEAL_POTENTIAL
 		P_UpdateVcom(panelTitle, SEAL_POTENTIAL, headStage)
 		print "Seal on head stage:", headstage
+		P_PublishSealedState(panelTitle, headstage)
+		P_AddSealedEntryToTPStorage(panelTitle, headstage)
 	else // no seal, start, hold, or increment negative pressure
 		// if there is no neg pressure, apply starting pressure.
 		access = P_GetUserAccess(panelTitle, headStage, PRESSURE_METHOD_SEAL)

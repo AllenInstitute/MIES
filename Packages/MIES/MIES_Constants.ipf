@@ -633,7 +633,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 47
+Constant LABNOTEBOOK_VERSION = 48
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
@@ -1566,7 +1566,14 @@ Constant LBN_TEXTUAL_KEYS     = 0x4
 Constant LBN_TEXTUAL_VALUES   = 0x8
 /// @}
 
-StrConstant PRESSURE_FILTER = "pressure:state"
+StrConstant PRESSURE_STATE_FILTER  = "pressure:state"
+StrConstant PRESSURE_SEALED_FILTER = "pressure:sealed"
 
 /// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.
 Constant EPOCHTIME_PRECISION = 7
+
+/// @name Possible cell state values
+/// @anchor CellStateValues
+/// @{
+Constant TPSTORAGE_SEALED = 0x1
+/// @}
