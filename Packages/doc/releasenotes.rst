@@ -3,6 +3,323 @@ Release notes
 
 .. toctree::
 
+Release 2.3
+===========
+
+Controls
+--------
+
+All added, removed or renamed controls of the main GUIs are listed. These lists are intended to help upgrading the JSON
+configuration files. Controls, like GroupBox'es, which can not be read/written with the configuration code are not included.
+
+DA\_Ephys
+~~~~~~~~~
+
+None
+
+Databrowser/Sweepbrowser
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Added
+^^^^^
+
+- ``check_BrowserSettings_VisEpochs``
+- ``popup_Device``
+- ``popup_experiment``
+- ``popupext_TPStorageKeys``
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Wavebuilder
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+- ``setvar_explDeltaValues_T12``
+
+Renamed
+^^^^^^^
+
+None
+
+Sweep Formula
+-------------
+
+None
+
+AnalysisBrowser
+---------------
+
+- Display the exact file type in the listbox
+- Allow resaving an NWBv1 file as NWBv2
+
+DataBrowser
+-----------
+
+- Make selecting the first existing sweep on locking more robust
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Make deleting the datafolder on panel close more reliable
+- Allow browsing TPStorage/Labnotebook waves. This also makes the dedicated
+  panels for the sweepbrowser unnecessary and these have been removed.
+- Make the labnotebook key menues better viewable with a lot (> 400) of entries
+- Make epoch viewing generally available for users (IP9 only)
+- Revamp settings tab
+
+Dashboard
+~~~~~~~~~
+
+- Make the failure messages for PSQ analysis functions more robust and include per sweep information
+
+DA\_Ephys
+---------
+
+- Allow `PCIe-6341` as new NI device for data acquisition
+- Read NWB version correctly for per-sweep NWB export
+- Try restarting DAQ/TP automatically on mismatched MCC gains instead of telling the user to do it
+
+JSON Configuration
+------------------
+
+None
+
+Downsample
+----------
+
+None
+
+Analysis Functions
+------------------
+
+- Fix ``PSQ_DAScale``/``PSQ_Chirp`` failing to work with headstage numbers different than zero
+- Remove ``PRE_SWEEP_EVENT`` and repurpose it as ``PRE_SWEEP_CONFIG_EVENT``. Users
+  had difficulties using ``PRE_SWEEP_EVENT`` as that happened after configuring
+  the sweep and thus did not allow tweaking settings for the current sweep
+  anymore. We therefore decided to remove that event and repurpose it as
+  ``PRE_SWEEP_CONFIG_EVENT`` which is now issued before the sweep is configured.
+  See the `analysis function <https://alleninstitute.github.io/MIES/file/_m_i_e_s___analysis_functions_8ipf.html>`_
+  documentation.
+- Teach ````SetControlInEvent```` to accept ````Pre Sweep```` entries as ````Pre Sweep Config```` entries but warn users
+- ````PSQ_DAScale````: Find the correct last passing rheobase sweep
+- Add ````AFH_GetHeadstageFromActiveADC````
+- Rework decision logic for post pulse baseline chunks. These could have been erroneously failed in edge cases.
+- ````PSQ_Chirp````: Use the fitted resistance instead of the resistance at a single point
+
+Foreign Function interface
+--------------------------
+
+None
+
+Pulse Average Plot
+------------------
+
+- Make updating the scale bars more robust
+
+General
+-------
+
+- Update manual installation instructions
+- Add a pull request template for github
+- Check also some common debug defines in the installation check
+- Allow downloading stimsets from `DANDI <https://gui.dandiarchive.org>`_
+- Add new acquisition state ``AS_PRE_SWEEP_CONFIG``
+- MIES now requires the released version of Igor Pro 9, instead of supporting
+  an intermediate beta version. Igor Pro 8 is still supported but
+  support for it will be removed in one of the next releases.
+- Add cell state as new entry into TPStorage
+
+ITC XOP 2
+----------
+
+None
+
+ZeroMQ XOP
+----------
+
+None
+
+MCC XOP
+-------
+
+None
+
+MIESUtils XOP
+-------------
+
+None
+
+Labnotebook
+-----------
+
+- The labnotebook waves are upgraded so that all keys are valid liberal object names (required by Igor Pro 9). This
+  required invalid keys to be renamed. See below for a list of renamed stock entries.
+  Also user entries are renamed as well.
+- Error out when trying to add labnotebook entries with invalid keys
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+- ``TP after DAQ``: If the testpulse is run after data acquisition or not
+- ``DAQ stop reason``: Enumeration value explaining why data acquisition was stopped, see `DQ_STOP_REASON
+  <https://alleninstitute.github.io/MIES/file/_m_i_e_s___constants_8ipf.html#_CPPv425DQ_STOP_REASON_DAQ_BUTTON>`_ for
+  all possible values.
+- ``Epochs Version``: Version of the epoch information
+- Add the version of the major builtin analysis functions to the labnotebook:
+
+  - ``USER_Chirp version``
+  - ``USER_DA Scale version``
+  - ``USER_F Rheo E version``
+  - ``USER_Ramp version``
+  - ``USER_Rheobase version``
+  - ``USER_Spike Control version``
+  - ``USER_Squ. Pul. version``
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+- ``Indexing End Stimset``: The ending stimset for locked/unlocked indexing of DA channels
+- The following entries are now also available for TTL channels. These are
+  stored hardware agnostic with ``NUM_DA_TTL_CHANNELS`` entries in the
+  ``INDEP_HEADSTAGE`` layer:
+
+  - ``TTL Indexing End Stimset``
+  - ``TTL Stimset length``
+  - ``TTL Stimset checksum``
+  - ``TTL Stimset wave note`` (URL encoded)
+
+- Set cycle counts for TTL channels:
+
+  - ``TTL rack zero set cycle counts`` (ITC hardware)
+  - ``TTL rack one set cycle counts`` (ITC hardware)
+  - ``TTL set cycle counts`` (NI hardware)
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``Delta I``: Use the correct unit ``A`` (amperes)
+
+Renamed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``Async AD $Channel: $Title`` -> ``Async AD $Channel [$Title]``
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``JSON config file: path`` -> ``JSON config file [path]``
+- ``JSON config file: stimset nwb file path`` -> ``JSON config file [stimset nwb file path]``
+- ``JSON config file: SHA-256 hash`` -> ``JSON config file [SHA-256 hash]``
+
+Epoch information
+-----------------
+
+- Add missing trailing baseline for:
+
+   - Stimsets when acquiring on multiple headstages with different length stimsets
+   - Pulse train epochs in edge cases
+
+NWB/IPNWB
+---------
+
+- Make per-sweep NWB export faster by pushing it into the ASYNC framework. This
+  makes the overhead smaller than 20ms on recent PCs. Please note that the
+  stimsets are not written anymore to the NWB in this mode.
+- We now save again always all four labnotebook waves in NWB. The previous
+  optimization which skipped empty ones turned out to be harmful
+  to downstream users which were not prepared for this.
+- ``/general/generated_by``: Store the HDF5 library version and sweep epoch version
+- Store the correct device name for NI devices
+
+File format
+~~~~~~~~~~~
+
+None
+
+Pressure Control
+----------------
+
+- Fix gathering pressure changes in ``TPStorage``
+- Publish pressure method changes and sealed state via ZeroMQ. See
+  `FFI_GetAvailableMessageFilters
+  <https://alleninstitute.github.io/MIES/file/_m_i_e_s___foreign_function_interface_8ipf.html#_CPPv430FFI_GetAvailableMessageFiltersv>`_
+  for all available message filters
+
+WaveBuilder
+-----------
+
+- Rename function for adding analysis parameters programmatically: ``WBP_AddAnalysisParameter`` -> ``AFH_AddAnalysisParameter``
+- Create an API for creating, modifying and deleting stimsets programmatically.
+  See `Simset API
+  <https://alleninstitute.github.io/MIES/group/group___stimset_a_p_i_functions.html#group-stimsetapifunctions>`_
+  for examples and documentation.
+- Make all parameter waves have valid liberal object names as dimension labels (required for Igor Pro 9)
+
+Work Sequencing Engine
+----------------------
+
+None
+
+Internal
+--------
+
+- Many more functions are now marked as threadsafe. In addition the labnotebook
+  getters now also work in preemptive threads.
+- Add a convenient way to debug threadsafe functions. See `Debugging threadsafe functions
+  <https://alleninstitute.github.io/MIES/developers.html?highlight=threadsafe#debugging-threadsafe-functions>`_
+  for instructions. This introduced the `THREADING_DISABLED` define which allows code to handle this case gracefully.
+- Fix compile errors with Igor Pro 9 due to duplicated case labels
+- Make dimension labels valid liberal names (required for Igor Pro 9)
+- Rework LBN getters for the databrowser/sweepbrowser completely
+- Add menu entry for resetting the analysis browser
+- Make the release package work as installation source again
+- DC_PlaceDataInDAQDataWave was refactored to be readable and maintainable again
+- Postpone writing the epoch information into the sweep settings wave to after finishing the sweeps
+
+Tests
+-----
+
+- Add tests to execute all window macros
+- Add tests to check that all GUIs don't have invalid control procedures
+- Other fixes and additions all over the place
+
+Async Framework
+---------------
+
+- Enhance ``ASYN_AddParam`` to allow for user defined parameter names and add
+  ``ASYNC_FetchWave``/``ASYNC_FetchVariable``/``ASYNC_FetchString`` for convenient
+  readout.
+
+Logging
+-------
+
+- Add log entries in failures cases of ``DAQ stop reason``
+
+Installer
+---------
+
+None
+
 Release 2.2
 ===========
 
