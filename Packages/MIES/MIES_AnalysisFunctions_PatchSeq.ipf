@@ -2924,7 +2924,7 @@ static Function [STRUCT ChirpBoundsInfo s] PSQ_CR_DetermineBoundsState(variable 
 	return [s]
 End
 
-static Function/S PSQ_CR_BoundsActionToString(variable boundsAction)
+Function/S PSQ_CR_BoundsActionToString(variable boundsAction)
 
 	switch(boundsAction)
 		case PSQ_CR_PASS:
