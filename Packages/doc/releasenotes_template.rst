@@ -59,6 +59,10 @@ DataBrowser/SweepBrowser
 ------------------------
 
 
+Dashboard
+~~~~~~~~~
+
+
 DA\_Ephys
 ---------
 
@@ -123,6 +127,18 @@ Changed textual entries
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 
+Renamed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Renamed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Epoch information
+-----------------
+
+
 NWB/IPNWB
 ---------
 
@@ -157,6 +173,7 @@ Async Framework
 
 Logging
 -------
+
 
 Installer
 ---------
