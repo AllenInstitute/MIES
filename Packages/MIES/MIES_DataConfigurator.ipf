@@ -1014,9 +1014,9 @@ static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DataConfiguration
 	DC_DocumentChannelProperty(panelTitle, "Igor Pro version", INDEP_HEADSTAGE, NaN, NaN, str=GetIgorProVersion())
 	DC_DocumentChannelProperty(panelTitle, "Igor Pro build", INDEP_HEADSTAGE, NaN, NaN, str=GetIgorProBuildVersion())
 	DC_DocumentChannelProperty(panelTitle, "Igor Pro bitness", INDEP_HEADSTAGE, NaN, NaN, var=GetArchitectureBits())
-	DC_DocumentChannelProperty(panelTitle, "JSON config file: path", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_SOURCEFILE_PATH))
-	DC_DocumentChannelProperty(panelTitle, "JSON config file: SHA-256 hash", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_SOURCEFILE_HASH))
-	DC_DocumentChannelProperty(panelTitle, "JSON config file: stimset nwb file path", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_STIMSET_NWB_PATH))
+	DC_DocumentChannelProperty(panelTitle, "JSON config file [path]", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_SOURCEFILE_PATH))
+	DC_DocumentChannelProperty(panelTitle, "JSON config file [SHA-256 hash]", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_SOURCEFILE_HASH))
+	DC_DocumentChannelProperty(panelTitle, "JSON config file [stimset nwb file path]", INDEP_HEADSTAGE, NaN, NaN, str=GetUserData(panelTitle, "", EXPCONFIG_UDATA_STIMSET_NWB_PATH))
 	DC_DocumentChannelProperty(panelTitle, "TP after DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ"))
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)

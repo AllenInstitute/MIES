@@ -583,3 +583,104 @@ Function SCid_InvalidWaveRef()
 	WAVE/Z settings  = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(settings, NULL_WAVE)
 End
+
+Function/WAVE LBNInvalidValidPairs()
+	Make/WAVE/N=5/FREE waves
+
+	Make/T/FREE wv0 = {"a:b", "a [b]"}
+	waves[0] = wv0
+
+	Make/T/FREE wv1 = {"\"", "_"}
+	waves[1] = wv1
+
+	Make/T/FREE wv2 = {"\'", "_"}
+	waves[2] = wv2
+
+	Make/T/FREE wv3 = {";", "_"}
+	waves[3] = wv3
+
+	Make/T/FREE wv4 = {":", "_"}
+	waves[4] = wv4
+
+	return waves
+End
+
+// UTF_TD_GENERATOR LBNInvalidValidPairs
+Function LabnotebookUpgradeForValidDimensionLabelsNum([WAVE/T wv])
+	string device, txtSetting, refSetting, invalidName, newName
+	variable numSetting
+
+	device = "ABCD"
+
+	WAVE/Z numericalValues = GetLBNumericalValues(device)
+	WAVE/T/Z numericalKeys   = GetLBNumericalKeys(device)
+
+	// add entry (numerical)
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[INDEP_HEADSTAGE] = 4711
+	ED_AddEntryToLabnotebook(device, "someSetting", values, overrideSweepNo = 0)
+
+	// now check that this exists
+	numSetting = GetLastSettingIndep(numericalValues, 0, "USER_someSetting", UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(numSetting, 4711)
+
+	// pretend the LBN is old so that the name cleanup for IP9 triggers
+	MIES_WAVEGETTERS#SetWaveVersion(numericalValues, 48)
+	MIES_WAVEGETTERS#SetWaveVersion(numericalKeys, 48)
+
+	invalidName = wv[0]
+	newName     = wv[1]
+
+	// numerical
+
+	// overwrite the old name with an invalid one
+	numericalKeys[%Parameter][%$"USER_someSetting"] = invalidName
+
+	// trigger LBN upgrade
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	// and check that this entry is now renamed
+	CHECK(FindDimLabel(numericalKeys, COLS, newName) >= 0)
+	CHECK(FindDimLabel(numericalValues, COLS, newName) >= 0)
+	txtSetting = numericalKeys[%Parameter][%$newName]
+	CHECK_EQUAL_STR(txtSetting, newName)
+End
+
+// UTF_TD_GENERATOR LBNInvalidValidPairs
+Function LabnotebookUpgradeForValidDimensionLabelsText([WAVE/T wv])
+	string device, refSetting, invalidName, newName, setting
+
+	device = "ABCD"
+
+	WAVE/Z textualValues = GetLBTextualValues(device)
+	WAVE/T/Z textualKeys   = GetLBTextualKeys(device)
+
+	// add entry (textual)
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) valuesTxt
+	valuesTxt[INDEP_HEADSTAGE] = "4711"
+	ED_AddEntryToLabnotebook(device, "someSetting", valuesTxt, overrideSweepNo = 0)
+
+	// now check that this exists
+	setting = GetLastSettingTextIndep(textualValues, 0, "USER_someSetting", UNKNOWN_MODE)
+	refSetting = "4711"
+	CHECK_EQUAL_STR(setting, refSetting)
+
+	// pretend the LBN is old so that the name cleanup for IP9 triggers
+	MIES_WAVEGETTERS#SetWaveVersion(textualValues, 48)
+	MIES_WAVEGETTERS#SetWaveVersion(textualKeys, 48)
+
+	invalidName = wv[0]
+	newName     = wv[1]
+
+	// overwrite the old name with an invalid one
+	textualKeys[%Parameter][%$"USER_someSetting"] = invalidName
+
+	// trigger LBN upgrade
+	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
+
+	// and check that this entry is now renamed
+	CHECK(FindDimLabel(textualKeys, COLS, newName) >= 0)
+	CHECK(FindDimLabel(textualKeys, COLS, newName) >= 0)
+	setting = textualKeys[%Parameter][%$newName]
+	CHECK_EQUAL_STR(setting, newName)
+End

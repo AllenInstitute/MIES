@@ -21,9 +21,7 @@
 #pragma IgorVersion=8.04
 
 #if IgorVersion() >= 9.0
-#if (NumberByKey("BUILD", IgorInfo(0)) < 37800)
-#define TOO_OLD_IGOR
-#endif
+// 37840 is the released version of IP9
 #else
 #if (NumberByKey("BUILD", IgorInfo(0)) < 37456)
 #define TOO_OLD_IGOR

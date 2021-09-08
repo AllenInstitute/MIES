@@ -623,7 +623,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 53
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 30
-Constant WAVEBUILDER_PANEL_VERSION        = 10
+Constant WAVEBUILDER_PANEL_VERSION        = 11
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 
 /// Version of the labnotebooks (numerical and textual)
@@ -633,7 +633,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 48
+Constant LABNOTEBOOK_VERSION = 49
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7

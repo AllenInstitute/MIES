@@ -1126,6 +1126,7 @@ End
 /// - Addition of fourth column "EntrySourceType"
 /// - Fix unit and tolerance of "Repeat Sets"
 /// - Reapplying the dimension labels as the old ones were cut off after 31 bytes
+/// - Making dimension labels valid liberal object names
 static Function UpgradeLabNotebook(panelTitle)
 	string panelTitle
 
@@ -1314,6 +1315,39 @@ static Function UpgradeLabNotebook(panelTitle)
 		DEBUGPRINT("Upgraded textual labnotebook to hold acquisition state column")
 	endif
 	// END acquisition state
+
+	// BEGIN IP9 dimension labels
+	if(WaveVersionIsSmaller(numericalKeys, 49))
+		numericalKeys[%Parameter][] = FixInvalidLabnotebookKey(numericalKeys[%Parameter][q])
+		LBN_SetDimensionLabels(numericalKeys, numericalValues)
+	endif
+
+	if(WaveVersionIsSmaller(textualKeys, 49))
+		textualKeys[%Parameter][] = FixInvalidLabnotebookKey(textualKeys[%Parameter][q])
+		LBN_SetDimensionLabels(textualKeys, textualValues)
+	endif
+	// END IP9 dimension labels
+End
+
+static Function/S FixInvalidLabnotebookKey(string name)
+	string first, last, result
+
+	if(strsearch(name, ":", 0) < 0)
+		// fixup unknown user labnotebook keys which are now invalid
+		return CleanupName(name, 1)
+	endif
+
+	// some common names are now invalid too,
+	// these are changed from `A: B` to `A [B]`.
+
+	SplitString/E="([^:]+):[[:space:]]*(.+)" name, first, last
+
+	if(V_Flag == 2)
+		sprintf result, "%s [%s]", trimstring(first), trimstring(last)
+		return result
+	endif
+
+	return CleanupName(name, 1)
 End
 
 /// @brief Return a wave reference to the text labnotebook keys
@@ -2179,9 +2213,9 @@ End
 /// - 26: Digitizer Hardware Name
 /// - 27: Digitizer Serial Numbers
 /// - 28: Epochs
-/// - 29: JSON config file: path (`|` separated list of full file paths)
-/// - 30: JSON config file: SHA-256 hash (`|` separated list of hashes)
-/// - 31: JSON config file: stimset nwb file path
+/// - 29: JSON config file [path] (`|` separated list of full file paths)
+/// - 30: JSON config file [SHA-256 hash] (`|` separated list of hashes)
+/// - 31: JSON config file [stimset nwb file path]
 /// - 32: Igor Pro build
 /// - 33: Indexing End Stimset
 /// - 34: TTL Indexing End Stimset (hardware agnostic), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
@@ -2245,9 +2279,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][26] = "Digitizer Hardware Name"
 	wv[0][27] = "Digitizer Serial Numbers"
 	wv[0][28] = EPOCHS_ENTRY_KEY
-	wv[0][29] = "JSON config file: path"
-	wv[0][30] = "JSON config file: SHA-256 hash"
-	wv[0][31] = "JSON config file: stimset nwb file path"
+	wv[0][29] = "JSON config file [path]"
+	wv[0][30] = "JSON config file [SHA-256 hash]"
+	wv[0][31] = "JSON config file [stimset nwb file path]"
 	wv[0][32] = "Igor Pro build"
 	wv[0][33] = "Indexing End Stimset"
 	wv[0][34] = "TTL Indexing End Stimset"
@@ -3229,7 +3263,7 @@ Function/WAVE GetTestPulse()
 	return wv
 End
 
-static Constant WP_WAVE_LAYOUT_VERSION = 11
+static Constant WP_WAVE_LAYOUT_VERSION = 12
 
 /// @brief Automated testing helper
 static Function GetWPVersion()
@@ -3283,6 +3317,8 @@ Function UpgradeWaveParam(wv)
 
 	// upgrade to wave version 11
 	// nothing to do as we keep them float
+
+	// upgrade to wave version 12 is done in AddDimLabelsToWP (liberal object names)
 
 	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
 End
@@ -3339,19 +3375,19 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 25, $("Chirp end frequency delta")      , wv
 	SetDimLabel ROWS, 26, $("Noise filter order")             , wv
 	SetDimLabel ROWS, 27, $("Noise filter order delta")       , wv
-	SetDimLabel ROWS, 28, $("PT: First Mixed Frequency")      , wv
-	SetDimLabel ROWS, 29, $("PT: First Mixed Frequency delta"), wv
-	SetDimLabel ROWS, 30, $("PT: Last Mixed Frequency")       , wv
-	SetDimLabel ROWS, 31, $("PT: Last Mixed Frequency delta") , wv
+	SetDimLabel ROWS, 28, $("PT [First Mixed Frequency]")     , wv
+	SetDimLabel ROWS, 29, $("PT [First Mixed Frequency] delta"), wv
+	SetDimLabel ROWS, 30, $("PT [Last Mixed Frequency]")      , wv
+	SetDimLabel ROWS, 31, $("PT [Last Mixed Frequency] delta"), wv
 	// unused entries are not labeled
 	SetDimLabel ROWS, 39, $("Reseed RNG for each epoch")      , wv
 	// unused entry, previously the global delta operation
-	SetDimLabel ROWS, 41, $("PT: Mixed Frequency")            , wv
-	SetDimLabel ROWS, 42, $("PT: Shuffle")                    , wv
-	SetDimLabel ROWS, 43, $("Chirp type: Log or sin")         , wv
+	SetDimLabel ROWS, 41, $("PT [Mixed Frequency]")           , wv
+	SetDimLabel ROWS, 42, $("PT [Shuffle]")                   , wv
+	SetDimLabel ROWS, 43, $("Chirp type [Log or sin]")        , wv
 	SetDimLabel ROWS, 44, $("Poisson distribution true/false"), wv
 	SetDimLabel ROWS, 45, $("Number of pulses")               , wv
-	SetDimLabel ROWS, 46, $("Duration type: User/Automatic")  , wv
+	SetDimLabel ROWS, 46, $("Duration type [User/Automatic]") , wv
 	SetDimLabel ROWS, 47, $("Number of pulses delta")         , wv
 	SetDimLabel ROWS, 48, $("Random Seed")                    , wv
 	SetDimLabel ROWS, 49, $("Reseed RNG for each step")       , wv
@@ -3360,7 +3396,7 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 51, $("Offset dme")                     , wv
 	SetDimLabel ROWS, 52, $("Duration dme")                   , wv
 	SetDimLabel ROWS, 53, $("Trigonometric function Sin/Cos") , wv
-	SetDimLabel ROWS, 54, $("Noise Type: White, Pink, Brown") , wv
+	SetDimLabel ROWS, 54, $("Noise Type [White, Pink, Brown]"), wv
 	SetDimLabel ROWS, 55, $("Build resolution (index)")       , wv
 	SetDimLabel ROWS, 56, $("Pulse train type (index)")       , wv
 	SetDimLabel ROWS, 57, $("Sin/chirp/saw frequency dme")    , wv
@@ -3373,8 +3409,8 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 64, $("High pass filter cut off dme")   , wv
 	SetDimLabel ROWS, 65, $("Chirp end frequency dme")        , wv
 	SetDimLabel ROWS, 66, $("Noise filter order dme")         , wv
-	SetDimLabel ROWS, 67, $("PT: First Mixed Frequency dme")  , wv
-	SetDimLabel ROWS, 68, $("PT: Last Mixed Frequency dme")   , wv
+	SetDimLabel ROWS, 67, $("PT [First Mixed Frequency] dme") , wv
+	SetDimLabel ROWS, 68, $("PT [Last Mixed Frequency] dme")  , wv
 	SetDimLabel ROWS, 69, $("Number of pulses dme")           , wv
 	SetDimLabel ROWS, 70, $("Amplitude op")                   , wv
 	SetDimLabel ROWS, 71, $("Offset op")                      , wv
@@ -3389,8 +3425,8 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 80, $("High pass filter cut off op")    , wv
 	SetDimLabel ROWS, 81, $("Chirp end frequency op")         , wv
 	SetDimLabel ROWS, 82, $("Noise filter order op")          , wv
-	SetDimLabel ROWS, 83, $("PT: First Mixed Frequency op")   , wv
-	SetDimLabel ROWS, 84, $("PT: Last Mixed Frequency op")    , wv
+	SetDimLabel ROWS, 83, $("PT [First Mixed Frequency] op")  , wv
+	SetDimLabel ROWS, 84, $("PT [Last Mixed Frequency] op")   , wv
 	SetDimLabel ROWS, 85, $("Number of pulses op")            , wv
 End
 
@@ -3453,7 +3489,7 @@ Function/WAVE GetWaveBuilderWaveParamAsFree()
 	return wv
 End
 
-static Constant WPT_WAVE_LAYOUT_VERSION = 10
+static Constant WPT_WAVE_LAYOUT_VERSION = 11
 
 /// @brief Automated testing helper
 static Function GetWPTVersion()
@@ -3525,6 +3561,8 @@ Function UpgradeWaveTextParam(wv)
 		wv[10][%Set][INDEP_EPOCH_TYPE] = ""
 	endif
 
+	// upgrade to wave version 11 is done in AddDimLabelsToWPT (liberal object names)
+
 	SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
 End
 
@@ -3561,8 +3599,8 @@ static Function AddDimLabelsToWPT(wv)
 	SetDimLabel ROWS, 21, $("High pass filter cut off ldel") , wv
 	SetDimLabel ROWS, 22, $("Chirp end frequency ldel")      , wv
 	SetDimLabel ROWS, 23, $("Noise filter order ldel")       , wv
-	SetDimLabel ROWS, 24, $("PT: First Mixed Frequency ldel"), wv
-	SetDimLabel ROWS, 25, $("PT: Last Mixed Frequency ldel") , wv
+	SetDimLabel ROWS, 24, $("PT [First Mixed Frequency] ldel"), wv
+	SetDimLabel ROWS, 25, $("PT [Last Mixed Frequency] ldel"), wv
 	SetDimLabel ROWS, 26, $("Number of pulses ldel")         , wv
 	SetDimLabel ROWS, 27, $("Analysis pre set function")     , wv
 	SetDimLabel ROWS, 28, $("Inter trial interval ldel")     , wv
@@ -3850,10 +3888,10 @@ Function/WAVE GetEpochParameterNames()
 	/// @{
 	Make/T/FREE st_0 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op"}
 	Make/T/FREE st_1 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op"}
-	Make/T/FREE st_2 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Build resolution (index)", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "High pass filter cut off", "High pass filter cut off delta", "High pass filter cut off dme", "High pass filter cut off ldel", "High pass filter cut off op", "Low pass filter cut off", "Low pass filter cut off delta", "Low pass filter cut off dme", "Low pass filter cut off ldel", "Low pass filter cut off op", "Noise filter order", "Noise filter order delta", "Noise filter order dme", "Noise filter order ldel", "Noise filter order op", "Noise Type: White, Pink, Brown", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Random Seed", "Reseed RNG for each epoch", "Reseed RNG for each step"}
-	Make/T/FREE st_3 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Chirp end frequency", "Chirp end frequency delta", "Chirp end frequency dme", "Chirp end frequency ldel", "Chirp end frequency op", "Chirp type: Log or sin", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op", "Trigonometric function Sin/Cos"}
+	Make/T/FREE st_2 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Build resolution (index)", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "High pass filter cut off", "High pass filter cut off delta", "High pass filter cut off dme", "High pass filter cut off ldel", "High pass filter cut off op", "Low pass filter cut off", "Low pass filter cut off delta", "Low pass filter cut off dme", "Low pass filter cut off ldel", "Low pass filter cut off op", "Noise filter order", "Noise filter order delta", "Noise filter order dme", "Noise filter order ldel", "Noise filter order op", "Noise Type [White, Pink, Brown]", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Random Seed", "Reseed RNG for each epoch", "Reseed RNG for each step"}
+	Make/T/FREE st_3 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Chirp end frequency", "Chirp end frequency delta", "Chirp end frequency dme", "Chirp end frequency ldel", "Chirp end frequency op", "Chirp type [Log or sin]", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op", "Trigonometric function Sin/Cos"}
 	Make/T/FREE st_4 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op"}
-	Make/T/FREE st_5 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Duration type: User/Automatic", "Number of pulses", "Number of pulses delta", "Number of pulses dme", "Number of pulses ldel", "Number of pulses op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Poisson distribution true/false", "PT: First Mixed Frequency", "PT: First Mixed Frequency delta", "PT: First Mixed Frequency dme", "PT: First Mixed Frequency ldel", "PT: First Mixed Frequency op", "PT: Last Mixed Frequency", "PT: Last Mixed Frequency delta", "PT: Last Mixed Frequency dme", "PT: Last Mixed Frequency ldel", "PT: Last Mixed Frequency op", "PT: Mixed Frequency", "PT: Shuffle", "Pulse train type (index)", "Random Seed", "Reseed RNG for each epoch", "Reseed RNG for each step", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op", "Train pulse duration", "Train pulse duration delta", "Train pulse duration dme", "Train pulse duration ldel", "Train pulse duration op"}
+	Make/T/FREE st_5 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Duration type [User/Automatic]", "Number of pulses", "Number of pulses delta", "Number of pulses dme", "Number of pulses ldel", "Number of pulses op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "Poisson distribution true/false", "PT [First Mixed Frequency]", "PT [First Mixed Frequency] delta", "PT [First Mixed Frequency] dme", "PT [First Mixed Frequency] ldel", "PT [First Mixed Frequency] op", "PT [Last Mixed Frequency]", "PT [Last Mixed Frequency] delta", "PT [Last Mixed Frequency] dme", "PT [Last Mixed Frequency] ldel", "PT [Last Mixed Frequency] op", "PT [Mixed Frequency]", "PT [Shuffle]", "Pulse train type (index)", "Random Seed", "Reseed RNG for each epoch", "Reseed RNG for each step", "Sin/chirp/saw frequency", "Sin/chirp/saw frequency delta", "Sin/chirp/saw frequency dme", "Sin/chirp/saw frequency ldel", "Sin/chirp/saw frequency op", "Train pulse duration", "Train pulse duration delta", "Train pulse duration dme", "Train pulse duration ldel", "Train pulse duration op"}
 	Make/T/FREE st_6 = {"Amplitude", "Amplitude delta", "Amplitude dme", "Amplitude ldel", "Amplitude op", "Duration", "Duration delta", "Duration dme", "Duration ldel", "Duration op", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op", "PSC exp decay time 1/2", "PSC exp decay time 1/2 delta", "PSC exp decay time 1/2 dme", "PSC exp decay time 1/2 ldel", "PSC exp decay time 1/2 op", "PSC exp decay time 2/2", "PSC exp decay time 2/2 delta", "PSC exp decay time 2/2 dme", "PSC exp decay time 2/2 ldel", "PSC exp decay time 2/2 op", "PSC exp rise time", "PSC exp rise time delta", "PSC exp rise time dme", "PSC exp rise time ldel", "PSC exp rise time op", "PSC ratio decay times", "PSC ratio decay times delta", "PSC ratio decay times dme", "PSC ratio decay times ldel", "PSC ratio decay times op"}
 	Make/T/FREE st_7 = {"Custom epoch wave name", "Offset", "Offset delta", "Offset dme", "Offset ldel", "Offset op"}
 	Make/T/FREE st_8 = {"Combine epoch formula"}
@@ -3932,7 +3970,7 @@ End
 /// - 2: Async Alarm $Channel OnOff
 /// - 3: Async Alarm $Channel Min
 /// - 4: Async Alarm  $Channel Max
-/// - 5: Async AD $Channel
+/// - 5: Async AD $Channel [$Title]
 Function/Wave GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, string title, string unit)
 	string prefix
 
@@ -3972,7 +4010,7 @@ Function/Wave GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, strin
 	wv[%Units][4]     = ""
 	wv[%Tolerance][4] = ".001"
 
-	sprintf prefix, "Async AD %d: %s", channel, title
+	sprintf prefix, "Async AD %d [%s]", channel, title
 
 	wv[%Parameter][5] = prefix
 	wv[%Units][5]     = unit

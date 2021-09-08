@@ -242,9 +242,9 @@ static Function GetStimsetParameterAsStringWorks()
 
 	// 1 == Pink
 	// internally stored as numeric, but with the API as string for better readability
-	WP[%$("Noise Type: White, Pink, Brown")][1][%$("Noise")] = 1
+	WP[%$("Noise Type [White, Pink, Brown]")][1][%$("Noise")] = 1
 
-	str = ST_GetStimsetParameterAsString(name, "Noise Type: White, Pink, Brown", epochIndex = 1)
+	str = ST_GetStimsetParameterAsString(name, "Noise Type [White, Pink, Brown]", epochIndex = 1)
 	ref = "Pink"
 	CHECK_EQUAL_STR(str, ref)
 
@@ -283,8 +283,8 @@ static Function SetStimsetParameterWorks()
 	CHECK_WAVE(WP, NUMERIC_WAVE)
 
 	// string given but stored as numeric
-	ST_SetStimsetParameter(name, "Noise Type: White, Pink, Brown", epochIndex = 1, str = "Brown")
-	CHECK_EQUAL_VAR(WP[%$("Noise Type: White, Pink, Brown")][1][%$("Noise")], 2)
+	ST_SetStimsetParameter(name, "Noise Type [White, Pink, Brown]", epochIndex = 1, str = "Brown")
+	CHECK_EQUAL_VAR(WP[%$("Noise Type [White, Pink, Brown]")][1][%$("Noise")], 2)
 
 	// really stored numerical, per epoch
 	ST_SetStimsetParameter(name, "Duration", epochIndex = 0, var = 123)
@@ -414,12 +414,12 @@ static Function SetStimsetParameterChecksInput()
 	ParameterWavesAreUnchanged_IGNORE(s)
 
 	// indexed epoch does not have that parameter
-	ST_SetStimsetParameter(name, "Noise Type: White, Pink, Brown", epochIndex = 0, str = "Brown")
+	ST_SetStimsetParameter(name, "Noise Type [White, Pink, Brown]", epochIndex = 0, str = "Brown")
 	CHECK_EQUAL_VAR(ret, 1)
 	ParameterWavesAreUnchanged_IGNORE(s)
 
 	// translated string parameter with invalid string
-	ST_SetStimsetParameter(name, "Noise Type: White, Pink, Brown", epochIndex = 1, str = "I DON'T EXIST")
+	ST_SetStimsetParameter(name, "Noise Type [White, Pink, Brown]", epochIndex = 1, str = "I DON'T EXIST")
 	CHECK_EQUAL_VAR(ret, 1)
 	ParameterWavesAreUnchanged_IGNORE(s)
 End

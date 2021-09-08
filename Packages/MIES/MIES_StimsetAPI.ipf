@@ -165,7 +165,7 @@ End
 static Function/S ST_ParameterStringValues(string entry)
 	// translate passed string values which are numeric internally
 	//                                  WBP_GetDeltaModes() WBP_GetNoiseTypes()               WBP_GetNoiseBuildResolution() WBP_GetTriggerTypes()             WBP_GetPulseTypes()
-	Make/FREE/T translateableEntries = {"^.* op$",          "Noise Type: White, Pink, Brown", "Build resolution (index)",   "Trigonometric function Sin/Cos", "Pulse train type (index)"}
+	Make/FREE/T translateableEntries = {"^.* op$",          "Noise Type [White, Pink, Brown]", "Build resolution (index)",   "Trigonometric function Sin/Cos", "Pulse train type (index)"}
 
 	if(GrepString(entry, translateableEntries[0]))
 		return WBP_GetDeltaModes()
