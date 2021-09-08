@@ -1687,7 +1687,7 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 31
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 32
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -1829,6 +1829,7 @@ End
 /// - 52: Autobias % (DAEphys->Settings->Amplifier)
 /// - 53: Autobias Interval (DAEphys->Settings->Amplifier)
 /// - 54: TP after DAQ
+/// - 55: Epochs version
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -1847,9 +1848,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 55) wv
+		Redimension/N=(-1, 56) wv
 	else
-		Make/T/N=(3, 55) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 56) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -2077,6 +2078,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][54] = "TP after DAQ"
 	wv[%Units][54]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][54] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][55] = "Epochs version"
+	wv[%Units][55]     = "a. u."
+	wv[%Tolerance][55] = "1"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)

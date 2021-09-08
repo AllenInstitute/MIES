@@ -10,10 +10,10 @@ static Constant OTHER_EPOCHS_PRECISION = 0.050
 static Constant MAX_ITERATIONS = 100000
 
 /// @brief Acquire data with the given DAQSettings on two headstages
-static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ, onsetDelayUser, terminationDelay])
+static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ, onsetDelayUser, terminationDelay, analysisFunction])
 	STRUCT DAQSettings& s
 	string devices
-	string stimSetName1, stimSetName2
+	string stimSetName1, stimSetName2, analysisFunction
 	variable dDAQ, oodDAQ, onsetDelayUser, terminationDelay
 
 	string unlockedPanelTitle, device
@@ -75,6 +75,9 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 
 		PASS()
 	endfor
+
+	ST_SetStimsetParameter(stimsetName1, "Analysis function (Generic)", str = analysisFunction)
+	ST_SetStimsetParameter(stimsetName2, "Analysis function (Generic)", str = analysisFunction)
 
 	device = devices
 

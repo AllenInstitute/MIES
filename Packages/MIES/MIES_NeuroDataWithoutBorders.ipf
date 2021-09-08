@@ -1274,7 +1274,6 @@ threadsafe static Function NWB_ClearWriteChannelParams(s)
 	string device
 	variable sweep, startingTime, samplingRate, groupIndex
 
-	// all entries except device and sweep will be cleared
 	if(strlen(s.device) > 0)
 		device = s.device
 	endif

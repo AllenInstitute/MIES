@@ -3058,7 +3058,7 @@ End
 /// '_free_'[0][0][1][1]= {"","","",""}
 /// '_free_'[0][0][0][2]= {"6","","",""}
 /// '_free_'[0][0][1][2]= {"","","",""}
-Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, chuSep])
+threadsafe Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, chuSep])
 	string list
 	variable dims
 	string rowSep, colSep, laySep, chuSep
@@ -3067,8 +3067,8 @@ Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, chuSep])
 	variable rowMaxSize, colMaxSize, layMaxSize, chuMaxSize
 	variable rowNr, colNr, layNr
 
-	ASSERT(!isNull(list), "list input string is null")
-	ASSERT(dims > 0 && dims <= 4, "number of dimensions must be > 0 and < 5")
+	ASSERT_TS(!isNull(list), "list input string is null")
+	ASSERT_TS(dims > 0 && dims <= 4, "number of dimensions must be > 0 and < 5")
 
 	if(ParamIsDefault(rowSep))
 		rowSep = ";"
@@ -4815,6 +4815,8 @@ End
 ///
 /// @param w 1D text wave
 /// @param[in] entry element content to compare
+///
+/// @return 0 if entry was found, 1 otherwise
 Function RemoveTextWaveEntry1D(w, entry)
 	WAVE/T w
 	string entry
@@ -4825,10 +4827,13 @@ Function RemoveTextWaveEntry1D(w, entry)
 
 	ASSERT(IsTextWave(w), "Input wave must be a text wave")
 
-	FindValue/TXOP=4/TEXT=entry w
+	FindValue/TXOP=4/TEXT=entry/RMD=[][0][0][0] w
 	if(V_Value >= 0)
 		DeletePoints V_Value, 1, w
+		return 0
 	endif
+
+	return 1
 End
 
 /// @brief Checks if a string ends with a specific suffix
