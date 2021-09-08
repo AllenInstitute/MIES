@@ -1751,6 +1751,7 @@ static Function DC_ITC_MakeTTLWave(panelTitle, rackNo)
 	string stimSetWaveNote = ""
 	string stimSetchecksum = ""
 	string stimSetLength = ""
+	string setCycleCounts = ""
 
 	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 
@@ -1786,6 +1787,7 @@ static Function DC_ITC_MakeTTLWave(panelTitle, rackNo)
 		if(!statusTTLFiltered[i])
 			if(i >= first && i <= last)
 				setSweepCounts = AddListItem("", setSweepCounts, ";", inf)
+				setCycleCounts = AddListItem("", setCycleCounts, ";", inf)
 			endif
 
 			indexingEndStimset = AddListItem("", indexingEndStimset, ";", inf)
@@ -1814,6 +1816,7 @@ static Function DC_ITC_MakeTTLWave(panelTitle, rackNo)
 			bit = 2^(i - first)
 			MultiThread TTLWave[0, lastIdx] += bit * TTLStimSet[p][col]
 			setSweepCounts = AddListItem(num2str(col), setSweepCounts, ";", inf)
+			setCycleCounts = AddListItem(num2str(setCycleCount), setCycleCounts, ";", inf)
 		endif
 	endfor
 
@@ -1821,10 +1824,12 @@ static Function DC_ITC_MakeTTLWave(panelTitle, rackNo)
 		sweepDataLNB[0][%$"TTL rack zero bits"][INDEP_HEADSTAGE]                = bits
 		sweepDataTxTLNB[0][%$"TTL rack zero stim sets"][INDEP_HEADSTAGE]        = listOfSets
 		sweepDataTxTLNB[0][%$"TTL rack zero set sweep counts"][INDEP_HEADSTAGE] = setSweepCounts
+		sweepDataTxTLNB[0][%$"TTL rack zero set cycle counts"][INDEP_HEADSTAGE] = setCycleCounts
 	else
 		sweepDataLNB[0][%$"TTL rack one bits"][INDEP_HEADSTAGE]                = bits
 		sweepDataTxTLNB[0][%$"TTL rack one stim sets"][INDEP_HEADSTAGE]        = listOfSets
 		sweepDataTxTLNB[0][%$"TTL rack one set sweep counts"][INDEP_HEADSTAGE] = setSweepCounts
+		sweepDataTxTLNB[0][%$"TTL rack one set cycle counts"][INDEP_HEADSTAGE] = setCycleCounts
 	endif
 
 	sweepDataTxTLNB[0][%$"TTL Indexing End stimset"][INDEP_HEADSTAGE] = indexingEndStimset
@@ -1845,6 +1850,7 @@ static Function DC_NI_MakeTTLWave(panelTitle)
 	string stimSetWaveNote = ""
 	string stimSetChecksum = ""
 	string stimSetLength = ""
+	string setCycleCounts = ""
 
 	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
@@ -1858,6 +1864,7 @@ static Function DC_NI_MakeTTLWave(panelTitle)
 		if(!statusTTLFiltered[i])
 			listOfSets = AddListItem("", listOfSets, ";", inf)
 			setSweepCounts = AddListItem("", setSweepCounts, ";", inf)
+			setCycleCounts = AddListItem("", setCycleCounts, ";", inf)
 			channels = AddListItem("", channels, ";", inf)
 			indexingEndStimset = AddListItem("", indexingEndStimset, ";", inf)
 			stimSetWaveNote = AddListItem("", stimSetWaveNote, ";", inf)
@@ -1875,6 +1882,7 @@ static Function DC_NI_MakeTTLWave(panelTitle)
 
 		listOfSets = AddListItem(set, listOfSets, ";", inf)
 		setSweepCounts = AddListItem(num2str(col), setSweepCounts, ";", inf)
+		setCycleCounts = AddListItem(num2str(setCycleCount), setCycleCounts, ";", inf)
 		channels = AddListItem(num2str(i), channels, ";", inf)
 		indexingEndStimset = AddListItem(allSetNamesIndexingEnd[i], indexingEndStimset, ";", inf)
 		stimSetWaveNote = AddListItem(URLEncode(note(TTLStimSet)), stimSetWaveNote, ";", inf)
@@ -1889,6 +1897,7 @@ static Function DC_NI_MakeTTLWave(panelTitle)
 	sweepDataTxTLNB[0][%$"TTL channels"][INDEP_HEADSTAGE]             = channels
 	sweepDataTxTLNB[0][%$"TTL stim sets"][INDEP_HEADSTAGE]            = listOfSets
 	sweepDataTxTLNB[0][%$"TTL set sweep counts"][INDEP_HEADSTAGE]     = setSweepCounts
+	sweepDataTxTLNB[0][%$"TTL set cycle counts"][INDEP_HEADSTAGE]     = setCycleCounts
 	sweepDataTxTLNB[0][%$"TTL Indexing End stimset"][INDEP_HEADSTAGE] = indexingEndStimset
 	sweepDataTxTLNB[0][%$"TTL Stimset wave note"][INDEP_HEADSTAGE]    = stimSetWaveNote
 	sweepDataTxTLNB[0][%$"TTL Stim Wave Checksum"][INDEP_HEADSTAGE]   = stimSetChecksum

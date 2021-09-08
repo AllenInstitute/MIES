@@ -2467,7 +2467,7 @@ End
 
 // Using unassociated channels works
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
-Function UnassociatedChannels([str])
+Function UnassociatedChannelsAndTTLs([str])
 	string str
 
 	STRUCT DAQSettings s
@@ -2475,7 +2475,7 @@ Function UnassociatedChannels([str])
 	AcquireData(s, str, preAcquireFunc = EnableUnassocChannels_IGNORE)
 End
 
-Function UnassociatedChannels_REENTRY([str])
+Function UnassociatedChannelsAndTTLs_REENTRY([str])
 	string str
 
 	string device, sweeps, configs, unit, expectedStr
@@ -2596,6 +2596,17 @@ Function UnassociatedChannels_REENTRY([str])
 					else
 						CHECK_WAVE(sweepCounts, NULL_WAVE)
 					endif
+
+					// set cycle count
+					WAVE/T/Z cycleCounts = GetLastSetting(textualValues, j, "TTL rack zero set cycle counts", DATA_ACQUISITION_MODE)
+					CHECK_EQUAL_TEXTWAVES(cycleCounts, {"", "", "", "", "", "", "", "", ";0;;0;"})
+					WAVE/T/Z cycleCounts = GetLastSetting(textualValues, j, "TTL rack one set cycle counts", DATA_ACQUISITION_MODE)
+					if(HW_ITC_GetNumberOfRacks(device) > 1)
+						CHECK_EQUAL_TEXTWAVES(cycleCounts, {"", "", "", "", "", "", "", "", ";0;;0;"})
+					else
+						CHECK_WAVE(cycleCounts, NULL_WAVE)
+					endif
+
 					break
 				case HARDWARE_NI_DAC:
 					CHECK_EQUAL_WAVES(TTLs, {1, 3}, mode = WAVE_DATA)
@@ -2608,6 +2619,9 @@ Function UnassociatedChannels_REENTRY([str])
 
 					WAVE/T/Z sweepCounts = GetLastSetting(textualValues, j, "TTL set sweep counts", DATA_ACQUISITION_MODE)
 					CHECK_EQUAL_TEXTWAVES(sweepCounts, {"", "", "", "", "", "", "", "", ";0;;0;;;;;"})
+
+					WAVE/T/Z cycleCounts = GetLastSetting(textualValues, j, "TTL set cycle counts", DATA_ACQUISITION_MODE)
+					CHECK_EQUAL_TEXTWAVES(cycleCounts, {"", "", "", "", "", "", "", "", ";0;;0;;;;;"})
 
 					break
 			endswitch
