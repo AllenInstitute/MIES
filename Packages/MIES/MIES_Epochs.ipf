@@ -386,6 +386,14 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 End
 
 /// @brief Sorts all epochs per channel in EpochsWave
+///
+/// Removes epochs marked for removal, those with NaN as StartTime and EndTime, as well.
+///
+/// Sorting:
+/// - Ascending starting time
+/// - Descending ending time
+/// - Ascending tree level
+///
 /// @param[in] panelTitle title of device panel
 static Function EP_SortEpochs(panelTitle)
 	string panelTitle
@@ -395,14 +403,30 @@ static Function EP_SortEpochs(panelTitle)
 	channelCnt = DimSize(epochWave, LAYERS)
 	for(channel = 0; channel < channelCnt; channel += 1)
 		epochCnt = EP_GetEpochCount(panelTitle, channel)
-		if(epochCnt)
-			Duplicate/FREE/T/RMD=[, epochCnt - 1][][channel] epochWave, epochChannel
-			Redimension/N=(-1, -1, 0) epochChannel
-			epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
-			SortColumns/DIML/KNDX={EPOCH_COL_STARTTIME, EPOCH_COL_ENDTIME, EPOCH_COL_TREELEVEL} sortWaves={epochChannel}
-			epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
+		if(epochCnt == 0)
+			continue
+		endif
+
+		Duplicate/FREE/T/RMD=[, epochCnt - 1][][channel] epochWave, epochChannel
+		Redimension/N=(-1, -1, 0) epochChannel
+
+		epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
+		SortColumns/DIML/KNDX={EPOCH_COL_STARTTIME, EPOCH_COL_ENDTIME, EPOCH_COL_TREELEVEL} sortWaves={epochChannel}
+		epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
+
+		// remove epochs marked for removal
+		// first column needs to be StartTime
+		ASSERT(EPOCH_COL_STARTTIME == 0, "First column changed")
+		for(;!RemoveTextWaveEntry1D(epochChannel, "NaN");)
+		endfor
+
+		epochCnt = DimSize(epochChannel, ROWS)
+
+		if(epochCnt > 0)
 			epochWave[, epochCnt - 1][][channel] = epochChannel[p][q]
 		endif
+
+		epochWave[epochCnt, *][][channel] = ""
 	endfor
 End
 
