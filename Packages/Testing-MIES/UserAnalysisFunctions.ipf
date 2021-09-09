@@ -822,3 +822,13 @@ Function StopMidSweep_V3(string panelTitle, STRUCT AnalysisFunction_V3& s)
 
 	return 0
 End
+
+Function AddUserEpoch_V3(string panelTitle, STRUCT AnalysisFunction_V3& s)
+	variable DAC
+	string tags
+
+	DAC = AFH_GetDACFromHeadstage(panelTitle, s.headstage)
+
+	sprintf tags, "HS=%d;eventType=%d;", s.headstage, s.eventType
+	EP_AddUserEpoch(panelTitle, XOP_CHANNEL_TYPE_DAC, DAC, 0.5, 0.6, tags)
+End

@@ -1574,3 +1574,7 @@ StrConstant EPOCH_TAG_INVALID_CHARS_REGEXP = "[:,]"
 /// @{
 Constant TPSTORAGE_SEALED = 0x1
 /// @}
+
+Constant EPOCH_USER_LEVEL = -1
+
+StrConstant EPOCH_SHORTNAME_USER_PREFIX = "U_"

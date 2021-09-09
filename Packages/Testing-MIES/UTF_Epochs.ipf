@@ -635,3 +635,51 @@ Function EP_EpochTest12_REENTRY([str])
 
 	TestEpochsGeneric(str)
 End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function EP_TestUserEpochs([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, "StimulusSetA_DA_0", "StimulusSetA_DA_0", analysisFunction = "AddUserEpoch_V3")
+End
+
+Function EP_TestUserEpochs_REENTRY([str])
+	string str
+
+	variable i, j
+	string tags, shortName
+
+	WAVE/T textualValues = GetLBTextualValues(str)
+	WAVE/T/Z epochLBN = GetLastSetting(textualValues, 0, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(epochLBN, TEXT_WAVE)
+
+	for(i = 0; i < 2; i += 1)
+		WAVE/T/Z epochWave = EP_EpochStrToWave(epochLBN[i])
+		CHECK_WAVE(epochWave, TEXT_WAVE)
+
+		// now check that we can find epochs from the expected events
+		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
+			sprintf tags, "HS=%d;eventType=%d;", i, j
+			// not using /TXOP=4 here as we have an unknown short name as well
+			FindValue/TEXT=tags/RMD=[][EPOCH_COL_NAME] epochWave
+
+			switch(j)
+				case PRE_SET_EVENT:
+				case PRE_SWEEP_CONFIG_EVENT:
+				case MID_SWEEP_EVENT:
+					// user epoch was added
+					CHECK(V_row >= 0)
+					tags = epochWave[V_row][EPOCH_COL_NAME]
+					shortName = EP_GetShortName(tags)
+					CHECK(GrepString(shortName, "^U_"))
+					break
+				default:
+					// no user epochs for all other events
+					CHECK(V_row < 0)
+					break
+			endswitch
+		endfor
+	endfor
+End

@@ -444,12 +444,39 @@ static Function EP_GetEpochCount(panelTitle, channel)
 	return V_row == -1 ? DimSize(epochWave, ROWS) : V_row
 End
 
+/// @brief Add user epochs
+///
+/// Allows to add user epochs for not yet finished sweeps. The tree level
+/// is fixed to #EPOCH_USER_LEVEL to not collide with stock entries.
+///
+/// @param panelTitle    device
+/// @param channelType   channel type, currently only #XOP_CHANNEL_TYPE_DAC is supported
+/// @param channelNumber channel number
+/// @param epBegin       start time of the epoch in seconds
+/// @param epEnd         end time of the epoch in seconds
+/// @param tags          tags for the epoch
+/// @param shortName     [optional, defaults to auto-generated] user defined short name for the epoch, will
+///                      be prefixed with #EPOCH_SHORTNAME_USER_PREFIX
+Function EP_AddUserEpoch(string panelTitle, variable channelType, variable channelNumber, variable epBegin, variable epEnd, string tags, [string shortName])
+
+	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC, "Currently only epochs for the DA channels are supported")
+
+	if(ParamIsDefault(shortName))
+		sprintf shortName, "%s%d", EPOCH_SHORTNAME_USER_PREFIX,  EP_GetEpochCount(panelTitle, channelNumber)
+	else
+		ASSERT(!GrepString(shortName, "^" + EPOCH_SHORTNAME_USER_PREFIX), "short name must not be prefixed with " + EPOCH_SHORTNAME_USER_PREFIX)
+		shortName = EPOCH_SHORTNAME_USER_PREFIX + shortName
+	endif
+
+	return EP_AddEpoch(panelTitle, channelNumber, epBegin * 1e6, epEnd * 1e6, tags, shortName, EPOCH_USER_LEVEL)
+End
+
 /// @brief Adds a epoch to the epochsWave
 /// @param[in] panelTitle  title of device panel
 /// @param[in] channel     number of DA channel
 /// @param[in] epBegin     start time of the epoch in micro seconds
 /// @param[in] epEnd       end time of the epoch in micro seconds
-/// @param[in] epName      name of the epoch
+/// @param[in] epName      tags of the epoch
 /// @param[in] epShortName short name of the epoch, should be unique
 /// @param[in] level       level of epoch
 /// @param[in] lowerlimit  [optional, default = -Inf] epBegin is limited between lowerlimit and Inf, epEnd must be > this limit

@@ -186,3 +186,31 @@ trains each pulse gets an level two epoch entry. The time interval of a pulse be
 level and includes the trailing baseline (that precedes the next pulse) unless it is the last pulse in the pulse train.
 An epoch named 'Baseline' is inserted if the first pulse in the pulse train has a leading baseline. This is applies for
 flipped Stimsets containing Stimset-Epochs with type pulse train.
+
+.. _user_epochs_doc:
+
+User epochs
+-----------
+
+Adding custom epoch information is supported via :cpp:func:`EP_AddUserEpoch`. This is especially useful for analysis
+function writers, who can add their own epochs of interest, see :ref:`File MIES_AnalysisFunctions.ipf` for the
+supported events.
+
+The ``tags`` property of user epochs can be freely set. When a ``shortName`` is supplied, this is always prefixed with
+``U_`` so that short names for user epochs don't collide with builtin epochs. Likewise the tree level for user epochs is
+fixed to ``-1``.
+
+User epochs will also be limited to the acquired sweep data like builtin epochs. This can result in shorter as expected epochs or even
+removed user epochs.
+
+ .. code-block:: igorpro
+   :caption: Example
+
+    string device = "ITC18USB_DEV_0"
+    variable startTime = 1.5
+    variable endTime   = 2.5
+    variable DAC = 1
+    string tags = "Name=Found Spikes;"
+    string shortName = "FS"
+
+    EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, startTime, endTime, tags, shortName = shortName)

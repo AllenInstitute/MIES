@@ -22,25 +22,27 @@
 ///    :width: 300 px
 ///    :align: center
 ///
-/// =================== ============================================== ===============================================================
-/// Event                Description                                    Specialities
-/// =================== ============================================== ===============================================================
-/// Pre DAQ              Before any DAQ occurs                          Called before the settings are validated completely, only the
+/// =================== ============================================== ================================================================= =============
+/// Event                Description                                    Specialities                                                      User epochs
+/// =================== ============================================== ================================================================= =============
+/// Pre DAQ              Before any DAQ occurs                          Called before the settings are validated completely, only the     No
 ///                                                                     analysis parameters are validated if present. With Indexing ON,
 ///                                                                     only the analysis function of the first stimset will receive
 ///                                                                     that event.
-/// Pre Sweep Config     Before the sweep is configured                 None
-/// Pre Set              Before a new set starts                        None
-/// Mid Sweep            Each time when new data is polled              Available for background DAQ only.
+/// Pre Sweep Config     Before the sweep is configured                 None                                                              Yes
+/// Pre Set              Before a new set starts                        None                                                              Yes
+/// Mid Sweep            Each time when new data is polled              Available for background DAQ only.                                Yes
 ///                                                                     Will always be called at least once and
 ///                                                                     also with the full stimset acquired.
 /// Post Sweep           After each sweep (before possible ITI pause)   None
-/// Post Set             After a *full* set has been acquired           This event is not always reached as the user might not acquire
+/// Post Set             After a *full* set has been acquired           This event is not always reached as the user might not acquire    No
 ///                                                                     all steps of a set. With indexing, locked and unlocked, only
 ///                                                                     the post set events for fully acquired stimsets are reached.
-/// Post DAQ             After DAQ has finished and before potential    None
+/// Post DAQ             After DAQ has finished and before potential    None                                                              No
 ///                      "TP after DAQ"
-/// =================== ============================================== ===============================================================
+/// =================== ============================================== ================================================================= =============
+///
+/// User epochs will only be recorded in events which support them, see :ref:`user_epochs_doc` for more information about user epochs.
 ///
 /// \endrst
 ///
