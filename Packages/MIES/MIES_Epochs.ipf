@@ -391,7 +391,6 @@ static Function EP_SortEpochs(panelTitle)
 	string panelTitle
 
 	variable channel, channelCnt, epochCnt
-	variable col0, col1, col2
 	WAVE/T epochWave = GetEpochsWave(panelTitle)
 	channelCnt = DimSize(epochWave, LAYERS)
 	for(channel = 0; channel < channelCnt; channel += 1)
@@ -400,16 +399,11 @@ static Function EP_SortEpochs(panelTitle)
 			Duplicate/FREE/T/RMD=[, epochCnt - 1][][channel] epochWave, epochChannel
 			Redimension/N=(-1, -1, 0) epochChannel
 			epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
-			col0 = FindDimLabel(epochChannel, COLS, "StartTime")
-			col1 = FindDimLabel(epochChannel, COLS, "EndTime")
-			col2 = FindDimLabel(epochChannel, COLS, "TreeLevel")
-			ASSERT(col0 >= 0 && col1 >= 0 && col2 >= 0, "Column in epochChannel wave not found")
-			SortColumns/DIML/KNDX={col0, col1, col2} sortWaves={epochChannel}
+			SortColumns/DIML/KNDX={EPOCH_COL_STARTTIME, EPOCH_COL_ENDTIME, EPOCH_COL_TREELEVEL} sortWaves={epochChannel}
 			epochChannel[][%EndTime] = num2strHighPrec(-1 * str2num(epochChannel[p][%EndTime]), precision = EPOCHTIME_PRECISION)
 			epochWave[, epochCnt - 1][][channel] = epochChannel[p][q]
 		endif
 	endfor
-
 End
 
 /// @brief Returns the number of epoch in the epochsWave for the given channel
