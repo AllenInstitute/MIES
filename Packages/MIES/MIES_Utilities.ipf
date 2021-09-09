@@ -4849,10 +4849,6 @@ Function RemoveTextWaveEntry1D(w, entry)
 	WAVE/T w
 	string entry
 
-	if(IsNull(entry))
-		return NaN
-	endif
-
 	ASSERT(IsTextWave(w), "Input wave must be a text wave")
 
 	FindValue/TXOP=4/TEXT=entry/RMD=[][0][0][0] w
