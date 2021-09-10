@@ -29,11 +29,11 @@
 ///                                                                     analysis parameters are validated if present. With Indexing ON,
 ///                                                                     only the analysis function of the first stimset will receive
 ///                                                                     that event.
+/// Pre Sweep Config     Before the sweep is configured                 None
+/// Pre Set              Before a new set starts                        None
 /// Mid Sweep            Each time when new data is polled              Available for background DAQ only.
 ///                                                                     Will always be called at least once and
 ///                                                                     also with the full stimset acquired.
-/// Pre Sweep Config     Before the sweep is configured                 None
-/// Pre Set              Before a new set starts                        None
 /// Post Sweep           After each sweep (before possible ITI pause)   None
 /// Post Set             After a *full* set has been acquired           This event is not always reached as the user might not acquire
 ///                                                                     all steps of a set. With indexing, locked and unlocked, only
