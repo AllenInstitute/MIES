@@ -1,20 +1,17 @@
-FROM debian:buster
+FROM debian:bullseye
 MAINTAINER Thomas Braun thomas.braun@byte-physics.de
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update &&                                                                                              \
-    apt-get install -y --no-install-recommends                                                                     \
-      git                                                                                                          \
-      python3-minimal                                                                                              \
-      python3-pip                                                                                                  \
-      python3-setuptools                                                                                           \
-      python3-wheel                                                                                                \
-      wget &&                                                                                                      \
-      wget --quiet http://ftp.us.debian.org/debian/pool/main/w/what-is-python/python-is-python3_3.9.2-1_all.deb && \
-      dpkg -i python-is-python3_3.9.2-1_all.deb &&                                                                 \
-      rm -rf /var/lib/apt/lists/*
-      # package python-is-python3 is only present in bullseye
+RUN apt-get update &&                          \
+    apt-get install -y --no-install-recommends \
+      git                                      \
+      python-is-python3                        \
+      python3-minimal                          \
+      python3-pip                              \
+      python3-setuptools                       \
+      python3-wheel &&                         \
+    rm -rf /var/lib/apt/lists/*
 
 ARG PACKAGE_WITH_VERSION
 
