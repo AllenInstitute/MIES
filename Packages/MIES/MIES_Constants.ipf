@@ -1565,6 +1565,10 @@ Constant EPOCHTIME_PRECISION = 7
 StrConstant EPOCH_LIST_ROW_SEP = ":"
 StrConstant EPOCH_LIST_COL_SEP = ","
 
+/// These characters are not allowed to be in epoch tags
+/// as they are used for serialization.
+StrConstant EPOCH_TAG_INVALID_CHARS_REGEXP = "[:,]"
+
 /// @name Possible cell state values
 /// @anchor CellStateValues
 /// @{

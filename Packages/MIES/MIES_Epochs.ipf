@@ -476,6 +476,7 @@ static Function EP_AddEpoch(panelTitle, channel, epBegin, epEnd, epName, epShort
 	ASSERT(epBegin < upperlimit, "Epoch begin is greater than upper limit")
 	ASSERT(epEnd > lowerlimit, "Epoch end lesser than lower limit")
 	ASSERT(channel >=0 && channel < NUM_DA_TTL_CHANNELS, "channel is out of range")
+	ASSERT(!GrepString(epName, EPOCH_TAG_INVALID_CHARS_REGEXP), "Epoch name contains invalid characters: " + EPOCH_TAG_INVALID_CHARS_REGEXP)
 
 	epBegin = limit(epBegin, lowerlimit, Inf)
 	epEnd = limit(epEnd, -Inf, upperlimit)
