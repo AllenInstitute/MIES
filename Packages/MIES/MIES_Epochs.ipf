@@ -33,6 +33,13 @@ static StrConstant EPOCH_SN_PULSETRAIN_PULSEBASE = "B"
 static StrConstant EPOCH_SN_PULSETRAIN_PULSEBASETRAIL = "BT"
 static StrConstant EPOCH_SN_PULSETRAINBASETRAIL = "BT"
 
+/// @brief Clear the list of epochs
+Function EP_ClearEpochs(string panelTitle)
+
+	WAVE/T epochWave = GetEpochsWave(panelTitle)
+	epochWave = ""
+End
+
 /// @brief Fill the epoch wave with epochs before DAQ/TP
 ///
 /// @param panelTitle device
@@ -41,8 +48,7 @@ Function EP_CollectEpochInfo(string panelTitle, STRUCT DataConfigurationResult &
 	variable i, channel, headstage, singleSetLength, epochOffset, epochBegin, epochEnd
 	variable stimsetCol, startOffset, stopCollectionPoint
 
-	WAVE/T epochWave = GetEpochsWave(panelTitle)
-	epochWave = ""
+	EP_ClearEpochs(panelTitle)
 
 	if(s.dataAcqOrTP != DATA_ACQUISITION_MODE)
 		// nothing to do after clearing epochWave
