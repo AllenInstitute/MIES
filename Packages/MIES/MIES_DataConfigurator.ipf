@@ -75,6 +75,8 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsTextKeyWave(panelTitle))
 
+	EP_ClearEpochs(panelTitle)
+
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		if(AFM_CallAnalysisFunctions(panelTitle, PRE_SET_EVENT))
 			Abort

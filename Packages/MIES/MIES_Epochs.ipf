@@ -48,10 +48,7 @@ Function EP_CollectEpochInfo(string panelTitle, STRUCT DataConfigurationResult &
 	variable i, channel, headstage, singleSetLength, epochOffset, epochBegin, epochEnd
 	variable stimsetCol, startOffset, stopCollectionPoint
 
-	EP_ClearEpochs(panelTitle)
-
 	if(s.dataAcqOrTP != DATA_ACQUISITION_MODE)
-		// nothing to do after clearing epochWave
 		return NaN
 	endif
 
