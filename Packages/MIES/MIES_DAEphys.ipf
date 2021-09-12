@@ -5638,12 +5638,14 @@ Function DAP_UpdateDaEphysStimulusSetPopups([panelTitle])
 			continue
 		endif
 
-		for(j = CHANNEL_INDEX_ALL; j < NUM_DA_TTL_CHANNELS; j += 1)
+		for(j = CHANNEL_INDEX_ALL_I_CLAMP; j < NUM_DA_TTL_CHANNELS; j += 1)
 			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			SetControlUserData(panelTitle, ctrlWave, "MenuExp", DAlist)
 			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", DAlist)
+		endfor
 
+		for(j = CHANNEL_INDEX_ALL; j < NUM_DA_TTL_CHANNELS; j += 1)
 			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 			SetControlUserData(panelTitle, ctrlWave, "MenuExp", TTLlist)
