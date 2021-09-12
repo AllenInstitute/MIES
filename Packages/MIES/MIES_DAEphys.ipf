@@ -924,7 +924,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			popupValue = DAP_FormatStimSetPopupValue(channelType, searchString = searchString)
 
 			ctrl = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_WAVE)
-			PopupMenu $ctrl win=$panelTitle, value=#popupValue, userdata(MenuExp)=listOfWaves
+			PopupMenu $ctrl win=$panelTitle, value=#popupValue, userdata(USER_DATA_MENU_EXP)=listOfWaves
 			sel = GetPopupMenuString(panelTitle, ctrl)
 			PopupMenu $ctrl win=$panelTitle, popmatch=sel
 
@@ -946,7 +946,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 					DAG_Update(panelTitle, ctrl, str = str)
 
 					ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
-					PopupMenu $ctrl win=$panelTitle, value=#popupValue, userdata(MenuExp)=listOfWaves
+					PopupMenu $ctrl win=$panelTitle, value=#popupValue, userdata(USER_DATA_MENU_EXP)=listOfWaves
 					sel = GetPopupMenuString(panelTitle, ctrl)
 					PopupMenu $ctrl win=$panelTitle, popmatch=sel
 
@@ -5606,7 +5606,7 @@ Function DAP_CheckProc_PowerSpectrum(cba) : CheckBoxControl
 	return 0
 End
 
-/// @brief Update the popup menus and its `MenuExp` user data after stim set changes
+/// @brief Update the popup menus and its #USER_DATA_MENU_EXP user data after stim set changes
 ///
 /// @param panelTitle [optional, defaults to all locked devices] device
 Function DAP_UpdateDaEphysStimulusSetPopups([panelTitle])
@@ -5641,15 +5641,15 @@ Function DAP_UpdateDaEphysStimulusSetPopups([panelTitle])
 		for(j = CHANNEL_INDEX_ALL_I_CLAMP; j < NUM_DA_TTL_CHANNELS; j += 1)
 			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-			SetControlUserData(panelTitle, ctrlWave, "MenuExp", DAlist)
-			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", DAlist)
+			SetControlUserData(panelTitle, ctrlWave, USER_DATA_MENU_EXP, DAlist)
+			SetControlUserData(panelTitle, ctrlIndexEnd, USER_DATA_MENU_EXP, DAlist)
 		endfor
 
 		for(j = CHANNEL_INDEX_ALL; j < NUM_DA_TTL_CHANNELS; j += 1)
 			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-			SetControlUserData(panelTitle, ctrlWave, "MenuExp", TTLlist)
-			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", TTLlist)
+			SetControlUserData(panelTitle, ctrlWave, USER_DATA_MENU_EXP, TTLlist)
+			SetControlUserData(panelTitle, ctrlIndexEnd, USER_DATA_MENU_EXP, TTLlist)
 		endfor
 
 		DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
