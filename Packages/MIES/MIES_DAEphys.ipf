@@ -5641,59 +5641,46 @@ Function DAP_UpdateDaEphysStimulusSetPopups([panelTitle])
 		for(j = CHANNEL_INDEX_ALL_I_CLAMP; j < NUM_DA_TTL_CHANNELS; j += 1)
 			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+
 			SetControlUserData(panelTitle, ctrlWave, USER_DATA_MENU_EXP, DAlist)
+			DAP_UpdateStimulusSetPopup(panelTitle, ctrlWave, DAlist)
+
 			SetControlUserData(panelTitle, ctrlIndexEnd, USER_DATA_MENU_EXP, DAlist)
+			DAP_UpdateStimulusSetPopup(panelTitle, ctrlIndexEnd, DAlist)
 		endfor
 
 		for(j = CHANNEL_INDEX_ALL; j < NUM_DA_TTL_CHANNELS; j += 1)
 			ctrlWave     = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 			ctrlIndexEnd = GetPanelControl(j, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+
 			SetControlUserData(panelTitle, ctrlWave, USER_DATA_MENU_EXP, TTLlist)
+			DAP_UpdateStimulusSetPopup(panelTitle, ctrlWave, TTLlist)
+
 			SetControlUserData(panelTitle, ctrlIndexEnd, USER_DATA_MENU_EXP, TTLlist)
+			DAP_UpdateStimulusSetPopup(panelTitle, ctrlIndexEnd, TTLlist)
 		endfor
 
 		DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
 	endfor
 End
 
-/// @brief Returns the names of the items in the popmenu controls in a list
-static Function/S DAP_PopupMenuWaveNameList(panelTitle, channelType, controlType)
-	string panelTitle
-	variable channelType, controlType
+static Function DAP_UpdateStimulusSetPopup(string panelTitle, string ctrl, string stimsets)
+	string stimset
+	variable index
 
-	string ctrl, stimset
-	string list = ""
-	variable i
+	stimset = GetPopupMenuString(panelTitle, ctrl)
+	index   = WhichListItem(stimset, stimsets)
 
-	ASSERT(controlType == CHANNEL_CONTROL_WAVE || controlType == CHANNEL_CONTROL_INDEX_END, "Invalid controlType")
+	if(index == -1)
+		// not found, select NONE
+		index   = 0
+		stimset = NONE
+	else
+		index += 1
+	endif
 
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, channelType, controlType)
-		stimset = GetPopupMenuString(panelTitle, ctrl)
-		list = AddListItem(stimset, list, ";", Inf)
-	endfor
-
-	return list
-End
-
-static Function DAP_RestorePopupMenuSelection(panelTitle, channelType, controlType, list)
-	variable channelType, controlType
-	string panelTitle, list
-
-	variable i, stimsetIndex
-	string ctrl, stimset
-
-	ASSERT(controlType == CHANNEL_CONTROL_WAVE || controlType == CHANNEL_CONTROL_INDEX_END, "Invalid controlType")
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl    = GetPanelControl(i, channelType, controlType)
-		stimset = GetPopupMenuString(panelTitle, ctrl)
-
-		if(cmpstr(stimset, StringFromList(i, list)) == 1 || isEmpty(stimset))
-			stimsetIndex = GetPopupMenuIndex(panelTitle, ctrl)
-			PGC_SetAndActivateControl(paneltitle, ctrl, val=(stimsetIndex - 1))
-		endif
-	endfor
+	SetPopupMenuIndex(panelTitle, ctrl, index)
+	DAG_Update(panelTitle, ctrl, val = index, str = stimset)
 End
 
 /// @brief Delete the stimulus set in the given DAEphys
@@ -5701,7 +5688,6 @@ End
 /// Internal use only, outside callers should use WB_RemoveStimulusSet()
 Function DAP_DeleteStimulusSet(string setName, [string device])
 	variable channelType
-	string popupMenuSelectedItemsStart, popupMenuSelectedItemsEnd
 
 	if(ParamIsDefault(device))
 		WB_KillParameterWaves(setName)
@@ -5715,12 +5701,8 @@ Function DAP_DeleteStimulusSet(string setName, [string device])
 		return NaN
 	endif
 
-	popupMenuSelectedItemsStart = DAP_PopupMenuWaveNameList(device, channelType, CHANNEL_CONTROL_WAVE)
-	popupMenuSelectedItemsEnd = DAP_PopupMenuWaveNameList(device, channelType, CHANNEL_CONTROL_INDEX_END)
 	WB_KillParameterWaves(setName)
 	WB_KillStimset(setName)
-	DAP_RestorePopupMenuSelection(device, channelType, CHANNEL_CONTROL_WAVE, popupMenuSelectedItemsStart)
-	DAP_RestorePopupMenuSelection(device, channelType, CHANNEL_CONTROL_INDEX_END, popupMenuSelectedItemsEnd)
 
 	DAP_UpdateDaEphysStimulusSetPopups(panelTitle = device)
 End
