@@ -128,7 +128,7 @@ Function CheckIfAllControlsReferStateWv([str])
 			case CONTROL_TYPE_POPUPMENU:
 
 				oldVal = GetPopupMenuIndex(str, ctrl)
-				val = 1
+				val = 0
 				KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(str))
 				KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(str))
 
