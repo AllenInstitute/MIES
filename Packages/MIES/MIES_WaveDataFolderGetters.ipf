@@ -817,14 +817,17 @@ Function/Wave GetEpochsWave(panelTitle)
 	  Make/T/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS) dfr:EpochsWave/Wave=wv
 	endif
 
+	SetEpochsDimensionLabels(wv)
+	SetWaveVersion(wv, EPOCHS_WAVE_VERSION)
+
+	return wv
+End
+
+threadsafe Function SetEpochsDimensionLabels(WAVE wv)
 	SetDimLabel COLS, EPOCH_COL_STARTTIME, StartTime, wv
 	SetDimLabel COLS, EPOCH_COL_ENDTIME, EndTime, wv
 	SetDimLabel COLS, EPOCH_COL_NAME, Name, wv
 	SetDimLabel COLS, EPOCH_COL_TREELEVEL, TreeLevel, wv
-
-	SetWaveVersion(wv, EPOCHS_WAVE_VERSION)
-
-	return wv
 End
 
 /// @brief Return the folder for the epoch visualization waves

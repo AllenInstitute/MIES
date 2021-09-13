@@ -365,7 +365,7 @@ EndStructure
 ///
 /// @sa NWB_ASYNC_SerializeStruct() and NWB_ASYNC_DeserializeStruct()
 Structure NWBAsyncParameters
-	string device, userComment
+	string device, userComment, nwbFilePath
 
 	variable sweep, compressionMode, session_start_time
 	variable locationID, nwbVersion
@@ -402,6 +402,8 @@ threadsafe Function [STRUCT NWBAsyncParameters s] NWB_ASYNC_DeserializeStruct(DF
 
 	s.device = ASYNC_FetchString(threadDFR, "device")
 	s.userComment = ASYNC_FetchString(threadDFR, "userComment")
+	// always an empty string as we are not writing epoch info during sweep-by-sweep export
+	s.nwbFilePath = ""
 
 	s.sweep = ASYNC_FetchVariable(threadDFR, "sweep")
 	s.compressionMode = ASYNC_FetchVariable(threadDFR, "compressionMode")

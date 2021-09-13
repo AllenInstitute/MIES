@@ -26,8 +26,11 @@ This information is exported with each data acquisition to the lab notebook with
 .. DC_AddDebugTracesForEpochs()
 .. SetAxis bottom 490,550
 
-Retrieving Epoch Information from the Lab Notebook
---------------------------------------------------
+Retrieving Epoch Information
+----------------------------
+
+MIES labnotebook
+~~~~~~~~~~~~~~~~
 
 The epoch information can be retrieved from the lab notebook with
 
@@ -45,6 +48,26 @@ The epochHeadstage wave has four columns:
 - Column 4: (tree) level. e.g., wavebuilder defined EPOCH tree level = 1, a sub epoch of a wavebuilder defined EPOCH = 2 and so on
 
 Each row is an epoch entry.
+
+NWBv2
+~~~~~
+
+Epoch information is also exported into NWBv2 files into ``/intervals/epochs``
+when doing full exports (it is skipped for per-sweep export). Using
+`pynwb.epoch.TimeIntervals <https://pynwb.readthedocs.io/en/stable/pynwb.epoch.html#pynwb.epoch.TimeIntervals>`
+this can be read with:
+
+.. code-block:: python
+
+    with NWBHDF5IO('file.nwb', mode='r', load_namespaces=True) as io:
+        nwbfile = io.read()
+
+        if nwbfile.epochs and len(nwbfile.epochs) > 0:
+            print(nwbfile.epochs[:, 'start_time'])
+            print(nwbfile.epochs[:, 'stop_time'])
+            print(nwbfile.epochs[:, 'tags'])
+            print(nwbfile.epochs[:, 'treelevel'])
+            print(nwbfile.epochs[:, 'timeseries'])
 
 Format
 ------

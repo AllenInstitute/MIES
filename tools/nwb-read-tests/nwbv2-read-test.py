@@ -44,6 +44,13 @@ def checkFile(path):
         object_ids = nwbfile.objects.keys()
         print(object_ids)
 
+        if nwbfile.epochs and len(nwbfile.epochs) > 0:
+            print(nwbfile.epochs[:, 'start_time'])
+            print(nwbfile.epochs[:, 'stop_time'])
+            print(nwbfile.epochs[:, 'tags'])
+            print(nwbfile.epochs[:, 'treelevel'])
+            print(nwbfile.epochs[:, 'timeseries'])
+
     # check that pynwb/hdmf can read our object IDs
     with h5py.File(path, 'r') as f:
         root_object_id_hdf5 = f["/"].attrs["object_id"]
