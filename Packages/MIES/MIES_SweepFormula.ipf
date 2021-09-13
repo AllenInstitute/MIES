@@ -1292,8 +1292,8 @@ End
 
 static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs, i, j, k, epType, sweepCnt, activeChannelCnt, outCnt, index, found, numEpochs
-	string str
+	variable numArgs, i, j, k, epType, sweepCnt, activeChannelCnt, outCnt, index, numEpochs
+	string str, epName, epShortName
 
 	// epochs(array sweeps, array channels, string shortName, [string type])
 	// returns 2xN wave for type = range except for a single range result
@@ -1368,33 +1368,32 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 			if(WaveExists(settings))
 				WAVE/T settingsT = settings
 				str = settingsT[index]
-				if(!IsEmpty(str))
-					WAVE/T epochInfo = EP_EpochStrToWave(str)
-					numEpochs = DimSize(epochInfo, ROWS)
-					Make/FREE/N=(numEpochs)/T epNames
-					for(k = 0; k < numEpochs; k += 1)
-						str = EP_GetShortName(epochInfo, k)
-						epNames[k] = SelectString(IsEmpty(str), str,epochInfo[k][EPOCH_COL_NAME])
-					endfor
+				SF_ASSERT(!IsEmpty(str), "Encountered channels without epoch information.")
+				WAVE/T epochInfo = EP_EpochStrToWave(str)
+				numEpochs = DimSize(epochInfo, ROWS)
+				Make/FREE/N=(numEpochs)/T epNames
+				for(k = 0; k < numEpochs; k += 1)
+					epName = epochInfo[k][EPOCH_COL_NAME]
+					epShortName = EP_GetShortName(epName)
+					epNames[k] = SelectString(IsEmpty(epShortName), epShortName, epName)
+				endfor
 
-					FindValue/TXOP=4/TEXT=epochName[0] epNames
-					if(V_Value >= 0)
-						SF_EpochsSetOutValues(epType, out, outCnt, name=epochInfo[V_Value][EPOCH_COL_NAME], treeLevel=epochInfo[V_Value][EPOCH_COL_TREELEVEL], startTime=epochInfo[V_Value][EPOCH_COL_STARTTIME], endTime=epochInfo[V_Value][EPOCH_COL_ENDTIME])
-						found = 1
-					endif
+				FindValue/TXOP=4/TEXT=epochName[0] epNames
+				if(V_Row >= 0)
+					SF_EpochsSetOutValues(epType, out, outCnt, name=epochInfo[V_Row][EPOCH_COL_NAME], treeLevel=epochInfo[V_Row][EPOCH_COL_TREELEVEL], startTime=epochInfo[V_Row][EPOCH_COL_STARTTIME], endTime=epochInfo[V_Row][EPOCH_COL_ENDTIME])
 				endif
 			endif
 			outCnt +=1
 		endfor
 	endfor
 
-	SF_ASSERT(found, "No fitting epoch found.")
-
 	if(epType == EPOCHS_TYPE_NAME || epType == EPOCHS_TYPE_TREELEVEL)
 		Redimension/N=(outCnt) out
 	else
 		if(outCnt == 1)
-			Redimension/N=(2) out
+			Redimension/N=2 out
+		elseif(outCnt == 0)
+			Redimension/N=0 out
 		else
 			Redimension/N=(-1, outCnt) out
 		endif
