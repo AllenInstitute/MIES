@@ -128,7 +128,7 @@ Function CheckIfAllControlsReferStateWv([str])
 			case CONTROL_TYPE_POPUPMENU:
 
 				oldVal = GetPopupMenuIndex(str, ctrl)
-				val = 1
+				val = 0
 				KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(str))
 				KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(str))
 
@@ -232,4 +232,40 @@ Function CheckStartupSettings([str])
 
 	CHECK_EQUAL_WAVES(guiStateNumRef, guiStateNumNew, mode = WAVE_DATA | DIMENSION_LABELS)
 	CHECK_EQUAL_WAVES(guiStateTxTRef, guiStateTxTNew, mode = WAVE_DATA | DIMENSION_LABELS)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckStimsetPopupMetadata([str])
+	string str
+
+	string controls, stimsetlist, ctrl, menuExp
+	variable i, numControls, channelIndex, channelType, controlType
+
+	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
+
+	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=str)
+	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+
+	controls = ControlNameList(str)
+	numControls = ItemsInList(controls)
+	for(i = 0; i < numControls; i += 1)
+		ctrl = StringFromList(i, controls)
+
+		// ignore non-popup menues
+		if(GetControlType(str, ctrl) != CONTROL_TYPE_POPUPMENU)
+			continue
+		endif
+
+		// ignore non-parseable controls
+		if(DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType))
+			continue
+		endif
+
+		if(DAP_IsAllControl(channelIndex))
+			menuExp = GetUserData(str, ctrl, USER_DATA_MENU_EXP)
+
+			stimsetlist = ST_GetStimsetList(channelType = channelType)
+			CHECK_EQUAL_STR(menuExp, stimsetlist)
+		endif
+	endfor
 End
