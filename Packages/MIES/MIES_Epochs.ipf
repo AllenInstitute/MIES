@@ -53,33 +53,38 @@ Function EP_CollectEpochInfo(string panelTitle, STRUCT DataConfigurationResult &
 
 	stopCollectionPoint = ROVar(GetStopCollectionPoint(panelTitle))
 
-	Duplicate/FREE s.insertStart, epochIndexer
-
-	// epoch for onsetDelayAuto is assumed to be a globalTPInsert which is added as epoch below
-	if(s.onsetDelayUser)
-		epochBegin = s.onsetDelayAuto * s.samplingInterval
-		epochEnd = epochBegin + s.onsetDelayUser * s.samplingInterval
-		epochIndexer[] = EP_AddEpoch(panelTitle, s.DACList[p], epochBegin, epochEnd, EPOCH_BASELINE_REGION_KEY, EPOCH_SN_BL_ONSETDELAYUSER, 0)
-	endif
-
-	if(s.distributedDAQ)
-		epochBegin = s.onsetDelay * s.samplingInterval
-		epochIndexer[] = s.insertStart[p] * s.samplingInterval
-		epochIndexer[] = epochBegin != epochIndexer[p] ? EP_AddEpoch(panelTitle, s.DACList[p], epochBegin, epochIndexer[p], EPOCH_BASELINE_REGION_KEY, EPOCH_SN_BL_DDAQ, 0) : 0
-	endif
-
-	if(s.terminationDelay)
-		epochIndexer[] = (s.insertStart[p] + s.setLength[p]) * s.samplingInterval
-		epochIndexer[] = EP_AddEpoch(panelTitle, s.DACList[p], epochIndexer[p], epochIndexer[p] + s.terminationDelay * s.samplingInterval, EPOCH_BASELINE_REGION_KEY, EPOCH_SN_BL_TERMINATIONDELAY, 0)
-	endif
-
 	for(i = 0; i < s.numDACEntries; i += 1)
+
+		if(WB_StimsetIsFromThirdParty(s.setName[i]) || !cmpstr(s.setName[i], STIMSET_TP_WHILE_DAQ))
+			continue
+		endif
+
 		channel = s.DACList[i]
 		headstage = s.headstageDAC[i]
-		WAVE singleStimSet = s.stimSet[i]
-		singleSetLength = s.setLength[i]
-		stimsetCol = s.setColumn[i]
 		startOffset = s.insertStart[i]
+		singleSetLength = s.setLength[i]
+		WAVE singleStimSet = s.stimSet[i]
+		stimsetCol = s.setColumn[i]
+
+		// epoch for onsetDelayAuto is assumed to be a globalTPInsert which is added as epoch below
+		if(s.onsetDelayUser)
+			epochBegin = s.onsetDelayAuto * s.samplingInterval
+			epochEnd = epochBegin + s.onsetDelayUser * s.samplingInterval
+			EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, EPOCH_BASELINE_REGION_KEY, EPOCH_SN_BL_ONSETDELAYUSER, 0)
+		endif
+
+		if(s.distributedDAQ)
+			epochBegin = s.onsetDelay * s.samplingInterval
+			epochEnd = startOffset * s.samplingInterval
+			if(epochBegin != epochEnd)
+				EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, EPOCH_BASELINE_REGION_KEY, EPOCH_SN_BL_DDAQ, 0)
+			endif
+		endif
+
+		if(s.terminationDelay)
+			epochBegin = (startOffset + singleSetLength) * s.samplingInterval
+			EP_AddEpoch(panelTitle, channel, epochBegin, epochBegin + s.terminationDelay * s.samplingInterval, EPOCH_BASELINE_REGION_KEY, EPOCH_SN_BL_TERMINATIONDELAY, 0)
+		endif
 
 		epochBegin = startOffset * s.samplingInterval
 		if(s.distributedDAQOptOv && s.offsets[i] > 0)
@@ -197,10 +202,13 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 	string shortNameEpTypePTBaseline
 	string stimNote = note(stimset)
 
+	ASSERT(!IsEmpty(stimNote), "Stimset note is empty.")
+
 	stimsetEnd = stimsetBegin + setLength
 	EP_AddEpoch(panelTitle, channel, stimsetBegin, stimsetEnd, "Stimset", EPOCH_SN_STIMSET, 0)
 
 	epochCount = WB_GetWaveNoteEntryAsNumber(stimNote, STIMSET_ENTRY, key="Epoch Count")
+	ASSERT(IsFinite(epochCount), "Could not find Epoch Count in stimset wave note.")
 
 	Make/FREE/D/N=(epochCount) duration, sweepOffset
 
