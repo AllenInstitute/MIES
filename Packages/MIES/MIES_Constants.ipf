@@ -1572,6 +1572,9 @@ StrConstant PRESSURE_SEALED_FILTER = "pressure:sealed"
 /// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.
 Constant EPOCHTIME_PRECISION = 7
 
+StrConstant EPOCH_LIST_ROW_SEP = ":"
+StrConstant EPOCH_LIST_COL_SEP = ","
+
 /// @name Possible cell state values
 /// @anchor CellStateValues
 /// @{

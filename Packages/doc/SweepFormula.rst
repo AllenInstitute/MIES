@@ -482,11 +482,39 @@ the Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026).
 
    start…stop
 
-The function generally accepts 1 to 3 arguments. The operation is inteded to be
+The function generally accepts 1 to 3 arguments. The operation is intended to be
 used with two arguments. Please note that you can use the preparser if you
 keyboard layout does not allow convenient typing of this character.  It is not
 too easy to implement multi-character token inputs at this stage. Use the range
 function if you do not like any of these approaches.
+
+epochs
+""""""
+The epochs function returns information from epochs.
+
+.. code-block:: bash
+
+   epochs(array sweeps, array channels, string name[, string type])
+
+type sets what information is returned. Valid types are: `range`, `name`, `treelevel`.
+If type is not specified then `range` is used as default.
+
+range:
+The operation returns a 2xN wave with the start and end time of the epoch(s) in [ms] for all active channels.
+If only a single epoch is returned then the operation returns a 1D wave with two elements, as the range function.
+The order of returned ranges for the N dimension is: sweeps( channels ).
+If a sweep/channel combination does not have epoch information saved `[NaN, NaN]` is returned as range for this combination.
+If no matching epoch was found a zero sized wave is returned.
+
+name:
+The full names of the epochs are returned in a 1D text wave.
+If a sweep/channel combination does not have epoch information saved an empty string is returned as name for this combination.
+If no matching epoch was found a zero sized wave is returned.
+
+treelevel:
+The tree levels of the epochs are returned in a 1D wave.
+If a sweep/channel combination does not have epoch information saved `NaN` is returned as tree level for this combination.
+If no matching epoch was found a zero sized wave is returned.
 
 merge
 """""

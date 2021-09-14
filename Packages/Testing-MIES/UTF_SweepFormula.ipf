@@ -1091,3 +1091,132 @@ Function TestLabNotebook()
 	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(input, data, mode = WAVE_DATA)
 End
+
+/// @brief Test Epoch operation of SweepFormula
+static Function TestOperationEpochs()
+
+	variable i, j, sweepNumber, channelNumber
+	string str, trace, key, name
+
+	variable numSweeps = 10
+	variable numChannels = 5
+	variable activeChannelsDA = 4
+	variable mode = DATA_ACQUISITION_MODE
+	string channelType = StringFromList(XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_NAMES)
+	string win = DATABROWSER_WINDOW_TITLE
+	string device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+
+	string channelTypeC = channelType + "C"
+
+	if(windowExists(win))
+		DoWindow/K $win
+	endif
+
+	Display/N=$win as device
+	BSP_SetDataBrowser(win)
+	BSP_SetDevice(win, device)
+
+	TUD_Clear(win)
+
+	WAVE/T numericalKeys = GetLBNumericalKeys(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	KillWaves numericalKeys, numericalValues
+
+	Make/FREE/T/N=(1, 1) keys = {{channelTypeC}}
+	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
+	Make/U/I/N=(numSweeps, numChannels) channels = q * 2 // 0, 2, 4, 6, 8 used for all sweeps
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+
+	Make/FREE/N=(128, numSweeps, numChannels) input = q + p^r
+
+	Make/FREE/T/N=(1, 1) keysEpochs = {{EPOCHS_ENTRY_KEY}}
+	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/T wEpochStr
+	wEpochStr = "0.5000000,0.5100000,Epoch=0;Type=Pulse Train;Amplitude=1;Pulse=48;ShortName=E0_PT_P48;,2,:0.5030000,0.5100000,Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;,3,"
+
+	for(i = 0; i < numSweeps; i += 1)
+		sweepNumber = i
+		for(j = 0; j < numChannels; j += 1)
+			name = UniqueName("data", 1, 0)
+			trace = "trace_" + name
+			Extract input, $name, q == i && r == j
+			WAVE wv = $name
+			AppendToGraph/W=$win wv/TN=$trace
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
+									 {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2istr(channels[i][j]), num2istr(sweepNumber)})
+			values[connections[j]] = channels[i][j]
+		endfor
+		// channels setup: 8, 6, NaN, 4, NaN, 2, NaN, 0, NaN
+		// -> 5 active channels for ADC
+		// -> 4 active channels for DAC, because DAC knows only 8 channels from 0 to 7.
+
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
+		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
+		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values
+		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
+
+		ED_AddEntriesToLabnotebook(wEpochStr, keysEpochs, sweepNumber, device, mode)
+	endfor
+
+	str = "epochs(0, channels(DA0), \"E0_PT_P48\")"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	Make/FREE/D refData = {500, 510}
+	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+
+	str = "epochs(0, channels(DA4), \"E0_PT_P48_B\")"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	Make/FREE/D refData = {503, 510}
+	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+
+	str = "epochs(0, channels(DA4), \"E0_PT_P48_B\", range)"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	Make/FREE/D refData = {503, 510}
+	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+
+	str = "epochs(0, channels(DA4), \"E0_PT_P48_B\", treelevel)"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	Make/FREE/D refData = {3}
+	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+
+	str = "epochs(9, channels(DA4), \"E0_PT_P48_B\", name)"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	Make/FREE/T refDataT = {"Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;"}
+	REQUIRE_EQUAL_WAVES(data, refDataT, mode = WAVE_DATA)
+
+	str = "epochs(sweeps(), channels(DA), \"E0_PT_P48_B\")"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	Make/FREE/D/N=(2, numSweeps * activeChannelsDA) refData
+	refData = p ? 510 : 503
+	REQUIRE_EQUAL_WAVES(data, refData, mode = WAVE_DATA)
+
+	// channel(s) with no epochs
+	str = "epochs(sweeps(), channels(AD), \"E0_PT_P48_B\")"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	Make/FREE/D/N=0 refdata
+	CHECK_EQUAL_WAVES(refData, data)
+
+	// name that does not match any
+	str = "epochs(sweeps(), channels(DA), \"does_not_exist\")"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	Make/FREE/D/N=(2, numSweeps * activeChannelsDA) refData = NaN
+	CHECK_EQUAL_WAVES(refData, data)
+
+	// invalid sweep
+	str = "epochs(-1, channels(DA), \"E0_PT_P48_B\")"
+	try
+		WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win); AbortOnRTE
+		FAIL()
+	catch
+		ClearRTError()
+		PASS()
+	endtry
+
+	// invalid type
+	str = "epochs(sweeps(), channels(DA), \"E0_PT_P48_B\", invalid_type)"
+	try
+		WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win); AbortOnRTE
+		FAIL()
+	catch
+		ClearRTError()
+		PASS()
+	endtry
+End
