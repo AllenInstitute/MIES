@@ -12,11 +12,15 @@
 ;     DetailPrint "Not running on NT. Installing ANSI application."
 ;   ${EndIf}
 ;
-; IsServerOS checks if the installer is running on a server version of Windows (NT4, 2003, 2008, etc.)
+; IsServerOS checks if the installer is running on a server version of Windows (2000, 2003, 2008, etc.)
+; IsDomainController checks if the server is a domain controller
 ;
 ; AtLeastWin<version> checks if the installer is running on Windows version at least as specified.
 ; IsWin<version> checks if the installer is running on Windows version exactly as specified.
 ; AtMostWin<version> checks if the installer is running on Windows version at most as specified.
+; AtLeastBuild <number> checks if the installer is running on a Windows version with a minimum build number.
+; AtMostBuild <number> checks if the installer is running on a Windows version with a maximum build number.
+; AtLeastWaaS <name> and AtMostWaaS <name> checks Windows 10 "friendly names" against the build number.
 ;
 ; <version> can be replaced with the following values:
 ;
@@ -78,7 +82,7 @@
 ;   check if running on the NT family.
 ;
 ;     ${If} ${AtLeastWin95}
-;     ${And} ${AtMostWinME}
+;     ${AndIf} ${AtMostWinME}
 ;       DetailPrint "Running 95, 98 or ME."
 ;       DetailPrint "Actually, maybe it's NT4?"
 ;       ${If} ${IsNT}
@@ -108,15 +112,15 @@
 
 # masks for our variables
 
-!define _WINVER_VERXBIT  0x00000001
-!define _WINVER_MASKVMAJ 0x7F000000
-!define _WINVER_MASKVMIN 0x00FF0000
-
-!define _WINVER_NTBIT    0x80000000
-!define _WINVER_NTMASK   0x7FFFFFFF
-!define _WINVER_NTSRVBIT 0x40000000
-!define _WINVER_MASKVBLD 0x0000FFFF
-!define _WINVER_MASKSP   0x000F0000
+!define _WINVER_VERXBIT  0x00000001 ; Used to boost $__WINVERV
+!define _WINVER_MASKVMAJ 0x7F000000 ; $__WINVERV mask
+!define _WINVER_MASKVMIN 0x00FF0000 ; $__WINVERV mask
+!define _WINVER_NTMASK   0x7FFFFFFF ; $__WINVERV mask used by AtMost/AtLeast
+!define _WINVER_NTBIT    0x80000000 ; $__WINVERV bit used by Is and $__WINVERSP bit used by IsNT
+!define _WINVER_NTSRVBIT 0x40000000 ; $__WINVERSP bit for !VER_NT_WORKSTATION
+!define _WINVER_NTDCBIT  0x20000000 ; $__WINVERSP bit for VER_NT_DOMAIN_CONTROLLER
+!define _WINVER_MASKVBLD 0x0000FFFF ; $__WINVERSP mask for OS build number
+!define _WINVER_MASKSP   0x000F0000 ; $__WINVERSP mask for OS service pack
 
 # possible variable values for different versions
 
@@ -172,7 +176,9 @@
 !define OSVERSIONINFOA_SIZE   148
 !define OSVERSIONINFOEXA_SIZE 156
 !define /ifndef VER_PLATFORM_WIN32_NT 2
-!define /ifndef VER_NT_WORKSTATION    1
+!define /ifndef VER_NT_WORKSTATION       1
+!define /ifndef VER_NT_DOMAIN_CONTROLLER 2
+!define /ifndef VER_NT_SERVER            3
 
 !define SM_TABLETPC    86
 !define SM_MEDIACENTER 87
@@ -263,7 +269,8 @@
     IntOp $__WINVERSP $__WINVERSP | ${_WINVER_NTBIT}
     IntOp $__WINVERV  $__WINVERV  | ${_WINVER_NTBIT}
   _winver_notnt:
-
+!ifndef NSIS_UNICODE
+!if "${NSIS_PTR_SIZE}" <= 4
   # get service pack information
   IntCmp $0 ${VER_PLATFORM_WIN32_NT} _winver_nt "" _winver_nt  # win9x
 
@@ -291,7 +298,8 @@
     Goto _winver_sp_done
 
   _winver_nt: # nt
-
+!endif #~ 32-bit
+!endif #~ ANSI
     IntCmp $R0 ${OSVERSIONINFOEX_SIZE} "" _winver_sp_noex _winver_sp_noex
 
       # discard szCSDVersion
@@ -302,9 +310,12 @@
       Pop $0
 
       # is server?
-      IntCmp $0 ${VER_NT_WORKSTATION} _winver_noserver
+      IntCmp $0 ${VER_NT_WORKSTATION} _winver_nt_notsrv
         IntOp $__WINVERSP $__WINVERSP | ${_WINVER_NTSRVBIT}
-      _winver_noserver:
+        IntCmp $0 ${VER_NT_DOMAIN_CONTROLLER} "" _winver_nt_notdc _winver_nt_notdc
+          IntOp $__WINVERSP $__WINVERSP | ${_WINVER_NTDCBIT}
+        _winver_nt_notdc:
+      _winver_nt_notsrv:
 
       # get wServicePackMajor
       Pop $0
@@ -333,7 +344,7 @@
         StrCpy $0 0 # no service pack
 
 !ifdef WINVER_NT4_OVER_W95
-      IntOp $__WINVERV $__WINVERV | ${_WINVER_VERXBIT}
+      IntOp $__WINVERV $__WINVERV | ${_WINVER_VERXBIT} ; change NT 4.0.reserved.0 to 4.0.reserved.1
 !endif
 
   _winver_sp_done:
@@ -427,21 +438,16 @@
 
 # version feature LogicLib macros
 
-!macro _IsNT _a _b _t _f
+!macro __WinVer_LL_IsBitSet _v _b _t _f
   !insertmacro _LOGICLIB_TEMP
   ${CallArtificialFunction} __WinVer_InitVars
-  IntOp $_LOGICLIB_TEMP $__WINVERSP & ${_WINVER_NTBIT}
+  IntOp $_LOGICLIB_TEMP ${_v} & ${_b}
   !insertmacro _!= $_LOGICLIB_TEMP 0 `${_t}` `${_f}`
 !macroend
-!define IsNT `"" IsNT ""`
 
-!macro _IsServerOS _a _b _t _f
-  !insertmacro _LOGICLIB_TEMP
-  ${CallArtificialFunction} __WinVer_InitVars
-  IntOp $_LOGICLIB_TEMP $__WINVERSP & ${_WINVER_NTSRVBIT}
-  !insertmacro _!= $_LOGICLIB_TEMP 0 `${_t}` `${_f}`
-!macroend
-!define IsServerOS `"" IsServerOS ""`
+!define IsNT `$__WINVERSP _WinVer_LL_IsBitSet ${_WINVER_NTBIT}`
+!define IsServerOS `$__WINVERSP _WinVer_LL_IsBitSet ${_WINVER_NTSRVBIT}`
+!define IsDomainController `$__WINVERSP _WinVer_LL_IsBitSet ${_WINVER_NTDCBIT}`
 
 # service pack macros
 
@@ -505,7 +511,53 @@
 !define WinVerGetMinor '!insertmacro __WinVer_GetVer $__WINVERV  16 ${_WINVER_MASKVMIN}'
 !define WinVerGetBuild '!insertmacro __WinVer_GetVer $__WINVERSP "" ${_WINVER_MASKVBLD}'
 
-# done
+!macro _WinVer_BuildNumCheck op num _t _f
+  !insertmacro _LOGICLIB_TEMP
+  ${WinVerGetBuild} $_LOGICLIB_TEMP
+  !insertmacro _${op} $_LOGICLIB_TEMP ${num} `${_t}` `${_f}`
+!macroend
+!define AtLeastBuild `U>= WinVer_BuildNumCheck `
+!define AtMostBuild `U<= WinVer_BuildNumCheck `
+
+# Windows as a Service macros
+
+!macro WinVer_WaaS id build fu codename marketingname
+  !if "${id}" == ${fu}
+    !define WinVer_WaaS_Build ${build}
+  !else if "${id}" == "${codename}"
+    !define WinVer_WaaS_Build ${build}
+  !else if "${id}" == "${marketingname}"
+    !define WinVer_WaaS_Build ${build}
+  !endif
+!macroend
+
+!macro _WinVer_WaaS op id _t _f
+  !insertmacro WinVer_WaaS "${id}" 10240 1507 "Threshold"   "RTM" ; 10240.16384
+  !insertmacro WinVer_WaaS "${id}" 10586 1511 "Threshold 2" "November Update" ; 10586.0?
+  !insertmacro WinVer_WaaS "${id}" 14393 1607 "Redstone"    "Anniversary Update" ; 14393.10
+  !insertmacro WinVer_WaaS "${id}" 15063 1703 "Redstone 2"  "Creators Update" ; 15063.13
+  !insertmacro WinVer_WaaS "${id}" 16299 1709 "Redstone 3"  "Fall Creators Update" ; 16299.19
+  !insertmacro WinVer_WaaS "${id}" 17134 1803 "Redstone 4"  "April 2018 Update" ; 17134.1
+  !insertmacro WinVer_WaaS "${id}" 17763 1809 "Redstone 5"  "October 2018 Update" ; 17763.1
+  !insertmacro WinVer_WaaS "${id}" 18362 1903 "19H1"        "May 2019 Update" ; 18362.116
+  !insertmacro WinVer_WaaS "${id}" 18363 1909 "19H2"        "November 2019 Update" ; 18363.418
+  !insertmacro WinVer_WaaS "${id}" 19041 2004 "20H1"        "May 2020 Update" ; 19041.264?
+  !insertmacro WinVer_WaaS "${id}" 19042 20H2 "20H2"        "October 2020 Update" ; 19042.572? A.K.A. 2009
+  !insertmacro WinVer_WaaS "${id}" 19043 21H1 "21H1"        "May 2021 Update" ; 19043.928
+
+  !ifmacrodef WinVerExternal_WaaS_MapToBuild
+    !insertmacro WinVerExternal_WaaS_MapToBuild ${op} "${id}" WinVer_WaaS_Build
+  !endif
+  !define /IfNDef WinVer_WaaS_Build 0
+  !if "${WinVer_WaaS_Build}" <= 9600
+    !error 'WinVer: Unknown WaaS name: ${id}'
+  !endif
+  !insertmacro _WinVer_BuildNumCheck ${op} ${WinVer_WaaS_Build} `${_t}` `${_f}`
+  !undef WinVer_WaaS_Build
+!macroend
+
+!define AtLeastWaaS `U>= WinVer_WaaS `
+!define AtMostWaaS `U<= WinVer_WaaS `
 
 !endif # !___WINVER__NSH___
 

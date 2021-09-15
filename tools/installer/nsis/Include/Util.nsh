@@ -46,11 +46,7 @@
 !define Int64Op '!insertmacro Int64Op '
 !define IntPtrOp '!insertmacro IntPtrOp '
 !macro Int32Op r a o b
-!if ${NSIS_PTR_SIZE} <= 4
-  IntOp `${r}` `${a}` `${o}` ${b}
-!else
-  !error "Int32Op not implemented"
-!endif
+IntOp `${r}` `${a}` `${o}` ${b}
 !macroend
 !macro Int64Op r a o b
 !echo "Int64Op ${r}=${a}${o}${b}"
@@ -60,24 +56,17 @@ Pop ${r}
 !verbose pop
 !macroend
 !macro IntPtrOp r a o b
-!if ${NSIS_PTR_SIZE} <= 4
-  ${Int32Op} `${r}` `${a}` `${o}` `${b}`
-!else
-  ${Int64Op} `${r}` `${a}` `${o}` `${b}`
-!endif
+IntPtrOp `${r}` `${a}` `${o}` `${b}`
 !macroend
 
 !define Int32Cmp '!insertmacro Int32Cmp '
 !define Int64Cmp '!insertmacro Int64Cmp '
 !define IntPtrCmp '!insertmacro IntPtrCmp '
 !macro Int32Cmp a b jeek jles jgtr
-!if ${NSIS_PTR_SIZE} <= 4
-  IntCmp `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
-!else
-  !error "Int32Cmp not implemented"
-!endif
+IntCmp `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
 !macroend
 !macro Int64Cmp a b jeek jles jgtr
+!if ${NSIS_PTR_SIZE} <= 4
 !ifmacrondef _LOGICLIB_TEMP
 !include LogicLib.nsh
 !endif
@@ -86,24 +75,19 @@ Pop ${r}
 ${IfThen} ${a} L= ${b} ${|} Goto ${jeek} ${|}
 !insertmacro _L< ${a} ${b} `${jles}` `${jgtr}`
 !verbose pop
+!else
+Int64Cmp `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
+!endif
 !macroend
 !macro IntPtrCmp a b jeek jles jgtr
-!if ${NSIS_PTR_SIZE} <= 4
-  ${Int32Cmp} `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
-!else
-  ${Int64Cmp} `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
-!endif
+IntPtrCmp `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
 !macroend
 
 !define Int32CmpU '!insertmacro Int32CmpU '
 !define Int64CmpU '!insertmacro Int64CmpU '
 !define IntPtrCmpU '!insertmacro IntPtrCmpU '
 !macro Int32CmpU a b jeek jles jgtr
-!if ${NSIS_PTR_SIZE} <= 4
-  IntCmpU `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
-!else
-  !error "Int32CmpU not implemented"
-!endif
+IntCmpU `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
 !macroend
 !macro Int64CmpUHelper
 ; This macro performs "$_LOGICLIB_TEMP = a < b ? -1 : a > b ? 1 : 0" but System::Int64Op does not support unsigned operations so we have to perform multiple steps
@@ -152,6 +136,7 @@ Pop $1
 Pop $2
 !macroend
 !macro Int64CmpU a b jeek jles jgtr
+!if ${NSIS_PTR_SIZE} <= 4
 !echo "Int64CmpU ${a}:${b} =${jeek}, <${jles}, >${jgtr}"
 !verbose push 2
 Push `${a}`
@@ -159,13 +144,39 @@ Push `${b}`
 !insertmacro CallArtificialFunction Int64CmpUHelper
 IntCmp $_LOGICLIB_TEMP 0 `${jeek}` `${jles}` `${jgtr}`
 !verbose pop
+!else
+Int64CmpU `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
+!endif
 !macroend
 !macro IntPtrCmpU a b jeek jles jgtr
-!if ${NSIS_PTR_SIZE} <= 4
-  ${Int32CmpU} `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
-!else
-  ${Int64CmpU} `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
+IntPtrCmpU `${a}` `${b}` `${jeek}` `${jles}` `${jgtr}`
+!macroend
+
+
+!define MakeARPInstallDate "!insertmacro MakeARPInstallDate "
+!macro MakeARPInstallDate _outvar
+System::Call 'KERNEL32::GetDateFormat(i0x409,i0,p0,t"yyyyMMdd",t.s,i${NSIS_MAX_STRLEN})'
+Pop ${_outvar}
+!macroend
+
+
+!define /IfNDef SPI_GETHIGHCONTRAST 0x42
+!define /IfNDef HCF_HIGHCONTRASTON 0x01
+!define /IfNDef /math SYSSIZEOF_HIGHCONTRAST 8 + ${NSIS_PTR_SIZE}
+!define IsHighContrastModeActive '"" IsHighContrastModeActive ""'
+!macro _IsHighContrastModeActive _lhs _rhs _t _f
+!ifmacrondef _LOGICLIB_TEMP
+!include LogicLib.nsh
 !endif
+!insertmacro _LOGICLIB_TEMP
+Push $1
+System::Call '*(i${SYSSIZEOF_HIGHCONTRAST},i0,p)p.r1'
+System::Call 'USER32::SystemParametersInfo(i${SPI_GETHIGHCONTRAST},i${SYSSIZEOF_HIGHCONTRAST},pr1,i0)'
+System::Call '*$1(i,i.s)'
+Pop $_LOGICLIB_TEMP
+System::Free $1
+Pop $1
+!insertmacro _& $_LOGICLIB_TEMP ${HCF_HIGHCONTRASTON} `${_t}` `${_f}`
 !macroend
 
 

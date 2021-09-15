@@ -199,6 +199,21 @@ Version History
 - Update check switched from JNetLib to WinInet
 - New file type icons
 
+2.3.4
+- Added Window Info/Spy feature
+- System DPI aware
+- New toolbar images
+
+2.3.5
+- Added log window colors
+- Basic AppEvents custom sound support for BuildComplete, BuildWarning and BuildError
+
+2.3.6
+- Added GUID generator tool
+
+2.4
+- Added Lookup tool
+- Use Consolas font if it exists
 
 Copyright Information
 ---------------------

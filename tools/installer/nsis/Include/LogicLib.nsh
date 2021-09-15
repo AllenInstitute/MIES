@@ -57,7 +57,8 @@
 ;       size_t integer tests
 ;         a Z= b; a Z<> b; a Z< b; a Z>= b; a Z> b; a Z<= b
 ;       Built-in NSIS flag tests:
-;         ${Abort}; ${Errors}; ${RebootFlag}; ${Silent}
+;         ${Abort}; ${Errors}; ${RebootFlag}; ${Silent}; ${RtlLanguage};
+;         ${ShellVarContextAll}
 ;       Built-in NSIS other tests:
 ;         ${FileExists} a
 ;       Any conditional NSIS instruction test:
@@ -67,6 +68,8 @@
 ;         ${SectionIsSectionGroupEnd} a; ${SectionIsBold} a;
 ;         ${SectionIsReadOnly} a; ${SectionIsExpanded} a;
 ;         ${SectionIsPartiallySelected} a
+;       Additional tests:
+;         HK RegKeyIsEmpty SubKey
 ;
 ; Examples:
 ;   See LogicLib.nsi in the Examples folder for lots of example usage.
@@ -96,7 +99,9 @@
   !macroend
 
   !macro LogicLib_JumpToBranch _Jump _Skip
-    StrCmp "" ""  `${_Jump}` ${_Skip}
+    !if `${_Jump}` != ``
+      StrCmp "" "" `${_Jump}` ${_Skip}
+    !endif
   !macroend
 
   !macro _IncreaseCounter
@@ -332,6 +337,37 @@
     IfSilent `${_t}` `${_f}`
   !macroend
   !define Silent `"" Silent ""`
+
+  !macro _ShellVarContextAll _a _b _t _f
+    IfShellVarContextAll `${_t}` `${_f}`
+  !macroend
+  !define ShellVarContextAll `"" ShellVarContextAll ""`
+
+  !macro _RtlLanguage _a _b _t _f
+    IfRtlLanguage `${_t}` `${_f}`
+  !macroend
+  !define RtlLanguage `"" RtlLanguage ""`
+
+  !macro _AltRegView _a _b _t _f
+    IfAltRegView `${_t}` `${_f}`
+  !macroend
+  !define AltRegView `"" AltRegView ""`
+
+  !macro _RegKeyIsEmpty _a _b _t _f
+    !insertmacro _LOGICLIB_TEMP
+    ClearErrors
+    EnumRegValue $_LOGICLIB_TEMP ${_a} `${_b}` ""
+    !if `${_f}` != ``
+    IfErrors "" `${_f}` ; Skip calls to EnumRegKey and _== if possible
+    !else
+    IfErrors +3
+    StrCpy $_LOGICLIB_TEMP "1" ; The default value is also named "", make sure we don't mistake it as empty
+    Goto +2
+    !endif
+    EnumRegKey $_LOGICLIB_TEMP ${_a} `${_b}` ""
+    !insertmacro _== $_LOGICLIB_TEMP "" `${_t}` `${_f}`
+  !macroend
+  !define RegKeyIsEmpty `RegKeyIsEmpty`
 
   ; "Any instruction" test
   !macro _Cmd _a _b _t _f
