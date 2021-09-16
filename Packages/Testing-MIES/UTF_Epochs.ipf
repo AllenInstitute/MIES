@@ -21,6 +21,7 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 
 	dDAQ = ParamIsDefault(dDAQ) ? 0 : !!dDAQ
 	oodDAQ = ParamIsDefault(oodDAQ) ? 0 : !!oodDAQ
+	analysisFunction = SelectString(ParamIsDefault(analysisFunction), analysisFunction, "")
 
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
@@ -76,8 +77,10 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 		PASS()
 	endfor
 
-	ST_SetStimsetParameter(stimsetName1, "Analysis function (Generic)", str = analysisFunction)
-	ST_SetStimsetParameter(stimsetName2, "Analysis function (Generic)", str = analysisFunction)
+	if(!IsEmpty(analysisFunction))
+		ST_SetStimsetParameter(stimsetName1, "Analysis function (Generic)", str = analysisFunction)
+		ST_SetStimsetParameter(stimsetName2, "Analysis function (Generic)", str = analysisFunction)
+	endif
 
 	device = devices
 
