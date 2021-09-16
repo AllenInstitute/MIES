@@ -2332,7 +2332,7 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 		sprintf line "/%s/port%d/line%d", device, DIOPort, DIOline
 	endif
 
-	ClearRTError()
+	AssertOnAndClearRTError()
 	DAQmx_DIO_Config/DEV=device/DIR=1/LGRP=(lineGrouping) line
 
 	if(ClearRTError())
@@ -2392,7 +2392,7 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 		sprintf line "/%s/port%d/line%d", device, DIOPort, DIOline
 	endif
 
-	ClearRTError()
+	AssertOnAndClearRTError()
 	DAQmx_DIO_Config/DEV=device/DIR=1/LGRP=(lineGrouping) line
 
 	if(ClearRTError())
@@ -2649,7 +2649,7 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 	DEBUGPRINTSTACKINFO()
 
 	string device, panelTitle, paraStr
-	variable channels, i, err
+	variable channels, i
 
 	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
@@ -2663,7 +2663,7 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 		endif
 	endfor
 
-	ClearRTError()
+	AssertOnAndClearRTError()
 	DAQmx_AO_SetOutputs/DEV=device paraStr
 
 	if(ClearRTError())

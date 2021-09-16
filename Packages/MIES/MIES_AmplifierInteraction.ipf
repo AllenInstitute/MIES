@@ -1026,8 +1026,8 @@ Function AI_SelectMultiClamp(panelTitle, headStage)
 		return AMPLIFIER_CONNECTION_INVAL_SER
 	endif
 
-	ClearRTError()
-	MCC_SelectMultiClamp700B(mccSerial, channel); err = GetRTError(1)
+	AssertOnAndClearRTError()
+	MCC_SelectMultiClamp700B(mccSerial, channel); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 	if(err)
 		return AMPLIFIER_CONNECTION_MCC_FAILED

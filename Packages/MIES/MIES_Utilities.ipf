@@ -1606,8 +1606,8 @@ threadsafe Function/S RemovePrefix(string str, [string start, variable regExp])
 	endif
 
 	if(regExp)
-		ClearRTError()
-		SplitString/E="^(" + start + ")" str, regExpResult; err = GetRTError(1)
+		AssertOnAndClearRTError()
+		SplitString/E="^(" + start + ")" str, regExpResult; err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 		if(V_flag == 1 && err == 0)
 			skipLength = strlen(regExpResult)
@@ -3827,12 +3827,12 @@ Function KillWindows(list)
 End
 
 /// @brief str2num variant with no runtime error on invalid conversions
-threadsafe Function str2numSafe(str)
-	string str
+threadsafe Function str2numSafe(string str)
 
-	variable err, var
+	variable var, err
 
-	var = str2num(str); err = GetRTError(1)
+	AssertOnAndClearRTError()
+	var = str2num(str); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 	return var
 End

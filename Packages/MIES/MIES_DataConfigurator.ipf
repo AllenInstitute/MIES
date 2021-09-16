@@ -796,7 +796,7 @@ static Function DC_PlaceDataInDAQDataWave(panelTitle, numActiveChannels, dataAcq
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, s.dataAcqOrTP, s.setLength)
 
-	ClearRTError()
+	AssertOnAndClearRTError()
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		DC_FillDAQDataWaveForTP(panelTitle, s)

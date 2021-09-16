@@ -488,7 +488,7 @@ End
 Function IVS_SaveExperiment(filename)
 	string filename
 
-	ClearRTError()
+	AssertOnAndClearRTError()
 	SaveExperiment/C/F={1,"",2}/P=home as filename + ".pxp"; AbortOnRTE
 End
 

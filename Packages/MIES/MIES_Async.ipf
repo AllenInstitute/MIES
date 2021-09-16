@@ -1024,6 +1024,7 @@ static Function ASYNC_IsASYNCRunning()
 #ifdef THREADING_DISABLED
 	return !IsNaN(tgID)
 #else
+	AssertOnAndClearRTError()
 	waitResult = ThreadGroupWait(tgID, 0); err = GetRTError(1)
 #endif
 
