@@ -1253,8 +1253,8 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "", setHelp = 1)
 			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
 
+			AssertOnAndClearRTError()
 			try
-				ClearRTError()
 				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortONRTE
 			catch
 				ClearRTError()

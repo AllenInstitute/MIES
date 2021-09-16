@@ -492,8 +492,8 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	debugOnError = DisableDebugOnError()
 
 	// also with "/Q" LoadData still complains if the subfolder path does not exist
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		if(FileExists(expFileOrFolder))
 			LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
 		elseif(FolderExists(expFileOrFolder))

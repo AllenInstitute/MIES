@@ -161,8 +161,8 @@ static Function IH_Cleanup()
 
 	debuggerState = DisableDebugger()
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		DAP_UnlockAllDevices(); AbortOnRTE
 		IH_RemoveAmplifierConnWaves(); AbortOnRTE
 		IH_KillTemporaries(); AbortOnRTE

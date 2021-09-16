@@ -89,8 +89,8 @@ static Function SWS_AfterSweepDataChangeHook(panelTitle)
 		return NaN
 	endif
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		DB_UpdateToLastSweep(databrowser); AbortOnRTE
 	catch
 		ClearRTError()

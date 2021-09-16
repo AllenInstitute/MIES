@@ -5130,8 +5130,8 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 #else
 		debugOnError = DisableDebugOnError()
 		do
+			AssertOnAndClearRTError()
 			try
-				ClearRTError()
 				RemoveFromGraph/W=$graph $("#0"); AbortOnRTE
 			catch
 				ClearRTError()
@@ -6619,8 +6619,8 @@ Function UploadCrashDumpsDaily()
 
 	variable lastWrite
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		NVAR JSONid = $GetSettingsJSONid()
 
 		lastWrite = ParseISO8601TimeStamp(JSON_GetString(jsonID, "/diagnostics/last upload"))

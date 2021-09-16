@@ -732,6 +732,7 @@ Function DB_WindowHook(s)
 				break
 			endif
 
+			AssertOnAndClearRTError()
 			try
 				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER); AbortOnRTE
 

@@ -125,8 +125,8 @@ static Function PS_ApplyStoredWindowCoordinate(variable JSONid, string win)
 		return NaN
 	endif
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		left = JSON_GetVariable(JSONid, path + "/left")
 		top = JSON_GetVariable(JSONid, path + "/top")
 		right = JSON_GetVariable(JSONid, path + "/right")
@@ -167,8 +167,8 @@ static Function PS_StoreWindowCoordinates(variable JSONid)
 			continue
 		endif
 
+		AssertOnAndClearRTError()
 		try
-			ClearRTError()
 			PS_StoreWindowCoordinate(JSONid, win); AbortOnRTE
 		catch
 			ClearRTError()
@@ -237,8 +237,8 @@ End
 /// Caller *must* invalidate JSONid after return.
 Function PS_SerializeSettings(string package, variable JSONid)
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		PS_StoreWindowCoordinates(JSONid); AbortOnRTE
 		PS_WriteSettings(package, JSONid); AbortOnRTE
 	catch

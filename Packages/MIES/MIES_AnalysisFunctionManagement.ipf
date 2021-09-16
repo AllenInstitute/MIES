@@ -111,8 +111,8 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		ChangeWaveLock(scaledDataWave, 1)
 
 		ret = NaN
+		AssertOnAndClearRTError()
 		try
-			ClearRTError()
 			if(valid_f1)
 				ret = f1(panelTitle, eventType, DAQDataWave, i); AbortOnRTE
 			elseif(valid_f2)

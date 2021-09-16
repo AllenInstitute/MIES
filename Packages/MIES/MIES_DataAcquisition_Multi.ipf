@@ -34,8 +34,8 @@ Function DQM_FIFOMonitor(s)
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
 
+				AssertOnAndClearRTError()
 				try
-					ClearRTError()
 					NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
 					fifoName = GetNIFIFOName(deviceID)
 					FIFOStatus/Q $fifoName

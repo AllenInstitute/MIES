@@ -229,8 +229,8 @@ static Function P_PublishPressureMethodChange(string panelTitle, variable headst
 	payload = JSON_Dump(jsonID)
 	JSON_Release(jsonID)
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 #if exists("zeromq_pub_send")
 		zeromq_pub_send(PRESSURE_STATE_FILTER, payload); AbortOnRTE
 #else
@@ -252,8 +252,8 @@ static Function P_PublishSealedState(string panelTitle, variable headstage)
 	payload = JSON_Dump(jsonID)
 	JSON_Release(jsonID)
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 #if exists("zeromq_pub_send")
 		zeromq_pub_send(PRESSURE_SEALED_FILTER, payload); AbortOnRTE
 #else

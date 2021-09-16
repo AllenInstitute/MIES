@@ -220,8 +220,8 @@ Function TPM_BkrdTPFuncMD(s)
 					if(V_FIFOChunks >= endOfPulse)
 						WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, TEST_PULSE_MODE)
 
+						AssertOnAndClearRTError()
 						try
-							ClearRTError()
 							for(j = 0; j < V_FIFOnchans; j += 1)
 								fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
 								channelNr = str2num(fifoChannelName)

@@ -753,8 +753,8 @@ Function DAP_WindowHook(s)
 			NVAR JSONid = $GetSettingsJSONid()
 			PS_StoreWindowCoordinate(JSONid, panelTitle)
 
+			AssertOnAndClearRTError()
 			try
-				ClearRTError()
 				DAP_UnlockDevice(panelTitle); AbortOnRTE
 			catch
 				// do nothing

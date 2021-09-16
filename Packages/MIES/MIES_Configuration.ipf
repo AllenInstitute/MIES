@@ -366,8 +366,8 @@ Function CONF_SaveWindow(fName)
 	variable i, jsonID, saveMask, saveResult
 	string out, wName, errMsg
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		wName = GetMainWindow(GetCurrentWindow())
 		if(!CmpStr(wName, "HistoryCarbonCopy"))
 			printf "Please select a window.\r"
@@ -421,8 +421,8 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 
 	jsonID = NaN
 	restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		if(usePanelTypeFromFile)
 			[input, fullFilePath] = LoadTextFile(fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Open configuration file")
 			if(IsEmpty(input))
@@ -492,8 +492,8 @@ static Function CONF_SaveDAEphys(fName)
 	variable i, jsonID, saveMask, saveResult
 	string out, wName, errMsg
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		wName = GetMainWindow(GetCurrentWindow())
 		ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Current window is no DA_Ephys panel")
 
@@ -544,8 +544,8 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 	string AmpSerialLocal, AmpTitleLocal, device, StimSetPath, path, filename, rStateSync
 	string input = ""
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		middleOfExperiment = ParamIsDefault(middleOfExperiment) ? 0 : !!middleOfExperiment
 		forceNewPanel = ParamIsDefault(forceNewPanel) ? 0 : !!forceNewPanel
 
@@ -686,8 +686,10 @@ End
 static Function CONF_ParseJSON(str)
 	string str
 
+	variable err
+
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		JSONXOP_Parse/Z=0/Q=0 str; AbortOnRTE
 		return V_Value
 	catch
@@ -974,8 +976,8 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 	variable arrayNameIndex
 	string ctrlName, niceName, arrayName, ctrlList, wList, uData, winHandle, jsonCtrlGroupPath, subWinTarget, str, errMsg
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		ASSERT(WinType(wName), "Window " + wName + " does not exist!")
 		ASSERT(restoreMask & (EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POSITION | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED | EXPCONFIG_SAVE_CTRLTYPE), "No property class enabled to restore in restoreMask.")
 
@@ -1375,6 +1377,7 @@ Function CONF_AllWindowsToJSON(wName, saveMask[, excCtrlTypes])
 	string wList, curWinName, errMsg
 	variable i, numWins, jsonID, jsonIDWin
 
+	AssertOnAndClearRTError()
 	try
 		excCtrlTypes = SelectString(ParamIsDefault(excCtrlTypes), excCtrlTypes, "")
 
@@ -1430,8 +1433,8 @@ Function CONF_WindowToJSON(wName, saveMask[, excCtrlTypes])
 	variable numCtrl, i, j, jsonID, numCoupled, setRadioPos, ctrlType, coupledCnt, numUniqueCtrlArray, numDupCheck
 	variable rbcIndex
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		excCtrlTypes = SelectString(ParamIsDefault(excCtrlTypes), excCtrlTypes, "")
 		ASSERT(WinType(wName), "Window " + wName + " does not exist!")
 		jsonID = JSON_New()
@@ -1728,8 +1731,8 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 					continue
 				endif
 				uData = GetUserData(wName, ctrlName, uDataKey)
+				AssertOnAndClearRTError()
 				try
-					ClearRTError()
 					s = ConvertTextEncoding(uData, TextEncodingCode("UTF-8"), TextEncodingCode("UTF-8"), 1, 0); AbortOnRTE
 				catch
 					ClearRTError()

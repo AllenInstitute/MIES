@@ -2008,8 +2008,8 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 	SVAR scanStr = $GetNI_AISetup(panelTitle)
 	fifoName = GetNIFIFOName(deviceID)
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		if(!HasEnoughDiskspaceFree(SpecialDirPath("Temporary", 0, 0, 0), HW_NI_FIFO_MIN_FREE_DISK_SPACE))
 			printf "%s: Can not start acquisition. Not enough free disk space for data buffer.\rThe free disk space is less than %.0W0PB.\r", panelTitle, HW_NI_FIFO_MIN_FREE_DISK_SPACE
 			ControlWindowToFront()
@@ -2098,8 +2098,8 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 	TTLStr = ""
 	Make/FREE/WAVE/N=(channels) TTLWaves
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		NewFIFO $fifoName
 		aiCnt = 0
 		ttlCnt = 0
@@ -2695,8 +2695,8 @@ Function HW_NI_KillFifo(deviceID)
 		return NaN
 	endif
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		if(V_FIFORunning)
 			CtrlFIFO $fifoName stop; AbortOnRTE
 		endif

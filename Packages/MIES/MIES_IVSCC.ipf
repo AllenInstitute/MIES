@@ -400,8 +400,8 @@ static Function IVS_PublishQCState(variable result, string description)
 	payload = JSON_Dump(jsonID)
 	JSON_Release(jsonID)
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 #if exists("zeromq_pub_send")
 		zeromq_pub_send(IVS_PUB_FILTER, payload); AbortOnRTE
 #else
