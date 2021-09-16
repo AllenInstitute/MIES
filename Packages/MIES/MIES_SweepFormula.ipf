@@ -199,7 +199,7 @@ End
 /// @param formula  string formula
 /// @param indentLevel [internal use only] recursive call level, used for debug output
 /// @returns a JSONid representation
-Function SF_FormulaParser(formula, [indentLevel])
+static Function SF_FormulaParser(formula, [indentLevel])
 	String formula
 	variable indentLevel
 
