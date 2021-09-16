@@ -11,6 +11,14 @@ range of sweeps using pre-defined functions. The backend parses a formula into
 a `JSON logic <http://jsonlogic.com/>`_ like pattern which in turn is analyzed
 to return a wave for plotting.
 
+Preprocessing
+^^^^^^^^^^^^^
+
+The entered code in the notebook is preprocessed. The preprocessor currently
+removes comments before testing the code for the ` vs ` operator after which
+it is passed to the formula parser.
+Comments start with a `#` character and end at the end of the current line.
+
 Formula Parser
 ^^^^^^^^^^^^^^
 
@@ -82,9 +90,7 @@ a `"` is an unallowed character.
 
 A function is defined as a string that is directly followed by an opening
 parenthesis. The parenthesis token causes to force a collect state until all
-parentheses are closed. A similar approach is used for comments. A comment
-character `#` causes the skip state which does not write to the buffer until a
-line ending character is encountered.
+parentheses are closed.
 
 Everything that is collected in a buffer is sent back to the function via
 recursive execution. The formula parser only handles elements inside one
