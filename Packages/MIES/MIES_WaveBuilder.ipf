@@ -2558,3 +2558,21 @@ Function WB_SplitStimsetName(string setName, string &setPrefix, variable &stimul
 	setPrefix    = setPrefixString
 	stimulusType = WB_ParseStimulusType(stimulusTypeString)
 End
+
+/// @brief Changes an existing stimset to a third party stimset
+Function WB_MakeStimsetThirdParty(string setName)
+
+	ASSERT(!IsEmpty(setName), "Stimset name can not be empty.")
+	ASSERT(!WB_StimsetIsFromThirdParty(setName), "Specified Stimset is already a third party stimset")
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	ASSERT(WaveExists(stimset), "Specified stimset does not exist.")
+	Note/k stimset
+
+	WAVE WP        = WB_GetWaveParamForSet(setName)
+	WAVE WPT       = WB_GetWaveTextParamForSet(setName)
+	WAVE SegWvType = WB_GetSegWvTypeForSet(setName)
+	KillOrMoveToTrash(wv=WP)
+	KillOrMoveToTrash(wv=WPT)
+	KillOrMoveToTrash(wv=SegWvType)
+End
