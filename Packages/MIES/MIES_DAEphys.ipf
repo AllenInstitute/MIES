@@ -758,6 +758,7 @@ Function DAP_WindowHook(s)
 				DAP_UnlockDevice(panelTitle); AbortOnRTE
 			catch
 				// do nothing
+				ClearRTError()
 			endtry
 
 			// return zero so that other hooks are called as well
