@@ -135,7 +135,7 @@ Formula Executor
 
 The formula executor receives a JSON id. It can only evaluate a specific
 structure of a formula which means for usual cases that it should start with an
-object that conatains *one* operation. Operations are evaluated via recursive
+object that contains *one* operation. Operations are evaluated via recursive
 calls to the formula executor at different paths. This ensures that the formula
 is evaluated from the last element to the first element. The formula in the
 above example `1*2+3*4` is therefore treated as
@@ -172,7 +172,7 @@ which evaluates to
 
 and finally to `[24]`. The concept of representing everything as an array also
 leaves our final result as an one element array or in Igor Pro context, a one
-elemented wave. At the time of an evaluation, the maximum depth of an array is
+element wave. At the time of an evaluation, the maximum depth of an array is
 3 dimensions as Igor Pro supports only 4 dimensions and one dimension is used
 for data alignment.
 
@@ -331,7 +331,7 @@ The function accepts an arbitrary amount of typical channel names like `AD` and
 it returns a numeric array of `[[channelName, channelNumber]+]` that has the
 same dimension as the input string array.
 
-It is inteded to be used with the `data()` function.
+It is intended to be used with the `data()` function.
 
 sweeps
 """"""
@@ -530,7 +530,7 @@ log
 """
 
 `log` prints the first element of the current array to the command line but
-passes the wave as usual to the next operation. It is usefull for debugging
+passes the wave as usual to the next operation. It is useful for debugging
 inside large formulas.
 
 Both, `merge` and `log` are defined in `JSON logic <http://jsonlogic.com/>`_.
