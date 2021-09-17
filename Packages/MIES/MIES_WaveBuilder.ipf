@@ -64,18 +64,15 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 	DFREF dfr = GetSetFolder(type)
 	WAVE/Z/SDFR=dfr stimSet = $setName
 
-	if(!WaveExists(stimSet))
-		// catches non-existing stimsets as well
-		if(WB_StimsetIsFromThirdParty(setName))
+	if(WB_StimsetIsFromThirdParty(setName))
+		if(WaveExists(stimSet))
+			return stimSet
+		else
 			return $""
 		endif
-
-		needToCreateStimSet = 1
-	elseif(WB_StimsetNeedsUpdate(setName))
-		needToCreateStimSet = 1
-	else
-		needToCreateStimSet = 0
 	endif
+
+	needToCreateStimSet = (!WaveExists(stimSet) || WB_StimsetNeedsUpdate(setName))
 
 	if(needToCreateStimSet)
 		// create current stimset
