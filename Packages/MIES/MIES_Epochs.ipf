@@ -511,14 +511,11 @@ Function EP_WriteEpochInfoIntoSweepSettings(string panelTitle, WAVE sweepWave, W
 	WAVE DACList = GetDACListFromConfig(configWave)
 	numDACEntries = DimSize(DACList, ROWS)
 
-	WAVE channelClampMode = GetChannelClampMode(panelTitle)
-	Make/D/FREE/N=(numDACEntries) headstageDAC = channelClampMode[DACList[p]][%DAC][%Headstage]
-
 	WAVE/T epochsWave = GetEpochsWave(panelTitle)
 
 	for(i = 0; i < numDACEntries; i += 1)
 		channel = DACList[i]
-		headstage = headstageDAC[i]
+		headstage = AFH_GetHeadstageFromDAC(panelTitle, channel)
 
 		Duplicate/FREE/RMD=[][][channel] epochsWave, epochChannel
 		Redimension/N=(-1, -1, 0) epochChannel
