@@ -23,7 +23,6 @@ static Constant SF_STATE_FUNCTION = 7
 static Constant SF_STATE_ARRAY = 8
 static Constant SF_STATE_ARRAYELEMENT = 9
 static Constant SF_STATE_WHITESPACE = 10
-static Constant SF_STATE_COMMENT = 11
 static Constant SF_STATE_NEWLINE = 12
 static Constant SF_STATE_OPERATION = 13
 static Constant SF_STATE_STRING = 14
@@ -92,6 +91,10 @@ static Constant EPOCHS_TYPE_RANGE = 0
 static Constant EPOCHS_TYPE_NAME = 1
 static Constant EPOCHS_TYPE_TREELEVEL = 2
 
+static StrConstant SF_CHAR_COMMENT = "#"
+static StrConstant SF_CHAR_CR = "\r"
+static StrConstant SF_CHAR_NEWLINE = "\n"
+
 static Function/S SF_StringifyState(variable state)
 
 	switch(state)
@@ -117,8 +120,6 @@ static Function/S SF_StringifyState(variable state)
 			return "SF_STATE_ARRAYELEMENT"
 		case SF_STATE_WHITESPACE:
 			return "SF_STATE_WHITESPACE"
-		case SF_STATE_COMMENT:
-			return "SF_STATE_COMMENT"
 		case SF_STATE_NEWLINE:
 			return "SF_STATE_NEWLINE"
 		case SF_STATE_OPERATION:
@@ -198,7 +199,7 @@ End
 /// @param formula  string formula
 /// @param indentLevel [internal use only] recursive call level, used for debug output
 /// @returns a JSONid representation
-Function SF_FormulaParser(formula, [indentLevel])
+static Function SF_FormulaParser(formula, [indentLevel])
 	String formula
 	variable indentLevel
 
@@ -276,14 +277,10 @@ Function SF_FormulaParser(formula, [indentLevel])
 			case ",":
 				state = SF_STATE_ARRAYELEMENT
 				break
-			case "#":
-				state = SF_STATE_COMMENT
-				break
 			case "\"":
 				state = SF_STATE_STRINGTERMINATOR
 				break
 			case "\r":
-			case "\n":
 				state = SF_STATE_NEWLINE
 				break
 			case " ":
@@ -311,8 +308,6 @@ Function SF_FormulaParser(formula, [indentLevel])
 		// state transition
 		if(lastState == SF_STATE_STRING && state != SF_STATE_STRINGTERMINATOR)
 			action = SF_ACTION_COLLECT
-		elseif(lastState == SF_STATE_COMMENT && state != SF_STATE_NEWLINE)
-			action = SF_ACTION_SKIP
 		elseif(state != lastState)
 			switch(state)
 				case SF_STATE_ADDITION:
@@ -371,7 +366,6 @@ Function SF_FormulaParser(formula, [indentLevel])
 					break
 				case SF_STATE_NEWLINE:
 				case SF_STATE_WHITESPACE:
-				case SF_STATE_COMMENT:
 					action = SF_ACTION_SKIP
 					break
 				case SF_STATE_COLLECT:
@@ -1137,6 +1131,26 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 	return out
 End
 
+/// @brief Pre process code entered into the notebook
+///        - unify line endings to CR
+///        - remove comments at line ending
+///        - cut off last CR from back conversion with TextWaveToList
+static Function/S SF_PreprocessInput(string formula)
+
+	if(IsEmpty(formula))
+		return ""
+	endif
+
+	formula = ReplaceString(SF_CHAR_NEWLINE, formula, SF_CHAR_CR)
+	WAVE/T lines = ListToTextWave(formula, SF_CHAR_CR)
+	lines = StringFromList(0, lines[p], SF_CHAR_COMMENT)
+	formula = TextWaveToList(lines, SF_CHAR_CR)
+	if(IsEmpty(formula))
+		return ""
+	endif
+	return formula[0, strlen(formula) - 2]
+End
+
 Function SF_button_sweepFormula_check(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -1157,6 +1171,7 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 
 			formula_nb = BSP_GetSFFormula(ba.win)
 			formula = GetNotebookText(formula_nb)
+			formula = SF_PreprocessInput(formula)
 
 			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
 			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "", setHelp = 1)
@@ -1219,6 +1234,7 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 			bsPanel = BSP_GetPanel(mainPanel)
 
 			code = GetNotebookText(formula_nb)
+			code = SF_PreprocessInput(code)
 
 			if(IsEmpty(code))
 				break
