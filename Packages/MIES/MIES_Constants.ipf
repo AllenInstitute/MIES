@@ -1010,7 +1010,7 @@ StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
 /// @{
 Constant PSQ_CHIRP_VERSION         = 1
 Constant PSQ_DA_SCALE_VERSION      = 1
-Constant PSQ_RAMP_VERSION          = 1
+Constant PSQ_RAMP_VERSION          = 2
 Constant PSQ_RHEOBASE_VERSION      = 1
 Constant PSQ_SQUARE_PULSE_VERSION  = 0
 Constant MSQ_FAST_RHEO_EST_VERSION = 0

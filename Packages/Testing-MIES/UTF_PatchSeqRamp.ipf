@@ -142,6 +142,44 @@ static Function/WAVE GetPulseDurations_IGNORE(sweepNo, device)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 End
 
+static Function/WAVE GetUserEpochs_IGNORE(sweepNo, device)
+	variable sweepNo
+	string device
+
+	variable i, j, numEntries, numEpochs
+
+	WAVE textualValues = GetLBTextualValues(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	WAVE/T/Z results = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
+	CHECK_WAVE(results, TEXT_WAVE)
+
+	// now filter out the user epochs
+	numEntries = DimSize(results, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/T/Z epochWave = EP_EpochStrToWave(results[i])
+		CHECK_WAVE(epochWave, TEXT_WAVE)
+
+		numEpochs = DimSize(epochWave, ROWS)
+		for(j = numEpochs - 1; j >= 0; j -= 1)
+			if(!GrepString(epochWave[j][EPOCH_COL_NAME], "ShortName=" + EPOCH_SHORTNAME_USER_PREFIX))
+				DeletePoints j, 1, epochWave
+			endif
+		endfor
+
+		results[i] = TextWaveToList(epochWave, EPOCH_LIST_ROW_SEP, colSep = EPOCH_LIST_COL_SEP, stopOnEmpty = 1)
+	endfor
+
+	return results
+End
+
+static Function/WAVE FindUserEpochs(WAVE/T userEpochs)
+
+	// RA_DS is present for all hardware types
+	Make/FREE/N=(DimSize(userEpochs, ROWS)) foundIt = (strsearch(userEpochs[p], "RA_DS", 0) >= 0)
+	return foundIt
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RA1([str])
 	string str
@@ -179,6 +217,13 @@ static Function PS_RA1_REENTRY([str])
 
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_WAVE(spikePositionWave, NULL_WAVE)
+
+	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	CHECK_WAVE(userEpochs, TEXT_WAVE)
+
+	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
+	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(foundUserEpochs, {0, 0})
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -246,6 +291,13 @@ static Function PS_RA2_REENTRY([str])
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_WAVE(spikePositionWave, NULL_WAVE)
 
+	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	CHECK_WAVE(userEpochs, TEXT_WAVE)
+
+	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
+	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(foundUserEpochs, {0, 0, 0})
+
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 	numEntries = DimSize(sweeps, ROWS)
@@ -295,6 +347,13 @@ static Function PS_RA3_REENTRY([str])
 
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"10000;", "10000;", "10000;"}, mode = WAVE_DATA)
+
+	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	CHECK_WAVE(userEpochs, TEXT_WAVE)
+
+	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
+	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(foundUserEpochs, {1, 1, 1})
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -348,6 +407,13 @@ static Function PS_RA4_REENTRY([str])
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"10000;", "", ""}, mode = WAVE_DATA)
 
+	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	CHECK_WAVE(userEpochs, TEXT_WAVE)
+
+	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
+	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(foundUserEpochs, {1, 0, 0})
+
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 	numEntries = DimSize(sweeps, ROWS)
@@ -400,6 +466,13 @@ static Function PS_RA5_REENTRY([str])
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"", "10000;", "10000;"}, mode = WAVE_DATA)
 
+	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	CHECK_WAVE(userEpochs, TEXT_WAVE)
+
+	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
+	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(foundUserEpochs, {0, 1, 1})
+
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 	numEntries = DimSize(sweeps, ROWS)
@@ -451,6 +524,13 @@ static Function PS_RA6_REENTRY([str])
 
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
 	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"", "", "10000;"}, mode = WAVE_DATA)
+
+	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	CHECK_WAVE(userEpochs, TEXT_WAVE)
+
+	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
+	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(foundUserEpochs, {0, 0, 1})
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
