@@ -375,6 +375,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCall)
 				// the pipette offset for the opposite mode has also changed, fetch that too
+				AssertOnAndClearRTError()
 				try
 					oldTab = GetTabID(panelTitle, "ADC")
 					if(oldTab != 0)
@@ -392,6 +393,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 						PGC_SetAndActivateControl(panelTitle, "ADC", val=oldTab)
 					endif
 				catch
+					ClearRTError()
 					if(DAG_GetNumericalValue(panelTitle, "check_Settings_SyncMiesToMCC"))
 						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", panelTitle, ConvertAmplifierModeToString(oppositeMode), i
 					endif

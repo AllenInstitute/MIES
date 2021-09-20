@@ -442,6 +442,7 @@ Function IVS_finishGigOhmSealQCCheck(s)
 
 	// See if we pass the Steady State Resistance
 	// added a second pass....if we don't pass the QC on the first go, check again before you fail out of the QC
+	AssertOnAndClearRTError()
 	try
 		if(ssResistanceVal > 1000) // ssResistance value is in MOhms
 			// and now run the EXTPCIIATT wave so that things are saved into the data record
@@ -454,6 +455,7 @@ Function IVS_finishGigOhmSealQCCheck(s)
 			Abort
 		endif
 	catch
+		ClearRTError()
 		ssResistanceVal = SSResistance[headstage]
 
 		printf "Second Pass: Steady State Resistance: %g\r", ssResistanceVal

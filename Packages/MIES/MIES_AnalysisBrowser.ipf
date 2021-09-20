@@ -1000,9 +1000,11 @@ static Function/S AB_LoadLabNotebookFromNWB(discLocation)
 
 	Wave/T nwb = AB_GetMap(discLocation)
 
+	AssertOnAndClearRTError()
 	try
 		h5_fileID = H5_OpenFile(nwb[%DiscLocation])
 	catch
+		ClearRTError()
 		printf "Could not open the NWB file %s.\r", nwb[%DiscLocation]
 		H5_CloseFile(h5_fileID)
 		return ""
