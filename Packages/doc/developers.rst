@@ -421,3 +421,67 @@ Debugging threadsafe functions
 The function ``DisableThreadsafeSupport()`` allows to turn off threadsafe support globally. This allows to use the
 debugger in threadsafe functions. Every MIES features which does not complain via ``ASSERT()`` or ``BUG()`` is supposed
 to work without threadsafe support as well.
+
+Preventing Debugger Popup
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There exist critical function calls that raise a runtime error. In well-defined circumstances the error condition is evaluated properly afterwards.
+When debugger is enabled and options are set to "Debug On Error", then the Debugger will popup on the line where such functions calls take place.
+This is inconvenient for debugging because the error is intended and properly handled. To prevent the debugger to open the coding convention is:
+
+.. code-block:: igorpro
+
+   AssertOnAndClearRTError()
+   CriticalFunction(); err = getRTError(1)
+
+Notable the second part that clears the RTE must be in the same line and can not be moved to an own function.
+This coding convention is only valid, if the critical function is expected to raise an runtime error.
+
+Runtime Error / Abort Handling Conventions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here a coding convention for try / catch / endtry constructs is introduced to
+prevent common issues like silently clearing unexpected runtime error conditions
+by using these.
+
+A try / catch / endtry construct catches by specification either
+
+- Runtime errors when AbortOnRTE is encountered between try / catch
+- Aborts when encountered between try / catch
+
+The code must take into account the possibility of runtime errors generated
+by bad code. These unexpected RTEs must not be silently cleared.
+
+For the case, where an RTE is expected from CriticalFunction, the common approach is:
+
+.. code-block:: igorpro
+
+   AssertOnAndClearRTError()
+   try
+       CriticalFunction(); AbortOnRTE
+   catch
+       err = ClearRTError()
+       ...
+   endtry
+
+Here pending RTEs are handled before the try. By convention the AbortOnRTE must be
+placed in the same function as the try / catch / endtry construct.
+The code between try / catch should only include critical function calls and be
+kept minimal. The expected RTE condition should be cleared directly after catch.
+
+For the case, where an Abort is expected from CriticalFunction, the common approach is:
+
+.. code-block:: igorpro
+
+   try
+       CriticalFunction()
+   catch
+       ...
+   endtry
+
+As Abort does not generate an RTE condition the try / catch / endtry construct
+leaves any possible unexpected RTE condition pending and no RTE condition is cleared.
+The programmer might consider evaluating ``V_AbortCode`` after catch.
+
+It is recommended to comment in the code before the try what the construct is
+intended to handle (RTE, Abort or both).
