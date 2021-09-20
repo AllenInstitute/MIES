@@ -544,10 +544,11 @@ End
 ///
 /// @param[in] epochStr string with epoch information in the format as stored in the labnotebook
 /// @returns 2D text wave with epoch information, use EPOCH_COL_ constants for column access
-Function/WAVE EP_EpochStrToWave(string epochStr)
+threadsafe Function/WAVE EP_EpochStrToWave(string epochStr)
 
-	ASSERT(!IsEmpty(epochStr), "No information in epochStr")
+	ASSERT_TS(!IsEmpty(epochStr), "No information in epochStr")
 	WAVE/T epochWave = ListToTextWaveMD(epochStr, 2, rowSep = EPOCH_LIST_ROW_SEP, colSep = EPOCH_LIST_COL_SEP)
+
 	return epochWave
 End
 
