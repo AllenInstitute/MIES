@@ -426,7 +426,7 @@ End
 static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 
 	variable numEpochs, idx, i, first, last, level
-	string name
+	string tags
 
 	if(IsEmpty(epochInfo))
 		return $""
@@ -441,19 +441,19 @@ static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 	for(i = 0; i < numEpochs; i += 1)
 		first = str2num(epochs[i][EPOCH_COL_STARTTIME])
 		last  = str2num(epochs[i][EPOCH_COL_ENDTIME])
-		name  = epochs[i][EPOCH_COL_NAME]
+		tags  = epochs[i][EPOCH_COL_TAGS]
 		level = str2num(epochs[i][EPOCH_COL_TREELEVEL])
 
 		switch(level)
 			case 2:
 			case 3:
-				if(strsearch(name, "Pulse=", 0) == -1)
+				if(strsearch(tags, "Pulse=", 0) == -1)
 					continue
 				endif
 
 				if(level == 2)
 					pulseInfos[idx][%Length] = (last - first) * 1000
-				elseif(level == 3 && strsearch(name, "Active", 0) != -1)
+				elseif(level == 3 && strsearch(tags, "Active", 0) != -1)
 					pulseInfos[idx][%PulseStart] = first * 1000
 					pulseInfos[idx][%PulseEnd]   = last  * 1000
 					// incrementing it here also gives an

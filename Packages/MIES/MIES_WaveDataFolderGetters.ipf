@@ -785,19 +785,20 @@ Function/WAVE GetNIDAQChannelWave(panelTitle, channel)
 	return wv
 End
 
-static Constant EPOCHS_WAVE_VERSION = 1
+static Constant EPOCHS_WAVE_VERSION = 2
 
 /// @brief Return the epochs text wave
 ///
 /// Rows:
 /// - epochs
 ///
-/// Column numbers must use global column number constants @sa epochColumnNumber
+/// Column numbers must use global column number constants @sa epochColumnNumber.
+///
 /// Columns:
-///   0 Start time in sec
-///   1 End time in sec
-///   2 Name
-///   3 Tree Level
+/// - 0: Start time in sec
+/// - 1: End time in sec
+/// - 2: Tags
+/// - 3: Tree Level
 /// Layers:
 /// - NUM_DA_TTL_CHANNELS
 ///
@@ -826,7 +827,7 @@ End
 threadsafe Function SetEpochsDimensionLabels(WAVE wv)
 	SetDimLabel COLS, EPOCH_COL_STARTTIME, StartTime, wv
 	SetDimLabel COLS, EPOCH_COL_ENDTIME, EndTime, wv
-	SetDimLabel COLS, EPOCH_COL_NAME, Name, wv
+	SetDimLabel COLS, EPOCH_COL_TAGS, Tags, wv
 	SetDimLabel COLS, EPOCH_COL_TREELEVEL, TreeLevel, wv
 End
 

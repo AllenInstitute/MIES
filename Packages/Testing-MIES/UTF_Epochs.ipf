@@ -663,7 +663,7 @@ Function EP_TestUserEpochs_REENTRY([str])
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
 			sprintf tags, "HS=%d;eventType=%d;", i, j
 			// not using /TXOP=4 here as we have an unknown short name as well
-			FindValue/TEXT=tags/RMD=[][EPOCH_COL_NAME] epochWave
+			FindValue/TEXT=tags/RMD=[][EPOCH_COL_TAGS] epochWave
 
 			switch(j)
 				case PRE_SET_EVENT:
@@ -671,7 +671,7 @@ Function EP_TestUserEpochs_REENTRY([str])
 				case MID_SWEEP_EVENT:
 					// user epoch was added
 					CHECK(V_row >= 0)
-					tags = epochWave[V_row][EPOCH_COL_NAME]
+					tags = epochWave[V_row][EPOCH_COL_TAGS]
 					shortName = EP_GetShortName(tags)
 					CHECK(GrepString(shortName, "^U_"))
 					break

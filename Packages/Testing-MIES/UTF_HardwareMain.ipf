@@ -387,7 +387,7 @@ static Function CheckEpochs(string dev)
 					str = settingsT[index]
 					if(!IsEmpty(str))
 						WAVE/T epochInfo = EP_EpochStrToWave(str)
-						Make/FREE/N=(DimSize(epochInfo, ROWS))/T epNames = EP_GetShortName(epochInfo[p][EPOCH_COL_NAME])
+						Make/FREE/N=(DimSize(epochInfo, ROWS))/T epNames = EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS])
 						// All Epochs should have short names
 						FindValue/TXOP=4/TEXT="" epNames
 						CHECK_EQUAL_VAR(V_Value, -1)

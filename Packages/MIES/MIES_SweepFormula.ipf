@@ -1391,14 +1391,14 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 				numEpochs = DimSize(epochInfo, ROWS)
 				Make/FREE/N=(numEpochs)/T epNames
 				for(k = 0; k < numEpochs; k += 1)
-					epName = epochInfo[k][EPOCH_COL_NAME]
+					epName = epochInfo[k][EPOCH_COL_TAGS]
 					epShortName = EP_GetShortName(epName)
 					epNames[k] = SelectString(IsEmpty(epShortName), epShortName, epName)
 				endfor
 
 				FindValue/TXOP=4/TEXT=epochName[0] epNames
 				if(V_Row >= 0)
-					SF_EpochsSetOutValues(epType, out, outCnt, name=epochInfo[V_Row][EPOCH_COL_NAME], treeLevel=epochInfo[V_Row][EPOCH_COL_TREELEVEL], startTime=epochInfo[V_Row][EPOCH_COL_STARTTIME], endTime=epochInfo[V_Row][EPOCH_COL_ENDTIME])
+					SF_EpochsSetOutValues(epType, out, outCnt, name=epochInfo[V_Row][EPOCH_COL_TAGS], treeLevel=epochInfo[V_Row][EPOCH_COL_TREELEVEL], startTime=epochInfo[V_Row][EPOCH_COL_STARTTIME], endTime=epochInfo[V_Row][EPOCH_COL_ENDTIME])
 				endif
 			endif
 			outCnt +=1

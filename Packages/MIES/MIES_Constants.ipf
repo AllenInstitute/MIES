@@ -1405,7 +1405,7 @@ StrConstant WORKLOADCLASS_TP = "TestPulse"
 
 Constant EPOCH_COL_STARTTIME = 0
 Constant EPOCH_COL_ENDTIME = 1
-Constant EPOCH_COL_NAME = 2
+Constant EPOCH_COL_TAGS = 2
 Constant EPOCH_COL_TREELEVEL = 3
 
 /// @}

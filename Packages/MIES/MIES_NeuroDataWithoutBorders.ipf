@@ -1297,7 +1297,7 @@ threadsafe static Function/WAVE NWB_FetchEpochs(WAVE numericalValues, WAVE/T/Z t
 		WAVE/T epochs = EP_EpochStrToWave(settingText[index])
 		ASSERT_TS(DimSize(epochs, ROWS) > 0, "Invalid epochs")
 		SetEpochsDimensionLabels(epochs)
-		epochs[][%Name] = RemoveEnding(epochs[p][%Name], ";") + ";"
+		epochs[][%Tags] = RemoveEnding(epochs[p][%Tags], ";") + ";"
 	endif
 
 	return epochs

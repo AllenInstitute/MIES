@@ -523,7 +523,7 @@ static Function EP_AddEpoch(panelTitle, channel, epBegin, epEnd, epTags, epShort
 
 	epochWave[i][%StartTime][channel] = startTimeStr
 	epochWave[i][%EndTime][channel] = endTimeStr
-	epochWave[i][%Name][channel] = epTags
+	epochWave[i][%Tags][channel] = epTags
 	epochWave[i][%TreeLevel][channel] = num2str(level)
 End
 

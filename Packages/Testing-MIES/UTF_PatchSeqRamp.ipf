@@ -162,7 +162,7 @@ static Function/WAVE GetUserEpochs_IGNORE(sweepNo, device)
 
 		numEpochs = DimSize(epochWave, ROWS)
 		for(j = numEpochs - 1; j >= 0; j -= 1)
-			if(!GrepString(epochWave[j][EPOCH_COL_NAME], "ShortName=" + EPOCH_SHORTNAME_USER_PREFIX))
+			if(!GrepString(epochWave[j][EPOCH_COL_TAGS], "ShortName=" + EPOCH_SHORTNAME_USER_PREFIX))
 				DeletePoints j, 1, epochWave
 			endif
 		endfor
