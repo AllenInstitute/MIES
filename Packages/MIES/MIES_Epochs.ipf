@@ -135,20 +135,20 @@ static Function EP_AddEpochsFromTP(panelTitle, channel, baselinefrac, testPulseL
 
 	variable epochBegin
 	variable epochEnd
-	string epochName, epochSubName
+	string epochTags, epochSubTags
 
 	// main TP range
 	epochBegin = offset
 	epochEnd = epochBegin + testPulseLength
-	epochName = AddListItem("Test Pulse", name, EPOCHNAME_SEP, Inf)
-	EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epochName, EPOCH_SN_TP, 0)
+	epochTags = AddListItem("Test Pulse", name, EPOCHNAME_SEP, Inf)
+	EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epochTags, EPOCH_SN_TP, 0)
 
 	// TP sub ranges
 	epochBegin = baselineFrac * testPulseLength + offset
 	epochEnd = (1 - baselineFrac) * testPulseLength + offset
-	epochSubName = AddListItem("pulse", epochName, EPOCHNAME_SEP, Inf)
-	epochSubName = ReplaceNumberByKey("Amplitude", epochSubName, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epochSubName, EPOCH_SN_TP_PULSE, 1)
+	epochSubTags = AddListItem("pulse", epochTags, EPOCHNAME_SEP, Inf)
+	epochSubTags = ReplaceNumberByKey("Amplitude", epochSubTags, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+	EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_PULSE, 1)
 
 	epochBegin = offset
 	epochEnd = epochBegin + baselineFrac * testPulseLength
@@ -196,7 +196,7 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 
 	variable stimsetEnd, stimsetEndLogical
 	variable epochBegin, epochEnd, subEpochBegin, subEpochEnd
-	string epSweepName, epSubName, epSubSubName, epSpecifier
+	string epSweepTags, epSubTags, epSubSubTags, epSpecifier
 	variable epochCount, totalDuration, poissonDistribution
 	variable epochNr, pulseNr, numPulses, epochType, flipping, pulseToPulseLength, stimEpochAmplitude, amplitude
 	variable pulseDuration
@@ -231,7 +231,7 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 
 	flipping = WB_GetWaveNoteEntryAsNumber(stimNote, STIMSET_ENTRY, key = "Flip")
 
-	epSweepName = ""
+	epSweepTags = ""
 
 	for(epochNr = 0; epochNr < epochCount; epochNr += 1)
 		type = WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, key="Type", sweep=sweep, epoch=epochNr)
@@ -255,9 +255,9 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 
 		poissonDistribution = !CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epochNr, key = "Poisson distribution"), "True")
 
-		epSubName = ReplaceNumberByKey("Epoch", epSweepName, epochNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		epSubName = ReplaceStringByKey("Type", epSubName, type, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		epSubName = ReplaceNumberByKey("Amplitude", epSubName, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+		epSubTags = ReplaceNumberByKey("Epoch", epSweepTags, epochNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+		epSubTags = ReplaceStringByKey("Type", epSubTags, type, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+		epSubTags = ReplaceNumberByKey("Amplitude", epSubTags, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		if(epochType == EPOCH_TYPE_PULSE_TRAIN)
 			if(!CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epochNr, key = "Mixed frequency"), "True"))
 				epSpecifier = "Mixed frequency"
@@ -271,11 +271,11 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 			epSpecifier = ""
 		endif
 		if(!isEmpty(epSpecifier))
-			epSubName = ReplaceStringByKey("Details", epSubName, epSpecifier, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+			epSubTags = ReplaceStringByKey("Details", epSubTags, epSpecifier, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		endif
 
 		shortNameEp = EPOCH_SN_EPOCH + num2istr(epochNr)
-		EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epSubName, shortNameEp, 1, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+		EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epSubTags, shortNameEp, 1, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 
 		// Add Sub Sub Epochs
 		if(epochType == EPOCH_TYPE_PULSE_TRAIN)
@@ -327,8 +327,8 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 							EP_AddEpoch(panelTitle, channel, epochBegin, subEpochBegin, EPOCH_BASELINE_REGION_KEY, shortNameEpTypePTPulseBT, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 						endif
 
-						epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-						EP_AddEpoch(panelTitle, channel, subEpochBegin, subEpochEnd, epSubSubName, shortNameEpTypePTPulse, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+						epSubSubTags = ReplaceNumberByKey("Pulse", epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+						EP_AddEpoch(panelTitle, channel, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTypePTPulse, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 
 						// active
 						subsubEpochBegin = subEpochBegin
@@ -348,9 +348,9 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 							subsubEpochBegin = limit(subsubEpochBegin, subEpochBegin, Inf)
 							subsubEpochEnd = limit(subsubEpochEnd, -Inf, subEpochEnd)
 
-							epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-							epSubSubName = epSubSubName + "Active"
-							EP_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubName, shortNameEpTypePTPulseP, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+							epSubSubTags = ReplaceNumberByKey("Pulse", epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+							epSubSubTags = epSubSubTags + "Active"
+							EP_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseP, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 
 							// baseline
 							subsubEpochBegin = subsubEpochEnd
@@ -361,10 +361,10 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 							elseif(subsubEpochBegin >= subsubEpochEnd)
 								DEBUGPRINT("Warning: sub sub epoch of pulse baseline is not present.")
 							else
-								epSubSubName = ReplaceNumberByKey("Pulse", epSubName, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-								epSubSubName = RemoveByKey("Amplitude", epSubSubName, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-								epSubSubName = epSubSubName + "Baseline"
-								EP_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubName, shortNameEpTypePTPulseB, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+								epSubSubTags = ReplaceNumberByKey("Pulse", epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+								epSubSubTags = RemoveByKey("Amplitude", epSubSubTags, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
+								epSubSubTags = epSubSubTags + "Baseline"
+								EP_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseB, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 							endif
 						endif
 					endif
@@ -476,16 +476,16 @@ End
 /// @param[in] channel     number of DA channel
 /// @param[in] epBegin     start time of the epoch in micro seconds
 /// @param[in] epEnd       end time of the epoch in micro seconds
-/// @param[in] epName      tags of the epoch
+/// @param[in] epTags      tags of the epoch
 /// @param[in] epShortName short name of the epoch, should be unique
 /// @param[in] level       level of epoch
 /// @param[in] lowerlimit  [optional, default = -Inf] epBegin is limited between lowerlimit and Inf, epEnd must be > this limit
 /// @param[in] upperlimit  [optional, default = Inf] epEnd is limited between -Inf and upperlimit, epBegin must be < this limit
-static Function EP_AddEpoch(panelTitle, channel, epBegin, epEnd, epName, epShortName, level[, lowerlimit, upperlimit])
+static Function EP_AddEpoch(panelTitle, channel, epBegin, epEnd, epTags, epShortName, level[, lowerlimit, upperlimit])
 	string panelTitle
 	variable channel
 	variable epBegin, epEnd
-	string epName, epShortName
+	string epTags, epShortName
 	variable level
 	variable lowerlimit, upperlimit
 
@@ -496,14 +496,14 @@ static Function EP_AddEpoch(panelTitle, channel, epBegin, epEnd, epName, epShort
 	lowerlimit = ParamIsDefault(lowerlimit) ? -Inf : lowerlimit
 	upperlimit = ParamIsDefault(upperlimit) ? Inf : upperlimit
 
-	ASSERT(!isNull(epName), "Epoch name is null")
-	ASSERT(!isEmpty(epName), "Epoch name is empty")
+	ASSERT(!isNull(epTags), "Epoch name is null")
+	ASSERT(!isEmpty(epTags), "Epoch name is empty")
 	ASSERT(!isEmpty(epShortName), "Epoch short name is empty")
 	ASSERT(epBegin <= epEnd, "Epoch end is < epoch begin")
 	ASSERT(epBegin < upperlimit, "Epoch begin is greater than upper limit")
 	ASSERT(epEnd > lowerlimit, "Epoch end lesser than lower limit")
 	ASSERT(channel >=0 && channel < NUM_DA_TTL_CHANNELS, "channel is out of range")
-	ASSERT(!GrepString(epName, EPOCH_TAG_INVALID_CHARS_REGEXP), "Epoch name contains invalid characters: " + EPOCH_TAG_INVALID_CHARS_REGEXP)
+	ASSERT(!GrepString(epTags, EPOCH_TAG_INVALID_CHARS_REGEXP), "Epoch name contains invalid characters: " + EPOCH_TAG_INVALID_CHARS_REGEXP)
 
 	epBegin = limit(epBegin, lowerlimit, Inf)
 	epEnd = limit(epEnd, -Inf, upperlimit)
@@ -519,11 +519,11 @@ static Function EP_AddEpoch(panelTitle, channel, epBegin, epEnd, epName, epShort
 		return NaN
 	endif
 
-	epName = ReplaceStringByKey(EPOCH_SHORTNAME_KEY, epName, epShortName, SHORTNAMEKEY_SEP)
+	epTags = ReplaceStringByKey(EPOCH_SHORTNAME_KEY, epTags, epShortName, SHORTNAMEKEY_SEP)
 
 	epochWave[i][%StartTime][channel] = startTimeStr
 	epochWave[i][%EndTime][channel] = endTimeStr
-	epochWave[i][%Name][channel] = epName
+	epochWave[i][%Name][channel] = epTags
 	epochWave[i][%TreeLevel][channel] = num2str(level)
 End
 
