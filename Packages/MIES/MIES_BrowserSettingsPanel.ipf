@@ -1498,7 +1498,7 @@ Function BSP_AddTracesForEpochs(string win)
 		WAVE/T textualValues = BSP_GetlBNWave(win, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
 
 		WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNumber, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
-		WAVE/T epochs = ListToTextWaveMD(epochLBEntries[headstage], 2, rowSep = ":", colSep = ",")
+		WAVE/T epochs = EP_EpochStrToWave(epochLBEntries[headstage])
 
 		sprintf name, "epochs_sweep%d_HS%d", sweepNumber, headstage
 

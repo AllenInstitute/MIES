@@ -423,7 +423,7 @@ static Function TestEpochsGeneric(device)
 			continue
 		endif
 
-		WAVE/T epochChannel = ListToTextWaveMD(epochStr, 2, rowSep = EPOCH_LIST_ROW_SEP, colSep = EPOCH_LIST_COL_SEP)
+		WAVE/T epochChannel = EP_EpochStrToWave(epochStr)
 		Make/FREE/D/N=(DimSize(epochChannel, ROWS)) endT
 
 		// does the latest end time exceed the 'acquiring part of the' DA wave?

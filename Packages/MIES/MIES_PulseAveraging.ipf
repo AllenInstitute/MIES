@@ -432,7 +432,7 @@ static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 		return $""
 	endif
 
-	WAVE/T epochs = ListToTextWaveMD(epochInfo, 2, rowSep = ":", colSep = ",")
+	WAVE/T epochs = EP_EpochStrToWave(epochInfo)
 
 	numEpochs = DimSize(epochs, ROWS)
 	WAVE/D pulseInfos = GetPulseInfoWave()
