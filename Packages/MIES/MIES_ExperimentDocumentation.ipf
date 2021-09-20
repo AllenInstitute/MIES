@@ -312,8 +312,7 @@ static Function ED_WriteChangedValuesToNote(panelTitle, sweepNo)
 			endif
 
 			if (!cmpstr(factor, LABNOTEBOOK_NO_TOLERANCE))
-				AssertOnAndClearRTError()
-				sprintf text, "%s%s: %s\r" frontLabel, key, SelectString(currentSetting[i], "Off", "On"); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
+				sprintf text, "%s%s: %s\r" frontLabel, key, SelectString(currentSetting[i], "Off", "On")
 			else
 				sprintf text, "%s%s: %.2f %s\r" frontLabel, key, currentSetting[i], unit
 			endif
