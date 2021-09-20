@@ -1468,7 +1468,7 @@ Function BSP_AddTracesForEpochs(string win)
 	variable sweepNumber
 	STRUCT RGBColor c
 	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name
-	string level_0_trace, level_1_trace, level_2_trace, level_3_trace
+	string level_0_trace, level_1_trace, level_2_trace, level_3_trace, level_4_trace
 
 	if(!BSP_IsDataBrowser(win) && !BSP_IsSweepBrowser(win))
 		printf "The current window is neither a databrowser nor a sweepbrowser windows.\r"
@@ -1509,14 +1509,14 @@ Function BSP_AddTracesForEpochs(string win)
 
 		numEpochs = DimSize(epochs, ROWS)
 
-		Make/FREE/N=(4) currentLevel, indexInLevel
+		Make/FREE/N=(5) currentLevel, indexInLevel
 
 		sprintf levels_x_name, "levels_x_sweep%d_HS%d", sweepNumber, headstage
-		Make/O/N=(numEpochs * 3, 4, 2) dfr:$levels_x_name/WAVE=levels_x
+		Make/O/N=(numEpochs * 3, 5, 2) dfr:$levels_x_name/WAVE=levels_x
 		levels_x = NaN
 
 		sprintf levels_y_name, "levels_y_sweep%d_HS%d", sweepNumber, headstage
-		Make/O/N=(numEpochs * 3, 4, 2) dfr:$levels_y_name/WAVE=levels_y
+		Make/O/N=(numEpochs * 3, 5, 2) dfr:$levels_y_name/WAVE=levels_y
 		levels_y = NaN
 		SetStringInWaveNote(levels_y, "EpochInfo", GetWavesDataFolder(epochs, 2))
 
@@ -1525,7 +1525,8 @@ Function BSP_AddTracesForEpochs(string win)
 			start_x = str2num(epochs[k][0]) * 1000
 			end_x   = str2num(epochs[k][1]) * 1000
 
-			level = str2num(epochs[k][3])
+			// handle EPOCH_USER_LEVEL being -1
+			level = str2num(epochs[k][3]) + 1
 
 			start_y = yOffset - yLevelOffset * level  - 0.1 * yLevelOffset * currentLevel[level]
 			end_y = start_y
@@ -1550,11 +1551,13 @@ Function BSP_AddTracesForEpochs(string win)
 		sprintf level_1_trace, "level%d_x_sweep%d_HS%d", 1, sweepNumber, headstage
 		sprintf level_2_trace, "level%d_x_sweep%d_HS%d", 2, sweepNumber, headstage
 		sprintf level_3_trace, "level%d_x_sweep%d_HS%d", 3, sweepNumber, headstage
+		sprintf level_4_trace, "level%d_x_sweep%d_HS%d", 4, sweepNumber, headstage
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][0]/TN=$level_0_trace vs levels_x[][0]
 		AppendToGraph/W=$win/L=$yAxis levels_y[][1]/TN=$level_1_trace vs levels_x[][1]
 		AppendToGraph/W=$win/L=$yAxis levels_y[][2]/TN=$level_2_trace vs levels_x[][2]
 		AppendToGraph/W=$win/L=$yAxis levels_y[][3]/TN=$level_3_trace vs levels_x[][3]
+		AppendToGraph/W=$win/L=$yAxis levels_y[][4]/TN=$level_4_trace vs levels_x[][4]
 
 		[c] = GetTraceColor(0)
 		ModifyGraph/W=$win marker($level_0_trace)=10, mode($level_0_trace)=4, rgb($level_0_trace)=(c.red, c.green, c.blue)
@@ -1564,6 +1567,8 @@ Function BSP_AddTracesForEpochs(string win)
 		ModifyGraph/W=$win marker($level_2_trace)=10, mode($level_2_trace)=4, rgb($level_2_trace)=(c.red, c.green, c.blue)
 		[c] = GetTraceColor(3)
 		ModifyGraph/W=$win marker($level_3_trace)=10, mode($level_3_trace)=4, rgb($level_3_trace)=(c.red, c.green, c.blue)
+		[c] = GetTraceColor(4)
+		ModifyGraph/W=$win marker($level_4_trace)=10, mode($level_4_trace)=4, rgb($level_4_trace)=(c.red, c.green, c.blue)
 
 		SetWindow $win tooltipHook(hook) = BSP_EpochGraphToolTip
 
