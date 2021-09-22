@@ -640,7 +640,8 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 			SetVariable SetVar_Sweep win=$panelTitle, noedit=1, limits={0,0,0}, help={"Sweep rollback is disabled by the configuration."}
 		endif
 
-		PGC_SetAndActivateControl(panelTitle, "StartTestPulseButton", switchTab = 1)
+		PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = 0, switchTab = 1)
+		PGC_SetAndActivateControl(panelTitle, "StartTestPulseButton")
 
 		print "Start Sciencing"
 		SetWindow $panelTitle, hide=0, needUpdate=1
