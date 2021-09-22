@@ -552,7 +552,7 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 		statusHS[i] = 1
 	endfor
 
-	Multithread TPStorage[0][][%Rss_Slope] = statusHS[q] ? CurveFitWrapper(TPStorage, startRow, endRow, q) : NaN; AbortOnRTE
+	Multithread TPStorage[0][][%Rss_Slope] = statusHS[q] ? CurveFitWrapper(TPStorage, startRow, endRow, q) : NaN
 End
 
 /// @brief Stop running background testpulse on all locked devices
