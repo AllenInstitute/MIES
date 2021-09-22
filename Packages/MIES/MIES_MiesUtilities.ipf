@@ -5106,7 +5106,7 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 	WAVE/Z wv
 	DFREF dfr
 
-	variable i, numEntries, numOptArgs, remove_all_traces, debugOnError
+	variable i, numEntries, numOptArgs, remove_all_traces, err
 	string traceList, refTrace
 
 	numOptArgs = ParamIsDefault(trace) + ParamIsDefault(wv) + ParamIsDefault(dfr)
@@ -5126,20 +5126,13 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 	if(remove_all_traces)
 #if IgorVersion() >= 9.0
 		RemoveFromGraph/ALL/W=$graph
-		return NaN
 #else
-		debugOnError = DisableDebugOnError()
+		AssertOnAndClearRTError()
 		do
-			AssertOnAndClearRTError()
-			try
-				RemoveFromGraph/W=$graph $("#0"); AbortOnRTE
-			catch
-				ClearRTError()
-				ResetDebugOnError(debugOnError)
-				return NaN
-			endtry
-		while(1)
+			RemoveFromGraph/W=$graph $("#0"); err = GetRTError(1)
+		while(err == 0)
 #endif
+		return NaN
 	endif
 
 	traceList  = TraceNameList(graph, ";", 1 )
