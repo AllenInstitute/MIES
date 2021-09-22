@@ -1257,7 +1257,7 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 
 			AssertOnAndClearRTError()
 			try
-				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortONRTE
+				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortOnRTE
 			catch
 				ClearRTError()
 				SVAR result = $GetSweepFormulaParseErrorMessage()
