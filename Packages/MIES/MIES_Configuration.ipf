@@ -1807,7 +1807,7 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 
 	WAVE/T ctrlProps = JSON_GetKeys(jsonID, controlPath)
 	if(!DimSize(ctrlProps, ROWS))
-		JSONXOP_Remove/Q=1 jsonID, controlPath; AbortOnRTE
+		JSONXOP_Remove/Q=1/Z=1 jsonID, controlPath
 	endif
 End
 
