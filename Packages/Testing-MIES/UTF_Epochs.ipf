@@ -316,7 +316,7 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 		endif
 
 		// check amplitudes
-		if(strsearch(name, "Amplitude", 0) > 0)
+		if(strsearch(name, "SubType=Pulse", 0) > 0)
 
 			amplitude = NumberByKey("Amplitude", name, "=")
 			CHECK(IsFinite(amplitude))
@@ -433,6 +433,8 @@ static Function TestEpochsGeneric(device)
 		TestEpochsMonotony(epochChannel, DAchannel, i)
 
 		TestUnacquiredEpoch(sweep, epochChannel)
+
+		TestNaming(epochChannel)
 	endfor
 End
 
@@ -444,9 +446,27 @@ static Function TestUnacquiredEpoch(WAVE sweep, WAVE epochChannel)
 		return NaN
 	endif
 
-	FindValue/TXOP=4/TEXT="Unacquired" epochChannel
+	FindValue/TEXT="Type=Unacquired" epochChannel
 	CHECK(V_row >= 0)
 	CHECK_EQUAL_VAR(V_col, 2)
+End
+
+static Function TestNaming(WAVE/T epochChannel)
+
+	variable numRows, numEntries, i, j
+	string tags, entry
+
+	numRows = DimSize(epochChannel, ROWS)
+	for(i = 0; i < numRows; i += 1)
+		tags = epochChannel[i][EPOCH_COL_TAGS]
+
+		numEntries = ItemsInList(tags, ";")
+		CHECK(numEntries > 0)
+		for(j = 0; j < numEntries; j += 1)
+			entry = StringFromList(j, tags)
+			CHECK(strsearch(entry, "=", 0) > 0)
+		endfor
+	endfor
 End
 
 /// <------------- TESTS FOLLOW HERE ---------------------->
