@@ -951,7 +951,8 @@ Function BSP_ParseChannelSelectionControl(ctrl, channelType, channelNum)
 	if(!cmpstr(channelNumStr, "All"))
 		channelNum = NaN
 	else
-		channelNum = str2num(channelNumStr); AbortOnRTE
+		channelNum = str2numSafe(channelNumStr)
+		ASSERT(IsInteger(channelNum) && channelNum >= 0, "Unexpected channelNumStr")
 	endif
 End
 
