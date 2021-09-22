@@ -755,9 +755,10 @@ Function DAP_WindowHook(s)
 
 			AssertOnAndClearRTError()
 			try
+				// catch all error conditions, asserts and aborts
+				// and silently ignore them
 				DAP_UnlockDevice(panelTitle); AbortOnRTE
 			catch
-				// do nothing
 				ClearRTError()
 			endtry
 

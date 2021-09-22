@@ -161,6 +161,8 @@ static Function IH_Cleanup()
 
 	debuggerState = DisableDebugger()
 
+	// catch all error conditions, asserts and aborts
+	// and silently ignore them
 	AssertOnAndClearRTError()
 	try
 		DAP_UnlockAllDevices(); AbortOnRTE

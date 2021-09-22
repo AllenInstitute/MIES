@@ -170,6 +170,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 		initialSetupReq = !!initialSetupReq
 	endif
 
+	// catches Abort and AbortOnRTE
 	AssertOnAndClearRTError()
 	try
 		if(initialSetupReq)
