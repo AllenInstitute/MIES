@@ -490,8 +490,15 @@ End
 Function IVS_SaveExperiment(filename)
 	string filename
 
+	variable err
+
 	AssertOnAndClearRTError()
-	SaveExperiment/C/F={1,"",2}/P=home as filename + ".pxp"; AbortOnRTE
+	try
+		SaveExperiment/C/F={1,"",2}/P=home as filename + ".pxp"; AbortOnRTE
+	catch
+		err = ClearRTError()
+		ASSERT(0, "Could not save experiment due to code: " + num2istr(err))
+	endtry
 End
 
 /// @brief Run a designated stim wave
