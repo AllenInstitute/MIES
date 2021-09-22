@@ -335,10 +335,6 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 		if(strsearch(name, "Baseline", 0) > 0)
 			WaveStats/R=(first, last)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_min, 0)
-
-			// take something around the egdes due to decimation
-			// offsets are in ms
-			WaveStats/R=(first, last)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_max, 0)
 		endif
 	endfor
