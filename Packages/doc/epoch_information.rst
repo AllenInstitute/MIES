@@ -156,13 +156,13 @@ The following table describes the 1:1 relationship between epoch names and MIES 
 |   0   |       |       |       | Unacquired                            | UA          | Planned to be acquired but skipped due to early sweep stop                   |
 +-------+-------+-------+-------+---------------------------------------+--------------------------------------------------------------------------------------------+
 
-If the name entry begins with '+' then it is appended to the higher-level name. The 'x' is a place holder where
+If the name entry begins with ``+`` then it is appended to the higher-level name. The ``x`` is a place holder where
 additional information is included in the names, such as Stimset-Epoch numbering, or amplitudes. Currently only pulse
 trains (see below) are supported with level two and three detail for Stimset-Epochs. Depending on the setup of the data
 acquisition, not every entry listed in the table has to appear in the epochs table.
 
-The 'Details' key for the Stimset-Epoch can contain a combination of 'Mixed frequency' or 'Poisson distribution' with
-'shuffled' as originally configured for the Stimset in the waveBuilder.
+The ``Details`` key for the Stimset-Epoch can contain a combination of ``Mixed frequency`` or ``Poisson distribution`` with
+``shuffled`` as originally configured for the Stimset in the waveBuilder.
 
 When the sweep is terminated earlier as planned, the epoch ``Unacquired`` is added in the planned but not acquired
 timespan at the end of the sweep. All other epochs are then also either shortend or dropped so that they don't extend
