@@ -41,6 +41,8 @@ static Constant SF_ACTION_ARRAY = 8
 
 /// Regular expression which extracts both formulas from `$a vs $b`
 static StrConstant SF_SWEEPFORMULA_REGEXP = "^(.+?)(?:\\bvs\\b(.+))?$"
+/// Regular expression which extracts formulas pairs from `$a vs $b\rand\r$c vs $d\rand\r...`
+static StrConstant SF_SWEEPFORMULA_GRAPHS_REGEXP = "^(.+?)(?:\\r[ \t]*and[ \t]*\\r(.*))?$"
 
 static Constant SF_MAX_NUMPOINTS_FOR_MARKERS = 1000
 
@@ -701,7 +703,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	DFREF dfr
 
 	String formula0, formula1, trace, axes
-	Variable i, numTraces, splitTraces, splitY, splitX
+	Variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs
 	Variable dim1Y, dim2Y, dim1X, dim2X
 	String win
 	String traceName = "formula"
@@ -710,135 +712,139 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		dfr = GetDataFolderDFR()
 	endif
 
-	SplitString/E=SF_SWEEPFORMULA_REGEXP formula, formula0, formula1
-	SF_Assert(V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
-	if(V_Flag == 2)
-		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula1)), graph = graph)
-		SF_Assert(WaveExists(wv), "Error in x part of formula.")
-		dim1X = max(1, DimSize(wv, COLS))
-		dim2X = max(1, DimSize(wv, LAYERS))
-		Redimension/N=(-1, dim1X * dim2X)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
+	WAVE/T graphCode = SF_SplitCodeToGraphs(formula)
+	numGraphs = DimSize(graphCode, ROWS)
+	for(j = 0; j < numGraphs; j += 1)
+		SplitString/E=SF_SWEEPFORMULA_REGEXP graphCode[j], formula0, formula1
+		SF_Assert(V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
+		if(V_Flag == 2)
+			WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula1)), graph = graph)
+			SF_Assert(WaveExists(wv), "Error in x part of formula.")
+			dim1X = max(1, DimSize(wv, COLS))
+			dim2X = max(1, DimSize(wv, LAYERS))
+			Redimension/N=(-1, dim1X * dim2X)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
 
-		WAVE wvX = GetSweepFormulaX(dfr)
-		if(WaveType(wv, 1) == WaveType(wvX, 1))
-			Duplicate/O wv $GetWavesDataFolder(wvX, 2)
-		else
-			MoveWaveWithOverWrite(wvX, wv)
-		endif
-		WAVE wvX = GetSweepFormulaX(dfr)
-	endif
-
-	WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula0)), graph = graph)
-	SF_Assert(WaveExists(wv), "Error in y part of formula.")
-	dim1Y = max(1, DimSize(wv, COLS))
-	dim2Y = max(1, DimSize(wv, LAYERS))
-	Redimension/N=(-1, dim1Y * dim2Y)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
-
-	WAVE wvY = GetSweepFormulaY(dfr)
-	if(WaveType(wv, 1) == WaveType(wvY, 1))
-		Duplicate/O wv $GetWavesDataFolder(wvY, 2)
-	else
-		MoveWaveWithOverWrite(wvY, wv)
-	endif
-	WAVE wvY = GetSweepFormulaY(dfr)
-
-	win = BSP_GetFormulaGraph(graph)
-
-	if(!WindowExists(win))
-		Display/N=$win as win
-		NVAR JSONid = $GetSettingsJSONid()
-		PS_InitCoordinates(JSONid, win, "sweepformula")
-		win = S_name
-	endif
-
-	WAVE/T/Z cursorInfos = GetCursorInfos(win)
-	WAVE axesRanges = GetAxesRanges(win)
-	RemoveTracesFromGraph(win)
-	ModifyGraph/W=$win swapXY = 0
-
-	SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
-	if(IsTextWave(wvY) && WaveExists(wvX))
-		SF_Assert(WaveExists(wvX), "Cannot plot a single text wave")
-		ModifyGraph/W=$win swapXY = 1
-		WAVE dummy = wvY
-		WAVE wvY = wvX
-		WAVE wvX = dummy
-	endif
-
-	if(!WaveExists(wvX))
-		numTraces = dim1Y * dim2Y
-		for(i = 0; i < numTraces; i += 1)
-			trace = traceName + num2istr(i)
-			AppendTograph/W=$win wvY[][i]/TN=$trace
-		endfor
-	elseif((dim1X * dim2X == 1) && (dim1Y * dim2Y == 1)) // 1D
-		if(DimSize(wvY, ROWS) == 1) // 0D vs 1D
-			numTraces = DimSize(wvX, ROWS)
-			for(i = 0; i < numTraces; i += 1)
-				trace = traceName + num2istr(i)
-				AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[i][]
-			endfor
-		elseif(DimSize(wvX, ROWS) == 1) // 1D vs 0D
-			numTraces = DimSize(wvY, ROWS)
-			for(i = 0; i < numTraces; i += 1)
-				trace = traceName + num2istr(i)
-				AppendTograph/W=$win wvY[i][]/TN=$trace vs wvX[][0]
-			endfor
-		else // 1D vs 1D
-			splitTraces = min(DimSize(wvY, ROWS), DimSize(wvX, ROWS))
-			numTraces = floor(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)) / splitTraces)
-			if(mod(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)), splitTraces) == 0)
-				DebugPrint("Unmatched Data Alignment in ROWS.")
-			endif
-			for(i = 0; i < numTraces; i += 1)
-				trace = traceName + num2istr(i)
-				splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
-				splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
-				AppendTograph/W=$win wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
-			endfor
-		endif
-	elseif(dim1Y * dim2Y == 1) // 1D vs 2D
-		numTraces = dim1X * dim2X
-		for(i = 0; i < numTraces; i += 1)
-			trace = traceName + num2istr(i)
-			AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][i]
-		endfor
-	elseif(dim1X * dim2X == 1) // 2D vs 1D
-		numTraces = dim1Y * dim2Y
-		for(i = 0; i < numTraces; i += 1)
-			trace = traceName + num2istr(i)
-			AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX
-		endfor
-	else // 2D vs 2D
-		numTraces = WaveExists(wvX) ? max(1, max(dim1Y * dim2Y, dim1X * dim2X)) : max(1, dim1Y * dim2Y)
-		if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
-			DebugPrint("Size mismatch in data rows for plotting waves.")
-		endif
-		if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
-			DebugPrint("Size mismatch in entity columns for plotting waves.")
-		endif
-		for(i = 0; i < numTraces; i += 1)
-			trace = traceName + num2istr(i)
-			if(WaveExists(wvX))
-				AppendTograph/W=$win wvY[][min(dim1Y * dim2Y - 1, i)]/TN=$trace vs wvX[][min(dim1X * dim2X - 1, i)]
+			WAVE wvX = GetSweepFormulaX(dfr, j)
+			if(WaveType(wv, 1) == WaveType(wvX, 1))
+				Duplicate/O wv $GetWavesDataFolder(wvX, 2)
 			else
-				AppendTograph/W=$win wvY[][i]/TN=$trace
+				MoveWaveWithOverWrite(wvX, wv)
 			endif
-		endfor
-	endif
+			WAVE wvX = GetSweepFormulaX(dfr, j)
+		endif
 
-	// @todo preserve channel information in LAYERS
-	// Redimension/N=(-1, dim1Y, dim2Y)/E=1 wvY
-	// Redimension/N=(-1, dim1X, dim2X)/E=1 wvX
+		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula0)), graph = graph)
+		SF_Assert(WaveExists(wv), "Error in y part of formula.")
+		dim1Y = max(1, DimSize(wv, COLS))
+		dim2Y = max(1, DimSize(wv, LAYERS))
+		Redimension/N=(-1, dim1Y * dim2Y)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
 
-	if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
-		&& (!WaveExists(wvX) \
-		|| DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
-		ModifyGraph/W=$win mode=3,marker=19
-	endif
+		WAVE wvY = GetSweepFormulaY(dfr, j)
+		if(WaveType(wv, 1) == WaveType(wvY, 1))
+			Duplicate/O wv $GetWavesDataFolder(wvY, 2)
+		else
+			MoveWaveWithOverWrite(wvY, wv)
+		endif
+		WAVE wvY = GetSweepFormulaY(dfr, j)
 
-	RestoreCursors(win, cursorInfos)
-	SetAxesRanges(win, axesRanges)
+		win = BSP_GetFormulaGraph(graph) + "_" + num2istr(j)
+
+		if(!WindowExists(win))
+			Display/N=$win as win
+			NVAR JSONid = $GetSettingsJSONid()
+			PS_InitCoordinates(JSONid, win, "sweepformula_" + win)
+			win = S_name
+		endif
+
+		WAVE/T/Z cursorInfos = GetCursorInfos(win)
+		WAVE axesRanges = GetAxesRanges(win)
+		RemoveTracesFromGraph(win)
+		ModifyGraph/W=$win swapXY = 0
+
+		SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
+		if(IsTextWave(wvY) && WaveExists(wvX))
+			SF_Assert(WaveExists(wvX), "Cannot plot a single text wave")
+			ModifyGraph/W=$win swapXY = 1
+			WAVE dummy = wvY
+			WAVE wvY = wvX
+			WAVE wvX = dummy
+		endif
+
+		if(!WaveExists(wvX))
+			numTraces = dim1Y * dim2Y
+			for(i = 0; i < numTraces; i += 1)
+				trace = traceName + num2istr(i)
+				AppendTograph/W=$win wvY[][i]/TN=$trace
+			endfor
+		elseif((dim1X * dim2X == 1) && (dim1Y * dim2Y == 1)) // 1D
+			if(DimSize(wvY, ROWS) == 1) // 0D vs 1D
+				numTraces = DimSize(wvX, ROWS)
+				for(i = 0; i < numTraces; i += 1)
+					trace = traceName + num2istr(i)
+					AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[i][]
+				endfor
+			elseif(DimSize(wvX, ROWS) == 1) // 1D vs 0D
+				numTraces = DimSize(wvY, ROWS)
+				for(i = 0; i < numTraces; i += 1)
+					trace = traceName + num2istr(i)
+					AppendTograph/W=$win wvY[i][]/TN=$trace vs wvX[][0]
+				endfor
+			else // 1D vs 1D
+				splitTraces = min(DimSize(wvY, ROWS), DimSize(wvX, ROWS))
+				numTraces = floor(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)) / splitTraces)
+				if(mod(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)), splitTraces) == 0)
+					DebugPrint("Unmatched Data Alignment in ROWS.")
+				endif
+				for(i = 0; i < numTraces; i += 1)
+					trace = traceName + num2istr(i)
+					splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
+					splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
+					AppendTograph/W=$win wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
+				endfor
+			endif
+		elseif(dim1Y * dim2Y == 1) // 1D vs 2D
+			numTraces = dim1X * dim2X
+			for(i = 0; i < numTraces; i += 1)
+				trace = traceName + num2istr(i)
+				AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][i]
+			endfor
+		elseif(dim1X * dim2X == 1) // 2D vs 1D
+			numTraces = dim1Y * dim2Y
+			for(i = 0; i < numTraces; i += 1)
+				trace = traceName + num2istr(i)
+				AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX
+			endfor
+		else // 2D vs 2D
+			numTraces = WaveExists(wvX) ? max(1, max(dim1Y * dim2Y, dim1X * dim2X)) : max(1, dim1Y * dim2Y)
+			if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
+				DebugPrint("Size mismatch in data rows for plotting waves.")
+			endif
+			if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
+				DebugPrint("Size mismatch in entity columns for plotting waves.")
+			endif
+			for(i = 0; i < numTraces; i += 1)
+				trace = traceName + num2istr(i)
+				if(WaveExists(wvX))
+					AppendTograph/W=$win wvY[][min(dim1Y * dim2Y - 1, i)]/TN=$trace vs wvX[][min(dim1X * dim2X - 1, i)]
+				else
+					AppendTograph/W=$win wvY[][i]/TN=$trace
+				endif
+			endfor
+		endif
+
+		// @todo preserve channel information in LAYERS
+		// Redimension/N=(-1, dim1Y, dim2Y)/E=1 wvY
+		// Redimension/N=(-1, dim1X, dim2X)/E=1 wvX
+
+		if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
+			&& (!WaveExists(wvX) \
+			|| DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
+			ModifyGraph/W=$win mode=3,marker=19
+		endif
+
+		RestoreCursors(win, cursorInfos)
+		SetAxesRanges(win, axesRanges)
+	endfor
 End
 
 /// @brief utility function for @c SF_FormulaPlotter
@@ -1154,8 +1160,7 @@ End
 Function SF_button_sweepFormula_check(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	String mainPanel, bsPanel, yFormula, xFormula, formula_nb, formula
-	Variable numFormulae, jsonIDx, jsonIDy
+	String mainPanel, bsPanel, formula_nb, json_nb, formula, errMsg
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -1171,50 +1176,62 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 
 			formula_nb = BSP_GetSFFormula(ba.win)
 			formula = GetNotebookText(formula_nb)
-			formula = SF_PreprocessInput(formula)
 
-			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
-			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "", setHelp = 1)
+			SF_CheckInputCode(formula, dfr)
 
-			SVAR result = $GetSweepFormulaParseErrorMessage()
-			result = ""
+			errMsg = ROStr(GetSweepFormulaParseErrorMessage())
+			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=IsEmpty(errMsg))
+			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", errMsg, setHelp = 1)
 
-			NVAR jsonID = $GetSweepFormulaJSONid(dfr)
-
-			SplitString/E=SF_SWEEPFORMULA_REGEXP formula, yFormula, xFormula
-			numFormulae = V_flag
-			if(numFormulae != 2 && numFormulae != 1)
-				DebugPrint("Display command must follow the \"y[ vs x]\" pattern. Can not evaluate parsing status.")
-				return 0
-			endif
-
-			AssertOnAndClearRTError()
-			try
-				jsonIDy = SF_FormulaParser(SF_FormulaPreParser(yFormula))
-				if(numFormulae == 1)
-					jsonID = jsonIDy
-					return 0
-				endif
-				JSON_Release(jsonID, ignoreErr = 1)
-				jsonID = JSON_New()
-				JSON_AddObjects(jsonID, "")
-				JSON_AddJSON(jsonID, "/y", jsonIDy)
-				JSON_Release(jsonIDy)
-				DebugPrint("y part of formula is valid.")
-				jsonIDx = SF_FormulaParser(SF_FormulaPreParser(xFormula))
-				JSON_AddJSON(jsonID, "/x", jsonIDx)
-				JSON_Release(jsonIDx)
-			catch
-				ClearRTError()
-				SetValDisplay(bsPanel, "status_sweepFormula_parser", var=0)
-				JSON_Release(jsonID, ignoreErr = 1)
-				SVAR result = $GetSweepFormulaParseErrorMessage()
-				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result, setHelp = 1)
-			endtry
 			break
 	endswitch
 
 	return 0
+End
+
+/// @brief Checks input code, sets globals for jsonId and error string
+static Function SF_CheckInputCode(string code, DFREF dfr)
+
+	variable i, numFormulae, numGraphs, jsonIDy, jsonIDx
+	string jsonPath, yFormula, xFormula
+
+	SVAR errMsg = $GetSweepFormulaParseErrorMessage()
+	errMsg = ""
+
+	NVAR jsonID = $GetSweepFormulaJSONid(dfr)
+	JSON_Release(jsonID, ignoreErr = 1)
+	jsonID = JSON_New()
+	JSON_AddObjects(jsonID, "")
+
+	WAVE/T graphCode = SF_SplitCodeToGraphs(SF_PreprocessInput(code))
+	numGraphs = DimSize(graphCode, ROWS)
+	for(i = 0; i < numGraphs; i += 1)
+		jsonPath = "/Formula_" + num2istr(i)
+		JSON_AddObjects(jsonID, jsonPath)
+
+		SplitString/E=SF_SWEEPFORMULA_REGEXP graphCode[i], yFormula, xFormula
+		numFormulae = V_flag
+
+		if(numFormulae != 2 && numFormulae != 1)
+			errMsg = "Could not determine y [vs x] formula pair."
+			return NaN
+		endif
+
+		// catch Abort from SF_Assert called from SF_FormulaParser
+		try
+			jsonIDy = SF_FormulaParser(SF_FormulaPreParser(yFormula))
+			JSON_AddJSON(jsonID, jsonPath + "/y", jsonIDy)
+			JSON_Release(jsonIDy)
+			if(numFormulae == 2)
+				jsonIDx = SF_FormulaParser(SF_FormulaPreParser(xFormula))
+				JSON_AddJSON(jsonID, jsonPath + "/x", jsonIDx)
+				JSON_Release(jsonIDx)
+			endif
+		catch
+			JSON_Release(jsonID, ignoreErr = 1)
+			break
+		endtry
+	endfor
 End
 
 /// @brief checks if SweepFormula (SF) is active.
@@ -2062,4 +2079,25 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 	endswitch
 
 	return outD
+End
+
+static Function/WAVE SF_SplitCodeToGraphs(string code)
+
+	string group0, group1
+	variable graphCount, size
+
+	Make/T/FREE/N=100 graphCode
+
+	do
+		SplitString/E=SF_SWEEPFORMULA_GRAPHS_REGEXP code, group0, group1
+		if(!IsEmpty(group0))
+			EnsureLargeEnoughWave(graphCode, dimension = ROWS, minimumSize = graphCount + 1)
+			graphCode[graphCount] = group0
+			graphCount += 1
+			code = group1
+		endif
+	while(!IsEmpty(group1))
+	Redimension/N=(graphCount) graphCode
+
+	return graphCode
 End
