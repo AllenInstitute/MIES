@@ -1160,7 +1160,8 @@ End
 Function SF_button_sweepFormula_check(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	String mainPanel, bsPanel, formula_nb, json_nb, formula, errMsg
+	String mainPanel, bsPanel, formula_nb, json_nb, formula, errMsg, text
+	variable jsonId
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -1182,6 +1183,12 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 			errMsg = ROStr(GetSweepFormulaParseErrorMessage())
 			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=IsEmpty(errMsg))
 			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", errMsg, setHelp = 1)
+
+			json_nb = BSP_GetSFJSON(mainPanel)
+			jsonID = ROVar(GetSweepFormulaJSONid(dfr))
+			text = JSON_Dump(jsonID, indent = 2, ignoreErr = 1)
+			text = NormalizeToEOL(text, "\r")
+			ReplaceNotebookText(json_nb, text)
 
 			break
 	endswitch
@@ -1298,10 +1305,6 @@ Function SF_TabProc_Formula(tca) : TabControl
 		case 2: // mouse up
 			mainPanel = GetMainWindow(tca.win)
 			bsPanel = BSP_GetPanel(mainPanel)
-			json_nb = BSP_GetSFJSON(mainPanel)
-
-			ReplaceNotebookText(json_nb, "")
-
 			if(tca.tab == 1)
 				PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_check")
 			endif
@@ -1311,14 +1314,6 @@ Function SF_TabProc_Formula(tca) : TabControl
 				break
 			endif
 
-			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
-
-			if(tca.tab == 1) // JSON
-				jsonID = ROVar(GetSweepFormulaJSONid(dfr))
-				text = JSON_Dump(jsonID, indent = 2)
-				text = NormalizeToEOL(text, "\r")
-				ReplaceNotebookText(json_nb, text)
-			endif
 			break
 	endswitch
 
