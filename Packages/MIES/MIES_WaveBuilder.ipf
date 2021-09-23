@@ -64,18 +64,15 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 	DFREF dfr = GetSetFolder(type)
 	WAVE/Z/SDFR=dfr stimSet = $setName
 
-	if(!WaveExists(stimSet))
-		// catches non-existing stimsets as well
-		if(WB_StimsetIsFromThirdParty(setName))
+	if(WB_StimsetIsFromThirdParty(setName))
+		if(WaveExists(stimSet))
+			return stimSet
+		else
 			return $""
 		endif
-
-		needToCreateStimSet = 1
-	elseif(WB_StimsetNeedsUpdate(setName))
-		needToCreateStimSet = 1
-	else
-		needToCreateStimSet = 0
 	endif
+
+	needToCreateStimSet = (!WaveExists(stimSet) || WB_StimsetNeedsUpdate(setName))
 
 	if(needToCreateStimSet)
 		// create current stimset
@@ -2560,4 +2557,22 @@ Function WB_SplitStimsetName(string setName, string &setPrefix, variable &stimul
 	setNumber    = str2num(setNumberString)
 	setPrefix    = setPrefixString
 	stimulusType = WB_ParseStimulusType(stimulusTypeString)
+End
+
+/// @brief Changes an existing stimset to a third party stimset
+Function WB_MakeStimsetThirdParty(string setName)
+
+	ASSERT(!IsEmpty(setName), "Stimset name can not be empty.")
+	ASSERT(!WB_StimsetIsFromThirdParty(setName), "Specified Stimset is already a third party stimset")
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	ASSERT(WaveExists(stimset), "Specified stimset does not exist.")
+	Note/k stimset
+
+	WAVE WP        = WB_GetWaveParamForSet(setName)
+	WAVE WPT       = WB_GetWaveTextParamForSet(setName)
+	WAVE SegWvType = WB_GetSegWvTypeForSet(setName)
+	KillOrMoveToTrash(wv=WP)
+	KillOrMoveToTrash(wv=WPT)
+	KillOrMoveToTrash(wv=SegWvType)
 End

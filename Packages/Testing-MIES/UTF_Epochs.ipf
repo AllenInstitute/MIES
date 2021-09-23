@@ -21,6 +21,7 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 
 	dDAQ = ParamIsDefault(dDAQ) ? 0 : !!dDAQ
 	oodDAQ = ParamIsDefault(oodDAQ) ? 0 : !!oodDAQ
+	analysisFunction = SelectString(ParamIsDefault(analysisFunction), analysisFunction, "")
 
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
@@ -76,8 +77,10 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 		PASS()
 	endfor
 
-	ST_SetStimsetParameter(stimsetName1, "Analysis function (Generic)", str = analysisFunction)
-	ST_SetStimsetParameter(stimsetName2, "Analysis function (Generic)", str = analysisFunction)
+	if(!IsEmpty(analysisFunction))
+		ST_SetStimsetParameter(stimsetName1, "Analysis function (Generic)", str = analysisFunction)
+		ST_SetStimsetParameter(stimsetName2, "Analysis function (Generic)", str = analysisFunction)
+	endif
 
 	device = devices
 
@@ -346,7 +349,7 @@ static Function TestEpochsGeneric(device)
 
 	variable numEntries, endTimeDAC, endTimeEpochs, samplingInterval
 	variable i
-	string list
+	string epochStr
 
 	string sweeps, configs
 	variable sweepNo
@@ -403,9 +406,16 @@ static Function TestEpochsGeneric(device)
 	endTimeDAC = samplingInterval * DimSize(sweep, ROWS) / 1E6
 
 	WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+	WAVE/T setNameLBEntries = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 
 	for(i = 0; i < numEntries; i += 1)
-		WAVE/T epochChannel = ListToTextWaveMD(epochLBEntries[i], 2, rowSep = ":", colSep = ",")
+		epochStr = epochLBEntries[i]
+		if(WB_StimsetIsFromThirdParty(setNameLBEntries[i]) || !cmpstr(setNameLBEntries[i], STIMSET_TP_WHILE_DAQ))
+			CHECK_EMPTY_STR(epochStr)
+			continue
+		endif
+
+		WAVE/T epochChannel = ListToTextWaveMD(epochStr, 2, rowSep = EPOCH_LIST_ROW_SEP, colSep = EPOCH_LIST_COL_SEP)
 		Make/FREE/D/N=(DimSize(epochChannel, ROWS)) endT
 
 		// does the latest end time exceed the 'acquiring part of the' DA wave?
@@ -553,6 +563,37 @@ Function EP_EpochTest9([str])
 End
 
 Function EP_EpochTest9_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function EP_EpochTest10([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG_1_RES_1")
+	AcquireData(s, str, "StimulusSetA_DA_0", "TestPulse")
+End
+
+Function EP_EpochTest10_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function EP_EpochTest11([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L1_BKG_1_RES_1")
+	WB_MakeStimsetThirdParty("StimulusSetB_DA_0")
+	AcquireData(s, str, "StimulusSetA_DA_0", "StimulusSetB_DA_0")
+End
+
+Function EP_EpochTest11_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
