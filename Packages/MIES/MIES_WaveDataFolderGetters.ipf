@@ -6857,3 +6857,14 @@ Function/WAVE GetDACAmplitudes(variable numDACEntries)
 
 	return wv
 End
+
+/// @brief Return a free text wave to store single y vs x formula combinations from sweepformula code
+///
+/// Rows:
+/// - One for each y vs x formula combination
+Function/WAVE GetYvsXFormulas()
+
+	Make/T/FREE/N=0 wv
+
+	return wv
+End

@@ -2081,7 +2081,7 @@ static Function/WAVE SF_SplitCodeToGraphs(string code)
 	string group0, group1
 	variable graphCount, size
 
-	Make/T/FREE/N=100 graphCode
+	WAVE/T graphCode = GetYvsXFormulas()
 
 	do
 		SplitString/E=SF_SWEEPFORMULA_GRAPHS_REGEXP code, group0, group1
