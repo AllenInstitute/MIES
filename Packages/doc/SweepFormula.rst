@@ -559,3 +559,17 @@ gives
 
 .. figure:: svg/sweepFormulaPlot.svg
    :align: center
+
+Several graphs can generated with a single input by separating the formulas
+with `and`. The `and` must be on an own line.
+
+.. code-block:: bash
+
+   0...10 vs range(10, 100, 10)
+   and
+   10...20 vs range(10, 100, 10)
+   and
+   20...30
+
+The above code creates three separate graph output windows. The window names are
+suffixed with numbers in the order of the formulas in the input.
