@@ -749,6 +749,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 			MoveWaveWithOverWrite(wvY, wv)
 		endif
 		WAVE wvY = GetSweepFormulaY(dfr, j)
+		SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
 
 		win = BSP_GetFormulaGraph(graph) + "_" + num2istr(j)
 
@@ -764,7 +765,6 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		RemoveTracesFromGraph(win)
 		ModifyGraph/W=$win swapXY = 0
 
-		SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
 		if(IsTextWave(wvY) && WaveExists(wvX))
 			SF_Assert(WaveExists(wvX), "Cannot plot a single text wave")
 			ModifyGraph/W=$win swapXY = 1
