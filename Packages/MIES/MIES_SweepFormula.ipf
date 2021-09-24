@@ -702,7 +702,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	String formula
 	DFREF dfr
 
-	String formula0, formula1, trace, axes
+	String trace, axes, xFormula
 	Variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs
 	Variable dim1Y, dim2Y, dim1X, dim2X
 	String win
@@ -713,12 +713,14 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	endif
 
 	WAVE/T graphCode = SF_SplitCodeToGraphs(formula)
+	WAVE/T/Z formulaPairs = SF_SplitGraphsToFormulas(graphCode)
+	SF_Assert(WaveExists(formulaPairs), "Could not determine y [vs x] formula pair.")
+
 	numGraphs = DimSize(graphCode, ROWS)
 	for(j = 0; j < numGraphs; j += 1)
-		SplitString/E=SF_SWEEPFORMULA_REGEXP graphCode[j], formula0, formula1
-		SF_Assert(V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
-		if(V_Flag == 2)
-			WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula1)), graph = graph)
+		xFormula = formulaPairs[j][%FORMULA_X]
+		if(!IsEmpty(xFormula))
+			WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(xFormula)), graph = graph)
 			SF_Assert(WaveExists(wv), "Error in x part of formula.")
 			dim1X = max(1, DimSize(wv, COLS))
 			dim2X = max(1, DimSize(wv, LAYERS))
@@ -733,7 +735,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 			WAVE wvX = GetSweepFormulaX(dfr, j)
 		endif
 
-		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula0)), graph = graph)
+		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formulaPairs[j][%FORMULA_Y])), graph = graph)
 		SF_Assert(WaveExists(wv), "Error in y part of formula.")
 		dim1Y = max(1, DimSize(wv, COLS))
 		dim2Y = max(1, DimSize(wv, LAYERS))
@@ -1209,7 +1211,7 @@ End
 static Function SF_CheckInputCode(string code, DFREF dfr)
 
 	variable i, numFormulae, numGraphs, jsonIDy, jsonIDx
-	string jsonPath, yFormula, xFormula
+	string jsonPath, tmpStr, xFormula
 
 	SVAR errMsg = $GetSweepFormulaParseErrorMessage()
 	errMsg = ""
@@ -1220,33 +1222,39 @@ static Function SF_CheckInputCode(string code, DFREF dfr)
 	JSON_AddObjects(jsonID, "")
 
 	WAVE/T graphCode = SF_SplitCodeToGraphs(SF_PreprocessInput(code))
-	numGraphs = DimSize(graphCode, ROWS)
+	WAVE/T/Z formulaPairs = SF_SplitGraphsToFormulas(graphCode)
+	if(!WaveExists(formulaPairs))
+		errMsg = "Could not determine y [vs x] formula pair."
+		return NaN
+	endif
+
+	numGraphs = DimSize(formulaPairs, ROWS)
 	for(i = 0; i < numGraphs; i += 1)
 		jsonPath = "/Formula_" + num2istr(i)
 		JSON_AddObjects(jsonID, jsonPath)
 
-		SplitString/E=SF_SWEEPFORMULA_REGEXP graphCode[i], yFormula, xFormula
-		numFormulae = V_flag
-
-		if(numFormulae != 2 && numFormulae != 1)
-			errMsg = "Could not determine y [vs x] formula pair."
-			return NaN
-		endif
-
 		// catch Abort from SF_Assert called from SF_FormulaParser
 		try
-			jsonIDy = SF_FormulaParser(SF_FormulaPreParser(yFormula))
-			JSON_AddJSON(jsonID, jsonPath + "/y", jsonIDy)
-			JSON_Release(jsonIDy)
-			if(numFormulae == 2)
-				jsonIDx = SF_FormulaParser(SF_FormulaPreParser(xFormula))
-				JSON_AddJSON(jsonID, jsonPath + "/x", jsonIDx)
-				JSON_Release(jsonIDx)
-			endif
+			jsonIDy = SF_FormulaParser(SF_FormulaPreParser(formulaPairs[i][%FORMULA_Y]))
 		catch
 			JSON_Release(jsonID, ignoreErr = 1)
-			break
+			return NaN
 		endtry
+		JSON_AddJSON(jsonID, jsonPath + "/y", jsonIDy)
+		JSON_Release(jsonIDy)
+
+		xFormula = formulaPairs[i][%FORMULA_X]
+		if(!IsEmpty(xFormula))
+			// catch Abort from SF_Assert called from SF_FormulaParser
+			try
+				jsonIDx = SF_FormulaParser(SF_FormulaPreParser(xFormula))
+			catch
+				JSON_Release(jsonID, ignoreErr = 1)
+				return NaN
+			endtry
+			JSON_AddJSON(jsonID, jsonPath + "/x", jsonIDx)
+			JSON_Release(jsonIDx)
+		endif
 	endfor
 End
 
