@@ -171,11 +171,12 @@ End
 /// sweep formula user error.
 ///
 /// All programmer error checks must still use ASSERT().
-static Function SF_Assert(condition, message)
-	Variable condition
-	String message
+static Function SF_Assert(variable condition, string message[, variable jsonId])
 
 	if(!condition)
+		if(!ParamIsDefault(jsonId))
+			JSON_Release(jsonId, ignoreErr=1)
+		endif
 		SVAR error = $GetSweepFormulaParseErrorMessage()
 		error = message
 		Abort
@@ -294,7 +295,7 @@ static Function SF_FormulaParser(formula, [indentLevel])
 					continue
 				endif
 				state = SF_STATE_COLLECT
-				SF_Assert(GrepString(token, "[A-Za-z0-9_\.:;=]"), "undefined pattern in formula: " + formula[i,i+5])
+				SF_Assert(GrepString(token, "[A-Za-z0-9_\.:;=]"), "undefined pattern in formula: " + formula[i, i + 5], jsonId=jsonId)
 		endswitch
 
 		if(level > 0 || arrayLevel > 0)
@@ -381,7 +382,7 @@ static Function SF_FormulaParser(formula, [indentLevel])
 					action = SF_ACTION_COLLECT
 					break
 				default:
-					SF_Assert(0, "Encountered undefined transition " + num2istr(state))
+					SF_Assert(0, "Encountered undefined transition " + num2istr(state), jsonId=jsonId)
 			endswitch
 			lastState = state
 		endif
@@ -436,9 +437,9 @@ static Function SF_FormulaParser(formula, [indentLevel])
 				JSON_Release(jsonIDdummy)
 				break
 			case SF_ACTION_ARRAY:
-				SF_Assert(!cmpstr(buffer[0], "["), "Encountered array ending without array start.")
+				SF_Assert(!cmpstr(buffer[0], "["), "Encountered array ending without array start.", jsonId=jsonId)
+				jsonIDdummy = SF_FormulaParser(buffer[1, inf], indentLevel = indentLevel + 1)
 				jsonIDarray = JSON_New()
-				jsonIDdummy = SF_FormulaParser(buffer[1,inf], indentLevel = indentLevel + 1)
 				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
 					JSON_AddTreeArray(jsonIDarray, "")
 				endif
@@ -533,14 +534,14 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 		Make/FREE/N=(topArraySize[0])/B types = JSON_GetType(jsonID, jsonPath + "/" + num2istr(p))
 
 		if(topArraySize[0] != 0 && types[0] == JSON_STRING)
-			SF_ASSERT(DimSize(topArraySize, ROWS) <= 1, "Text Waves Must Be 1-dimensional.")
+			SF_ASSERT(DimSize(topArraySize, ROWS) <= 1, "Text Waves Must Be 1-dimensional.", jsonId=jsonId)
 			return JSON_GetTextWave(jsonID, jsonPath)
 		endif
 		EXTRACT/FREE types, strings, types[p] == JSON_STRING
-		SF_ASSERT(DimSize(strings, ROWS) == 0, "Object evaluation For Mixed Text/Numeric Arrays Is Not Allowed")
+		SF_ASSERT(DimSize(strings, ROWS) == 0, "Object evaluation For Mixed Text/Numeric Arrays Is Not Allowed", jsonId=jsonId)
 		WaveClear strings
 
-		SF_ASSERT(DimSize(topArraySize, ROWS) < 4, "Unhandled Data Alignment. Only 3 Dimensions Are Supported For Operations.")
+		SF_ASSERT(DimSize(topArraySize, ROWS) < 4, "Unhandled Data Alignment. Only 3 Dimensions Are Supported For Operations.", jsonId=jsonId)
 		WAVE out = JSON_GetWave(jsonID, jsonPath)
 
 		Redimension/N=4 topArraySize
@@ -582,11 +583,11 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	endif
 
 	// operation evaluation
-	SF_ASSERT(JSONtype == JSON_OBJECT, "Topmost element needs to be an object")
+	SF_ASSERT(JSONtype == JSON_OBJECT, "Topmost element needs to be an object", jsonId=jsonId)
 	WAVE/T operations = JSON_GetKeys(jsonID, jsonPath)
-	SF_ASSERT(DimSize(operations, ROWS) == 1, "Only one operation is allowed")
+	SF_ASSERT(DimSize(operations, ROWS) == 1, "Only one operation is allowed", jsonId=jsonId)
 	jsonPath += "/" + SF_EscapeJsonPath(operations[0])
-	SF_ASSERT(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.")
+	SF_ASSERT(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.", jsonId=jsonId)
 
 	/// @name SweepFormulaOperations
 	/// @{
@@ -685,7 +686,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			WAVE out = SF_OperationApFrequency(jsonId, jsonPath, graph)
 			break
 		default:
-			SF_ASSERT(0, "Undefined Operation")
+			SF_ASSERT(0, "Undefined Operation", jsonId=jsonId)
 	endswitch
 	/// @}
 
