@@ -73,6 +73,51 @@ Function TP_StoreTP(panelTitle, TPWave, tpMarker, hsList)
 	SetNumberInWaveNote(storedTP, NOTE_INDEX, index)
 End
 
+/// @brief Return a number of consecutive test pulses ending with the TP
+/// identified by tpMarker.
+///
+/// The wave reference wave will have as many columns as active headstages were used.
+Function/WAVE TP_GetStoredTPs(string panelTitle, variable tpMarker, variable number)
+
+	variable numEntries
+
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
+	numEntries = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
+
+	if(numEntries == 0)
+		return $""
+	endif
+
+	Make/FREE/N=(numEntries) matches
+
+	Multithread matches[0, numEntries - 1] = GetNumberFromWaveNote(storedTP[p], "TPMarker") == tpMarker
+
+	FindValue/V=1 matches
+
+	if(V_row == -1)
+		return $""
+	endif
+
+	Make/FREE/N=(number)/WAVE result
+
+	if(number > V_row + 1)
+		// too few TPs available
+		return $""
+	endif
+
+	result[] = storedTP[V_row - number + 1 + p]
+
+	// check that they all belong to the same TP cycle
+	Redimension/N=(number) matches
+	matches[] = GetNumberFromWaveNote(result[0], "TPCycleID") == GetNumberFromWaveNote(result[p], "TPCycleID")
+
+	if(Sum(matches) < number)
+		return $""
+	endif
+
+	return result
+End
+
 /// @brief Split the stored testpulse wave reference wave into single waves
 ///        for easier handling
 Function TP_SplitStoredTestPulseWave(panelTitle)
