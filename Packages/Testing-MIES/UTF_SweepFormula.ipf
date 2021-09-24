@@ -940,6 +940,8 @@ static Function TestPlotting()
 	WAVE scale1D = SF_FormulaExecutor(DirectToFormulaParser(strScale1D))
 	WAVE array0D = SF_FormulaExecutor(DirectToFormulaParser(strArray0D))
 
+	win = win + "_0"
+
 	SF_FormulaPlotter(sweepBrowser, strArray2D)
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	traces = TraceNameList(win, ";", 0x1)
