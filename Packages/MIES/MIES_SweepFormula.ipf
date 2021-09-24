@@ -1143,18 +1143,27 @@ End
 ///        - cut off last CR from back conversion with TextWaveToList
 static Function/S SF_PreprocessInput(string formula)
 
+	variable endsWithCR
+
 	if(IsEmpty(formula))
 		return ""
 	endif
 
-	formula = ReplaceString(SF_CHAR_NEWLINE, formula, SF_CHAR_CR)
+	formula = NormalizeToEOL(formula, SF_CHAR_CR)
+	endsWithCR = StringEndsWith(formula, SF_CHAR_CR)
+
 	WAVE/T lines = ListToTextWave(formula, SF_CHAR_CR)
 	lines = StringFromList(0, lines[p], SF_CHAR_COMMENT)
 	formula = TextWaveToList(lines, SF_CHAR_CR)
 	if(IsEmpty(formula))
 		return ""
 	endif
-	return formula[0, strlen(formula) - 2]
+
+	if(!endsWithCR)
+		formula = formula[0, strlen(formula) - 2]
+	endif
+
+	return formula
 End
 
 Function SF_button_sweepFormula_check(ba) : ButtonControl
