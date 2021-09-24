@@ -1297,12 +1297,10 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "", setHelp = 1)
 			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
 
-			AssertOnAndClearRTError()
+			// catch Abort from SF_ASSERT
 			try
 				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortOnRTE
 			catch
-				ClearRTError()
-				SVAR result = $GetSweepFormulaParseErrorMessage()
 				SetValDisplay(bsPanel, "status_sweepFormula_parser", var=0)
 				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result, setHelp = 1)
 			endtry
