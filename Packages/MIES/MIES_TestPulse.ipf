@@ -57,6 +57,7 @@ Function TP_StoreTP(panelTitle, TPWave, tpMarker, hsList)
 
 	SetStringInWaveNote(TPWave, "TimeStamp", GetISO8601TimeStamp(numFracSecondsDigits = 3))
 	SetNumberInWaveNote(TPWave, "TPMarker", tpMarker, format="%d")
+	SetNumberInWaveNote(TPWave, "TPCycleID", ROVAR(GetTestpulseCycleID(panelTitle)), format="%d")
 	SetStringInWaveNote(TPWave, "Headstages", hsList)
 
 	// setting dimension labels only works if the dimension size is not zero
@@ -342,7 +343,7 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 	WAVE TPResults
 	variable now, tpMarker
 
-	variable delta, i, ret, lastPressureCtrl, timestamp
+	variable delta, i, ret, lastPressureCtrl, timestamp, cycleID
 	WAVE TPStorage = GetTPStorage(panelTitle)
 	WAVE hsProp = GetHSProperties(panelTitle)
 	variable count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
@@ -411,6 +412,8 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 	TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 	TPStorage[count][][%TPMarker] = tpMarker
 
+	cycleID = ROVAR(GetTestpulseCycleID(panelTitle))
+	TPStorage[count][][%TPCycleID] = cycleID
 	lastPressureCtrl = GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC)
 	if((now - lastPressureCtrl) > TP_PRESSURE_INTERVAL)
 		P_PressureControl(panelTitle)
@@ -598,6 +601,8 @@ Function TP_Setup(panelTitle, runMode, [fast])
 		NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
 		runModeGlobal = runMode
 
+		// fast restart is considered to be part of the same cycle
+
 		NVAR deviceID = $GetDAQDeviceID(panelTitle)
 		HW_PrepareAcq(GetHardwareType(panelTitle), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 		return NaN
@@ -647,6 +652,9 @@ Function TP_SetupCommon(panelTitle)
 	index = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	SetNumberInWaveNote(TPStorage, INDEX_ON_TP_START, index)
 
+	NVAR tpCycleID = $GetTestpulseCycleID(panelTitle)
+	tpCycleID = TP_GetTPCycleID(panelTitle)
+
 	WAVE tpAsyncBuffer = GetTPResultAsyncBuffer(panelTitle)
 	KillOrMoveToTrash(wv=tpAsyncBuffer)
 End
@@ -689,7 +697,11 @@ Function TP_TeardownCommon(panelTitle)
 	string panelTitle
 
 	P_LoadPressureButtonState(panelTitle)
+
+	NVAR tpCycleID = $GetTestpulseCycleID(panelTitle)
+	tpCycleID = NaN
 End
+
 /// @brief Return the number of devices which have TP running
 Function TP_GetNumDevicesWithTPRunning()
 
@@ -834,4 +846,20 @@ Function TP_UpdateTPSettingsLBNWaves(string panelTitle)
 	TPSettingsLBN[0][%$"TP Amplitude VC"][INDEP_HEADSTAGE]      = TPSettings[%amplitudeVC][INDEP_HEADSTAGE]
 	TPSettingsLBN[0][%$"TP Amplitude IC"][INDEP_HEADSTAGE]      = TPSettings[%amplitudeIC][INDEP_HEADSTAGE]
 	TPSettingsLBN[0][%$"TP Pulse Duration"][INDEP_HEADSTAGE]    = calculated[%pulseLengthMS]
+End
+
+/// @brief Return the TP cycle ID for the given device
+///
+/// Follower and leader will have the same TP cycle ID.
+static Function TP_GetTPCycleID(panelTitle)
+	string panelTitle
+
+	DAP_AbortIfUnlocked(panelTitle)
+
+	if(DeviceIsFollower(panelTitle))
+		NVAR tpCycleIDLead = $GetTestpulseCycleID(ITC1600_FIRST_DEVICE)
+		return tpCycleIDLead
+	else
+		return GetNextRandomNumberForDevice(panelTitle)
+	endif
 End

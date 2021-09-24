@@ -2372,18 +2372,19 @@ End
 ///       the user pressure was acquired
 /// - 22: TPMarker unique number identifying this set of TPs
 /// - 23: Cell state: Pressure control values defining the cell state, one of @ref CellStateValues
+/// - 24: Testpulse Cycle Id (changes whenever TP is started, allows to group TPs together)
 Function/Wave GetTPStorage(panelTitle)
 	string panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 13
+	variable versionOfNewWave = 14
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, NUM_HEADSTAGES, 24)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, 25)/D wv
 
 		if(WaveVersionIsSmaller(wv, 10))
 			wv[][][17]    = NaN
@@ -2395,8 +2396,11 @@ Function/Wave GetTPStorage(panelTitle)
 		if(WaveVersionIsSmaller(wv, 13))
 			wv[][][23]    = NaN
 		endif
+		if(WaveVersionIsSmaller(wv, 14))
+			wv[][][24] = NaN
+		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 24)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 25)/D dfr:TPStorage/Wave=wv
 
 		wv = NaN
 
@@ -2429,6 +2433,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 21, UserPressureTimeStampUTC  , wv
 	SetDimLabel LAYERS, 22, TPMarker                  , wv
 	SetDimLabel LAYERS, 23, CellState                 , wv
+	SetDimLabel LAYERS, 24, TPCycleID                 , wv
 
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
