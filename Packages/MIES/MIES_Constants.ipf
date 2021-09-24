@@ -842,7 +842,8 @@ Constant INDEP_EPOCH_TYPE = 0
 /// @name Parameters for gnoise and enoise
 ///@{
 Constant NOISE_GEN_LINEAR_CONGRUENTIAL = 1 ///< Don't use for new code.
-Constant NOISE_GEN_MERSENNE_TWISTER    = 2
+Constant NOISE_GEN_MERSENNE_TWISTER    = 2 ///< Don't use for new code.
+Constant NOISE_GEN_XOSHIRO             = 3
 ///@}
 
 StrConstant SEGMENTWAVE_SPECTRUM_PREFIX = "segmentWaveSpectrum"
