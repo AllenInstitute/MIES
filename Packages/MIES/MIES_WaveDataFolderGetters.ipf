@@ -6868,3 +6868,20 @@ Function/WAVE GetYvsXFormulas()
 
 	return wv
 End
+
+/// @brief Return a free text wave to store y and x formula combinations from sweepformula code
+///
+/// Rows:
+/// - One for each formula
+/// Columns:
+/// - FORMULA_X: formula for x wave
+/// - FORMULA_Y: formula for y wave
+Function/WAVE GetYandXFormulas()
+
+	Make/T/FREE/N=(0, 2) wv
+
+	SetDimLabel COLS, 0, FORMULA_X, wv
+	SetDimLabel COLS, 1, FORMULA_Y, wv
+
+	return wv
+End

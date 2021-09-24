@@ -2105,3 +2105,25 @@ static Function/WAVE SF_SplitCodeToGraphs(string code)
 
 	return graphCode
 End
+
+static Function/WAVE SF_SplitGraphsToFormulas(WAVE/T graphCode)
+
+	variable i, numGraphs, numFormulae
+	string yFormula, xFormula
+
+	WAVE/T wFormulas = GetYandXFormulas()
+
+	numGraphs = DimSize(graphCode, ROWS)
+	Redimension/N=(numGraphs, -1) wFormulas
+	for(i = 0; i < numGraphs; i += 1)
+		SplitString/E=SF_SWEEPFORMULA_REGEXP graphCode[i], yFormula, xFormula
+		numFormulae = V_Flag
+		if(numFormulae != 1 && numFormulae != 2)
+			return $""
+		endif
+		wFormulas[i][%FORMULA_X] = SelectString(numFormulae == 2, "", xFormula)
+		wFormulas[i][%FORMULA_Y] = yFormula
+	endfor
+
+	return wFormulas
+End
