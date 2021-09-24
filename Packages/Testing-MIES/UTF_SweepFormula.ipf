@@ -1238,12 +1238,12 @@ static Function TestSFPreprocessor()
 	CHECK_EQUAL_STR(output, refOutput)
 
 	input = "\r\r\r"
-	refOutput = "\r\r"
+	refOutput = "\r\r\r"
 	output = MIES_SF#SF_PreprocessInput(input)
 	CHECK_EQUAL_STR(output, refOutput)
 
 	input = "text\rtext\r"
-	refOutput = "text\rtext"
+	refOutput = "text\rtext\r"
 	output = MIES_SF#SF_PreprocessInput(input)
 	CHECK_EQUAL_STR(output, refOutput)
 
