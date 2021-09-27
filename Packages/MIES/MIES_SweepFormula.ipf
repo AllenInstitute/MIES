@@ -718,7 +718,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	SF_Assert(WaveExists(formulaPairs), "Could not determine y [vs x] formula pair.")
 
 	wList = ""
-	winNameTemplate = BSP_GetFormulaGraph(graph) + "_"
+	winNameTemplate = SF_GetFormulaWinNameTemplate(graph)
 	numGraphs = DimSize(graphCode, ROWS)
 	for(j = 0; j < numGraphs; j += 1)
 		xFormula = formulaPairs[j][%FORMULA_X]
@@ -2145,4 +2145,32 @@ static Function/WAVE SF_SplitGraphsToFormulas(WAVE/T graphCode)
 	endfor
 
 	return wFormulas
+End
+
+static Function/S SF_GetFormulaWinNameTemplate(string mainWindow)
+
+	return BSP_GetFormulaGraph(mainWindow) + "_"
+End
+
+Function SF_button_sweepFormula_tofront(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string winNameTemplate, wList, wName
+	variable numWins, i
+
+	switch( ba.eventCode )
+		case 2: // mouse up
+			// click code here
+			winNameTemplate = SF_GetFormulaWinNameTemplate(GetMainWindow(ba.win))
+			wList = WinList(winNameTemplate + "*", ";", "WIN:1")
+			numWins = ItemsInList(wList)
+			for(i = 0; i < numWins; i += 1)
+				wName = StringFromList(i, wList)
+				DoWindow/F $wName
+			endfor
+
+			break
+	endswitch
+
+	return 0
 End
