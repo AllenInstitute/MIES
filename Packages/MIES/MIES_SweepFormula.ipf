@@ -704,9 +704,9 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	DFREF dfr
 
 	String trace, axes, xFormula
-	Variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs
+	Variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs, numWins
 	Variable dim1Y, dim2Y, dim1X, dim2X
-	String win
+	String win, wList, winNameTemplate, exWList, wName
 	String traceName = "formula"
 
 	if(ParamIsDefault(dfr))
@@ -717,6 +717,8 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	WAVE/T/Z formulaPairs = SF_SplitGraphsToFormulas(graphCode)
 	SF_Assert(WaveExists(formulaPairs), "Could not determine y [vs x] formula pair.")
 
+	wList = ""
+	winNameTemplate = BSP_GetFormulaGraph(graph) + "_"
 	numGraphs = DimSize(graphCode, ROWS)
 	for(j = 0; j < numGraphs; j += 1)
 		xFormula = formulaPairs[j][%FORMULA_X]
@@ -751,7 +753,8 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		WAVE wvY = GetSweepFormulaY(dfr, j)
 		SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
 
-		win = BSP_GetFormulaGraph(graph) + "_" + num2istr(j)
+		win = winNameTemplate + num2istr(j)
+		wList = AddListItem(win, wList)
 
 		if(!WindowExists(win))
 			Display/N=$win as win
@@ -847,6 +850,15 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 
 		RestoreCursors(win, cursorInfos)
 		SetAxesRanges(win, axesRanges)
+	endfor
+
+	exWList = WinList(winNameTemplate + "*", ";", "WIN:1")
+	numWins = ItemsInList(exWList)
+	for(i = 0; i < numWins; i += 1)
+		wName = StringFromList(i, exWList)
+		if(WhichListItem(wName, wList) == -1)
+			KillWindow/Z $wName
+		endif
 	endfor
 End
 
