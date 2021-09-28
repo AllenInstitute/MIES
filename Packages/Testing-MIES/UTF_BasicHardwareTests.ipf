@@ -2396,17 +2396,21 @@ Function ChangeToMultiDeviceDAQ_REENTRY([str])
 	CHECK_EQUAL_VAR(multiDeviceMode, 1)
 End
 
+Function ChangeStimSetDuringDAQ_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
+
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 600), period=60, proc=StopTP_IGNORE
+	CtrlNamedBackGround ChangeStimsetDuringDAQ, start, period=30, proc=ChangeStimSet_IGNORE
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 Function ChangeStimSetDuringDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
-	AcquireData(s, str)
-
-	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 600), period=60, proc=StopTP_IGNORE
-	CtrlNamedBackGround ChangeStimsetDuringDAQ, start=180, period=30, proc=ChangeStimSet_IGNORE
-	PGC_SetAndActivateControl(str, "check_Settings_TPAfterDAQ", val = 1)
+	AcquireData(s, str, preAcquireFunc = ChangeStimSetDuringDAQ_IGNORE)
 End
 
 Function ChangeStimSetDuringDAQ_REENTRY([str])

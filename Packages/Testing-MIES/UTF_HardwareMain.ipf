@@ -682,11 +682,18 @@ Function ChangeStimSet_IGNORE(s)
 	SVAR devices = $GetDevicePanelTitleList()
 	string device = StringFromList(0, devices)
 
-	ctrl   = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 
-	PGC_SetAndActivateControl(device, ctrl, val = GetPopupMenuIndex(device, ctrl) + 1)
+	NVAR tpRunMode = $GetTestpulseRunMode(device)
 
-	return 1
+	if(dataAcqRunMode != DAQ_NOT_RUNNING && !(tpRunMode & TEST_PULSE_DURING_RA_MOD))
+		ctrl = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		PGC_SetAndActivateControl(device, ctrl, val = GetPopupMenuIndex(device, ctrl) + 1)
+
+		return 1
+	endif
+
+	return 0
 End
 
 Function ClampModeDuringSweep_IGNORE(s)
