@@ -5845,3 +5845,15 @@ Function/S GetCodeForWaveContents(WAVE/T wv)
 
 	return "{" + list + "}"
 End
+
+/// @brief If the layout of an panel was changed, this function calls the
+///        ResizeControlsPanel module functions of the Igor Pro native package
+///        to store the changed resize info. The original inteded way to do this
+///        was through the Packages GUI, which is clunky for some workflows.
+Function StoreCurrentPanelsResizeInfo(string panel)
+
+	ASSERT(!IsEmpty(panel), "Panel name can not be empty.")
+
+	ResizeControlsPanel#ResetListboxWaves()
+	ResizeControlsPanel#SaveControlPositions(panel, 0)
+End
