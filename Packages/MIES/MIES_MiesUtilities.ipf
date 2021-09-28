@@ -758,6 +758,8 @@ End
 
 /// @brief Return a numerical or text setting for the given channel
 ///
+/// It also returns headstage independent entries when the given channel refers to an active channel.
+///
 /// @return the wave containing the setting and the index into it.
 ///
 /// @ingroup LabnotebookQueryFunctions
@@ -765,12 +767,9 @@ End
 threadsafe Function [WAVE/Z settings, variable index] GetLastSettingChannel(WAVE numericalValues, WAVE/T/Z textualValues, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
 
 	[settings, index] = GetLastSettingChannelInternal(numericalValues, numericalValues, sweepNo, setting, channelNumber, channelType, entrySourceType)
+
 	if(WaveExists(settings))
-		if(IsNaN(settings[index]))
-			return [settings, GetIndexForHeadstageIndepData(numericalValues)]
-		else
-			return [settings, index]
-		endif
+		return [settings, index]
 	endif
 
 	if(!WaveExists(textualValues))
@@ -778,13 +777,9 @@ threadsafe Function [WAVE/Z settings, variable index] GetLastSettingChannel(WAVE
 	endif
 
 	[settings, index] = GetLastSettingChannelInternal(numericalValues, textualValues, sweepNo, setting, channelNumber, channelType, entrySourceType)
+
 	if(WaveExists(settings))
-		WAVE/T settingsT = settings
-		if(!cmpstr(settingsT[index], ""))
-			return [settingsT, GetIndexForHeadstageIndepData(textualValues)]
-		else
-			return [settingsT, index]
-		endif
+		return [settings, index]
 	endif
 
 	return [$"", NaN]
@@ -809,6 +804,7 @@ End
 /// @sa GetLastSettingChannel
 threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInternal(WAVE numericalValues, WAVE values, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
 	string entryName
+	variable idx, indep
 
 	switch(channelType)
 		case XOP_CHANNEL_TYPE_DAC:
@@ -825,23 +821,41 @@ threadsafe static Function [WAVE/Z wv, variable index] GetLastSettingChannelInte
 
 	if(WaveExists(activeChannels))
 		WAVE/Z indizes = FindIndizes(activeChannels, col=0, var=channelNumber)
+
 		if(WaveExists(indizes))
-			// associated entry
+			// given channel was associated and active
 			ASSERT_TS(DimSize(indizes, ROWS) == 1, "Unexpected size")
+			idx = indizes[0]
 
 			WAVE/Z settings = GetLastSetting(values, sweepNo, setting, entrySourceType)
 
-			if(WaveExists(settings))
-				WAVE/T settingsT = settings
-				if((IsNumericWave(settings) && IsNaN(settings[indizes[0]]))          \
-				   || (IsTextWave(settingsT) && !cmpstr(settingsT[indizes[0]], "")))
-					return [$"", NaN]
-				endif
-
-				return [settings, indizes[0]]
+			if(!WaveExists(settings))
+				// but the setting does not exist
+				return [$"", NaN]
 			endif
 
-			return [$"", NaN]
+			indep = GetIndexForHeadstageIndepData(values)
+
+			WAVE/T settingsT = settings
+			if(IsNumericWave(settings))
+				if(!IsNaN(settings[idx]))
+					// numerical assoc setting
+					return [settings, idx]
+				elseif(!IsNaN(settings[indep]))
+					// ... unassoc ...
+					return [settings, indep]
+				endif
+			elseif(IsTextWave(settingsT))
+				if(cmpstr(settingsT[idx], ""))
+					// textual assoc setting
+					return [settingsT, idx]
+				elseif(cmpstr(settingsT[indep], ""))
+					// ... unassoc ...
+					return [settingsT, indep]
+				endif
+			else
+				ASSERT_TS(0, "Invalid wave type")
+			endif
 		endif
 	endif
 

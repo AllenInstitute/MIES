@@ -815,6 +815,31 @@ Function [string device, string key, string keyTxt] PrepareLBN_IGNORE()
 	keys[] = keyTxt
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	sweepNo = 2
+
+	valuesDAC[]  = NaN
+	valuesDAC[0][0][0] = 2
+	valuesDAC[0][0][1] = 3
+	keys[] = "DAC"
+	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	valuesADC[]  = NaN
+	valuesADC[0][0][0] = 6
+	valuesADC[0][0][1] = 7
+	keys[] = "ADC"
+	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	// indep headstage
+	values[] = NaN
+	values[0][0][INDEP_HEADSTAGE] = 252627
+	keys[] = key
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	valuesTxt[] = ""
+	valuesTxt[0][0][INDEP_HEADSTAGE] = "252627"
+	keys[] = keyTxt
+	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
 	return [device, key, keyTxt]
 End
 
@@ -1059,4 +1084,37 @@ Function Test_GetLastSettingChannel()
 	CHECK_WAVE(settings, TEXT_WAVE)
 	CHECK_EQUAL_VAR(index, INDEP_HEADSTAGE)
 	CHECK_EQUAL_TEXTWAVES(settings, {"", "", "", "", "", "", "", "", "101112"}, mode = WAVE_DATA)
+
+	// indep headstage
+
+	// numerical
+
+	// returns nothing as the channel was not active
+	sweepNo = 2
+	channelNumber = 0
+	[settings, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, key, channelNumber, XOP_CHANNEL_TYPE_ADC, UNKNOWN_MODE)
+	CHECK_WAVE(settings, NULL_WAVE)
+	CHECK_EQUAL_VAR(index, NaN)
+
+	// works
+	sweepNo = 2
+	channelNumber = 6
+	[settings, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, key, channelNumber, XOP_CHANNEL_TYPE_ADC, UNKNOWN_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(index, INDEP_HEADSTAGE)
+	CHECK_EQUAL_WAVES(settings, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 252627}, mode = WAVE_DATA)
+
+	// textual
+	sweepNo = 2
+	channelNumber = 0
+	[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, keyTxt, channelNumber, XOP_CHANNEL_TYPE_ADC, UNKNOWN_MODE)
+	CHECK_WAVE(settings, NULL_WAVE)
+	CHECK_EQUAL_VAR(index, NaN)
+
+	sweepNo = 2
+	channelNumber = 6
+	[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, keyTxt, channelNumber, XOP_CHANNEL_TYPE_ADC, UNKNOWN_MODE)
+	CHECK_WAVE(settings, TEXT_WAVE)
+	CHECK_EQUAL_VAR(index, INDEP_HEADSTAGE)
+	CHECK_EQUAL_TEXTWAVES(settings, {"", "", "", "", "", "", "", "", "252627"}, mode = WAVE_DATA)
 End
