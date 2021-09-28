@@ -12,7 +12,7 @@
 /// @brief Add numerical/textual entries to the labnotebook
 ///
 /// @see ED_createTextNotes, ED_createWaveNote
-Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE keys, variable sweepNo, string panelTitle, variable entrySourceType)
+Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, string panelTitle, variable entrySourceType)
 
 	ASSERT(DimSize(vals, ROWS)   == 1, "Mismatched row count")
 	ASSERT(DimSize(vals, COLS)   == DimSize(keys, COLS), "Mismatched column count")
