@@ -90,7 +90,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	BSP_UnsetDynamicSettingsHistory(panelTitle)
 
 	// store current positions as reference
-	ResizeControlsPanel#SaveControlPositions(bsPanel, 0)
+	StoreCurrentPanelsResizeInfo(bsPanel)
 
 	TabControl SF_InfoTab, WIN = $bsPanel, disable=2
 

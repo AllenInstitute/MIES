@@ -2448,7 +2448,7 @@ Function AB_BrowserStartupSettings()
 
 	AB_ResetListBoxWaves(0)
 
-	ResizeControlsPanel#SaveControlPositions(panel, 0)
+	StoreCurrentPanelsResizeInfo(panel)
 
 	SearchForInvalidControlProcs(panel)
 	print "Do not forget to increase ANALYSISBROWSER_PANEL_VERSION."
