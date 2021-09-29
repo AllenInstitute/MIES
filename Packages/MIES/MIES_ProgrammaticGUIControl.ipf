@@ -205,18 +205,26 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 
 			[popupMenuValue, popupMenuType] = ParsePopupMenuValue(S_recreation)
 
+			popupMenuList = GetPopupMenuList(popupMenuValue, popupMenuType)
+
 			if(!ParamIsDefault(val))
-				ASSERT(val >= 0,"Invalid index")
+				ASSERT(val >= 0 && val < ItemsInList(popupMenuList), "Invalid value for popupmenu: " + num2str(val))
 				PopupMenu $control win=$win, mode=(val + 1)
 			elseif(!ParamIsDefault(str))
 				switch(popupMenuType)
 					case POPUPMENULIST_TYPE_BUILTIN:
+						val = WhichListItem(str, popupMenuList)
+						ASSERT(val >= 0 && val < ItemsInList(popupMenuList), "Invalid value for popupmenu: " + num2str(val))
+
 						// popmatch does not work with these
-						popupMenuList = GetPopupMenuList(popupMenuValue, popupMenuType)
 						PopupMenu $control win=$win, mode=(WhichListItem(str, popupMenuList) + 1)
 						break
 					case POPUPMENULIST_TYPE_OTHER:
+						// the return value might be different due to wildcard expansion
 						str = SetPopupMenuString(win, control, str)
+
+						val = WhichListItem(str, popupMenuList)
+						ASSERT(val >= 0 && val < ItemsInList(popupMenuList), "Invalid value for popupmenu: " + num2str(val))
 						break
 					default:
 						ASSERT(0, "Invalid popup menu type")
@@ -232,17 +240,8 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			pa.win       = win
 			pa.eventCode = 2
 
-			if(isEmpty(popupMenuList))
-				popupMenuList = GetPopupMenuList(popupMenuValue, popupMenuType)
-			endif
-
-			if(!ParamIsDefault(val))
-				pa.popNum = val + 1
-				pa.popStr = StringFromList(val, popupMenuList)
-			elseif(!ParamIsDefault(str))
-				pa.popNum = WhichListItem(str, popupMenuList) + 1
-				pa.popStr = str
-			endif
+			pa.popNum = val + 1
+			pa.popStr = StringFromList(val, popupMenuList)
 
 			FUNCREF PGC_PopupActionControlProcedure PopupProc = $procedure
 			PopupProc(pa)

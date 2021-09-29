@@ -85,58 +85,6 @@ static Function PGCT_PopupMenuAborts2()
 	CHECK_EQUAL_STR(refString, popStr)
 End
 
-static Function PGCT_PopupMenuAborts3()
-
-	variable refValue, popNum
-	string refString, popStr
-
-	SVAR/SDFR=root: panel
-
-	try
-		PGC_SetAndActivateControl(panel, "popup_ctrl", val = -1)
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	// no changes
-	DoUpdate
-	ControlInfo/W=$panel popup_ctrl
-	refValue  = V_Value
-	refString = S_Value
-
-	popStr = StringFromList(0, PGCT_POPUPMENU_ENTRIES)
-	popNum = 1
-	CHECK_EQUAL_VAR(refValue, popNum)
-	CHECK_EQUAL_STR(refString, popStr)
-End
-
-static Function PGCT_PopupMenuAborts4()
-
-	variable refValue, popNum
-	string refString, popStr
-
-	SVAR/SDFR=root: panel
-
-	try
-		PGC_SetAndActivateControl(panel, "popup_ctrl", str = "I_DONT_EXIST")
-		FAIL()
-	catch
-		PASS()
-	endtry
-
-	// no changes
-	DoUpdate
-	ControlInfo/W=$panel popup_ctrl
-	refValue  = V_Value
-	refString = S_Value
-
-	popStr = StringFromList(0, PGCT_POPUPMENU_ENTRIES)
-	popNum = 1
-	CHECK_EQUAL_VAR(refValue, popNum)
-	CHECK_EQUAL_STR(refString, popStr)
-End
-
 static Function PGCT_PopupMenuVarWorks1()
 
 	variable refValue, popNum, i
@@ -208,6 +156,113 @@ static Function PGCT_PopupMenuStrWorks1()
 		CHECK_EQUAL_STR(refString, popStr)
 	endfor
 End
+
+Function/WAVE InvalidPopupMenuOtherIndizes()
+
+	Make/FREE wv = {-1, NaN, Inf, -Inf, ItemsInList(PGCT_POPUPMENU_ENTRIES)}
+
+	return wv
+End
+
+Function/WAVE InvalidPopupMenuColorTableIndizes()
+
+	Make/FREE wv = {-1, NaN, Inf, -Inf, ItemsInList(CTabList())}
+
+	return wv
+End
+
+// UTF_TD_GENERATOR InvalidPopupMenuOtherIndizes
+static Function PGCT_PopupMenuOtherAbortsWithOutOfRangeVar([variable var])
+	variable refValue, popNum, i
+	string refString, popStr
+
+	SVAR/SDFR=root: panel
+
+	ControlInfo/W=$panel popup_ctrl
+	refValue  = V_Value
+	refString = S_Value
+
+	popStr = StringFromList(0, PGCT_POPUPMENU_ENTRIES)
+	popNum = 1
+	CHECK_EQUAL_VAR(refValue, popNum)
+	CHECK_EQUAL_STR(refString, popStr)
+
+	try
+		PGC_SetAndActivateControl(panel, "popup_ctrl", val = var)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	ControlInfo/W=$panel popup_ctrl
+	refValue  = V_Value
+	refString = S_Value
+	CHECK_EQUAL_VAR(refValue, popNum)
+	CHECK_EQUAL_STR(refString, popStr)
+End
+
+// UTF_TD_GENERATOR InvalidPopupMenuColorTableIndizes
+static Function PGCT_PopupMenuColorAbortsWithOutOfRangeVar([variable var])
+	variable refValue, popNum, i
+	string refString, popStr
+
+	SVAR/SDFR=root: panel
+
+	ControlInfo/W=$panel popup_ctrl_colortable
+	refValue  = V_Value
+	refString = S_Value
+
+	popStr = StringFromList(1, CTabList())
+	popNum = 2
+	CHECK_EQUAL_VAR(refValue, popNum)
+	CHECK_EQUAL_STR(refString, popStr)
+
+	try
+		PGC_SetAndActivateControl(panel, "popup_ctrl_colortable", val = var)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	ControlInfo/W=$panel popup_ctrl_colortable
+	refValue  = V_Value
+	refString = S_Value
+	CHECK_EQUAL_VAR(refValue, popNum)
+	CHECK_EQUAL_STR(refString, popStr)
+
+	NVAR/Z popNumNVAR = popNum
+	SVAR/Z popStrSVAR = popStr
+
+	CHECK(!NVAR_Exists(popNumNVAR))
+	CHECK(!SVAR_Exists(popStrSVAR))
+End
+
+static Function PGCT_PopupMenuAbortsWithOutRangeStr()
+
+	variable refValue, popNum
+	string refString, popStr
+
+	SVAR/SDFR=root: panel
+
+	try
+		PGC_SetAndActivateControl(panel, "popup_ctrl", str = "Entry4")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// no changes
+	DoUpdate
+	ControlInfo/W=$panel popup_ctrl
+	refValue  = V_Value
+	refString = S_Value
+
+	popStr = StringFromList(0, PGCT_POPUPMENU_ENTRIES)
+	popNum = 1
+	CHECK_EQUAL_VAR(refValue, popNum)
+	CHECK_EQUAL_STR(refString, popStr)
+End
+
 
 static Function PGCT_PopupMenuStrWorksWithWC()
 
