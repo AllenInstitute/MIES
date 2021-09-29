@@ -3818,7 +3818,7 @@ Function HasNaNAsDefaultWhenAborted_REENTRY([str])
 	CHECK_WAVE(sweepWave, NUMERIC_WAVE)
 
 	FindValue/FNAN/RMD=[][0] sweepWave
-	CHECK(V_row > 0)
+	CHECK(V_row >= 0)
 
 	// check that we have NaNs for all columns starting from the first unacquired point
 	Duplicate/FREE/RMD=[V_row,][] sweepWave, unacquiredData
