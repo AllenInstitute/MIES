@@ -392,8 +392,12 @@ static Function CheckEpochs(string dev)
 						FindValue/TXOP=4/TEXT="" epNames
 						CHECK_EQUAL_VAR(V_Value, -1)
 						// No duplicate short names should exist
-						FindDuplicates/FREE/DT=dupsWave epNames
-						CHECK_EQUAL_VAR(DimSize(dupsWave, ROWS), 0)
+						FindDuplicates/FREE/DT=dupsWave/Z epNames
+						if(WaveExists(dupsWave))
+							CHECK_EQUAL_VAR(DimSize(dupsWave, ROWS), 0)
+						else
+							CHECK_EQUAL_VAR(DimSize(epNames, ROWS), 1)
+						endif
 					endif
 				endif
 
