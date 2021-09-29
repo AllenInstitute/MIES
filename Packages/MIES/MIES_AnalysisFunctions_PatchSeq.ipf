@@ -1506,13 +1506,13 @@ Function PSQ_DAScale(panelTitle, s)
 				return 1
 			endif
 
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
-
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
 			// fallthrough-by-design
 		case PRE_SET_EVENT:
 			SetAnalysisFunctionVersion(panelTitle, PSQ_DA_SCALE, s.headstage, s.sweepNo)
+
+			PSQ_SetSamplingIntervalMultiplier(panelTitle, multiplier)
 
 			DAScalesIndex[s.headstage] = 0
 
@@ -1934,13 +1934,13 @@ Function PSQ_SquarePulse(panelTitle, s)
 				return 1
 			endif
 
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
-
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
 			// fallthrough-by-design
 		case PRE_SET_EVENT:
 			SetAnalysisFunctionVersion(panelTitle, PSQ_SQUARE_PULSE, s.headstage, s.sweepNo)
+
+			PSQ_SetSamplingIntervalMultiplier(panelTitle, multiplier)
 
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
@@ -2192,13 +2192,13 @@ Function PSQ_Rheobase(panelTitle, s)
 				return 1
 			endif
 
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
-
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
 			// fallthrough-by-design
 		case PRE_SET_EVENT:
 			SetAnalysisFunctionVersion(panelTitle, PSQ_RHEOBASE, s.headstage, s.sweepNo)
+
+			PSQ_SetSamplingIntervalMultiplier(panelTitle, multiplier)
 
 			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 4)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
@@ -2608,8 +2608,6 @@ Function PSQ_Ramp(panelTitle, s)
 				return 1
 			endif
 
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
-
 			DAC = AFH_GetDACFromHeadstage(panelTitle, s.headstage)
 			stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
 			if(IDX_NumberOfSweepsInSet(stimset) < PSQ_RA_NUM_SWEEPS_PASS)
@@ -2623,6 +2621,8 @@ Function PSQ_Ramp(panelTitle, s)
 			// fallthrough-by-design
 		case PRE_SET_EVENT:
 			SetAnalysisFunctionVersion(panelTitle, PSQ_RAMP, s.headstage, s.sweepNo)
+
+			PSQ_SetSamplingIntervalMultiplier(panelTitle, multiplier)
 
 			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
@@ -3703,4 +3703,12 @@ static Function PSQ_ForceSetEvent(panelTitle, headstage)
 
 	setEventFlag[DAC][%PRE_SET_EVENT]  = 1
 	setEventFlag[DAC][%POST_SET_EVENT] = 1
+End
+
+static Function PSQ_SetSamplingIntervalMultiplier(string panelTitle, variable multiplier)
+
+	string multiplierAsString = num2str(multiplier)
+
+	PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = multiplierAsString)
+	ASSERT(!cmpstr(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"), multiplierAsString), "Sampling interval multiplier could not be set")
 End
