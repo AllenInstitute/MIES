@@ -400,6 +400,60 @@ Function GSD_Works6()
 	CHECK_EQUAL_WAVES(matches, data1)
 End
 
+Function GSD_WorksText1()
+
+	Make/Free/T data1 = {"1", "2", "3", "4"}
+	Make/Free/T data2 = {"4", "5", "6"}
+
+	WAVE/Z matches = GetSetDifference(data1, data2)
+	CHECK_EQUAL_TEXTWAVES(matches, {"1", "2", "3"})
+End
+
+Function GSD_WorksText2()
+
+	Make/Free/T data1 = {"1", "2", "3", "4"}
+	Make/Free/T data2 = {"5", "6", "7"}
+
+	WAVE/Z matches = GetSetDifference(data1, data2)
+	CHECK_EQUAL_TEXTWAVES(matches, {"1", "2", "3", "4"})
+End
+
+Function GSD_WorksText3()
+
+	Make/Free/T data1 = {"1", "2", "3", "4"}
+	Make/Free/T data2 = {"4", "3", "2"}
+
+	WAVE/Z matches = GetSetDifference(data1, data2)
+	CHECK_EQUAL_TEXTWAVES(matches, {"1"})
+End
+
+Function GSD_WorksText4()
+
+	Make/Free/T data1
+	Make/Free/T data2
+
+	WAVE/Z matches = GetSetDifference(data1, data2)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
+
+Function GSD_WorksText5()
+
+	Make/Free/T data1
+	Make/Free/T/N=0 data2
+
+	WAVE matches = GetSetDifference(data1, data2)
+	CHECK_EQUAL_TEXTWAVES(matches, data1)
+End
+
+Function GSD_WorksText6()
+
+	Make/Free/T data1 = num2str(p)
+	Make/Free/T data2 = num2str(-1)
+
+	WAVE matches = GetSetDifference(data1, data2)
+	CHECK_EQUAL_TEXTWAVES(matches, data1)
+End
+
 Function GSD_ReturnsInvalidWaveRefWOMatches()
 
 	Make/Free/D/N=0 data1
