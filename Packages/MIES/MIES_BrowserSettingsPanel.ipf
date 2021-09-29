@@ -208,6 +208,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	PGC_SetAndActivateControl(bsPanel, "SF_InfoTab", val = 0)
 	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
 
+	BSP_SetSFControlStatus(bsPanel)
 	BSP_UpdateHelpNotebook(mainPanel)
 
 	SetWindow $bsPanel, hook(sweepFormula)=BSP_SweepFormulaHook
@@ -535,7 +536,7 @@ Function BSP_SetSFControlStatus(win)
 
 	string controlList
 
-	controlList = "group_properties_sweepFormula;SF_InfoTab;button_sweepFormula_display;button_sweepFormula_check;setvar_sweepFormula_parseResult;status_sweepFormula_parser;"
+	controlList = "group_properties_sweepFormula;SF_InfoTab;button_sweepFormula_display;button_sweepFormula_check;setvar_sweepFormula_parseResult;status_sweepFormula_parser;button_sweepFormula_tofront;"
 	BSP_SetControlStatus(win, controlList, SF_IsActive(win))
 End
 
