@@ -639,7 +639,7 @@ Constant LABNOTEBOOK_VERSION = 49
 Constant STIMSET_NOTE_VERSION = 7
 
 /// Version of the epoch information for DA data
-Constant SWEEP_EPOCH_VERSION = 2
+Constant SWEEP_EPOCH_VERSION = 3
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
@@ -1010,7 +1010,7 @@ StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
 /// @{
 Constant PSQ_CHIRP_VERSION         = 1
 Constant PSQ_DA_SCALE_VERSION      = 1
-Constant PSQ_RAMP_VERSION          = 1
+Constant PSQ_RAMP_VERSION          = 2
 Constant PSQ_RHEOBASE_VERSION      = 1
 Constant PSQ_SQUARE_PULSE_VERSION  = 0
 Constant MSQ_FAST_RHEO_EST_VERSION = 0
@@ -1249,16 +1249,6 @@ Constant TTL_RESCALE_OFF = 0x0
 Constant TTL_RESCALE_ON  = 0x1
 /// @}
 
-/// @brief Helper struct for storing the number of active channels per rack
-Structure ActiveChannels
-	int32 numDARack1
-	int32 numADRack1
-	int32 numTTLRack1
-	int32 numDARack2
-	int32 numADRack2
-	int32 numTTLRack2
-EndStructure
-
 /// @name Epoch key constants
 /// @anchor EpochKeys
 /// @{
@@ -1415,7 +1405,7 @@ StrConstant WORKLOADCLASS_TP = "TestPulse"
 
 Constant EPOCH_COL_STARTTIME = 0
 Constant EPOCH_COL_ENDTIME = 1
-Constant EPOCH_COL_NAME = 2
+Constant EPOCH_COL_TAGS = 2
 Constant EPOCH_COL_TREELEVEL = 3
 
 /// @}
@@ -1575,8 +1565,16 @@ Constant EPOCHTIME_PRECISION = 7
 StrConstant EPOCH_LIST_ROW_SEP = ":"
 StrConstant EPOCH_LIST_COL_SEP = ","
 
+/// These characters are not allowed to be in epoch tags
+/// as they are used for serialization.
+StrConstant EPOCH_TAG_INVALID_CHARS_REGEXP = "[:,]"
+
 /// @name Possible cell state values
 /// @anchor CellStateValues
 /// @{
 Constant TPSTORAGE_SEALED = 0x1
 /// @}
+
+Constant EPOCH_USER_LEVEL = -1
+
+StrConstant EPOCH_SHORTNAME_USER_PREFIX = "U_"

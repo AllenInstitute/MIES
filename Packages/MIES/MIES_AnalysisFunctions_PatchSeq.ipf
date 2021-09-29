@@ -2759,6 +2759,8 @@ Function PSQ_Ramp(panelTitle, s)
 				Multithread wv[fifoOffset, inf][0, ADChannelToMonitor - 1] = 0
 				SetWaveLock 1, wv
 
+				PSQ_Ramp_AddEpoch(panelTitle, s.headstage, wv, "Name=DA Suppression", "RA_DS", fifoOffset, DimSize(wv, ROWS) - 1)
+
 				HW_StartAcq(HARDWARE_ITC_DAC, deviceID)
 				TFH_StartFIFOStopDaemon(HARDWARE_ITC_DAC, deviceID)
 
@@ -2785,6 +2787,8 @@ Function PSQ_Ramp(panelTitle, s)
 				Multithread wv[fifoOffset, fifoOffset + fifoPos][ADChannelToMonitor, inf] = 0
 				SetWaveLock 1, wv
 
+				PSQ_Ramp_AddEpoch(panelTitle, s.headstage, wv, "Name=Unacquired DA data", "RA_UD", fifoOffset, fifoOffset + fifoPos)
+
 			elseif(hardwareType == HARDWARE_NI_DAC)
 				// DA output runs on the AD tasks clock source ai
 				// we stop DA and set the analog out to 0, the AD task keeps on running
@@ -2804,8 +2808,9 @@ Function PSQ_Ramp(panelTitle, s)
 					SetWaveLock 0, NIChannel
 					MultiThread NIChannel[V_FIFOChunks,] = 0
 					SetWaveLock 1, NIChannel
-				endif
 
+					PSQ_Ramp_AddEpoch(panelTitle, s.headstage, NIChannel, "Name=DA suppression", "RA_DS", V_FIFOChunks, DimSize(NIChannel, ROWS) - 1)
+				endif
 			else
 				ASSERT(0, "Unknown hardware type")
 			endif
@@ -2840,6 +2845,18 @@ Function PSQ_Ramp(panelTitle, s)
 			return PSQ_EvaluateBaselinePassed(paneltitle, PSQ_RAMP, s.sweepNo, s.headstage, chunk, ret)
 		endif
 	endif
+End
+
+static Function PSQ_Ramp_AddEpoch(string panelTitle, variable headstage, WAVE wv, string tags, string shortName, variable first, variable last)
+	variable DAC, epBegin, epEnd
+
+	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+
+	ASSERT(!cmpstr(WaveUnits(wv, ROWS), "ms"), "Unexpected x unit")
+	epBegin = IndexToScale(wv, first, ROWS) / 1e3
+	epEnd   = IndexToScale(wv, last, ROWS) / 1e3
+
+	EP_AddUserEpoch(panelTitle, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
 End
 
 /// @brief Determine if we have three passing sweeps with the same DAScale value

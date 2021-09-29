@@ -65,16 +65,6 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 		SaveExperimentSpecial(SAVE_AND_SPLIT)
 	endif
 
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		if(AFM_CallAnalysisFunctions(panelTitle, PRE_SET_EVENT))
-			Abort
-		endif
-
-		if(AS_HandlePossibleTransition(panelTitle, AS_PRE_SWEEP_CONFIG))
-			Abort
-		endif
-	endif
-
 	// prevent crash in ITC XOP as it must not run if we resize the DAQDataWave
 	NVAR deviceID = $GetDAQDeviceID(panelTitle)
 	variable hardwareType = GetHardwareType(panelTitle)
@@ -84,6 +74,18 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 	KillOrMoveToTrash(wv=GetSweepSettingsTextWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsTextKeyWave(panelTitle))
+
+	EP_ClearEpochs(panelTitle)
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		if(AFM_CallAnalysisFunctions(panelTitle, PRE_SET_EVENT))
+			Abort
+		endif
+
+		if(AS_HandlePossibleTransition(panelTitle, AS_PRE_SWEEP_CONFIG))
+			Abort
+		endif
+	endif
 
 	DC_UpdateGlobals(panelTitle)
 

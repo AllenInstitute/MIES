@@ -812,3 +812,23 @@ Function ModifyStimSet(string panelTitle, STRUCT AnalysisFunction_V3& s)
 
 	return 0
 End
+
+Function StopMidSweep_V3(string panelTitle, STRUCT AnalysisFunction_V3& s)
+
+	switch(s.eventType)
+		case MID_SWEEP_EVENT:
+			return ANALYSIS_FUNC_RET_EARLY_STOP
+	endswitch
+
+	return 0
+End
+
+Function AddUserEpoch_V3(string panelTitle, STRUCT AnalysisFunction_V3& s)
+	variable DAC
+	string tags
+
+	DAC = AFH_GetDACFromHeadstage(panelTitle, s.headstage)
+
+	sprintf tags, "HS=%d;eventType=%d;", s.headstage, s.eventType
+	EP_AddUserEpoch(panelTitle, XOP_CHANNEL_TYPE_DAC, DAC, 0.5, 0.6, tags)
+End

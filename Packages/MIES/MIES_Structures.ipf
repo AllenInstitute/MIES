@@ -540,3 +540,13 @@ Structure DataConfigurationResult
 	/// Uses active channel indexing like DataConfigurationResult::ADCList
 	WAVE/D headstageADC
 EndStructure
+
+/// @brief Helper struct for storing the number of active channels per rack
+Structure ActiveChannels
+	int32 numDARack1
+	int32 numADRack1
+	int32 numTTLRack1
+	int32 numDARack2
+	int32 numADRack2
+	int32 numTTLRack2
+EndStructure

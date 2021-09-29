@@ -116,51 +116,57 @@ Naming
 
 The following table describes the 1:1 relationship between epoch names and MIES feature names:
 
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-| Level | Level | Level | Level | Name                                  | Short Name  | Origin                                                                       |
-+=======+=======+=======+=======+=======================================+=============+==============================================================================+
-|   0   |       |       |       | Baseline                              | B0_OD       | Onset Delay                                                                  |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|   0   |       |       |       | Baseline                              | B0_DD       | Onset delay of channel due to distributed DAQ [dDAQ]                         |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|   0   |       |       |       | Baseline                              | B0_DO       | Onset delay of channel due to distributed DAQ optimized overlay [dDAQ OptOv] |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|   0   |       |       |       | Inserted TP;Test Pulse;               | TP          | Inserted TP                                                                  |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|       |   1   |       |       | Baseline                              | TP_B0       | preceding baseline of inserted TP                                            |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|       |   1   |       |       | +pulse;Amplitude=x;                   | TP_P        | pulse time of inserted TP                                                    |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|       |   1   |       |       | Baseline                              | TP_B1       |subsequent baseline of inserted TP                                            |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|   0   |       |       |       | Stimset                               | ST          | Stimset                                                                      |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|       |   1   |       |       | Epoch=x;Type=x;Amplitude=x;Details=x; | Ex          | Stimset-Epoch                                                                |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|       |       |   2   |       | Baseline                              | Ex_PT_Px_BT | Stimset-Epoch baseline before first pulse (example pulse train)              |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|       |       |   2   |       | +Pulse=x;                             | Ex_PT_Px    | Stimset-Epoch component (example pulse train)                                |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|       |       |       |   3   | +Active                               | Ex_PT_Px_P  | High region of pulse  (example pulse train)                                  |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|       |       |       |   3   | +Baseline                             | Ex_PT_Px_B  | Zero region of pulse  (example pulse train)                                  |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|       |       |   2   |       | oodDAQRegion=x                        | ODx         | oodDAQ region                                                                |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|       |   1   |       |       | Baseline                              | ST_B        | trailing baseline due to different length stimsets                           |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|   0   |       |       |       | Baseline                              | B0_TR       | trailing baseline from Distributed DAQ [OptOv]                               |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
-|   0   |       |       |       | Baseline                              | B0_TD       | Termination Delay                                                            |
-+-------+-------+-------+-------+---------------------------------------+-------------+------------------------------------------------------------------------------+
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+| Level | Level | Level | Level | Tags                                                | Short Name  | Origin                                                                       |
++=======+=======+=======+=======+=====================================================+=============+==============================================================================+
+|   0   |       |       |       | Type=Baseline                                       | B0_OD       | Onset Delay                                                                  |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|   0   |       |       |       | Type=Baseline                                       | B0_DD       | Onset delay of channel due to distributed DAQ [dDAQ]                         |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|   0   |       |       |       | Type=Baseline                                       | B0_DO       | Onset delay of channel due to distributed DAQ optimized overlay [dDAQ OptOv] |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|   0   |       |       |       | Type=Inserted Testpulse                             | TP          | Inserted TP                                                                  |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|       |   1   |       |       | Type=Inserted Testpulse;SubType=Baseline            | TP_B0       | preceding baseline of inserted TP                                            |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|       |   1   |       |       | Type=Inserted Testpulse;SubType=Pulse;Amplitude=x   | TP_P        | pulse time of inserted TP                                                    |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|       |   1   |       |       | Type=Inserted Testpulse;SubType=Baseline            | TP_B1       |subsequent baseline of inserted TP                                            |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|   0   |       |       |       | Type=Stimset                                        | ST          | Stimset                                                                      |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|       |   1   |       |       | Type=Epoch;Epoch=x;EpochType=x;Amplitude=x;Details=x| Ex          | Stimset-Epoch (Details is optional)                                          |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|       |       |   2   |       | +SubType=Baseline                                   | Ex_PT_Px_BT | Stimset-Epoch baseline before first pulse (example pulse train)              |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|       |       |   2   |       | +Pulse=x                                            | Ex_PT_Px    | Stimset-Epoch component (example pulse train)                                |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|       |       |       |   3   | +SubType=Pulse;Pulse=x                              | Ex_PT_Px_P  | High region of pulse  (example pulse train)                                  |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|       |       |       |   3   | +SubType=Baseline;Pulse=x                           | Ex_PT_Px_B  | Zero region of pulse  (example pulse train)                                  |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|       |       |   2   |       | Type=oodDAQ;oodDAQRegion=x                          | ODx         | oodDAQ region                                                                |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|       |   1   |       |       | Type=Baseline                                       | ST_B        | trailing baseline due to different length stimsets                           |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|   0   |       |       |       | Type=Baseline                                       | B0_TR       | trailing baseline from Distributed DAQ [OptOv]                               |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|   0   |       |       |       | Type=Baseline                                       | B0_TD       | Termination Delay                                                            |
++-------+-------+-------+-------+-----------------------------------------------------+-------------+------------------------------------------------------------------------------+
+|   0   |       |       |       | Type=Unacquired                                     | UA          | Planned to be acquired but skipped due to early sweep stop                   |
++-------+-------+-------+-------+-----------------------------------------------------+--------------------------------------------------------------------------------------------+
 
-If the name entry begins with '+' then it is appended to the higher-level name. The 'x' is a place holder where
+If the name entry begins with ``+`` then it is appended to the higher-level name. The ``x`` is a place holder where
 additional information is included in the names, such as Stimset-Epoch numbering, or amplitudes. Currently only pulse
 trains (see below) are supported with level two and three detail for Stimset-Epochs. Depending on the setup of the data
 acquisition, not every entry listed in the table has to appear in the epochs table.
 
-The 'Details' key for the Stimset-Epoch can contain a combination of 'Mixed frequency' or 'Poisson distribution' with
-'shuffled' as originally configured for the Stimset in the waveBuilder.
+The ``Details`` key for the Stimset-Epoch can contain a combination of ``Mixed frequency`` or ``Poisson distribution`` with
+``shuffled`` as originally configured for the Stimset in the waveBuilder.
+
+When the sweep is terminated earlier as planned, the epoch ``Unacquired`` is added in the planned but not acquired
+timespan at the end of the sweep. All other epochs are then also either shortend or dropped so that they don't extend
+into the unacquired epoch.
 
 Short Names
 ~~~~~~~~~~~
@@ -180,3 +186,31 @@ trains each pulse gets an level two epoch entry. The time interval of a pulse be
 level and includes the trailing baseline (that precedes the next pulse) unless it is the last pulse in the pulse train.
 An epoch named 'Baseline' is inserted if the first pulse in the pulse train has a leading baseline. This is applies for
 flipped Stimsets containing Stimset-Epochs with type pulse train.
+
+.. _user_epochs_doc:
+
+User epochs
+-----------
+
+Adding custom epoch information is supported via :cpp:func:`EP_AddUserEpoch`. This is especially useful for analysis
+function writers, who can add their own epochs of interest, see :ref:`File MIES_AnalysisFunctions.ipf` for the
+supported events.
+
+The ``tags`` property of user epochs can be freely set. When a ``shortName`` is supplied, this is always prefixed with
+``U_`` so that short names for user epochs don't collide with builtin epochs. Likewise the tree level for user epochs is
+fixed to ``-1``.
+
+User epochs will also be limited to the acquired sweep data like builtin epochs. This can result in shorter as expected epochs or even
+removed user epochs.
+
+ .. code-block:: igorpro
+   :caption: Example
+
+    string device = "ITC18USB_DEV_0"
+    variable startTime = 1.5
+    variable endTime   = 2.5
+    variable DAC = 1
+    string tags = "Name=Found Spikes;"
+    string shortName = "FS"
+
+    EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, startTime, endTime, tags, shortName = shortName)

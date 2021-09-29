@@ -4839,19 +4839,15 @@ Function [string data, string fName] LoadTextFile(string fileName[, string fileF
 	return [data, S_Path + S_fileName]
 End
 
-/// @brief Removes first found entry from a 1D text wave
+/// @brief Removes first found entry from a text wave
 ///
-/// @param w 1D text wave
+/// @param w   text wave
 /// @param[in] entry element content to compare
 ///
 /// @return 0 if entry was found, 1 otherwise
 Function RemoveTextWaveEntry1D(w, entry)
 	WAVE/T w
 	string entry
-
-	if(IsNull(entry))
-		return NaN
-	endif
 
 	ASSERT(IsTextWave(w), "Input wave must be a text wave")
 

@@ -2396,17 +2396,21 @@ Function ChangeToMultiDeviceDAQ_REENTRY([str])
 	CHECK_EQUAL_VAR(multiDeviceMode, 1)
 End
 
+Function ChangeStimSetDuringDAQ_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
+
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 600), period=60, proc=StopTP_IGNORE
+	CtrlNamedBackGround ChangeStimsetDuringDAQ, start, period=30, proc=ChangeStimSet_IGNORE
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 Function ChangeStimSetDuringDAQ([str])
 	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
-	AcquireData(s, str)
-
-	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 600), period=60, proc=StopTP_IGNORE
-	CtrlNamedBackGround ChangeStimsetDuringDAQ, start=180, period=30, proc=ChangeStimSet_IGNORE
-	PGC_SetAndActivateControl(str, "check_Settings_TPAfterDAQ", val = 1)
+	AcquireData(s, str, preAcquireFunc = ChangeStimSetDuringDAQ_IGNORE)
 End
 
 Function ChangeStimSetDuringDAQ_REENTRY([str])
@@ -3786,6 +3790,7 @@ Function HasNaNAsDefaultWhenAborted_IGNORE(device)
 	// enable TTL1
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val=1)
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), str="StimulusSetA*")
+	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcq_IGNORE
 End
 
 // check default values for data when aborting DAQ
@@ -3797,7 +3802,6 @@ Function HasNaNAsDefaultWhenAborted([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	AcquireData(s, str, preAcquireFunc=HasNaNAsDefaultWhenAborted_IGNORE)
-	CtrlNamedBackGround Abort_ITI_PressAcq, start=(ticks + 3), period=30, proc=StopAcq_IGNORE
 End
 
 Function HasNaNAsDefaultWhenAborted_REENTRY([str])
@@ -3814,7 +3818,7 @@ Function HasNaNAsDefaultWhenAborted_REENTRY([str])
 	CHECK_WAVE(sweepWave, NUMERIC_WAVE)
 
 	FindValue/FNAN/RMD=[][0] sweepWave
-	CHECK(V_row > 0)
+	CHECK(V_row >= 0)
 
 	// check that we have NaNs for all columns starting from the first unacquired point
 	Duplicate/FREE/RMD=[V_row,][] sweepWave, unacquiredData

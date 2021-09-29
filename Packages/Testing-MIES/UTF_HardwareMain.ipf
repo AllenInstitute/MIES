@@ -387,13 +387,17 @@ static Function CheckEpochs(string dev)
 					str = settingsT[index]
 					if(!IsEmpty(str))
 						WAVE/T epochInfo = EP_EpochStrToWave(str)
-						Make/FREE/N=(DimSize(epochInfo, ROWS))/T epNames = EP_GetShortName(epochInfo[p][EPOCH_COL_NAME])
+						Make/FREE/N=(DimSize(epochInfo, ROWS))/T epNames = EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS])
 						// All Epochs should have short names
 						FindValue/TXOP=4/TEXT="" epNames
 						CHECK_EQUAL_VAR(V_Value, -1)
 						// No duplicate short names should exist
-						FindDuplicates/FREE/DT=dupsWave epNames
-						CHECK_EQUAL_VAR(DimSize(dupsWave, ROWS), 0)
+						FindDuplicates/FREE/DT=dupsWave/Z epNames
+						if(WaveExists(dupsWave))
+							CHECK_EQUAL_VAR(DimSize(dupsWave, ROWS), 0)
+						else
+							CHECK_EQUAL_VAR(DimSize(epNames, ROWS), 1)
+						endif
 					endif
 				endif
 
@@ -682,11 +686,18 @@ Function ChangeStimSet_IGNORE(s)
 	SVAR devices = $GetDevicePanelTitleList()
 	string device = StringFromList(0, devices)
 
-	ctrl   = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 
-	PGC_SetAndActivateControl(device, ctrl, val = GetPopupMenuIndex(device, ctrl) + 1)
+	NVAR tpRunMode = $GetTestpulseRunMode(device)
 
-	return 1
+	if(dataAcqRunMode != DAQ_NOT_RUNNING && !(tpRunMode & TEST_PULSE_DURING_RA_MOD))
+		ctrl = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		PGC_SetAndActivateControl(device, ctrl, val = GetPopupMenuIndex(device, ctrl) + 1)
+
+		return 1
+	endif
+
+	return 0
 End
 
 Function ClampModeDuringSweep_IGNORE(s)

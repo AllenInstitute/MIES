@@ -316,7 +316,7 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 		endif
 
 		// check amplitudes
-		if(strsearch(name, "Amplitude", 0) > 0)
+		if(strsearch(name, "SubType=Pulse", 0) > 0)
 
 			amplitude = NumberByKey("Amplitude", name, "=")
 			CHECK(IsFinite(amplitude))
@@ -335,10 +335,6 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 		if(strsearch(name, "Baseline", 0) > 0)
 			WaveStats/R=(first, last)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_min, 0)
-
-			// take something around the egdes due to decimation
-			// offsets are in ms
-			WaveStats/R=(first, last)/Q/M=1 DAChannel
 			CHECK_EQUAL_VAR(V_max, 0)
 		endif
 	endfor
@@ -348,8 +344,8 @@ static Function TestEpochsGeneric(device)
 	string device
 
 	variable numEntries, endTimeDAC, endTimeEpochs, samplingInterval
-	variable i
-	string epochStr
+	variable i, lastPoint
+	string list, epochStr
 
 	string sweeps, configs
 	variable sweepNo
@@ -403,7 +399,15 @@ static Function TestEpochsGeneric(device)
 	// further checks of data from LabNotebook Entries
 	WAVE/Z samplInt = GetLastSetting(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
 	samplingInterval = samplInt[INDEP_HEADSTAGE] * 1000
-	endTimeDAC = samplingInterval * DimSize(sweep, ROWS) / 1E6
+
+	FindValue/FNAN sweep
+	if(V_row >= 0)
+		lastPoint = V_row - 1
+	else
+		lastPoint = DimSize(sweep, ROWS)
+	endif
+
+	endTimeDAC = samplingInterval * lastPoint  / 1E6
 
 	WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	WAVE/T setNameLBEntries = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
@@ -415,7 +419,7 @@ static Function TestEpochsGeneric(device)
 			continue
 		endif
 
-		WAVE/T epochChannel = ListToTextWaveMD(epochStr, 2, rowSep = EPOCH_LIST_ROW_SEP, colSep = EPOCH_LIST_COL_SEP)
+		WAVE/T epochChannel = EP_EpochStrToWave(epochStr)
 		Make/FREE/D/N=(DimSize(epochChannel, ROWS)) endT
 
 		// does the latest end time exceed the 'acquiring part of the' DA wave?
@@ -427,8 +431,42 @@ static Function TestEpochsGeneric(device)
 		Redimension/N=(-1, 0) DAchannel
 
 		TestEpochsMonotony(epochChannel, DAchannel, i)
-	endfor
 
+		TestUnacquiredEpoch(sweep, epochChannel)
+
+		TestNaming(epochChannel)
+	endfor
+End
+
+static Function TestUnacquiredEpoch(WAVE sweep, WAVE epochChannel)
+
+	FindValue/FNAN sweep
+
+	if(V_row == -1)
+		return NaN
+	endif
+
+	FindValue/TEXT="Type=Unacquired" epochChannel
+	CHECK(V_row >= 0)
+	CHECK_EQUAL_VAR(V_col, 2)
+End
+
+static Function TestNaming(WAVE/T epochChannel)
+
+	variable numRows, numEntries, i, j
+	string tags, entry
+
+	numRows = DimSize(epochChannel, ROWS)
+	for(i = 0; i < numRows; i += 1)
+		tags = epochChannel[i][EPOCH_COL_TAGS]
+
+		numEntries = ItemsInList(tags, ";")
+		CHECK(numEntries > 0)
+		for(j = 0; j < numEntries; j += 1)
+			entry = StringFromList(j, tags)
+			CHECK(strsearch(entry, "=", 0) > 0)
+		endfor
+	endfor
 End
 
 /// <------------- TESTS FOLLOW HERE ---------------------->
@@ -597,4 +635,67 @@ Function EP_EpochTest11_REENTRY([str])
 	string str
 
 	TestEpochsGeneric(str)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function EP_EpochTest12([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, "StimulusSetA_DA_0", "StimulusSetA_DA_0", analysisFunction = "StopMidSweep_V3")
+End
+
+Function EP_EpochTest12_REENTRY([str])
+	string str
+
+	TestEpochsGeneric(str)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function EP_TestUserEpochs([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, "StimulusSetA_DA_0", "StimulusSetA_DA_0", analysisFunction = "AddUserEpoch_V3")
+End
+
+Function EP_TestUserEpochs_REENTRY([str])
+	string str
+
+	variable i, j
+	string tags, shortName
+
+	WAVE/T textualValues = GetLBTextualValues(str)
+	WAVE/T/Z epochLBN = GetLastSetting(textualValues, 0, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(epochLBN, TEXT_WAVE)
+
+	for(i = 0; i < 2; i += 1)
+		WAVE/T/Z epochWave = EP_EpochStrToWave(epochLBN[i])
+		CHECK_WAVE(epochWave, TEXT_WAVE)
+
+		// now check that we can find epochs from the expected events
+		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
+			sprintf tags, "HS=%d;eventType=%d;", i, j
+			// not using /TXOP=4 here as we have an unknown short name as well
+			FindValue/TEXT=tags/RMD=[][EPOCH_COL_TAGS] epochWave
+
+			switch(j)
+				case PRE_SET_EVENT:
+				case PRE_SWEEP_CONFIG_EVENT:
+				case MID_SWEEP_EVENT:
+					// user epoch was added
+					CHECK(V_row >= 0)
+					tags = epochWave[V_row][EPOCH_COL_TAGS]
+					shortName = EP_GetShortName(tags)
+					CHECK(GrepString(shortName, "^U_"))
+					break
+				default:
+					// no user epochs for all other events
+					CHECK(V_row < 0)
+					break
+			endswitch
+		endfor
+	endfor
 End
