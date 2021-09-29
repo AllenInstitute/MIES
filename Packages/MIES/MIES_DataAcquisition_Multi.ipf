@@ -34,8 +34,8 @@ Function DQM_FIFOMonitor(s)
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
 
+				AssertOnAndClearRTError()
 				try
-					ClearRTError()
 					NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
 					fifoName = GetNIFIFOName(deviceID)
 					FIFOStatus/Q $fifoName
@@ -170,6 +170,8 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 		initialSetupReq = !!initialSetupReq
 	endif
 
+	// catches Abort and AbortOnRTE
+	AssertOnAndClearRTError()
 	try
 		if(initialSetupReq)
 			DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
@@ -178,6 +180,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 		DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
 		NVAR maxITI = $GetMaxIntertrialInterval(panelTitle)
 	catch
+		ClearRTError()
 		if(initialSetupReq)
 			DAP_OneTimeCallAfterDAQ(panelTitle, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
 		else // required for RA for the lead device only
@@ -202,6 +205,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 	numFollower = ItemsInList(listOfFollowerDevices)
 
+	AssertOnAndClearRTError()
 	try
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
@@ -216,6 +220,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 			acrossYokingMaxITI = max(maxITI, acrossYokingMaxITI)
 		endfor
 	catch
+		ClearRTError()
 		if(initialSetupReq)
 			for(i = 0; i < numFollower; i += 1)
 				followerPanelTitle = StringFromList(i, listOfFollowerDevices)

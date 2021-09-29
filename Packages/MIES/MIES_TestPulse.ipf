@@ -507,8 +507,8 @@ threadsafe static Function CurveFitWrapper(TPStorage, startRow, endRow, headstag
 	Make/FREE/D/N=2 coefWave
 	V_FitOptions = 4
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		V_FitError  = 0
 		V_AbortCode = 0
 		CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow,endRow][headstage][%SteadyStateResistance]/X=TPStorage[startRow,endRow][headstage][%TimeInSeconds]/AD=0/AR=0; AbortOnRTE
@@ -552,7 +552,7 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 		statusHS[i] = 1
 	endfor
 
-	Multithread TPStorage[0][][%Rss_Slope] = statusHS[q] ? CurveFitWrapper(TPStorage, startRow, endRow, q) : NaN; AbortOnRTE
+	Multithread TPStorage[0][][%Rss_Slope] = statusHS[q] ? CurveFitWrapper(TPStorage, startRow, endRow, q) : NaN
 End
 
 /// @brief Stop running background testpulse on all locked devices

@@ -1188,6 +1188,7 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 				return 0
 			endif
 
+			AssertOnAndClearRTError()
 			try
 				jsonIDy = SF_FormulaParser(SF_FormulaPreParser(yFormula))
 				if(numFormulae == 1)
@@ -1204,6 +1205,7 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 				JSON_AddJSON(jsonID, "/x", jsonIDx)
 				JSON_Release(jsonIDx)
 			catch
+				ClearRTError()
 				SetValDisplay(bsPanel, "status_sweepFormula_parser", var=0)
 				JSON_Release(jsonID, ignoreErr = 1)
 				SVAR result = $GetSweepFormulaParseErrorMessage()
@@ -1253,9 +1255,9 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "", setHelp = 1)
 			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
 
+			AssertOnAndClearRTError()
 			try
-				ClearRTError()
-				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortONRTE
+				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortOnRTE
 			catch
 				ClearRTError()
 				SVAR result = $GetSweepFormulaParseErrorMessage()

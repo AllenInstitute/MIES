@@ -1606,8 +1606,8 @@ threadsafe Function/S RemovePrefix(string str, [string start, variable regExp])
 	endif
 
 	if(regExp)
-		ClearRTError()
-		SplitString/E="^(" + start + ")" str, regExpResult; err = GetRTError(1)
+		AssertOnAndClearRTError()
+		SplitString/E="^(" + start + ")" str, regExpResult; err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 		if(V_flag == 1 && err == 0)
 			skipLength = strlen(regExpResult)
@@ -3827,12 +3827,12 @@ Function KillWindows(list)
 End
 
 /// @brief str2num variant with no runtime error on invalid conversions
-threadsafe Function str2numSafe(str)
-	string str
+threadsafe Function str2numSafe(string str)
 
-	variable err, var
+	variable var, err
 
-	var = str2num(str); err = GetRTError(1)
+	AssertOnAndClearRTError()
+	var = str2num(str); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 	return var
 End
@@ -4311,24 +4311,42 @@ Function/S GetHistoryNotebookText()
 	return GetNotebookText("HistoryCarbonCopy")
 End
 
-/// @brief Helper function for try/catch with AbortOnRTE
+/// @brief Helper function to ensure that there is no pending RTE before entering a critical section.
+///        If there is a pending RTE then an ASSERTion is thrown.
 ///
-/// Not clearing the RTE before calling `AbortOnRTE` will always trigger the
-/// RTE no matter what you do in that line. Any call to GetRTErrMessage() must
-/// be done prior to clearing the runtime error in the catch block.
+///        Not catching and pending RTE would clear this condition silently and valid errors would be
+///        suppressed. This is dangerous in regards of data consistency.
+///
+///        Not clearing the RTE before calling `AbortOnRTE` will always trigger the
+///        RTE no matter what you do in that line. Any call to GetRTErrMessage() must
+///        be done prior to clearing the runtime error in the catch block.
 ///
 /// Usage:
 /// \rst
 /// .. code-block:: igorpro
 ///
+/// 	AssertOnAndClearRTError()
 ///    try
-///       ClearRTError()
-///       myFunc(); AbortOnRTE
+///      CriticalFunc(); AbortOnRTE
 ///    catch
+///      msg = GetRTErrMessage()
 ///      err = ClearRTError()
 ///    endtry
 ///
 /// \endrst
+threadsafe Function AssertOnAndClearRTError()
+
+	string msg
+	variable err
+
+	msg = GetRTErrMessage()
+	err = ClearRTError()
+	ASSERT_TS(!err, "Encountered pending RTE: " + num2istr(err) + ", " + msg)
+End
+
+/// @brief Helper function to unconditionally clear a RTE condition
+///	        It is generally strongly recommended to use @sa AssertOnAndClearRTError
+///        before critical code sections. For detailed description of the implications @sa AssertOnAndClearRTError
 threadsafe Function ClearRTError()
 
 	return GetRTError(1)

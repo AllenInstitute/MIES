@@ -8,6 +8,7 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	string device
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
+	KillWaves/Z root:overrideResults
 	Make/O/N=(0) root:overrideResults/Wave=overrideResults
 	Note/K overrideResults
 

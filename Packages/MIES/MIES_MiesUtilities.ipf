@@ -4292,7 +4292,8 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 		ASSERT(ignoreAxesWithLevelCrossing, "Optional argument level makes only sense if ignoreAxesWithLevelCrossing is enabled")
 	endif
 
-	GetAxis/W=$graph/Q bottom; err = GetRTError(1)
+	AssertOnAndClearRTError()
+	GetAxis/W=$graph/Q bottom; err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 	if(!V_Flag)
 		xRangeBegin = V_min
 		xRangeEnd   = V_max
@@ -5105,7 +5106,7 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 	WAVE/Z wv
 	DFREF dfr
 
-	variable i, numEntries, numOptArgs, remove_all_traces, debugOnError
+	variable i, numEntries, numOptArgs, remove_all_traces, err
 	string traceList, refTrace
 
 	numOptArgs = ParamIsDefault(trace) + ParamIsDefault(wv) + ParamIsDefault(dfr)
@@ -5125,20 +5126,13 @@ Function RemoveTracesFromGraph(graph, [trace, wv, dfr])
 	if(remove_all_traces)
 #if IgorVersion() >= 9.0
 		RemoveFromGraph/ALL/W=$graph
-		return NaN
 #else
-		debugOnError = DisableDebugOnError()
+		AssertOnAndClearRTError()
 		do
-			try
-				ClearRTError()
-				RemoveFromGraph/W=$graph $("#0"); AbortOnRTE
-			catch
-				ClearRTError()
-				ResetDebugOnError(debugOnError)
-				return NaN
-			endtry
-		while(1)
+			RemoveFromGraph/W=$graph $("#0"); err = GetRTError(1)
+		while(err == 0)
 #endif
+		return NaN
 	endif
 
 	traceList  = TraceNameList(graph, ";", 1 )
@@ -5500,7 +5494,8 @@ Function StartZeroMQSockets([variable forceRestart])
 
 	if(!forceRestart)
 		// do nothing if we are already running
-		zeromq_handler_start(); err = GetRTError(1)
+		AssertOnAndClearRTError()
+		zeromq_handler_start(); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 		if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
 			DEBUGPRINT("Already running, nothing to do.")
 			return NaN
@@ -5517,7 +5512,8 @@ Function StartZeroMQSockets([variable forceRestart])
 
 	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
 		port = ZEROMQ_BIND_REP_PORT + i
-		zeromq_server_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1)
+		AssertOnAndClearRTError()
+		zeromq_server_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 		if(!err)
 			DEBUGPRINT("Successfully listening with server on port:", var=port)
@@ -5528,7 +5524,8 @@ Function StartZeroMQSockets([variable forceRestart])
 
 	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
 		port = ZEROMQ_BIND_PUB_PORT + i
-		zeromq_pub_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1)
+		AssertOnAndClearRTError()
+		zeromq_pub_bind("tcp://127.0.0.1:" + num2str(port)); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 		if(!err)
 			DEBUGPRINT("Successfully listening with publisher on port:", var=port)
@@ -6615,8 +6612,8 @@ Function UploadCrashDumpsDaily()
 
 	variable lastWrite
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		NVAR JSONid = $GetSettingsJSONid()
 
 		lastWrite = ParseISO8601TimeStamp(JSON_GetString(jsonID, "/diagnostics/last upload"))

@@ -2503,7 +2503,8 @@ threadsafe Function/WAVE PA_SpikePositionsForNonVC(WAVE wv, variable failedPulse
 			continue
 		endif
 
-		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(failedPulsesLevel)/R=(first, last) wv; err = GetRTError(1)
+		AssertOnAndClearRTError()
+		FindPeak/B=(PA_PEAK_BOX_AVERAGE)/M=(failedPulsesLevel)/R=(first, last) wv; err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 
 		if(!err)
 			ASSERT_TS(!V_Flag, "Could not find peak but FindLevelWrapper was successfull, this is unexpected.")
@@ -3460,7 +3461,8 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				WAVE/WAVE set2 = PA_GetSetWaves(pasi.pulseAverageHelperDFR, channelNumber, region)
 				colStart = firstPulseIndex
 				colEnd = numPulses
-				Multithread img[][colStart, colEnd - 1] = WaveRef(set2[q][0])(x); err = GetRTError(1)
+				AssertOnAndClearRTError()
+				Multithread img[][colStart, colEnd - 1] = WaveRef(set2[q][0])(x); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 				for(k = colStart; k < colEnd; k += 1)
 					pulseScaleLeft = scaleLeft[k]
 					if(refScaleLeft != pulseScaleLeft && pulseScaleLeft > refScaleLeft + refScaleDelta)
@@ -3490,7 +3492,8 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				// when all pulses from the set fail, we don't have an average wave
 				colStart = numPulses
 				colEnd = numPulses + specialEntryHeight
-				Multithread img[][colStart, colEnd - 1] = averageWave(x); err = GetRTError(1)
+				AssertOnAndClearRTError()
+				Multithread img[][colStart, colEnd - 1] = averageWave(x); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 				val = leftx(averageWave)
 				if(refScaleLeft != val  && val > refScaleLeft + refScaleDelta)
 					img[0, ScaleToIndexWrapper(img, val, ROWS)][colStart, colEnd - 1] = NaN
@@ -3509,7 +3512,8 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRU
 				WAVE deconv = PA_Deconvolution(averageWave, pasi.pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
 				colStart = numPulses + specialEntryHeight
 				colEnd = numPulses + 2 * specialEntryHeight
-				Multithread img[][colStart, colEnd - 1] = limit(deconv(x), vert_min, vert_max); err = GetRTError(1)
+				AssertOnAndClearRTError()
+				Multithread img[][colStart, colEnd - 1] = limit(deconv(x), vert_min, vert_max); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 				val = leftx(deconv)
 				if(refScaleLeft != val && val > refScaleLeft + refScaleDelta)
 					img[0, ScaleToIndexWrapper(img, val, ROWS)][colStart, colEnd - 1] = NaN

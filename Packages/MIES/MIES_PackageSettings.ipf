@@ -125,15 +125,14 @@ static Function PS_ApplyStoredWindowCoordinate(variable JSONid, string win)
 		return NaN
 	endif
 
-	try
-		ClearRTError()
-		left = JSON_GetVariable(JSONid, path + "/left")
-		top = JSON_GetVariable(JSONid, path + "/top")
-		right = JSON_GetVariable(JSONid, path + "/right")
-		bottom = JSON_GetVariable(JSONid, path + "/bottom")
+	left = JSON_GetVariable(JSONid, path + "/left", ignoreErr = 1)
+	top = JSON_GetVariable(JSONid, path + "/top", ignoreErr = 1)
+	right = JSON_GetVariable(JSONid, path + "/right", ignoreErr = 1)
+	bottom = JSON_GetVariable(JSONid, path + "/bottom", ignoreErr = 1)
 
-		MoveWindow/W=$win left, top, right, bottom
-		AbortONRTE
+	AssertOnAndClearRTError()
+	try
+		MoveWindow/W=$win left, top, right, bottom; AbortOnRTE
 	catch
 		err = ClearRTError()
 		printf "Applying window coordinates for %s failed with %d\r", win, err
@@ -167,8 +166,8 @@ static Function PS_StoreWindowCoordinates(variable JSONid)
 			continue
 		endif
 
+		AssertOnAndClearRTError()
 		try
-			ClearRTError()
 			PS_StoreWindowCoordinate(JSONid, win); AbortOnRTE
 		catch
 			ClearRTError()
@@ -237,8 +236,8 @@ End
 /// Caller *must* invalidate JSONid after return.
 Function PS_SerializeSettings(string package, variable JSONid)
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		PS_StoreWindowCoordinates(JSONid); AbortOnRTE
 		PS_WriteSettings(package, JSONid); AbortOnRTE
 	catch

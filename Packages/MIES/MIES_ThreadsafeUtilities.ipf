@@ -28,8 +28,8 @@ Function TS_GetNewestFromThreadQueue(tgID, varName)
 	endif
 
 	for(;;)
+		AssertOnAndClearRTError()
 		try
-			ClearRTError()
 			DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); AbortOnRTE
 		catch
 			ClearRTError()
@@ -87,8 +87,8 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
 	endfor
 
 	for(;;)
+		AssertOnAndClearRTError()
 		try
-			ClearRTError()
 			DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); AbortOnRTE
 		catch
 			ClearRTError()

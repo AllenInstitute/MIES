@@ -149,8 +149,8 @@ threadsafe static Function/DF ASYNC_Run_Worker(DFREF dfr)
 
 	err = 0
 	dfrOut = $""
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 		dfrOut = f(dfrInp);AbortOnRTE
 	catch
 		errmsg = GetRTErrMessage()
@@ -252,8 +252,8 @@ Function ASYNC_ThreadReadOut()
 		SVAR errmsg = dfr:$ASYNC_ERRORMSG_STR
 
 		statCnt += 1
+		AssertOnAndClearRTError()
 		try
-			ClearRTError()
 			f(dfrOut, err, errmsg);AbortOnRTE
 		catch
 			rterrmsg = GetRTErrMessage()
@@ -473,8 +473,8 @@ Function ASYNC_Stop([timeout, fromAssert])
 
 	endTime = dateTime + timeout
 	do
+		AssertOnAndClearRTError()
 		try
-			ClearRTError()
 			waitResult = ThreadGroupWait(tgID, 0); AbortOnRTE
 		catch
 			ClearRTError()
@@ -1024,6 +1024,7 @@ static Function ASYNC_IsASYNCRunning()
 #ifdef THREADING_DISABLED
 	return !IsNaN(tgID)
 #else
+	AssertOnAndClearRTError()
 	waitResult = ThreadGroupWait(tgID, 0); err = GetRTError(1)
 #endif
 

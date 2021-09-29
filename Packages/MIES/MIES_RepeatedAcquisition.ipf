@@ -234,6 +234,7 @@ Function RA_Counter(panelTitle)
 	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 
 	if(Count < numTotalSweeps)
+		AssertOnAndClearRTError()
 		try
 			DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
 
@@ -243,6 +244,7 @@ Function RA_Counter(panelTitle)
 				DQS_DataAcq(panelTitle)
 			endif
 		catch
+			ClearRTError()
 			RA_FinishAcquisition(panelTitle)
 		endtry
 	else

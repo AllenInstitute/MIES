@@ -831,8 +831,8 @@ Function/S AFH_CheckAnalysisParameter(genericFunc, params)
 			continue
 		endif
 
+		AssertOnAndClearRTError()
 		try
-			ClearRTError()
 			message = f(name, params); AbortOnRTE
 
 			if(!IsEmpty(message))

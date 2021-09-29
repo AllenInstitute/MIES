@@ -43,10 +43,12 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 	endif
 
 	if(!DeviceHasFollower(panelTitle))
+		AssertOnAndClearRTError()
 		try
 			TP_Setup(panelTitle, runMode, fast = fast)
 			TPM_BkrdTPMD(panelTitle)
 		catch
+			ClearRTError()
 			TP_Teardown(panelTitle)
 		endtry
 
@@ -58,6 +60,7 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 	numFollower = ItemsInList(listOfFollowerDevices)
 
+	AssertOnAndClearRTError()
 	try
 		// configure all followers
 		for(i = 0; i < numFollower; i += 1)
@@ -67,6 +70,7 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 
 		TP_Setup(panelTitle, runMode)
 	catch
+		ClearRTError()
 		// deconfigure all followers
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
@@ -220,8 +224,8 @@ Function TPM_BkrdTPFuncMD(s)
 					if(V_FIFOChunks >= endOfPulse)
 						WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, TEST_PULSE_MODE)
 
+						AssertOnAndClearRTError()
 						try
-							ClearRTError()
 							for(j = 0; j < V_FIFOnchans; j += 1)
 								fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
 								channelNr = str2num(fifoChannelName)

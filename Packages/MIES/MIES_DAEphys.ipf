@@ -753,11 +753,13 @@ Function DAP_WindowHook(s)
 			NVAR JSONid = $GetSettingsJSONid()
 			PS_StoreWindowCoordinate(JSONid, panelTitle)
 
+			AssertOnAndClearRTError()
 			try
-				ClearRTError()
+				// catch all error conditions, asserts and aborts
+				// and silently ignore them
 				DAP_UnlockDevice(panelTitle); AbortOnRTE
 			catch
-				// do nothing
+				ClearRTError()
 			endtry
 
 			// return zero so that other hooks are called as well
@@ -969,6 +971,7 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2:
+			AssertOnAndClearRTError()
 			try
 				paneltitle = cba.win
 				control    = cba.ctrlName
@@ -976,6 +979,7 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 				DAP_AdaptAssocHeadstageState(panelTitle, control)
 				DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 			catch
+				ClearRTError()
 				SetCheckBoxState(panelTitle, control, !cba.checked)
 				DAG_Update(cba.win, cba.ctrlName, val = !cba.checked)
 				Abort
@@ -1075,6 +1079,7 @@ Function DAP_CheckProc_AD(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
+			AssertOnAndClearRTError()
 			try
 				paneltitle = cba.win
 				control    = cba.ctrlName
@@ -1082,6 +1087,7 @@ Function DAP_CheckProc_AD(cba) : CheckBoxControl
 				DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 				DAP_AdaptAssocHeadstageState(panelTitle, control)
 			catch
+				ClearRTError()
 				SetCheckBoxState(panelTitle, control, !cba.checked)
 				DAG_Update(cba.win, cba.ctrlName, val = !cba.checked)
 				Abort
@@ -3288,6 +3294,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
+			AssertOnAndClearRTError()
 			try
 				panelTitle = cba.win
 				control    = cba.ctrlName
@@ -3302,6 +3309,7 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 					DAP_SetAmpModeControls(panelTitle, headstage, mode, delayed = 1)
 				endif
 			catch
+				ClearRTError()
 				SetCheckBoxState(panelTitle, control, !cba.checked)
 				Abort
 			endtry
@@ -3319,12 +3327,14 @@ Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
+			AssertOnAndClearRTError()
 			try
 				panelTitle = cba.win
 				control    = cba.ctrlName
 				checked    = cba.checked
 				DAP_ChangeHeadstageState(panelTitle, control, checked)
 			catch
+				ClearRTError()
 				SetCheckBoxState(panelTitle, control, !checked)
 				Abort
 			endtry

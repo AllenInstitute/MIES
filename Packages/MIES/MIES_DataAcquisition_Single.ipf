@@ -31,9 +31,11 @@ Function DQS_StartDAQSingleDevice(panelTitle, [useBackground])
 
 	DAP_OneTimeCallBeforeDAQ(panelTitle, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
 
+	AssertOnAndClearRTError()
 	try
 		DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
 	catch
+		ClearRTError()
 		// we need to undo the earlier one time call only
 		DAP_OneTimeCallAfterDAQ(panelTitle, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
 		return NaN

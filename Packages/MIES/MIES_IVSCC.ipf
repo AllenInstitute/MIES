@@ -400,8 +400,8 @@ static Function IVS_PublishQCState(variable result, string description)
 	payload = JSON_Dump(jsonID)
 	JSON_Release(jsonID)
 
+	AssertOnAndClearRTError()
 	try
-		ClearRTError()
 #if exists("zeromq_pub_send")
 		zeromq_pub_send(IVS_PUB_FILTER, payload); AbortOnRTE
 #else
@@ -442,6 +442,7 @@ Function IVS_finishGigOhmSealQCCheck(s)
 
 	// See if we pass the Steady State Resistance
 	// added a second pass....if we don't pass the QC on the first go, check again before you fail out of the QC
+	AssertOnAndClearRTError()
 	try
 		if(ssResistanceVal > 1000) // ssResistance value is in MOhms
 			// and now run the EXTPCIIATT wave so that things are saved into the data record
@@ -454,6 +455,7 @@ Function IVS_finishGigOhmSealQCCheck(s)
 			Abort
 		endif
 	catch
+		ClearRTError()
 		ssResistanceVal = SSResistance[headstage]
 
 		printf "Second Pass: Steady State Resistance: %g\r", ssResistanceVal
@@ -488,8 +490,15 @@ End
 Function IVS_SaveExperiment(filename)
 	string filename
 
-	ClearRTError()
-	SaveExperiment/C/F={1,"",2}/P=home as filename + ".pxp"; AbortOnRTE
+	variable err
+
+	AssertOnAndClearRTError()
+	try
+		SaveExperiment/C/F={1,"",2}/P=home as filename + ".pxp"; AbortOnRTE
+	catch
+		err = ClearRTError()
+		ASSERT(0, "Could not save experiment due to code: " + num2istr(err))
+	endtry
 End
 
 /// @brief Run a designated stim wave

@@ -1638,8 +1638,8 @@ Function PSQ_DAScale(panelTitle, s)
 					sprintf msg, "Spike frequency %.2W1PHz, DAScale %.2W1PA", spikeFrequencies[acquiredSweepsInSet - 1], DAScalesPlot[acquiredSweepsInSet - 1]
 					DEBUGPRINT(msg)
 
+					AssertOnAndClearRTError()
 					try
-						ClearRTError()
 						V_FitError  = 0
 						V_AbortCode = 0
 

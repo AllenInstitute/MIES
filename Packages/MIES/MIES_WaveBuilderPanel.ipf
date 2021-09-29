@@ -1807,8 +1807,8 @@ static Function WBP_UpdateParameterWave()
 			name = listWave[i][%Name]
 
 			if(WhichListItem(name, suggNames) != -1)
+				AssertOnAndClearRTError()
 				try
-					ClearRTError()
 					help = f(name); AbortOnRTE
 					listWave[i][%Help] = help
 					helpWave[i][%Help] = LineBreakingIntoPar(help, minimumWidth = 40)

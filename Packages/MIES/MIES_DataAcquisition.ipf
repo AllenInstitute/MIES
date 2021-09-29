@@ -21,7 +21,8 @@ Function DQ_StopOngoingDAQAllLocked(variable stopReason)
 	for(i = 0; i < numDev; i += 1)
 		device = StringFromList(i, devices)
 
-		DQ_StopOngoingDAQ(device, stopReason, startTPAfterDAQ = 0); err = GetRTError(1)
+		AssertOnAndClearRTError()
+		DQ_StopOngoingDAQ(device, stopReason, startTPAfterDAQ = 0); err = GetRTError(1) // see developer docu section Preventing Debugger Popup
 	endfor
 End
 
