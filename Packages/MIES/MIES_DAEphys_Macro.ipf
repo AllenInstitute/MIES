@@ -4318,7 +4318,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_OsciUpdExt,userdata(tabnum)="5"
 	SetVariable setvar_Settings_OsciUpdExt,userdata(tabcontrol)="ADC"
 	SetVariable setvar_Settings_OsciUpdExt,limits={0,1000,1},value=_NUM:10
-	PopupMenu Popup_Settings_DecMethod,pos={40.00,582.00},size={189.00,19.00},bodyWidth=80,disable=1,proc=DAP_PopMenuProc_FixedSampInt
+	PopupMenu Popup_Settings_DecMethod,pos={40.00,582.00},size={189.00,19.00},bodyWidth=80,disable=1,proc=DAP_PopMenuProc_UpdateGuiState
 	PopupMenu Popup_Settings_DecMethod,title="Decimation Method"
 	PopupMenu Popup_Settings_DecMethod,help={"Decimation methods for speeding up the display"}
 	PopupMenu Popup_Settings_DecMethod,userdata(tabnum)="5"
