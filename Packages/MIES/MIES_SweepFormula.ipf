@@ -191,6 +191,7 @@ static Function/S SF_FormulaPreParser(formula)
 
 	SF_Assert(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket mismatch in formula.")
 	SF_Assert(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket mismatch in formula.")
+	SF_Assert(!mod(CountSubstrings(formula, "\""), 2), "Quotation marks mismatch in formula.")
 
 	formula = ReplaceString("...", formula, "…")
 
