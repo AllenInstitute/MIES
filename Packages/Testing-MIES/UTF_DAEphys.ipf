@@ -101,7 +101,7 @@ Function CheckIfAllControlsReferStateWv([str])
 					CHECK_WAVE(DA_EphysGuiStateNum, NUMERIC_WAVE)
 
 					if(inputModified)
-						val = GetLimitConstrainedSetVar(str, ctrl, val)
+						val = GetLimitConstrainedSetVar(S_recreation, val)
 					endif
 
 					CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, lbl, index = index), val)

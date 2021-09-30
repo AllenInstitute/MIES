@@ -332,7 +332,7 @@ Function SetSetVariable(win,Control, newValue, [respectLimits])
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
 
 	if(respectLimits)
-		newValue = GetLimitConstrainedSetVar(win, control, newValue)
+		newValue = GetLimitConstrainedSetVar(S_recreation, newValue)
 	endif
 
 	if(newValue != v_value)
@@ -1309,16 +1309,14 @@ Function CheckIfValueIsInsideLimits(win, control, val)
 
 	return val >= minVal && val <= maxVal
 End
+
 /// @brief Returns a value that is constrained by the limits defined by the control
 ///
 /// @return val <= control max and val >= contorl min
-Function GetLimitConstrainedSetVar(win, control, val)
-	string win
-	string control
-	variable val
+Function GetLimitConstrainedSetVar(string recMacro, variable val)
 
 	variable minVal, maxVal, incVal
-	if(!ExtractLimits(win, control, minVal, maxVal, incVal))
+	if(!ExtractLimitsFromRecMacro(recMacro, minVal, maxVal, incVal))
 		val = limit(val, minVal, maxVal)
    	endif
 
