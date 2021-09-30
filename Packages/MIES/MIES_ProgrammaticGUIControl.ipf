@@ -205,6 +205,8 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 
 	switch(controlType)
 		case CONTROL_TYPE_BUTTON:
+			// we accept a var just that PGC_SetAndActivateControlVar keeps working
+			ASSERT(ParamIsDefault(str), "Does not accept str argument.")
 
 			if(isEmpty(procedure))
 				break
@@ -265,7 +267,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			PopupProc(pa)
 			break
 		case CONTROL_TYPE_CHECKBOX:
-			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
+			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
 
 			val = !!val
 
@@ -293,8 +295,10 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			CheckboxProc(cba)
 			break
 		case CONTROL_TYPE_TAB:
-			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
+			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
 			TabControl $control win=$win, value=val
+
+			// @todo add range check
 
 			if(isEmpty(procedure))
 				break
@@ -346,12 +350,14 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			SetVariableProc(sva)
 			break
 		case CONTROL_TYPE_VALDISPLAY:
-			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
+			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
 			SetValDisplay(win, control, var=val)
 			// Value displays don't have control procedures
 			break
 		case CONTROL_TYPE_SLIDER:
-			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
+			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
+			ASSERT(GetLimitConstrainedSetVar(S_recreation, val) == val, "Value " + num2str(val) + " is out of range.")
+
 			Slider $control win=$win, value = val
 
 			if(isEmpty(procedure))
