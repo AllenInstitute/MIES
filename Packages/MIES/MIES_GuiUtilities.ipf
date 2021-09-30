@@ -1257,23 +1257,14 @@ Function GetInternalSetVariableType(recMacro)
 	return SET_VARIABLE_GLOBAL
 End
 
-/// @brief Extract the limits specification of the control and return it in `minVal`, `maxVal` and `incVal`
-///
-/// @return 0 on success, 1 if no specification could be found
-Function ExtractLimits(win, control, minVal, maxVal, incVal)
-	string win, control
-	variable &minVal, &maxVal, &incVal
-
+Function ExtractLimitsFromRecMacro(string recMacro, variable& minVal, variable& maxVal, variable& incVal)
 	string minStr, maxStr, incStr
 
 	minVal = NaN
 	maxVal = NaN
 	incVal = NaN
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "win or control does not exist")
-
-	SplitString/E="(?i).*limits={([^,]+),([^,]+),([^,]+)}.*" S_recreation, minStr, maxStr, incStr
+	SplitString/E="(?i).*limits={([^,]+),([^,]+),([^,]+)}.*" recMacro, minStr, maxStr, incStr
 
 	if(V_flag != 3)
 		return 1
@@ -1284,6 +1275,20 @@ Function ExtractLimits(win, control, minVal, maxVal, incVal)
 	incVal = str2num(incStr)
 
 	return 0
+End
+
+/// @brief Extract the limits specification of the control and return it in `minVal`, `maxVal` and `incVal`
+///
+/// @return 0 on success, 1 if no specification could be found
+///
+/// @sa ExtractLimitsFromRecMacro for a faster way if you already have the recreation macro
+Function ExtractLimits(string win, string control, variable& minVal, variable& maxVal, variable& incVal)
+	string minStr, maxStr, incStr
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "win or control does not exist")
+
+	return ExtractLimitsFromRecMacro(S_recreation, minVal, maxVal, incVal)
 End
 
 /// @brief Check if the given value is inside the limits defined by the control
