@@ -448,13 +448,19 @@ Function PGCT_CheckProc(cba) : CheckBoxControl
 	return 0
 End
 
-static Function PGCT_CheckboxDisabled()
+static Function PGCT_ModeFlagDefault()
 
 	variable refState, state
 
 	SVAR/SDFR=root: panel
 
-	PGC_SetAndActivateControl(panel, "checkbox_ctrl_disabled", val = 1)
+	// defaults to assert
+	try
+		PGC_SetAndActivateControl(panel, "checkbox_ctrl_disabled", val = 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
 
 	// no changes
 	DoUpdate
@@ -466,18 +472,48 @@ static Function PGCT_CheckboxDisabled()
 
 	refState = 0
 	CHECK_EQUAL_VAR(refState, state)
+End
 
-	// now it is set
-	PGC_SetAndActivateControl(panel, "checkbox_ctrl_disabled", val = 1, ignoreDisabledState = 1)
+static Function/WAVE VariousModeFlags()
+
+	Make/FREE/D modes = {-1, PGC_MODE_ASSERT_ON_DISABLED, PGC_MODE_FORCE_ON_DISABLED, PGC_MODE_SKIP_ON_DISABLED}
+
+	return modes
+End
+
+// UTF_TD_GENERATOR VariousModeFlags
+static Function PGCT_ModeFlag([variable var])
+	variable refState, state
+
+	SVAR/SDFR=root: panel
+
+	if(var != PGC_MODE_FORCE_ON_DISABLED && var != PGC_MODE_SKIP_ON_DISABLED)
+		try
+			PGC_SetAndActivateControl(panel, "checkbox_ctrl_disabled", val = 1, mode = var)
+			FAIL()
+		catch
+			PASS()
+		endtry
+	else
+		PGC_SetAndActivateControl(panel, "checkbox_ctrl_disabled", val = 1, mode = var)
+	endif
 
 	DoUpdate
 	ControlInfo/W=$panel checkbox_ctrl_disabled
 	state = V_Value
 
-	NVAR/Z checkedSVAR = checked
-	CHECK(NVAR_Exists(checkedSVAR))
+	if(var == PGC_MODE_FORCE_ON_DISABLED)
 
-	refState = 1
-	CHECK_EQUAL_VAR(refState, state)
+		NVAR/Z checkedSVAR = checked
+		CHECK(NVAR_Exists(checkedSVAR))
 
+		refState = 1
+		CHECK_EQUAL_VAR(refState, state)
+	else
+		NVAR/Z checkedSVAR = checked
+		CHECK(!NVAR_Exists(checkedSVAR))
+
+		refState = 0
+		CHECK_EQUAL_VAR(refState, state)
+	endif
 End

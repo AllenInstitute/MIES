@@ -1023,7 +1023,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 				if(statusHS[i] && !statusHSIC[i]) // active non-IC headstage
 					ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-					PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED, ignoreDisabledState = 1)
+					PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED, mode = PGC_MODE_FORCE_ON_DISABLED)
 				endif
 			endfor
 
@@ -1233,7 +1233,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 				for(i = 0; i < NUM_HEADSTAGES; i += 1)
 					if(previousActiveHS[i] && !statusHS[i])
 						ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-						PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_SELECTED, ignoreDisabledState = 1)
+						PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_SELECTED, mode = PGC_MODE_FORCE_ON_DISABLED)
 					endif
 				endfor
 			endif

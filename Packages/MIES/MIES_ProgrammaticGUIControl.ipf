@@ -129,14 +129,19 @@ Function PGC_SetAndActivateControlVar(win, control, var)
 End
 
 /// @brief Set the control's value and execute the control procedure
-/// of the given control (if it exists)
+/// of the given control (if it exists).
 ///
-/// @param win                 Window
-/// @param control             GUI control
-/// @param val                 [optionality depends on control type] Numeric value to set
-/// @param str                 [optionality depends on control type] String value to set
-/// @param switchTab           [optional, defaults to false] Switches tabs so that the control is shown
-/// @param ignoreDisabledState [optional, defaults to false] Allows to set disabled controls (DANGEROUS!)
+/// The function tries to mimick interactive operation as closely as possible.
+/// Therefore interacting with disabled controls results in an assertion. See `ignoreDisabledState`
+/// for a way to avoid that.
+///
+/// @param win       Window
+/// @param control   GUI control
+/// @param val       [optionality depends on control type] Numeric value to set
+/// @param str       [optionality depends on control type] String value to set
+/// @param switchTab [optional, defaults to false] Switches tabs so that the control is shown
+/// @param mode      [optional, defaults to #PGC_MODE_ASSERT_ON_DISABLED] One of @ref PGC_MODES.
+///                  Allows to fine tune the behaviour for disabled controls.
 ///
 /// PopupMenus:
 /// - Only one of `val` or `str` can be supplied
@@ -153,10 +158,10 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function PGC_SetAndActivateControl(string win, string control, [variable val, string str, variable switchTab, variable ignoreDisabledState])
+Function PGC_SetAndActivateControl(string win, string control, [variable val, string str, variable switchTab, variable mode])
 	string procedure, popupMenuList, popupMenuValue
 	variable paramType, controlType, variableType, inputWasModified, limitedVal
-	variable isCheckbox, mode, popupMenuType, index
+	variable isCheckbox, checkBoxMode, popupMenuType, index
 
 	if(ParamIsDefault(switchTab))
 		switchTab = 0
@@ -164,10 +169,10 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 		switchTab = !!switchTab
 	endif
 
-	if(ParamIsDefault(ignoreDisabledState))
-		ignoreDisabledState = 0
+	if(ParamIsDefault(mode))
+		mode = PGC_MODE_ASSERT_ON_DISABLED
 	else
-		ignoreDisabledState = !!ignoreDisabledState
+		ASSERT(mode == PGC_MODE_ASSERT_ON_DISABLED || mode == PGC_MODE_FORCE_ON_DISABLED || mode == PGC_MODE_SKIP_ON_DISABLED, "Invalid mode")
 	endif
 
 	// call only once
@@ -178,9 +183,22 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 	endif
 	controlType = abs(V_flag)
 
-	if((V_disable & DISABLE_CONTROL_BIT) && !ignoreDisabledState)
-		DEBUGPRINT("The control " + control + " in the panel " + win + " is disabled and will not be touched.")
-		return NaN
+	if(V_disable & DISABLE_CONTROL_BIT)
+		switch(mode)
+			case PGC_MODE_SKIP_ON_DISABLED:
+				// compatibility behaviour for old code
+				return NaN
+				break
+			case PGC_MODE_ASSERT_ON_DISABLED:
+				ASSERT(0, "The control " + control + " in the panel " + win + " is disabled and can not be touched.")
+				break
+			case PGC_MODE_FORCE_ON_DISABLED:
+				// just continue
+				break
+			default:
+				ASSERT(0, "Invalid mode")
+				break
+		endswitch
 	endif
 
 	procedure = PGC_GetProcAndCheckParamType(S_recreation)
@@ -251,8 +269,8 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 
 			val = !!val
 
-			mode = str2numSafe(GetValueFromRecMacro(REC_MACRO_MODE, S_recreation))
-			isCheckBox = IsNan(mode) || mode == 1
+			checkBoxMode = str2numSafe(GetValueFromRecMacro(REC_MACRO_MODE, S_recreation))
+			isCheckBox = IsNan(checkBoxMode) || checkBoxMode == 1
 
 			 // emulate the real user experience and do nothing
 			if(isCheckBox && val == V_Value)
