@@ -208,7 +208,7 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 
 		refValue = GetDA_EphysGuiStateNum(panelTitle)[waveIndex][%$ctrl]
 
-		if(!CheckIfClose(V_Value, refValue) && !(V_Value == 0 && refValue == 0))
+		if(!CheckIfClose(V_Value, refValue) && !EqualValuesOrBothNaN(V_Value, refValue))
 			sprintf msg, "Numeric GUI state wave is inconsistent for %s: %g vs. %g\r", ctrl, V_Value, refValue
 			BUG(msg)
 		endif
