@@ -1395,11 +1395,8 @@ Function/Wave GetLBTextualKeys(panelTitle)
 
 	wv = ""
 
-	wv[0][0] = "SweepNum"
-	wv[0][1] = "TimeStamp"
-	wv[0][2] = "TimeStampSinceIgorEpochUTC"
-	wv[0][3] = "EntrySourceType"
-	wv[0][4] = "AcquisitionState"
+	ASSERT(INITIAL_KEY_WAVE_COL_COUNT == ItemsInList(LABNOTEBOOK_KEYS_INITIAL), "Mismatched default keys")
+	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units,     wv
@@ -1452,11 +1449,8 @@ Function/Wave GetLBNumericalKeys(panelTitle)
 
 	wv = ""
 
-	wv[0][0] = "SweepNum"
-	wv[0][1] = "TimeStamp"
-	wv[0][2] = "TimeStampSinceIgorEpochUTC"
-	wv[0][3] = "EntrySourceType"
-	wv[0][4] = "AcquisitionState"
+	ASSERT(INITIAL_KEY_WAVE_COL_COUNT == ItemsInList(LABNOTEBOOK_KEYS_INITIAL), "Mismatched default keys")
+	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units,     wv

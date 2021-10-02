@@ -82,22 +82,20 @@ End
 
 /// @brief Return a wave with all keys in the labnotebook key wave
 static Function/WAVE LBV_GetLabNotebookKeys(WAVE/Z/T keyWave)
-
-	variable numCols
+	variable row
 
 	if(!WaveExists(keyWave))
 		return $""
 	endif
 
-	numCols = DimSize(keyWave, COLS) - INITIAL_KEY_WAVE_COL_COUNT
-	if(numCols <= 0)
-		return $""
-	endif
+	row = FindDimLabel(keyWave, ROWS, "Parameter")
 
-	Make/FREE/T/N=(numCols) keys
-	keys[] = keyWave[%Parameter][INITIAL_KEY_WAVE_COL_COUNT + p]
+	Duplicate/FREE/RMD=[row][] keyWave, keys
+	Redimension/N=(numpnts(keyWave))/E=1 keys
 
-	return keys
+	WAVE/T hiddenDefaultKeys = ListToTextWave(LABNOTEBOOK_KEYS_INITIAL, ";")
+
+	return GetSetDifference(keys, hiddenDefaultKeys)
 End
 
 /// @brief Return a text wave with all entries from all TPStorage waves which are candidates for plotting

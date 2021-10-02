@@ -246,6 +246,8 @@ Constant LISTBOX_TREEVIEW              = 0x40
 
 Constant INITIAL_KEY_WAVE_COL_COUNT = 5
 
+StrConstant LABNOTEBOOK_KEYS_INITIAL = "SweepNum;TimeStamp;TimeStampSinceIgorEpochUTC;EntrySourceType;AcquisitionState"
+
 /// @name Constants for the note of the wave returned by GetTPStorage
 /// @{
 StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"

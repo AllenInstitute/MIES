@@ -3707,30 +3707,70 @@ threadsafe Function/WAVE GetSetDifference(wave1, wave2)
 	WAVE wave1
 	WAVE wave2
 
-	variable numEntries, i, j, value
+	variable isText, index
 
-	ASSERT_TS(IsFloatingPointWave(wave1) && IsFloatingPointWave(wave2), "Can only work with floating point waves.")
+	isText = (IsTextWave(wave1) && IsTextWave(wave2))
+
+	ASSERT_TS((IsFloatingPointWave(wave1) && IsFloatingPointWave(wave2)) || isText, "Non matching wave types (both float or both text).")
 	ASSERT_TS(WaveType(wave1) == WaveType(wave2), "Wave type mismatch")
+
+	WAVE/Z result
+
+	if(isText)
+		[result, index] = GetSetDifferenceText(wave1, wave2)
+	else
+		[result, index] = GetSetDifferenceNumeric(wave1, wave2)
+	endif
+
+	if(index == 0)
+		return $""
+	endif
+
+	Redimension/N=(index) result
+
+	return result
+End
+
+threadsafe static Function [WAVE result, variable index] GetSetDifferenceNumeric(WAVE wave1, WAVE wave2)
+	variable numEntries, i, j, value
 
 	Duplicate/FREE wave1, result
 
 	numEntries = DimSize(wave1, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		value = wave1[i]
+
 		FindValue/UOFV/V=(value) wave2
 		if(V_Value == -1)
 			result[j++] = value
 		endif
 	endfor
 
-	if(j == 0)
-		return $""
-	endif
-
-	Redimension/N=(j) result
-
-	return result
+	return [result, j]
 End
+
+threadsafe static Function [WAVE result, variable index] GetSetDifferenceText(WAVE/T wave1, WAVE/T wave2)
+	variable numEntries, i, j
+	string str
+
+	Duplicate/FREE/T wave1, resultTxT
+
+	numEntries = DimSize(wave1, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		str = wave1[i]
+
+		FindValue/UOFV/TEXT=(str)/TXOP=4 wave2
+		if(V_Value == -1)
+			resultTxT[j++] = str
+		endif
+	endfor
+
+	WAVE result = resultTxT
+
+	return [result, j]
+End
+
+
 
 /// @brief Return a wave with the set theory style intersection of wave1 and wave2
 ///
