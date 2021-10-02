@@ -540,14 +540,16 @@ static Function/S DAG_GetSpecificCtrlNum(panelTitle, list)
 	string list
 
 	string subtypeCtrlList = ""
-	variable i, numEntries
-	string controlName
+	variable i, numEntries, controlType
+	string controlName, recMacro
 
 	numEntries = itemsinlist(list)
 	for(i = 0; i < numEntries; i += 1)
 		controlName = StringFromList(i, list)
-		controlInfo/W=$panelTitle $controlName
-		switch(abs(V_flag))
+
+		[recMacro, controlType] = GetRecreationMacroAndType(panelTitle, controlName)
+
+		switch(controlType)
 			case CONTROL_TYPE_CHECKBOX:
 			case CONTROL_TYPE_POPUPMENU:
 			case CONTROL_TYPE_SLIDER: // fallthrough by design
@@ -574,14 +576,16 @@ static Function/S DAG_GetSpecificCtrlTxT(panelTitle, list)
 	string list
 
 	string subtypeCtrlList = ""
-	variable i, numEntries
-	string controlName
+	variable i, numEntries, controlType
+	string controlName, recMacro
 
 	numEntries = itemsinlist(list)
 	for(i = 0; i < numEntries; i += 1)
 		controlName = StringFromList(i, list)
-		controlInfo/W=$panelTitle $controlName
-		switch(abs(V_flag))
+
+		[recMacro, controlType] = GetRecreationMacroAndType(panelTitle, controlName)
+
+		switch(controlType)
 			case CONTROL_TYPE_POPUPMENU:
 				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				break

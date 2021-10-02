@@ -1032,15 +1032,14 @@ Function SetGuiControlValue(win, control, value)
 	string value
 
 	variable controlType, variableType
+	string recMacro
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	controlType = abs(V_flag)
+	[recMacro, controlType] = GetRecreationMacroAndType(win, control)
 
 	if(controlType == CONTROL_TYPE_CHECKBOX)
 		SetCheckBoxState(win, control, str2num(value))
 	elseif(controlType == CONTROL_TYPE_SETVARIABLE)
-		variableType = GetInternalSetVariableType(S_recreation)
+		variableType = GetInternalSetVariableType(recMacro)
 		if(variableType == SET_VARIABLE_BUILTIN_STR)
 			SetSetVariableString(win, control, value)
 		elseif(variableType == SET_VARIABLE_BUILTIN_NUM)
@@ -1417,7 +1416,7 @@ Function SearchForInvalidControlProcs(win, [warnOnEmpty])
 	variable warnOnEmpty
 
 	string controlList, control, controlProc
-	string subTypeStr, helpEntry
+	string subTypeStr, helpEntry, recMacro
 	variable result, numEntries, i, subType, controlType
 	string funcList, subwindowList, subwindow
 
@@ -1451,20 +1450,19 @@ Function SearchForInvalidControlProcs(win, [warnOnEmpty])
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, controlList)
 
-		ControlInfo/W=$win $control
-		controlType = abs(V_flag)
+		[recMacro, controlType] = GetRecreationMacroAndType(win, control)
 
 		if(controlType == CONTROL_TYPE_VALDISPLAY || controlType == CONTROL_TYPE_GROUPBOX)
 			continue
 		endif
 
-		helpEntry = GetValueFromRecMacro("help", S_recreation)
+		helpEntry = GetValueFromRecMacro("help", recMacro)
 
 		if(IsEmpty(helpEntry))
 			printf "SearchForInvalidControlProcs: Panel \"%s\" has the control \"%s\" which does not have a help entry.\r", win, control
 		endif
 
-		controlProc = GetValueFromRecMacro(REC_MACRO_PROCEDURE, S_recreation)
+		controlProc = GetValueFromRecMacro(REC_MACRO_PROCEDURE, recMacro)
 
 		if(IsEmpty(controlProc))
 			if(warnOnEmpty)
@@ -2106,3 +2104,15 @@ Function ShowTraceInfoTags()
 End
 
 #endif
+
+/// @brief Return the recreation macro and the type of the given control
+Function [string recMacro, variable type] GetRecreationMacroAndType(string win, string control)
+
+	ControlInfo/W=$win $control
+	if(!V_flag)
+		ASSERT(WindowExists(win), "The panel " + win + " does not exist.")
+		ASSERT(0, "The control " + control + " in the panel " + win + " does not exist.")
+	endif
+
+	return [S_recreation, abs(V_flag)]
+End
