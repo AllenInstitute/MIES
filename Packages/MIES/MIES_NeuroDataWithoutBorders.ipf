@@ -1866,11 +1866,25 @@ threadsafe Function NWB_Flush(variable locationID)
 	H5_FlushFile(locationID)
 End
 
+static Function NWB_AppendLogFileToString(string path, string &str)
+	string data, fname
+
+	if(!FileExists(path))
+		return NaN
+	endif
+
+	[data, fname] = LoadTextFile(path)
+
+	// normalizing EOLs is only necessary because
+	// someone might have edited the log file by hand
+	str += "\n" + LOGFILE_NWB_MARKER + "\n" + NormalizeToEOL(data, "\n")
+End
+
 static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	variable nwbVersion, locationID
 
 	variable groupID
-	string history, name, logfile, fname, data, entry
+	string history, name
 
 	EnsureValidNWBVersion(nwbVersion)
 	ASSERT(GetNWBMajorVersion(ReadNWBVersion(locationID)) == nwbVersion, "NWB version of the selected file differs.")
@@ -1883,20 +1897,13 @@ static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 
 	groupID = H5_OpenGroup(locationID, "/general")
 	ASSERT(!IsNaN(groupID), "CreateCommonGroups() needs to be called prior to this call")
-	entry = NormalizeToEOL(history, "\n")
+	history = NormalizeToEOL(history, "\n")
 
-	logfile = LOG_GetFile(PACKAGE_MIES)
-	if(FileExists(logfile))
-		[data, fname] = LoadTextFile(logfile)
-
-		// normalizing EOLs is only necessary because
-		// someone might have edited the log file by hand
-		entry += "\n" + LOGFILE_NWB_MARKER + "\n" + NormalizeToEOL(data, "\n")
-	endif
+	NWB_AppendLogFileToString(LOG_GetFile(PACKAGE_MIES), history)
 
 	name = GetHistoryAndLogFileDatasetName(nwbVersion)
 
-	H5_WriteTextDataset(groupID, name, str=entry, compressionMode = GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
+	H5_WriteTextDataset(groupID, name, str=history, compressionMode = GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
 
 	if(nwbVersion == 1)
 		MarkAsCustomEntry(groupID, name)
