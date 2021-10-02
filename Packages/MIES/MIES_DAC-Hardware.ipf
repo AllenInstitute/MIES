@@ -822,6 +822,7 @@ threadsafe Function HW_ITC_HandleReturnValues_TS(flags, ITCError, ITCXOPError)
 
 	return ITCXOPError != 0 || ITCError != 0
 #else
+	ClearRTError()
 	return 0
 #endif
 End
@@ -866,6 +867,7 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 
 	return ITCXOPError != 0 || ITCError != 0
 #else
+	ClearRTError()
 	return 0
 #endif
 End
