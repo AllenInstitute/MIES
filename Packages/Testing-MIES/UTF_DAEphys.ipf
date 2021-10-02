@@ -71,7 +71,7 @@ Function CheckIfAllControlsReferStateWv([str])
 				PGC_SetAndActivateControl(str, ctrl, val = oldVal)
 				break
 			case CONTROL_TYPE_SETVARIABLE:
-				if(DoesControlHaveInternalString(str, ctrl))
+				if(DoesControlHaveInternalString(S_recreation))
 					stri = NONE
 					KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(str))
 
@@ -199,7 +199,7 @@ Function CheckStartupSettings([str])
 				SetCheckBoxState(unlockedPanelTitle, ctrl, val)
 				break
 			case CONTROL_TYPE_SETVARIABLE:
-				if(DoesControlHaveInternalString(unlockedPanelTitle, ctrl))
+				if(DoesControlHaveInternalString(S_recreation))
 					SetSetVariableString(unlockedPanelTitle, ctrl, num2str(enoise(1, 2)))
 				else
 					SetSetVariable(unlockedPanelTitle, ctrl, enoise(5, 2))

@@ -1531,13 +1531,8 @@ Function GetControlType(win, control)
 End
 
 /// @brief Determines if control stores numeric or text data
-Function DoesControlHaveInternalString(win, control)
-	string win, control
-
-	variable internalString
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "invalid or non existing control")
-	return strsearch(S_recreation, "_STR:", 0) != -1
+Function DoesControlHaveInternalString(string recMacro)
+	return strsearch(recMacro, "_STR:", 0) != -1
 End
 
 /// @brief Returns checkbox mode

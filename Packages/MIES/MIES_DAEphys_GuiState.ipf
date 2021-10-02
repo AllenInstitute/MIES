@@ -557,7 +557,7 @@ static Function/S DAG_GetSpecificCtrlNum(panelTitle, list)
 				break
 			case CONTROL_TYPE_VALDISPLAY:
 			case CONTROL_TYPE_SETVARIABLE:  // fallthrough by design
-				if(!DoesControlHaveInternalString(panelTitle, controlName))
+				if(!DoesControlHaveInternalString(recMacro))
 					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				endif
 				break
@@ -591,7 +591,7 @@ static Function/S DAG_GetSpecificCtrlTxT(panelTitle, list)
 				break
 			case CONTROL_TYPE_VALDISPLAY:
 			case CONTROL_TYPE_SETVARIABLE:  // fallthrough by design
-				if(DoesControlHaveInternalString(panelTitle, controlName))
+				if(DoesControlHaveInternalString(recMacro))
 					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				endif
 				break
