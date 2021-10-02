@@ -1284,10 +1284,11 @@ End
 Function ExtractLimits(string win, string control, variable& minVal, variable& maxVal, variable& incVal)
 	string minStr, maxStr, incStr
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "win or control does not exist")
+	string recMacro
+	variable controlType
+	[recMacro, controlType] = GetRecreationMacroAndType(win, control)
 
-	return ExtractLimitsFromRecMacro(S_recreation, minVal, maxVal, incVal)
+	return ExtractLimitsFromRecMacro(recMacro, minVal, maxVal, incVal)
 End
 
 /// @brief Check if the given value is inside the limits defined by the control
@@ -1339,18 +1340,6 @@ Function GetFunctionParameterType(func, paramIndex)
 	sprintf param, "PARAM_%d_TYPE", paramIndex
 
 	return NumberByKey(param, funcInfo)
-End
-
-/// @brief Return the control procedure for the given control
-///
-/// @returns name of control procedure or an empty string
-Function/S GetControlProcedure(win, control)
-	string win, control
-
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "invalid or non existing control")
-
-	return GetValueFromRecMacro(REC_MACRO_PROCEDURE, S_recreation)
 End
 
 /// @brief Return an entry from the given recreation macro
