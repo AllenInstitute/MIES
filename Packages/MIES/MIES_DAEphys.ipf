@@ -4275,7 +4275,7 @@ Function DAP_ButtonProc_OpenCommentNB(ba) : ButtonControl
 		case 2: // mouse up
 			panelTitle = ba.win
 
-			DAP_AbortIfUnlocked(panelTitle)
+			DAP_OpenCommentPanel(panelTitle)
 			DAP_AddUserComment(panelTitle)
 			break
 	endswitch
@@ -4319,14 +4319,15 @@ static Function DAP_AddUserComment(panelTitle)
 	string commentNotebook, comment, formattedComment
 	variable sweepNo
 
-	DAP_OpenCommentPanel(panelTitle)
-
-	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 	comment = DAG_GetTextualValue(panelTitle, "SetVar_DataAcq_Comment")
 
 	if(isEmpty(comment))
 		return NaN
 	endif
+
+	DAP_OpenCommentPanel(panelTitle)
+
+	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 
 	commentNotebook = DAP_GetCommentNotebook(panelTitle)
 	formattedComment = DAP_FormatCommentString(panelTitle, comment, sweepNo)
