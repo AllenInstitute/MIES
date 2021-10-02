@@ -1900,6 +1900,7 @@ static Function NWB_AppendIgorHistoryAndLogFile(nwbVersion, locationID)
 	history = NormalizeToEOL(history, "\n")
 
 	NWB_AppendLogFileToString(LOG_GetFile(PACKAGE_MIES), history)
+	NWB_AppendLogFileToString(GetZeroMQXOPLogfile(), history)
 
 	name = GetHistoryAndLogFileDatasetName(nwbVersion)
 
