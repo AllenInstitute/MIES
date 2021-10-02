@@ -4313,7 +4313,7 @@ End
 ///        to the comment notebook and to the labnotebook.
 ///
 /// The `SetVariable` for the user comment is also cleared
-Function DAP_AddUserComment(panelTitle)
+static Function DAP_AddUserComment(panelTitle)
 	string panelTitle
 
 	string commentNotebook, comment, formattedComment
