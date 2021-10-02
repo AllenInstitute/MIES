@@ -927,18 +927,26 @@ static Function TestPlotting()
 	String traces
 
 	Variable minimum, maximum
+	string win
+	DFREF dfr
+
 	string sweepBrowser = CreateFakeSweepBrowser_IGNORE()
-	String win = BSP_GetFormulaGraph(sweepBrowser)
+	String winBase = BSP_GetFormulaGraph(sweepBrowser)
 
 	String strArray2D = "[range(10), range(10,20), range(10), range(10,20)]"
 	String strArray1D = "range(4)"
 	String strScale1D = "time(setscale(range(4),x,1,0.1))"
 	String strArray0D = "1"
+	String strCombined = "[1, 2] vs [3, 4]\rand\r[5, 6] vs [7, 8]\rand\r[9, 10]\rand\r"
+	String strCombinedPartial = "[1, 2] vs [1, 2]\rand\r[1?=*, 2] vs [1, 2]"
 
 	WAVE array2D = SF_FormulaExecutor(DirectToFormulaParser(strArray2D))
 	WAVE array1D = SF_FormulaExecutor(DirectToFormulaParser(strArray1D))
 	WAVE scale1D = SF_FormulaExecutor(DirectToFormulaParser(strScale1D))
 	WAVE array0D = SF_FormulaExecutor(DirectToFormulaParser(strArray0D))
+
+	win = winBase + "_0"
+	dfr = GetDataFolderDFR()
 
 	SF_FormulaPlotter(sweepBrowser, strArray2D)
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
@@ -1029,6 +1037,43 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(90 / 3))
 	SF_FormulaPlotter(sweepBrowser, "range(3) vs range(7)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(7 / 3))
+
+	SF_FormulaPlotter(sweepBrowser, strCombined); DoUpdate
+	win = winBase + "_0"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	KillWindow/Z $win
+	win = winBase + "_1"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	KillWindow/Z $win
+	win = winBase + "_2"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	KillWindow/Z $win
+
+	WAVE wvY0 = GetSweepFormulaY(dfr, 0)
+	WAVE wvX0 = GetSweepFormulaX(dfr, 0)
+	WAVE wvY1 = GetSweepFormulaY(dfr, 1)
+	WAVE wvX1 = GetSweepFormulaX(dfr, 1)
+	Make/FREE/D wvY0ref = {{1, 2}}
+	CHECK_EQUAL_WAVES(wvY0, wvY0ref)
+	Make/FREE/D wvX0ref = {{3, 4}}
+	CHECK_EQUAL_WAVES(wvX0, wvX0ref)
+	Make/FREE/D wvY1ref = {{5, 6}}
+	CHECK_EQUAL_WAVES(wvY1, wvY1ref)
+	Make/FREE/D wvX1ref = {{7, 8}}
+	CHECK_EQUAL_WAVES(wvX1, wvX1ref)
+
+
+	try
+		SF_FormulaPlotter(sweepBrowser, strCombinedPartial)
+		FAIL()
+	catch
+		PASS()
+	endtry
+	DoUpdate
+	win = winBase + "_0"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	win = winBase + "_1"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 0)
 End
 
 Function TestLabNotebook()
@@ -1238,12 +1283,12 @@ static Function TestSFPreprocessor()
 	CHECK_EQUAL_STR(output, refOutput)
 
 	input = "\r\r\r"
-	refOutput = "\r\r"
+	refOutput = "\r\r\r"
 	output = MIES_SF#SF_PreprocessInput(input)
 	CHECK_EQUAL_STR(output, refOutput)
 
 	input = "text\rtext\r"
-	refOutput = "text\rtext"
+	refOutput = "text\rtext\r"
 	output = MIES_SF#SF_PreprocessInput(input)
 	CHECK_EQUAL_STR(output, refOutput)
 

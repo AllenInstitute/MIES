@@ -6536,31 +6536,33 @@ Function/WAVE GetElapsedTimeWave()
 End
 
 /// @brief Return the X wave for the sweep formula
-Function/WAVE GetSweepFormulaX(dfr)
-	DFREF dfr
+Function/WAVE GetSweepFormulaX(DFREF dfr, variable graphNr)
 
-	WAVE/Z/D/SDFR=dfr wv = sweepFormulaX
+	string wName = "sweepFormulaX_" + num2istr(graphNr)
+
+	WAVE/Z/D/SDFR=dfr wv = $wName
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=0/D dfr:sweepFormulaX/Wave=wv
+	Make/N=0/D dfr:$wName/Wave=wv
 
 	return wv
 End
 
 /// @brief Return the Y wave for the sweep formula
-Function/WAVE GetSweepFormulaY(dfr)
-	DFREF dfr
+Function/WAVE GetSweepFormulaY(DFREF dfr, variable graphNr)
 
-	WAVE/Z/D/SDFR=dfr wv = sweepFormulaY
+	string wName = "sweepFormulaY_" + num2istr(graphNr)
+
+	WAVE/Z/D/SDFR=dfr wv = $wName
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/N=0/D dfr:sweepFormulaY/Wave=wv
+	Make/N=0/D dfr:$wName/Wave=wv
 
 	return wv
 End
@@ -6853,6 +6855,34 @@ Function/WAVE GetDACAmplitudes(variable numDACEntries)
 
 	SetDimLabel COLS, 0, DASCALE, wv
 	SetDimLabel COLS, 1, TPAMP, wv
+
+	return wv
+End
+
+/// @brief Return a free text wave to store single y vs x formula combinations from sweepformula code
+///
+/// Rows:
+/// - One for each y vs x formula combination
+Function/WAVE GetYvsXFormulas()
+
+	Make/T/FREE/N=0 wv
+
+	return wv
+End
+
+/// @brief Return a free text wave to store y and x formula combinations from sweepformula code
+///
+/// Rows:
+/// - One for each formula
+/// Columns:
+/// - FORMULA_X: formula for x wave
+/// - FORMULA_Y: formula for y wave
+Function/WAVE GetYandXFormulas()
+
+	Make/T/FREE/N=(0, 2) wv
+
+	SetDimLabel COLS, 0, FORMULA_X, wv
+	SetDimLabel COLS, 1, FORMULA_Y, wv
 
 	return wv
 End
