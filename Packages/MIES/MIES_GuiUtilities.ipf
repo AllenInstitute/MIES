@@ -659,6 +659,7 @@ Function GetTabID(win, ctrl)
 
 	ControlInfo/W=$win $ctrl
 	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_TAB, "Control is not a tab")
 	return V_value
 End
 
