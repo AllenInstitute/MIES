@@ -4403,6 +4403,8 @@ Function DAP_SerializeCommentNotebook(panelTitle)
 
 	string commentPanel, commentNotebook, text
 
+	DAP_AddUserComment(panelTitle)
+
 	commentPanel = DAP_GetCommentPanel(panelTitle)
 	if(!windowExists(commentPanel))
 		return NaN
