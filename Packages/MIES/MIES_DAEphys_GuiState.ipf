@@ -193,7 +193,6 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 
 	// check if the GUI state wave is consistent
 	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForCaller())
-		ControlInfo/W=$panelTitle $ctrl
 
 		if(!IsFinite(index))
 			ControlInfo/W=$panelTitle $ctrl
