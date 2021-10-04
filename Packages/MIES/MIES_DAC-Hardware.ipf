@@ -2149,8 +2149,8 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 		clkStr = "/" + device + "/ai/sampleclock"
 		// note actually this does already 'starts' a measurement
 #ifdef EVIL_KITTEN_EATING_MODE
-		// more NI devices support DAQmx_Val_Rising (`1`)
-		DAQmx_WaveFormGen/DEV=device/STRT=1/CLK={clkStr, 1} wavegenStr;AbortOnRTE
+		// don't set any clock source to make the USB6001 work with DAQ
+		DAQmx_WaveFormGen/DEV=device/STRT=1 wavegenStr;AbortOnRTE
 #else
 		DAQmx_WaveFormGen/DEV=device/STRT=1/CLK={clkStr, 0} wavegenStr;AbortOnRTE
 #endif
