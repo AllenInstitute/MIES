@@ -142,7 +142,12 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 		PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
 		PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
 		PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
+
+		if(!s.MD)
+			PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
+		else
+			CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
+		endif
 
 		PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
 

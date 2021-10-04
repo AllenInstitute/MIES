@@ -54,10 +54,15 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
 	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
 	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = "4")
+
+	if(!s.MD)
+		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
+	else
+		CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
+	endif
 
 	DoUpdate/W=$device
 
