@@ -205,7 +205,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 
 	BSP_InitMainCheckboxes(bsPanel)
 
-	PGC_SetAndActivateControl(bsPanel, "SF_InfoTab", val = 0)
 	BSP_UpdateHelpNotebook(mainPanel)
 
 	SetWindow $bsPanel, hook(sweepFormula)=BSP_SweepFormulaHook

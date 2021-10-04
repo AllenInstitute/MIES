@@ -92,7 +92,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	// store current positions as reference
 	StoreCurrentPanelsResizeInfo(bsPanel)
 
-	TabControl SF_InfoTab, WIN = $bsPanel, disable=2
+	TabControl SF_InfoTab, WIN = $bsPanel, value=0, disable=1
 
 	// invalidate main panel
 	SetWindow $panelTitle, userData(panelVersion) = ""
