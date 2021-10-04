@@ -208,7 +208,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	PGC_SetAndActivateControl(bsPanel, "SF_InfoTab", val = 0)
 	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
 
-	BSP_SetSFControlStatus(bsPanel)
 	BSP_UpdateHelpNotebook(mainPanel)
 
 	SetWindow $bsPanel, hook(sweepFormula)=BSP_SweepFormulaHook
@@ -500,6 +499,7 @@ static Function BSP_InitMainCheckboxes(win)
 
 	BSP_SetOVSControlStatus(bsPanel)
 	BSP_SetARControlStatus(bsPanel)
+	BSP_SetSFControlStatus(bsPanel)
 
 	return 1
 End
