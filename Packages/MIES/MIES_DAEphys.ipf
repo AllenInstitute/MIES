@@ -5054,8 +5054,14 @@ static Function DAP_UnlockDevice(panelTitle)
 
 	DAP_SerializeCommentNotebook(panelTitle)
 	DAP_LockCommentNotebook(panelTitle)
-	PGC_SetAndActivateControl(panelTitle, "button_Hardware_P_Disable")
-	PGC_SetAndActivateControl(panelTitle, "button_Hardware_PUser_Disable")
+
+	if(!IsControlDisabled(panelTitle, "button_Hardware_P_Disable"))
+		PGC_SetAndActivateControl(panelTitle, "button_Hardware_P_Disable")
+	endif
+
+	if(!IsControlDisabled(panelTitle, "button_Hardware_PUser_Disable"))
+		PGC_SetAndActivateControl(panelTitle, "button_Hardware_PUser_Disable")
+	endif
 
 	if(DeviceHasFollower(panelTitle))
 		DAP_RemoveALLYokedDACs(panelTitle)
