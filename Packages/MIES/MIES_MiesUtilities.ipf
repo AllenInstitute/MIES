@@ -1848,7 +1848,7 @@ Function/S GetAllDevices()
 	return list
 End
 
-/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have acquired data.
+/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have content.
 ///
 /// @param contentType [optional, defaults to CONTENT_TYPE_SWEEP] type of
 ///                    content to look for, one of @ref CONTENT_TYPES
