@@ -122,7 +122,7 @@ Function/WAVE DeviceNameGeneratorMD1()
 #ifdef TESTS_WITH_YOKING
 #define *** ITC18USB has no Yoking support
 #else
-	devList = AddListItem("ITC18USB_dev_0", devList, ":")
+	devList = AddListItem("ITC18USB_Dev_0", devList, ":")
 	lblList = AddListItem("ITC", lblList)
 #endif
 
@@ -131,10 +131,10 @@ Function/WAVE DeviceNameGeneratorMD1()
 #ifdef TESTS_WITH_ITC1600_HARDWARE
 
 #ifdef TESTS_WITH_YOKING
-	devList = AddListItem("ITC1600_dev_0;ITC1600_dev_1", devList, ":")
+	devList = AddListItem("ITC1600_Dev_0;ITC1600_Dev_1", devList, ":")
 	lblList = AddListItem("ITC600_YOKED", lblList)
 #else
-	devList = AddListItem("ITC1600_dev_0", devList, ":")
+	devList = AddListItem("ITC1600_Dev_0", devList, ":")
 	lblList = AddListItem("ITC600", lblList)
 #endif
 
