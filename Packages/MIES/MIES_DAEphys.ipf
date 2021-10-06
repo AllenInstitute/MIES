@@ -944,7 +944,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 
 					ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_SEARCH)
 					str = SelectString(isCustomSearchString, "", searchString)
-					PGC_SetAndActivateControl(panelTitle, ctrl, str = str)
+					PGC_SetAndActivateControl(panelTitle, ctrl, str = str, mode = PGC_MODE_SKIP_ON_DISABLED)
 					DAG_Update(panelTitle, ctrl, str = str)
 
 					ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
