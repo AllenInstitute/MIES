@@ -1656,6 +1656,12 @@ Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
 		Make/FREE/N=(DimSize(indizes, ROWS)) sweeps = labnotebookValues[indizes[p]][sweepCol][0]
 	endif
 
+	WAVE/Z cleanSweeps = ZapNaNs(sweeps)
+
+	if(!WaveExists(cleanSweeps))
+		return $""
+	endif
+
 	// @todo IP9: Make it threadsafe once FindDuplicates is threadsafe
 	return DeleteDuplicates(sweeps)
 End
