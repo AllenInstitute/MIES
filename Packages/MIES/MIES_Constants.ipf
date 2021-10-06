@@ -862,6 +862,7 @@ StrConstant CONTROLS_DISABLE_DURING_DAQ_TP = "Check_Settings_BkgTP;Check_Setting
 /// @{
 Constant CONTENT_TYPE_SWEEP     = 0x01
 Constant CONTENT_TYPE_TPSTORAGE = 0x02
+Constant CONTENT_TYPE_COMMENT   = 0x04
 Constant CONTENT_TYPE_ALL       = 0xFF
 /// @}
 

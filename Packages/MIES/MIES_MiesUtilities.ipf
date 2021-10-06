@@ -1848,6 +1848,29 @@ Function/S GetAllDevices()
 	return list
 End
 
+static Function DeviceHasUserComments(string device)
+
+	string userCommentDraft, userCommentNB, userComment, commentNotebook
+
+	userComment = ROStr(GetUserComment(device))
+
+	if(WindowExists(device))
+		userCommentDraft = DAG_GetTextualValue(device, "SetVar_DataAcq_Comment")
+
+		commentNotebook = DAP_GetCommentNotebook(device)
+		if(WindowExists(commentNotebook))
+			userCommentNB = GetNotebookText(commentNotebook)
+		else
+			userCommentNB = ""
+		endif
+	else
+		userCommentNB    = ""
+		userCommentDraft = ""
+	endif
+
+	return !IsEmpty(userComment) || !IsEmpty(userCommentDraft) || !IsEmpty(userCommentNB)
+End
+
 /// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have content.
 ///
 /// @param contentType [optional, defaults to CONTENT_TYPE_SWEEP] type of
@@ -1881,6 +1904,12 @@ Function/S GetAllDevicesWithContent([contentType])
 		if(contentType & CONTENT_TYPE_TPSTORAGE                                     \
 		   && DataFolderExists(testPulsePath)                                       \
 		   && ItemsInList(GetListOfObjects($testPulsePath, TP_STORAGE_REGEXP)) > 0)
+			list = AddListItem(device, list, ";", inf)
+			continue
+		endif
+
+		if(contentType & CONTENT_TYPE_COMMENT \
+		   && DeviceHasUserComments(device))
 			list = AddListItem(device, list, ";", inf)
 			continue
 		endif
