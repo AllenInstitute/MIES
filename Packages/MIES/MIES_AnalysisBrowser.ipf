@@ -2863,7 +2863,7 @@ static Function AB_ReExport(variable index, variable overwrite)
 		path = path + "::" + GetFile(path)
 		DuplicateDataFolder/O=2 source, $path
 
-		// Mock deviceID for GetAllDevicesWithContent
+		// Mock deviceID for GetAllDevices
 		NVAR deviceID = $GetDAQDeviceID(device)
 
 		DFREF dfr = GetDeviceDataPath(device)
