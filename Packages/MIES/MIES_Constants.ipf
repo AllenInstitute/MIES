@@ -621,7 +621,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION           = 53
+Constant DA_EPHYS_PANEL_VERSION           = 54
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 30
 Constant WAVEBUILDER_PANEL_VERSION        = 11
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
