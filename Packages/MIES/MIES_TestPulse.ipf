@@ -661,8 +661,7 @@ Function TP_Teardown(panelTitle, [fast])
 	endif
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
-		EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
-		DAP_SwitchSingleMultiMode(panelTitle)
+		DAP_HandleSingleDeviceDependentControls(panelTitle)
 	endif
 
 	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)

@@ -2101,3 +2101,48 @@ Function [string recMacro, variable type] GetRecreationMacroAndType(string win, 
 
 	return [S_recreation, abs(V_flag)]
 End
+
+/// @brief Check and disable dependent controls
+///
+/// Enables a list of checkbox controls and stores their
+/// current values as user data before disabling them. On switching back their
+/// previous values are restored and they are also enabled again.
+Function AdaptDependentControls(string panelTitle, string controls, variable newState)
+
+	variable numControls, oldState, i
+	string ctrl
+
+	newState = !!newState
+	numControls = ItemsInList(controls)
+
+	if(newState)
+		for(i = 0; i < numControls; i += 1)
+			ctrl = StringFromList(i, controls)
+			// store current state
+			oldState = DAG_GetNumericalValue(panelTitle, ctrl)
+			SetControlUserData(panelTitle, ctrl, "oldState", num2str(oldState))
+
+			// and check
+			PGC_SetAndActivateControl(panelTitle, ctrl, val = CHECKBOX_SELECTED)
+		endfor
+
+		// and disable
+		DisableControls(panelTitle, controls)
+	else
+		// enable
+		EnableControls(panelTitle, controls)
+
+		for(i = 0; i < numControls; i += 1)
+			ctrl = StringFromList(i, controls)
+
+			// and read old state
+			oldState = str2num(GetUserData(panelTitle, ctrl, "oldState"))
+
+			// invalidate old state
+			SetControlUserData(panelTitle, ctrl, "oldState", "")
+
+			// set old state
+			PGC_SetAndActivateControl(panelTitle, ctrl, val = oldState)
+		endfor
+	endif
+End
