@@ -36,13 +36,12 @@ End
 
 /// @brief Stores the given TP wave
 ///
-/// @param panelTitle panel title
+/// @param panelTitle device
+/// @param TPWave     reference to wave holding the TP data, see GetOscilloscopeWave()
+/// @param tpMarker   unique number for this set of TPs from all TP channels
+/// @param hsList     list of headstage numbers in the same order as the columns of TPWave
 ///
-/// @param TPWave reference to wave holding the TP data in the same format as OscilloscopeData
-///
-/// @param tpMarker unique number for this set of TPs from all TP channels
-///
-/// @param hsList list of headstage numbers in the same order as the columns of TPWave
+/// The stored test pulse waves will have column dimension labels in the format `HS_X`.
 Function TP_StoreTP(panelTitle, TPWave, tpMarker, hsList)
 	string panelTitle
 	WAVE TPWave
