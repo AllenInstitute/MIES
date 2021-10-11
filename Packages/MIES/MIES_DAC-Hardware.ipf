@@ -2094,7 +2094,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 
 	AssertOnAndClearRTError()
 	try
-		NewFIFO $fifoName
+		NewFIFO $fifoName; AbortOnRTE
 		aiCnt = 0
 		ttlCnt = 0
 		for(i = 0;i < channels; i += 1)
