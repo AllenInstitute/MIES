@@ -55,9 +55,19 @@ Function TP_StoreTP(panelTitle, TPWave, tpMarker, hsList)
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 	EnsureLargeEnoughWave(storedTP, minimumSize=index)
 	Note/K TPWave
+
 	SetStringInWaveNote(TPWave, "TimeStamp", GetISO8601TimeStamp(numFracSecondsDigits = 3))
 	SetNumberInWaveNote(TPWave, "TPMarker", tpMarker, format="%d")
 	SetStringInWaveNote(TPWave, "Headstages", hsList)
+
+	// setting dimension labels only works if the dimension size is not zero
+	if(DimSize(TPWave, COLS) == 0)
+		Redimension/N=(-1, 1, -1, -1) TPWave
+	endif
+
+	hsList = ReplaceString(",", hsList, ";")
+	SetDimensionLabels(TPWave, AddPrefixToEachListItem("HS_", hsList), COLS)
+
 	storedTP[index++] = TPWave
 
 	SetNumberInWaveNote(storedTP, NOTE_INDEX, index)
