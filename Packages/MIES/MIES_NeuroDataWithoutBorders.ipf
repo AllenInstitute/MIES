@@ -572,6 +572,8 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 
 		// init: 2/3
 		s.device = panelTitle
+
+		DAP_SerializeCommentNotebook(panelTitle)
 		s.userComment = ROStr(GetUserComment(panelTitle))
 
 		WAVE s.numericalValues = GetLBNumericalValues(panelTitle)
@@ -896,6 +898,8 @@ Function NWB_AppendSweepDuringDAQ(string panelTitle, WAVE DAQDataWave, WAVE DAQC
 	STRUCT NWBAsyncParameters s
 
 	s.device = panelTitle
+
+	DAP_SerializeCommentNotebook(panelTitle)
 	s.userComment = ROStr(GetUserComment(panelTitle))
 
 	s.sweep = sweep

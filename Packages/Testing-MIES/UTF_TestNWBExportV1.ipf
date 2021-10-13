@@ -21,6 +21,14 @@ static Function TestHistory(fileID)
 	CHECK_WAVE(history, TEXT_WAVE)
 end
 
+static Function/S TestUserComment(variable fileID, string device)
+	WAVE/Z/T userComment = H5_LoadDataSet(fileID, "/general/user_comment/" + device + "/userComment")
+	CHECK_WAVE(userComment, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(userComment, ROWS), 1)
+
+	return userComment[0]
+End
+
 static Function TestLabnotebooks(fileID, device)
 	variable fileID
 	string device
@@ -627,6 +635,9 @@ Function TestNwbExportV1()
 
 	// check history
 	TestHistory(fileID)
+
+	// check user comment
+	TestUserComment(fileID, device)
 
 	// check LBNs
 	TestLabnotebooks(fileID, device)

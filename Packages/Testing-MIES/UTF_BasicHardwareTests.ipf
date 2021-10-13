@@ -4794,3 +4794,37 @@ Function ExportIntoNWBSweepBySweep_REENTRY([str])
 	CHECK_PROPER_STR(stimulus)
 	HDF5CloseFile fileID
 End
+
+Function ExportOnlyCommentsIntoNWB_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_Comment", str = "abcdefgh ijjkl")
+
+	// don't start TP/DAQ at all
+	Abort
+End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function ExportOnlyCommentsIntoNWB([string str])
+
+	string discLocation, userComment, userCommentRef
+	variable fileID
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	try
+		AcquireData(s, str, preAcquireFunc = ExportOnlyCommentsIntoNWB_IGNORE)
+	catch
+		CHECK_EQUAL_VAR(V_AbortCode, -3)
+	endtry
+
+	discLocation = TestNWBExportV2#TestFileExport()
+	CHECK(FileExists(discLocation))
+
+	fileID = H5_OpenFile(discLocation)
+	userComment = TestNWBExportV2#TestUserComment(fileID, str)
+	userCommentRef = "abcdefgh ijjkl"
+	CHECK(strsearch(userComment, userCommentRef, 0) >= 0)
+
+	H5_CloseFile(fileID)
+End
