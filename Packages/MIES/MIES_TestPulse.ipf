@@ -18,6 +18,11 @@ static Constant TP_EVAL_POINT_OFFSET          = 5
 // comment in for debugging
 // #define TP_ANALYSIS_DEBUGGING
 
+/// @brief Check if the value is a valid baseline fraction
+Function TP_IsValidBaselineFraction(variable value)
+	return value >= 0.25 && value <= 0.49
+End
+
 /// @brief Return the total length of a single testpulse with baseline
 ///
 /// @param pulseDuration duration of the high portion of the testpulse in points or time
@@ -25,7 +30,7 @@ static Constant TP_EVAL_POINT_OFFSET          = 5
 Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 	variable pulseDuration, baselineFrac
 
-	ASSERT(baselineFrac > 0 && baselineFrac < 0.5, "baselineFrac is out of range")
+	ASSERT(TP_IsValidBaselineFraction(baselineFrac), "baselineFrac is out of range")
 	return pulseDuration / (1 - 2 * baselineFrac)
 End
 
