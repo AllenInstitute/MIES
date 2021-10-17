@@ -20,7 +20,7 @@ static Constant TP_EVAL_POINT_OFFSET          = 5
 
 /// @brief Check if the value is a valid baseline fraction
 Function TP_IsValidBaselineFraction(variable value)
-	return value >= 0.25 && value <= 0.49
+	return value >= TP_BASELINE_FRACTION_LOW && value <= TP_BASELINE_FRACTION_HIGH
 End
 
 /// @brief Return the total length of a single testpulse with baseline
