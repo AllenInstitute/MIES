@@ -2215,7 +2215,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_ScalingZero,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_ScalingZero,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_ScalingZero,value=0
-	CheckBox check_Settings_SetOption_04,pos={215.00,349.00},size={115.00,15.00},disable=3,proc=DAP_CheckProc_UpdateGuiState
+	CheckBox check_Settings_SetOption_04,pos={215.00,349.00},size={115.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
 	CheckBox check_Settings_SetOption_04,title="Turn off headstage"
 	CheckBox check_Settings_SetOption_04,help={"Turns off AD associated with DA via Channel and Amplifier Assignments"}
 	CheckBox check_Settings_SetOption_04,userdata(tabnum)="5"
