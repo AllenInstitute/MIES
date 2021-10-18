@@ -5533,8 +5533,6 @@ Function StartZeroMQSockets([variable forceRestart])
 
 	variable i, port, err, numBinds
 
-#if exists("zeromq_stop")
-
 	if(ParamIsDefault(forceRestart))
 		forceRestart = 0
 	else
@@ -5585,12 +5583,6 @@ Function StartZeroMQSockets([variable forceRestart])
 
 	ASSERT(numBinds == 2, "Could not establish ZeroMQ bind connections.")
 	zeromq_handler_start()
-
-#else
-
-	DEBUGPRINT("ZeroMQ XOP is not present")
-
-#endif
 End
 
 /// @brief Split an DAQDataWave into one 1D-wave per channel/ttlBit
@@ -7071,19 +7063,12 @@ Function UpdateZeroMQXOPLoggingTemplate()
 	variable JSONid
 	string str
 
-#if exists("zeromq_set_logging_template")
-
 	JSONid = LOG_GenerateEntryTemplate("XOP")
 
 	str = JSON_Dump(JSONid)
 	JSON_Release(JSONid)
 
 	zeromq_set_logging_template(str)
-#else
-
-	DEBUGPRINT("ZeroMQ XOP is not present")
-
-#endif
 End
 
 /// @brief Return the disc location of the (possibly non-existing) ZeroMQ-XOP logfile
