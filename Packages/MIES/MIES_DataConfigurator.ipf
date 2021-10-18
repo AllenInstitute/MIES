@@ -11,17 +11,21 @@
 /// test pulse related to the DAQ data and config waves
 
 /// @brief Update global variables used by the Testpulse or DAQ
-///
-/// @param panelTitle device
-static Function DC_UpdateGlobals(panelTitle)
-	string panelTitle
+static Function DC_UpdateGlobals(string panelTitle, variable dataAcqOrTP)
 
 	// we need to update the list of analysis functions here as the stimset
 	// can change due to indexing, etc.
 	// @todo investigate if this is really required here
 	AFM_UpdateAnalysisFunctionWave(panelTitle)
 
-	TP_UpdateTPSettingsLBNWaves(panelTitle)
+	TP_UpdateTPSettingsCalculated(panelTitle)
+
+	KillOrMoveToTrash(wv=GetTPSettingsLabnotebook(panelTitle))
+	KillOrMoveToTrash(wv=GetTPSettingsLabnotebookKeyWave(panelTitle))
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		TP_UpdateTPLBNSettings(panelTitle)
+	endif
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	panelTitleG = panelTitle
@@ -80,7 +84,7 @@ Function DC_Configure(panelTitle, dataAcqOrTP, [multiDevice])
 		endif
 	endif
 
-	DC_UpdateGlobals(panelTitle)
+	DC_UpdateGlobals(panelTitle, dataAcqOrTP)
 
 	numActiveChannels = DC_ChannelCalcForDAQConfigWave(panelTitle, dataAcqOrTP)
 	DC_MakeDAQConfigWave(panelTitle, numActiveChannels)
@@ -987,7 +991,6 @@ static Function DC_PrepareLBNEntries(string panelTitle, STRUCT DataConfiguration
 	DC_DocumentChannelProperty(panelTitle, "Multi Device mode", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
 	DC_DocumentChannelProperty(panelTitle, "Background Testpulse", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_BkgTP"))
 	DC_DocumentChannelProperty(panelTitle, "Background DAQ", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"))
-	DC_DocumentChannelProperty(panelTitle, "TP buffer size", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_Settings_TPBuffer"))
 	DC_DocumentChannelProperty(panelTitle, "TP during ITI", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP"))
 	DC_DocumentChannelProperty(panelTitle, "Amplifier change via I=0", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_AmpIEQZstep"))
 	DC_DocumentChannelProperty(panelTitle, "Skip analysis functions", INDEP_HEADSTAGE, NaN, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs"))
@@ -1386,9 +1389,9 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string pa
 		if(IsFinite(headstage))
 			channelMode = ChannelClampMode[channel][%DAC][%ClampMode]
 			if(channelMode == V_CLAMP_MODE)
-				s.DACAmp[i][%TPAMP] = TPSettings[%amplitudeVC][INDEP_HEADSTAGE]
+				s.DACAmp[i][%TPAMP] = TPSettings[%amplitudeVC][headstage]
 			elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
-				s.DACAmp[i][%TPAMP] = TPSettings[%amplitudeIC][INDEP_HEADSTAGE]
+				s.DACAmp[i][%TPAMP] = TPSettings[%amplitudeIC][headstage]
 			else
 				ASSERT(0, "Unknown clamp mode")
 			endif

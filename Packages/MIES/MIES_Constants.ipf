@@ -256,6 +256,7 @@ StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
 StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
 StrConstant PRESSURE_CTRL_LAST_INVOC       = "PressureControlLastInvocation"
 StrConstant INDEX_ON_TP_START              = "IndexOnTestPulseStart"
+StrConstant AUTOTP_LAST_INVOCATION_KEY     = "AutoTPLastInvocation"
 /// @}
 
 /// @name Modes for SaveExperimentSpecial
@@ -625,7 +626,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION           = 54
+Constant DA_EPHYS_PANEL_VERSION           = 55
 Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 33
 Constant WAVEBUILDER_PANEL_VERSION        = 11
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
@@ -637,7 +638,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 52
+Constant LABNOTEBOOK_VERSION = 53
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
@@ -1615,3 +1616,33 @@ Constant PGC_MODE_SKIP_ON_DISABLED   = 2
 
 Constant TP_BASELINE_FRACTION_LOW  = 0.25
 Constant TP_BASELINE_FRACTION_HIGH = 0.49
+
+StrConstant DAEPHYS_TP_CONTROLS_ALL        = "SetVar_DataAcq_TPDuration;SetVar_DataAcq_TPBaselinePerc;SetVar_DataAcq_TPAmplitude;SetVar_DataAcq_TPAmplitudeIC;setvar_Settings_TPBuffer;setvar_Settings_TP_RTolerance;Check_TP_SendToAllHS;check_DataAcq_AutoTP;setvar_DataAcq_IinjMax;setvar_DataAcq_targetVoltage;setvar_DataAcq_targetVoltageRange;setvar_Settings_autoTP_perc;setvar_Settings_autoTP_int"
+StrConstant DAEPHYS_TP_CONTROLS_DEPEND     = "SetVar_DataAcq_TPAmplitude;SetVar_DataAcq_TPAmplitudeIC;check_DataAcq_AutoTP;setvar_DataAcq_IinjMax;setvar_DataAcq_targetVoltage;setvar_DataAcq_targetVoltageRange"
+StrConstant DAEPHYS_TP_CONTROLS_INDEP      = "SetVar_DataAcq_TPDuration;SetVar_DataAcq_TPBaselinePerc;setvar_Settings_TPBuffer;setvar_Settings_TP_RTolerance;Check_TP_SendToAllHS;setvar_Settings_autoTP_perc;setvar_Settings_autoTP_int"
+StrConstant DAEPHYS_TP_CONTROLS_NO_RESTART = "Check_TP_SendToAllHS;check_DataAcq_AutoTP;setvar_DataAcq_IinjMax;setvar_DataAcq_targetVoltage;setvar_DataAcq_targetVoltageRange;setvar_Settings_autoTP_perc;setvar_Settings_autoTP_int"
+
+Constant TP_BASELINE_RATIO_HIGH = 0.285714 // 1 / 3.50
+Constant TP_BASELINE_RATIO_OPT  = 0.25     // 1 / 4.00
+Constant TP_BASELINE_RATIO_LOW  = 0.222222 // 1 / 4.50
+
+Constant TP_AUTO_TP_CONSECUTIVE_PASSES            = 3
+Constant TP_AUTO_TP_BASELINE_RANGE_EXCEEDED_FAILS = 3
+
+Constant TP_OVERRIDE_RESULTS_AUTO_TP = 0x0
+
+/// Possible result values for TP_AutoFitBaseline
+/// @anchor TPBaselineFitResults
+/// @{
+Constant TP_BASELINE_FIT_RESULT_OK        = 0
+Constant TP_BASELINE_FIT_RESULT_ERROR     = 1
+// future space for more elaborated error codes
+Constant TP_BASELINE_FIT_RESULT_TOO_NOISY = 32
+/// @}
+
+/// Possible option values for TP_GetValuesFromTPStorage
+/// @anchor TPStorageQueryingOptions
+/// @{
+Constant TP_GETVALUES_DEFAULT            = 0x0
+Constant TP_GETVALUES_LATEST_AUTOTPCYCLE = 0x1
+/// @}

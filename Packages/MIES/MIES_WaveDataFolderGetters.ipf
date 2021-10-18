@@ -24,6 +24,8 @@ static Constant WAVE_TYPE_TEXTUAL   = 0x2
 
 static Constant PULSE_WAVE_VERSION = 4
 
+static StrConstant TP_SETTINGS_LABELS = "bufferSize;resistanceTol;sendToAllHS;baselinePerc;durationMS;amplitudeVC;amplitudeIC;autoTPEnable;autoAmpMaxCurrent;autoAmpVoltage;autoAmpVoltageRange;autoTPPercentage;autoTPInterval;autoTPCycleID"
+
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
 /// Rows:
@@ -1876,25 +1878,24 @@ End
 /// - 34: Background Testpulse
 /// - 35: Background DAQ
 /// - 36: Sampling interval multiplier
-/// - 37: TP buffer size
-/// - 38: TP during ITI
-/// - 39: Amplifier change via I=0
-/// - 40: Skip analysis functions
-/// - 41: Repeat sweep on async alarm
-/// - 42: Set Cycle Count
-/// - 43: Stimset cycle ID
-/// - 44: Digitizer Hardware Type, one of @ref HardwareDACTypeConstants
-/// - 45: Fixed frequency acquisition
-/// - 46: Headstage Active
-/// - 47: Clamp Mode
-/// - 48: Igor Pro bitness
-/// - 49: DA ChannelType, one of @ref DaqChannelTypeConstants
-/// - 50: AD ChannelType, one of @ref DaqChannelTypeConstants
-/// - 51: oodDAQ member, true if headstage takes part in oodDAQ mode, false otherwise
-/// - 52: Autobias % (DAEphys->Settings->Amplifier)
-/// - 53: Autobias Interval (DAEphys->Settings->Amplifier)
-/// - 54: TP after DAQ
-/// - 55: Epochs version
+/// - 37: TP during ITI
+/// - 38: Amplifier change via I=0
+/// - 39: Skip analysis functions
+/// - 40: Repeat sweep on async alarm
+/// - 41: Set Cycle Count
+/// - 42: Stimset cycle ID
+/// - 43: Digitizer Hardware Type, one of @ref HardwareDACTypeConstants
+/// - 44: Fixed frequency acquisition
+/// - 45: Headstage Active
+/// - 46: Clamp Mode
+/// - 47: Igor Pro bitness
+/// - 48: DA ChannelType, one of @ref DaqChannelTypeConstants
+/// - 49: AD ChannelType, one of @ref DaqChannelTypeConstants
+/// - 50: oodDAQ member, true if headstage takes part in oodDAQ mode, false otherwise
+/// - 51: Autobias % (DAEphys->Settings->Amplifier)
+/// - 52: Autobias Interval (DAEphys->Settings->Amplifier)
+/// - 53: TP after DAQ
+/// - 54: Epochs version
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -1913,9 +1914,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 56) wv
+		Redimension/N=(-1, 55) wv
 	else
-		Make/T/N=(3, 56) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 55) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -2072,81 +2073,77 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][36]     = "a. u."
 	wv[%Tolerance][36] = "1"
 
-	wv[%Parameter][37] = "TP buffer size"
-	wv[%Units][37]     = "a. u."
-	wv[%Tolerance][37] = "1"
+	wv[%Parameter][37] = "TP during ITI"
+	wv[%Units][37]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][37] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][38] = "TP during ITI"
+	wv[%Parameter][38] = "Amplifier change via I=0"
 	wv[%Units][38]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][38] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][39] = "Amplifier change via I=0"
+	wv[%Parameter][39] = "Skip analysis functions"
 	wv[%Units][39]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][39] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][40] = "Skip analysis functions"
+	wv[%Parameter][40] = "Repeat sweep on async alarm"
 	wv[%Units][40]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][40] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][41] = "Repeat sweep on async alarm"
-	wv[%Units][41]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][41] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][41] = "Set Cycle Count"
+	wv[%Units][41]     = "a. u."
+	wv[%Tolerance][41] = "1"
 
-	wv[%Parameter][42] = "Set Cycle Count"
+	wv[%Parameter][42] = STIMSET_ACQ_CYCLE_ID_KEY
 	wv[%Units][42]     = "a. u."
 	wv[%Tolerance][42] = "1"
 
-	wv[%Parameter][43] = STIMSET_ACQ_CYCLE_ID_KEY
+	wv[%Parameter][43] = "Digitizer Hardware Type"
 	wv[%Units][43]     = "a. u."
 	wv[%Tolerance][43] = "1"
 
-	wv[%Parameter][44] = "Digitizer Hardware Type"
-	wv[%Units][44]     = "a. u."
+	wv[%Parameter][44] = "Fixed frequency acquisition"
+	wv[%Units][44]     = "kHz"
 	wv[%Tolerance][44] = "1"
 
-	wv[%Parameter][45] = "Fixed frequency acquisition"
-	wv[%Units][45]     = "kHz"
-	wv[%Tolerance][45] = "1"
+	wv[%Parameter][45] = "Headstage Active"
+	wv[%Units][45]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][45] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][46] = "Headstage Active"
-	wv[%Units][46]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Parameter][46] = "Clamp Mode"
+	wv[%Units][46]     = "a. u."
 	wv[%Tolerance][46] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][47] = "Clamp Mode"
+	wv[%Parameter][47] = "Igor Pro bitness"
 	wv[%Units][47]     = "a. u."
 	wv[%Tolerance][47] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][48] = "Igor Pro bitness"
+	wv[%Parameter][48] = "DA ChannelType"
 	wv[%Units][48]     = "a. u."
-	wv[%Tolerance][48] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Tolerance][48] = "1"
 
-	wv[%Parameter][49] = "DA ChannelType"
+	wv[%Parameter][49] = "AD ChannelType"
 	wv[%Units][49]     = "a. u."
 	wv[%Tolerance][49] = "1"
 
-	wv[%Parameter][50] = "AD ChannelType"
-	wv[%Units][50]     = "a. u."
-	wv[%Tolerance][50] = "1"
+	wv[%Parameter][50] = "oodDAQ member"
+	wv[%Units][50]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][50] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][51] = "oodDAQ member"
-	wv[%Units][51]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][51] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][51] = "Autobias %"
+	wv[%Units][51]     = "a. u."
+	wv[%Tolerance][51] = "0.1"
 
-	wv[%Parameter][52] = "Autobias %"
-	wv[%Units][52]     = "a. u."
+	wv[%Parameter][52] = "Autobias Interval"
+	wv[%Units][52]     = "s"
 	wv[%Tolerance][52] = "0.1"
 
-	wv[%Parameter][53] = "Autobias Interval"
-	wv[%Units][53]     = "s"
-	wv[%Tolerance][53] = "0.1"
+	wv[%Parameter][53] = "TP after DAQ"
+	wv[%Units][53]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][53] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][54] = "TP after DAQ"
-	wv[%Units][54]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][54] = LABNOTEBOOK_NO_TOLERANCE
-
-	wv[%Parameter][55] = "Epochs version"
-	wv[%Units][55]     = "a. u."
-	wv[%Tolerance][55] = "1"
+	wv[%Parameter][54] = "Epochs version"
+	wv[%Units][54]     = "a. u."
+	wv[%Tolerance][54] = "1"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
@@ -2373,18 +2370,23 @@ End
 /// - 22: TPMarker unique number identifying this set of TPs
 /// - 23: Cell state: Pressure control values defining the cell state, one of @ref CellStateValues
 /// - 24: Testpulse Cycle Id (changes whenever TP is started, allows to group TPs together)
+/// - 25: Auto TP Amplitude: success/fail state
+/// - 26: Auto TP Baseline: success/fail state
+/// - 27: Auto TP Baseline Range Exceeded: True/False
+/// - 28: Auto TP Cycle ID: Unique number which is constant until the "Auto TP"
+///       state is switched (aka on->off or off->on)
 Function/Wave GetTPStorage(panelTitle)
 	string panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 14
+	variable versionOfNewWave = 15
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, NUM_HEADSTAGES, 25)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, 29)/D wv
 
 		if(WaveVersionIsSmaller(wv, 10))
 			wv[][][17]    = NaN
@@ -2393,47 +2395,55 @@ Function/Wave GetTPStorage(panelTitle)
 		if(WaveVersionIsSmaller(wv, 11))
 			wv[][][22]    = NaN
 		endif
+		// no size change on version 12
 		if(WaveVersionIsSmaller(wv, 13))
 			wv[][][23]    = NaN
 		endif
 		if(WaveVersionIsSmaller(wv, 14))
 			wv[][][24] = NaN
 		endif
+		if(WaveVersionIsSmaller(wv, 15))
+			wv[][][25, 28] = NaN
+		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 25)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 29)/D dfr:TPStorage/Wave=wv
 
 		wv = NaN
 
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	endif
 
-	SetDimLabel COLS,  -1,  Headstage                 , wv
+	SetDimLabel COLS,  -1,  Headstage                   , wv
 
-	SetDimLabel LAYERS,  0, HoldingCmd_VC             , wv
-	SetDimLabel LAYERS,  1, HoldingCmd_IC             , wv
-	SetDimLabel LAYERS,  2, PeakResistance            , wv
-	SetDimLabel LAYERS,  3, SteadyStateResistance     , wv
-	SetDimLabel LAYERS,  4, TimeInSeconds             , wv
-	SetDimLabel LAYERS,  5, DeltaTimeInSeconds        , wv
-	SetDimLabel LAYERS,  6, Rss_Slope                 , wv
-	SetDimLabel LAYERS,  7, Pressure                  , wv
-	SetDimLabel LAYERS,  8, TimeStamp                 , wv
-	SetDimLabel LAYERS,  9, TimeStampSinceIgorEpochUTC, wv
-	SetDimLabel LAYERS, 10, PressureChange            , wv
-	SetDimLabel LAYERS, 11, Baseline_VC               , wv
-	SetDimLabel LAYERS, 12, Baseline_IC               , wv
-	SetDimLabel LAYERS, 13, ADC                       , wv
-	SetDimLabel LAYERS, 14, DAC                       , wv
-	SetDimLabel LAYERS, 15, Headstage                 , wv
-	SetDimLabel LAYERS, 16, ClampMode                 , wv
-	SetDimLabel LAYERS, 17, UserPressure              , wv
-	SetDimLabel LAYERS, 18, PressureMethod            , wv
-	SetDimLabel LAYERS, 19, ValidState                , wv
-	SetDimLabel LAYERS, 20, UserPressureType          , wv
-	SetDimLabel LAYERS, 21, UserPressureTimeStampUTC  , wv
-	SetDimLabel LAYERS, 22, TPMarker                  , wv
-	SetDimLabel LAYERS, 23, CellState                 , wv
-	SetDimLabel LAYERS, 24, TPCycleID                 , wv
+	SetDimLabel LAYERS,  0, HoldingCmd_VC               , wv
+	SetDimLabel LAYERS,  1, HoldingCmd_IC               , wv
+	SetDimLabel LAYERS,  2, PeakResistance              , wv
+	SetDimLabel LAYERS,  3, SteadyStateResistance       , wv
+	SetDimLabel LAYERS,  4, TimeInSeconds               , wv
+	SetDimLabel LAYERS,  5, DeltaTimeInSeconds          , wv
+	SetDimLabel LAYERS,  6, Rss_Slope                   , wv
+	SetDimLabel LAYERS,  7, Pressure                    , wv
+	SetDimLabel LAYERS,  8, TimeStamp                   , wv
+	SetDimLabel LAYERS,  9, TimeStampSinceIgorEpochUTC  , wv
+	SetDimLabel LAYERS, 10, PressureChange              , wv
+	SetDimLabel LAYERS, 11, Baseline_VC                 , wv
+	SetDimLabel LAYERS, 12, Baseline_IC                 , wv
+	SetDimLabel LAYERS, 13, ADC                         , wv
+	SetDimLabel LAYERS, 14, DAC                         , wv
+	SetDimLabel LAYERS, 15, Headstage                   , wv
+	SetDimLabel LAYERS, 16, ClampMode                   , wv
+	SetDimLabel LAYERS, 17, UserPressure                , wv
+	SetDimLabel LAYERS, 18, PressureMethod              , wv
+	SetDimLabel LAYERS, 19, ValidState                  , wv
+	SetDimLabel LAYERS, 20, UserPressureType            , wv
+	SetDimLabel LAYERS, 21, UserPressureTimeStampUTC    , wv
+	SetDimLabel LAYERS, 22, TPMarker                    , wv
+	SetDimLabel LAYERS, 23, CellState                   , wv
+	SetDimLabel LAYERS, 24, TPCycleID                   , wv
+	SetDimLabel LAYERS, 25, AutoTPAmplitude             , wv
+	SetDimLabel LAYERS, 26, AutoTPBaseline              , wv
+	SetDimLabel LAYERS, 27, AutoTPBaselineRangeExceeded , wv
+	SetDimLabel LAYERS, 28, AutoTPCycleID               , wv
 
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
@@ -2559,16 +2569,20 @@ End
 /// @brief Return the testpulse results wave
 ///
 /// Rows:
-/// - Resistance Instantaneous: [MOhm]
-/// - Baseline Steady State: [mV] for IC, [pA] for VC
-/// - Resistance Steady State: [MOhm]
-/// - Elevated Steady State: [mV] for IC, [pA] for VC
-/// - Elevated Instantaneous: [mV] for IC, [pA] for VC
+/// - 0: Resistance Instantaneous: [MOhm]
+/// - 1: Baseline Steady State: [mV] for IC, [pA] for VC
+/// - 2: Resistance Steady State: [MOhm]
+/// - 3: Elevated Steady State: [mV] for IC, [pA] for VC
+/// - 4: Elevated Instantaneous: [mV] for IC, [pA] for VC
+/// - 5: Auto TP Amplitude: Pass/Fail
+/// - 6: Auto TP Baseline: Pass/Fail
+/// - 7: Auto TP Baseline range exceeded: True/False
+/// - 8: Auto TP Baseline fit result: One of @ref TPBaselineFitResults
 ///
 /// Columns:
 /// - NUM_HEADSTAGES
 Function/Wave GetTPResults(string panelTitle)
-	variable version = 2
+	variable version = 3
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE/D/Z/SDFR=dfr wv = results
@@ -2576,25 +2590,26 @@ Function/Wave GetTPResults(string panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
 	elseif(WaveExists(wv))
-		// do upgrade
-	else
-		Make/D/N=(5, NUM_HEADSTAGES) dfr:results/Wave=wv
+		Redimension/D/N=(9, NUM_HEADSTAGES) wv
 		wv = NaN
-
-		SetDimensionLabels(wv, "ResistanceInst;BaselineSteadyState;ResistanceSteadyState;ElevatedSteadyState;ElevatedInst", ROWS)
+	else
+		Make/D/N=(9, NUM_HEADSTAGES) dfr:results/Wave=wv
+		wv = NaN
 
 		// initialize with the old 1D waves
 		WAVE/D/Z/SDFR=dfr InstResistance, BaselineSSAvg, SSResistance
 
-		wv[%ResistanceInst][]        = WaveExists(InstResistance) ? InstResistance[q] : NaN
-		wv[%BaselineSteadyState][]   = WaveExists(BaselineSSAvg) ? BaselineSSAvg[q] : NaN
-		wv[%ResistanceSteadyState][] = WaveExists(SSResistance) ? SSResistance[q] : NaN
+		wv[0][] = WaveExists(InstResistance) ? InstResistance[q] : NaN
+		wv[1][] = WaveExists(BaselineSSAvg) ? BaselineSSAvg[q] : NaN
+		wv[2][] = WaveExists(SSResistance) ? SSResistance[q] : NaN
 
 		// and get rid of them
 		KillOrMoveToTrash(wv = InstResistance)
 		KillOrMoveToTrash(wv = BaselineSSAvg)
 		KillOrMoveToTrash(wv = SSResistance)
 	endif
+
+	SetDimensionLabels(wv, "ResistanceInst;BaselineSteadyState;ResistanceSteadyState;ElevatedSteadyState;ElevatedInst;AutoTPAmplitude;AutoTPBaseline;AutoTPBaselineRangeExceeded;AutoTPBaselineFitResult", ROWS)
 
 	SetWaveVersion(wv, version)
 
@@ -6769,6 +6784,26 @@ Function/WAVE GetYandXFormulas()
 	return wv
 End
 
+/// @brief Free wave version of GetTPSettingsFree()
+Function/WAVE GetTPSettingsFree()
+	Make/N=(14, LABNOTEBOOK_LAYER_COUNT)/D/FREE wv
+	wv = NaN
+
+	SetDimensionLabels(wv, TP_SETTINGS_LABELS, ROWS)
+
+	// supply initial values for headstage dependent controls
+	// see also DAEPHYS_TP_CONTROLS_DEPEND
+	wv[%amplitudeVC][0, NUM_HEADSTAGES - 1] = 10
+	wv[%amplitudeIC][0, NUM_HEADSTAGES - 1] = -50
+
+	wv[%autoTPEnable][0, NUM_HEADSTAGES - 1]        = 0
+	wv[%autoAmpMaxCurrent][0, NUM_HEADSTAGES - 1]   = 200
+	wv[%autoAmpVoltage][0, NUM_HEADSTAGES - 1]      = -5
+	wv[%autoAmpVoltageRange][0, NUM_HEADSTAGES - 1] = 0.5
+
+	return wv
+End
+
 /// @brief Return the testpulse GUI settings
 ///
 /// Rows:
@@ -6780,6 +6815,13 @@ End
 /// - Pulse duration [ms]
 /// - Amplitude VC
 /// - Amplitude IC
+/// - Auto TP: On/Off (Requires to also call TP_AutoTPGenerateNewCycleID() when writing)
+/// - Auto TP: Maximum current [pA]
+/// - Auto TP: Voltage [mV]
+/// - Auto TP: +/- Voltage [mV]
+/// - Auto TP: Percentage [%]
+/// - Auto TP: Interval [s]
+/// - Auto TP: Cycle ID
 ///
 /// Columns:
 /// - LABNOTEBOOK_LAYER_COUNT
@@ -6794,16 +6836,14 @@ Function/WAVE GetTPSettings(string panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		// do upgrade
+		Redimension/N=(14, -1) wv
+		SetDimensionLabels(wv, TP_SETTINGS_LABELS, ROWS)
 	else
-		Make/N=(6, LABNOTEBOOK_LAYER_COUNT)/D dfr:settings/WAVE=wv
-		wv = NaN
+		WAVE wv = GetTPSettingsFree()
+		MoveWave wv, dfr:settings
 	endif
 
-	SetDimensionLabels(wv, "bufferSize;resistanceTol;baselinePerc;durationMS;amplitudeVC;amplitudeIC", ROWS)
 	DAP_TPSettingsToWave(panelTitle, wv)
-
-	SetWaveVersion(wv, versionOfNewWave)
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -6835,7 +6875,7 @@ Function/WAVE GetTPSettingsCalculated(string panelTitle)
 	return wv
 End
 
-static Constant TP_SETTINGS_WAVE_VERSION = 1
+static Constant TP_SETTINGS_WAVE_VERSION = 2
 
 /// @brief Returns a wave reference to the TP settings key wave
 ///
@@ -6844,11 +6884,22 @@ static Constant TP_SETTINGS_WAVE_VERSION = 1
 /// - 1: Units
 /// - 2: Tolerance Factor
 ///
-/// Columns:
-/// - 0: TP Baseline Fraction
-/// - 1: TP Amplitude VC
-/// - 2: TP Amplitude IC
-/// - 3: TP Pulse Duration
+/// Columns (all entries headstage dependent except otherwise noted):
+/// -  0: TP Baseline Fraction (INDEP_HEADSTAGE)
+/// -  1: TP Amplitude VC
+/// -  2: TP Amplitude IC
+/// -  3: TP Pulse Duration (INDEP_HEADSTAGE)
+/// -  4: TP Auto On/Off
+/// -  5: TP Auto max current
+/// -  6: TP Auto voltage
+/// -  7: TP Auto voltage range
+/// -  8: TP buffer size (INDEP_HEADSTAGE)
+/// -  9: Minimum TP resistance for tolerance (INDEP_HEADSTAGE)
+/// - 10: Send TP settings to all headstages (INDEP_HEADSTAGE)
+/// - 11: TP Auto percentage (INDEP_HEADSTAGE)
+/// - 12: TP Auto interval (INDEP_HEADSTAGE)
+/// - 13: TP Auto QC
+/// - 14: TP Cycle ID
 Function/WAVE GetTPSettingsLabnotebookKeyWave(string panelTitle)
 
 	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
@@ -6859,9 +6910,9 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 4) wv
+		Redimension/N=(-1, 15) wv
 	else
-		Make/T/N=(3, 4) dfr:TPSettingsKeyWave/Wave=wv
+		Make/T/N=(3, 15) dfr:TPSettingsKeyWave/Wave=wv
 	endif
 
 	wv = ""
@@ -6870,21 +6921,65 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string panelTitle)
 	SetDimLabel 0, 1, Units, wv
 	SetDimLabel 0, 2, Tolerance, wv
 
-	wv[%Parameter][0] = "TP Baseline Fraction" // fraction of total TP duration
-	wv[%Units][0]     = ""
-	wv[%Tolerance][0] = ""
+	wv[%Parameter][0]  = "TP Baseline Fraction" // fraction of total TP duration
+	wv[%Units][0]      = ""
+	wv[%Tolerance][0]  = ""
 
-	wv[%Parameter][1] = "TP Amplitude VC"
-	wv[%Units][1]     = ""
-	wv[%Tolerance][1] = ""
+	wv[%Parameter][1]  = "TP Amplitude VC"
+	wv[%Units][1]      = ""
+	wv[%Tolerance][1]  = ""
 
-	wv[%Parameter][2] = "TP Amplitude IC"
-	wv[%Units][2]     = ""
-	wv[%Tolerance][2] = ""
+	wv[%Parameter][2]  = "TP Amplitude IC"
+	wv[%Units][2]      = ""
+	wv[%Tolerance][2]  = ""
 
-	wv[%Parameter][3] = "TP Pulse Duration"
-	wv[%Units][3]     = "ms"
-	wv[%Tolerance][3] = ""
+	wv[%Parameter][3]  = "TP Pulse Duration"
+	wv[%Units][3]      = "ms"
+	wv[%Tolerance][3]  = ""
+
+	wv[%Parameter][4]  = "TP Auto"
+	wv[%Units][4]      = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][4]  = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][5]  = "TP Auto max current"
+	wv[%Units][5]      = "pA"
+	wv[%Tolerance][5]  = "0.1"
+
+	wv[%Parameter][6]  = "TP Auto voltage"
+	wv[%Units][6]      = "mV"
+	wv[%Tolerance][6]  = "0.1"
+
+	wv[%Parameter][7]  = "TP Auto voltage range"
+	wv[%Units][7]      = "mV"
+	wv[%Tolerance][7]  = "0.1"
+
+	wv[%Parameter][8]  = "TP buffer size"
+	wv[%Units][8]      = "a. u."
+	wv[%Tolerance][8]  = "1"
+
+	wv[%Parameter][9]  = "Minimum TP resistance for tolerance"
+	wv[%Units][9]      = "MOhm"
+	wv[%Tolerance][9]  = "1"
+
+	wv[%Parameter][10] = "Send TP settings to all headstages"
+	wv[%Units][10]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][10] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][11] = "TP Auto percentage"
+	wv[%Units][11]     = "%"
+	wv[%Tolerance][11] = "1"
+
+	wv[%Parameter][12] = "TP Auto interval"
+	wv[%Units][12]     = "s"
+	wv[%Tolerance][12] = "0.1"
+
+	wv[%Parameter][13] = "TP Auto QC"
+	wv[%Units][13]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][13] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][14] = "TP Cycle ID"
+	wv[%Units][14]     = "a. u."
+	wv[%Tolerance][14] = "1"
 
 	return wv
 End

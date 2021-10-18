@@ -575,9 +575,9 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 
 					headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
 					if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
-						clampAmp = TPSettings[%amplitudeIC][INDEP_HEADSTAGE]
+						clampAmp = TPSettings[%amplitudeIC][headstage]
 					else
-						clampAmp = TPSettings[%amplitudeVC][INDEP_HEADSTAGE]
+						clampAmp = TPSettings[%amplitudeVC][headstage]
 					endif
 					tpInput.clampAmp = clampAmp
 					tpInput.clampMode = hsProp[headstage][%ClampMode]

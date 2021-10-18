@@ -15,6 +15,9 @@ static Constant TP_FIT_POINTS                 = 5
 static Constant TP_PRESSURE_INTERVAL          = 0.090  ///< [s]
 static Constant TP_EVAL_POINT_OFFSET          = 5
 
+static Constant TP_BASELINE_FITTING_INSET     = 0.3 // ms
+static Constant TP_SET_PRECISION              = 2
+
 // comment in for debugging
 // #define TP_ANALYSIS_DEBUGGING
 
@@ -32,6 +35,11 @@ Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 
 	ASSERT(TP_IsValidBaselineFraction(baselineFrac), "baselineFrac is out of range")
 	return pulseDuration / (1 - 2 * baselineFrac)
+End
+
+/// @brief Inverse function of TP_CalculateTestPulseLength
+static Function TP_CalculateBaselineFraction(variable pulseDuration, variable totalLength)
+	return (pulseDuration / totalLength - 1) / -2
 End
 
 /// @brief Stores the given TP wave
@@ -226,10 +234,601 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 			TP_CalculateAverage(TPResultsBuffer, TPResults)
 		endif
 
-		TP_RecordTP(panelTitle, TPResults, now, marker)
+		TPResults[%AutoTPAmplitude][]             = NaN
+		TPResults[%AutoTPBaseline][]              = NaN
+		TPResults[%AutoTPBaselineRangeExceeded][] = NaN
+		TPResults[%AutoTPBaselineFitResult][]     = NaN
+
+		TP_AutoAmplitudeAndBaseline(panelTitle, TPResults, marker)
 		DQ_ApplyAutoBias(panelTitle, TPResults)
+		TP_RecordTP(panelTitle, TPResults, now, marker)
+	endif
+End
+
+static Function/WAVE TP_CreateOverrideResults(string panelTitle, variable type)
+	variable numRows, numCols, numLayers
+	string labels
+
+	switch(type)
+		case TP_OVERRIDE_RESULTS_AUTO_TP:
+			numRows   = MINIMUM_WAVE_SIZE
+			numCols   = NUM_HEADSTAGES
+			numLayers = 3
+			labels = "Factor;Voltage;BaselineFitResult"
+			break
+		default:
+			ASSERT(0, "Invalid type")
+	endswitch
+
+	WAVE/D/Z/SDFR=root: wv = overrideResults
+
+	KillOrMoveToTrash(wv = wv)
+
+	Make/D/N=(numRows, numCols, numLayers) root:overrideResults/Wave=wv
+
+	wv[] = NaN
+
+	SetDimensionLabels(wv, labels, LAYERS)
+
+	Make/FREE/N=(NUM_HEADSTAGES) zeros
+	SetStringInWaveNote(wv, "Next unread index [baseline]", NumericWaveToList(zeros, ","))
+	SetStringInWaveNote(wv, "Next unread index [amplitude]", NumericWaveToList(zeros, ","))
+
+	return wv
+End
+
+/// @brief Return a 2D wave with two testpulses concatenated
+///
+/// Rows:
+/// - TPs
+///
+/// Columns:
+/// - Active headstages
+static Function/WAVE TP_GetTPWaveForAutoTP(string paneltitle, variable marker)
+
+	WAVE/WAVE/Z TPs = TP_GetStoredTPs(panelTitle, marker, 2)
+
+	if(!WaveExists(TPs))
+		return $""
 	endif
 
+	Concatenate/DL/FREE/NP=0 {TPs}, allData
+
+	return allData
+End
+
+static Function TP_AutoBaseline(string panelTitle, variable headstage, WAVE TPResults, WAVE TPs)
+	variable idx, pulseLengthMS, tau, baseline, fac, baselineFracCand, needsUpdate
+	variable rangeExceeded, result
+	string msg
+
+	WAVE TPSettings = GetTPSettings(panelTitle)
+
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	Make/D/FREE/N=(NUM_HEADSTAGES) baselineFrac = NaN
+
+	pulseLengthMS = TPSettings[%durationMS][INDEP_HEADSTAGE]
+
+	// extract data from single headstage
+	idx = FindDimLabel(TPs, COLS, "HS_" + num2str(headstage))
+	ASSERT(idx >= 0, "Invalid dimension label")
+
+	Duplicate/FREE/RMD=[*][idx] TPs, data
+	Redimension/N=(numpnts(data))/E=1 data
+
+	[result, tau, baseline] = TP_AutoFitBaseline(data, pulseLengthMS)
+
+	if(TestOverrideActive())
+		WAVE overrideResults = GetOverrideResults()
+		WAVE indizes = ListToNumericWave(GetStringFromWaveNote(overrideResults, "Next unread index [baseline]"), ",")
+		ASSERT(indizes[headstage] < DimSize(overrideResults, ROWS), "Invalid index")
+		fac = overrideResults[indizes[headstage]][headstage][%Factor]
+		result = overrideResults[indizes[headstage]][headstage][%BaselineFitResult]
+		indizes[headstage] += 1
+		SetStringInWaveNote(overrideResults, "Next unread index [baseline]", NumericWaveToList(indizes, ","))
+		tau = fac * baseline
+	else
+		fac = tau / baseline
+	endif
+
+	sprintf msg, "TP_AutoFitBaseline: result %g, tau %g, baseline %g", result, tau, baseline
+	DEBUGPRINT(msg)
+
+	TPResults[%AutoTPBaselineFitResult][headstage] = result
+
+	switch(result)
+		case TP_BASELINE_FIT_RESULT_OK:
+			// nothing to do
+			break
+		case TP_BASELINE_FIT_RESULT_ERROR:
+		case TP_BASELINE_FIT_RESULT_TOO_NOISY:
+			TPResults[%AutoTPBaseline][headstage]              = 0
+			TPResults[%AutoTPBaselineRangeExceeded][headstage] = 0
+			return NaN
+		default:
+			ASSERT(0, "Unknown return value from TP_AutoFitBaseline")
+	endswitch
+
+	if(fac >= TP_BASELINE_RATIO_LOW && fac <= TP_BASELINE_RATIO_HIGH)
+		TPResults[%AutoTPBaseline][headstage]              = 1
+		TPResults[%AutoTPBaselineRangeExceeded][headstage] = 0
+	else
+		TPResults[%AutoTPBaseline][headstage] = 0
+
+		// optimum baseline length [ms]: baseline * (fac / TP_BASELINE_RATIO_OPT) = tau / TP_BASELINE_RATIO_OPT
+		baselineFracCand = TP_CalculateBaselineFraction(pulseLengthMS, pulseLengthMS + tau / TP_BASELINE_RATIO_OPT)
+		baselineFrac[headstage]  = limit(baselineFracCand, TP_BASELINE_FRACTION_LOW, TP_BASELINE_FRACTION_HIGH)
+
+		TPResults[%AutoTPBaselineRangeExceeded][headstage] = (baselineFracCand != baselineFrac[headstage])
+
+		needsUpdate = 1
+	endif
+
+	sprintf msg, "headstage %d, tau %g, baseline %g, baselineFracCand %g, factor %g, QC %s, range exceeded: %s", headstage, tau, baseline, baselineFracCand, fac, ToPassFail(TPResults[%AutoTPBaseline][headstage]), ToTrueFalse(TPResults[%AutoTPBaselineRangeExceeded][headstage])
+	DEBUGPRINT(msg)
+
+	if(needsUpdate)
+		// now use the maximum of all baselines
+		WAVE baselineFracClean = ZapNaNs(baselineFrac)
+
+		TPSettings[%baselinePerc][INDEP_HEADSTAGE] = RoundNumber(WaveMax(baselineFracClean) * 100, TP_SET_PRECISION)
+
+		DAP_TPSettingsToGUI(panelTitle, entry = "baselinePerc")
+	endif
+End
+
+/// @brief Fit the tail of the first TP with an expontential and return it's time constant.
+///
+/// @verbatim
+///
+///        +----+        +----+
+///        |    |        |    |
+///        |    |        |    |
+///        |    |        |    |
+///        |    |        |    |
+///    ----+    +--------+    +----
+///
+///             <-------->
+///            Fitting range
+///
+///    <------------>
+///        One TP
+///
+///        <---->
+///        Pulse
+///
+/// @endverbatim
+///
+/// @param data          input data
+/// @param pulseLengthMS length of the pulse (high part) of the testpulse [ms]
+///
+/// @retval result       One of @ref TPBaselineFitResults
+/// @retval tau          time constant of the decay [ms]
+/// @retval baseline     baseline length of one pulse (same as the fitting range) [ms]
+static Function [variable result, variable tau, variable baseline] TP_AutoFitBaseline(WAVE data, variable pulseLengthMS)
+	variable first, last, firstPnt, lastPnt, totalLength, debugEnabled, fitQuality, referenceThreshold
+	variable V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode
+	string msg, win
+
+	ASSERT(IsFloatingPointWave(data), "Expected floating point wave")
+	ASSERT(DimSize(data, COLS) <= 1, "Invalid data dimensions")
+	ASSERT(DimOffset(data, ROWS) == 0, "Invalid dimension offset")
+	ASSERT(pulseLengthMS > 0, "Expected valid pulse length")
+
+	totalLength = DimDelta(data, ROWS) * (DimSize(data, ROWS) - 1)
+
+	first = 1/4 * totalLength + 1/2 * pulseLengthMS
+	last  = 3/4 * totalLength - 1/2 * pulseLengthMS
+	ASSERT(first < last, "Invalid first/last")
+
+	baseline = last - first
+
+	first += TP_BASELINE_FITTING_INSET
+	last  -= TP_BASELINE_FITTING_INSET
+
+#ifdef DEBUGGING_ENABLED
+	if(DP_DebuggingEnabledForCaller())
+		debugEnabled = 1
+
+		Duplicate/O data, root:AutoTPDebuggingData/WAVE=displayedData
+		Duplicate/O data, root:Res_AutoTPDebuggingData/WAVE=residuals
+
+		if(!WindowExists("AutoTPDebugging"))
+			// @todo move away from manual layouting when /AR, /AD, /R=wv are fixed
+
+			Display/K=1/N=AutoTPDebugging displayedData
+
+			AppendToGraph/W=AutoTPDebugging/L=res residuals
+			AppendToGraph/W=AutoTPDebugging displayedData
+			ModifyGraph/W=AutoTPDebugging rgb(Res_AutoTPDebuggingData)=(0,0,0),rgb(AutoTPDebuggingData)=(655355,0,0)
+			ModifyGraph axisEnab(left)={0,0.65},axisEnab(res)={0.7,1},freePos(res)=0
+		endif
+
+		Cursor/W=AutoTPDebugging A $NameOfWave(displayedData) first
+		Cursor/W=AutoTPDebugging B $NameOfWave(displayedData) last
+
+		WAVE data = root:AutoTPDebuggingData
+		WAVE residuals = root:Res_AutoTPDebuggingData
+	endif
+#endif
+
+	if(!debugEnabled)
+		Duplicate/FREE data, residuals
+	endif
+
+	residuals = NaN
+
+	Make/FREE/D/N=3 coefWave
+
+	V_FitOptions = 4
+
+	AssertOnAndClearRTError()
+	try
+		V_FitError  = 0
+		V_AbortCode = 0
+
+		firstPnt = ScaleToIndex(data, first, ROWS)
+		lastPnt  = ScaleToIndex(data, last, ROWS)
+		CurveFit/Q=(!debugEnabled)/N=(!debugEnabled)/NTHR=1/M=0/W=2 exp_XOffset, kwCWave=coefWave, data[firstPnt, lastPnt]/A=(debugEnabled)/R=residuals; AbortOnRTE
+	catch
+		msg = GetRTErrMessage()
+		ClearRTError()
+
+		ASSERT(0, "CurveFit failed with error: " + msg)
+	endtry
+
+	sprintf msg, "Fit result: tau %g, V_FitError %g, V_FitQuitReason %g\r", coefWave[2], V_FitError, V_FitQuitReason
+	DEBUGPRINT(msg)
+
+	if(V_FitError || V_FitQuitReason)
+		return [TP_BASELINE_FIT_RESULT_ERROR, NaN, baseline]
+	endif
+
+	// @todo check coefficient sign, range, etc
+
+	// detect residuals being too large
+	Multithread residuals = residuals[p]^2
+	fitQuality         = Sum(residuals, first, last) / (lastPnt - firstPnt)
+	referenceThreshold = 0.25 * abs(WaveMax(data, first, last))
+
+	sprintf msg, "fitQuality %g, referenceThreshold %g\r", fitQuality, referenceThreshold
+	DEBUGPRINT(msg)
+
+	ASSERT(IsFinite(fitQuality), "Invalid fit quality")
+
+	if(fitQuality > referenceThreshold)
+		return [TP_BASELINE_FIT_RESULT_TOO_NOISY, NaN, baseline]
+	endif
+
+	return [TP_BASELINE_FIT_RESULT_OK, coefWave[2], baseline]
+End
+
+static Function TP_AutoAmplitudeAndBaseline(string panelTitle, WAVE TPResults, variable marker)
+	variable i, maximumCurrent, targetVoltage, targetVoltageTol, resistance, voltage, current
+	variable needsUpdate, lastInvocation, curTime, scalar, skipAutoBaseline
+	string msg
+
+	NVAR daqRunMode = $GetDataAcqRunMode(panelTitle)
+
+	if(daqRunMode != DAQ_NOT_RUNNING)
+		// don't do anything for TP during DAQ
+		// and TP during ITI
+		return NaN
+	endif
+
+	WAVE TPSettings = GetTPSettings(panelTitle)
+
+	WAVE/Z TPs = TP_GetTPWaveForAutoTP(panelTitle, marker)
+
+	if(!WaveExists(TPs))
+		return NaN
+	endif
+
+	Wave TPStorage = GetTPStorage(panelTitle)
+	lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOTP_LAST_INVOCATION_KEY)
+	curTime = ticks * TICKS_TO_SECONDS
+
+	if(IsFinite(lastInvocation) && (curTime - lastInvocation) < TPSettings[%autoTPInterval][INDEP_HEADSTAGE])
+		return NaN
+	endif
+
+	SetNumberInWaveNote(TPStorage, AUTOTP_LAST_INVOCATION_KEY, curTime, format="%.06f")
+
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		if(DAG_GetHeadstageMode(panelTitle, i) != I_CLAMP_MODE)
+			continue
+		endif
+
+		if(!TPSettings[%autoTPEnable][i])
+			continue
+		endif
+
+		/// all variables holding physical units use plain values without prefixes
+		/// e.g Amps instead of pA
+
+		maximumCurrent = abs(TPSettings[%autoAmpMaxCurrent][i] * 1e-12)
+
+		targetVoltage    = TPSettings[%autoAmpVoltage][i] * 1e-3
+		targetVoltageTol = TPSettings[%autoAmpVoltageRange][i] * 1e-3
+
+		resistance = TPResults[%ResistanceSteadyState][i] * 1e6
+
+		if(TestOverrideActive())
+			WAVE overrideResults = GetOverrideResults()
+			WAVE indizes = ListToNumericWave(GetStringFromWaveNote(overrideResults, "Next unread index [amplitude]"), ",")
+			ASSERT(indizes[i] < DimSize(overrideResults, ROWS), "Invalid index")
+			voltage = overrideResults[indizes[i]][i][%Voltage]
+			indizes[i] += 1
+			SetStringInWaveNote(overrideResults, "Next unread index [amplitude]", NumericWaveToList(indizes, ","))
+		else
+			voltage = (TPResults[%ElevatedSteadyState][i] - TPResults[%BaselineSteadyState][i]) * 1e-3
+		endif
+
+		skipAutoBaseline = 0
+
+		if(sign(targetVoltage) != sign(TPSettings[%amplitudeIC][i]))
+			TPSettings[%amplitudeIC][i] = RoundNumber(abs(TPSettings[%amplitudeIC][i]) * sign(targetVoltage), TP_SET_PRECISION)
+
+			skipAutoBaseline = 1
+			needsUpdate = 1
+		endif
+
+		if(abs(TPSettings[%amplitudeIC][i]) <= 5)
+			// generate random amplitude from [5, 10)
+			TPSettings[%amplitudeIC][i] = RoundNumber((7.5 + enoise(2.5, NOISE_GEN_MERSENNE_TWISTER)) * sign(targetVoltage), TP_SET_PRECISION)
+
+			skipAutoBaseline = 1
+			needsUpdate = 1
+		endif
+
+		if(skipAutoBaseline)
+			TPResults[%AutoTPAmplitude][i] = 0
+		else
+			TP_AutoBaseline(panelTitle, i, TPResults, TPs)
+
+			ASSERT(IsFinite(TPResults[%AutoTPBaseline][i]), "Unexpected AutoTPBaseline result")
+
+			if(!TPResults[%AutoTPBaseline][i])
+				// only adapt amplitude once the baseline passes
+				continue
+			endif
+
+			if(abs(targetVoltage - voltage) < targetVoltageTol)
+				TPResults[%AutoTPAmplitude][i] = 1
+				sprintf msg, "headstage %d has passing auto TP amplitude", i
+				DEBUGPRINT(msg)
+				continue
+			endif
+
+			// Auto TP amplitude always fails when we get here
+			TPResults[%AutoTPAmplitude][i] = 0
+
+			if(!isFinite(resistance))
+				printf "Headstage %d: Can not apply auto TP amplitude as the measured resistance is non-finite.\r", i
+				continue
+			endif
+
+			scalar = TPSettings[%autoTPPercentage][INDEP_HEADSTAGE] / 100
+
+			current = (targetVoltage - voltage) / resistance
+
+			sprintf msg, "headstage %d: current  %g, targetVoltage %g, resistance %g, scalar %g\r", i, current, targetVoltage, resistance, scalar
+			DEBUGPRINT(msg)
+
+			current = TPSettings[%amplitudeIC][i] * 1e-12 + current * scalar
+
+			if(abs(current) > maximumCurrent)
+				printf "Headstage %d: Not applying new amplitude of %.0W0PA as that would exceed the maximum allowed current of %.0W0PA.\r", i, current, maximumCurrent
+				continue
+			endif
+
+			TPSettings[%amplitudeIC][i] = RoundNumber(current / 1e-12, TP_SET_PRECISION)
+		endif
+
+		sprintf msg, "headstage %d has failing auto TP amplitude and will use a new IC amplitude of %g", i, TPSettings[%amplitudeIC][i]
+		DEBUGPRINT(msg)
+
+		needsUpdate = 1
+	endfor
+
+	if(needsUpdate)
+		DAP_TPSettingsToGUI(panelTitle, entry = "amplitudeIC")
+	endif
+End
+
+Function TP_AutoTPActive(string panelTitle)
+	WAVE settings = GetTPSettings(panelTitle)
+
+	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+
+	Duplicate/FREE/RMD=[FindDimLabel(settings, ROWS, "autoTPEnable")][0, NUM_HEADSTAGES - 1] settings, autoTPEnable
+	Redimension/N=(numpnts(autoTPEnable))/E=1 autoTPEnable
+
+	autoTPEnable[] = statusHS[p] && autoTPEnable[p]
+
+	return Sum(autoTPEnable) > 0
+End
+
+static Function TP_AutoTPTurnOff(string panelTitle, WAVE autoTPEnable, variable headstage, variable QC)
+	autoTPEnable[headstage] = 0
+
+	QC = !!QC
+
+	TP_AutoTPGenerateNewCycleID(panelTitle, headstage = headstage)
+
+	WAVE TPSettingsLBN = GetTPSettingsLabnotebook(panelTitle)
+	TPSettingsLBN[0][%$"TP Auto QC"][headstage] = QC
+End
+
+/// @brief Disable Auto TP if it passed `TP_AUTO_TP_CONSECUTIVE_PASSES` times in a row.
+static Function TP_AutoDisableIfFinished(string panelTitle, WAVE TPStorage)
+	variable i, needsUpdate, TPState
+
+	WAVE TPSettings = GetTPSettings(panelTitle)
+
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) autoTPEnable = TPSettings[%autoTPEnable][p]
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(!statusHS[i])
+			continue
+		endif
+
+		if(!TPSettings[%autoTPEnable][i])
+			continue
+		endif
+
+		if(DAG_GetHeadstageMode(panelTitle, i) != I_CLAMP_MODE)
+			continue
+		endif
+
+		// auto TP is enabled on this headstage
+		WAVE/Z amplitudePasses = TP_GetValuesFromTPStorage(TPStorage, i, "AutoTPAmplitude", TP_AUTO_TP_CONSECUTIVE_PASSES, options = TP_GETVALUES_LATEST_AUTOTPCYCLE)
+		WAVE/Z baselinePasses  = TP_GetValuesFromTPStorage(TPStorage, i, "AutoTPBaseline", TP_AUTO_TP_CONSECUTIVE_PASSES, options = TP_GETVALUES_LATEST_AUTOTPCYCLE)
+
+		if((WaveExists(amplitudePasses) && Sum(amplitudePasses) == TP_AUTO_TP_CONSECUTIVE_PASSES)  \
+		   && (WaveExists(baselinePasses) && Sum(baselinePasses) == TP_AUTO_TP_CONSECUTIVE_PASSES))
+
+			TP_AutoTPTurnOff(panelTitle, autoTPEnable, i, 1)
+
+			needsUpdate = 1
+			continue
+		endif
+
+		WAVE/Z baselineRangeExceeded = TP_GetValuesFromTPStorage(TPStorage, i, "AutoTPBaselineRangeExceeded", TP_AUTO_TP_BASELINE_RANGE_EXCEEDED_FAILS, options = TP_GETVALUES_LATEST_AUTOTPCYCLE)
+		if(WaveExists(baselineRangeExceeded) && Sum(baselineRangeExceeded) == TP_AUTO_TP_BASELINE_RANGE_EXCEEDED_FAILS)
+			printf "Auto TP baseline adaptation failed %d times in a row for headstage %d to calculate a value in range, turning it off.\r", TP_AUTO_TP_BASELINE_RANGE_EXCEEDED_FAILS, i
+			ControlWindowToFront()
+
+			TP_AutoTPTurnOff(panelTitle, autoTPEnable, i, 0)
+
+			needsUpdate = 1
+			continue
+		endif
+	endfor
+
+	if(needsUpdate)
+		// implicitly transfers TPSettings to TPSettingsLBN and write entries to labnotebook
+		TPState = TP_StopTestPulse(panelTitle)
+
+		// only now can we apply the new auto TP enabled state
+		TPSettings[%autoTPEnable][] = autoTPEnable[q]
+
+		DAP_TPSettingsToGUI(panelTitle, entry = "autoTPEnable")
+
+		TP_RestartTestPulse(panelTitle, TPState)
+	endif
+End
+
+
+/// @brief Generate new auto TP cycle IDs
+///
+/// This is required everytime we lock a device or toggle Auto TP for a headstage
+///
+/// @param panelTitle device
+/// @param headstage  [optional, default to all headstages] only update it for a specific headstage
+/// @param first      [optional, default to all headstages] only update the range [first, last]
+/// @param last       [optional, default to all headstages] only update the range [first, last]
+Function TP_AutoTPGenerateNewCycleID(string panelTitle, [variable headstage, variable first, variable last])
+
+	if(!ParamIsDefault(headstage))
+		first = headstage
+		last  = headstage
+	elseif(!ParamIsDefault(first) && !ParamIsDefault(last))
+		// nothing to set
+	elseif(!ParamIsDefault(headstage) && !ParamIsDefault(first) && !ParamIsDefault(last))
+		first = 0
+		last  = NUM_HEADSTAGES
+	endif
+
+	WAVE TPSettings = GetTPSettings(panelTitle)
+
+	// we don't look at HS activeness here, this is done in TP_RecordTP()
+	TPSettings[%autoTPCycleID][first, last] = GetNextRandomNumberForDevice(panelTitle)
+End
+
+/// @brief Return the last `numReqEntries` non-NaN values from layer `entry` of `headstage`
+///
+/// @param TPStorage     TP results wave, see GetTPStorage()
+/// @param headstage     Headstage
+/// @param entry         Name of the value to search
+/// @param numReqEntries Number of entries to return, supports integer values and inf
+/// @param options       [optional, default to nothing] One of @ref TPStorageQueryingOptions
+Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, string entry, variable numReqEntries, [variable options])
+	variable i, idx, value, entryLayer, lastValidEntry, currentAutoTPCycleID, latestAutoTPCycleID
+
+	if(ParamIsDefault(options))
+		options = TP_GETVALUES_DEFAULT
+	else
+		ASSERT(options == TP_GETVALUES_DEFAULT || options == TP_GETVALUES_LATEST_AUTOTPCYCLE, "Invalid option")
+	endif
+
+	lastValidEntry = GetNumberFromWaveNote(TPStorage, NOTE_INDEX) - 1
+
+	// no valid entries available
+	if(lastValidEntry < 0)
+		return $""
+	endif
+
+	latestAutoTPCycleID = TPStorage[lastValidEntry][headstage][%autoTPCycleID]
+
+	if(numReqEntries == inf)
+		entryLayer = FindDimLabel(TPstorage, LAYERS, entry)
+		ASSERT(entryLayer >= 0, "Invalid entry")
+		Duplicate/FREE/RMD=[0, lastValidEntry][headstage][entryLayer] TPStorage, slice
+		Redimension/N=(numpnts(slice))/E=1 slice
+
+		if(options == TP_GETVALUES_LATEST_AUTOTPCYCLE)
+			// filter all entries which don't have the latest ID out
+			slice[] = (TPStorage[p][headstage][%autoTPCycleID] == latestAutoTPCycleID) ? slice[p] : NaN
+		endif
+
+		return ZapNaNs(slice)
+	endif
+
+	ASSERT(IsInteger(numReqEntries) && numReqEntries > 0, "Number of required entries must be larger than zero")
+
+	if(numReqEntries > lastValidEntry)
+		return $""
+	endif
+
+	Make/FREE/D/N=(numReqEntries) result = NaN
+
+	// take the last finite values
+	// count is an unused entry, therefore - 1
+	for(i = lastValidEntry; i >= 0; i -= 1)
+		if(idx == numReqEntries)
+			ASSERT(!IsNaN(Sum(result)), "Expected non-nan sum")
+			return result
+		endif
+
+		value = TPStorage[i][headstage][%$entry]
+
+		if(!IsFinite(value))
+			continue
+		endif
+
+		if(options == TP_GETVALUES_LATEST_AUTOTPCYCLE)
+			currentAutoTPCycleID = TPStorage[i][headstage][%autoTPCycleID]
+
+			if(currentAutoTPCycleID != latestAutoTPCycleID)
+				continue
+			endif
+		endif
+
+		result[idx++] = value
+	endfor
+
+	return $""
 End
 
 /// @brief This function analyses a TP data set. It is called by the ASYNC frame work in an own thread.
@@ -377,12 +976,9 @@ static Function TP_CalculateAverage(WAVE TPResultsBuffer, WAVE TPResults)
 	TPResults[][] = results[p][q]
 End
 
-/// @brief Records values from  BaselineSSAvg, InstResistance, SSResistance into TPStorage at defined intervals.
+/// @brief Records values from TPResults into TPStorage at defined intervals.
 ///
 /// Used for analysis of TP over time.
-/// When the TP is initiated by any method, the TP storageWave should be empty
-/// If 200 ms have elapsed, or it is the first TP sweep,
-/// data from the input waves is transferred to the storage waves.
 static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 	string panelTitle
 	WAVE TPResults
@@ -459,6 +1055,14 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 
 	cycleID = ROVAR(GetTestpulseCycleID(panelTitle))
 	TPStorage[count][][%TPCycleID] = cycleID
+
+	TPStorage[count][][%AutoTPAmplitude]             = TPResults[%AutoTPAmplitude][q]
+	TPStorage[count][][%AutoTPBaseline]              = TPResults[%AutoTPBaseline][q]
+	TPStorage[count][][%AutoTPBaselineRangeExceeded] = TPResults[%AutoTPBaselineRangeExceeded][q]
+
+	WAVE TPSettings = GetTPSettings(panelTitle)
+	TPStorage[count][][%AutoTPCycleID] = hsProp[q][%Enabled] ? TPSettings[%autoTPCycleID][q] : NaN
+
 	lastPressureCtrl = GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC)
 	if((now - lastPressureCtrl) > TP_PRESSURE_INTERVAL)
 		P_PressureControl(panelTitle)
@@ -472,6 +1076,8 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 	TPStorageDat[count][] = TPStorage[count][q][%TimeStampSinceIgorEpochUTC]
 
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
+
+	TP_AutoDisableIfFinished(panelTitle, TPStorage)
 End
 
 /// @brief Threadsafe wrapper for performing CurveFits on the TPStorage wave
@@ -665,6 +1271,8 @@ Function TP_Setup(panelTitle, runMode, [fast])
 	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
 	runModeGlobal = runMode
 
+	DAP_AdaptAutoTPColorAndDependent(panelTitle)
+
 	DC_Configure(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
 
 	NVAR deviceID = $GetDAQDeviceID(panelTitle)
@@ -692,6 +1300,10 @@ Function TP_SetupCommon(panelTitle)
 
 	if(GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC) > now)
 		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, 0)
+	endif
+
+	if(GetNumberFromWaveNote(TPStorage, AUTOTP_LAST_INVOCATION_KEY) > now)
+		SetNumberInWaveNote(TPStorage, AUTOTP_LAST_INVOCATION_KEY, 0)
 	endif
 
 	index = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
@@ -733,6 +1345,8 @@ Function TP_Teardown(panelTitle, [fast])
 	SCOPE_KillScopeWindowIfRequest(panelTitle)
 
 	runMode = TEST_PULSE_NOT_RUNNING
+
+	DAP_AdaptAutoTPColorAndDependent(panelTitle)
 
 	TP_TeardownCommon(panelTitle)
 End
@@ -861,10 +1475,7 @@ Function TP_SendToAnalysis(string panelTitle, STRUCT TPAnalysisInput &tpInput)
 	ASYNC_Execute(threadDF)
 End
 
-/// @brief Update calculated and LBN TP waves
-///
-/// Calling this function before DAQ/TP allows to query calculated TP settings during DAQ/TP via GetTPSettingsCalculated().
-Function TP_UpdateTPSettingsLBNWaves(string panelTitle)
+Function TP_UpdateTPSettingsCalculated(string panelTitle)
 	WAVE TPSettings = GetTPSettings(panelTitle)
 
 	WAVE calculated = GetTPSettingsCalculated(panelTitle)
@@ -880,17 +1491,55 @@ Function TP_UpdateTPSettingsLBNWaves(string panelTitle)
 	calculated[%totalLengthMS]        = TP_CalculateTestPulseLength(calculated[%pulseLengthMS], calculated[%baselineFrac])
 	calculated[%totalLengthPointsTP]  = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsTP], calculated[%baselineFrac]))
 	calculated[%totalLengthPointsDAQ] = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsDAQ], calculated[%baselineFrac]))
+End
 
-	// store the current TP settings for later LBN writing via ED_TPSettingsDocumentation()
-	KillOrMoveToTrash(wv=GetTPSettingsLabnotebook(panelTitle))
-	KillOrMoveToTrash(wv=GetTPSettingsLabnotebookKeyWave(panelTitle))
+/// @brief Update the Testpulse labnotebook wave
+///
+/// DAQ:
+/// - TPSettings holds the current GUI values
+/// - TPSettingsLabnotebook holds the settings which were active when the sweep started
+///
+/// TP:
+/// - TPSettings holds the current GUI values
+/// - TPSettingsLabnotebook is cleared when TP is started and filled from TPSettings when TP is stopped
+///   This means we only have the *latest* values for the TP settings which don't restart TP. For entries
+///   which do restart TP we always have the current values. See also the DAEPHYS_TP_CONTROLS_XXX constants.
+///
+/// @see DAP_TPGUISettingToWave() for the special auto TP entry handling.
+Function TP_UpdateTPLBNSettings(string panelTitle)
+	variable i, value
 
-	WAVE TPSettingsLBN  = GetTPSettingsLabnotebook(panelTitle)
+	WAVE TPSettings = GetTPSettings(panelTitle)
+	WAVE calculated = GetTPSettingsCalculated(panelTitle)
 
-	TPSettingsLBN[0][%$"TP Baseline Fraction"][INDEP_HEADSTAGE] = calculated[%baselineFrac]
-	TPSettingsLBN[0][%$"TP Amplitude VC"][INDEP_HEADSTAGE]      = TPSettings[%amplitudeVC][INDEP_HEADSTAGE]
-	TPSettingsLBN[0][%$"TP Amplitude IC"][INDEP_HEADSTAGE]      = TPSettings[%amplitudeIC][INDEP_HEADSTAGE]
-	TPSettingsLBN[0][%$"TP Pulse Duration"][INDEP_HEADSTAGE]    = calculated[%pulseLengthMS]
+	WAVE TPSettingsLBN = GetTPSettingsLabnotebook(panelTitle)
+
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(!statusHS[i])
+			continue
+		endif
+
+		TPSettingsLBN[0][%$"TP Amplitude VC"][i] = TPSettings[%amplitudeVC][i]
+		TPSettingsLBN[0][%$"TP Amplitude IC"][i] = TPSettings[%amplitudeIC][i]
+
+		TPSettingsLBN[0][%$"Auto TP"][i]               = TPSettings[%autoTPEnable][i]
+		TPSettingsLBN[0][%$"Auto TP max current"][i]   = TPSettings[%autoAmpMaxCurrent][i]
+		TPSettingsLBN[0][%$"Auto TP voltage"][i]       = TPSettings[%autoAmpVoltage][i]
+		TPSettingsLBN[0][%$"Auto TP voltage range"][i] = TPSettings[%autoAmpVoltageRange][i]
+	endfor
+
+	TPSettingsLBN[0][%$"TP Baseline Fraction"][INDEP_HEADSTAGE]                = calculated[%baselineFrac]
+	TPSettingsLBN[0][%$"TP Pulse Duration"][INDEP_HEADSTAGE]                   = calculated[%pulseLengthMS]
+	TPSettingsLBN[0][%$"TP buffer size"][INDEP_HEADSTAGE]                      = TPSettings[%bufferSize][INDEP_HEADSTAGE]
+	TPSettingsLBN[0][%$"Minimum TP resistance for tolerance"][INDEP_HEADSTAGE] = TPSettings[%resistanceTol][INDEP_HEADSTAGE]
+	value = ROVar(GetTestpulseCycleID(panelTitle))
+	TPSettingsLBN[0][%$"TP Cycle ID"][INDEP_HEADSTAGE] = value
+
+	TPSettingsLBN[0][%$"Send TP settings to all headstages"][INDEP_HEADSTAGE]  = TPSettings[%sendToAllHS][INDEP_HEADSTAGE]
+	TPSettingsLBN[0][%$"Auto TP percentage"][INDEP_HEADSTAGE]                  = TPSettings[%autoTPPercentage][INDEP_HEADSTAGE]
+	TPSettingsLBN[0][%$"Auto TP interval"][INDEP_HEADSTAGE]                    = TPSettings[%autoTPInterval][INDEP_HEADSTAGE]
 End
 
 /// @brief Return the TP cycle ID for the given device

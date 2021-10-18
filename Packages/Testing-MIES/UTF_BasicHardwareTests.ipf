@@ -3218,7 +3218,7 @@ End
 Function TPDuringDAQOnlyTP_REENTRY([str])
 	string str
 
-	variable sweepNo, col, tpAmplitude
+	variable sweepNo, col
 	string ctrl
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
@@ -3255,8 +3255,9 @@ Function TPDuringDAQOnlyTP_REENTRY([str])
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
@@ -3321,7 +3322,7 @@ End
 Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	string str
 
-	variable sweepNo, col, channelTypeUnassoc, tpAmplitude, stimScaleUnassoc
+	variable sweepNo, col, channelTypeUnassoc, stimScaleUnassoc
 	string ctrl, stimsetUnassoc, stimsetUnassocRef, key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
@@ -3371,8 +3372,9 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_DAQ)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	key = CreateLBNUnassocKey(STIMSET_SCALE_FACTOR_KEY, 1, XOP_CHANNEL_TYPE_DAC)
 	stimScaleUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
@@ -3405,7 +3407,7 @@ End
 Function TPDuringDAQ_REENTRY([str])
 	string str
 
-	variable sweepNo, col, tpAmplitude, daGain
+	variable sweepNo, col, daGain
 	string ctrl
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
@@ -3445,10 +3447,11 @@ Function TPDuringDAQ_REENTRY([str])
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
 	daGain = DAG_GetNumericalValue(str, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = 0)
 
-	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, daGain, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], daGain, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
@@ -3477,7 +3480,7 @@ End
 Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	string str
 
-	variable sweepNo, col, tpAmplitude, daGain, oodDAQ
+	variable sweepNo, col, daGain, oodDAQ
 	string ctrl
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
@@ -3512,7 +3515,9 @@ Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
+
 	daGain = DAG_GetNumericalValue(str, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = 0)
 
 	oodDAQ = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", DATA_ACQUISITION_MODE)
@@ -3521,7 +3526,7 @@ Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	WAVE/Z oodDAQMembers = GetLastSetting(numericalValues, sweepNo, "oodDAQ member", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(oodDAQMembers, {0, 1, 1, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, daGain, daGain, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], daGain, daGain, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "StimulusSetC_DA_0", "", "", "", "", "", ""}, mode = WAVE_DATA)

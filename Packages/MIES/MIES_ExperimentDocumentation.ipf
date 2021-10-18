@@ -724,6 +724,8 @@ Function ED_TPDocumentation(panelTitle)
 	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, TEST_PULSE_MODE)
 
+	TP_UpdateTPLBNSettings(panelTitle)
+
 	ED_TPSettingsDocumentation(panelTitle, sweepNo, TEST_PULSE_MODE)
 End
 

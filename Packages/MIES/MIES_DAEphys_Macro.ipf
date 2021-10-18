@@ -11,7 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(1286,324,1786,1200)
+	NewPanel /K=1 /W=(142,686,620,1562)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,297.00},size={84.00,27.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)="0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)="tab_DataAcq_Pressure"
@@ -703,7 +703,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_ITI,limits={0,inf,1},value=_NUM:0
-	Button StartTestPulseButton,pos={42.00,444.00},size={405.00,39.00},disable=1,proc=DAP_ButtonProc_TPDAQ
+	Button StartTestPulseButton,pos={42.00,456.00},size={405.00,39.00},disable=1,proc=DAP_ButtonProc_TPDAQ
 	Button StartTestPulseButton,title="\\Z14\\f01Start Test \rPulse"
 	Button StartTestPulseButton,help={"Starts generating test pulses. Can be stopped by pressing the Escape key."}
 	Button StartTestPulseButton,userdata(tabnum)="0",userdata(tabcontrol)="ADC"
@@ -718,7 +718,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcqHS_00,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcqHS_00,userdata(ControlArray)="Check_DataAcqHS"
 	CheckBox Check_DataAcqHS_00,userdata(ControlArrayIndex)="0",value=0
-	SetVariable SetVar_DataAcq_TPDuration,pos={30.00,417.00},size={127.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
+	SetVariable SetVar_DataAcq_TPDuration,pos={31.00,407.00},size={127.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
 	SetVariable SetVar_DataAcq_TPDuration,title="Duration (ms)"
 	SetVariable SetVar_DataAcq_TPDuration,help={"Duration of the testpulse in milliseconds"}
 	SetVariable SetVar_DataAcq_TPDuration,userdata(tabnum)="0"
@@ -728,7 +728,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_TPDuration,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_TPDuration,userdata(Config_GroupPath)="Test Pulse"
 	SetVariable SetVar_DataAcq_TPDuration,limits={1,inf,5},value=_NUM:10
-	SetVariable SetVar_DataAcq_TPBaselinePerc,pos={165.00,417.00},size={118.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
+	SetVariable SetVar_DataAcq_TPBaselinePerc,pos={40.00,430.00},size={118.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
 	SetVariable SetVar_DataAcq_TPBaselinePerc,title="Baseline (%)"
 	SetVariable SetVar_DataAcq_TPBaselinePerc,help={"Length of the baseline before and after the testpulse, in parts of the total testpulse duration"}
 	SetVariable SetVar_DataAcq_TPBaselinePerc,userdata(tabnum)="0"
@@ -738,7 +738,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_TPBaselinePerc,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_TPBaselinePerc,userdata(Config_GroupPath)="Test Pulse"
 	SetVariable SetVar_DataAcq_TPBaselinePerc,limits={25,49,1},value=_NUM:35
-	SetVariable SetVar_DataAcq_TPAmplitude,pos={300.00,417.00},size={69.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
+	SetVariable SetVar_DataAcq_TPAmplitude,pos={168.00,407.00},size={69.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
 	SetVariable SetVar_DataAcq_TPAmplitude,title="VC"
 	SetVariable SetVar_DataAcq_TPAmplitude,help={"Amplitude of the testpulse in voltage clamp mode"}
 	SetVariable SetVar_DataAcq_TPAmplitude,userdata(tabnum)="0"
@@ -893,7 +893,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_SetRepeats,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_SetRepeats,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_SetRepeats,limits={1,inf,1},value=_NUM:1
-	ValDisplay ValDisp_DataAcq_SamplingInt,pos={228.00,573.00},size={30.00,21.00},bodyWidth=30,disable=1
+	ValDisplay ValDisp_DataAcq_SamplingInt,pos={228.00,576.00},size={30.00,21.00},bodyWidth=30,disable=1
 	ValDisplay ValDisp_DataAcq_SamplingInt,userdata(tabnum)="0"
 	ValDisplay ValDisp_DataAcq_SamplingInt,userdata(tabcontrol)="ADC"
 	ValDisplay ValDisp_DataAcq_SamplingInt,userdata(ResizeControlsInfo)=A"!!,Gu!!#CtJ,hn)!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -904,7 +904,7 @@ Window DA_Ephys() : Panel
 	ValDisplay ValDisp_DataAcq_SamplingInt,valueBackColor=(0,0,0)
 	ValDisplay ValDisp_DataAcq_SamplingInt,limits={0,0,0},barmisc={0,1000}
 	ValDisplay ValDisp_DataAcq_SamplingInt,value=_NUM:0
-	SetVariable SetVar_Sweep,pos={210.00,531.00},size={75.00,35.00},bodyWidth=75,disable=1,proc=DAP_SetVarProc_NextSweepLimit
+	SetVariable SetVar_Sweep,pos={210.00,534.00},size={75.00,35.00},bodyWidth=75,disable=1,proc=DAP_SetVarProc_NextSweepLimit
 	SetVariable SetVar_Sweep,help={"The up/down arrows allow to adjust the current and next sweep number.<p style=\"color:Red;\"><strong>WARNING!</strong></p>This is an advanced feature that overwrites acquired data. Data will be permanently lost."}
 	SetVariable SetVar_Sweep,userdata(tabnum)="0",userdata(tabcontrol)="ADC"
 	SetVariable SetVar_Sweep,userdata(ResizeControlsInfo)=A"!!,Gc!!#Cj!!#?O!!#=oz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1944,7 +1944,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_ITITP,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_ITITP,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_ITITP,value=1
-	ValDisplay valdisp_DataAcq_ITICountdown,pos={57.00,564.00},size={132.00,21.00},bodyWidth=30,disable=1
+	ValDisplay valdisp_DataAcq_ITICountdown,pos={57.00,567.00},size={132.00,21.00},bodyWidth=30,disable=1
 	ValDisplay valdisp_DataAcq_ITICountdown,title="ITI remaining (s)"
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(tabnum)="0"
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(tabcontrol)="ADC"
@@ -1956,7 +1956,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_ITICountdown,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_ITICountdown,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_ITICountdown,value=_NUM:0
-	ValDisplay valdisp_DataAcq_TrialsCountdown,pos={51.00,537.00},size={144.00,21.00},bodyWidth=30,disable=1
+	ValDisplay valdisp_DataAcq_TrialsCountdown,pos={51.00,540.00},size={144.00,21.00},bodyWidth=30,disable=1
 	ValDisplay valdisp_DataAcq_TrialsCountdown,title="Sweeps remaining"
 	ValDisplay valdisp_DataAcq_TrialsCountdown,userdata(tabnum)="0"
 	ValDisplay valdisp_DataAcq_TrialsCountdown,userdata(tabcontrol)="ADC"
@@ -2215,7 +2215,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_ScalingZero,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_ScalingZero,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_ScalingZero,value=0
-	CheckBox check_Settings_SetOption_04,pos={215.00,349.00},size={115.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState
+	CheckBox check_Settings_SetOption_04,pos={215.00,349.00},size={115.00,15.00},disable=3,proc=DAP_CheckProc_UpdateGuiState
 	CheckBox check_Settings_SetOption_04,title="Turn off headstage"
 	CheckBox check_Settings_SetOption_04,help={"Turns off AD associated with DA via Channel and Amplifier Assignments"}
 	CheckBox check_Settings_SetOption_04,userdata(tabnum)="5"
@@ -2350,7 +2350,7 @@ Window DA_Ephys() : Panel
 	TitleBox title_Settings_SetCondition2,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition2,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition2,fSize=12,frame=0
-	ValDisplay valdisp_DataAcq_SweepsInSet,pos={297.00,537.00},size={30.00,21.00},bodyWidth=30,disable=1
+	ValDisplay valdisp_DataAcq_SweepsInSet,pos={297.00,540.00},size={30.00,21.00},bodyWidth=30,disable=1
 	ValDisplay valdisp_DataAcq_SweepsInSet,userdata(tabnum)="0"
 	ValDisplay valdisp_DataAcq_SweepsInSet,userdata(tabcontrol)="ADC"
 	ValDisplay valdisp_DataAcq_SweepsInSet,userdata(ResizeControlsInfo)=A"!!,HP!!#Ck^]6[i!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2390,7 +2390,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DataAcq_IndexRandom,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataAcq_IndexRandom,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DataAcq_IndexRandom,fColor=(65280,43520,0),value=0
-	ValDisplay valdisp_DataAcq_SweepsActiveSet,pos={297.00,564.00},size={30.00,21.00},bodyWidth=30,disable=1
+	ValDisplay valdisp_DataAcq_SweepsActiveSet,pos={297.00,567.00},size={30.00,21.00},bodyWidth=30,disable=1
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,help={"Displays the number of steps in the set with the most steps on active DA and TTL channels"}
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,userdata(tabnum)="0"
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,userdata(tabcontrol)="ADC"
@@ -2402,7 +2402,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,value=_NUM:1
-	SetVariable SetVar_DataAcq_TPAmplitudeIC,pos={373.00,417.00},size={65.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
+	SetVariable SetVar_DataAcq_TPAmplitudeIC,pos={172.00,429.00},size={65.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,title="IC"
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,help={"Amplitude of the testpulse in current clamp mode"}
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabnum)="0"
@@ -2798,41 +2798,41 @@ Window DA_Ephys() : Panel
 	GroupBox group_DataAcq_ClampMode,userdata(ResizeControlsInfo)=A"!!,C$!!#>*!!#CCJ,hs?z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_DataAcq_ClampMode,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_DataAcq_ClampMode,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_DataAcq_ClampMode1,pos={24.00,393.00},size={444.00,99.00},disable=1
+	GroupBox group_DataAcq_ClampMode1,pos={24.00,388.00},size={444.00,114.00},disable=1
 	GroupBox group_DataAcq_ClampMode1,title="Test Pulse",userdata(tabnum)="0"
 	GroupBox group_DataAcq_ClampMode1,userdata(tabcontrol)="ADC"
 	GroupBox group_DataAcq_ClampMode1,userdata(ResizeControlsInfo)=A"!!,C$!!#C*!!#CCJ,hpWz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_DataAcq_ClampMode1,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_DataAcq_ClampMode1,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_DataAcq_ClampMode2,pos={24.00,498.00},size={444.00,120.00},disable=1
+	GroupBox group_DataAcq_ClampMode2,pos={24.00,501.00},size={444.00,120.00},disable=1
 	GroupBox group_DataAcq_ClampMode2,title="Status Information"
 	GroupBox group_DataAcq_ClampMode2,userdata(tabnum)="0"
 	GroupBox group_DataAcq_ClampMode2,userdata(tabcontrol)="ADC"
 	GroupBox group_DataAcq_ClampMode2,userdata(ResizeControlsInfo)=A"!!,C$!!#C^!!#CCJ,hq*z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_DataAcq_ClampMode2,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_DataAcq_ClampMode2,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	TitleBox title_DataAcq_NextSweep,pos={210.00,513.00},size={71.00,19.00},disable=1
+	TitleBox title_DataAcq_NextSweep,pos={210.00,516.00},size={71.00,19.00},disable=1
 	TitleBox title_DataAcq_NextSweep,title="Next Sweep",userdata(tabnum)="0"
 	TitleBox title_DataAcq_NextSweep,userdata(tabcontrol)="ADC"
 	TitleBox title_DataAcq_NextSweep,userdata(ResizeControlsInfo)=A"!!,Gc!!#Ce5QF-2!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_DataAcq_NextSweep,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_DataAcq_NextSweep,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_DataAcq_NextSweep,fSize=14,frame=0,fStyle=0
-	TitleBox title_DataAcq_NextSweep1,pos={333.00,540.00},size={78.00,19.00},disable=1
+	TitleBox title_DataAcq_NextSweep1,pos={333.00,543.00},size={78.00,19.00},disable=1
 	TitleBox title_DataAcq_NextSweep1,title="Total Sweeps",userdata(tabnum)="0"
 	TitleBox title_DataAcq_NextSweep1,userdata(tabcontrol)="ADC"
 	TitleBox title_DataAcq_NextSweep1,userdata(ResizeControlsInfo)=A"!!,HbJ,htB!!#?W!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_DataAcq_NextSweep1,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_DataAcq_NextSweep1,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_DataAcq_NextSweep1,fSize=14,frame=0,fStyle=0
-	TitleBox title_DataAcq_NextSweep2,pos={333.00,567.00},size={98.00,19.00},disable=1
+	TitleBox title_DataAcq_NextSweep2,pos={333.00,570.00},size={98.00,19.00},disable=1
 	TitleBox title_DataAcq_NextSweep2,title="Set Max Sweeps",userdata(tabnum)="0"
 	TitleBox title_DataAcq_NextSweep2,userdata(tabcontrol)="ADC"
 	TitleBox title_DataAcq_NextSweep2,userdata(ResizeControlsInfo)=A"!!,HbJ,htH^]6^>!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TitleBox title_DataAcq_NextSweep2,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_DataAcq_NextSweep2,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_DataAcq_NextSweep2,fSize=14,frame=0,fStyle=0
-	TitleBox title_DataAcq_NextSweep3,pos={180.00,591.00},size={132.00,19.00},disable=1
+	TitleBox title_DataAcq_NextSweep3,pos={180.00,594.00},size={132.00,19.00},disable=1
 	TitleBox title_DataAcq_NextSweep3,title="Sampling Interval (µs)"
 	TitleBox title_DataAcq_NextSweep3,userdata(tabnum)="0"
 	TitleBox title_DataAcq_NextSweep3,userdata(tabcontrol)="ADC"
@@ -3642,8 +3642,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_1,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_1,userdata(ControlArray)="valdisp_DataAcq_P"
 	ValDisplay valdisp_DataAcq_P_1,userdata(ControlArrayIndex)="1",fSize=14,frame=0
-	ValDisplay valdisp_DataAcq_P_1,fStyle=0,valueColor=(65000,65000,65000)
-	ValDisplay valdisp_DataAcq_P_1,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_1,fStyle=0,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_1,limits={0,0,0},barmisc={0,1000},value=#"0.00"
 	ValDisplay valdisp_DataAcq_P_2,pos={193.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_2,help={"black background:user selected headstage"}
@@ -4011,7 +4010,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_TTL_ALL,userdata(Config_RestorePriority)="60",value=0
-	CheckBox check_settings_show_power,pos={27.00,157.00},size={134.00,15.00},disable=1,proc=DAP_CheckProc_PowerSpectrum
+	CheckBox check_settings_show_power,pos={27.00,156.00},size={134.00,15.00},disable=1,proc=DAP_CheckProc_PowerSpectrum
 	CheckBox check_settings_show_power,title="Show power spectrum"
 	CheckBox check_settings_show_power,help={"Show the power spectrum (Fourier Transform) of the testpulse"}
 	CheckBox check_settings_show_power,userdata(tabnum)="5"
@@ -4227,12 +4226,12 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_TP_SaveTP,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_Settings_TP_SaveTP,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_TP_SaveTP,value=0
-	Button Button_DataAcq_SkipForward,pos={342.00,588.00},size={50.00,18.00},disable=1,proc=DAP_ButtonProc_skipSweep
+	Button Button_DataAcq_SkipForward,pos={342.00,591.00},size={50.00,18.00},disable=1,proc=DAP_ButtonProc_skipSweep
 	Button Button_DataAcq_SkipForward,title="Skip\\Z12 >>",userdata(tabnum)="0"
 	Button Button_DataAcq_SkipForward,userdata(tabcontrol)="ADC",labelBack=(0,0,0)
 	Button Button_DataAcq_SkipForward,fStyle=1,fColor=(4369,4369,4369,6554)
 	Button Button_DataAcq_SkipForward,valueColor=(65535,65535,65535)
-	Button Button_DataAcq_SkipBackwards,pos={105.00,588.00},size={50.00,18.00},disable=1,proc=DAP_ButtonProc_skipBack
+	Button Button_DataAcq_SkipBackwards,pos={105.00,591.00},size={50.00,18.00},disable=1,proc=DAP_ButtonProc_skipBack
 	Button Button_DataAcq_SkipBackwards,title="<<Skip",userdata(tabnum)="0"
 	Button Button_DataAcq_SkipBackwards,userdata(tabcontrol)="ADC",labelBack=(0,0,0)
 	Button Button_DataAcq_SkipBackwards,fStyle=1,fColor=(4369,4369,4369)
@@ -4344,6 +4343,71 @@ Window DA_Ephys() : Panel
 	GroupBox group_Hardware_YokeInner,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_Hardware_YokeInner,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	GroupBox group_Hardware_YokeInner,fSize=12
+	SetVariable setvar_Settings_autoTP_perc,pos={164.00,154.00},size={137.00,18.00},disable=1,proc=DAP_SetVarProc_TestPulseSett
+	SetVariable setvar_Settings_autoTP_perc,title="Auto TP Amp (%)"
+	SetVariable setvar_Settings_autoTP_perc,help={"Automatic amplitude percentage"}
+	SetVariable setvar_Settings_autoTP_perc,userdata(tabnum)="5"
+	SetVariable setvar_Settings_autoTP_perc,userdata(tabcontrol)="ADC"
+	SetVariable setvar_Settings_autoTP_perc,limits={1,100,1},value=_NUM:15
+	SetVariable setvar_Settings_autoTP_int,pos={303.00,154.00},size={156.00,18.00},disable=1,proc=DAP_SetVarProc_TestPulseSett
+	SetVariable setvar_Settings_autoTP_int,title="Auto TP interval (s)"
+	SetVariable setvar_Settings_autoTP_int,help={"Auto TP Amplitude and baseline interval"}
+	SetVariable setvar_Settings_autoTP_int,userdata(tabnum)="5"
+	SetVariable setvar_Settings_autoTP_int,userdata(tabcontrol)="ADC"
+	SetVariable setvar_Settings_autoTP_int,limits={0,1000,0.25},value=_NUM:0
+	SetVariable setvar_DataAcq_targetVoltage,pos={241.00,429.00},size={101.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
+	SetVariable setvar_DataAcq_targetVoltage,title="Vm (mV)"
+	SetVariable setvar_DataAcq_targetVoltage,help={"Target voltage for auto amplitude"}
+	SetVariable setvar_DataAcq_targetVoltage,userdata(tabnum)="0"
+	SetVariable setvar_DataAcq_targetVoltage,userdata(tabcontrol)="ADC"
+	SetVariable setvar_DataAcq_targetVoltage,userdata(ResizeControlsInfo)=A"!!,HJJ,hr?!!#@.!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_DataAcq_targetVoltage,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	SetVariable setvar_DataAcq_targetVoltage,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataAcq_targetVoltage,userdata(Config_DontRestore)="1"
+	SetVariable setvar_DataAcq_targetVoltage,userdata(Config_DontSave)="1"
+	SetVariable setvar_DataAcq_targetVoltage,limits={-99,99,1},value=_NUM:10
+	SetVariable setvar_DataAcq_targetVoltageRange,pos={347.00,429.00},size={62.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
+	SetVariable setvar_DataAcq_targetVoltageRange,title="±"
+	SetVariable setvar_DataAcq_targetVoltageRange,help={"± voltage range for auto amplitude"}
+	SetVariable setvar_DataAcq_targetVoltageRange,userdata(tabcontrol)="ADC"
+	SetVariable setvar_DataAcq_targetVoltageRange,userdata(tabnum)="0"
+	SetVariable setvar_DataAcq_targetVoltageRange,userdata(ResizeControlsInfo)=A"!!,I*!!#Ai!!#?1!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_DataAcq_targetVoltageRange,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	SetVariable setvar_DataAcq_targetVoltageRange,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataAcq_targetVoltageRange,userdata(Config_DontRestore)="1"
+	SetVariable setvar_DataAcq_targetVoltageRange,userdata(Config_DontSave)="1"
+	SetVariable setvar_DataAcq_targetVoltageRange,limits={0,inf,1},value=_NUM:0.5
+	SetVariable setvar_DataAcq_IinjMax,pos={325.00,407.00},size={132.00,20.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
+	SetVariable setvar_DataAcq_IinjMax,title="max I \\Binj\\M (pA) ±"
+	SetVariable setvar_DataAcq_IinjMax,help={"Maximum current to inject for auto amplitude"}
+	SetVariable setvar_DataAcq_IinjMax,userdata(tabcontrol)="ADC"
+	SetVariable setvar_DataAcq_IinjMax,userdata(tabnum)="0"
+	SetVariable setvar_DataAcq_IinjMax,userdata(ResizeControlsInfo)=A"!!,HP!!#B+!!#@l!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_DataAcq_IinjMax,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	SetVariable setvar_DataAcq_IinjMax,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataAcq_IinjMax,userdata(Config_DontRestore)="1"
+	SetVariable setvar_DataAcq_IinjMax,userdata(Config_DontSave)="1"
+	SetVariable setvar_DataAcq_IinjMax,limits={1,1500,1},value=_NUM:200
+	CheckBox check_DataAcq_AutoTP,pos={243.00,409.00},size={58.00,15.00},disable=1,proc=DAP_CheckProc_TestPulseSett
+	CheckBox check_DataAcq_AutoTP,title="Auto TP"
+	CheckBox check_DataAcq_AutoTP,help={"Auto TP amplitude and baseline tuning"}
+	CheckBox check_DataAcq_AutoTP,userdata(tabnum)="0",userdata(tabcontrol)="ADC"
+	CheckBox check_DataAcq_AutoTP,userdata(ResizeControlsInfo)=A"!!,H[J,hr+!!#?;!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataAcq_AutoTP,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataAcq_AutoTP,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_DataAcq_AutoTP,userdata(Config_DontRestore)="1"
+	CheckBox check_DataAcq_AutoTP,userdata(Config_DontSave)="1",value=0,side=1
+	CheckBox Check_TP_SendToAllHS,pos={414.00,431.00},size={48.00,15.00},disable=1,proc=DAP_CheckProc_TestPulseSett
+	CheckBox Check_TP_SendToAllHS,title="All HS"
+	CheckBox Check_TP_SendToAllHS,help={"Set Testpulse settings from this group to all headstages (checked) or only the currently selected one (unchecked)."}
+	CheckBox Check_TP_SendToAllHS,userdata(tabnum)="0",userdata(tabcontrol)="ADC"
+	CheckBox Check_TP_SendToAllHS,userdata(ResizeControlsInfo)=A"!!,Ff!!#?e!!#<`!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox Check_TP_SendToAllHS,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox Check_TP_SendToAllHS,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox Check_TP_SendToAllHS,value=1,side=1
+	GroupBox group_testpulse_indep_headstage_sep,pos={162.00,406.00},size={4.00,43.00},disable=1
+	GroupBox group_testpulse_indep_headstage_sep,userdata(tabnum)="0"
+	GroupBox group_testpulse_indep_headstage_sep,userdata(tabcontrol)="ADC",frame=0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
