@@ -402,11 +402,7 @@ static Function IVS_PublishQCState(variable result, string description)
 
 	AssertOnAndClearRTError()
 	try
-#if exists("zeromq_pub_send")
 		zeromq_pub_send(IVS_PUB_FILTER, payload); AbortOnRTE
-#else
-		ASSERT(0, "ZeroMQ XOP not present")
-#endif
 	catch
 		err = ClearRTError()
 		BUG("Could not publish QC results due to error " + num2str(err))

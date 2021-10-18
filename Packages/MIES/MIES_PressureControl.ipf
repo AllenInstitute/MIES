@@ -231,11 +231,7 @@ static Function P_PublishPressureMethodChange(string panelTitle, variable headst
 
 	AssertOnAndClearRTError()
 	try
-#if exists("zeromq_pub_send")
 		zeromq_pub_send(PRESSURE_STATE_FILTER, payload); AbortOnRTE
-#else
-		ASSERT(0, "ZeroMQ XOP not present")
-#endif
 	catch
 		err = ClearRTError()
 		BUG("Could not publish pressure method change " + num2str(err))
@@ -254,11 +250,7 @@ static Function P_PublishSealedState(string panelTitle, variable headstage)
 
 	AssertOnAndClearRTError()
 	try
-#if exists("zeromq_pub_send")
 		zeromq_pub_send(PRESSURE_SEALED_FILTER, payload); AbortOnRTE
-#else
-		ASSERT(0, "ZeroMQ XOP not present")
-#endif
 	catch
 		err = ClearRTError()
 		BUG("Could not publish pressure seal state " + num2str(err))
