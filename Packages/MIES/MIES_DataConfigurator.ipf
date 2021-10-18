@@ -1377,10 +1377,12 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string pa
 		endif
 
 		if(dataAcqOrTP == TEST_PULSE_MODE)
-			s.setColumn[i] = 0
+			s.setColumn[i]     = 0
+			s.setCycleCount[i] = NaN
 		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
 			// DATA_ACQUISITION_MODE cases
-			s.setColumn[i] = 0
+			s.setColumn[i]     = 0
+			s.setCycleCount[i] = NaN
 		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 			// only call DC_CalculateChannelColumnNo for real data acquisition
 			[ret, setCycleCountLocal] = DC_CalculateChannelColumnNo(panelTitle, s.setName[i], channel, CHANNEL_TYPE_DAC)
