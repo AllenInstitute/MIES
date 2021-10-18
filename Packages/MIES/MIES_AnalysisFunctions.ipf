@@ -109,10 +109,7 @@
 /// \rst
 /// .. code-block:: igorpro
 ///
-///    Function MyAnalysisFunction(panelTitle, s)
-///        string panelTitle
-///        struct AnalysisFunction_V3& s
-///
+///    Function MyAnalysisFunction(string panelTitle, struct AnalysisFunction_V3& s)
 ///        // ...
 ///    End
 ///
@@ -120,9 +117,7 @@
 ///        return "param1:variable,[optParam1:wave]"
 ///    End
 ///
-///    Function/S MyAnalysisFunction_CheckParam(name, params)
-///        string name, params
-///
+///    Function/S MyAnalysisFunction_CheckParam(string name, string params)
 ///        variable value
 ///
 ///        strswitch(name)
@@ -143,8 +138,7 @@
 ///        return ""
 ///    End
 ///
-///    Function/S MyAnalysisFunction_GetHelp(name)
-///        string name, params
+///    Function/S MyAnalysisFunction_GetHelp(string name)
 ///
 ///        strswitch(name)
 ///            case "param1":
