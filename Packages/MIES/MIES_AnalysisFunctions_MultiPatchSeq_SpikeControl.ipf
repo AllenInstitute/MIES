@@ -303,7 +303,7 @@ static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNu
 
 		WAVE noteWave = propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSENOTE]
 
-		if(MSQ_TestOverrideActive())
+		if(TestOverrideActive())
 			WAVE/T overrideResults = GetOverrideResults()
 			entry = overrideResults[sweepNoProp][headstageProp][pulseIndex][region]
 			WAVE spikePositions = ListToNumericWave(StringByKey("SpikePosition_ms", entry), ",")
@@ -609,7 +609,7 @@ static Function/WAVE SC_SpontaneousSpikingCheckQC(string panelTitle, variable sw
 		SC_RegionBlanked(singleAD, totalOnsetDelay, oodDAQRegion)
 
 		// check that the max of the data is below failedPulseLevel
-		if(MSQ_TestOverrideActive())
+		if(TestOverrideActive())
 			WAVE/T overrideResults = GetOverrideResults()
 
 			entry = overrideResults[sweepNo][i][0][0]

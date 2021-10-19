@@ -6577,8 +6577,9 @@ End
 
 /// @brief Return the wave used for storing mock data for the analysis function tests
 ///
-/// This wave is created by MSQ_CreateOverrideResults() or PSQ_CreateOverrideResults() and does also not
-/// folow our usual rules so it might not exist.
+/// This wave is created by MSQ_CreateOverrideResults(),
+/// PSQ_CreateOverrideResults() or TP_CreateOverrideResults() and does also not
+/// follow our usual rules so it might not exist.
 Function/WAVE GetOverrideResults()
 
 	WAVE/Z/SDFR=root: overrideResults

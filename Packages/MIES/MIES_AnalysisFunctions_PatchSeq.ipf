@@ -411,7 +411,7 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 	targetV = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
 
 	// BEGIN TEST
-	if(PSQ_TestOverrideActive())
+	if(TestOverrideActive())
 		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 		chunkPassedTestOverride = overrideResults[chunk][count][0]
@@ -453,7 +453,7 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 			// check 1: RMS of the last 1.5ms of the baseline should be below 0.07mV
 			rmsShort[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
 
-			if(PSQ_TestOverrideActive())
+			if(TestOverrideActive())
 				rmsShortPassed[i] = chunkPassedTestOverride
 			else
 				rmsShortPassed[i] = rmsShort[i] < rmsShortThreshold
@@ -479,7 +479,7 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 			// check 2: RMS of the last 500ms of the baseline should be below 0.50mV
 			rmsLong[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
 
-			if(PSQ_TestOverrideActive())
+			if(TestOverrideActive())
 				rmsLongPassed[i] = chunkPassedTestOverride
 			else
 				rmsLongPassed[i] = rmsLong[i] < rmsLongThreshold
@@ -505,7 +505,7 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 			// check 3: Average voltage within 1mV of auto bias target voltage
 			avgVoltage[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
 
-			if(PSQ_TestOverrideActive())
+			if(TestOverrideActive())
 				targetVPassed[i] = chunkPassedTestOverride
 			else
 				targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
@@ -947,7 +947,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		endif
 	endif
 
-	if(PSQ_TestOverrideActive())
+	if(TestOverrideActive())
 		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 
@@ -1057,25 +1057,6 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	ASSERT(IsFinite(spikeDetection[headstage]), "Expected finite result")
 
 	return DEBUGPRINTw(spikeDetection)
-End
-
-/// @brief Return if the analysis function results are overriden for testing purposes
-static Function PSQ_TestOverrideActive()
-
-	variable numberOfOverrideWarnings
-
-	WAVE/Z/SDFR=root: overrideResults
-
-	if(WaveExists(overrideResults))
-		numberOfOverrideWarnings = GetNumberFromWaveNote(overrideResults, "OverrideWarningIssued")
-		if(IsNaN(numberOfOverrideWarnings))
-			print "TEST OVERRIDE ACTIVE"
-			SetNumberInWaveNote(overrideResults, "OverrideWarningIssued", 1)
-		endif
-		return 1
-	endif
-
-	return 0
 End
 
 /// @brief Return a sweep number of an existing sweep matching the following conditions
@@ -1195,7 +1176,7 @@ Function PSQ_DS_GetDAScaleOffset(panelTitle, headstage, opMode)
 	variable sweepNo
 
 	if(!cmpstr(opMode, PSQ_DS_SUPRA))
-		if(PSQ_TestOverrideActive())
+		if(TestOverrideActive())
 			return PSQ_DS_OFFSETSCALE_FAKE
 		endif
 
@@ -2336,7 +2317,7 @@ Function PSQ_Rheobase(panelTitle, s)
 
 			if(!IsFinite(finalDAScale) || CheckIfSmall(finalDAScale, tol = 1e-14) || !IsValidSweepNumber(sweepNoFound))
 				printf "(%s): Could not find final DAScale value from one of the previous analysis functions.\r", panelTitle
-				if(PSQ_TestOverrideActive())
+				if(TestOverrideActive())
 					finalDASCale = PSQ_GetFinalDAScaleFake()
 				else
 					ControlWindowToFront()
@@ -2359,7 +2340,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				// query the initial DA scale from the previous sweep (which is from a different RAC)
 				key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
 				finalDAScale = GetLastSweepWithSettingIndep(numericalValues, key, sweepNoFound)
-				if(PSQ_TestOverrideActive())
+				if(TestOverrideActive())
 					finalDAScale = PSQ_GetFinalDAScaleFake()
 				else
 					ASSERT(IsFinite(finalDAScale) && IsValidSweepNumber(sweepNoFound), "Could not find final DAScale value from previous analysis function")
@@ -2595,7 +2576,7 @@ Function PSQ_GetFinalDAScaleFake()
 
 	variable daScale
 
-	ASSERT(PSQ_TestOverrideActive(), "Should not be called in production.")
+	ASSERT(TestOverrideActive(), "Should not be called in production.")
 
 	WAVE overrideResults = GetOverrideResults()
 	ASSERT(WaveExists(overrideResults), "overrideResults wave must exist")
@@ -2892,7 +2873,7 @@ Function PSQ_Ramp(panelTitle, s)
 		                                          totalOnsetDelay, PSQ_SPIKE_LEVEL, spikePositions = spikePos, numberOfSpikesReq = numberOfSpikes)
 
 		if(spikeDetection[s.headstage] \
-		   && ((PSQ_TestOverrideActive() && (fifoInStimsetTime > WaveMax(spikePos))) || !PSQ_TestOverrideActive()))
+		   && ((TestOverrideActive() && (fifoInStimsetTime > WaveMax(spikePos))) || !TestOverrideActive()))
 
 			enoughSpikesFound = 1
 
@@ -3183,7 +3164,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 
 	[lowerValue, upperValue] = WaveMinAndMaxWrapper(singleAD, x1 = chirpStart, x2 = cycleEnd)
 
-	if(PSQ_TestOverrideActive())
+	if(TestOverrideActive())
 		WAVE/SDFR=root: overrideResults
 		NVAR count = $GetCount(panelTitle)
 		upperValueOverride = overrideResults[0][count][1]
@@ -3200,7 +3181,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 						+ GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
-	if(PSQ_TestOverrideActive())
+	if(TestOverrideActive())
 		baselineVoltage = PSQ_CR_BASELINE_V_FAKE
 	else
 		key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_TARGETV, chunk = 0, query = 1)
@@ -3621,7 +3602,7 @@ Function PSQ_Chirp(panelTitle, s)
 				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_SPIKE_CHECK)
 				ED_AddEntryToLabnotebook(panelTitle, key, values, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 
-				if(PSQ_TestOverrideActive())
+				if(TestOverrideActive())
 					resistance = PSQ_CR_RESISTANCE_FAKE * 1e9
 				else
 					passingDaScaleSweep = PSQ_GetLastPassingDAScaleSub(panelTitle, s.headstage)
