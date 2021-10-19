@@ -6,6 +6,8 @@
 #pragma ModuleName=MIES_CA
 #endif
 
+// #define CACHE_DEBUGGING
+
 /// @file MIES_Cache.ipf
 /// @brief __CA__ This file holds functions related to caching of waves.
 ///
@@ -495,7 +497,9 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 	index = CA_GetCacheIndex(key)
 
 	if(!IsFinite(index))
+#ifdef CACHE_DEBUGGING
 		DEBUGPRINT_TS("Could not find a cache entry for key=", str=key)
+#endif
 		return $""
 	endif
 
@@ -507,7 +511,9 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 	WAVE/Z cache = values[index]
 
 	if(!WaveExists(cache))
+#ifdef CACHE_DEBUGGING
 		DEBUGPRINT_TS("Could not find a valid wave for key=", str=key)
+#endif
 		// invalidate cache entry due to non existent wave,
 		// this can happen for unpacked experiments which don't store free waves
 		keys[index] = ""
@@ -515,7 +521,10 @@ threadsafe Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 	endif
 
 	stats[index][%Hits] += 1
+
+#ifdef CACHE_DEBUGGING
 	DEBUGPRINT_TS("Found cache entry for key=", str=key)
+#endif
 
 	if(returnDuplicate)
 		if(IsWaveRefWave(cache))
