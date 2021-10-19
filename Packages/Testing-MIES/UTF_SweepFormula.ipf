@@ -926,8 +926,8 @@ End
 static Function TestPlotting()
 	String traces
 
-	Variable minimum, maximum
-	string win
+	Variable minimum, maximum, i, pos, offset
+	string win, gInfo, tmpStr, refStr
 	DFREF dfr
 
 	string sweepBrowser = CreateFakeSweepBrowser_IGNORE()
@@ -945,7 +945,7 @@ static Function TestPlotting()
 	WAVE scale1D = SF_FormulaExecutor(DirectToFormulaParser(strScale1D))
 	WAVE array0D = SF_FormulaExecutor(DirectToFormulaParser(strArray0D))
 
-	win = winBase + "_0"
+	win = winBase + "_#" + winBase + "_0"
 	dfr = GetDataFolderDFR()
 
 	SF_FormulaPlotter(sweepBrowser, strArray2D)
@@ -1038,7 +1038,7 @@ static Function TestPlotting()
 	SF_FormulaPlotter(sweepBrowser, "range(3) vs range(7)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(7 / 3))
 
-	SF_FormulaPlotter(sweepBrowser, strCombined); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_NORMAL); DoUpdate
 	win = winBase + "_0"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	KillWindow/Z $win
@@ -1062,9 +1062,8 @@ static Function TestPlotting()
 	Make/FREE/D wvX1ref = {{7, 8}}
 	CHECK_EQUAL_WAVES(wvX1, wvX1ref)
 
-
 	try
-		SF_FormulaPlotter(sweepBrowser, strCombinedPartial)
+		SF_FormulaPlotter(sweepBrowser, strCombinedPartial, dmMode = SF_DM_NORMAL)
 		FAIL()
 	catch
 		PASS()
@@ -1074,6 +1073,31 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	win = winBase + "_1"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 0)
+
+	offset = 0.1 // workaround for IUTF issue https://github.com/byte-physics/igor-unit-testing-framework/issues/216
+	SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_SUBWINDOWS); DoUpdate
+	win = winBase + "_"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	for(i = 0; i < 4; i += 1)
+		gInfo = GuideInfo(win, "HOR" + num2istr(i))
+		CHECK_NON_EMPTY_STR(gInfo)
+		pos = NumberByKey("RELPOSITION", gInfo)
+		CHECK_CLOSE_VAR(pos + offset, i / 3 + offset, tol = 0.01)
+		pos = NumberByKey("HORIZONTAL", gInfo)
+		CHECK_EQUAL_VAR(pos, 1)
+		tmpStr = StringByKey("GUIDE1", gInfo)
+		refStr = "FT"
+		CHECK_EQUAL_STR(tmpStr, refStr)
+		tmpStr = StringByKey("GUIDE2", gInfo)
+		refStr = "FB"
+		CHECK_EQUAL_STR(tmpStr, refStr)
+	endfor
+	win = winBase + "_#" + winBase + "_0"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	win = winBase + "_#" + winBase + "_1"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	win = winBase + "_#" + winBase + "_2"
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 End
 
 Function TestLabNotebook()

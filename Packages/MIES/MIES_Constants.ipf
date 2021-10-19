@@ -1581,3 +1581,10 @@ Constant TPSTORAGE_SEALED = 0x1
 Constant EPOCH_USER_LEVEL = -1
 
 StrConstant EPOCH_SHORTNAME_USER_PREFIX = "U_"
+
+/// @name SweepFormula display modes
+/// @anchor SweepFormulaDisplayModes
+/// @{
+Constant SF_DM_NORMAL = 1
+Constant SF_DM_SUBWINDOWS = 2
+/// @}
