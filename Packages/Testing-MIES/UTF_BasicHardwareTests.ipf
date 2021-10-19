@@ -1631,7 +1631,7 @@ Function RepeatSets_8_REENTRY([str])
 
 	t.acquiredStimSets_HS1      = "Testpulse"
 	t.sweepCount_HS1            = {0, 0, 0, 0}
-	t.setCycleCount_HS1         = {0, 0, 0, 0}
+	t.setCycleCount_HS1         = {NaN, NaN, NaN, NaN}
 	WAVEClear t.stimsetCycleID_HS1
 
 	t.DAQChannelTypeDA = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
@@ -1676,7 +1676,7 @@ Function RepeatSets_9_REENTRY([str])
 
 	t.acquiredStimSets_HS1      = "Testpulse"
 	t.sweepCount_HS1            = {0, 0, 0, 0}
-	t.setCycleCount_HS1         = {0, 0, 0, 0}
+	t.setCycleCount_HS1         = {NaN, NaN, NaN, NaN}
 	WAVEClear t.stimsetCycleID_HS1
 
 	t.DAQChannelTypeDA = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
@@ -3348,6 +3348,9 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	WAVE numericalValues = GetLBNumericalValues(str)
 	WAVE textualValues = GetLBTextualValues(str)
 
+	WAVE/Z setCycleCount = GetLastSetting(numericalValues, sweepNo, "Set Cycle Count", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(setCycleCount, NULL_WAVE)
+
 	WAVE DAChannelTypes = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(DAChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
@@ -3426,6 +3429,9 @@ Function TPDuringDAQ_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 	WAVE textualValues = GetLBTextualValues(str)
+
+	WAVE setCycleCount = GetLastSetting(numericalValues, sweepNo, "Set Cycle Count", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(setCycleCount, {NaN, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE DAChannelTypes = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(DAChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
