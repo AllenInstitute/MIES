@@ -207,7 +207,6 @@ Function CHI_CheckInstallation()
 		printf "Mies version info: Valid \"%s...\" (Nice!)\r", StringFromList(0, miesVersion, "\r")
 	endif
 
-#if defined(IGOR64)
 	CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
 	CHI_CheckXOP(listOfXOPs, "JSON-64.xop", "JSON XOP", state)
 	CHI_CheckXOP(listOfXOPs, "VDT2-64.xop", "VDT2 XOP", state)
@@ -217,31 +216,16 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state)
-#else
-	CHI_CheckXOP(listOfXOPs, "itcxop2.xop", "ITC XOP", state)
-	CHI_CheckXOP(listOfXOPs, "JSON.xop", "JSON XOP", state)
-	CHI_CheckXOP(listOfXOPs, "VDT2.xop", "VDT2 XOP", state)
-#if IgorVersion() < 9.0
-	CHI_CheckXOP(listOfXOPs, "HDF5.xop", "HDF5 XOP", state)
-#endif
-	CHI_CheckXOP(listOfXOPs, "AxonTelegraph.xop", "Axon Telegraph XOP", state)
-	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander.xop", "Multi Clamp Commander XOP", state)
-	CHI_CheckXOP(listOfXOPs, "ZeroMQ.xop", "ZeroMQ XOP", state)
-#endif
 
 	CHI_CheckJSONXOPVersion(state)
 
 	printf "Results: %d checks, %d number of errors\r", state.numTries, state.numErrors
-	
+
 	STRUCT CHI_InstallationState stateExtended
 	CHI_InitInstallationState(stateExtended)
 	printf "\rChecking extended installation:\r"
 
-#if defined(IGOR64)
 	CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", stateExtended, expectedHash = CHI_NIDAQ_XOP_64_HASH)
-#else
-	CHI_CheckXOP(listOfXOPs, "NIDAQmx.xop", "NI-DAQ MX XOP", stateExtended, expectedHash = CHI_NIDAQ_XOP_HASH)
-#endif
 
 	printf "Results: %d checks, %d number of errors\r", stateExtended.numTries, stateExtended.numErrors
 	ControlWindowToFront()

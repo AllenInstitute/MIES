@@ -904,11 +904,7 @@ static Function/S AI_GetMCCWinFilePath()
 
 	progFolder = GetProgramFilesFolder()
 
-#if defined(IGOR64)
 	MAKE/FREE/T locations = {"Molecular Devices\\MultiClamp_64\\MC700B.exe", "Molecular Devices\\MultiClamp 700B Commander\\MC700B.exe"}
-#else
-	MAKE/FREE/T locations = {"Molecular Devices\\MultiClamp 700B Commander\\MC700B.exe"}
-#endif
 
 	numEntries = DimSize(locations, ROWS)
 	for(i = 0; i < numEntries; i += 1)
