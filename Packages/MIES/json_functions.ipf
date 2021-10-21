@@ -21,7 +21,7 @@ static Constant JSON_QFLAG_DEFAULT = 1
 #endif
 
 /// @addtogroup JSON_TYPES
-///@{
+/// @{
 Constant JSON_INVALID   = -1
 Constant JSON_OBJECT    = 0
 Constant JSON_ARRAY     = 1
@@ -29,10 +29,10 @@ Constant JSON_NUMERIC   = 2
 Constant JSON_STRING    = 3
 Constant JSON_BOOL      = 4
 Constant JSON_NULL      = 5
-///@}
+/// @}
 
 /// @addtogroup JSONXOP_Parse
-///@{
+/// @{
 /// @brief Parse a JSON string with the XOP
 ///
 /// @param jsonStr    string representation of the JSON object
@@ -44,17 +44,21 @@ threadsafe Function JSON_Parse(jsonStr, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_Parse/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT) jsonStr; AbortOnRTE
+	JSONXOP_Parse/Z=1/Q=(JSON_QFLAG_DEFAULT) jsonStr
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
+
 	return V_Value
 End
-///@}
+/// @}
 
 /// @addtogroup JSONXOP_Dump
-///@{
+/// @{
 
 /// @brief Dump a JSON id to its string representation
 ///
@@ -70,17 +74,21 @@ threadsafe Function/S JSON_Dump(jsonID, [indent, ignoreErr])
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 	indent = ParamIsDefault(indent) ? 0 : !!numtype(indent) ? -1 : round(indent)
 
-	JSON_ClearRTError()
-	JSONXOP_Dump/IND=(indent)/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT) jsonID; AbortOnRTE
+	JSONXOP_Dump/IND=(indent)/Z=1/Q=(JSON_QFLAG_DEFAULT) jsonID
 	if(V_flag)
-		return ""
+		if(ignoreErr)
+			return ""
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
+
 	return S_Value
 End
-///@}
+/// @}
 
 /// @addtogroup JSONXOP_New
-///@{
+/// @{
 /// @brief register a new object
 ///
 /// @param ignoreErr  [optional, default 0] set to ignore runtime errors
@@ -90,17 +98,21 @@ threadsafe Function JSON_New([ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_New/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT); AbortOnRTE
+	JSONXOP_New/Z=1/Q=(JSON_QFLAG_DEFAULT)
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
+
 	return V_Value
 End
-///@}
+/// @}
 
 /// @addtogroup JSONXOP_Release
-///@{
+/// @{
 /// @brief Release a JSON id from memory
 ///
 /// @param jsonID     numeric identifier of the main object
@@ -112,17 +124,21 @@ threadsafe Function JSON_Release(jsonID, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_Release/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT) jsonID; AbortOnRTE
+	JSONXOP_Release/Z=1/Q=(JSON_QFLAG_DEFAULT) jsonID
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
+
 	return 0
 End
-///@}
+/// @}
 
 /// @addtogroup JSONXOP_Remove
-///@{
+/// @{
 /// @brief Remove a path element from a JSON string representation
 ///
 /// @param jsonID     numeric identifier of the main object
@@ -136,17 +152,21 @@ threadsafe Function JSON_Remove(jsonID, jsonPath [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_Remove/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT) jsonID, jsonPath; AbortOnRTE
+	JSONXOP_Remove/Z=1/Q=(JSON_QFLAG_DEFAULT) jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
+
 	return 0
 End
-///@}
+/// @}
 
 /// @addtogroup JSONXOP_AddTree
-///@{
+/// @{
 
 /// @brief Recursively add new objects to the tree
 ///
@@ -188,18 +208,21 @@ threadsafe static Function JSON_AddTree(jsonID, jsonPath, type, ignoreErr)
 	String jsonPath
 	Variable type, ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddTree/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/T=(type) jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddTree/Z=1/Q=(JSON_QFLAG_DEFAULT)/T=(type) jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
+
 	return 0
 End
 
-///@}
+/// @}
 /// @addtogroup JSONXOP_GetKeys
-///@{
+/// @{
 /// @brief Get the name of all object members of the specified path
 ///
 /// @param jsonID     numeric identifier of the JSON object
@@ -214,26 +237,27 @@ threadsafe Function/WAVE JSON_GetKeys(jsonID, jsonPath, [esc, ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-
 	if(ParamIsDefault(esc))
-		JSONXOP_GetKeys/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/FREE jsonID, jsonPath, result; AbortOnRTE
+		JSONXOP_GetKeys/Z=1/Q=(JSON_QFLAG_DEFAULT)/FREE jsonID, jsonPath, result
 	else
 		esc = !!esc
-		JSONXOP_GetKeys/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/ESC=(esc)/FREE jsonID, jsonPath, result; AbortOnRTE
+		JSONXOP_GetKeys/Z=1/Q=(JSON_QFLAG_DEFAULT)/ESC=(esc)/FREE jsonID, jsonPath, result
 	endif
 
 	if(V_flag)
-		return $""
+		if(ignoreErr)
+			return $""
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return result
 End
-///@}
+/// @}
 
-///@}
 /// @addtogroup JSONXOP_GetType
-///@{
+/// @{
 /// @brief get the JSON Type for an element at the given path.
 ///
 /// @param jsonID     numeric identifier of the JSON object
@@ -247,19 +271,22 @@ threadsafe Function JSON_GetType(jsonID, jsonPath, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_GetType/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT) jsonID, jsonPath; AbortOnRTE
+	JSONXOP_GetType/Z=1/Q=(JSON_QFLAG_DEFAULT) jsonID, jsonPath
 
 	if(V_flag)
-		return JSON_INVALID
+		if(ignoreErr)
+			return JSON_INVALID
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return V_Value
 End
-///@}
+/// @}
 
 /// @addtogroup JSONXOP_GetArraySize
-///@{
+/// @{
 /// @brief Get the number of elements in an array.
 ///
 /// @param jsonID     numeric identifier of the JSON object
@@ -273,19 +300,21 @@ threadsafe Function JSON_GetArraySize(jsonID, jsonPath, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_GetArraySize/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT) jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_GetArraySize/Z=1/Q=(JSON_QFLAG_DEFAULT) jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return V_Value
 End
-///@}
+/// @}
 
 /// @addtogroup JSONXOP_GetMaxArraySize
-///@{
+/// @{
 /// @brief Get the maximum element size for each dimension in an array
 ///
 /// @param jsonID     numeric identifier of the JSON object
@@ -299,19 +328,21 @@ threadsafe Function/WAVE JSON_GetMaxArraySize(jsonID, jsonPath, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_GetMaxArraySize/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/FREE jsonID, jsonPath, w; AbortOnRTE
-
+	JSONXOP_GetMaxArraySize/Z=1/Q=(JSON_QFLAG_DEFAULT)/FREE jsonID, jsonPath, w
 	if(V_flag)
-		return $""
+		if(ignoreErr)
+			return $""
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return w
 End
-///@}
+/// @}
 
 /// @addtogroup JSONXOP_GetValue
-///@{
+/// @{
 
 /// @brief Get a text entity as string variable from a JSON object
 ///
@@ -326,11 +357,13 @@ threadsafe Function/S JSON_GetString(jsonID, jsonPath, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_GetValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/T jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_GetValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/T jsonID, jsonPath
 	if(V_flag)
-		return ""
+		if(ignoreErr)
+			return ""
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return S_Value
@@ -349,11 +382,13 @@ threadsafe Function JSON_GetVariable(jsonID, jsonPath, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_GetValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/V jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_GetValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/V jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return V_Value
@@ -372,11 +407,13 @@ threadsafe Function/WAVE JSON_GetTextWave(jsonID, jsonPath, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_GetValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/TWAV=wv/FREE jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_GetValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/TWAV=wv/FREE jsonID, jsonPath
 	if(V_flag)
-		return $""
+		if(ignoreErr)
+			return $""
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return wv
@@ -395,11 +432,13 @@ threadsafe Function/WAVE JSON_GetWave(jsonID, jsonPath, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_GetValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/WAVE=wv/FREE jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_GetValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/WAVE=wv/FREE jsonID, jsonPath
 	if(V_flag)
-		return $""
+		if(ignoreErr)
+			return $""
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return wv
@@ -415,13 +454,15 @@ threadsafe Function [Int64 result] JSON_GetInt64(Variable jsonID, String jsonPat
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
-	JSON_ClearRTError()
 	Make/FREE/L/N=1 wv
-	JSONXOP_GetValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/L=wv/FREE jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_GetValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/L=wv/FREE jsonID, jsonPath
 	if(V_flag)
-		result = 0
-		return [result]
+		if(ignoreErr)
+			result = 0
+			return [result]
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	result = wv[0]
@@ -438,23 +479,25 @@ threadsafe Function [UInt64 result] JSON_GetUInt64(Variable jsonID, String jsonP
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : ignoreErr
 
-	JSON_ClearRTError()
 	Make/FREE/L/U/N=1 wv
-	JSONXOP_GetValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/L=wv/FREE jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_GetValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/L=wv/FREE jsonID, jsonPath
 	if(V_flag)
-		result = 0
-		return [result]
+		if(ignoreErr)
+			result = 0
+			return [result]
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	result = wv[0]
 	return [result]
 End
 
-///@}
+/// @}
 
 /// @addtogroup JSONXOP_AddValue
-///@{
+/// @{
 
 /// @brief Add a string entity to a JSON object
 ///
@@ -470,11 +513,13 @@ threadsafe Function JSON_AddString(jsonID, jsonPath, value, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/T=(value) jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/T=(value) jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -496,18 +541,19 @@ threadsafe Function JSON_AddVariable(jsonID, jsonPath, value, [significance, ign
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-
 	if(trunc(value) == value && !numtype(value))
-		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/I=(value) jsonID, jsonPath; AbortOnRTE
+		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/I=(value) jsonID, jsonPath
 	elseif(ParamIsDefault(significance))
-		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/V=(value) jsonID, jsonPath; AbortOnRTE
+		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/V=(value) jsonID, jsonPath
 	else
-		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/V=(value)/S=(significance) jsonID, jsonPath; AbortOnRTE
+		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/V=(value)/S=(significance) jsonID, jsonPath
 	endif
-
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -525,11 +571,13 @@ threadsafe Function JSON_AddNull(jsonID, jsonPath, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/N jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/N jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -549,16 +597,17 @@ threadsafe Function JSON_AddBoolean(jsonID, jsonPath, value, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-
 	if(!!numtype(value))
-		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/N jsonID, jsonPath; AbortOnRTE
+		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/N jsonID, jsonPath
 	else
-		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/B=(!!value) jsonID, jsonPath; AbortOnRTE
+		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/B=(!!value) jsonID, jsonPath
 	endif
-
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -578,11 +627,13 @@ threadsafe Function JSON_AddWave(jsonID, jsonPath, wv, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/WAVE=wv jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/WAVE=wv jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -630,11 +681,13 @@ threadsafe static Function AddValueI64(jsonID, jsonPath, w, ignoreErr)
 	WAVE w
 	Variable ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/L=w jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/L=w jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -654,11 +707,13 @@ threadsafe Function JSON_AddObjects(jsonID, jsonPath, [objCount, ignoreErr])
 	objCount = ParamIsDefault(objCount) ? 1 : objCount
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/OBJ=(objCount) jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/OBJ=(objCount) jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -678,11 +733,13 @@ threadsafe Function JSON_AddJSON(jsonID, jsonPath, jsonID2, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/JOIN=(jsonID2) jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/JOIN=(jsonID2) jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -702,11 +759,13 @@ threadsafe Function JSON_SetString(jsonID, jsonPath, value, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/O/T=(value) jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/T=(value) jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -728,18 +787,19 @@ threadsafe Function JSON_SetVariable(jsonID, jsonPath, value, [significance, ign
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-
 	if(trunc(value) == value)
-		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/O/I=(value) jsonID, jsonPath; AbortOnRTE
+		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/I=(value) jsonID, jsonPath
 	elseif(ParamIsDefault(significance))
-		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/O/V=(value) jsonID, jsonPath; AbortOnRTE
+		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/V=(value) jsonID, jsonPath
 	else
-		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/O/V=(value)/S=(significance) jsonID, jsonPath; AbortOnRTE
+		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/V=(value)/S=(significance) jsonID, jsonPath
 	endif
-
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -757,11 +817,13 @@ threadsafe Function JSON_SetNull(jsonID, jsonPath, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/O/N jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/N jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -781,16 +843,17 @@ threadsafe Function JSON_SetBoolean(jsonID, jsonPath, value, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-
 	if(!!numtype(value))
-		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/O/N jsonID, jsonPath; AbortOnRTE
+		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/N jsonID, jsonPath
 	else
-		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/O/B=(!!value) jsonID, jsonPath; AbortOnRTE
+		JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/B=(!!value) jsonID, jsonPath
 	endif
-
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -810,11 +873,13 @@ threadsafe Function JSON_SetWave(jsonID, jsonPath, wv, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/O/WAVE=wv jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/WAVE=wv jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -862,11 +927,13 @@ threadsafe static Function SetValueI64(jsonID, jsonPath, w, ignoreErr)
 	WAVE w
 	Variable ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/O/L=w jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/L=w jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -886,11 +953,13 @@ threadsafe Function JSON_SetObjects(jsonID, jsonPath, [objCount, ignoreErr])
 	objCount = ParamIsDefault(objCount) ? 1 : objCount
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/O/OBJ=(objCount) jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/OBJ=(objCount) jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
@@ -910,22 +979,19 @@ threadsafe Function JSON_SetJSON(jsonID, jsonPath, jsonID2, [ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	JSON_ClearRTError()
-	JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/O/JOIN=(jsonID2) jsonID, jsonPath; AbortOnRTE
-
+	JSONXOP_AddValue/Z=1/Q=(JSON_QFLAG_DEFAULT)/O/JOIN=(jsonID2) jsonID, jsonPath
 	if(V_flag)
-		return NaN
+		if(ignoreErr)
+			return NaN
+		endif
+
+		AbortOnValue 1, V_flag
 	endif
 
 	return 0
 End
 
-///@}
-
-threadsafe static Function JSON_ClearRTError()
-
-	return GetRTError(1)
-End
+/// @}
 
 threadsafe static Function JSON_KVPairsToJSON(jsonID, jsonPath, str, ignoreErr)
 	variable jsonID, ignoreErr
@@ -1016,14 +1082,7 @@ threadsafe Function JSON_Exists(jsonID, jsonPath)
 	Variable jsonID
 	String jsonPath
 
-	try
-		JSON_ClearRTError()
-		JSON_GetType(jsonID, jsonPath); AbortOnRTE
-		return 1
-	catch
-		JSON_ClearRTError()
-		return 0
-	endtry
+	return JSON_GetType(jsonID, jsonPath, ignoreErr = 1) != JSON_INVALID
 End
 
 /// @}

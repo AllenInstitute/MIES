@@ -13,7 +13,7 @@
 
 static StrConstant CHI_NIDAQ_XOP_64_HASH = "92427feeec9d330d410452b15ff1b6da90fe8e2dd0b8362cd711358c8726706a"
 static StrConstant CHI_NIDAQ_XOP_HASH    = "ed7f5bc51553608bcf7850b06d472dc739952a32939c1b196b80d131a87f2527"
-static StrConstant CHI_JSON_XOP_VERSION  = "version-650-ge9b149c"
+static StrConstant CHI_JSON_XOP_VERSION  = "version-753-g902d43f"
 
 /// @brief Collection of counters used for installation checking
 static Structure CHI_InstallationState
@@ -41,7 +41,7 @@ static Function CHI_CheckJSONXOPVersion(state)
 	if(!cmpstr(version, CHI_JSON_XOP_VERSION))
 		printf "JSON XOP: Present in the right version (%s) (Nice!)\r", version
 	else
-		printf "JSON XOP: Present in the wrong version (expected: %s vs present: %s) (Very Bad)\r", version, CHI_JSON_XOP_VERSION
+		printf "JSON XOP: Present in the wrong version (expected: %s vs present: %s) (Very Bad)\r", CHI_JSON_XOP_VERSION, version
 		state.numErrors += 1
 	endif
 End
