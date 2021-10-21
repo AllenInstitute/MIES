@@ -699,16 +699,18 @@ End
 /// @param graph  graph to pass to SF_FormulaExecutor
 /// @param formula formula to plot
 /// @param dfr     [optional, default current] working dataFolder
-Function SF_FormulaPlotter(graph, formula, [dfr])
-	String graph
-	String formula
-	DFREF dfr
+/// @param dmMode  [optional, default DM_SUBWINDOWS] display mode that defines how multiple sweepformula graphs are arranged
+Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dmMode])
 
 	String trace, axes, xFormula
 	Variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs, numWins
-	Variable dim1Y, dim2Y, dim1X, dim2X
-	String win, wList, winNameTemplate, exWList, wName
+	Variable dim1Y, dim2Y, dim1X, dim2X, guidePos, winDisplayMode
+	String win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName
 	String traceName = "formula"
+	string guideNameTemplate = "HOR"
+
+	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
+	ASSERT(winDisplaymode == SF_DM_NORMAL || winDisplaymode == SF_DM_SUBWINDOWS, "Invalid display mode.")
 
 	if(ParamIsDefault(dfr))
 		dfr = GetDataFolderDFR()
@@ -721,6 +723,20 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	wList = ""
 	winNameTemplate = SF_GetFormulaWinNameTemplate(graph)
 	numGraphs = DimSize(graphCode, ROWS)
+
+	if(winDisplayMode == SF_DM_SUBWINDOWS)
+		KillWindow/Z $winNameTemplate
+		NewPanel/N=$winNameTemplate
+		panelName = S_name
+		NVAR JSONid = $GetSettingsJSONid()
+		PS_InitCoordinates(JSONid, panelName, "sweepformula_" + panelName)
+		for(j = 0; j < numGraphs + 1; j += 1)
+			guideName1 = guideNameTemplate + num2istr(j)
+			guidePos = j / numGraphs
+			DefineGuide $guideName1={FT, guidePos, FB}
+		endfor
+	endif
+
 	for(j = 0; j < numGraphs; j += 1)
 		xFormula = formulaPairs[j][%FORMULA_X]
 		if(!IsEmpty(xFormula))
@@ -755,13 +771,19 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
 
 		win = winNameTemplate + num2istr(j)
-		wList = AddListItem(win, wList)
-
-		if(!WindowExists(win))
-			Display/N=$win as win
-			NVAR JSONid = $GetSettingsJSONid()
-			PS_InitCoordinates(JSONid, win, "sweepformula_" + win)
-			win = S_name
+		if(winDisplayMode == SF_DM_NORMAL)
+			if(!WindowExists(win))
+				Display/N=$win as win
+				win = S_name
+				NVAR JSONid = $GetSettingsJSONid()
+				PS_InitCoordinates(JSONid, win, "sweepformula_" + win)
+			endif
+			wList = AddListItem(win, wList)
+		elseif(winDisplayMode == SF_DM_SUBWINDOWS)
+			guideName1 = guideNameTemplate + num2istr(j)
+			guideName2 = guideNameTemplate + num2istr(j + 1)
+			Display/HOST=$panelName/FG=(FL, $guideName1, FR, $guideName2)/N=$win
+			win = panelName + "#" + S_name
 		endif
 
 		WAVE/T/Z cursorInfos = GetCursorInfos(win)
@@ -853,14 +875,16 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		SetAxesRanges(win, axesRanges)
 	endfor
 
-	exWList = WinList(winNameTemplate + "*", ";", "WIN:1")
-	numWins = ItemsInList(exWList)
-	for(i = 0; i < numWins; i += 1)
-		wName = StringFromList(i, exWList)
-		if(WhichListItem(wName, wList) == -1)
-			KillWindow/Z $wName
-		endif
-	endfor
+	if(winDisplayMode == SF_DM_NORMAL)
+		exWList = WinList(winNameTemplate + "*", ";", "WIN:1")
+		numWins = ItemsInList(exWList)
+		for(i = 0; i < numWins; i += 1)
+			wName = StringFromList(i, exWList)
+			if(WhichListItem(wName, wList) == -1)
+				KillWindow/Z $wName
+			endif
+		endfor
+	endif
 End
 
 /// @brief utility function for @c SF_FormulaPlotter
