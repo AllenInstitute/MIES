@@ -41,7 +41,7 @@ static Function CHI_CheckJSONXOPVersion(state)
 	if(!cmpstr(version, CHI_JSON_XOP_VERSION))
 		printf "JSON XOP: Present in the right version (%s) (Nice!)\r", version
 	else
-		printf "JSON XOP: Present in the wrong version (expected: %s vs present: %s) (Very Bad)\r", version, CHI_JSON_XOP_VERSION
+		printf "JSON XOP: Present in the wrong version (expected: %s vs present: %s) (Very Bad)\r", CHI_JSON_XOP_VERSION, version
 		state.numErrors += 1
 	endif
 End
