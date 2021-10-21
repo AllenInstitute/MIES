@@ -5541,7 +5541,7 @@ Function DAP_UpdateDeviceInfoWaves(string deviceList, variable hardwareType)
 	for(i = 0; i < numEntries; i += 1)
 		device = StringFromList(i, deviceList)
 		WAVE deviceInfo = GetDeviceInfoWave(device)
-		WAVE devInfoHW = HW_GetDeviceInfoUnregistered(hardwareType, device)
+		WAVE/Z devInfoHW = HW_GetDeviceInfoUnregistered(hardwareType, device)
 		hardwareType = GetHardwareType(device)
 		HW_WriteDeviceInfo(hardwareType, deviceInfo, devInfoHW)
 	endfor
