@@ -218,7 +218,9 @@ static Function AD_FillWaves(win, list, info)
 
 			stimset = stimsets[headstage]
 
-			if(anaFuncType != INVALID_ANALYSIS_FUNCTION)
+			if(anaFuncType == INVALID_ANALYSIS_FUNCTION)
+				passed = NaN
+			else
 				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
 				passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
