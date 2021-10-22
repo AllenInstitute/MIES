@@ -3071,7 +3071,7 @@ Function [variable result, variable maxOccurences] PSQ_CR_SetHasPassed(WAVE nume
 	return [0, maxValue]
 End
 
-/// @brief Returns the two letter states "AA", "AB" and "BA" for the value and
+/// @brief Returns the two letter states "AA", "BB" and "BA" for the value and
 /// the scaling factors to reach min/center/max
 ///
 /// We need the real baseline value (measured), whereas
