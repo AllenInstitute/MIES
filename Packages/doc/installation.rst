@@ -51,11 +51,10 @@ via the Installer package.
 
 Install the `Visual C++ Redistributable for Visual Studio 2019
 <https://support.microsoft.com/en-us/topic/the-latest-supported-visual-c-downloads-2647da03-1eea-4433-9aff-95f26a218cc0>`__
-packages both for 32bit (x86) and 64bit (x64) in English.
+package for 64bit (x64) in English.
 
 -  Quit Igor Pro
--  Create the following shortcuts in
-   ``C:\Users\$username\Documents\WaveMetrics\Igor Pro 8 User Files``
+-  Create the following shortcuts in ``C:\Users\$username\Documents\WaveMetrics\Igor Pro 9 User Files``
 
    -  In ``User Procedures`` a shortcut pointing to
 
@@ -63,17 +62,11 @@ packages both for 32bit (x86) and 64bit (x64) in English.
       -  ``Packages\IPNWB``
       -  ``Packages\MIES``
 
-   -  In ``Igor Procedures`` a shortcut pointing to
-      Packages\MIES_Include.ipf
-   -  In ``Igor Extensions (64-bit)`` a shortcut pointing to
+   -  In ``Igor Procedures`` a shortcut pointing to ``Packages\MIES_Include.ipf``
 
-      -  ``XOPs-IP8-64bit``
+   -  In ``Igor Extensions (64-bit)`` a shortcut pointing to ``XOPs-IP9-64bit``
 
-   -  In ``Igor Extensions`` a shortcut pointing to
-
-      -  ``XOPs-IP8``
-
-   -  In ``Igor Help Files`` a shortcut pointing to HelpFiles-IP8
+   -  In ``Igor Help Files`` a shortcut pointing to ``HelpFiles-IP9``
 
 -  Start Igor Pro
 
@@ -85,7 +78,7 @@ hardware related XOPs present.
 
 -  Quit Igor Pro
 -  Create the following shortcuts in
-   ``C:\Users\$username\Documents\WaveMetrics\Igor Pro 8 User Files``
+   ``C:\Users\$username\Documents\WaveMetrics\Igor Pro 9 User Files``
 
    -  In ``User Procedures`` a shortcut pointing to
 
@@ -93,23 +86,14 @@ hardware related XOPs present.
       -  ``Packages\IPNWB``
       -  ``Packages\MIES``
 
-   -  In ``Igor Procedures`` a shortcut pointing to
-      ``Packages\MIES_Include.ipf``
+   -  In ``Igor Procedures`` a shortcut pointing to ``Packages\MIES_Include.ipf``
 
    -  In ``Igor Extensions (64-bit)`` a shortcut pointing to
 
-      -  ``XOPs-IP8-64bit\HDF5-64.xop``
-      -  ``XOPs-IP8-64bit\JSON-64.xop``
-      -  ``XOPs-IP8-64bit\MIESUtils-64.xop``
-      -  ``XOPs-IP8-64bit\ZeroMQ-64.xop``
+      -  ``XOPs-IP9-64bit\JSON-64.xop``
+      -  ``XOPs-IP9-64bit\MIESUtils-64.xop``
+      -  ``XOPs-IP9-64bit\ZeroMQ-64.xop``
 
-   -  In ``Igor Extensions`` a shortcut pointing to
-
-      -  ``XOPs-IP8\HDF5.xop``
-      -  ``XOPs-IP8\JSON.xop``
-      -  ``XOPs-IP8\MIESUtils.xop``
-      -  ``XOPs-IP8\ZeroMQ.xop``
-
-   -  In ``Igor Help Files`` a shortcut pointing to HelpFiles-IP8
+   -  In ``Igor Help Files`` a shortcut pointing to HelpFiles-IP9
 
 -  Start Igor Pro

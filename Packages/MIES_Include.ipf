@@ -28,6 +28,12 @@
 #endif
 #endif
 
+///@cond HIDDEN_SYMBOL
+#if !defined(IGOR64)
+#define TOO_OLD_IGOR
+#endif
+///@endcond // HIDDEN_SYMBOL
+
 #ifdef TOO_OLD_IGOR
 
 Window OpenPanelWithDocumentationLink() : Panel
@@ -106,9 +112,13 @@ static Function AfterCompiledHook()
 
 	string igorMajorVersion
 
+#if defined(IGOR64)
 	igorMajorVersion = StringByKey("IGORVERS", IgorInfo(0))[0]
 	printf "Your Igor Pro %s version is too old to be usable for MIES.\r", igorMajorVersion
 	Execute "OpenPanelWithDocumentationLink()"
+#else
+	printf "The 32bit version of Igor Pro is not supported anymore.\r"
+#endif
 End
 
 #else

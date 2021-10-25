@@ -134,9 +134,6 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 	IH_SerializeSettings()
 
 	IH_KillTemporaries()
-#if !defined(IGOR64)
-	IH_KillStimSets()
-#endif
 
 	NVAR fileIDExport = $GetNWBFileIDExport()
 	NWB_Flush(fileIDExport)

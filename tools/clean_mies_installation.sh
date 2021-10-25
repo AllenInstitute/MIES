@@ -151,23 +151,15 @@ do
 
   if [ "$skipHardwareXOPs" = "0" ]
   then
-    cp -r  "$base_folder"/XOPs-IP${i}/*  "$xops32"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/*  "$xops64"
   else
     if [ $i -le 8 ]
     then
-      cp -r  "$base_folder"/XOPs-IP${i}/HDF5*  "$xops32"
       cp -r  "$base_folder"/XOPs-IP${i}-64bit/HDF5*  "$xops64"
     fi
 
-    cp -r  "$base_folder"/XOPs-IP${i}/MIESUtils*  "$xops32"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/MIESUtils*  "$xops64"
-
-    cp -r  "$base_folder"/XOPs-IP${i}/JSON*  "$xops32"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/JSON*  "$xops64"
-
-    cp -r  "$base_folder"/XOPs-IP${i}/ZeroMQ*  "$xops32"
-    cp -r  "$base_folder"/XOPs-IP${i}/libzmq*  "$xops32"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/ZeroMQ*  "$xops64"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/libzmq*  "$xops64"
   fi
