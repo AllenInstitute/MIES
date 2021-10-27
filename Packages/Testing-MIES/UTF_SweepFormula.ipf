@@ -18,7 +18,7 @@ Function/S CreateFakeSweepBrowser_IGNORE()
 End
 
 /// @brief test two jsonIDs for equal content
-static Function WARN_EQUAL_JSON(jsonID0, jsonID1)
+static Function CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	variable jsonID0, jsonID1
 
 	string jsonDump0, jsonDump1
@@ -28,7 +28,7 @@ static Function WARN_EQUAL_JSON(jsonID0, jsonID1)
 	JSONXOP_Dump/IND=2 jsonID1
 	jsonDump1 = S_Value
 
-	WARN_EQUAL_STR(jsonDump0, jsonDump1)
+	CHECK_EQUAL_STR(jsonDump0, jsonDump1)
 End
 
 static Function DirectToFormulaParser(string code)
@@ -42,41 +42,41 @@ static Function primitiveOperations()
 
 	jsonID0 = JSON_Parse("null")
 	jsonID1 = DirectToFormulaParser("")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("1")
 	jsonID1 = DirectToFormulaParser("1")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1)
 
 	jsonID0 = JSON_Parse("{\"+\":[1,2]}")
 	jsonID1 = DirectToFormulaParser("1+2")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2)
 
 	jsonID0 = JSON_Parse("{\"*\":[1,2]}")
 	jsonID1 = DirectToFormulaParser("1*2")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1*2)
 
 	jsonID0 = JSON_Parse("{\"-\":[1,2]}")
 	jsonID1 = DirectToFormulaParser("1-2")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1-2)
 
 	jsonID0 = JSON_Parse("{\"/\":[1,2]}")
 	jsonID1 = DirectToFormulaParser("1/2")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1/2)
 
 	jsonID0 = JSON_Parse("{\"-\":[1]}")
 	jsonID1 = DirectToFormulaParser("-1")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], -1)
 
 	jsonID0 = JSON_Parse("{\"+\":[1]}")
 	jsonID1 = DirectToFormulaParser("+1")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], +1)
 End
 
@@ -86,36 +86,41 @@ static Function stringHandling()
 	// basic strings
 	jsonID0 = JSON_Parse("\"abc\"")
 	jsonID1 = DirectToFormulaParser("abc")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	// ignore white spaces
 	jsonID0 = JSON_Parse("\"abcdef\"")
 	jsonID1 = DirectToFormulaParser("abc def")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	// allow white space in strings
 	jsonID0 = JSON_Parse("\"abc def\"")
 	jsonID1 = DirectToFormulaParser("\"abc def\"")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	// ignore comments
 	jsonID0 = JSON_Parse("null")
 	jsonID1 = DirectToFormulaParser("# comment")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
-
-	// allow # inside strings
-	jsonID0 = JSON_Parse("\"#\"")
-	jsonID1 = DirectToFormulaParser("\"#\"")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	// do not evaluate calculations in strings
 	jsonID0 = JSON_Parse("\"1+1\"")
 	jsonID1 = DirectToFormulaParser("\"1+1\"")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("\"\"")
 	jsonID1 = DirectToFormulaParser("\"\"")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+End
+
+// UTF_EXPECTED_FAILURE
+static Function StringHandlingPending()
+	variable jsonID0, jsonID1
+
+	// allow # inside strings
+	jsonID0 = JSON_Parse("\"#\"")
+	jsonID1 = DirectToFormulaParser("\"#\"")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 End
 
 static Function arrayOperations(array2d, numeric)
@@ -181,22 +186,22 @@ static Function concatenationOfOperations()
 
 	jsonID0 = JSON_Parse("{\"+\":[1,2,3,4]}")
 	jsonID1 = DirectToFormulaParser("1+2+3+4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2+3+4)
 
 	jsonID0 = JSON_Parse("{\"-\":[1,2,3,4]}")
 	jsonID1 = DirectToFormulaParser("1-2-3-4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1-2-3-4)
 
 	jsonID0 = JSON_Parse("{\"/\":[1,2,3,4]}")
 	jsonID1 = DirectToFormulaParser("1/2/3/4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1/2/3/4)
 
 	jsonID0 = JSON_Parse("{\"*\":[1,2,3,4]}")
 	jsonID1 = DirectToFormulaParser("1*2*3*4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1*2*3*4)
 End
 
@@ -207,67 +212,67 @@ static Function orderOfCalculation()
 	// + and -
 	jsonID0 = JSON_Parse("{\"+\":[2,{\"-\":[3,4]}]}")
 	jsonID1 = DirectToFormulaParser("2+3-4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2+3-4)
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"-\":[2,3]},4]}")
 	jsonID1 = DirectToFormulaParser("2-3+4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2-3+4)
 
 	// + and *
 	jsonID0 = JSON_Parse("{\"+\":[2,{\"*\":[3,4]}]}")
 	jsonID1 = DirectToFormulaParser("2+3*4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2+3*4)
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"*\":[2,3]},4]}")
 	jsonID1 = DirectToFormulaParser("2*3+4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2*3+4)
 
 	// + and /
 	jsonID0 = JSON_Parse("{\"+\":[2,{\"/\":[3,4]}]}")
 	jsonID1 = DirectToFormulaParser("2+3/4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2+3/4)
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"/\":[2,3]},4]}")
 	jsonID1 = DirectToFormulaParser("2/3+4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/3+4)
 
 	// - and *
 	jsonID0 = JSON_Parse("{\"-\":[2,{\"*\":[3,4]}]}")
 	jsonID1 = DirectToFormulaParser("2-3*4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2-3*4)
 
 	jsonID0 = JSON_Parse("{\"-\":[{\"*\":[2,3]},4]}")
 	jsonID1 = DirectToFormulaParser("2*3-4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2*3-4)
 
 	// - and /
 	jsonID0 = JSON_Parse("{\"-\":[2,{\"/\":[3,4]}]}")
 	jsonID1 = DirectToFormulaParser("2-3/4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2-3/4)
 
 	jsonID0 = JSON_Parse("{\"-\":[{\"/\":[2,3]},4]}")
 	jsonID1 = DirectToFormulaParser("2/3-4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/3-4)
 
 	// * and /
 	jsonID0 = JSON_Parse("{\"*\":[2,{\"/\":[3,4]}]}")
 	jsonID1 = DirectToFormulaParser("2*3/4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2*3/4)
 
 	jsonID0 = JSON_Parse("{\"*\":[{\"/\":[2,3]},4]}")
 	jsonID1 = DirectToFormulaParser("2/3*4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/3*4)
 
 	jsonID1 = DirectToFormulaParser("5*1+2*3+4+5*10")
@@ -300,52 +305,52 @@ static Function brackets()
 
 	jsonID0 = JSON_Parse("{\"+\":[1,2]}")
 	jsonID1 = DirectToFormulaParser("(1+2)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2)
 
 	jsonID0 = JSON_Parse("{\"+\":[1,2]}")
 	jsonID1 = DirectToFormulaParser("((1+2))")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2)
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"+\":[1,2]},{\"+\":[3,4]}]}")
 	jsonID1 = DirectToFormulaParser("(1+2)+(3+4)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (1+2)+(3+4))
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"+\":[4,3]},{\"+\":[2,1]}]}")
 	jsonID1 = DirectToFormulaParser("(4+3)+(2+1)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (4+3)+(2+1))
 
 	jsonID0 = JSON_Parse("{\"+\":[1,{\"+\":[2,3]},{\"+\": [4]}]}")
 	jsonID1 = DirectToFormulaParser("1+(2+3)+4")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+(2+3)+4)
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"*\":[3,2]},1]}")
 	jsonID1 = DirectToFormulaParser("(3*2)+1")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (3*2)+1)
 
 	jsonID0 = JSON_Parse("{\"+\":[1,{\"*\":[2,3]}]}")
 	jsonID1 = DirectToFormulaParser("1+(2*3)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+(2*3))
 
 	jsonID0 = JSON_Parse("{\"*\":[{\"+\":[1,2]},3]}")
 	jsonID1 = DirectToFormulaParser("(1+2)*3")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (1+2)*3)
 
 	jsonID0 = JSON_Parse("{\"*\":[3,{\"+\":[2,1]}]}")
 	jsonID1 = DirectToFormulaParser("3*(2+1)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 3*(2+1))
 
 	jsonID0 = JSON_Parse("{\"*\":[{\"/\":[2,{\"+\":[3,4]}]},5]}")
 	jsonID1 = DirectToFormulaParser("2/(3+4)*5")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/(3+4)*5)
 
 	jsonID1 = DirectToFormulaParser("5*(1+2)*3/(4+5*10)")
@@ -357,58 +362,58 @@ static Function array()
 
 	jsonID0 = JSON_Parse("[1]")
 	jsonID1 = DirectToFormulaParser("[1]")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1,2,3]")
 	jsonID1 = DirectToFormulaParser("1,2,3")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID1 = DirectToFormulaParser("[1,2,3]")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[1,2],3,4]")
 	jsonID1 = DirectToFormulaParser("[[1,2],3,4]")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1,[2,3],4]")
 	jsonID1 = DirectToFormulaParser("[1,[2,3],4]")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1,2,[3,4]]")
 	jsonID1 = DirectToFormulaParser("[1,2,[3,4]]")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[0,1],[1,2],[2,3]]")
 	jsonID1 = DirectToFormulaParser("[[0,1],[1,2],[2,3]]")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[0,1],[2,3],[4,5]]")
 	jsonID1 = DirectToFormulaParser("[[0,1],[2,3],[4,5]]")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[0],[2,3],[4,5]]")
 	jsonID1 = DirectToFormulaParser("[[0],[2,3],[4,5]]")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[0,1],[2],[4,5]]")
 	jsonID1 = DirectToFormulaParser("[[0,1],[2],[4,5]]")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[0,1],[2,3],[5]]")
 	jsonID1 = DirectToFormulaParser("[[0,1],[2,3],[5]]")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1,{\"+\":[2,3]}]")
 	jsonID1 = DirectToFormulaParser("1,2+3")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[{\"+\":[1,2]},3]")
 	jsonID1 = DirectToFormulaParser("1+2,3")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1,{\"/\":[5,{\"+\":[6,7]}]}]")
 	jsonID1 = DirectToFormulaParser("1,5/(6+7)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 End
 
 static Function whiteSpace()
@@ -416,30 +421,30 @@ static Function whiteSpace()
 
 	jsonID0 = DirectToFormulaParser("1+(2*3)")
 	jsonID1 = DirectToFormulaParser(" 1 + (2 * 3) ")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = DirectToFormulaParser("(2+3)")
 	jsonID1 = DirectToFormulaParser("(2+3)  ")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = DirectToFormulaParser("1+(2*3)")
 	jsonID1 = DirectToFormulaParser("\r1\r+\r(\r2\r*\r3\r)\r")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID1 = DirectToFormulaParser("\t1\t+\t(\t2\t*\t3\t)\t")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID1 = DirectToFormulaParser("\r\t1+\r\t\t(2*3)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID1 = DirectToFormulaParser("\r\t1+\r\t# this is a \t comment\r\t(2*3)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID1 = DirectToFormulaParser("\r\t1+\r\t# this is a \t comment\n\t(2*3)#2")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID1 = DirectToFormulaParser("# this is a comment which does not calculate 1+1")
-	WARN_EQUAL_JSON(JSON_PARSE("null"), jsonID1)
+	CHECK_EQUAL_JSON(JSON_PARSE("null"), jsonID1)
 End
 
 // test static Functions with 1..N arguments
@@ -448,82 +453,82 @@ static Function minimaximu()
 
 	jsonID0 = JSON_Parse("{\"min\":[1]}")
 	jsonID1 = DirectToFormulaParser("min(1)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1)
 
 	jsonID0 = JSON_Parse("{\"min\":[1,2]}")
 	jsonID1 = DirectToFormulaParser("min(1,2)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(1,2))
 
 	jsonID0 = JSON_Parse("{\"min\":[1,{\"-\":[1]}]}")
 	jsonID1 = DirectToFormulaParser("min(1,-1)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(1,-1))
 
 	jsonID0 = JSON_Parse("{\"max\":[1,2]}")
 	jsonID1 = DirectToFormulaParser("max(1,2)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2))
 
 	jsonID0 = JSON_Parse("{\"min\":[1,2,3]}")
 	jsonID1 = DirectToFormulaParser("min(1,2,3)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(1,2,3))
 
 	jsonID0 = JSON_Parse("{\"max\":[1,{\"+\":[2,3]}]}")
 	jsonID1 = DirectToFormulaParser("max(1,(2+3))")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,(2+3)))
 
 	jsonID0 = JSON_Parse("{\"min\":[{\"-\":[1,2]},3]}")
 	jsonID1 = DirectToFormulaParser("min((1-2),3)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min((1-2),3))
 
 	jsonID0 = JSON_Parse("{\"min\":[{\"max\":[1,2]},3]}")
 	jsonID1 = DirectToFormulaParser("min(max(1,2),3)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(max(1,2),3))
 
 	jsonID0 = JSON_Parse("{\"max\":[1,{\"+\":[2,3]},2]}")
 	jsonID1 = DirectToFormulaParser("max(1,2+3,2)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2+3,2))
 
 	jsonID0 = JSON_Parse("{\"max\":[{\"+\":[1,2]},{\"+\":[3,4]},{\"+\":[5,{\"/\":[6,7]}]}]}")
 	jsonID1 = DirectToFormulaParser("max(1+2,3+4,5+6/7)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1+2,3+4,5+6/7))
 
 	jsonID0 = JSON_Parse("{\"max\":[{\"+\":[1,2]},{\"+\":[3,4]},{\"+\":[5,{\"/\":[6,7]}]}]}")
 	jsonID1 = DirectToFormulaParser("max(1+2,3+4,5+(6/7))")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1+2,3+4,5+(6/7)))
 
 	jsonID0 = JSON_Parse("{\"max\":[{\"max\":[1,{\"/\":[{\"+\":[2,3]},7]},4]},{\"min\":[3,4]}]}")
 	jsonID1 = DirectToFormulaParser("max(max(1,(2+3)/7,4),min(3,4))")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(max(1,(2+3)/7,4),min(3,4)))
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"max\":[1,2]},1]}")
 	jsonID1 = DirectToFormulaParser("max(1,2)+1")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2)+1)
 
 	jsonID0 = JSON_Parse("{\"+\":[1,{\"max\":[1,2]}]}")
 	jsonID1 = DirectToFormulaParser("1+max(1,2)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+max(1,2))
 
 	jsonID0 = JSON_Parse("{\"+\":[1,{\"max\":[1,2]},{\"+\":[1]}]}")
 	jsonID1 = DirectToFormulaParser("1+max(1,2)+1")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+max(1,2)+1)
 
 	jsonID0 = JSON_Parse("{\"-\":[{\"max\":[1,2]},{\"max\":[1,2]}]}")
 	jsonID1 = DirectToFormulaParser("max(1,2)-max(1,2)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2)-max(1,2))
 End
 
@@ -533,7 +538,7 @@ static Function merge()
 
 	jsonID0 = JSON_Parse("{\"merge\":[1,[2,3],4]}")
 	jsonID1 = DirectToFormulaParser("merge(1,[2,3],4)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[2], 3)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[3], 4)
 	WAVE output = SF_FormulaExecutor(jsonID1)
@@ -708,7 +713,7 @@ static Function arrayExpansion()
 
 	jsonID0 = DirectToFormulaParser("1…10")
 	jsonID1 = JSON_Parse("{\"…\":[1,10]}")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	WAVE output = SF_FormulaExecutor(jsonID0)
 	Make/N=9/U/I/FREE testwave = 1 + p
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
