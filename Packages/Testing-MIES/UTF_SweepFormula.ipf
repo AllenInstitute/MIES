@@ -31,9 +31,20 @@ static Function CHECK_EQUAL_JSON(jsonID0, jsonID1)
 	CHECK_EQUAL_STR(jsonDump0, jsonDump1)
 End
 
+static Function FailFormula(string code)
+
+	try
+		DirectToFormulaParser(code)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 static Function DirectToFormulaParser(string code)
 
 	code = MIES_SF#SF_PreprocessInput(code)
+	code = MIES_SF#SF_FormulaPreParser(code)
 	return MIES_SF#SF_FormulaParser(code)
 End
 
@@ -117,10 +128,15 @@ End
 static Function StringHandlingPending()
 	variable jsonID0, jsonID1
 
-	// allow # inside strings
-	jsonID0 = JSON_Parse("\"#\"")
-	jsonID1 = DirectToFormulaParser("\"#\"")
-	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+	// note: only Assertion can be expected failures.
+	try
+		// allow # inside strings
+		jsonID0 = JSON_Parse("\"#\"")
+		jsonID1 = DirectToFormulaParser("\"#\"")
+		CHECK_EQUAL_JSON(jsonID0, jsonID1)
+	catch
+		FAIL()
+	endtry
 End
 
 static Function arrayOperations(array2d, numeric)
@@ -364,6 +380,18 @@ static Function array()
 	jsonID1 = DirectToFormulaParser("[1]")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
 
+	jsonID0 = JSON_Parse("[[1]]")
+	jsonID1 = DirectToFormulaParser("[[1]]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[[1]]]")
+	jsonID1 = DirectToFormulaParser("[[[1]]]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[0, [1, 2], 3]]")
+	jsonID1 = DirectToFormulaParser("[[0, [1, 2], 3]]")
+	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
 	jsonID0 = JSON_Parse("[1,2,3]")
 	jsonID1 = DirectToFormulaParser("1,2,3")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
@@ -414,6 +442,14 @@ static Function array()
 	jsonID0 = JSON_Parse("[1,{\"/\":[5,{\"+\":[6,7]}]}]")
 	jsonID1 = DirectToFormulaParser("1,5/(6+7)")
 	CHECK_EQUAL_JSON(jsonID0, jsonID1)
+
+	// failures that have to SF_ASSERT
+	FailFormula("1]")
+	FailFormula("[1")
+	FailFormula("0[1]")
+	FailFormula("[1]2")
+	FailFormula("[0,[1]2]")
+	FailFormula("[0[1],2]")
 End
 
 static Function whiteSpace()
