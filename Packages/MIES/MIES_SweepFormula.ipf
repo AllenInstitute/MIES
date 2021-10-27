@@ -311,7 +311,7 @@ static Function SF_FormulaParser(formula, [indentLevel])
 
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForCaller())
-			printf "%stoken %s, state %s, ", indentation, token, SF_StringifyState(state)
+			printf "%stoken %s, state %s, lastCalculation %s, ", indentation, token, SF_StringifyState(state),  SF_StringifyState(lastCalculation)
 		endif
 #endif
 
@@ -338,7 +338,7 @@ static Function SF_FormulaParser(formula, [indentLevel])
 				case SF_STATE_DIVISION:
 				case SF_STATE_OPERATION:
 					if(IsEmpty(buffer))
-						if(lastCalculation == -1)
+						if(lastCalculation == SF_STATE_UNINITIALIZED)
 							action = SF_ACTION_HIGHERORDER
 						else
 							action = SF_ACTION_COLLECT
@@ -427,6 +427,8 @@ static Function SF_FormulaParser(formula, [indentLevel])
 				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[1, inf], indentLevel = indentLevel + 1))
 				break
 			case SF_ACTION_HIGHERORDER:
+				// - called if for the first time a "," is encountered (from SF_STATE_ARRAYELEMENT)
+				// - called if a higher priority calculation, e.g. * over + requires to put array in sub json path
 				lastCalculation = state
 				if(!IsEmpty(buffer))
 					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))
@@ -462,6 +464,8 @@ static Function SF_FormulaParser(formula, [indentLevel])
 				endif
 				jsonPath += "/" + SF_EscapeJsonPath(token)
 			case SF_ACTION_ARRAYELEMENT:
+				// - "," was encountered, thus we have multiple elements, we need to set an array at current path
+				// The actual content is added in the case fall-through
 				JSON_AddTreeArray(jsonID, jsonPath)
 				lastCalculation = state
 			case SF_ACTION_SAMECALCULATION:
