@@ -206,11 +206,9 @@ End
 /// @param formula  string formula
 /// @param indentLevel [internal use only] recursive call level, used for debug output
 /// @returns a JSONid representation
-static Function SF_FormulaParser(formula, [indentLevel])
-	String formula
-	variable indentLevel
+static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
-	Variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray
+	Variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray, subId
 	variable formulaLength
 	String tempPath
 	string indentation = ""
@@ -222,6 +220,8 @@ static Function SF_FormulaParser(formula, [indentLevel])
 	Variable lastCalculation = SF_STATE_UNINITIALIZED
 	Variable level = 0
 	Variable arrayLevel = 0
+	variable createdArrayLocal, wasArrayCreated
+	variable lastAction = SF_ACTION_UNINITIALIZED
 
 	Variable jsonID = JSON_New()
 	String jsonPath = ""
@@ -437,25 +437,23 @@ static Function SF_FormulaParser(formula, [indentLevel])
 				if(!cmpstr(jsonPath, ",") || !cmpstr(jsonPath, "]"))
 					jsonPath = ""
 				endif
-				jsonIDdummy = jsonID
-				jsonID = JSON_New()
-				JSON_AddTreeArray(jsonID, jsonPath)
-				if(JSON_GetType(jsonIDdummy, "") != JSON_NULL)
-					JSON_AddJSON(jsonID, jsonPath, jsonIDdummy)
-				endif
-				JSON_Release(jsonIDdummy)
+				jsonId = SF_FPPutInArrayAtPath(jsonID, jsonPath)
+				createdArrayLocal = 1
 				break
 			case SF_ACTION_ARRAY:
-				SF_Assert(!cmpstr(buffer[0], "["), "Encountered array ending without array start.", jsonId=jsonId)
-				jsonIDdummy = SF_FormulaParser(buffer[1, inf], indentLevel = indentLevel + 1)
-				jsonIDarray = JSON_New()
-				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
-					JSON_AddTreeArray(jsonIDarray, "")
+				// - buffer has collected chars between "[" and "]"(where "]" is not included in the buffer here)
+				// - Parse recursively the inner part of the brackets
+				// - return if the parsing of the inner part created implicitly in the JSON brackets or not
+				// If there was no array created, we have to add another outer array around the returned json
+				// An array needs to be also added if the returned json is a simple value as this action requires
+				// to return an array.
+				SF_Assert(!cmpstr(buffer[0], "["), "Can not find array start. (Is there a \",\" before \"[\" missing?)", jsonId=jsonId)
+				subId = SF_FormulaParser(buffer[1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
+				if(wasArrayCreated)
+					ASSERT(JSON_GetType(subId, "") == JSON_ARRAY, "Expected Array")
 				endif
-				JSON_AddJSON(jsonIDarray, "", jsonIDdummy)
-				JSON_Release(jsonIDdummy)
-				JSON_AddJSON(jsonID, jsonPath, jsonIDarray)
-				JSON_Release(jsonIDarray)
+
+				SF_FPAddArray(jsonId, jsonPath, subId, wasArrayCreated)
 				break
 			case SF_ACTION_CALCULATION:
 				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
@@ -493,7 +491,46 @@ static Function SF_FormulaParser(formula, [indentLevel])
 		JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
 	endif
 
+	if(!ParamIsDefault(createdArray))
+		createdArray = createdArrayLocal
+	endif
+
 	return jsonID
+End
+
+/// @brief Create a new empty array object, add mainId into it at path and return created json, release subId
+static Function SF_FPPutInArrayAtPath(variable subId, string jsonPath)
+
+	variable newId
+
+	newId = JSON_New()
+	JSON_AddTreeArray(newId, jsonPath)
+	if(JSON_GetType(subId, "") != JSON_NULL)
+		JSON_AddJSON(newId, jsonPath, subId)
+	endif
+	JSON_Release(subId)
+
+	return newId
+End
+
+/// @brief Adds subId to mainId, if necessary puts subId into an array, release subId
+static Function SF_FPAddArray(variable mainId, string jsonPath, variable subId, variable arrayWasCreated)
+
+	variable tmpId
+
+	if(JSON_GetType(subId, "") != JSON_ARRAY || !arrayWasCreated)
+
+		tmpId = JSON_New()
+		JSON_AddTreeArray(tmpId, "")
+		JSON_AddJSON(tmpId, "", subId)
+
+		JSON_AddJSON(mainId, jsonPath, tmpId)
+		JSON_Release(tmpId)
+	else
+		JSON_AddJSON(mainId, jsonPath, subId)
+	endif
+
+	JSON_Release(subId)
 End
 
 /// @brief add escape characters to a path element
