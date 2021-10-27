@@ -400,6 +400,18 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		endif
 #endif
 
+		// Checks for simple syntax dependencies
+		if(action != SF_ACTION_SKIP)
+			switch(lastAction)
+				case SF_ACTION_ARRAY:
+					// If the last action was the handling of "]" from an array
+					SF_ASSERT(action == SF_ACTION_ARRAYELEMENT || action == SF_ACTION_HIGHERORDER, "Expected \",\" after \"]\"")
+					break
+				default:
+					break
+			endswitch
+		endif
+
 		// action
 		switch(action)
 			case SF_ACTION_COLLECT:
@@ -472,6 +484,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))
 				endif
 		endswitch
+		lastAction = action
 		buffer = ""
 		token = ""
 	endfor
