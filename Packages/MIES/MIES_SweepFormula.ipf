@@ -211,6 +211,7 @@ static Function SF_FormulaParser(formula, [indentLevel])
 	variable indentLevel
 
 	Variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray
+	variable formulaLength
 	String tempPath
 	string indentation = ""
 	Variable action = SF_ACTION_UNINITIALIZED
@@ -235,11 +236,13 @@ static Function SF_FormulaParser(formula, [indentLevel])
 	endif
 #endif
 
-	if(strlen(formula) == 0)
+	formulaLength = strlen(formula)
+
+	if(formulaLength == 0)
 		return jsonID
 	endif
 
-	for(i = 0; i < strlen(formula); i += 1)
+	for(i = 0; i < formulaLength; i += 1)
 		token += formula[i]
 
 		// state
