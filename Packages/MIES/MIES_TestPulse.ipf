@@ -427,7 +427,7 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 End
 
 /// @brief Threadsafe wrapper for performing CurveFits on the TPStorage wave
-threadsafe static Function CurveFitWrapper(TPStorage, startRow, endRow, headstage)
+threadsafe static Function TP_FitResistance(TPStorage, startRow, endRow, headstage)
 	WAVE TPStorage
 	variable startRow, endRow, headstage
 
@@ -487,7 +487,7 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 		statusHS[i] = 1
 	endfor
 
-	Multithread TPStorage[0][][%Rss_Slope] = statusHS[q] ? CurveFitWrapper(TPStorage, startRow, endRow, q) : NaN
+	Multithread TPStorage[0][][%Rss_Slope] = statusHS[q] ? TP_FitResistance(TPStorage, startRow, endRow, q) : NaN
 End
 
 /// @brief Stop running background testpulse on all locked devices
