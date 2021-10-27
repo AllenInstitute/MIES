@@ -306,6 +306,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		endswitch
 
 		if(level > 0 || arrayLevel > 0)
+			// transfer sub level "as is" to buffer
 			state = SF_STATE_DEFAULT
 		endif
 
