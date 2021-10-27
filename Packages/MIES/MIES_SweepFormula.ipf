@@ -225,11 +225,11 @@ static Function SF_FormulaParser(formula, [indentLevel])
 	Variable jsonID = JSON_New()
 	String jsonPath = ""
 
+#ifdef DEBUGGING_ENABLED
 	for(i = 0; i < indentLevel; i += 1)
 		indentation += "-> "
 	endfor
 
-#ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
 		printf "%sformula %s\r", indentation, formula
 	endif
