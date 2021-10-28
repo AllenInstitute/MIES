@@ -906,10 +906,10 @@ Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dm
 			endfor
 		else // 2D vs 2D
 			numTraces = WaveExists(wvX) ? max(1, max(dim1Y * dim2Y, dim1X * dim2X)) : max(1, dim1Y * dim2Y)
-			if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
+			if(DimSize(wvY, ROWS) != DimSize(wvX, ROWS))
 				DebugPrint("Size mismatch in data rows for plotting waves.")
 			endif
-			if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
+			if(DimSize(wvY, COLS) != DimSize(wvX, COLS))
 				DebugPrint("Size mismatch in entity columns for plotting waves.")
 			endif
 			for(i = 0; i < numTraces; i += 1)
