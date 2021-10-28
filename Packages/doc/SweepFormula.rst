@@ -204,7 +204,7 @@ They can be used for evaluating
 - scalars with 1d waves as in `1 + [1,2] = [2,3]`
 - 1d waves with 1d waves as in `[1,2]+[3,4] = [4,6]`
 - 1d waves with 2d waves as in `[1,2]+[[3,4],[5,6]] = [[1+3,2+5],[null+4,null+6]] = [[4,7],[null,null]]`
-- 2d waves with 2d waves as in `[[1,2],[3,4]]+[[5,6],[7,8]] = [[6,10],[8,12]]`
+- 2d waves with 2d waves as in `[[1,2],[3,4]]+[[5,6],[7,8]] = [[6,8],[10,12]]`
 
 After evaluation of the operation, the wave is reduced to have the same amount
 of dimensions as the input array. The size in each dimension is expanded to
