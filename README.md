@@ -1,3 +1,8 @@
+![GitHub contributors](https://img.shields.io/github/contributors/AllenInstitute/MIES?style=plastic)
+![Signed Installer](https://img.shields.io/badge/Signed%20Installer-Yes-success?style=plastic)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/AllenInstitute/MIES?style=plastic)
+[![Documentation](https://img.shields.io/badge/docs-doxygen%2Fbreathe%2Fsphinx-blue.svg?style=plastic)](https://alleninstitute.github.io/MIES/user.html)
+
 MIES is a proven \[[1](https://doi.org/10.1038/s41586-021-03813-8),
 [2](https://doi.org/10.1038/s41593-019-0417-0),
 [3](https://elifesciences.org/articles/37349),
