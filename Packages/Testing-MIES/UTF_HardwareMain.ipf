@@ -424,14 +424,15 @@ End
 ///        as reentry part of the given test case.
 ///
 /// Does nothing if the reentry function does not exist. Supports both plain test cases and multi data test cases
-/// accepting string arguments.
+/// accepting string/ref wave arguments.
 Function RegisterReentryFunction(string testcase)
 
 	string reentryFuncName = testcase + "_REENTRY"
 	FUNCREF TEST_CASE_PROTO reentryFuncPlain = $reentryFuncName
 	FUNCREF TEST_CASE_PROTO_MD_STR reentryFuncMDStr = $reentryFuncName
+	FUNCREF TEST_CASE_PROTO_MD_WVWAVEREF reentryFuncRefWave = $reentryFuncName
 
-	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)))
+	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncRefWave)))
 		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
 		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600, failOnTimeout = 1)
