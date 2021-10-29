@@ -1079,6 +1079,10 @@ static Function TestPlotting()
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, "range(3) vs range(7)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(7 / 3))
 
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, "[0...3],[1...4] vs 1"); DoUpdate
+	WAVE wvX = WaveRefIndexed(win, 0, 2)
+	CHECK_EQUAL_VAR(DimSize(wvX, ROWS), 2)
+
 	MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_NORMAL); DoUpdate
 	win = winBase + "_0"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
