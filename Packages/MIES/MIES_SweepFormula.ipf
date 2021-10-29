@@ -904,7 +904,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				trace = traceName + num2istr(i)
 				AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][i]
 			endfor
-		elseif(xMxN == 1) // 2D vs 1D
+		elseif(xMxN == 1) // 2D vs 1D or 0D
+			if(xPoints == 1) // 2D vs 0D -> extend X to 1D with constant value
+				Redimension/N=(yPoints) wvX
+				xPoints = yPoints
+				wvX = wvX[0]
+			endif
 			numTraces = yMxN
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
