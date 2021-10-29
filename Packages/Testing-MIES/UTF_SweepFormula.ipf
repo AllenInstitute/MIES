@@ -989,7 +989,7 @@ static Function TestPlotting()
 	win = winBase + "_#" + winBase + "_0"
 	dfr = GetDataFolderDFR()
 
-	SF_FormulaPlotter(sweepBrowser, strArray2D)
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray2D)
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
@@ -997,7 +997,7 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_WAVES(array2D, wvY)
 
 	// one to many
-	SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray2D); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray2D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 	WAVE wvX = XWaveRefFromTrace(win, StringFromList(0, traces))
@@ -1011,13 +1011,13 @@ static Function TestPlotting()
 	[minimum, maximum] = GetAxisRange(win, "left", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array1D))
-	SF_FormulaPlotter(sweepBrowser, strScale1D + " vs " + strArray2D); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strScale1D + " vs " + strArray2D); DoUpdate
 	[minimum, maximum] = GetAxisRange(win, "left", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(scale1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(scale1D))
 
 	// many to one
-	SF_FormulaPlotter(sweepBrowser, strArray2D + " vs " + strArray1D); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray2D + " vs " + strArray1D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 	WAVE wvY = TraceNameToWaveRef(win, StringFromList(0, traces))
@@ -1032,18 +1032,18 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array2D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array2D))
 
-	SF_FormulaPlotter(sweepBrowser, strArray2D + " vs range(3)"); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray2D + " vs range(3)"); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 	[minimum, maximum] = GetAxisRange(win, "bottom", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(maximum, array1D[2])
 
-	SF_FormulaPlotter(sweepBrowser, "time(setscale(range(4),x,1,0.1)) vs [range(10), range(10,20), range(10), range(10,20)]"); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, "time(setscale(range(4),x,1,0.1)) vs [range(10), range(10,20), range(10), range(10,20)]"); DoUpdate
 	[minimum, maximum] = GetAxisRange(win, "left", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(scale1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(scale1D))
 
-	SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray1D); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray1D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), 1)
 	[minimum, maximum] = GetAxisRange(win, "left", mode=AXIS_RANGE_INC_AUTOSCALED)
@@ -1053,33 +1053,33 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(array1D))
 
-	SF_FormulaPlotter(sweepBrowser, strArray2D + " vs " + strArray2D); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray2D + " vs " + strArray2D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 
-	SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray1D); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray1D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), 1)
 
-	SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray0D); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray0D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array1D, ROWS))
 
-	SF_FormulaPlotter(sweepBrowser, strArray0D + " vs " + strArray1D); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray0D + " vs " + strArray1D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array1D, ROWS))
 
-	SF_FormulaPlotter(sweepBrowser, strArray0D + " vs " + strArray0D); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strArray0D + " vs " + strArray0D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array0D, ROWS))
 
 	// plotting of unaligned data
-	SF_FormulaPlotter(sweepBrowser, "range(10) vs range(5)"); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, "range(10) vs range(5)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(10 / 5))
-	SF_FormulaPlotter(sweepBrowser, "range(5) vs range(10)"); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, "range(5) vs range(10)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(10 / 5))
-	SF_FormulaPlotter(sweepBrowser, "range(3) vs range(90)"); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, "range(3) vs range(90)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(90 / 3))
-	SF_FormulaPlotter(sweepBrowser, "range(3) vs range(7)"); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, "range(3) vs range(7)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(7 / 3))
 
-	SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_NORMAL); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_NORMAL); DoUpdate
 	win = winBase + "_0"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	KillWindow/Z $win
@@ -1104,7 +1104,7 @@ static Function TestPlotting()
 	CHECK_EQUAL_WAVES(wvX1, wvX1ref)
 
 	try
-		SF_FormulaPlotter(sweepBrowser, strCombinedPartial, dmMode = SF_DM_NORMAL)
+		MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombinedPartial, dmMode = SF_DM_NORMAL)
 		FAIL()
 	catch
 		PASS()
@@ -1116,7 +1116,7 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(WindowExists(win), 0)
 
 	offset = 0.1 // workaround for IUTF issue https://github.com/byte-physics/igor-unit-testing-framework/issues/216
-	SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_SUBWINDOWS); DoUpdate
+	MIES_SF#SF_FormulaPlotter(sweepBrowser, strCombined, dmMode = SF_DM_SUBWINDOWS); DoUpdate
 	win = winBase + "_"
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	for(i = 0; i < 4; i += 1)

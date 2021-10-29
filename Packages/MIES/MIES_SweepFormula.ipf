@@ -762,11 +762,12 @@ End
 /// @param formula formula to plot
 /// @param dfr     [optional, default current] working dataFolder
 /// @param dmMode  [optional, default DM_SUBWINDOWS] display mode that defines how multiple sweepformula graphs are arranged
-Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dmMode])
+static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dmMode])
 
 	String trace, axes, xFormula
 	Variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs, numWins
 	Variable dim1Y, dim2Y, dim1X, dim2X, guidePos, winDisplayMode
+	variable xMxN, yMxN
 	String win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName
 	String traceName = "formula"
 	string guideNameTemplate = "HOR"
@@ -806,7 +807,8 @@ Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dm
 			SF_Assert(WaveExists(wv), "Error in x part of formula.")
 			dim1X = max(1, DimSize(wv, COLS))
 			dim2X = max(1, DimSize(wv, LAYERS))
-			Redimension/N=(-1, dim1X * dim2X)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
+			xMxN = dim1X * dim2X
+			Redimension/N=(-1, xMxN)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
 
 			WAVE wvX = GetSweepFormulaX(dfr, j)
 			if(WaveType(wv, 1) == WaveType(wvX, 1))
@@ -821,7 +823,8 @@ Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dm
 		SF_Assert(WaveExists(wv), "Error in y part of formula.")
 		dim1Y = max(1, DimSize(wv, COLS))
 		dim2Y = max(1, DimSize(wv, LAYERS))
-		Redimension/N=(-1, dim1Y * dim2Y)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
+		yMxN = dim1Y * dim2Y
+		Redimension/N=(-1, yMxN)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
 
 		WAVE wvY = GetSweepFormulaY(dfr, j)
 		if(WaveType(wv, 1) == WaveType(wvY, 1))
@@ -862,12 +865,12 @@ Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dm
 		endif
 
 		if(!WaveExists(wvX))
-			numTraces = dim1Y * dim2Y
+			numTraces = yMxN
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
 				AppendTograph/W=$win wvY[][i]/TN=$trace
 			endfor
-		elseif((dim1X * dim2X == 1) && (dim1Y * dim2Y == 1)) // 1D
+		elseif((xMxN == 1) && (yMxN == 1)) // 1D
 			if(DimSize(wvY, ROWS) == 1) // 0D vs 1D
 				numTraces = DimSize(wvX, ROWS)
 				for(i = 0; i < numTraces; i += 1)
@@ -893,20 +896,20 @@ Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dm
 					AppendTograph/W=$win wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
 				endfor
 			endif
-		elseif(dim1Y * dim2Y == 1) // 1D vs 2D
-			numTraces = dim1X * dim2X
+		elseif(yMxN == 1) // 1D vs 2D
+			numTraces = xMxN
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
 				AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][i]
 			endfor
-		elseif(dim1X * dim2X == 1) // 2D vs 1D
-			numTraces = dim1Y * dim2Y
+		elseif(xMxN == 1) // 2D vs 1D
+			numTraces = yMxN
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
 				AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX
 			endfor
 		else // 2D vs 2D
-			numTraces = WaveExists(wvX) ? max(1, max(dim1Y * dim2Y, dim1X * dim2X)) : max(1, dim1Y * dim2Y)
+			numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
 			if(DimSize(wvY, ROWS) != DimSize(wvX, ROWS))
 				DebugPrint("Size mismatch in data rows for plotting waves.")
 			endif
@@ -916,7 +919,7 @@ Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dm
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
 				if(WaveExists(wvX))
-					AppendTograph/W=$win wvY[][min(dim1Y * dim2Y - 1, i)]/TN=$trace vs wvX[][min(dim1X * dim2X - 1, i)]
+					AppendTograph/W=$win wvY[][min(yMxN - 1, i)]/TN=$trace vs wvX[][min(xMxN - 1, i)]
 				else
 					AppendTograph/W=$win wvY[][i]/TN=$trace
 				endif
