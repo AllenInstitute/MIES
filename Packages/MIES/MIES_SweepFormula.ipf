@@ -204,6 +204,7 @@ End
 /// @brief serialize a string formula into JSON
 ///
 /// @param formula  string formula
+/// @param createdArray [optional, default 0] set on recursive calls, returns boolean if parser created a JSON array
 /// @param indentLevel [internal use only] recursive call level, used for debug output
 /// @returns a JSONid representation
 static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
