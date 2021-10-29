@@ -1167,3 +1167,15 @@ Function/S GetExperimentNWBFileForExport()
 
 	return S_path + experimentName + ".nwb"
 End
+
+Function StopTPWhenWeHaveOne(STRUCT WMBackgroundStruct &s)
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
+
+	if(TP_TestPulseHasCycled(device, 1))
+		PGC_SetAndActivateControl(device, "StartTestPulseButton")
+		return 1
+	endif
+
+	return 0
+End
