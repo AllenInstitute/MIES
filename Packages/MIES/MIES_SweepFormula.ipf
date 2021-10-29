@@ -767,7 +767,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	String trace, axes, xFormula
 	Variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs, numWins
 	Variable dim1Y, dim2Y, dim1X, dim2X, guidePos, winDisplayMode
-	variable xMxN, yMxN
+	variable xMxN, yMxN, xPoints, yPoints
 	String win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName
 	String traceName = "formula"
 	string guideNameTemplate = "HOR"
@@ -805,6 +805,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		if(!IsEmpty(xFormula))
 			WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(xFormula)), graph = graph)
 			SF_Assert(WaveExists(wv), "Error in x part of formula.")
+			xPoints = DimSize(wv, ROWS)
 			dim1X = max(1, DimSize(wv, COLS))
 			dim2X = max(1, DimSize(wv, LAYERS))
 			xMxN = dim1X * dim2X
@@ -821,6 +822,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formulaPairs[j][%FORMULA_Y])), graph = graph)
 		SF_Assert(WaveExists(wv), "Error in y part of formula.")
+		yPoints = DimSize(wv, ROWS)
 		dim1Y = max(1, DimSize(wv, COLS))
 		dim2Y = max(1, DimSize(wv, LAYERS))
 		yMxN = dim1Y * dim2Y
@@ -871,22 +873,22 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 				AppendTograph/W=$win wvY[][i]/TN=$trace
 			endfor
 		elseif((xMxN == 1) && (yMxN == 1)) // 1D
-			if(DimSize(wvY, ROWS) == 1) // 0D vs 1D
-				numTraces = DimSize(wvX, ROWS)
+			if(yPoints == 1) // 0D vs 1D
+				numTraces = xPoints
 				for(i = 0; i < numTraces; i += 1)
 					trace = traceName + num2istr(i)
 					AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[i][]
 				endfor
-			elseif(DimSize(wvX, ROWS) == 1) // 1D vs 0D
-				numTraces = DimSize(wvY, ROWS)
+			elseif(xPoints == 1) // 1D vs 0D
+				numTraces = yPoints
 				for(i = 0; i < numTraces; i += 1)
 					trace = traceName + num2istr(i)
 					AppendTograph/W=$win wvY[i][]/TN=$trace vs wvX[][0]
 				endfor
 			else // 1D vs 1D
-				splitTraces = min(DimSize(wvY, ROWS), DimSize(wvX, ROWS))
-				numTraces = floor(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)) / splitTraces)
-				if(mod(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)), splitTraces) == 0)
+				splitTraces = min(yPoints, xPoints)
+				numTraces = floor(max(yPoints, xPoints) / splitTraces)
+				if(mod(max(yPoints, xPoints), splitTraces) == 0)
 					DebugPrint("Unmatched Data Alignment in ROWS.")
 				endif
 				for(i = 0; i < numTraces; i += 1)
@@ -910,7 +912,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			endfor
 		else // 2D vs 2D
 			numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
-			if(DimSize(wvY, ROWS) != DimSize(wvX, ROWS))
+			if(yPoints != xPoints)
 				DebugPrint("Size mismatch in data rows for plotting waves.")
 			endif
 			if(DimSize(wvY, COLS) != DimSize(wvX, COLS))
