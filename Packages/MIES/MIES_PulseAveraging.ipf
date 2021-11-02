@@ -424,8 +424,7 @@ End
 /// @param[in] epochInfo epoch data to extract pulse starting times
 /// @returns pulse info, see GetPulseInfoWave() or an invalid wave reference on error
 static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
-
-	variable numEpochs, idx, i, first, last, level
+	variable numEpochs, idx, pulseNo, epoch, i, first, last, level, hasPerPulseInfo, numWrittenEpochs, hasOneValidEntry
 	string tags
 
 	if(IsEmpty(epochInfo))
@@ -438,6 +437,10 @@ static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 	WAVE/D pulseInfos = GetPulseInfoWave()
 	Redimension/N=(numEpochs, -1) pulseInfos
 
+	Make/FREE/N=(WB_TOTAL_NUMBER_OF_EPOCHS) pulsesPerStimsetEpoch
+
+	pulseInfos = NaN
+
 	for(i = 0; i < numEpochs; i += 1)
 		first = str2num(epochs[i][EPOCH_COL_STARTTIME])
 		last  = str2num(epochs[i][EPOCH_COL_ENDTIME])
@@ -447,30 +450,50 @@ static Function/WAVE PA_RetrievePulseInfosFromEpochs(string epochInfo)
 		switch(level)
 			case 2:
 			case 3:
-				if(strsearch(tags, "Pulse=", 0) == -1)
+				pulseNo = NumberByKey("Pulse", tags, "=")
+
+				if(IsNaN(pulseNo))
 					continue
+				endif
+
+				epoch = NumberByKey("Epoch", tags, "=")
+				ASSERT(IsValidEpochNumber(epoch), "Invalid epoch")
+
+				pulsesPerStimsetEpoch[epoch] = max(pulsesPerStimsetEpoch[epoch], pulseNo)
+
+				// readout pulse indizes are per epoch, so we need to sum up all the pulse counts from previous epochs
+				if(epoch > 0)
+					idx = Sum(pulsesPerStimsetEpoch, 0, epoch - 1) + pulseNo
+				else
+					idx = pulseNo
 				endif
 
 				if(level == 2)
 					pulseInfos[idx][%Length] = (last - first) * 1000
+
+					hasOneValidEntry = 1
 				elseif(level == 3 && (strsearch(tags, "Active", 0) != -1) || (strsearch(tags, "SubType=Pulse;", 0) != -1))
 					pulseInfos[idx][%PulseStart] = first * 1000
 					pulseInfos[idx][%PulseEnd]   = last  * 1000
-					// incrementing it here also gives an
-					// empty wave for old epoch info without level 3
-					idx += 1
+
+					hasPerPulseInfo = 1
+					hasOneValidEntry = 1
 				endif
+				break
 			default:
 				// do nothing
 				continue
 		endswitch
 	endfor
 
-	if(!idx)
+	if(!hasPerPulseInfo || !hasOneValidEntry)
 		return $""
 	endif
 
-	Redimension/N=(idx, -1) pulseInfos
+	numWrittenEpochs = Sum(pulsesPerStimsetEpoch) + 1
+
+	Redimension/N=(numWrittenEpochs, -1) pulseInfos
+
 	return pulseInfos
 End
 
