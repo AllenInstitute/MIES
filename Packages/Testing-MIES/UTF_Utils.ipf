@@ -4415,10 +4415,30 @@ End
 Function IC_WorksSpecialValues([val])
 	variable val
 
+	Make/FREE/N=0 empty
+	CHECK_EQUAL_VAR(IsConstant(empty, val, ignoreNaN = 0), NaN)
+	CHECK_EQUAL_VAR(IsConstant(empty, val, ignoreNaN = 1), NaN)
+
 	CHECK_EQUAL_VAR(IsConstant({1, val, 1}, 0), 0)
-	CHECK_EQUAL_VAR(IsConstant({val, val}, val), 1)
-	CHECK_EQUAL_VAR(IsConstant({val, val}, 0), 0)
-	CHECK_EQUAL_VAR(IsConstant({val, -val}, 0), 0)
+	CHECK_EQUAL_VAR(IsConstant({val, val}, val), SelectNumber(IsNaN(val), 1, NaN))
+	CHECK_EQUAL_VAR(IsConstant({val, val}, 0), SelectNumber(IsNaN(val), 0, NaN))
+	CHECK_EQUAL_VAR(IsConstant({val, -val}, 0), SelectNumber(IsNaN(val), 0, NaN))
+End
+
+Function IC_CheckNaNInInputWave()
+	// default is to ignore NaNs
+	CHECK_EQUAL_VAR(IsConstant({NaN, 0}, 0), 1)
+	CHECK_EQUAL_VAR(IsConstant({NaN, 0}, 0, ignoreNaN = 1), 1)
+
+	CHECK_EQUAL_VAR(IsConstant({NaN, 0}, 0, ignoreNaN = 0), 0)
+	CHECK_EQUAL_VAR(IsConstant({NaN, -inf}, NaN, ignoreNaN = 0), 0)
+	CHECK_EQUAL_VAR(IsConstant({NaN, inf}, NaN, ignoreNaN = 0), 0)
+
+	// it can only be true if all are NaN
+	CHECK_EQUAL_VAR(IsConstant({NaN, NaN}, NaN, ignoreNaN = 0), 1)
+
+	// and if all are NaN and we ignore NaN we actually have an empty wave and get NaN as result
+	CHECK_EQUAL_VAR(IsConstant({NaN, NaN}, NaN, ignoreNaN = 1), NaN)
 End
 
 /// @}

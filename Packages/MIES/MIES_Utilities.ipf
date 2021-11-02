@@ -5693,13 +5693,45 @@ threadsafe Function EqualValuesOrBothNaN(variable left, variable right)
 End
 
 /// @brief Checks wether `wv` is constant and has the value `val`
-threadsafe Function IsConstant(WAVE wv, variable val)
+///
+/// @param wv        wave to check
+/// @param val       value to check
+/// @param ignoreNaN [optional, defaults to true] ignore NaN in wv
+threadsafe Function IsConstant(WAVE wv, variable val, [variable ignoreNaN])
 
 	variable minimum, maximum
 
+	if(ParamIsDefault(ignoreNaN))
+		ignoreNaN = 1
+	else
+		ignoreNaN = !!ignoreNaN
+	endif
+
+	if(DimSize(wv, ROWS) == 0)
+		return NaN
+	endif
+
+	WaveStats/M=1/Q wv
+
+	if(V_npnts == 0 && V_numInfs == 0)
+		// complete input wave is NaN
+
+		if(ignoreNaN)
+			return NaN
+		else
+			return IsNaN(val)
+		endif
+	elseif(V_numNans > 0)
+		// we have some NaNs
+		 if(!ignoreNaN)
+			// and don't ignore them, this is always false
+			return 0
+		endif
+	endif
+
 	[minimum, maximum] = WaveMinAndMaxWrapper(wv)
 
-	return (minimum == val && maximum == val) || (IsNaN(minimum) && IsNaN(maximum) && IsNaN(val))
+	return minimum == val && maximum == val
 End
 
 /// @brief Sanitize the given name so that it is a nice file name
