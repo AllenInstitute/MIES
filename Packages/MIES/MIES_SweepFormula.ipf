@@ -97,6 +97,8 @@ static StrConstant SF_CHAR_COMMENT = "#"
 static StrConstant SF_CHAR_CR = "\r"
 static StrConstant SF_CHAR_NEWLINE = "\n"
 
+static StrConstant SF_DIMLABEL_SWEEP = "sweep"
+
 static Function/S SF_StringifyState(variable state)
 
 	switch(state)
@@ -767,10 +769,11 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 	String trace, axes, xFormula
 	Variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs, numWins
 	Variable dim1Y, dim2Y, dim1X, dim2X, guidePos, winDisplayMode
-	variable xMxN, yMxN, xPoints, yPoints
+	variable xMxN, yMxN, xPoints, yPoints, areTracesSweeps
 	String win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName
 	String traceName = "formula"
 	string guideNameTemplate = "HOR"
+	STRUCT RGBColor s
 
 	winDisplayMode = ParamIsDefault(dmMode) ? SF_DM_SUBWINDOWS : dmMode
 	ASSERT(winDisplaymode == SF_DM_NORMAL || winDisplaymode == SF_DM_SUBWINDOWS, "Invalid display mode.")
@@ -805,11 +808,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		if(!IsEmpty(xFormula))
 			WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(xFormula)), graph = graph)
 			SF_Assert(WaveExists(wv), "Error in x part of formula.")
+			WAVE wxLabels = SF_SaveDimLabels(wv)
 			xPoints = DimSize(wv, ROWS)
 			dim1X = max(1, DimSize(wv, COLS))
 			dim2X = max(1, DimSize(wv, LAYERS))
 			xMxN = dim1X * dim2X
-			Redimension/N=(-1, xMxN)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
+			Redimension/N=(-1, xMxN)/E=1 wv
 
 			WAVE wvX = GetSweepFormulaX(dfr, j)
 			if(WaveType(wv, 1) == WaveType(wvX, 1))
@@ -822,11 +826,12 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 
 		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formulaPairs[j][%FORMULA_Y])), graph = graph)
 		SF_Assert(WaveExists(wv), "Error in y part of formula.")
+		WAVE wyLabels = SF_SaveDimLabels(wv)
 		yPoints = DimSize(wv, ROWS)
 		dim1Y = max(1, DimSize(wv, COLS))
 		dim2Y = max(1, DimSize(wv, LAYERS))
 		yMxN = dim1Y * dim2Y
-		Redimension/N=(-1, yMxN)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
+		Redimension/N=(-1, yMxN)/E=1 wv
 
 		WAVE wvY = GetSweepFormulaY(dfr, j)
 		if(WaveType(wv, 1) == WaveType(wvY, 1))
@@ -858,6 +863,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		RemoveTracesFromGraph(win)
 		ModifyGraph/W=$win swapXY = 0
 
+		areTracesSweeps = SF_CheckDimLabelsForSweeps(wyLabels)
+		[s] = SF_DefaultTraceColor()
+
 		if(IsTextWave(wvY))
 			SF_Assert(WaveExists(wvX), "A single text wave requires X-values to be plotted.")
 			ModifyGraph/W=$win swapXY = 1
@@ -870,20 +878,30 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			numTraces = yMxN
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
-				AppendTograph/W=$win wvY[][i]/TN=$trace
+				if(areTracesSweeps)
+					[s] = SF_GetTraceColor(wyLabels, i, graph)
+				endif
+				AppendTograph/W=$win/C=(s.red, s.green, s.blue, 65535) wvY[][i]/TN=$trace
 			endfor
 		elseif((xMxN == 1) && (yMxN == 1)) // 1D
 			if(yPoints == 1) // 0D vs 1D
 				numTraces = xPoints
 				for(i = 0; i < numTraces; i += 1)
 					trace = traceName + num2istr(i)
-					AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[i][]
+					if(areTracesSweeps)
+						[s] = SF_GetTraceColor(wyLabels, i, graph)
+					endif
+					AppendTograph/W=$win/C=(s.red, s.green, s.blue, 65535) wvY[][0]/TN=$trace vs wvX[i][]
 				endfor
 			elseif(xPoints == 1) // 1D vs 0D
 				numTraces = yPoints
 				for(i = 0; i < numTraces; i += 1)
 					trace = traceName + num2istr(i)
-					AppendTograph/W=$win wvY[i][]/TN=$trace vs wvX[][0]
+					if(areTracesSweeps)
+						[s] = SF_GetTraceColor(wyLabels, i, graph)
+					else
+						AppendTograph/W=$win/C=(s.red, s.green, s.blue, 65535) wvY[i][]/TN=$trace vs wvX[][0]
+					endif
 				endfor
 			else // 1D vs 1D
 				splitTraces = min(yPoints, xPoints)
@@ -895,14 +913,20 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 					trace = traceName + num2istr(i)
 					splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
 					splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
-					AppendTograph/W=$win wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
+					if(areTracesSweeps)
+						[s] = SF_GetTraceColor(wyLabels, i, graph)
+					endif
+					AppendTograph/W=$win/C=(s.red, s.green, s.blue, 65535) wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
 				endfor
 			endif
 		elseif(yMxN == 1) // 1D vs 2D
 			numTraces = xMxN
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
-				AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][i]
+				if(areTracesSweeps)
+					[s] = SF_GetTraceColor(wyLabels, i, graph)
+				endif
+				AppendTograph/W=$win/C=(s.red, s.green, s.blue, 65535) wvY[][0]/TN=$trace vs wvX[][i]
 			endfor
 		elseif(xMxN == 1) // 2D vs 1D or 0D
 			if(xPoints == 1) // 2D vs 0D -> extend X to 1D with constant value
@@ -913,7 +937,10 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			numTraces = yMxN
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
-				AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX
+				if(areTracesSweeps)
+					[s] = SF_GetTraceColor(wyLabels, i, graph)
+				endif
+				AppendTograph/W=$win/C=(s.red, s.green, s.blue, 65535) wvY[][i]/TN=$trace vs wvX
 			endfor
 		else // 2D vs 2D
 			numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
@@ -925,17 +952,16 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			endif
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
+				if(areTracesSweeps)
+					[s] = SF_GetTraceColor(wyLabels, i, graph)
+				endif
 				if(WaveExists(wvX))
-					AppendTograph/W=$win wvY[][min(yMxN - 1, i)]/TN=$trace vs wvX[][min(xMxN - 1, i)]
+					AppendTograph/W=$win/C=(s.red, s.green, s.blue, 65535) wvY[][min(yMxN - 1, i)]/TN=$trace vs wvX[][min(xMxN - 1, i)]
 				else
-					AppendTograph/W=$win wvY[][i]/TN=$trace
+					AppendTograph/W=$win/C=(s.red, s.green, s.blue, 65535) wvY[][i]/TN=$trace
 				endif
 			endfor
 		endif
-
-		// @todo preserve channel information in LAYERS
-		// Redimension/N=(-1, dim1Y, dim2Y)/E=1 wvY
-		// Redimension/N=(-1, dim1X, dim2X)/E=1 wvX
 
 		if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
 			&& (!WaveExists(wvX) \
@@ -1101,7 +1127,7 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 			endif
 		endfor
 
-		sprintf dimLabel, "sweep%d", sweeps[i]
+		sprintf dimLabel, SF_DIMLABEL_SWEEP + "%d", sweeps[i]
 		SetDimLabel COLS, i, $dimLabel, sweepData
 	endfor
 
@@ -2289,4 +2315,157 @@ Function SF_button_sweepFormula_tofront(ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+static Function SF_SaveDimLabels_impl(WAVE w, WAVE result, variable dim, variable index)
+
+	SetDimLabel dim - 1, index, $GetDimLabel(w, dim, index), result
+End
+
+/// @brief Transfers dim labels from a up to 3D source wave to a label wave
+///        dim labels from COLS, LAYERS are transfered to ROWS, COLS
+static Function/WAVE SF_SaveDimLabels(WAVE w)
+
+	variable cNum, lNum
+
+	cNum = DimSize(w, COLS)
+	lNum = DimSize(w, LAYERS)
+	Make/FREE/N=(cNum, lNum) result
+	if(cNum > 0)
+		result[][0] = SF_SaveDimLabels_impl(w, result, COLS, p)
+	endif
+	if(lNum > 0)
+		result[0][] = SF_SaveDimLabels_impl(w, result, LAYERS, q)
+	endif
+
+	return result
+End
+
+
+/// @brief Returns the sweep number from a label
+static Function SF_ParseSweepNumberFromLabel(string lbl)
+
+	variable klen
+
+	if(IsEmpty(lbl))
+		return NaN
+	endif
+
+	klen = strlen(SF_DIMLABEL_SWEEP)
+	if(strlen(lbl) < klen + 1)
+		return NaN
+	endif
+	if(strsearch(lbl, SF_DIMLABEL_SWEEP, 0) != 0)
+		return NaN
+	endif
+
+	return str2num(lbl[klen, Inf])
+End
+
+/// @brief Returns 1 if the DimLabels in a label wave refer to sweep data.
+static Function SF_CheckDimLabelsForSweeps(WAVE w)
+
+	variable sweep
+
+	if(!DimSize(w, ROWS))
+		return 0
+	endif
+
+	sweep = SF_ParseSweepNumberFromLabel(GetDimLabel(w, ROWS, 0))
+
+	return IsFinite(sweep) && IsInteger(sweep)
+End
+
+/// @brief Returns sweep, channel type and channel number from label wave and a specific X, Y coordinate
+static Function [variable sweep, variable channelType, variable channelNum] SF_GetSweepMetaFromLabels(WAVE wLbl, variable x, variable y)
+
+	string sweepLbl, channelLbl
+	variable chanNames, i, chanNameLen
+	string cType
+
+	channelType = NaN
+	channelNum = NaN
+
+	sweepLbl = GetDimLabel(wLbl, ROWS, x)
+	sweep = SF_ParseSweepNumberFromLabel(sweepLbl)
+
+	channelLbl = GetDimLabel(wLbl, COLS, y)
+	chanNames = ItemsInList(XOP_CHANNEL_NAMES)
+	for(i = 0; i < chanNames; i += 1)
+		cType = StringFromList(i, XOP_CHANNEL_NAMES)
+		if(IsEmpty(cType))
+			continue
+		endif
+		if(strsearch(channelLbl, cType, 0) == 0)
+			channelType = i
+
+			chanNameLen = strlen(cType)
+			if(strlen(channelLbl) > chanNameLen)
+				channelNum = str2num(channelLbl[chanNameLen, Inf])
+				channelNum = IsInteger(channelNum) ? channelNum : NaN
+			endif
+			break
+		endif
+	endfor
+
+	return [sweep, channelType, channelNum]
+End
+
+/// @brief Returns a default trace color
+static Function [STRUCT RGBColor s] SF_DefaultTraceColor()
+
+	STRUCT RGBColor c
+
+	c.red = 65535
+	c.green = 0
+	c.blue = 0
+
+	return [c]
+End
+
+/// @brief Returns a color from a saved label wave (from SF_FormulaPLotter) for displayed sweeps
+static Function [STRUCT RGBColor s] SF_GetTraceColor(WAVE wLbl, variable traceNum, string graph)
+
+	variable x, y, stripe
+	variable sweep, channelType, channelNum, headstage, ttlBits, channelCnt, i, activeChannelCnt
+	string device
+
+	stripe = DimSize(wLbl, COLS)
+	y = mod(traceNum, stripe)
+	x = trunc(traceNum / stripe)
+	[sweep, channelType, channelNum] = SF_GetSweepMetaFromLabels(wLbl, x, y)
+
+	WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
+
+	WAVE/Z setting
+	[setting, headstage] = GetLastSettingChannel(numericalValues, $"", sweep, "Headstage Active", channelNum, channelType, DATA_ACQUISITION_MODE)
+
+	[s] = SF_DefaultTraceColor()
+	if(!WaveExists(setting))
+		return [s]
+	endif
+
+	if(channelType == XOP_CHANNEL_TYPE_TTL)
+		device = BSP_GetDevice(graph)
+		DFREF dfr = GetDeviceDataPath(device)
+		WAVE/Z/SDFR=dfr sweepWave = $GetSweepWaveName(sweep)
+		WAVE config = GetConfigWave(sweepWave)
+		channelCnt = DimSize(config, ROWS)
+		for(i = 0; i < channelCnt; i += 1)
+			if(config[i][%ChannelType] == XOP_CHANNEL_TYPE_TTL)
+				activeChannelCnt += 1
+			endif
+		endfor
+
+		ttlBits = GetTTLBits(numericalValues, sweep, channelNum)
+		if(IsFinite(ttlBits))
+			[s] = GetHeadstageColor(headstage, channelType = "TTL", activeChannelCount = activeChannelCnt, channelSubNumber = ttlBits)
+		else
+			[s] = GetHeadstageColor(headstage, channelType = "TTL", activeChannelCount = activeChannelCnt)
+		endif
+	else
+		[s] = GetHeadstageColor(headstage)
+	endif
+
+	return [s]
 End
