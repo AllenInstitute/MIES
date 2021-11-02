@@ -25,5 +25,5 @@ Table of Contents
   mies-concepts
   daq-details
 
-The user documentation can be reached at :ref:`user documentation`, developer documentation is everything e The
-documentation for the ZeroMQ-XOP is located `here <https://github.com/AllenInstitute/ZeroMQ-XOP/#readme>`__.
+The user documentation can be reached at :ref:`user documentation`, developer documentation is everything else.
+The documentation for the ZeroMQ-XOP is located `here <https://github.com/AllenInstitute/ZeroMQ-XOP/#readme>`__.

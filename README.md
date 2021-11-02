@@ -1,6 +1,6 @@
-![GitHub contributors](https://img.shields.io/github/contributors/AllenInstitute/MIES?style=plastic)
-![Signed Installer](https://img.shields.io/badge/Signed%20Installer-Yes-success?style=plastic)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/AllenInstitute/MIES?style=plastic)
+[![GitHub contributors](https://img.shields.io/github/contributors/AllenInstitute/MIES?style=plastic)](https://github.com/AllenInstitute/MIES/graphs/contributors)
+[![Signed Installer](https://img.shields.io/badge/Signed%20Installer-Yes-success?style=plastic)](https://alleninstitute.github.io/MIES/developers.html#signed-installer)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/AllenInstitute/MIES?style=plastic)](https://github.com/AllenInstitute/MIES/releases)
 [![Documentation](https://img.shields.io/badge/docs-doxygen%2Fbreathe%2Fsphinx-blue.svg?style=plastic)](https://alleninstitute.github.io/MIES/user.html)
 
 MIES is a proven \[[1](https://doi.org/10.1038/s41586-021-03813-8),
