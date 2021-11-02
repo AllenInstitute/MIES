@@ -1548,7 +1548,8 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 		if(outCnt == 1)
 			Redimension/N=2 out
 		elseif(outCnt == 0)
-			Redimension/N=0 out
+			Redimension/N=1 out
+			out = NaN
 		else
 			Redimension/N=(-1, outCnt) out
 		endif

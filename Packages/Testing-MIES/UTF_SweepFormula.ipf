@@ -1311,8 +1311,7 @@ static Function TestOperationEpochs()
 	// channel(s) with no epochs
 	str = "epochs(sweeps(), channels(AD), \"E0_PT_P48_B\")"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	Make/FREE/D/N=0 refdata
-	CHECK_EQUAL_WAVES(refData, data)
+	CHECK_EQUAL_WAVES({NaN}, data, mode = WAVE_DATA)
 
 	// name that does not match any
 	str = "epochs(sweeps(), channels(DA), \"does_not_exist\")"
@@ -1321,14 +1320,8 @@ static Function TestOperationEpochs()
 	CHECK_EQUAL_WAVES(refData, data)
 
 	// invalid sweep
-	str = "epochs(-1, channels(DA), \"E0_PT_P48_B\")"
-	try
-		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win); AbortOnRTE
-		FAIL()
-	catch
-		ClearRTError()
-		PASS()
-	endtry
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser("epochs(-1, channels(DA), \"E0_PT_P48_B\")"), graph = win)
+	CHECK_EQUAL_WAVES({NaN}, data, mode = WAVE_DATA)
 
 	// invalid type
 	str = "epochs(sweeps(), channels(DA), \"E0_PT_P48_B\", invalid_type)"
