@@ -1599,7 +1599,7 @@ Function BSP_EpochGraphToolTip(s)
 			first = str2num(epochs[idx][0]) * 1000
 			last  = str2num(epochs[idx][1]) * 1000
 
-			s.tooltip = num2str(first) + "<->" + num2str(last) + "\n" + epochs[idx][2]
+			s.tooltip = num2str(first) + "<->" + num2str(last) + "\n" + epochs[idx][2] + "TreeLevel=" + epochs[idx][3]
 		endif
 	endif
 
