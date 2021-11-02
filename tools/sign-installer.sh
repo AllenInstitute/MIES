@@ -12,7 +12,6 @@
 # - Install SafeNet Client Application from the vendor
 # - Reboot the machine
 # - Store the password and the container name in ~/.credentials/code-signing in the format "[{{token password}}]=container"
-# - Export the public certificate into ~/.credentials/signing.cer
 #
 # Due to Microsoft Windows security features, you must not be logged in via RDP for this script to work.
 
@@ -40,9 +39,9 @@ then
   exit 1
 fi
 
-# signtool does not accept a path for signing.cer
-cp ~/.credentials/signing.cer signing.cer
+# signtool does not accept a path for the certificate
+cp $top_level/tools/installer/public-key.cer public-key.cer
 
-MSYS_NO_PATHCONV=1 "$sign_tool_exe" sign /tr http://timestamp.sectigo.com /fd sha256 /td sha256 /csp "eToken Base Cryptographic Provider" /kc $(cat ~/.credentials/code-signing) /f signing.cer tools/installer/MIES*.exe
+MSYS_NO_PATHCONV=1 "$sign_tool_exe" sign /tr http://timestamp.sectigo.com /fd sha256 /td sha256 /csp "eToken Base Cryptographic Provider" /kc $(cat ~/.credentials/code-signing) /f public-key.cer tools/installer/MIES*.exe
 
 rm -f signing.cer
