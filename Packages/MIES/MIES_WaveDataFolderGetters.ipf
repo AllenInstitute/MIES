@@ -3336,7 +3336,7 @@ static Function AddDimLabelsToWP(wv)
 
 	SetDimLabel COLS,   -1, $("Epoch number"), wv
 
-	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
+	for(i = 0; i < WB_TOTAL_NUMBER_OF_EPOCHS; i += 1)
 		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
 	endfor
 
@@ -3610,7 +3610,7 @@ static Function AddDimLabelsToWPT(wv)
 	SetDimLabel ROWS, 28, $("Inter trial interval ldel")     , wv
 	SetDimLabel ROWS, 29, $("Analysis function params (encoded)"), wv
 
-	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
+	for(i = 0; i < WB_TOTAL_NUMBER_OF_EPOCHS; i += 1)
 		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
 	endfor
 
@@ -3737,9 +3737,9 @@ static Function AddDimLabelsToSegWvType(wv)
 
 	variable i
 
-	ASSERT(SEGMENT_TYPE_WAVE_LAST_IDX < DimSize(wv, ROWS), "Number of reserved rows for epochs is larger than wave the itself")
+	ASSERT(WB_TOTAL_NUMBER_OF_EPOCHS < DimSize(wv, ROWS), "Number of reserved rows for epochs is larger than wave the itself")
 
-	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
+	for(i = 0; i < WB_TOTAL_NUMBER_OF_EPOCHS; i += 1)
 		SetDimLabel ROWS, i, $("Type of Epoch " + num2str(i)), wv
 	endfor
 
@@ -3754,7 +3754,7 @@ static Function AddDimLabelsToSegWvType(wv)
 End
 
 /// @brief Returns the segment type wave used by the wave builder panel
-/// Remember to change #SEGMENT_TYPE_WAVE_LAST_IDX if changing the wave layout
+/// Remember to change #WB_TOTAL_NUMBER_OF_EPOCHS if changing the wave layout
 ///
 /// Rows:
 /// - 0 - 93: epoch types using one of @ref WaveBuilderEpochTypes

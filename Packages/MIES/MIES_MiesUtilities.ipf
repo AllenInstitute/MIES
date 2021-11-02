@@ -2050,7 +2050,7 @@ End
 Function IsValidEpochNumber(epochNo)
 	variable epochNo
 
-	return IsInteger(epochNo) && epochNo >= 0 && epochNo <= SEGMENT_TYPE_WAVE_LAST_IDX
+	return IsInteger(epochNo) && epochNo >= 0 && epochNo < WB_TOTAL_NUMBER_OF_EPOCHS
 End
 
 /// @brief Returns the config wave for a given sweep wave

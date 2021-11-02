@@ -2056,7 +2056,7 @@ Function/WAVE WB_CustomWavesPathFromStimSet([stimsetList])
 		numStimsets = ItemsInList(stimsetList)
 	endif
 
-	Make/N=(numStimsets * SEGMENT_TYPE_WAVE_LAST_IDX)/FREE/T customWaves
+	Make/N=(numStimsets * WB_TOTAL_NUMBER_OF_EPOCHS)/FREE/T customWaves
 
 	for(i = 0; i < numStimsets; i += 1)
 		if(ParamIsDefault(stimsetList))

@@ -36,8 +36,8 @@ static Function/WAVE ST_GetStimsetParametersGlobal(string setName)
 	WAVE SegWvType = WB_GetSegWvTypeForSet(setName)
 
 	// SegWvType
-	numEntries = DimSize(SegWvType, ROWS) - (SEGMENT_TYPE_WAVE_LAST_IDX + 1)
-	Make/FREE/N=(numEntries)/T SegWvTypeNames = GetDimLabel(SegWvType, ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 1 + p)
+	numEntries = DimSize(SegWvType, ROWS) - WB_TOTAL_NUMBER_OF_EPOCHS
+	Make/FREE/N=(numEntries)/T SegWvTypeNames = GetDimLabel(SegWvType, ROWS, WB_TOTAL_NUMBER_OF_EPOCHS + p)
 
 	// SegWvType, only output one for Type of Epoch XX
 	Make/FREE/T types = {"Type of Epoch XX"}
