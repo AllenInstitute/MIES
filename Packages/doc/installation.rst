@@ -30,7 +30,7 @@ and a dialog appears with a button which opens this documentation.
 In that case please perform the following steps:
 
 - Download the zip package for |IgorPro8Nightly| or |IgorPro9Nightly|. Either
-  from the within Igor Pro or from the browser.
+  from within Igor Pro or from the browser.
 - Close Igor Pro
 - Replace the folders ``IgorBinaries_x64`` and
   ``IgorBinaries_Win32`` in ``C:\Program Files\WaveMetrics\Igor Pro 8/9`` with the
