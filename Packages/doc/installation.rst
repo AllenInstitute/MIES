@@ -50,6 +50,17 @@ package from Wavemetrics.
 Install version 2.2.2 of the Multiclamp Commander (64bit) from `here
 <http://mdc.custhelp.com/app/answers/detail/a_id/20059>`__.
 
+Signed installer
+~~~~~~~~~~~~~~~~
+
+Starting with release 2.3 the installer executable is signed with an Extended
+Validation (EV) Code Signing certificate. See `Wikipedia
+<https://en.wikipedia.org/wiki/Code_signing#Extended_validation_(EV)_code_signing>`__
+for more information. Signing the installer should avoid most issues with
+antivirus software treating the MIES installer as potentially malicious. The
+public key of the certificate can be downloaded from :download:`here
+<../../tools/installer/public-key.cer>`.
+
 Silent installation
 ~~~~~~~~~~~~~~~~~~~
 
