@@ -802,8 +802,9 @@ static Constant EPOCHS_WAVE_VERSION = 2
 /// Layers:
 /// - NUM_DA_TTL_CHANNELS
 ///
-/// Version 1:
-/// - Initial version
+/// Version History:
+/// - 1: Initial version
+/// - 2: Renamed column `Name` to `Tags`
 Function/Wave GetEpochsWave(panelTitle)
 	string panelTitle
 
