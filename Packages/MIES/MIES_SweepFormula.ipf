@@ -858,8 +858,8 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		RemoveTracesFromGraph(win)
 		ModifyGraph/W=$win swapXY = 0
 
-		if(IsTextWave(wvY) && WaveExists(wvX))
-			SF_Assert(WaveExists(wvX), "Cannot plot a single text wave")
+		if(IsTextWave(wvY))
+			SF_Assert(WaveExists(wvX), "A single text wave requires X-values to be plotted.")
 			ModifyGraph/W=$win swapXY = 1
 			WAVE dummy = wvY
 			WAVE wvY = wvX
