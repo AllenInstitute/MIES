@@ -802,9 +802,28 @@ static Constant EPOCHS_WAVE_VERSION = 2
 /// Layers:
 /// - NUM_DA_TTL_CHANNELS
 ///
-/// Version History:
+/// ## Version History
+///
+/// ### Wave
+///
 /// - 1: Initial version
 /// - 2: Renamed column `Name` to `Tags`
+///
+/// ### Tags format
+///
+/// Initial version in a2172f03 (Added generations of epoch information wave,
+/// 2019-05-22), parsed in PA plot since 4e534e29 (Pulse Averaging: Pulse
+/// starting times are now read from the lab notebook, 2020-10-07).
+///
+/// In d150d896 (DC_AddEpochsFromStimSetNote: Add sub sub epoch information, 2021-02-02)
+/// tree level 3 info for pulse train pulses was added, which is read out since
+/// ba209bbd (PA plot: Gather more pulse infos, 2021-02-02).
+///
+/// And in 2371cfb0 (Epochs: Revise naming, 2021-09-22) we changed the naming
+/// of the tags and also adapted PA_RetrievePulseStartTimesFromEpochs.
+///
+/// For these three formats we have tests in RPI_WorksWithOldData(). When
+/// changing the tags format this test needs to be updated.
 Function/Wave GetEpochsWave(panelTitle)
 	string panelTitle
 
