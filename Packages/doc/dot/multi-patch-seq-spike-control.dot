@@ -119,7 +119,7 @@ of the value depending on the operator"];
 	n79 -> n81	[label="Too Many"];
 	n82	[label="Warn user in history once\nduring this RA cycle"];
 	n79 -> n82	[label=Mixed];
-	n83	[label="Increase DA scale according to analysis parameters\n \"DAScaleModifier\" (multiply by two)\n and \"DAScaleOperator\""];
+	n83	[label="Increase DA scale according to analysis parameters\n \"DAScaleModifier\"\n and \"DAScaleOperator\""];
 	n79 -> n83	[label="Too Few"];
 	n82 -> n62;
 	n77	[label="Increase DA scale according to analysis parameters\n \"DAScaleSpikePositionModifier\"\n and \"DAScaleSpikePositionOperator\""];
