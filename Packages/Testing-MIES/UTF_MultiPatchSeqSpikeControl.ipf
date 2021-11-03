@@ -899,7 +899,7 @@ static Function SC_Test7_REENTRY([str])
 
 	//	spike position modifier kicks in the third sweep of HS1
 	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 2.5, 4, 5.5}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 2.5, -0.5, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 2.5, -1, 1.5}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0, 0, 0}, mode = WAVE_DATA)
@@ -1026,8 +1026,8 @@ static Function SC_Test8_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%spontSpikeQC_HS1], {1, 1, 1, 1}, mode = WAVE_DATA)
 
 	//	spike position modifier kicks in the third sweep of HS1
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 2, 6, 1.5}, mode = WAVE_DATA)
-	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 3, 0.75, 0.75}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS0], {1, 2, 6, 2.5}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%stimScale_HS1], {1, 3, -0.5, -0.5}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS0], {0, 0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%autoBiasV_HS1], {0, 0, 0, 0}, mode = WAVE_DATA)
