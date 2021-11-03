@@ -801,11 +801,11 @@ Function/S SC_SpikeControl_GetHelp(name)
 			return "[Optional, defaults to infinity] A sweep is rerun this many times on a failed headstage."
 			break
 		case "DAScaleOperator":
-			return "Set the math operator to use for combining the DAScale and the "            \
-			       + "modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
+			return "Set the math operator to use for combining the DAScale and the "                          \
+			       + "too few spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 			break
 		case "DAScaleModifier":
-			return "Modifier value to the DA Scale of headstages with failed pulses"
+			return "Modifier value to the DA Scale of headstages for too few spikes"
 			break
 		case "DAScaleSpikePositionOperator":
 			return "Set the math operator to use for combining the DAScale and the "                           \
