@@ -4578,6 +4578,8 @@ Function TurnOffASLR()
 	sprintf cmd, "powershell.exe -ExecutionPolicy Bypass \"%s\"", GetWindowsPath(path)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "Error executing ASLR script")
+
+	printf "Please restart Igor Pro as normal user and execute \"Mies Panels\"->\"Check installation\" to see if ASLR is now turned off or not.\r See also https://github.com/AllenInstitute/ITCXOP2#windows-10 for further manual instructions.\r"
 End
 
 /// @brief Check if we are running on Windows 10
