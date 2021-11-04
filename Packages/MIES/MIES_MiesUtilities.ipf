@@ -3649,11 +3649,11 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 		PA_Update(graph, mode, additionalData = additionalData)
 	endif
 
-	BSP_ScaleAxes(graph)
-
 	if(pps.visualizeEpochs)
 		BSP_AddTracesForEpochs(graph)
 	endif
+
+	BSP_ScaleAxes(graph)
 
 	[tgs] = BSP_GatherTiledGraphSettings(graph)
 	LayoutGraph(graph, tgs)
