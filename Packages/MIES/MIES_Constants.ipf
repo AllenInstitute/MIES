@@ -151,6 +151,8 @@ StrConstant NONE = "- none -"
 /// Hook events constants
 Constant EVENT_KILL_WINDOW_HOOK = 2
 
+Constant EVENT_MOD_ALT_OPTION = 0x4
+
 /// Used by CheckName and UniqueName
 Constant CONTROL_PANEL_TYPE = 9
 

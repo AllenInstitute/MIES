@@ -388,9 +388,14 @@ Function SB_SweepBrowserWindowHook(s)
 				break
 			endif
 
+			if(!(s.eventMod & EVENT_MOD_ALT_OPTION))
+				break
+			endif
+
 			scPanel = BSP_GetSweepControlsPanel(graph)
 
-			if(sign(s.wheelDy) == 1) // positive
+			// ALT changes the scroll direction
+			if(sign(s.wheelDx) == 1) // positive
 				ctrl = "button_SweepControl_PrevSweep"
 			else //negative
 				ctrl = "button_SweepControl_NextSweep"
