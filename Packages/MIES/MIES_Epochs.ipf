@@ -449,8 +449,7 @@ static Function EP_SortEpochs(panelTitle)
 		// remove epochs marked for removal
 		// first column needs to be StartTime
 		ASSERT(EPOCH_COL_STARTTIME == 0, "First column changed")
-		for(;!RemoveTextWaveEntry1D(epochChannel, "NaN");)
-		endfor
+		RemoveTextWaveEntry1D(epochChannel, "NaN", all = 1)
 
 		epochCnt = DimSize(epochChannel, ROWS)
 
