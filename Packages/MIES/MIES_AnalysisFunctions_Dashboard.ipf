@@ -688,6 +688,14 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				ASSERT(0, "Unsupported analysis function")
 		endswitch
 
+		// check that we had the correct sampling interval
+		key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SAMPLING_PASS, query = 1)
+		WAVE/Z samplingIntervalQC = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+		if(WaveExists(samplingIntervalQC) && !samplingIntervalQC[INDEP_HEADSTAGE])
+			msg = "The used sampling frequency did not match the \"SamplingFrequency\" analysis parameter."
+			sprintf text, "Sweep %d failed: %s", sweepNo, msg
+		endif
+
 		if(IsEmpty(text))
 			BUG("Unknown reason for failure")
 			sprintf text, "Sweep %d failed: Unknown reasons", sweepNo

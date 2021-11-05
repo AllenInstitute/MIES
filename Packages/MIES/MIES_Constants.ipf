@@ -637,7 +637,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 50
+Constant LABNOTEBOOK_VERSION = 51
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
@@ -994,6 +994,7 @@ StrConstant PSQ_FMT_LBN_CHUNK_PASS         = "%s Chk%d BL QC"
 StrConstant PSQ_FMT_LBN_BL_QC_PASS         = "%s BL QC"
 StrConstant PSQ_FMT_LBN_SWEEP_PASS         = "%s Sweep QC"
 StrConstant PSQ_FMT_LBN_SET_PASS           = "%s Set QC"
+StrConstant PSQ_FMT_LBN_SAMPLING_PASS      = "%s Sampling interval QC"
 StrConstant PSQ_FMT_LBN_PULSE_DUR          = "%s Pulse duration"
 StrConstant PSQ_FMT_LBN_SPIKE_DASCALE_ZERO = "%s spike with zero"
 StrConstant PSQ_FMT_LBN_RB_LIMITED_RES     = "%s limited resolut."
