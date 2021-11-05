@@ -873,13 +873,12 @@ Function/Wave GetUniqueEntries(wv, [caseSensitive])
 	numRows = DimSize(wv, ROWS)
 	ASSERT(numRows == numpnts(wv), "Wave must be 1D")
 
-	Duplicate/FREE wv, result
-
 	if(numRows <= 1)
+		Duplicate/FREE wv, result
 		return result
 	endif
 
-	FindDuplicates/RN=result wv
+	FindDuplicates/FREE/RN=result wv
 
 	/// @todo this should be removed as it does not belong into this function
 	WaveTransform/O zapNaNs wv
@@ -934,17 +933,18 @@ static Function/Wave GetUniqueTextEntries(wv, [caseSensitive])
 	numEntries = DimSize(wv, ROWS)
 	ASSERT(numEntries == numpnts(wv), "Wave must be 1D.")
 
-	Duplicate/T/FREE wv result
 	if(numEntries <= 1)
+		Duplicate/T/FREE wv result
 		return result
 	endif
 
 	if(caseSensitive)
-		FindDuplicates/RT=result wv
+		FindDuplicates/FREE/RT=result wv
 	else
-		Make/I/FREE index
+		Duplicate/T/FREE wv result
+
 		MAKE/T/FREE/N=(numEntries) duplicates = LowerStr(wv[p])
-		FindDuplicates/INDX=index duplicates
+		FindDuplicates/FREE/INDX=index duplicates
 		numDuplicates = DimSize(index, ROWS)
 		for(i = numDuplicates - 1; i >= 0; i -= 1)
 			DeletePoints index[i], 1, result

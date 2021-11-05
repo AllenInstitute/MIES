@@ -5393,10 +5393,9 @@ Function SearchForDuplicates(wv)
 
 	ASSERT(WaveExists(wv), "Missing wave")
 
-	Make/FREE/U/I/N=0 idx
-	FindDuplicates/Z/INDX=idx wv
+	FindDuplicates/FREE/Z/INDX=idx wv
 
-	return DimSize(idx, ROWS) > 0
+	return WaveExists(idx) && DimSize(idx, ROWS) > 0
 End
 
 /// @brief Check that the device can act as a follower
