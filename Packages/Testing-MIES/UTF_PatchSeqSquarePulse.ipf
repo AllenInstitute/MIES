@@ -8,7 +8,9 @@ static Function AcquireData(s, device)
 	STRUCT DAQSettings& s
 	string device
 
-	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
+	string stimset, unlockedPanelTitle
+
+	unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
 	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=device)
 	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
@@ -46,7 +48,10 @@ static Function AcquireData(s, device)
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
 	PGC_SetAndActivateControl(device, GetPanelControl(PSQ_TEST_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "PatchSeqSquarePu_DA_0")
+
+	stimset = "PatchSeqSquarePu_DA_0"
+	AdjustAnalysisParamsForPSQ(device, stimset)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimset)
 
 	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
@@ -54,7 +59,6 @@ static Function AcquireData(s, device)
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
 	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
-	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = "4")
 
 	if(!s.MD)
 		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)

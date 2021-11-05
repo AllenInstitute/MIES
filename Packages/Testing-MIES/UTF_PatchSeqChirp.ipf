@@ -8,6 +8,8 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	string device
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
+	string stimset, unlockedPanelTitle
+
 	KillWaves/Z root:overrideResults
 	Make/O/N=(0) root:overrideResults/Wave=overrideResults
 	Note/K overrideResults
@@ -15,7 +17,8 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	if(!ParamIsDefault(postInitializeFunc))
 		postInitializeFunc(device)
 	endif
-	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
+
+	unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
 	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=device)
 	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
@@ -53,7 +56,10 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
 	PGC_SetAndActivateControl(device, GetPanelControl(PSQ_TEST_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "PatchSeqChirp*")
+
+	stimset = "PatchSeqChirp_DA_0"
+	AdjustAnalysisParamsForPSQ(device, stimset)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimset)
 
 	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
