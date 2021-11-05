@@ -851,7 +851,7 @@ Function CalculateLCMOfWave(wv)
 	return result
 End
 
-/// @brief Returns an unsorted free wave with all unique entries from wv neglecting NaN/Inf.
+/// @brief Returns an unsorted free wave with all unique entries from wv
 ///
 /// uses built-in igor function FindDuplicates. Entries are deleted from left to right.
 Function/Wave GetUniqueEntries(wv, [caseSensitive])
@@ -879,10 +879,6 @@ Function/Wave GetUniqueEntries(wv, [caseSensitive])
 	endif
 
 	FindDuplicates/FREE/RN=result wv
-
-	/// @todo this should be removed as it does not belong into this function
-	WaveTransform/O zapNaNs wv
-	WaveTransform/O zapINFs wv
 
 	return result
 End
