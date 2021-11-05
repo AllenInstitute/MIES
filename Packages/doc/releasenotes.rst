@@ -769,7 +769,7 @@ Analysis Functions
 - Fix an off-by-one issue as we use the lastKnownRowIndex/lastValidRowIndex as
   zero-based indizes and not as length. We now also pass these values as NaN
   if they do not make sense for the current event.
-- AnalysisFunctions_V3: Introduce scaledDataWave member
+- AnalysisFunction_V3: Introduce scaledDataWave member
 - Add an analysis function for measuring the mid sweep event timings
 - Fix level calculation for NI hardware in ``PSQ_Ramp``
 - Adapt Supra mode for ``PSQ_DAScale``:

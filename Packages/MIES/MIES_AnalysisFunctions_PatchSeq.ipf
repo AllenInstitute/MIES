@@ -295,7 +295,7 @@ End
 /// @brief Evaluate one chunk of the baseline
 ///
 /// @param panelTitle        device
-/// @param scaledDACWave     the scaled DAC wave, usually just AnalysisFunctions_V3::scaledDacWave
+/// @param scaledDACWave     the scaled DAC wave, usually just AnalysisFunction_V3::scaledDacWave
 /// @param type              analysis function type, one of @ref PatchSeqAnalysisFunctionTypes
 /// @param sweepNo           sweep number
 /// @param chunk             chunk number, `chunk == 0` -> Pre pulse baseline chunk, `chunk >= 1` -> Post pulse baseline
