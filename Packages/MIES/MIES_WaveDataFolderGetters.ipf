@@ -5820,6 +5820,10 @@ Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
 	SetNumberInWaveNote(wv, "NeedsUpdate", 1)
 	SetWaveVersion(wv, versionOfNewWave)
 
+	if(!skipUpdate)
+		OVS_UpdateSweepSelectionChoices(win, wv)
+	endif
+
 	return wv
 End
 
