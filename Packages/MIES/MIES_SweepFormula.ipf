@@ -179,6 +179,9 @@ static Function SF_Assert(variable condition, string message[, variable jsonId])
 		endif
 		SVAR error = $GetSweepFormulaParseErrorMessage()
 		error = message
+#ifdef AUTOMATED_TESTING_DEBUGGING
+		Debugger
+#endif
 		Abort
 	endif
 End
@@ -201,13 +204,13 @@ End
 /// @brief serialize a string formula into JSON
 ///
 /// @param formula  string formula
+/// @param createdArray [optional, default 0] set on recursive calls, returns boolean if parser created a JSON array
 /// @param indentLevel [internal use only] recursive call level, used for debug output
 /// @returns a JSONid representation
-static Function SF_FormulaParser(formula, [indentLevel])
-	String formula
-	variable indentLevel
+static Function SF_FormulaParser(string formula, [variable &createdArray, variable indentLevel])
 
-	Variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray
+	Variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray, subId
+	variable formulaLength
 	String tempPath
 	string indentation = ""
 	Variable action = SF_ACTION_UNINITIALIZED
@@ -218,25 +221,29 @@ static Function SF_FormulaParser(formula, [indentLevel])
 	Variable lastCalculation = SF_STATE_UNINITIALIZED
 	Variable level = 0
 	Variable arrayLevel = 0
+	variable createdArrayLocal, wasArrayCreated
+	variable lastAction = SF_ACTION_UNINITIALIZED
 
 	Variable jsonID = JSON_New()
 	String jsonPath = ""
 
+#ifdef DEBUGGING_ENABLED
 	for(i = 0; i < indentLevel; i += 1)
 		indentation += "-> "
 	endfor
 
-#ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
 		printf "%sformula %s\r", indentation, formula
 	endif
 #endif
 
-	if(strlen(formula) == 0)
+	formulaLength = strlen(formula)
+
+	if(formulaLength == 0)
 		return jsonID
 	endif
 
-	for(i = 0; i < strlen(formula); i += 1)
+	for(i = 0; i < formulaLength; i += 1)
 		token += formula[i]
 
 		// state
@@ -300,12 +307,13 @@ static Function SF_FormulaParser(formula, [indentLevel])
 		endswitch
 
 		if(level > 0 || arrayLevel > 0)
+			// transfer sub level "as is" to buffer
 			state = SF_STATE_DEFAULT
 		endif
 
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForCaller())
-			printf "%stoken %s, state %s, ", indentation, token, SF_StringifyState(state)
+			printf "%stoken %s, state %s, lastCalculation %s, ", indentation, token, SF_StringifyState(state),  SF_StringifyState(lastCalculation)
 		endif
 #endif
 
@@ -332,7 +340,7 @@ static Function SF_FormulaParser(formula, [indentLevel])
 				case SF_STATE_DIVISION:
 				case SF_STATE_OPERATION:
 					if(IsEmpty(buffer))
-						if(lastCalculation == -1)
+						if(lastCalculation == SF_STATE_UNINITIALIZED)
 							action = SF_ACTION_HIGHERORDER
 						else
 							action = SF_ACTION_COLLECT
@@ -394,6 +402,18 @@ static Function SF_FormulaParser(formula, [indentLevel])
 		endif
 #endif
 
+		// Checks for simple syntax dependencies
+		if(action != SF_ACTION_SKIP)
+			switch(lastAction)
+				case SF_ACTION_ARRAY:
+					// If the last action was the handling of "]" from an array
+					SF_ASSERT(action == SF_ACTION_ARRAYELEMENT || action == SF_ACTION_HIGHERORDER, "Expected \",\" after \"]\"")
+					break
+				default:
+					break
+			endswitch
+		endif
+
 		// action
 		switch(action)
 			case SF_ACTION_COLLECT:
@@ -421,6 +441,8 @@ static Function SF_FormulaParser(formula, [indentLevel])
 				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[1, inf], indentLevel = indentLevel + 1))
 				break
 			case SF_ACTION_HIGHERORDER:
+				// - called if for the first time a "," is encountered (from SF_STATE_ARRAYELEMENT)
+				// - called if a higher priority calculation, e.g. * over + requires to put array in sub json path
 				lastCalculation = state
 				if(!IsEmpty(buffer))
 					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))
@@ -429,25 +451,23 @@ static Function SF_FormulaParser(formula, [indentLevel])
 				if(!cmpstr(jsonPath, ",") || !cmpstr(jsonPath, "]"))
 					jsonPath = ""
 				endif
-				jsonIDdummy = jsonID
-				jsonID = JSON_New()
-				JSON_AddTreeArray(jsonID, jsonPath)
-				if(JSON_GetType(jsonIDdummy, "") != JSON_NULL)
-					JSON_AddJSON(jsonID, jsonPath, jsonIDdummy)
-				endif
-				JSON_Release(jsonIDdummy)
+				jsonId = SF_FPPutInArrayAtPath(jsonID, jsonPath)
+				createdArrayLocal = 1
 				break
 			case SF_ACTION_ARRAY:
-				SF_Assert(!cmpstr(buffer[0], "["), "Encountered array ending without array start.", jsonId=jsonId)
-				jsonIDdummy = SF_FormulaParser(buffer[1, inf], indentLevel = indentLevel + 1)
-				jsonIDarray = JSON_New()
-				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
-					JSON_AddTreeArray(jsonIDarray, "")
+				// - buffer has collected chars between "[" and "]"(where "]" is not included in the buffer here)
+				// - Parse recursively the inner part of the brackets
+				// - return if the parsing of the inner part created implicitly in the JSON brackets or not
+				// If there was no array created, we have to add another outer array around the returned json
+				// An array needs to be also added if the returned json is a simple value as this action requires
+				// to return an array.
+				SF_Assert(!cmpstr(buffer[0], "["), "Can not find array start. (Is there a \",\" before \"[\" missing?)", jsonId=jsonId)
+				subId = SF_FormulaParser(buffer[1, inf], createdArray=wasArrayCreated, indentLevel = indentLevel + 1)
+				if(wasArrayCreated)
+					ASSERT(JSON_GetType(subId, "") == JSON_ARRAY, "Expected Array")
 				endif
-				JSON_AddJSON(jsonIDarray, "", jsonIDdummy)
-				JSON_Release(jsonIDdummy)
-				JSON_AddJSON(jsonID, jsonPath, jsonIDarray)
-				JSON_Release(jsonIDarray)
+
+				SF_FPAddArray(jsonId, jsonPath, subId, wasArrayCreated)
 				break
 			case SF_ACTION_CALCULATION:
 				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
@@ -456,6 +476,8 @@ static Function SF_FormulaParser(formula, [indentLevel])
 				endif
 				jsonPath += "/" + SF_EscapeJsonPath(token)
 			case SF_ACTION_ARRAYELEMENT:
+				// - "," was encountered, thus we have multiple elements, we need to set an array at current path
+				// The actual content is added in the case fall-through
 				JSON_AddTreeArray(jsonID, jsonPath)
 				lastCalculation = state
 			case SF_ACTION_SAMECALCULATION:
@@ -464,6 +486,7 @@ static Function SF_FormulaParser(formula, [indentLevel])
 					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))
 				endif
 		endswitch
+		lastAction = action
 		buffer = ""
 		token = ""
 	endfor
@@ -483,7 +506,46 @@ static Function SF_FormulaParser(formula, [indentLevel])
 		JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
 	endif
 
+	if(!ParamIsDefault(createdArray))
+		createdArray = createdArrayLocal
+	endif
+
 	return jsonID
+End
+
+/// @brief Create a new empty array object, add mainId into it at path and return created json, release subId
+static Function SF_FPPutInArrayAtPath(variable subId, string jsonPath)
+
+	variable newId
+
+	newId = JSON_New()
+	JSON_AddTreeArray(newId, jsonPath)
+	if(JSON_GetType(subId, "") != JSON_NULL)
+		JSON_AddJSON(newId, jsonPath, subId)
+	endif
+	JSON_Release(subId)
+
+	return newId
+End
+
+/// @brief Adds subId to mainId, if necessary puts subId into an array, release subId
+static Function SF_FPAddArray(variable mainId, string jsonPath, variable subId, variable arrayWasCreated)
+
+	variable tmpId
+
+	if(JSON_GetType(subId, "") != JSON_ARRAY || !arrayWasCreated)
+
+		tmpId = JSON_New()
+		JSON_AddTreeArray(tmpId, "")
+		JSON_AddJSON(tmpId, "", subId)
+
+		JSON_AddJSON(mainId, jsonPath, tmpId)
+		JSON_Release(tmpId)
+	else
+		JSON_AddJSON(mainId, jsonPath, subId)
+	endif
+
+	JSON_Release(subId)
 End
 
 /// @brief add escape characters to a path element
@@ -700,11 +762,12 @@ End
 /// @param formula formula to plot
 /// @param dfr     [optional, default current] working dataFolder
 /// @param dmMode  [optional, default DM_SUBWINDOWS] display mode that defines how multiple sweepformula graphs are arranged
-Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dmMode])
+static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dmMode])
 
 	String trace, axes, xFormula
 	Variable i, j, numTraces, splitTraces, splitY, splitX, numGraphs, numWins
 	Variable dim1Y, dim2Y, dim1X, dim2X, guidePos, winDisplayMode
+	variable xMxN, yMxN, xPoints, yPoints
 	String win, wList, winNameTemplate, exWList, wName, guideName1, guideName2, panelName
 	String traceName = "formula"
 	string guideNameTemplate = "HOR"
@@ -742,9 +805,11 @@ Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dm
 		if(!IsEmpty(xFormula))
 			WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(xFormula)), graph = graph)
 			SF_Assert(WaveExists(wv), "Error in x part of formula.")
+			xPoints = DimSize(wv, ROWS)
 			dim1X = max(1, DimSize(wv, COLS))
 			dim2X = max(1, DimSize(wv, LAYERS))
-			Redimension/N=(-1, dim1X * dim2X)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
+			xMxN = dim1X * dim2X
+			Redimension/N=(-1, xMxN)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
 
 			WAVE wvX = GetSweepFormulaX(dfr, j)
 			if(WaveType(wv, 1) == WaveType(wvX, 1))
@@ -757,9 +822,11 @@ Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dm
 
 		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formulaPairs[j][%FORMULA_Y])), graph = graph)
 		SF_Assert(WaveExists(wv), "Error in y part of formula.")
+		yPoints = DimSize(wv, ROWS)
 		dim1Y = max(1, DimSize(wv, COLS))
 		dim2Y = max(1, DimSize(wv, LAYERS))
-		Redimension/N=(-1, dim1Y * dim2Y)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
+		yMxN = dim1Y * dim2Y
+		Redimension/N=(-1, yMxN)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
 
 		WAVE wvY = GetSweepFormulaY(dfr, j)
 		if(WaveType(wv, 1) == WaveType(wvY, 1))
@@ -800,28 +867,28 @@ Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dm
 		endif
 
 		if(!WaveExists(wvX))
-			numTraces = dim1Y * dim2Y
+			numTraces = yMxN
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
 				AppendTograph/W=$win wvY[][i]/TN=$trace
 			endfor
-		elseif((dim1X * dim2X == 1) && (dim1Y * dim2Y == 1)) // 1D
-			if(DimSize(wvY, ROWS) == 1) // 0D vs 1D
-				numTraces = DimSize(wvX, ROWS)
+		elseif((xMxN == 1) && (yMxN == 1)) // 1D
+			if(yPoints == 1) // 0D vs 1D
+				numTraces = xPoints
 				for(i = 0; i < numTraces; i += 1)
 					trace = traceName + num2istr(i)
 					AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[i][]
 				endfor
-			elseif(DimSize(wvX, ROWS) == 1) // 1D vs 0D
-				numTraces = DimSize(wvY, ROWS)
+			elseif(xPoints == 1) // 1D vs 0D
+				numTraces = yPoints
 				for(i = 0; i < numTraces; i += 1)
 					trace = traceName + num2istr(i)
 					AppendTograph/W=$win wvY[i][]/TN=$trace vs wvX[][0]
 				endfor
 			else // 1D vs 1D
-				splitTraces = min(DimSize(wvY, ROWS), DimSize(wvX, ROWS))
-				numTraces = floor(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)) / splitTraces)
-				if(mod(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)), splitTraces) == 0)
+				splitTraces = min(yPoints, xPoints)
+				numTraces = floor(max(yPoints, xPoints) / splitTraces)
+				if(mod(max(yPoints, xPoints), splitTraces) == 0)
 					DebugPrint("Unmatched Data Alignment in ROWS.")
 				endif
 				for(i = 0; i < numTraces; i += 1)
@@ -831,30 +898,35 @@ Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, variable dm
 					AppendTograph/W=$win wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
 				endfor
 			endif
-		elseif(dim1Y * dim2Y == 1) // 1D vs 2D
-			numTraces = dim1X * dim2X
+		elseif(yMxN == 1) // 1D vs 2D
+			numTraces = xMxN
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
 				AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][i]
 			endfor
-		elseif(dim1X * dim2X == 1) // 2D vs 1D
-			numTraces = dim1Y * dim2Y
+		elseif(xMxN == 1) // 2D vs 1D or 0D
+			if(xPoints == 1) // 2D vs 0D -> extend X to 1D with constant value
+				Redimension/N=(yPoints) wvX
+				xPoints = yPoints
+				wvX = wvX[0]
+			endif
+			numTraces = yMxN
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
 				AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX
 			endfor
 		else // 2D vs 2D
-			numTraces = WaveExists(wvX) ? max(1, max(dim1Y * dim2Y, dim1X * dim2X)) : max(1, dim1Y * dim2Y)
-			if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
+			numTraces = WaveExists(wvX) ? max(1, max(yMxN, xMxN)) : max(1, yMxN)
+			if(yPoints != xPoints)
 				DebugPrint("Size mismatch in data rows for plotting waves.")
 			endif
-			if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
+			if(DimSize(wvY, COLS) != DimSize(wvX, COLS))
 				DebugPrint("Size mismatch in entity columns for plotting waves.")
 			endif
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
 				if(WaveExists(wvX))
-					AppendTograph/W=$win wvY[][min(dim1Y * dim2Y - 1, i)]/TN=$trace vs wvX[][min(dim1X * dim2X - 1, i)]
+					AppendTograph/W=$win wvY[][min(yMxN - 1, i)]/TN=$trace vs wvX[][min(xMxN - 1, i)]
 				else
 					AppendTograph/W=$win wvY[][i]/TN=$trace
 				endif

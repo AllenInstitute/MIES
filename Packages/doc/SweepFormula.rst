@@ -14,7 +14,7 @@ to return a wave for plotting.
 Preprocessing
 ^^^^^^^^^^^^^
 
-The entered code in the notebook is preprocessed. The preprocessor currently
+The entered code in the notebook is preprocessed. The preprocessor
 removes comments before testing the code for the ` vs ` operator after which
 it is passed to the formula parser.
 Comments start with a `#` character and end at the end of the current line.
@@ -33,8 +33,9 @@ operation. The member name is the operation and the value is an ordered array
 of the operands. To ensure that multiplication is executed before addition to
 get `1+2*3=7` and not `1+2*3=9` the states have a priority. Higher order states
 cause the operation order to switch. The old operation becomes part of the new
-operation. In this context, also the array or function argument separators `,`
-are treated as higher order operations.
+operation. In this context, when the first array or function argument separator `,`
+is parsed on a level, it is treated as higher order operations because it creates
+a new array.
 
 .. code-block:: json
 
@@ -50,7 +51,14 @@ are treated as higher order operations.
      ]
    }
 
-Arrays start with a square bracket `[` and end with a `]`. They are special as
+Arrays start with a square bracket `[` and end with a `]`. Subsequent array elements are
+separated by a `,`. In a series of arrays like `[1, 2], [3, 4], [5, 6]` the `,` after
+the `]` is enforced by the parser. Arrays can be part of arrays. Since at its core very
+formula input is an array the series of arrays `[1, 2], [3, 4], [5, 6]` is implicitly
+a 2-dimensional array: `[[1, 2], [3, 4], [5, 6]]`. The same applies for simple inputs like
+`1`, which is implicitly treated as 1-dimensional array: `[1]`. The input `[[1]]` instead
+is treated as 1x1 2-dimensional array.
+Arrays are special as
 also function arguments contain array elements. Therefore, an array can also
 simply be created by omitting the array brackets and only using element
 separators similar as in functions. The function `max(1,2)` is therefore
@@ -78,7 +86,7 @@ numeric value and not as string. The formula parser treats everything that is
 not parsable but matches alphanumeric characters (excluding operations) to a
 string as in `a_string`. White spaces are ignored throughout the
 formula which means that strings do *not* need to get enclosed by `"`. In fact,
-a `"` is an unallowed character.
+a `"` is an disallowed character.
 
 .. code-block:: json
 
@@ -129,7 +137,7 @@ follow each other, they are concatenated into the same array level as for
    }
 
 
-The formula can be optionally sent to a preparser that checks for the correct
+The formula is sent to a preparser that checks for the correct
 amount of brackets and converts multi-character operations to their multi-character
 UTF-8 representations like `...` to `…`. It should be noted that an
 operation consists of one UTF-8 character. Functions on the other hand can
@@ -204,7 +212,7 @@ They can be used for evaluating
 - scalars with 1d waves as in `1 + [1,2] = [2,3]`
 - 1d waves with 1d waves as in `[1,2]+[3,4] = [4,6]`
 - 1d waves with 2d waves as in `[1,2]+[[3,4],[5,6]] = [[1+3,2+5],[null+4,null+6]] = [[4,7],[null,null]]`
-- 2d waves with 2d waves as in `[[1,2],[3,4]]+[[5,6],[7,8]] = [[6,10],[8,12]]`
+- 2d waves with 2d waves as in `[[1,2],[3,4]]+[[5,6],[7,8]] = [[6,8],[10,12]]`
 
 After evaluation of the operation, the wave is reduced to have the same amount
 of dimensions as the input array. The size in each dimension is expanded to
@@ -226,9 +234,9 @@ a row based array.
 
 .. code-block:: bash
 
-   min([[1,2],[3,4]]) = [1,2]
+   min([[1, 2],[3, 4]]) = [1, 2]
 
-   max(min([[1,2],[3,4]])) = [2]
+   max(min([[1, 2],[3, 4]])) = [2]
 
    min(2) == [2]
 
@@ -246,9 +254,9 @@ if the wave is 1-dimensional.  They evaluate column-based
 
 .. code-block:: bash
 
-   avg(1,2,3) == [2]
+   avg(1, 2, 3) == [2]
 
-   avg([1,2,3],[4,5,6],[7,8,9]) == [2,5,8]
+   avg([1, 2, 3],[4, 5, 6],[7, 8, 9]) == [2, 5, 8]
 
 The function is defined only for one and two dimensions.
 
@@ -259,10 +267,26 @@ root mean square
 of a row if the wave is 1-dimensional. It acts column based if the wave is
 2-dimensional.
 
+.. code-block:: bash
+
+   rms(1, 2, 3) == [2.160246899469287]
+
+   rms([1, 2, 3],[2, 3, 4],[3, 4, 5]) == [2.160246899469287, 3.109126351029605, 4.08248290463863]
+
 variance and stdev
 """"""""""""""""""
 
 `variance` and `stdev` behave similar as above.
+
+.. code-block:: bash
+
+   variance(1, 2, 4) == [2.33333]
+
+   variance([1, 2, 4],[2, 3, 2],[4, 2, 1]) == [2.33333, 0.33333, 2.33333]
+
+   stdev(1, 2, 4) == [1.52753]
+
+   stdev([1, 2, 4],[2, 3, 2],[4, 2, 1]) == [1.52753, 0.57735, 1.52753]
 
 Igor Pro Wrappers
 ^^^^^^^^^^^^^^^^^
@@ -283,7 +307,15 @@ Does work on a per column-basis for 2D arrays. Does zeroing by default, pass
 derivative
 """"""""""
 
-Use `derivative` to differentiate along rows for 1 and 2 data.
+Use `derivative` to differentiate along rows for 1- and 2-dimensional data.
+Central differences are used. The same amount of points as the input is returned.
+
+.. code-block:: bash
+
+   derivative(1, 2, 4) == [1, 1.5, 2]
+
+   derivative([1, 2, 4],[2, 3, 2],[4, 2, 1]) == [1, 1, -2],[1.5, 0, -1.5],[2, -1, -1]
+
 
 integrate
 """""""""
@@ -293,24 +325,44 @@ guessing. The function returns the same amount of points as the input waves. It
 is the counterpart to derivative but due to the end point problem it can
 potentially introduce follow-up flaws.
 
+.. code-block:: bash
+
+   integrate(1, 2, 4) == [0, 1.5, 4.5]
+
+   integrate([1, 2, 4],[2, 3, 2],[4, 2, 1]) == [0, 0, 0],[1.5, 2.5, 3],[4.5, 5, 4.5]
+
 butterworth
 """""""""""
 
 The butterworth filter uses `FilterIIR` from Igor Pro and acts along rows. It
-strictly accepts 4 parameters as follows:
+strictly accepts four parameters as follows:
 
 .. code-block:: bash
 
    butterworth(data, lowPassCutoffInHz, highPassCutoffInHz, order)
 
 The first parameter `data` is intended to be used with the `data()` function but
-can be an arbitrary numeric array.
+can be an arbitrary numeric array. The parameters lowPassCutoffInHz and highPassCutoffInHz
+are divided by `WAVEBUILDER_MIN_SAMPINT_HZ`, that is 200.000 Hz. The maximum order is 100.
+
+.. code-block:: bash
+
+   butterworth([0,1,0,1,0,1,0,1], 90E3, 100E3, 2) == [0, 0.863871, 0.235196, 0.692709, 0.359758, 0.60206, 0.425727, 0.554052]
 
 xvalues and time
 """"""""""""""""
 
-The `xvalues` or `time` function returns a wave containing the scaling of the
+The function `xvalues` or `time` are synonyms for the same function.
+The function returns a wave containing the scaling of the
 input data. It fills the scaling of the rows for all dimensions.
+
+.. code-block:: bash
+
+   xvalues(10, 20, 30, 40, 50) == [0, 1, 2, 3, 4]
+
+   // The sweeps in this example were sampled at 250 kHz.
+   // For each data point in the sweep the time is returned.
+   time(data([0, 1000], channels(AD), sweeps())) == [0, 0.004, 0.008, 0.012, ...]
 
 setscale
 """"""""
@@ -326,6 +378,10 @@ present, the wave scaling will get cleared for the given dimension.
 `dimOffset` and `dimDelta` default to `0` and `1`, while the `unit` is empty by
 default.
 
+.. code-block:: bash
+
+   xvalues(setscale([0, 1, 2, 3, 4], x, 0, 0.2, firkin)) == [0, 0.2, 0.4, 0.6, 0.8]
+
 channels
 """"""""
 
@@ -334,10 +390,14 @@ channels
 The function accepts an arbitrary amount of typical channel names like `AD` and
 `DA` with a combination of numbers `AD1` or channel numbers alone like `2`.
 
-it returns a numeric array of `[[channelName, channelNumber]+]` that has the
-same dimension as the input string array.
+It returns a numeric array of `[[channelType+], [channelNumber+]]` that has the
+same row dimension as the input string array.
 
 It is intended to be used with the `data()` function.
+
+.. code-block:: bash
+
+   channels([AD0,AD1, DA0, DA1]) == [[0, 0, 1, 1], [0, 1, 0, 1]]
 
 sweeps
 """"""
@@ -345,12 +405,14 @@ sweeps
 `sweeps()`
 
 return an array which holds the sweep numbers of all displayed sweeps.
-`sweeps(all)` return an array of all available sweeps. The not-yet checked sweeps
-from overlay sweeps will be automatically enabled.
+`sweeps(all)` return an array of all available sweeps.
 
-.. note::
+Not implemented yet: The not-yet checked sweeps from overlay sweeps are automatically enabled.
 
-   Not yet fully implemented.
+.. code-block:: bash
+
+   // For this example two sweeps were acquired
+   sweeps() == [0, 1]
 
 cursors
 """""""
@@ -392,7 +454,7 @@ Although being listed near the end, the `data()` function is the core of the
    data(array range, array channels, array sweeps)
 
 It returns `[[sweeps][channel]]` for all `[sweeps]` in the array containing the
-sweep numbers. The output is grouped by channels.
+sweep numbers.
 
 The sweeps that you want to return need to be displayed in the graph. Do this
 in the OVS tab.
@@ -401,7 +463,19 @@ The range can be either supplied explicitly using `[100, 300]` which would
 select `100 ms` to `300 ms` or by using `cursors()`. In case `cursors()` is
 used but there are no cursors on the graph, the full x-range is used.
 
-The function does not return errors for unmatched entries.
+The function does not return errors for unmatched entries. If no entry was found
+data returns a single element wave with a `NaN` value.
+
+When executed by the Formula Executor the data wave has the layout:
+
+- ROWS: sweep data
+- COLS: sweep number with dimension label `sweepX` where X is an integer
+- LAYERS: channels with dimension label <channelnameX>, e.g. AD0.
+
+.. code-block:: bash
+
+   // Shows the first second of the AD channels of all sweeps
+   data([0, 1000], channels(AD), sweeps())
 
 labnotebook
 """""""""""
@@ -436,7 +510,7 @@ corresponding `[channel]` (`[[sweeps][channel]]`).
 
 The function searches for numeric entries in the labnotebook first and then for
 text entries. It returns `NaN` if no match was found. It adds dimension labels
-to the columns to indicate to indicate the channel names.
+to the columns to indicate the channel names.
 
 findlevel
 """""""""
@@ -447,7 +521,7 @@ and falling (`0`), other options are rising (`1`) or falling (`2`).
 
 .. code-block:: bash
 
-   findlevel([1, 2, 3], 1.5)
+   findlevel([1, 2, 3], 1.5) == [0.5]
 
 apfrequency
 """""""""""
@@ -489,10 +563,11 @@ the Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026).
    start…stop
 
 The function generally accepts 1 to 3 arguments. The operation is intended to be
-used with two arguments. Please note that you can use the preparser if you
-keyboard layout does not allow convenient typing of this character.  It is not
-too easy to implement multi-character token inputs at this stage. Use the range
-function if you do not like any of these approaches.
+used with two arguments.
+
+.. code-block:: bash
+
+   range(1, 5, 0.7) == [1, 1.7, 2.4, 3.1, 3.8, 4.5]
 
 epochs
 """"""
@@ -522,6 +597,11 @@ The tree levels of the epochs are returned in a 1D wave.
 If a sweep/channel combination does not have epoch information saved `NaN` is returned as tree level for this combination.
 If no matching epoch was found a zero sized wave is returned.
 
+.. code-block:: bash
+
+   // two sweeps acquired with two headstages set with PulseTrain_100Hz_DA_0 and PulseTrain_150Hz_DA_0 from _2017_09_01_192934-compressed.nwb
+   epochs(sweeps(), channels(AD), ST, range) == [[20, 1376.01], [20, 1342.67], [20, 1376.01], [20, 1342.67]]
+
 merge
 """""
 
@@ -530,7 +610,7 @@ removing all inner square brackets:
 
 .. code-block:: bash
 
-   merge([1,[2,3],4]) == [1,2,3,4]
+   merge([1, [2, 3], 4]) == [1, 2, 3, 4]
 
 log
 """
@@ -539,6 +619,11 @@ log
 passes the wave as usual to the next operation. It is useful for debugging
 inside large formulas.
 
+.. code-block:: bash
+
+   // outputs "1" to the history area
+   log(1, 10, 100) == [1, 10, 100]
+
 Both, `merge` and `log` are defined in `JSON logic <http://jsonlogic.com/>`_.
 
 log10
@@ -546,10 +631,30 @@ log10
 
 Apply the decadic (base 10) logarithm to its input.
 
+.. code-block:: bash
+
+   log10(1, 10, 100) == [0,1,2]
+
+
 Plotting
 ^^^^^^^^
 
-Two formulas can be plotted against each other by using the vs operator.
+When clicking the `Display` button in the SF tab the formula gets parsed, executed and
+the result plotted. Running the JSON object from the Formula Parser through the Formula Executor
+gives a resulting wave. The data from the rows is plotted as traces and the columns and layers
+are evaluated as an array of traces. Thus, a single plotted trace is created by the following input:
+`1, 2, 3, 4, 5`. Two traces with 5 data points each are created by this input:
+`[1, 3], [2, 4], [3, 5], [4, 6], [5, 7]`. Whereas the input `0...10, 20...30` creates
+ten traces with two data points each, starting with the first trace X = 0, Y = 0; X = 1, Y = 20.
+
+In typical use cases instead of explicitly writing static data in the formula the data
+operation is utilized that returns data in the correct array layout.
+
+Separate X-values
+"""""""""""""""""
+
+Sometimes it is useful to explicitly specify X values for a series of data values.
+Therefore, two formulas can be plotted against each other by using the vs operator.
 
 .. code-block:: bash
 
@@ -559,6 +664,38 @@ gives
 
 .. figure:: svg/sweepFormulaPlot.svg
    :align: center
+
+Note that in this example there are 10 Y-values and only 9 X-values returned by the
+respective formula part. The resulting graph shows 9 data points and thus does not show
+data points where either an X or Y value for the X, Y value pair is missing.
+
+The plotter supports the same X values for multiple traces:
+
+.. code-block:: bash
+
+   [1, 3], [2, 4], [3, 5], [4, 6], [5, 7] vs 1...6
+
+.. figure:: ScreenShots/sweepFormulaPlot2.png
+   :align: center
+
+This example plots two traces with five data points each against equidistant
+X coordinates 1, 2, 3, 4, 5. The first trace is colored blue for demonstration.
+This also works for a constant X value and multiple traces.
+The same way separate X value series for traces can be set:
+
+.. code-block:: bash
+
+   [1, 3], [2, 4], [3, 5], [4, 6], [5, 7] vs [1, 0], [2, 0.5], [3, 1], [4, 1.5], [5, 2]
+
+.. figure:: ScreenShots/sweepFormulaPlot3.png
+   :align: center
+
+The above example plots two traces with the first one Y series: 1, 2, 3, 4, 5; X series: 1, 2, 3, 4, 5
+and the second Y series: 3, 4, 5, 6, 7; X series: 0, 0.5, 1, 1.5, 2.
+The first trace is colored blue for demonstration.
+
+Multiple graphs
+"""""""""""""""
 
 Several graphs can generated with a single input by separating the formulas
 with `and`. The `and` must be on an own line.
@@ -571,4 +708,7 @@ with `and`. The `and` must be on an own line.
    and
    20...30
 
-The above code creates a panel with three separate graphs vertically arranged.
+The above code creates a panel with three separate graphs arranged vertically evenly spaced.
+
+.. figure:: ScreenShots/sweepFormulaPlot4.png
+   :align: center
