@@ -190,7 +190,7 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 				return NaN
 				break
 			case PGC_MODE_ASSERT_ON_DISABLED:
-				ASSERT(0, "The control " + control + " in the panel " + win + " is disabled and can not be touched.")
+				ASSERT(0, "The control " + control + " in the panel " + win + " is disabled. The control state cannot be changed when disabled.")
 				break
 			case PGC_MODE_FORCE_ON_DISABLED:
 				// just continue
