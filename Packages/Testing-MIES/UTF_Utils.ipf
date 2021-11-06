@@ -5330,3 +5330,25 @@ Function SICP_EnsureValidGUIs()
 	panel = DP_OpenDebugPanel()
 	CHECK_EQUAL_VAR(SearchForInvalidControlProcs(panel), 0)
 End
+
+Function RPI_WorksWithOldData()
+	string epochInfo
+
+	// 4e534e29 (Pulse Averaging: Pulse starting times are now read from the lab notebook, 2020-10-07)
+	// no level 3 info
+	epochInfo = EP_EpochWaveToStr(root:EpochsWave:EpochsWave_4e534e298, 0)
+	WAVE/Z pulseInfos = MIES_PA#PA_RetrievePulseInfosFromEpochs(epochInfo)
+	CHECK_WAVE(pulseInfos, NULL_WAVE)
+
+	// d150d896 (DC_AddEpochsFromStimSetNote: Add sub sub epoch information, 2021-02-02)
+	epochInfo = EP_EpochWaveToStr(root:EpochsWave:EpochsWave_d150d896e, 0)
+	WAVE/Z pulseInfos_d150d896e = MIES_PA#PA_RetrievePulseInfosFromEpochs(epochInfo)
+	CHECK_WAVE(pulseInfos_d150d896e, NUMERIC_WAVE)
+
+	// 22c735d7 (Merge pull request #1130 from AllenInstitute/feature/1130-fix-is-constant, 2021-11-03)
+	epochInfo = EP_EpochWaveToStr(root:EpochsWave:EpochsWave_22c735d7, 0)
+	WAVE/Z pulseInfos_22c735d7 = MIES_PA#PA_RetrievePulseInfosFromEpochs(epochInfo)
+	CHECK_WAVE(pulseInfos_22c735d7, NUMERIC_WAVE)
+
+	CHECK_EQUAL_WAVES(pulseInfos_d150d896e, pulseInfos_22c735d7, mode = WAVE_DATA)
+End

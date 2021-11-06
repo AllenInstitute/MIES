@@ -802,8 +802,28 @@ static Constant EPOCHS_WAVE_VERSION = 2
 /// Layers:
 /// - NUM_DA_TTL_CHANNELS
 ///
-/// Version 1:
-/// - Initial version
+/// ## Version History
+///
+/// ### Wave
+///
+/// - 1: Initial version
+/// - 2: Renamed column `Name` to `Tags`
+///
+/// ### Tags format
+///
+/// Initial version in a2172f03 (Added generations of epoch information wave,
+/// 2019-05-22), parsed in PA plot since 4e534e29 (Pulse Averaging: Pulse
+/// starting times are now read from the lab notebook, 2020-10-07).
+///
+/// In d150d896 (DC_AddEpochsFromStimSetNote: Add sub sub epoch information, 2021-02-02)
+/// tree level 3 info for pulse train pulses was added, which is read out since
+/// ba209bbd (PA plot: Gather more pulse infos, 2021-02-02).
+///
+/// And in 2371cfb0 (Epochs: Revise naming, 2021-09-22) we changed the naming
+/// of the tags and also adapted PA_RetrievePulseStartTimesFromEpochs.
+///
+/// For these three formats we have tests in RPI_WorksWithOldData(). When
+/// changing the tags format this test needs to be updated.
 Function/Wave GetEpochsWave(panelTitle)
 	string panelTitle
 
@@ -3336,7 +3356,7 @@ static Function AddDimLabelsToWP(wv)
 
 	SetDimLabel COLS,   -1, $("Epoch number"), wv
 
-	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
+	for(i = 0; i < WB_TOTAL_NUMBER_OF_EPOCHS; i += 1)
 		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
 	endfor
 
@@ -3610,7 +3630,7 @@ static Function AddDimLabelsToWPT(wv)
 	SetDimLabel ROWS, 28, $("Inter trial interval ldel")     , wv
 	SetDimLabel ROWS, 29, $("Analysis function params (encoded)"), wv
 
-	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
+	for(i = 0; i < WB_TOTAL_NUMBER_OF_EPOCHS; i += 1)
 		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
 	endfor
 
@@ -3737,9 +3757,9 @@ static Function AddDimLabelsToSegWvType(wv)
 
 	variable i
 
-	ASSERT(SEGMENT_TYPE_WAVE_LAST_IDX < DimSize(wv, ROWS), "Number of reserved rows for epochs is larger than wave the itself")
+	ASSERT(WB_TOTAL_NUMBER_OF_EPOCHS < DimSize(wv, ROWS), "Number of reserved rows for epochs is larger than wave the itself")
 
-	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
+	for(i = 0; i < WB_TOTAL_NUMBER_OF_EPOCHS; i += 1)
 		SetDimLabel ROWS, i, $("Type of Epoch " + num2str(i)), wv
 	endfor
 
@@ -3754,7 +3774,7 @@ static Function AddDimLabelsToSegWvType(wv)
 End
 
 /// @brief Returns the segment type wave used by the wave builder panel
-/// Remember to change #SEGMENT_TYPE_WAVE_LAST_IDX if changing the wave layout
+/// Remember to change #WB_TOTAL_NUMBER_OF_EPOCHS if changing the wave layout
 ///
 /// Rows:
 /// - 0 - 93: epoch types using one of @ref WaveBuilderEpochTypes

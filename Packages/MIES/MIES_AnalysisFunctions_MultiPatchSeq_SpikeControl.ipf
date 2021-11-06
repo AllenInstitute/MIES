@@ -693,14 +693,17 @@ End
 
 /// @brief Perform various actions on QC failures
 static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string params)
-	variable daScaleSpikePositionModifier, daScaleModifier, i, autoBiasV, autobiasModifier, prevSliderPos
-	string daScaleOperator, daScaleSpikePositionOperator
+	variable daScaleSpikePositionModifier, daScaleModifier, daScaleTooManySpikesModifier, i, autoBiasV, autobiasModifier, prevSliderPos
+	string daScaleOperator, daScaleSpikePositionOperator, daScaleTooManySpikesOperator
 	string key, msg
 
 	daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", params)
 	daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", params)
 	daScaleSpikePositionModifier = AFH_GetAnalysisParamNumerical("DAScaleSpikePositionModifier", params)
 	daScaleSpikePositionOperator = AFH_GetAnalysisParamTextual("DAScaleSpikePositionOperator", params)
+	daScaleTooManySpikesModifier = AFH_GetAnalysisParamNumerical("DaScaleTooManySpikesModifier", params)
+	daScaleTooManySpikesOperator = AFH_GetAnalysisParamTextual("DaScaleTooManySpikesOperator", params)
+
 	autobiasModifier = AFH_GetAnalysisParamNumerical("AutoBiasBaselineModifier", params)
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
@@ -754,7 +757,7 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 
 		strswitch(spikeCountStateLBN[i])
 			case SC_SPIKE_COUNT_STATE_STR_TOO_MANY:
-				SetDAScaleModOp(panelTitle, i, 2 * daScaleModifier, daScaleOperator, invert = 1)
+				SetDAScaleModOp(panelTitle, i, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_MIXED:
 				printf "The spike count on headstage %d in sweep %d is mixed (some pulses have too few, others too many)\n", i, sweepNo
@@ -785,9 +788,10 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 End
 
 Function/S SC_SpikeControl_GetParams()
-	return "[FailedPulseLevel:variable],[MaxTrials:variable],DAScaleOperator:string,DAScaleModifier:variable,"             \
-            + "DAScaleSpikePositionOperator:string,DAScaleSpikePositionModifier:variable,MinimumSpikePosition:variable," \
-            + "IdealNumberOfSpikesPerPulse:variable,AutoBiasBaselineModifier:variable"
+	return "[FailedPulseLevel:variable],[MaxTrials:variable],DAScaleOperator:string,DAScaleModifier:variable,"           \
+			+ "DAScaleSpikePositionOperator:string,DAScaleSpikePositionModifier:variable,MinimumSpikePosition:variable," \
+			+ "IdealNumberOfSpikesPerPulse:variable,AutoBiasBaselineModifier:variable,"                                  \
+			+ "DaScaleTooManySpikesOperator:string,DaScaleTooManySpikesModifier:variable"
 End
 
 Function/S SC_SpikeControl_GetHelp(name)
@@ -801,11 +805,11 @@ Function/S SC_SpikeControl_GetHelp(name)
 			return "[Optional, defaults to infinity] A sweep is rerun this many times on a failed headstage."
 			break
 		case "DAScaleOperator":
-			return "Set the math operator to use for combining the DAScale and the "            \
-			       + "modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
+			return "Set the math operator to use for combining the DAScale and the "                          \
+			       + "too few spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
 			break
 		case "DAScaleModifier":
-			return "Modifier value to the DA Scale of headstages with failed pulses"
+			return "Modifier value to the DA Scale of headstages for too few spikes"
 			break
 		case "DAScaleSpikePositionOperator":
 			return "Set the math operator to use for combining the DAScale and the "                           \
@@ -813,6 +817,13 @@ Function/S SC_SpikeControl_GetHelp(name)
 			break
 		case "DAScaleSpikePositionModifier":
 			return "Modifier value to the DA Scale of headstages with failing spike positions."
+			break
+		case "DaScaleTooManySpikesOperator":
+			return "Set the math operator to use for combining the DAScale and the "                           \
+				   + "too many spikes modifier. Valid strings are \"+\" (addition) and \"*\" (multiplication)."
+			break
+		case "DaScaleTooManySpikesModifier":
+			return "Modifier value to the DA Scale of headstages for too many spikes"
 			break
 		case "MinimumSpikePosition":
 			return "Minimum allowed spike positions in pulse active coordinate system (0 - 100)."
@@ -831,8 +842,8 @@ End
 
 Function/S SC_SpikeControl_CheckParam(string name, string params)
 
-	variable val
-	string str
+	variable val, modifier
+	string str, operator
 
 	strswitch(name)
 		case "FailedPulseLevel":
@@ -849,6 +860,7 @@ Function/S SC_SpikeControl_CheckParam(string name, string params)
 			break
 		case "DAScaleOperator":
 		case "DAScaleSpikePositionOperator":
+		case "DaScaleTooManySpikesOperator":
 			str = AFH_GetAnalysisParamTextual(name, params)
 			if(cmpstr(str, "+") && cmpstr(str, "*"))
 				return "Invalid string " + str
@@ -856,6 +868,7 @@ Function/S SC_SpikeControl_CheckParam(string name, string params)
 			break
 		case "DAScaleModifier":
 		case "DAScaleSpikePositionModifier":
+		case "DaScaleTooManySpikesModifier":
 			val = AFH_GetAnalysisParamNumerical(name, params)
 			if(!IsFinite(val))
 				return "Invalid value " + num2str(val)
@@ -878,6 +891,28 @@ Function/S SC_SpikeControl_CheckParam(string name, string params)
 			if(!IsFinite(val) || abs(val) >= 1000)
 				return "Invalid value " + num2str(val)
 			endif
+			break
+	endswitch
+
+	strswitch(name)
+		case "DaScaleTooManySpikesModifier":
+		case "DaScaleTooManySpikesOperator":
+			modifier = AFH_GetAnalysisParamNumerical("DaScaleTooManySpikesModifier", params)
+			operator = AFH_GetAnalysisParamTextual("DaScaleTooManySpikesOperator", params)
+
+			// check that their combination results in something which reduces the DAScale
+			if(!cmpstr(operator, "*"))
+				if(modifier >= 1.0)
+					return "The modifier needs to be strictly smaller than 1.0 for multiplication"
+				endif
+			elseif(!cmpstr(operator, "+"))
+				if(modifier >= 0.0)
+					return "The modifier needs to be strictly negative for addition"
+				endif
+			endif
+			break
+		default:
+			// do nothing
 			break
 	endswitch
 

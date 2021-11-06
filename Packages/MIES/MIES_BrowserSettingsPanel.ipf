@@ -1493,6 +1493,9 @@ Function BSP_AddTracesForEpochs(string win)
 		yaxis = traceInfos[j][%YAXIS]
 		xaxis = traceInfos[j][%XAXIS]
 
+		// use our own y axis
+		yaxis = ReplaceString("_DA", yaxis, "_EP_DA")
+
 		headstage   = str2num(traceInfos[j][%headstage])
 		sweepNumber = str2num(traceInfos[j][%sweepNumber])
 
@@ -1555,10 +1558,19 @@ Function BSP_AddTracesForEpochs(string win)
 		sprintf level_4_trace, "level%d_x_sweep%d_HS%d", 4, sweepNumber, headstage
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][0]/TN=$level_0_trace vs levels_x[][0]
+		TUD_SetUserData(win, level_0_trace, "YAXIS", yaxis)
+
 		AppendToGraph/W=$win/L=$yAxis levels_y[][1]/TN=$level_1_trace vs levels_x[][1]
+		TUD_SetUserData(win, level_1_trace, "YAXIS", yaxis)
+
 		AppendToGraph/W=$win/L=$yAxis levels_y[][2]/TN=$level_2_trace vs levels_x[][2]
+		TUD_SetUserData(win, level_2_trace, "YAXIS", yaxis)
+
 		AppendToGraph/W=$win/L=$yAxis levels_y[][3]/TN=$level_3_trace vs levels_x[][3]
+		TUD_SetUserData(win, level_3_trace, "YAXIS", yaxis)
+
 		AppendToGraph/W=$win/L=$yAxis levels_y[][4]/TN=$level_4_trace vs levels_x[][4]
+		TUD_SetUserData(win, level_4_trace, "YAXIS", yaxis)
 
 		[c] = GetTraceColor(0)
 		ModifyGraph/W=$win marker($level_0_trace)=10, mode($level_0_trace)=4, rgb($level_0_trace)=(c.red, c.green, c.blue)
@@ -1599,7 +1611,7 @@ Function BSP_EpochGraphToolTip(s)
 			first = str2num(epochs[idx][0]) * 1000
 			last  = str2num(epochs[idx][1]) * 1000
 
-			s.tooltip = num2str(first) + "<->" + num2str(last) + "\n" + epochs[idx][2]
+			s.tooltip = num2str(first) + "<->" + num2str(last) + "\n" + epochs[idx][2] + "TreeLevel=" + epochs[idx][3]
 		endif
 	endif
 

@@ -588,13 +588,22 @@ Function EP_WriteEpochInfoIntoSweepSettings(string panelTitle, WAVE sweepWave, W
 		channel = DACList[i]
 		headstage = AFH_GetHeadstageFromDAC(panelTitle, channel)
 
-		Duplicate/FREE/RMD=[][][channel] epochsWave, epochChannel
-		Redimension/N=(-1, -1, 0) epochChannel
-		entry = TextWaveToList(epochChannel, EPOCH_LIST_ROW_SEP, colSep = EPOCH_LIST_COL_SEP, stopOnEmpty = 1)
+		entry = EP_EpochWaveToStr(epochsWave, channel)
 		DC_DocumentChannelProperty(panelTitle, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=entry)
 	endfor
 
 	DC_DocumentChannelProperty(panelTitle, "Epochs Version", INDEP_HEADSTAGE, NaN, NaN, var=SWEEP_EPOCH_VERSION)
+End
+
+/// @brief Convert the epochs wave layer given by `channel` to a string suitable for storing the labnotebook
+///
+/// @param epochsWave wave with epoch information
+/// @param channel    DA channel
+threadsafe Function/S EP_EpochWaveToStr(WAVE epochsWave, variable channel)
+	Duplicate/FREE/RMD=[][][channel] epochsWave, epochChannel
+	Redimension/N=(-1, -1, 0) epochChannel
+
+	return TextWaveToList(epochChannel, EPOCH_LIST_ROW_SEP, colSep = EPOCH_LIST_COL_SEP, stopOnEmpty = 1)
 End
 
 /// @brief Converts a string containing epoch information in the format that is stored in the Labnotebook

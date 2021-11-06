@@ -4834,3 +4834,62 @@ Function ExportOnlyCommentsIntoNWB([string str])
 
 	H5_CloseFile(fileID)
 End
+
+Function CheckPulseInfoGathering_IGNORE(string device)
+	string ctrl
+
+	ctrl = GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+	PGC_SetAndActivateControl(device, ctrl, val=0)
+
+	ctrl = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	PGC_SetAndActivateControl(device, ctrl, str = "Y4_SRecovery_50H*")
+End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckPulseInfoGathering([string str])
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc = CheckPulseInfoGathering_IGNORE)
+End
+
+Function CheckPulseInfoGathering_REENTRY([string str])
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/T textualValues = GetLBTextualValues(str)
+	WAVE/T/Z epochs = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+
+	WAVE/Z pulseInfos = MIES_PA#PA_RetrievePulseInfosFromEpochs(epochs[0])
+	CHECK_WAVE(pulseInfos, NUMERIC_WAVE)
+
+	// no zeros
+	FindValue/V=0 pulseInfos
+	CHECK_EQUAL_VAR(V_Value, -1)
+
+	// no infinite values
+	Wavestats/Q/M=1 pulseInfos
+	CHECK_EQUAL_VAR(V_numInfs, 0)
+	CHECK_EQUAL_VAR(V_numNaNs, 0)
+
+	// check some values
+	Duplicate/FREE/RMD=[9][] pulseInfos, pulseInfo_row9
+	Redimension/N=(numpnts(pulseInfo_row9)) pulseInfo_row9
+	CHECK_EQUAL_WAVES(pulseInfo_row9, {20, 826.505, 828.005}, mode = WAVE_DATA, tol = 1e-4)
+
+	Duplicate/FREE/RMD=[25][] pulseInfos, pulseInfo_row25
+	Redimension/N=(numpnts(pulseInfo_row25)) pulseInfo_row25
+	CHECK_EQUAL_WAVES(pulseInfo_row25, {26.5433, 1373.55, 1375.05}, mode = WAVE_DATA, tol = 1e-4)
+
+	Duplicate/FREE/RMD=[55][] pulseInfos, pulseInfo_row55
+	Redimension/N=(numpnts(pulseInfo_row55)) pulseInfo_row55
+	CHECK_EQUAL_WAVES(pulseInfo_row55, {29.6455, 2505.13, 2506.63}, mode = WAVE_DATA, tol = 1e-4)
+
+	// check total number of pulses
+	CHECK_EQUAL_VAR(DimSize(pulseInfos, ROWS), 60)
+End

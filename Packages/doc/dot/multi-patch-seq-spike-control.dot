@@ -114,12 +114,11 @@ digraph G {
 	n75	[label="Add \"Auto bias baseline modifier\" analysis parameter\n value to autobias target voltage"];
 	n74 -> n75	[label=Yes];
 	n79	[label="Spike Count state?"];
-	n81	[label="Decrease DA Scale according to analysis parameters\n \"DAScaleModifier\" and \"DAScaleOperator\"\n by using the inverse (*) or the minus (+)\n \
-of the value depending on the operator"];
+	n81	[label="Decrease DA Scale according to analysis parameters\n \"DaScaleTooManySpikesModifier\" and \"DaScaleTooManySpikesOperator\""];
 	n79 -> n81	[label="Too Many"];
 	n82	[label="Warn user in history once\nduring this RA cycle"];
 	n79 -> n82	[label=Mixed];
-	n83	[label="Increase DA scale according to analysis parameters\n \"DAScaleModifier\" (multiply by two)\n and \"DAScaleOperator\""];
+	n83	[label="Increase DA scale according to analysis parameters\n \"DAScaleModifier\"\n and \"DAScaleOperator\""];
 	n79 -> n83	[label="Too Few"];
 	n82 -> n62;
 	n77	[label="Increase DA scale according to analysis parameters\n \"DAScaleSpikePositionModifier\"\n and \"DAScaleSpikePositionOperator\""];
