@@ -2090,18 +2090,6 @@ Function GUE_WorksWithOne()
 	CHECK_EQUAL_WAVES(result, wv)
 End
 
-Function GUE_RemovesSpecialValues()
-
-	Make/N=3 wv
-
-	wv[1] = Inf
-	wv[2] = NaN
-
-	WAVE/Z result = GetUniqueEntries(wv)
-	CHECK_WAVE(result, NUMERIC_WAVE, minorType=FLOAT_WAVE)
-	CHECK_EQUAL_WAVES(wv, {0})
-End
-
 Function GUE_BailsOutWith2D()
 
 	Make/N=(1, 2) wv
