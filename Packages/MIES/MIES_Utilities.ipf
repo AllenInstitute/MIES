@@ -4875,25 +4875,52 @@ Function [string data, string fName] LoadTextFile(string fileName[, string fileF
 	return [data, S_Path + S_fileName]
 End
 
-/// @brief Removes first found entry from a text wave
+/// @brief Removes found entry from a text wave
 ///
-/// @param w   text wave
-/// @param[in] entry element content to compare
+/// @param w       text wave
+/// @param entry   element content to compare
+/// @param options [optional, defaults to "whole wave element"] FindValue/TXOP options
+/// @param all     [optional, defaults to false] removes all entries
 ///
-/// @return 0 if entry was found, 1 otherwise
-Function RemoveTextWaveEntry1D(w, entry)
-	WAVE/T w
-	string entry
-
+/// @return 0 if at least one entry was found, 1 otherwise
+Function RemoveTextWaveEntry1D(WAVE/T w, string entry, [variable options, variable all])
 	ASSERT(IsTextWave(w), "Input wave must be a text wave")
 
-	FindValue/TXOP=4/TEXT=entry/RMD=[][0][0][0] w
-	if(V_Value >= 0)
-		DeletePoints V_Value, 1, w
-		return 0
+	variable start, foundOnce
+
+	if(ParamIsDefault(options))
+		options = 4
 	endif
 
-	return 1
+	if(ParamIsDefault(all))
+		all = 0
+	else
+		all = !!all
+	endif
+
+	for(;;)
+		if(start >= DimSize(w, ROWS))
+			break
+		endif
+
+		FindValue/S=(start)/TXOP=(options)/TEXT=entry/RMD=[][0][0][0] w
+
+		if(V_Value >= 0)
+			DeletePoints V_Value, 1, w
+
+			if(all)
+				start = V_Value
+				foundOnce = 1
+				continue
+			endif
+
+			return 0
+		endif
+
+		break
+	endfor
+
+	return foundOnce ? 0 : 1
 End
 
 /// @brief Checks if a string ends with a specific suffix

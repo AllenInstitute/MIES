@@ -637,7 +637,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 49
+Constant LABNOTEBOOK_VERSION = 50
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
@@ -1589,4 +1589,13 @@ StrConstant EPOCH_SHORTNAME_USER_PREFIX = "U_"
 /// @{
 Constant SF_DM_NORMAL = 1
 Constant SF_DM_SUBWINDOWS = 2
+/// @}
+
+/// @name Parameters for GetTTLLabnotebookEntry()
+/// @anchor LabnotebookTTLNames
+///
+/// @{
+StrConstant LABNOTEBOOK_TTL_STIMSETS       = "stim sets"
+StrConstant LABNOTEBOOK_TTL_SETSWEEPCOUNTS = "set sweep counts"
+StrConstant LABNOTEBOOK_TTL_SETCYCLECOUNTS = "set cycle counts"
 /// @}

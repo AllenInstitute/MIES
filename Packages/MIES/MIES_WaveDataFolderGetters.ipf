@@ -2274,8 +2274,8 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][0]  = STIM_WAVE_NAME_KEY
 	wv[0][1]  = "DA unit"
 	wv[0][2]  = "AD unit"
-	wv[0][3]  = "TTL rack zero stim sets"
-	wv[0][4]  = "TTL rack one stim sets"
+	wv[0][3]  = "TTL rack zero " + LABNOTEBOOK_TTL_STIMSETS
+	wv[0][4]  = "TTL rack one " + LABNOTEBOOK_TTL_STIMSETS
 	wv[0][5]  = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
 	wv[0][6]  = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
 	wv[0][7]  = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
@@ -2289,10 +2289,10 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][15] = "Electrode"
 	wv[0][16] = HIGH_PREC_SWEEP_START_KEY
 	wv[0][17] = STIMSET_WAVE_NOTE_KEY
-	wv[0][18] = "TTL rack zero set sweep counts"
-	wv[0][19] = "TTL rack one set sweep counts"
-	wv[0][20] = "TTL set sweep counts"
-	wv[0][21] = "TTL stim sets"
+	wv[0][18] = "TTL rack zero " + LABNOTEBOOK_TTL_SETSWEEPCOUNTS
+	wv[0][19] = "TTL rack one  " + LABNOTEBOOK_TTL_SETSWEEPCOUNTS
+	wv[0][20] = "TTL " + LABNOTEBOOK_TTL_SETSWEEPCOUNTS
+	wv[0][21] = "TTL " + LABNOTEBOOK_TTL_STIMSETS
 	wv[0][22] = "TTL channels"
 	wv[0][23] = "Follower Device"
 	wv[0][24] = "MIES version"
@@ -5806,7 +5806,7 @@ Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
 	DFREF dfr
 	variable skipUpdate
 
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	if(ParamIsDefault(skipUpdate))
 		skipUpdate = 0
@@ -5830,15 +5830,19 @@ Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
 		endif
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 3) wv
+		Redimension/N=(-1, -1, 7) wv
 	else
 		ASSERT(NUM_HEADSTAGES == NUM_DA_TTL_CHANNELS, "Unexpected channel count")
-		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 3) dfr:$newName/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 7) dfr:$newName/Wave=wv
 	endif
 
-	SetDimensionLabels(wv, "Stimset;TTLStimset;StimsetAndClampMode", LAYERS)
-	SetNumberInWaveNote(wv, "NeedsUpdate", 1)
+	SetDimensionLabels(wv, "Stimset;TTLStimset;DAStimsetAndClampMode;DAStimsetAndSetSweepCount;TTLStimsetAndSetSweepCount;DAStimsetAndSetCycleCount;TTLStimsetAndSetCycleCount", LAYERS)
+	SetNumberInWaveNote(wv, NOTE_NEEDS_UPDATE, 1)
 	SetWaveVersion(wv, versionOfNewWave)
+
+	if(!skipUpdate)
+		OVS_UpdateSweepSelectionChoices(win, wv)
+	endif
 
 	return wv
 End

@@ -4808,33 +4808,30 @@ End
 /// The indexing here is **hardware independent**.
 /// For ITC hardware the assertion "log(ttlBit)/log(2) == DAEphys TTL channel" holds.
 ///
-/// @param numericalValues Numerical labnotebook values
 /// @param textualValues   Text labnotebook values
+/// @param name            One of @ref LabnotebookTTLNames
 /// @param sweep           Sweep number
-threadsafe Function/WAVE GetTTLStimSets(numericalValues, textualValues, sweep)
-	WAVE numericalValues, textualValues
-	variable sweep
-
+threadsafe Function/WAVE GetTTLLabnotebookEntry(WAVE/T textualValues, string name, variable sweep)
 	variable index
 
-	index = GetIndexForHeadstageIndepData(numericalValues)
+	index = GetIndexForHeadstageIndepData(textualValues)
 
-	WAVE/T/Z ttlStimsets = GetLastSetting(textualValues, sweep, "TTL stim sets", DATA_ACQUISITION_MODE)
-	WAVE/T/Z ttlStimsetsRackZero = GetLastSetting(textualValues, sweep, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
-	WAVE/T/Z ttlStimsetsRackOne = GetLastSetting(textualValues, sweep, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
+	WAVE/T/Z ttlEntry = GetLastSetting(textualValues, sweep, "TTL " + name, DATA_ACQUISITION_MODE)
+	WAVE/T/Z ttlEntryRackZero = GetLastSetting(textualValues, sweep, "TTL rack zero " + name, DATA_ACQUISITION_MODE)
+	WAVE/T/Z ttlEntryRackOne = GetLastSetting(textualValues, sweep, "TTL rack one " + name, DATA_ACQUISITION_MODE)
 
-	if(WaveExists(ttlStimsets))
+	if(WaveExists(ttlEntry))
 		// NI hardware
-		return ListToTextWave(ttlStimsets[index], ";")
-	elseif(WaveExists(ttlStimsetsRackZero) || WaveExists(ttlStimsetsRackOne))
+		return ListToTextWave(ttlEntry[index], ";")
+	elseif(WaveExists(ttlEntryRackZero) || WaveExists(ttlEntryRackOne))
 		// ITC hardware
 		Make/FREE/T/N=(NUM_DA_TTL_CHANNELS) entries
-		if(WaveExists(ttlStimsetsRackZero))
-			entries += StringFromList(p, ttlStimsetsRackZero[index])
+		if(WaveExists(ttlEntryRackZero))
+			entries += StringFromList(p, ttlEntryRackZero[index])
 		endif
 
-		if(WaveExists(ttlStimsetsRackOne))
-			entries += StringFromList(p, ttlStimsetsRackOne[index])
+		if(WaveExists(ttlEntryRackOne))
+			entries += StringFromList(p, ttlEntryRackOne[index])
 		endif
 
 		return entries
@@ -6420,7 +6417,8 @@ End
 ///
 /// Allows to search only the specified column for a value
 /// and returns all matching row indizes in a wave. By defaults only looks into the first layer
-/// for backward compatibility reasons.
+/// for backward compatibility reasons. When multiple layers are searched `startLayer`/`endLayer` the
+/// result contains matches from all layers, and this also means the resulting wave is still 1D.
 ///
 /// Exactly one of `var`/`str`/`prop` has to be given except for
 /// `prop == PROP_MATCHES_VAR_BIT_MASK` and `prop == PROP_NOT_MATCHES_VAR_BIT_MASK`
