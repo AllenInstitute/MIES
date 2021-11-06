@@ -1166,7 +1166,7 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 	WAVE channels, sweeps
 	variable entrySourceType
 
-	variable i, j, k, channelType, channelNumber, numIndices
+	variable i, j, k, channelType, channelNumber, numIndices, sweepNo
 	string setting, msg
 
 	WAVE/Z settings
@@ -1191,7 +1191,13 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 
 	// search sweeps for active channels
 	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
-		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweeps[i])
+		sweepNo = sweeps[i]
+
+		if(!IsValidSweepNumber(sweepNo))
+			continue
+		endif
+
+		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
 
 		for(j = 0; j < DimSize(channels, ROWS); j += 1)
 			channelType = channels[j][0]
@@ -1216,7 +1222,7 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 				if(!IsNaN(channelNumber) && channelNumber != k)
 					continue
 				endif
-				[settings, index] = GetLastSettingChannel(numericalValues, $"", sweeps[i], setting, k, channelType, entrySourceType)
+				[settings, index] = GetLastSettingChannel(numericalValues, $"", sweepNo, setting, k, channelType, entrySourceType)
 				if(!WaveExists(settings))
 					continue
 				endif
@@ -1447,7 +1453,7 @@ End
 
 static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string graph)
 
-	variable numArgs, i, j, k, epType, sweepCnt, activeChannelCnt, outCnt, index, numEpochs
+	variable numArgs, i, j, k, epType, sweepCnt, activeChannelCnt, outCnt, index, numEpochs, sweepNo
 	string str, epName, epShortName
 
 	// epochs(array sweeps, array channels, string shortName, [string type])
@@ -1514,11 +1520,17 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 
 	outCnt = 0
 	for(i = 0; i < sweepCnt; i += 1)
-		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = epochSweeps[i])
-		WAVE textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = epochSweeps[i])
+		sweepNo = epochSweeps[i]
+
+		if(!IsValidSweepNumber(sweepNo))
+			continue
+		endif
+
+		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 
 		for(j = 0; j <  activeChannelCnt; j += 1)
-			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, epochSweeps[i], EPOCHS_ENTRY_KEY, activeChannels[j][%channelNumber], activeChannels[j][%channelType], DATA_ACQUISITION_MODE)
+			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, activeChannels[j][%channelNumber], activeChannels[j][%channelType], DATA_ACQUISITION_MODE)
 
 			if(WaveExists(settings))
 				WAVE/T settingsT = settings
@@ -1548,7 +1560,8 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 		if(outCnt == 1)
 			Redimension/N=2 out
 		elseif(outCnt == 0)
-			Redimension/N=0 out
+			Redimension/N=1 out
+			out = NaN
 		else
 			Redimension/N=(-1, outCnt) out
 		endif
@@ -1997,7 +2010,7 @@ End
 /// return lab notebook @p key for all @p sweeps that belong to the channels @p channels
 static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices, i, j, mode, JSONtype, index
+	variable numIndices, i, j, mode, JSONtype, index, sweepNo
 	string str
 
 	SF_ASSERT(!IsEmpty(graph), "Graph not specified.")
@@ -2044,8 +2057,14 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 	Make/D/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outD = NaN
 	Make/T/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outT
 	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
-		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweeps[i])
-		WAVE textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweeps[i])
+		sweepNo = sweeps[i]
+
+		if(!IsValidSweepNumber(sweepNo))
+			continue
+		endif
+
+		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 
 		for(j = 0; j <  DimSize(activeChannels, ROWS); j += 1)
 			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], str, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)

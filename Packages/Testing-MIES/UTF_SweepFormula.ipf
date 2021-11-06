@@ -1311,8 +1311,7 @@ static Function TestOperationEpochs()
 	// channel(s) with no epochs
 	str = "epochs(sweeps(), channels(AD), \"E0_PT_P48_B\")"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	Make/FREE/D/N=0 refdata
-	CHECK_EQUAL_WAVES(refData, data)
+	CHECK_EQUAL_WAVES({NaN}, data, mode = WAVE_DATA)
 
 	// name that does not match any
 	str = "epochs(sweeps(), channels(DA), \"does_not_exist\")"
@@ -1321,14 +1320,8 @@ static Function TestOperationEpochs()
 	CHECK_EQUAL_WAVES(refData, data)
 
 	// invalid sweep
-	str = "epochs(-1, channels(DA), \"E0_PT_P48_B\")"
-	try
-		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win); AbortOnRTE
-		FAIL()
-	catch
-		ClearRTError()
-		PASS()
-	endtry
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser("epochs(-1, channels(DA), \"E0_PT_P48_B\")"), graph = win)
+	CHECK_EQUAL_WAVES({NaN}, data, mode = WAVE_DATA)
 
 	// invalid type
 	str = "epochs(sweeps(), channels(DA), \"E0_PT_P48_B\", invalid_type)"
@@ -1385,4 +1378,29 @@ static Function TestSFPreprocessor()
 	refOutput = "text\rtext\rtext"
 	output = MIES_SF#SF_PreprocessInput(input)
 	CHECK_EQUAL_STR(output, refOutput)
+End
+
+static Function/WAVE SweepFormulaFunctionsWithSweepsArgument()
+
+	Make/FREE/T wv = {"data(cursors(A,B), channels(AD), sweeps())",           \
+	                  "epochs(sweeps(),channels(DA),\"I DONT EXIST\")",       \
+	                  "labnotebook(\"I DONT EXIST\", channels(DA), sweeps())"}
+
+	SetDimensionLabels(wv, "data;epochs;labnotebook", ROWS)
+
+	return wv
+End
+
+// UTF_TD_GENERATOR SweepFormulaFunctionsWithSweepsArgument
+static Function AvoidAssertingOutWithNoSweeps([string str])
+
+	string win = DATABROWSER_WINDOW_TITLE
+	string device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+
+	Display/N=$win as device
+	BSP_SetDataBrowser(win)
+	BSP_SetDevice(win, device)
+
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
 End

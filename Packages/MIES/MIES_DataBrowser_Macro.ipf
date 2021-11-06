@@ -987,14 +987,14 @@ Window DataBrowser() : Graph
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo)=A"!!,E<!!#Co5QF,1!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	TabControl SF_InfoTab,pos={7.00,90.00},size={377.00,442.00},disable=3,proc=ACL_DisplayTab
+	TabControl SF_InfoTab,pos={8.00,90.00},size={378.00,450.00},disable=3,proc=ACL_DisplayTab
 	TabControl SF_InfoTab,help={"Choose between sweep formula input, JSON representation and the help notebook"}
 	TabControl SF_InfoTab,userdata(finalhook)="SF_TabProc_Formula"
 	TabControl SF_InfoTab,userdata(currenttab)="0",userdata(tabnum)="5"
 	TabControl SF_InfoTab,userdata(tabcontrol)="Settings"
-	TabControl SF_InfoTab,userdata(ResizeControlsInfo)=A"!!,@C!!#?m!!#C!J,hsmz!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
+	TabControl SF_InfoTab,userdata(ResizeControlsInfo)=A"!!,@c!!#?m!!#C\"!!#CFz!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	TabControl SF_InfoTab,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	TabControl SF_InfoTab,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	TabControl SF_InfoTab,userdata(ResizeControlsInfo)+=A"zzz!!#N3Bk1ct<C^(Vzzzzzzzzzzzzz!!!"
 	TabControl SF_InfoTab,userdata(Config_DontRestore)="1"
 	TabControl SF_InfoTab,userdata(Config_DontSave)="1",tabLabel(0)="Formula"
 	TabControl SF_InfoTab,tabLabel(1)="JSON",tabLabel(2)="Help",value=0
@@ -1252,7 +1252,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	RenameWindow #,sweepFormula_json
 	SetActiveSubwindow ##
-	NewNotebook /F=0 /N=sweepFormula_formula /W=(12,71,378,529)/FG=(UGVL,UGVT,UGVR,$"") /HOST=# /V=0
+	NewNotebook /F=0 /N=sweepFormula_formula /W=(12,71,378,529)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
 	Notebook kwTopWin, defaultTab=20, autoSave= 1, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z*!1@=S>)+F`2^BZWLb84b@(eDO%R/Lo%!.b8RgERN@q:!Q;Rb=g(\\Ea=4.iptUKJmo0`?;1F7@M*q"
@@ -1265,9 +1265,9 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	RenameWindow #,sweepFormula_formula
 	SetActiveSubwindow ##
-	NewNotebook /F=1 /N=sweepFormula_help /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=4
+	NewNotebook /F=1 /N=sweepFormula_help /W=(10,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=4
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1, showRuler=0, rulerUnits=2
-	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,245}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
+	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,251}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)= "2"
 	SetWindow kwTopWin,userdata(tabcontrol)= "SF_InfoTab"
