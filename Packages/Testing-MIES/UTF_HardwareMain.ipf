@@ -352,6 +352,80 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 End
 
+/// @brief Checks user epochs for consistency
+static Function CheckUserEpochsFromChunks(string dev)
+
+	variable i, j, sweepCnt, numEpochs, DAC
+
+	WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+
+	if(!WaveExists(sweeps))
+		PASS()
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(dev)
+	WAVE textualValues = GetLBTextualValues(dev)
+
+	sweepCnt = DimSize(sweeps, ROWS)
+
+	for(i = 0; i < sweepCnt; i += 1)
+
+		WAVE statusHS = GetLastSetting(numericalValues, sweeps[i], "Headstage Active", DATA_ACQUISITION_MODE)
+
+		for(j = 0; j <  NUM_HEADSTAGES; j += 1)
+
+			if(!statusHS[j])
+				continue
+			endif
+
+			DAC = AFH_GetDACFromHeadstage(dev, j)
+			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, EPOCH_USER_LEVEL, EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "[0-9]+")
+
+			if(!WaveExists(userChunkEpochs))
+				continue
+			endif
+
+			CheckUserEpochChunkUniqueness(userChunkEpochs)
+			CheckUserEpochChunkNoOverlap(userChunkEpochs)
+		endfor
+	endfor
+
+	PASS()
+End
+
+static Function CheckUserEpochChunkUniqueness(WAVE/T epochInfo)
+
+	variable numEpochs
+
+	numEpochs = DimSize(epochInfo, ROWS)
+	Make/FREE/D/N=(numEpochs) chunkNums, chunkRef
+
+	chunkNums = NumberByKey("Index", epochInfo[p][EPOCH_COL_TAGS], "=")
+	Sort chunkNums, chunkNums
+
+	chunkRef = p
+	CHECK_EQUAL_WAVES(chunkNums, chunkRef) // equal if ascending from 0 with step 1 and thus, unique at the same time
+End
+
+static Function CheckUserEpochChunkNoOverlap(WAVE/T epochInfo)
+
+	variable numEpochs, i, j
+	variable s1, e1, s2, e2, overlap
+
+	numEpochs = DimSize(epochInfo, ROWS)
+	for(i = 0; i < numEpochs - 1; i += 1)
+		s1 = str2num(epochInfo[i][EPOCH_COL_STARTTIME])
+		e1 = str2num(epochInfo[i][EPOCH_COL_ENDTIME])
+		for(j = i + 1; j < numEpochs; j += 1)
+			s2 = str2num(epochInfo[j][EPOCH_COL_STARTTIME])
+			e2 = str2num(epochInfo[j][EPOCH_COL_ENDTIME])
+			overlap = min(e1, e2) - max(s1, s2)
+			CHECK(overlap <= 0) // if overlap is positive the two intervalls intersect
+		endfor
+	endfor
+End
+
 /// @brief Checks epochs for consistency
 ///        - all epochs must have a short name
 ///        - no duplicate short names allowed
@@ -1027,6 +1101,8 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 
 	CheckAnaFuncVersion(device, type)
 	CheckDashboard(device, headstageQC)
+
+	CheckUserEpochsFromChunks(device)
 End
 
 Function AddLabnotebookEntries_IGNORE(s)
