@@ -254,7 +254,7 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 
 	for(i = 0; i < numBaselineChunks; i += 1)
 
-		ret = PSQ_EvaluateBaselineProperties(panelTitle, s.scaledDACWave, type, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+		ret = PSQ_EvaluateBaselineProperties(panelTitle, s, type, i, fifoInStimsetTime, totalOnsetDelay)
 
 		if(IsNaN(ret))
 			// NaN: not enough data for check
@@ -296,9 +296,8 @@ End
 /// @brief Evaluate one chunk of the baseline
 ///
 /// @param panelTitle        device
-/// @param scaledDACWave     the scaled DAC wave, usually just AnalysisFunction_V3::scaledDacWave
+/// @param s                 AnalysisFunction_V3 struct
 /// @param type              analysis function type, one of @ref PatchSeqAnalysisFunctionTypes
-/// @param sweepNo           sweep number
 /// @param chunk             chunk number, `chunk == 0` -> Pre pulse baseline chunk, `chunk >= 1` -> Post pulse baseline
 /// @param fifoInStimsetTime Fifo position in ms *relative* to the start of the stimset (therefore ignoring the totalOnsetDelay)
 /// @param totalOnsetDelay   total onset delay in ms
@@ -306,10 +305,7 @@ End
 /// @return
 /// pre pulse baseline: 0 if the chunk passes, one of the possible @ref AnalysisFuncReturnTypesConstants values otherwise
 /// post pulse baseline: 0 if the chunk passes, PSQ_BL_FAILED if it does not pass
-static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay)
-	string panelTitle
-	WAVE scaledDACWave
-	variable type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay
+static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT AnalysisFunction_V3 &s, variable type, variable chunk, variable fifoInStimsetTime, variable totalOnsetDelay)
 
 	variable , evalStartTime, evalRangeTime
 	variable i, ADC, ADcol, chunkStartTimeMax, chunkStartTime
@@ -318,23 +314,23 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	variable targetVPassedAll, baselineType, chunkLengthTime
 	string msg, adUnit, ctrl, key
 
-	struct PSQ_PulseSettings s
-	PSQ_GetPulseSettingsForType(type, s)
+	struct PSQ_PulseSettings ps
+	PSQ_GetPulseSettingsForType(type, ps)
 
 	if(chunk == 0) // pre pulse baseline
 		chunkStartTimeMax  = totalOnsetDelay
-		chunkLengthTime    = s.prePulseChunkLength
+		chunkLengthTime    = ps.prePulseChunkLength
 		baselineType       = PSQ_BL_PRE_PULSE
 	else // post pulse baseline
 		 if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
-			 WAVE durations = PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay)
+			 WAVE durations = PSQ_GetPulseDurations(panelTitle, type, s.sweepNo, totalOnsetDelay)
 		 else
-			 Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = s.pulseDuration
+			 Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = ps.pulseDuration
 		 endif
 
 		 // skip: onset delay, the pulse itself and one chunk of post pulse baseline
-		chunkStartTimeMax = (totalOnsetDelay + s.prePulseChunkLength + WaveMax(durations)) + chunk * s.postPulseChunkLength
-		chunkLengthTime   = s.postPulseChunkLength
+		chunkStartTimeMax = (totalOnsetDelay + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength
+		chunkLengthTime   = ps.postPulseChunkLength
 		baselineType      = PSQ_BL_POST_PULSE
 	endif
 
@@ -347,7 +343,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	WAVE textualValues   = GetLBTextualValues(panelTitle)
 
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk, query = 1)
-	chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = NaN)
+	chunkPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = NaN)
 
 	if(IsFinite(chunkPassed)) // already evaluated
 		return !chunkPassed
@@ -396,7 +392,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			chunkStartTime = totalOnsetDelay
 		else
 			ASSERT(durations[i] != 0, "Invalid calculated durations")
-			chunkStartTime = (totalOnsetDelay + s.prePulseChunkLength + durations[i]) + chunk * s.postPulseChunkLength
+			chunkStartTime = (totalOnsetDelay + ps.prePulseChunkLength + durations[i]) + chunk * ps.postPulseChunkLength
 		endif
 
 		ADC = AFH_GetADCFromHeadstage(panelTitle, i)
@@ -414,7 +410,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			evalRangeTime = 1.5
 
 			// check 1: RMS of the last 1.5ms of the baseline should be below 0.07mV
-			rmsShort[i]       = PSQ_Calculate(scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
+			rmsShort[i]       = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
 			rmsShortPassed[i] = rmsShort[i] < PSQ_RMS_SHORT_THRESHOLD
 
 			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], ToPassFail(rmsShortPassed[i])
@@ -435,7 +431,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			evalRangeTime = chunkLengthTime
 
 			// check 2: RMS of the last 500ms of the baseline should be below 0.50mV
-			rmsLong[i]       = PSQ_Calculate(scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
+			rmsLong[i]       = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
 			rmsLongPassed[i] = rmsLong[i] < PSQ_RMS_LONG_THRESHOLD
 
 			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], ToPassFail(rmsLongPassed[i])
@@ -456,7 +452,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			evalRangeTime = chunkLengthTime
 
 			// check 3: Average voltage within 1mV of auto bias target voltage
-			avgVoltage[i]    = PSQ_Calculate(scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
+			avgVoltage[i]    = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
 			targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
 
 			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
@@ -478,16 +474,16 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 		// mV -> V
 		avgVoltage[] *= 1000
 		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_TARGETV, chunk = chunk)
-		ED_AddEntryToLabnotebook(panelTitle, key, avgVoltage, unit = "Volt", overrideSweepNo = sweepNo)
+		ED_AddEntryToLabnotebook(panelTitle, key, avgVoltage, unit = "Volt", overrideSweepNo = s.sweepNo)
 	endif
 
 	// document results per headstage and chunk
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, rmsShortPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, rmsShortPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, rmsLongPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, rmsLongPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_TARGETV_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, targetVPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, targetVPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 	if(testMatrix[baselineType][PSQ_RMS_SHORT_TEST])
 		rmsShortPassedAll = WaveMin(rmsShortPassed) == 1
@@ -531,7 +527,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 	result[INDEP_HEADSTAGE] = chunkPassed
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 	if(PSQ_TestOverrideActive())
 		if(baselineType == PSQ_BL_PRE_PULSE)
