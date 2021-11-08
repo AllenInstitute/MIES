@@ -637,7 +637,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 51
+Constant LABNOTEBOOK_VERSION = 52
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
@@ -987,7 +987,9 @@ StrConstant PSQ_FMT_LBN_SPIKE_COUNT        = "%s spike count"
 StrConstant PSQ_FMT_LBN_FINAL_SCALE        = "%s final DAScale"
 StrConstant PSQ_FMT_LBN_INITIAL_SCALE      = "%s initial DAScale"
 StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS     = "%s Chk%d S-RMS QC"
+StrConstant PSQ_FMT_LBN_RMS_SHORT_THRESHOLD= "%s S-RMS Threshold"
 StrConstant PSQ_FMT_LBN_RMS_LONG_PASS      = "%s Chk%d L-RMS QC"
+StrConstant PSQ_FMT_LBN_RMS_LONG_THRESHOLD = "%s L-RMS Threshold"
 StrConstant PSQ_FMT_LBN_TARGETV            = "%s Chk%d T-V BL"
 StrConstant PSQ_FMT_LBN_TARGETV_PASS       = "%s Chk%d T-V BL QC"
 StrConstant PSQ_FMT_LBN_CHUNK_PASS         = "%s Chk%d BL QC"
