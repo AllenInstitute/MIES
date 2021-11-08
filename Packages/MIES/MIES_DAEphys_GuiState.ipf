@@ -193,7 +193,6 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 
 	// check if the GUI state wave is consistent
 	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForCaller())
-		ControlInfo/W=$panelTitle $ctrl
 
 		if(!IsFinite(index))
 			ControlInfo/W=$panelTitle $ctrl
@@ -209,7 +208,7 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 
 		refValue = GetDA_EphysGuiStateNum(panelTitle)[waveIndex][%$ctrl]
 
-		if(!CheckIfClose(V_Value, refValue) && !(V_Value == 0 && refValue == 0))
+		if(!CheckIfClose(V_Value, refValue) && !EqualValuesOrBothNaN(V_Value, refValue))
 			sprintf msg, "Numeric GUI state wave is inconsistent for %s: %g vs. %g\r", ctrl, V_Value, refValue
 			BUG(msg)
 		endif
@@ -540,14 +539,16 @@ static Function/S DAG_GetSpecificCtrlNum(panelTitle, list)
 	string list
 
 	string subtypeCtrlList = ""
-	variable i, numEntries
-	string controlName
+	variable i, numEntries, controlType
+	string controlName, recMacro
 
 	numEntries = itemsinlist(list)
 	for(i = 0; i < numEntries; i += 1)
 		controlName = StringFromList(i, list)
-		controlInfo/W=$panelTitle $controlName
-		switch(abs(V_flag))
+
+		[recMacro, controlType] = GetRecreationMacroAndType(panelTitle, controlName)
+
+		switch(controlType)
 			case CONTROL_TYPE_CHECKBOX:
 			case CONTROL_TYPE_POPUPMENU:
 			case CONTROL_TYPE_SLIDER: // fallthrough by design
@@ -555,7 +556,7 @@ static Function/S DAG_GetSpecificCtrlNum(panelTitle, list)
 				break
 			case CONTROL_TYPE_VALDISPLAY:
 			case CONTROL_TYPE_SETVARIABLE:  // fallthrough by design
-				if(!DoesControlHaveInternalString(panelTitle, controlName))
+				if(!DoesControlHaveInternalString(recMacro))
 					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				endif
 				break
@@ -574,20 +575,22 @@ static Function/S DAG_GetSpecificCtrlTxT(panelTitle, list)
 	string list
 
 	string subtypeCtrlList = ""
-	variable i, numEntries
-	string controlName
+	variable i, numEntries, controlType
+	string controlName, recMacro
 
 	numEntries = itemsinlist(list)
 	for(i = 0; i < numEntries; i += 1)
 		controlName = StringFromList(i, list)
-		controlInfo/W=$panelTitle $controlName
-		switch(abs(V_flag))
+
+		[recMacro, controlType] = GetRecreationMacroAndType(panelTitle, controlName)
+
+		switch(controlType)
 			case CONTROL_TYPE_POPUPMENU:
 				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				break
 			case CONTROL_TYPE_VALDISPLAY:
 			case CONTROL_TYPE_SETVARIABLE:  // fallthrough by design
-				if(DoesControlHaveInternalString(panelTitle, controlName))
+				if(DoesControlHaveInternalString(recMacro))
 					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				endif
 				break

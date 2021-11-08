@@ -129,14 +129,19 @@ Function PGC_SetAndActivateControlVar(win, control, var)
 End
 
 /// @brief Set the control's value and execute the control procedure
-/// of the given control (if it exists)
+/// of the given control (if it exists).
 ///
-/// @param win                 Window
-/// @param control             GUI control
-/// @param val                 [optionality depends on control type] Numeric value to set
-/// @param str                 [optionality depends on control type] String value to set
-/// @param switchTab           [optional, defaults to false] Switches tabs so that the control is shown
-/// @param ignoreDisabledState [optional, defaults to false] Allows to set disabled controls (DANGEROUS!)
+/// The function tries to mimick interactive operation as closely as possible.
+/// Therefore interacting with disabled controls results in an assertion. See `ignoreDisabledState`
+/// for a way to avoid that.
+///
+/// @param win       Window
+/// @param control   GUI control
+/// @param val       [optionality depends on control type] Numeric value to set
+/// @param str       [optionality depends on control type] String value to set
+/// @param switchTab [optional, defaults to false] Switches tabs so that the control is shown
+/// @param mode      [optional, defaults to #PGC_MODE_ASSERT_ON_DISABLED] One of @ref PGC_MODES.
+///                  Allows to fine tune the behaviour for disabled controls.
 ///
 /// PopupMenus:
 /// - Only one of `val` or `str` can be supplied
@@ -153,10 +158,10 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function PGC_SetAndActivateControl(string win, string control, [variable val, string str, variable switchTab, variable ignoreDisabledState])
+Function PGC_SetAndActivateControl(string win, string control, [variable val, string str, variable switchTab, variable mode])
 	string procedure, popupMenuList, popupMenuValue
 	variable paramType, controlType, variableType, inputWasModified, limitedVal
-	variable isCheckbox, mode, popupMenuType, index
+	variable isCheckbox, checkBoxMode, popupMenuType, index
 
 	if(ParamIsDefault(switchTab))
 		switchTab = 0
@@ -164,10 +169,10 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 		switchTab = !!switchTab
 	endif
 
-	if(ParamIsDefault(ignoreDisabledState))
-		ignoreDisabledState = 0
+	if(ParamIsDefault(mode))
+		mode = PGC_MODE_ASSERT_ON_DISABLED
 	else
-		ignoreDisabledState = !!ignoreDisabledState
+		ASSERT(mode == PGC_MODE_ASSERT_ON_DISABLED || mode == PGC_MODE_FORCE_ON_DISABLED || mode == PGC_MODE_SKIP_ON_DISABLED, "Invalid mode")
 	endif
 
 	// call only once
@@ -178,15 +183,30 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 	endif
 	controlType = abs(V_flag)
 
-	if((V_disable & DISABLE_CONTROL_BIT) && !ignoreDisabledState)
-		DEBUGPRINT("The control " + control + " in the panel " + win + " is disabled and will not be touched.")
-		return NaN
+	if(V_disable & DISABLE_CONTROL_BIT)
+		switch(mode)
+			case PGC_MODE_SKIP_ON_DISABLED:
+				// compatibility behaviour for old code
+				return NaN
+				break
+			case PGC_MODE_ASSERT_ON_DISABLED:
+				ASSERT(0, "The control " + control + " in the panel " + win + " is disabled. The control state cannot be changed when disabled.")
+				break
+			case PGC_MODE_FORCE_ON_DISABLED:
+				// just continue
+				break
+			default:
+				ASSERT(0, "Invalid mode")
+				break
+		endswitch
 	endif
 
 	procedure = PGC_GetProcAndCheckParamType(S_recreation)
 
 	switch(controlType)
 		case CONTROL_TYPE_BUTTON:
+			// we accept a var just that PGC_SetAndActivateControlVar keeps working
+			ASSERT(ParamIsDefault(str), "Does not accept str argument.")
 
 			if(isEmpty(procedure))
 				break
@@ -205,18 +225,26 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 
 			[popupMenuValue, popupMenuType] = ParsePopupMenuValue(S_recreation)
 
+			popupMenuList = GetPopupMenuList(popupMenuValue, popupMenuType)
+
 			if(!ParamIsDefault(val))
-				ASSERT(val >= 0,"Invalid index")
+				ASSERT(val >= 0 && val < ItemsInList(popupMenuList), "Invalid value for popupmenu: " + num2str(val))
 				PopupMenu $control win=$win, mode=(val + 1)
 			elseif(!ParamIsDefault(str))
 				switch(popupMenuType)
 					case POPUPMENULIST_TYPE_BUILTIN:
+						val = WhichListItem(str, popupMenuList)
+						ASSERT(val >= 0 && val < ItemsInList(popupMenuList), "Invalid value for popupmenu: " + num2str(val))
+
 						// popmatch does not work with these
-						popupMenuList = GetPopupMenuList(popupMenuValue, popupMenuType)
 						PopupMenu $control win=$win, mode=(WhichListItem(str, popupMenuList) + 1)
 						break
 					case POPUPMENULIST_TYPE_OTHER:
+						// the return value might be different due to wildcard expansion
 						str = SetPopupMenuString(win, control, str)
+
+						val = WhichListItem(str, popupMenuList)
+						ASSERT(val >= 0 && val < ItemsInList(popupMenuList), "Invalid value for popupmenu: " + num2str(val))
 						break
 					default:
 						ASSERT(0, "Invalid popup menu type")
@@ -232,28 +260,19 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			pa.win       = win
 			pa.eventCode = 2
 
-			if(isEmpty(popupMenuList))
-				popupMenuList = GetPopupMenuList(popupMenuValue, popupMenuType)
-			endif
-
-			if(!ParamIsDefault(val))
-				pa.popNum = val + 1
-				pa.popStr = StringFromList(val, popupMenuList)
-			elseif(!ParamIsDefault(str))
-				pa.popNum = WhichListItem(str, popupMenuList) + 1
-				pa.popStr = str
-			endif
+			pa.popNum = val + 1
+			pa.popStr = StringFromList(val, popupMenuList)
 
 			FUNCREF PGC_PopupActionControlProcedure PopupProc = $procedure
 			PopupProc(pa)
 			break
 		case CONTROL_TYPE_CHECKBOX:
-			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
+			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
 
 			val = !!val
 
-			mode = str2numSafe(GetValueFromRecMacro(REC_MACRO_MODE, S_recreation))
-			isCheckBox = IsNan(mode) || mode == 1
+			checkBoxMode = str2numSafe(GetValueFromRecMacro(REC_MACRO_MODE, S_recreation))
+			isCheckBox = IsNan(checkBoxMode) || checkBoxMode == 1
 
 			 // emulate the real user experience and do nothing
 			if(isCheckBox && val == V_Value)
@@ -276,8 +295,10 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			CheckboxProc(cba)
 			break
 		case CONTROL_TYPE_TAB:
-			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
+			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
 			TabControl $control win=$win, value=val
+
+			// @todo add range check
 
 			if(isEmpty(procedure))
 				break
@@ -329,12 +350,14 @@ Function PGC_SetAndActivateControl(string win, string control, [variable val, st
 			SetVariableProc(sva)
 			break
 		case CONTROL_TYPE_VALDISPLAY:
-			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
+			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
 			SetValDisplay(win, control, var=val)
 			// Value displays don't have control procedures
 			break
 		case CONTROL_TYPE_SLIDER:
-			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
+			ASSERT(!ParamIsDefault(val) && ParamIsDefault(str), "Needs a variable argument")
+			ASSERT(GetLimitConstrainedSetVar(S_recreation, val) == val, "Value " + num2str(val) + " is out of range.")
+
 			Slider $control win=$win, value = val
 
 			if(isEmpty(procedure))

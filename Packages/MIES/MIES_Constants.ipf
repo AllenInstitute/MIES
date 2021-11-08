@@ -1599,3 +1599,11 @@ StrConstant LABNOTEBOOK_TTL_STIMSETS       = "stim sets"
 StrConstant LABNOTEBOOK_TTL_SETSWEEPCOUNTS = "set sweep counts"
 StrConstant LABNOTEBOOK_TTL_SETCYCLECOUNTS = "set cycle counts"
 /// @}
+
+/// @brief Mode flags for PGC_SetAndActivateControl
+/// @anchor PGC_MODES
+/// @{
+Constant PGC_MODE_ASSERT_ON_DISABLED = 0
+Constant PGC_MODE_FORCE_ON_DISABLED  = 1
+Constant PGC_MODE_SKIP_ON_DISABLED   = 2
+/// @}

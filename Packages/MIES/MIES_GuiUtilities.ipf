@@ -332,7 +332,7 @@ Function SetSetVariable(win,Control, newValue, [respectLimits])
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
 
 	if(respectLimits)
-		newValue = GetLimitConstrainedSetVar(win, control, newValue)
+		newValue = GetLimitConstrainedSetVar(S_recreation, newValue)
 	endif
 
 	if(newValue != v_value)
@@ -659,6 +659,7 @@ Function GetTabID(win, ctrl)
 
 	ControlInfo/W=$win $ctrl
 	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_TAB, "Control is not a tab")
 	return V_value
 End
 
@@ -1032,15 +1033,14 @@ Function SetGuiControlValue(win, control, value)
 	string value
 
 	variable controlType, variableType
+	string recMacro
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	controlType = abs(V_flag)
+	[recMacro, controlType] = GetRecreationMacroAndType(win, control)
 
 	if(controlType == CONTROL_TYPE_CHECKBOX)
 		SetCheckBoxState(win, control, str2num(value))
 	elseif(controlType == CONTROL_TYPE_SETVARIABLE)
-		variableType = GetInternalSetVariableType(S_recreation)
+		variableType = GetInternalSetVariableType(recMacro)
 		if(variableType == SET_VARIABLE_BUILTIN_STR)
 			SetSetVariableString(win, control, value)
 		elseif(variableType == SET_VARIABLE_BUILTIN_NUM)
@@ -1257,23 +1257,14 @@ Function GetInternalSetVariableType(recMacro)
 	return SET_VARIABLE_GLOBAL
 End
 
-/// @brief Extract the limits specification of the control and return it in `minVal`, `maxVal` and `incVal`
-///
-/// @return 0 on success, 1 if no specification could be found
-Function ExtractLimits(win, control, minVal, maxVal, incVal)
-	string win, control
-	variable &minVal, &maxVal, &incVal
-
+Function ExtractLimitsFromRecMacro(string recMacro, variable& minVal, variable& maxVal, variable& incVal)
 	string minStr, maxStr, incStr
 
 	minVal = NaN
 	maxVal = NaN
 	incVal = NaN
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "win or control does not exist")
-
-	SplitString/E="(?i).*limits={([^,]+),([^,]+),([^,]+)}.*" S_recreation, minStr, maxStr, incStr
+	SplitString/E="(?i).*limits={([^,]+),([^,]+),([^,]+)}.*" recMacro, minStr, maxStr, incStr
 
 	if(V_flag != 3)
 		return 1
@@ -1284,6 +1275,21 @@ Function ExtractLimits(win, control, minVal, maxVal, incVal)
 	incVal = str2num(incStr)
 
 	return 0
+End
+
+/// @brief Extract the limits specification of the control and return it in `minVal`, `maxVal` and `incVal`
+///
+/// @return 0 on success, 1 if no specification could be found
+///
+/// @sa ExtractLimitsFromRecMacro for a faster way if you already have the recreation macro
+Function ExtractLimits(string win, string control, variable& minVal, variable& maxVal, variable& incVal)
+	string minStr, maxStr, incStr
+
+	string recMacro
+	variable controlType
+	[recMacro, controlType] = GetRecreationMacroAndType(win, control)
+
+	return ExtractLimitsFromRecMacro(recMacro, minVal, maxVal, incVal)
 End
 
 /// @brief Check if the given value is inside the limits defined by the control
@@ -1304,16 +1310,14 @@ Function CheckIfValueIsInsideLimits(win, control, val)
 
 	return val >= minVal && val <= maxVal
 End
+
 /// @brief Returns a value that is constrained by the limits defined by the control
 ///
 /// @return val <= control max and val >= contorl min
-Function GetLimitConstrainedSetVar(win, control, val)
-	string win
-	string control
-	variable val
+Function GetLimitConstrainedSetVar(string recMacro, variable val)
 
 	variable minVal, maxVal, incVal
-	if(!ExtractLimits(win, control, minVal, maxVal, incVal))
+	if(!ExtractLimitsFromRecMacro(recMacro, minVal, maxVal, incVal))
 		val = limit(val, minVal, maxVal)
    	endif
 
@@ -1337,18 +1341,6 @@ Function GetFunctionParameterType(func, paramIndex)
 	sprintf param, "PARAM_%d_TYPE", paramIndex
 
 	return NumberByKey(param, funcInfo)
-End
-
-/// @brief Return the control procedure for the given control
-///
-/// @returns name of control procedure or an empty string
-Function/S GetControlProcedure(win, control)
-	string win, control
-
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "invalid or non existing control")
-
-	return GetValueFromRecMacro(REC_MACRO_PROCEDURE, S_recreation)
 End
 
 /// @brief Return an entry from the given recreation macro
@@ -1414,7 +1406,7 @@ Function SearchForInvalidControlProcs(win, [warnOnEmpty])
 	variable warnOnEmpty
 
 	string controlList, control, controlProc
-	string subTypeStr, helpEntry
+	string subTypeStr, helpEntry, recMacro
 	variable result, numEntries, i, subType, controlType
 	string funcList, subwindowList, subwindow
 
@@ -1448,20 +1440,19 @@ Function SearchForInvalidControlProcs(win, [warnOnEmpty])
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, controlList)
 
-		ControlInfo/W=$win $control
-		controlType = abs(V_flag)
+		[recMacro, controlType] = GetRecreationMacroAndType(win, control)
 
 		if(controlType == CONTROL_TYPE_VALDISPLAY || controlType == CONTROL_TYPE_GROUPBOX)
 			continue
 		endif
 
-		helpEntry = GetValueFromRecMacro("help", S_recreation)
+		helpEntry = GetValueFromRecMacro("help", recMacro)
 
 		if(IsEmpty(helpEntry))
 			printf "SearchForInvalidControlProcs: Panel \"%s\" has the control \"%s\" which does not have a help entry.\r", win, control
 		endif
 
-		controlProc = GetValueFromRecMacro(REC_MACRO_PROCEDURE, S_recreation)
+		controlProc = GetValueFromRecMacro(REC_MACRO_PROCEDURE, recMacro)
 
 		if(IsEmpty(controlProc))
 			if(warnOnEmpty)
@@ -1529,69 +1520,6 @@ Function GetNumericSubType(subType)
 	endswitch
 End
 
-///@brief Return the control type as string
-///
-/// @param win     window name
-/// @param control name of control
-/// @return type of control as string or empty string
-Function/S GetControlTypeAsString(win, control)
-	string win
-	string control
-
-	variable checkBoxMode
-
-	switch(GetControlType(win, control))
-		case 1:
-			return "Button"
-			break
-		case 2:
-			checkBoxMode = GetCheckBoxMode(win, control)
-			if(!checkBoxMode)
-				return "Check"
-			elseif(checkBoxMode == 1)
-				return "Radio"
-			elseif(checkBoxMode == 2)
-				return "Triangle"
-			else
-				ASSERT(0, "Impossible case")
-			endif
-			break
-		case 3:
-			return "PopUp"
-			break
-		case 4:
-			return "ValDisp"
-			break
-		case 5:
-			return "SetVar"
-			break
-		case 6:
-			return "Chart"
-			break
-		case 7:
-			return "Slider"
-			break
-		case 8:
-			return "TabCtrl"
-			break
-		case 9:
-			return "Group"
-			break
-		case 10:
-			return "Title"
-			break
-		case 11:
-			return "List"
-			break
-		case 12:
-			return "Custom"
-			break
-		default:
-			ASSERT(0, "Impossible case")
-			break
-	endswitch
-End
-
 /// @brief Return the numeric control type
 ///
 /// @return one of @ref GUIControlTypes
@@ -1604,13 +1532,8 @@ Function GetControlType(win, control)
 End
 
 /// @brief Determines if control stores numeric or text data
-Function DoesControlHaveInternalString(win, control)
-	string win, control
-
-	variable internalString
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "invalid or non existing control")
-	return strsearch(S_recreation, "_STR:", 0) != -1
+Function DoesControlHaveInternalString(string recMacro)
+	return strsearch(recMacro, "_STR:", 0) != -1
 End
 
 /// @brief Returns checkbox mode
@@ -1629,30 +1552,6 @@ Function GetCheckBoxMode(win, checkBoxName)
 	endif
 	ASSERT(IsFinite(mode), "Unexpected checkbox mode")
 	return mode
-End
-
-///@brief Returns formatted control name
-Function/S GetFormattedControlName(win, control)
-	string win, control
-
-	string savedCtrlName = control
-	string newPrefix = GetControlTypeAsString(Win, control)
-	control = trimstring(control)
-	variable stringLocation = strsearch(control,newPrefix,0,2)
-	if(stringLocation == 0)
-		control = replacestring(newPrefix, control, newPrefix) // returns case correct formatting
-	elseif(stringLocation > 0)
-		control = replacestring(newPrefix, control, "") // removes incorrectly placed ctrl type string
-		control = newPrefix + control
-		control = replacestring("__", control, "_") // remove double underscores
-	elseif(stringLocation == -1)
-		control = newPrefix + "_" + control // adds ctrl type string prefix to ctrl name with missing ctrl type string
-	endif
-
-	if(DoesControlHaveInternalString(win, savedCtrlName)) // adds txt suffix string to string setting ctrl
-		control = control + "_txt"
-	endif
-	return control
 End
 
 /// @brief Returns the selected row of the ListBox for some modes
@@ -2190,3 +2089,15 @@ Function ShowTraceInfoTags()
 End
 
 #endif
+
+/// @brief Return the recreation macro and the type of the given control
+Function [string recMacro, variable type] GetRecreationMacroAndType(string win, string control)
+
+	ControlInfo/W=$win $control
+	if(!V_flag)
+		ASSERT(WindowExists(win), "The panel " + win + " does not exist.")
+		ASSERT(0, "The control " + control + " in the panel " + win + " does not exist.")
+	endif
+
+	return [S_recreation, abs(V_flag)]
+End

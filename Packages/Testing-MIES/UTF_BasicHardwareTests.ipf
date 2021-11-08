@@ -142,7 +142,12 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 		PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
 		PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
 		PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
+
+		if(!s.MD)
+			PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
+		else
+			CHECK_EQUAL_VAR(s.BKG_DAQ, 1)
+		endif
 
 		PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
 
@@ -3261,6 +3266,9 @@ Function TPDuringDAQOnlyTPWithLockedIndexing_IGNORE(device)
 	string device
 
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = NONE)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH), str = "Test*")
+
 	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
 End
 
@@ -3269,11 +3277,8 @@ Function TPDuringDAQOnlyTPWithLockedIndexing([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_3")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1_RES_3")
 	AcquireData(s, str, preAcquireFunc=TPDuringDAQOnlyTPWithLockedIndexing_IGNORE)
-
-	PGC_SetAndActivateControl(str, "Check_DataAcq_Indexing", val = 1)
-	PGC_SetAndActivateControl(str, "Check_DataAcq1_IndexingLocked", val = 0)
 End
 
 Function TPDuringDAQOnlyTPWithLockedIndexing_REENTRY([str])
