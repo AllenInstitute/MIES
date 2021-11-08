@@ -968,6 +968,8 @@ Constant PSQ_CALC_METHOD_AVG = 0x1 // average
 Constant PSQ_CALC_METHOD_RMS = 0x2 // root-mean-square (rms)
 
 Constant PSQ_BL_FAILED = 1
+
+StrConstant PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX = "BLC"
 /// @}
 
 /// @name PatchSeq labnotebook constants

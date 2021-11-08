@@ -63,9 +63,24 @@
 /// FMT_LBN_ANA_FUNC_VERSION        Integer version of the analysis function                  Numerical                All                      No                     Yes
 /// =============================== ========================================================= ======================== ======================== =====================  =====================
 ///
+/// Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale.
+///
 /// \endrst
 ///
-/// Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale.
+/// The following table lists the user epochs which are added during data acquisition:
+///
+/// \rst
+///
+/// ============================ ========== ================== ======================================= =====
+/// Tags                         Short Name Analysis function  Description                             Level
+/// ============================ ========== ================== ======================================= =====
+/// Name=Baseline Chunk;Index=x  U_BLCx     DA, RB, RA, CR     Baseline QC evaluation chunks           -1
+/// Name=DA Suppression          U_RA_DA    RA                 DA was suppressed in this time interval -1
+/// Name=Unacquired DA data      U_RA_UD    RA                 Interval of unacquired data             -1
+/// ============================ ========== ================== ======================================= =====
+///
+/// See also :ref:`_epoch_information_time_specialities`
+/// \endrst
 
 static Constant PSQ_BL_PRE_PULSE   = 0x0
 static Constant PSQ_BL_POST_PULSE  = 0x1
@@ -335,12 +350,12 @@ End
 static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT AnalysisFunction_V3 &s, variable type, variable chunk, variable fifoInStimsetTime, variable totalOnsetDelay)
 
 	variable , evalStartTime, evalRangeTime
-	variable i, ADC, ADcol, chunkStartTimeMax, chunkStartTime
+	variable i, DAC, ADC, ADcol, chunkStartTimeMax, chunkStartTime
 	variable targetV, index
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
 	variable targetVPassedAll, baselineType, chunkLengthTime
 	variable rmsShortThreshold, rmsLongThreshold, chunkPassedTestOverride
-	string msg, adUnit, ctrl, key
+	string msg, adUnit, ctrl, key, epName, epShortName
 
 	struct PSQ_PulseSettings ps
 	PSQ_GetPulseSettingsForType(type, ps)
@@ -425,6 +440,12 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 		if(!statusHS[i])
 			continue
 		endif
+
+		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
+		ASSERT(IsFinite(DAC), "Could not determine DAC channel number for HS " + num2istr(i) + " for device " + panelTitle)
+		epName = "Name=Baseline Chunk;Index=" + num2istr(chunk)
+		epShortName = PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + num2istr(chunk)
+		EP_AddUserEpoch(panelTitle, XOP_CHANNEL_TYPE_DAC, DAC, chunkStartTimeMax / 1E3, (chunkStartTimeMax + chunkLengthTime) / 1E3, epName, shortname = epShortName)
 
 		if(chunk == 0) // pre pulse baseline
 			chunkStartTime = totalOnsetDelay
