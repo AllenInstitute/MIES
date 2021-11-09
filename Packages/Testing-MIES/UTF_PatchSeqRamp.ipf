@@ -10,10 +10,7 @@ Constant SPIKE_POSITION_MS = 10000
 Constant SPIKE_POSITION_TEST_DELAY_MS = 10500
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, device)
-	STRUCT DAQSettings& s
-	string device
-
+static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLABLE_PROTO preAcquireFunc])
 	string stimset, unlockedPanelTitle
 
 	// create an empty one so that the preDAQ analysis function can find it
@@ -76,6 +73,10 @@ static Function AcquireData(s, device)
 	endif
 
 	DoUpdate/W=$device
+
+	if(!ParamIsDefault(preAcquireFunc))
+		preAcquireFunc(device)
+	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 	DB_OpenDatabrowser()
