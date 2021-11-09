@@ -1255,3 +1255,70 @@ Function StopTPWhenWeHaveOne(STRUCT WMBackgroundStruct &s)
 
 	return 0
 End
+
+/// @brief chunkTimes in ms, if sweeps is given, the chunkTimes are only checked for this specific sweep
+Function CheckPSQChunkTimes(string dev, WAVE chunkTimes[, variable sweep])
+
+	variable size, numChunks, index, expectedChunkCnt, sweepCnt, DAC
+	variable i, j, k
+	variable startTime, endTime, startRef, endRef
+	string str
+
+	sweep = ParamIsDefault(sweep) ? NaN : sweep
+
+	size = DimSize(chunkTimes, ROWS)
+	REQUIRE(IsEven(size))
+	expectedChunkCnt = size >> 1
+
+	WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+
+	if(!WaveExists(sweeps))
+		FAIL()
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(dev)
+	WAVE textualValues = GetLBTextualValues(dev)
+
+	sweepCnt = DimSize(sweeps, ROWS)
+
+	for(i = 0; i < sweepCnt; i += 1)
+		if(!IsNaN(sweep) && sweep != sweeps[i])
+			continue
+		endif
+
+		WAVE statusHS = GetLastSetting(numericalValues, sweeps[i], "Headstage Active", DATA_ACQUISITION_MODE)
+
+		for(j = 0; j <  NUM_HEADSTAGES; j += 1)
+
+			if(!statusHS[j])
+				continue
+			endif
+
+			DAC = AFH_GetDACFromHeadstage(dev, j)
+			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, EPOCH_USER_LEVEL, EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "[0-9]+")
+			if(!WaveExists(userChunkEpochs))
+				continue
+			endif
+
+			numChunks = DimSize(userChunkEpochs, ROWS)
+
+			Make/FREE/T/N=(numChunks) epochShortNames = EP_GetShortName(userChunkEpochs[p][EPOCH_COL_TAGS])
+			for(k = 0; k < numChunks; k += 1)
+				str = EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + num2istr(k)
+				FindValue/TEXT=str/TXOP=4 epochShortNames
+				index = V_Value
+				CHECK_NEQ_VAR(index, -1)
+				startTime = str2num(userChunkEpochs[k][EPOCH_COL_STARTTIME])
+				endTime = str2num(userChunkEpochs[k][EPOCH_COL_ENDTIME])
+				startRef = chunkTimes[k << 1] / 1E3
+				endRef = chunkTimes[k << 1 + 1] / 1E3
+				CHECK_CLOSE_VAR(startTime, startRef, tol = 0.0005)
+				CHECK_CLOSE_VAR(endTime, endRef, tol = 0.0005)
+			endfor
+		endfor
+	endfor
+
+	// In the case we did not reached the inner checks of the upper loop
+	CHECK_EQUAL_VAR(numChunks, expectedChunkCnt)
+End
