@@ -4,10 +4,7 @@
 #pragma ModuleName=PatchSeqTestSquarePulse
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, device)
-	STRUCT DAQSettings& s
-	string device
-
+static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLABLE_PROTO preAcquireFunc])
 	string stimset, unlockedPanelTitle
 
 	unlockedPanelTitle = DAP_CreateDAEphysPanel()
@@ -67,6 +64,10 @@ static Function AcquireData(s, device)
 	endif
 
 	DoUpdate/W=$device
+
+	if(!ParamIsDefault(preAcquireFunc))
+		preAcquireFunc(device)
+	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 	DB_OpenDatabrowser()

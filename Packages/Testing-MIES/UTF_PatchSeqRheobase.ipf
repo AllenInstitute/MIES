@@ -6,11 +6,7 @@
 static Constant PSQ_RHEOBASE_TEST_DURATION = 2
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, finalDAScaleFake, device)
-	STRUCT DAQSettings& s
-	variable finalDAScaleFake
-	string device
-
+static Function AcquireData(STRUCT DAQSettings& s, variable finalDAScaleFake, string device, [FUNCREF CALLABLE_PROTO preAcquireFunc])
 	string stimset, unlockedPanelTitle
 
 	Make/O/N=(0) root:overrideResults/Wave=overrideResults
@@ -73,6 +69,10 @@ static Function AcquireData(s, finalDAScaleFake, device)
 	endif
 
 	DoUpdate/W=$device
+
+	if(!ParamIsDefault(preAcquireFunc))
+		preAcquireFunc(device)
+	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 	DB_OpenDatabrowser()
