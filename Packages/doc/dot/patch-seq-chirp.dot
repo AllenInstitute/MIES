@@ -1,1660 +1,196 @@
-digraph "G" {
-	graph [
-		fontsize = "14"
-		fontname = "Helvetica"
-		fontcolor = "black"
-		ratio = "0,01"
-		penwidth = "0.1"
-		compound = "true"
-		center = "true"
-		color = "white"
-	]
-	node [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	edge [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Start DAQ/RA" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Mid Sweep Event" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Post DAQ Event" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Post Set Event" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Post Sweep Event" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Prepare DAQ/Pre Set Event" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Enable \"TP during ITI\"" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Enable \"Autobias\"" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Enable \"Multidevice DAQ\"" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Valid Autobias voltage (finite and non-zero)" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Disable \"dDAQ\"/\"oodDAQ\"" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Enable \"Repeated Acquisition\"" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Enable \"Insert TP\"" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Check if no TTL channels are active" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Check if only one headstage is active" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Stimset is large enough" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Check if mode is IC" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"All checks passed" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Abort" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"At least three sweeps" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Get DeltaI/DeltaV from labnotebook" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Calculate Resistance from it\n store in labnotebook" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Calculate initial DAScale\n store in labnotebook" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Set DAScale" [
-		colorscheme = "blues4"
-		color = "2"
-		comment = "Wildcard node added automatic in EG."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Update Dashboard" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"BL QC passed?" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Grab next completely acquired chunk\n(500ms) of stimset baseline" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Baseline chunk type" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Chunk already evaluated?" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Last chunk?" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Mark Sweep as failed" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Check RMS short" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Check RMS long" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Check target voltage [1]" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Check target voltage [2]" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Add BL QC passed labnotebook entry" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Add BL QC failed labnotebook entry" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Mark chunk as passed/failed [1]" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Early sweep stop, repurpose ITI and add 10s to ITI" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Mark chunk as passed/failed [2]" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Early Sweep stop" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"\"Inside Bounds\" labnotebook\n entry present?" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Calculate number of cycles\n in chirp, store in labnotebook" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Calculate min/max of AD data during these cycles" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Store \"Inside Bounds\" as true in labnotebook" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Store \"Inside Bounds\" as false in labnotebook" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Abort Sweep" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Calculate scaling factor\n to be inside the bounds" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Adjust DAScale (rounded to full pA)\n according to scaling factor" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Has three passing sweeps in set\n with the same DAScale value? [1]" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Mark set as failed\n in labnotebook" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Mark set as passed\n in labnotebook" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Mark sweep as failed\n in labnotebook" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Mark sweep as passed\n in labnotebook" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Has three passing sweeps in set\n with the same DAScale value? [2]" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Skip to end of set" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Skip to end of DAQ" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"Set can still pass?" [
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-		colorscheme = "blues4"
-		color = "2"
-	]
-	"n63" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Is \"SpikeCheck\" enabled?\n (Given by optional analysis parameter\n \"SpikeCheck\" defaulting to 1)"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n64" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Store Spike check in labnotebook"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n65" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Spike QC labnotebook entry found?"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n66" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Has acquired data in chirp region?"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n67" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Increase DA scale according to analysis parameters\n \"DAScaleModifier\" and \"DAScaleOperator\""
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n68" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Has spike in AD data of acquired chirp region?\nUses \"FailedLevel\" analysis parameter for spike search."
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n69" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Add Spike QC failed labnotebook entry"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n71" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Has acquired past the end of chirp?"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n72" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Add Spike QC passed labnotebook entry"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n73" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "\"Spike Check\" labnotebook entry is true?"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n74" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Spike QC passed?"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"n75" [
-		colorscheme = "blues4"
-		color = "2"
-		label = "Abort sweep"
-		fontsize = "13"
-		fontname = "Helvetica"
-		fontcolor = "4"
-		fillcolor = "1"
-		shape = "ellipse"
-		style = "filled"
-	]
-	"Start DAQ/RA" -> "Mid Sweep Event" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Start DAQ/RA" -> "Post DAQ Event" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Start DAQ/RA" -> "Prepare DAQ/Pre Set Event" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Start DAQ/RA" -> "Post Set Event" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Start DAQ/RA" -> "Post Sweep Event" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Enable \"Autobias\"" -> "Enable \"TP during ITI\"" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Enable \"TP during ITI\"" -> "Enable \"Multidevice DAQ\"" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Enable \"Repeated Acquisition\"" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Enable \"Repeated Acquisition\"" -> "Enable \"Insert TP\"" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Valid Autobias voltage (finite and non-zero)" -> "Check if no TTL channels are active" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check if no TTL channels are active" -> "Stimset is large enough" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Stimset is large enough" -> "Check if mode is IC" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check if mode is IC" -> "Check if only one headstage is active" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check if only one headstage is active" -> "All checks passed" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"All checks passed" -> "Abort" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"All checks passed" -> "Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> "Abort" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Not found"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"At least three sweeps" -> "All checks passed" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Enable \"Insert TP\"" -> "At least three sweeps" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> "Get DeltaI/DeltaV from labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Found"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Calculate initial DAScale\n store in labnotebook" -> "Set DAScale" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Calculate Resistance from it\n store in labnotebook" -> "Calculate initial DAScale\n store in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Get DeltaI/DeltaV from labnotebook" -> "Calculate Resistance from it\n store in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard node added automatic in EG."
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Post DAQ Event" -> "Update Dashboard" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mid Sweep Event" -> "BL QC passed?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"BL QC passed?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Chunk already evaluated?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Have one"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Last chunk?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "None left"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Last chunk?" -> "Mark Sweep as failed" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Chunk already evaluated?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Chunk already evaluated?" -> "Baseline chunk type" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Baseline chunk type" -> "Check RMS short" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "pre pulse"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check RMS short" -> "Check RMS long" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Passed"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check RMS short" -> "Add BL QC failed labnotebook entry" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Failed"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check RMS long" -> "Add BL QC failed labnotebook entry" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Failed"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check RMS long" -> "Check target voltage [1]" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Passed"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check target voltage [1]" -> "Mark chunk as passed/failed [1]" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Passed"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Failed"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Baseline chunk type" -> "Check target voltage [2]" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "post pulse"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Check target voltage [2]" -> "Mark chunk as passed/failed [2]" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Failed"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark chunk as passed/failed [2]" -> "Add BL QC passed labnotebook entry" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Passed"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Add BL QC passed labnotebook entry" -> "Early Sweep stop" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Add BL QC failed labnotebook entry" -> "Early Sweep stop" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Post Set Event" -> "Update Dashboard" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mid Sweep Event" -> "\"Inside Bounds\" labnotebook\n entry present?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"\"Inside Bounds\" labnotebook\n entry present?" -> "Calculate number of cycles\n in chirp, store in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Calculate number of cycles\n in chirp, store in labnotebook" -> "Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)" -> "Calculate min/max of AD data during these cycles" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Calculate min/max of AD data during these cycles" -> "Determine bounds state and action\n from min/max values and table\n store in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as true in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "PASS"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "RERUN"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "INCREASE"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "DECREASE"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Abort Sweep" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "RERUN"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Calculate scaling factor\n to be inside the bounds" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "INCREASE"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Calculate scaling factor\n to be inside the bounds" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "DECREASE"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Calculate scaling factor\n to be inside the bounds" -> "Adjust DAScale (rounded to full pA)\n according to scaling factor" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Adjust DAScale (rounded to full pA)\n according to scaling factor" -> "Abort Sweep" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Post Set Event" -> "Has three passing sweeps in set\n with the same DAScale value? [1]" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as failed\n in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as passed\n in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> "Mark sweep as failed\n in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> "Mark sweep as passed\n in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark sweep as passed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mark sweep as failed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Skip to end of set" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Skip to end of DAQ" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Set can still pass?" -> "Skip to end of DAQ" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "2"
-	]
-	"Mid Sweep Event" -> "n63" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n63" -> "n64" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n63" -> "n65" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n65" -> "n66" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n66" -> "n68" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n68" -> "n69" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n69" -> "n67" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n68" -> "n71" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n71" -> "n72" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"Post Sweep Event" -> "n73" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n73" -> "n74" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n74" -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "Yes"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n74" -> "Mark sweep as failed\n in labnotebook" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n73" -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		label = "No"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
-	"n67" -> "n75" [
-		fontsize = "10"
-		fontname = "Helvetica"
-		fontcolor = "3"
-		style = "solid"
-		comment = "Wildcard edge"
-		colorscheme = "blues3"
-		color = "1"
-	]
+digraph G {
+	graph [center=true,
+		color=white,
+		compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1,
+		ratio="0,01"
+	];
+	node [color=2,
+		colorscheme=blues4,
+		comment="Wildcard node added automatic in EG.",
+		fillcolor=1,
+		fontcolor=4,
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color=2,
+		colorscheme=blues3,
+		comment="Wildcard node added automatic in EG.",
+		fontcolor=3,
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
+	"Start DAQ/RA" -> "Mid Sweep Event"	 [comment="Wildcard edge"];
+	"Start DAQ/RA" -> "Post DAQ Event"	 [comment="Wildcard edge"];
+	"Start DAQ/RA" -> "Post Set Event"	 [comment="Wildcard edge"];
+	"Start DAQ/RA" -> "Post Sweep Event"	 [comment="Wildcard edge"];
+	"Start DAQ/RA" -> "Prepare DAQ/Pre Set Event"	 [comment="Wildcard edge"];
+	"Mid Sweep Event" -> "BL QC passed?"	 [comment="Wildcard edge"];
+	"Mid Sweep Event" -> "\"Inside Bounds\" labnotebook\n entry present?"	 [comment="Wildcard edge"];
+	n63	 [label="Is \"SpikeCheck\" enabled?\n (Given by optional analysis parameter\n \"SpikeCheck\" defaulting to 1)"];
+	"Mid Sweep Event" -> n63	 [color=1,
+		comment="Wildcard edge"];
+	"Post DAQ Event" -> "Update Dashboard"	 [comment="Wildcard edge"];
+	"Post Set Event" -> "Update Dashboard"	 [comment="Wildcard edge"];
+	"Post Set Event" -> "Has three passing sweeps in set\n with the same DAScale value? [1]"	 [comment="Wildcard edge"];
+	n73	 [label="\"Spike Check\" labnotebook entry is true?"];
+	"Post Sweep Event" -> n73	 [color=1,
+		comment="Wildcard edge"];
+	"Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
+	"Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
+	"BL QC passed?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [comment="Wildcard edge",
+		label=No];
+	"\"Inside Bounds\" labnotebook\n entry present?" -> "Calculate number of cycles\n in chirp, store in labnotebook"	 [comment="Wildcard edge",
+		label=No];
+	n64	 [label="Store Spike check in labnotebook"];
+	n63 -> n64	 [color=1,
+		comment="Wildcard edge"];
+	n65	 [label="Spike QC labnotebook entry found?"];
+	n63 -> n65	 [color=1,
+		comment="Wildcard edge"];
+	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as failed\n in labnotebook"	 [comment="Wildcard edge",
+		label=No];
+	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as passed\n in labnotebook"	 [comment="Wildcard edge",
+		label=Yes];
+	n73 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	 [color=1,
+		comment="Wildcard edge",
+		label=No];
+	n74	 [label="Spike QC passed?"];
+	n73 -> n74	 [color=1,
+		comment="Wildcard edge",
+		label=Yes];
+	"Enable \"Autobias\"" -> "Enable \"TP during ITI\"";
+	"Valid Autobias voltage (finite and non-zero)" -> "Check if no TTL channels are active";
+	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Chunk already evaluated?"	 [comment="Wildcard edge",
+		label="Have one"];
+	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Last chunk?"	 [comment="Wildcard edge",
+		label="None left"];
+	"Calculate number of cycles\n in chirp, store in labnotebook" -> "Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)"	 [comment="Wildcard edge"];
+	n66	 [label="Has acquired data in chirp region?"];
+	n65 -> n66	 [color=1,
+		comment="Wildcard edge",
+		label=No];
+	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> "Mark sweep as failed\n in labnotebook"	 [comment="Wildcard edge",
+		label=No];
+	n76	 [label="Read \"SamplingFrequency\" analysis parameter\n (defaulting to 50kHz) if not present"];
+	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> n76	 [label=Yes];
+	n74 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	 [color=1,
+		comment="Wildcard edge",
+		label=Yes];
+	n74 -> "Mark sweep as failed\n in labnotebook"	 [color=1,
+		comment="Wildcard edge",
+		label=No];
+	"Enable \"TP during ITI\"" -> "Enable \"Multidevice DAQ\"";
+	"Check if no TTL channels are active" -> "Stimset is large enough";
+	"Chunk already evaluated?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [comment="Wildcard edge",
+		label=Yes];
+	"Chunk already evaluated?" -> "Baseline chunk type"	 [comment="Wildcard edge",
+		label=No];
+	"Last chunk?" -> "Mark Sweep as failed"	 [comment="Wildcard edge",
+		label=Yes];
+	"Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)" -> "Calculate min/max of AD data during these cycles"	 [comment="Wildcard edge",
+		label=Yes];
+	n68	 [label="Has spike in AD data of acquired chirp region?\nUses \"FailedLevel\" analysis parameter for spike search."];
+	n66 -> n68	 [color=1,
+		comment="Wildcard edge",
+		label=Yes];
+	"Mark sweep as failed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]"	 [comment="Wildcard edge"];
+	n85	 [label="Check if the acquired data\n has that sampling interval"];
+	n76 -> n85;
+	"Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+	"Stimset is large enough" -> "Check if mode is IC";
+	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Enable \"Repeated Acquisition\"";
+	"Enable \"Repeated Acquisition\"" -> "Enable \"Insert TP\"";
+	n89	 [label="Use \"SamplingMultiplier\" analysis parameter\n (defaulting to 4 if not present) and set it."];
+	"Enable \"Insert TP\"" -> n89;
+	"Check if mode is IC" -> "Check if only one headstage is active";
+	n89 -> "At least three sweeps";
+	"At least three sweeps" -> "All checks passed";
+	"All checks passed" -> Abort	 [label=No];
+	"All checks passed" -> "Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode"	 [label=Yes];
+	"Check if only one headstage is active" -> "All checks passed";
+	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> Abort	 [label="Not found"];
+	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> "Get DeltaI/DeltaV from labnotebook"	 [label=Found];
+	"Get DeltaI/DeltaV from labnotebook" -> "Calculate Resistance from it\n store in labnotebook";
+	"Calculate Resistance from it\n store in labnotebook" -> "Calculate initial DAScale\n store in labnotebook";
+	"Calculate initial DAScale\n store in labnotebook" -> "Set DAScale";
+	"Baseline chunk type" -> "Check RMS short"	 [comment="Wildcard edge",
+		label="pre pulse"];
+	"Baseline chunk type" -> "Check target voltage [2]"	 [comment="Wildcard edge",
+		label="post pulse"];
+	"Check RMS short" -> "Check RMS long"	 [comment="Wildcard edge",
+		label=Passed];
+	"Check RMS short" -> "Add BL QC failed labnotebook entry"	 [comment="Wildcard edge",
+		label=Failed];
+	"Check target voltage [2]" -> "Mark chunk as passed/failed [2]"	 [comment="Wildcard edge"];
+	"Check RMS long" -> "Add BL QC failed labnotebook entry"	 [comment="Wildcard edge",
+		label=Failed];
+	"Check RMS long" -> "Check target voltage [1]"	 [comment="Wildcard edge",
+		label=Passed];
+	"Add BL QC failed labnotebook entry" -> "Early Sweep stop"	 [comment="Wildcard edge"];
+	"Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [comment="Wildcard edge",
+		label=Failed];
+	"Mark chunk as passed/failed [2]" -> "Add BL QC passed labnotebook entry"	 [comment="Wildcard edge",
+		label=Passed];
+	"Check target voltage [1]" -> "Mark chunk as passed/failed [1]"	 [comment="Wildcard edge"];
+	"Add BL QC passed labnotebook entry" -> "Early Sweep stop"	 [comment="Wildcard edge"];
+	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [comment="Wildcard edge",
+		label=Passed];
+	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	 [comment="Wildcard edge",
+		label=Failed];
+	"Calculate min/max of AD data during these cycles" -> "Determine bounds state and action\n from min/max values and table\n store in labnotebook"	 [comment="Wildcard edge"];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as true in labnotebook"	 [comment="Wildcard edge",
+		label=PASS];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook"	 [comment="Wildcard edge",
+		label=RERUN];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook"	 [comment="Wildcard edge",
+		label=INCREASE];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook"	 [comment="Wildcard edge",
+		label=DECREASE];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Abort Sweep"	 [comment="Wildcard edge",
+		label=RERUN];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Calculate scaling factor\n to be inside the bounds"	 [comment="Wildcard edge",
+		label=INCREASE];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Calculate scaling factor\n to be inside the bounds"	 [comment="Wildcard edge",
+		label=DECREASE];
+	"Calculate scaling factor\n to be inside the bounds" -> "Adjust DAScale (rounded to full pA)\n according to scaling factor"	 [comment="Wildcard edge"];
+	"Adjust DAScale (rounded to full pA)\n according to scaling factor" -> "Abort Sweep"	 [comment="Wildcard edge"];
+	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Skip to end of set"	 [comment="Wildcard edge",
+		label=Yes];
+	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?"	 [comment="Wildcard edge",
+		label=No];
+	n85 -> "Mark sweep as failed\n in labnotebook"	 [label=No];
+	n85 -> "Mark sweep as passed\n in labnotebook"	 [label=Yes];
+	n85 -> "Skip to end of DAQ"	 [label=No];
+	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Skip to end of DAQ"	 [comment="Wildcard edge",
+		label=Yes];
+	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Set can still pass?"	 [label=No];
+	"Mark sweep as passed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]"	 [comment="Wildcard edge"];
+	"Set can still pass?" -> "Skip to end of DAQ"	 [comment="Wildcard edge",
+		label=No];
+	n69	 [label="Add Spike QC failed labnotebook entry"];
+	n68 -> n69	 [color=1,
+		comment="Wildcard edge",
+		label=Yes];
+	n71	 [label="Has acquired past the end of chirp?"];
+	n68 -> n71	 [color=1,
+		comment="Wildcard edge",
+		label=No];
+	n67	 [label="Increase DA scale according to analysis parameters\n \"DAScaleModifier\" and \"DAScaleOperator\""];
+	n69 -> n67	 [color=1,
+		comment="Wildcard edge"];
+	n72	 [label="Add Spike QC passed labnotebook entry"];
+	n71 -> n72	 [color=1,
+		comment="Wildcard edge",
+		label=Yes];
+	n75	 [label="Abort sweep"];
+	n67 -> n75	 [color=1,
+		comment="Wildcard edge"];
 }
