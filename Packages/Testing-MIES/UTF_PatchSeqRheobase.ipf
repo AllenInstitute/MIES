@@ -201,9 +201,6 @@ static Function PS_RB1_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
-// we don't test the BL QC code path here anymore
-// as that is already done in the patchseq square pulse tests
-
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB2([str])
 	string str
