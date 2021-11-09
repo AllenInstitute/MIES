@@ -808,7 +808,6 @@ digraph "G" {
 		shape = "ellipse"
 		style = "filled"
 	]
-	subgraph "cluster_preDAQ" {
 		graph [
 			fontsize = "14"
 			fontname = "Helvetica"
@@ -859,7 +858,6 @@ digraph "G" {
 		"Calculate Resistance from it\n store in labnotebook"
 		"Calculate initial DAScale\n store in labnotebook"
 		"Set DAScale"
-	}
 	"Start DAQ/RA" -> "Mid Sweep Event" [
 		fontsize = "10"
 		fontname = "Helvetica"
