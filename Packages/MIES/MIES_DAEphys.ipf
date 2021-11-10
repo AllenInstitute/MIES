@@ -296,7 +296,7 @@ Function DAP_EphysPanelStartUpSettings()
 
 	SetVariable SetVar_DataAcq_TPDuration  WIN = $panelTitle,value= _NUM:10
 	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $panelTitle,value= _NUM:10
-	SetVariable SetVar_DataAcq_TPBaselinePerc  WIN = $panelTitle,value= _NUM:25
+	SetVariable SetVar_DataAcq_TPBaselinePerc  WIN = $panelTitle,value= _NUM:35
 
 	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL)
 	PopupMenu Wave_TTL_00 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
