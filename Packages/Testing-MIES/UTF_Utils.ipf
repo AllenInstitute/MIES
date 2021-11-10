@@ -2838,6 +2838,52 @@ Function num2strHighPrecWorks5()
 End
 /// @}
 
+
+/// RoundNumber
+/// @{
+
+// failure cases are covered in the num2strHighPrec tests above
+
+static Function/WAVE RoundNumberPairs()
+
+	Make/FREE/WAVE/N=6 entries
+
+	Make/FREE/D wv0 = {1.23456, 0, 1}
+	entries[0] = wv0
+
+	// rounds correctly
+	Make/FREE/D wv1 = {1.23456, 4, 1.2346}
+	entries[1] = wv1
+
+	Make/FREE/D wv2 = {1.23456, 2, 1.23}
+	entries[2] = wv2
+
+	Make/FREE/D wv3 = {NaN, 0, NaN}
+	entries[3] = wv3
+
+	Make/FREE/D wv4 = {Inf, 0, Inf}
+	entries[4] = wv4
+
+	Make/FREE/D wv5 = {-Inf, 0, -Inf}
+	entries[5] = wv5
+
+	return entries
+End
+
+// UTF_TD_GENERATOR RoundNumberPairs
+Function RN_Works([WAVE wv])
+
+	variable number, precision, expected
+
+	number    = wv[0]
+	precision = wv[1]
+	expected  = wv[2]
+
+	CHECK_EQUAL_VAR(RoundNumber(number, precision), expected)
+End
+
+/// @}
+
 /// ListToTextWaveMD
 /// @{
 

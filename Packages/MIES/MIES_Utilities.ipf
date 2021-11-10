@@ -4534,6 +4534,12 @@ threadsafe Function/S num2strHighPrec(val, [precision])
 	return str
 End
 
+/// @brief Round the given number to the given number of decimal digits
+threadsafe Function RoundNumber(variable val, variable precision)
+
+	return str2num(num2strHighPrec(val, precision = precision))
+End
+
 /// @brief Return the per application setting of ASLR for the Igor Pro executable
 ///
 /// See https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-exploit-guard/enable-exploit-protection
