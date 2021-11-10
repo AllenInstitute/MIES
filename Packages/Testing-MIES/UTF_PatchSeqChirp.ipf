@@ -86,8 +86,9 @@ End
 
 static Function/WAVE GetLBNEntriesWave_IGNORE()
 
-	string list = "sweepPass;setPass;insideBounds;baselinePass;spikePass;"                  \
-                  + "boundsState;boundsAction;initialDAScale;DAScale;resistance;spikeCheck"
+	string list = "sweepPass;setPass;insideBounds;baselinePass;spikePass;"                    \
+			      + "boundsState;boundsAction;initialDAScale;DAScale;resistance;spikeCheck;" \
+			      + "samplingPass"
 
 	Make/FREE/WAVE/N=(ItemsInList(list)) wv
 	SetDimensionLabels(wv, list, ROWS)
@@ -112,6 +113,7 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 	wv[%DAScale] = GetResults_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 	wv[%resistance] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
 	wv[%spikeCheck] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_SPIKE_CHECK)
+	wv[%samplingPass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 
 	return wv
 End
@@ -131,6 +133,7 @@ static Function/WAVE GetResults_IGNORE(device, sweepNo, name)
 		case PSQ_FMT_LBN_SWEEP_PASS:
 		case PSQ_FMT_LBN_CR_INSIDE_BOUNDS:
 		case PSQ_FMT_LBN_CR_BOUNDS_ACTION:
+		case PSQ_FMT_LBN_SAMPLING_PASS:
 			key = CreateAnaFuncLBNKey(PSQ_CHIRP, name, query = 1)
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 		case PSQ_FMT_LBN_CR_BOUNDS_STATE:
@@ -196,6 +199,7 @@ static Function PS_CR1_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
@@ -250,6 +254,7 @@ static Function PS_CR2_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
@@ -303,6 +308,7 @@ static Function PS_CR3_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
@@ -381,6 +387,7 @@ static Function PS_CR4_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
@@ -458,6 +465,7 @@ static Function PS_CR5_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
@@ -535,6 +543,7 @@ static Function PS_CR6_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, NaN, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 1, 0, 1, 1, 1}, mode = WAVE_DATA)
@@ -609,6 +618,7 @@ static Function PS_CR7_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
@@ -683,6 +693,7 @@ static Function PS_CR8_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {0, 0, 1, 1, 1}, mode = WAVE_DATA)
@@ -763,6 +774,7 @@ static Function PS_CR9_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1, 0, 0, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, NaN, NaN, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 0, 0, 1, 1}, mode = WAVE_DATA)
@@ -839,6 +851,7 @@ static Function PS_CR10_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 0, 1, 0, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, NaN, 1, NaN, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 0, 1, 0, 1}, mode = WAVE_DATA)
@@ -898,6 +911,7 @@ static Function PS_CR11_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_WAVE(lbnEntries[%baselinePass], NULL_WAVE)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {0, 0, 0}, mode = WAVE_DATA)
 
 	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
@@ -956,6 +970,7 @@ static Function PS_CR12_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {1, 1, 1}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {1, 1, 1}, mode = WAVE_DATA)
@@ -1021,6 +1036,7 @@ static Function PS_CR13_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0, 1, 1, 0, 0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {NaN, 1, 1, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(lbnEntries[%spikePass], {0, 1, 1, 0, 0}, mode = WAVE_DATA)
 
 	CHECK_EQUAL_WAVES(lbnEntries[%insideBounds], {NaN, 1, 1, NaN, NaN}, mode = WAVE_DATA)
@@ -1030,6 +1046,62 @@ static Function PS_CR13_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30, 31, 31, 31, 32}, mode = WAVE_DATA, tol = 1e-14)
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+End
+
+static Function PS_CR14_IGNORE(string device)
+
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SamplingFrequency", var=10)
+End
+
+// Same as PS_CR1 but with failing sampling interval check
+//
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_CR14([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, preAcquireFunc = PS_CR14_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_CHIRP)
+	// all tests fail
+	// layer 0: BL
+	// layer 1: Maximum of AD (0 triggers PSQ_CR_RERUN)
+	// layer 2: Minimum of AD (0 triggers PSQ_CR_RERUN)
+	// layer 3: Spikes check during chirp (not done)
+	wv = 0
+End
+
+static Function PS_CR14_REENTRY([str])
+	string str
+
+	variable sweepNo, setPassed
+	string key
+
+	sweepNo = 0
+
+	WAVE/WAVE lbnEntries = GetLBNEntries_IGNORE(str, sweepNo)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%sweepPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%setPass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%baselinePass], {0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%samplingPass], {0}, mode = WAVE_DATA)
+	CHECK_WAVE(lbnEntries[%spikePass], NULL_WAVE)
+
+	CHECK_WAVE(lbnEntries[%insideBounds], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%boundsState], NULL_WAVE)
+	CHECK_WAVE(lbnEntries[%boundsAction], NULL_WAVE)
+
+	CHECK_EQUAL_WAVES(lbnEntries[%initialDAScale], {30e-12}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%DAScale], {30}, mode = WAVE_DATA, tol = 1e-14)
+	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {0}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
 End

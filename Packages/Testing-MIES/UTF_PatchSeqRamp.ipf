@@ -190,6 +190,18 @@ static Function/WAVE FindUserEpochs(WAVE/T userEpochs)
 	return foundIt
 End
 
+static Function/WAVE GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
+	variable sweepNo
+	string device
+
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SAMPLING_PASS, query = 1)
+	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RA1([str])
 	string str
@@ -221,6 +233,9 @@ static Function PS_RA1_REENTRY([str])
 
 	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(sweepQCWave, {0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_WAVE(spikeDetectionWave, NULL_WAVE)
@@ -292,6 +307,9 @@ static Function PS_RA2_REENTRY([str])
 	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(sweepQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0}, mode = WAVE_DATA)
 
@@ -348,6 +366,9 @@ static Function PS_RA3_REENTRY([str])
 
 	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(sweepQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 1, 1}, mode = WAVE_DATA)
@@ -408,6 +429,9 @@ static Function PS_RA4_REENTRY([str])
 	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(sweepQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 0, 0}, mode = WAVE_DATA)
 
@@ -466,6 +490,9 @@ static Function PS_RA5_REENTRY([str])
 
 	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(sweepQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 1}, mode = WAVE_DATA)
@@ -526,6 +553,9 @@ static Function PS_RA6_REENTRY([str])
 	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(sweepQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 1}, mode = WAVE_DATA)
 
@@ -548,6 +578,84 @@ static Function PS_RA6_REENTRY([str])
 	CHECK(durations[0] > 15000 - PSQ_RA_BL_EVAL_RANGE)
 	CHECK(durations[1] > 15000 - PSQ_RA_BL_EVAL_RANGE)
 	CHECK(durations[2] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[2] < SPIKE_POSITION_TEST_DELAY_MS)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+End
+
+static Function PS_RA7_IGNORE(string device)
+	AFH_AddAnalysisParameter("Ramp_DA_0", "SamplingFrequency", var=10)
+End
+
+// Same as PS_RA1 but with failing sampling interval check
+//
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RA7([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, preAcquireFunc = PS_RA7_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
+	// baseline QC passes and no spikes at all
+	wv = 0
+	wv[0,2][][0] = 1
+End
+
+static Function PS_RA7_REENTRY([str])
+	string str
+	variable sweepNo, numEntries, onsetDelay, DAScale
+
+	sweepNo = 0
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	WAVE/Z setPassed = GetSetQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(setPassed, {0}, mode = WAVE_DATA)
+
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(baselineQCWave, {1}, mode = WAVE_DATA)
+
+	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(sweepQCWave, {0}, mode = WAVE_DATA)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {0}, mode = WAVE_DATA)
+
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {0}, mode = WAVE_DATA)
+
+	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
+	CHECK_WAVE(spikePositionWave, NULL_WAVE)
+
+	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	CHECK_WAVE(userEpochs, TEXT_WAVE)
+
+	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
+	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(foundUserEpochs, {0})
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 1)
+
+	DAScale = GetLastSetting(numericalValues, sweeps[0], STIMSET_SCALE_FACTOR_KEY, UNKNOWN_MODE)[PSQ_TEST_HEADSTAGE]
+	CHECK_EQUAL_VAR(DAScale, PSQ_RA_DASCALE_DEFAULT)
+
+	// no early abort on BL QC failure
+	onsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
+				 GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+
+	Make/FREE/N=(numEntries) stimSetLengths = GetLastSetting(numericalValues, sweeps[p], "Stim set length", DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(str, sweeps[p]), ROWS)
+
+	sweepLengths[] -= onsetDelay / DimDelta(GetSweepWave(str, sweeps[p]), ROWS)
+
+	CHECK_EQUAL_WAVES(stimSetLengths, sweepLengths, mode = WAVE_DATA)
+
+	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(durations, {15000}, mode = WAVE_DATA, tol = 1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 End
