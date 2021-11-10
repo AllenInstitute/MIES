@@ -4719,11 +4719,12 @@ End
 /// In both cases the dimension label of the each column holds the number of found levels
 /// in each data colum. This will be always 1 for FINDLEVEL_MODE_SINGLE.
 threadsafe Function/WAVE FindLevelWrapper(WAVE data, variable level, variable edge, variable mode, [variable maxNumLevels])
-	variable numCols, numColsFixed, numRows, xDelta, maxLevels, numLevels
+	variable numCols, numColsFixed, numRows, numLayers, xDelta, maxLevels, numLevels
 	variable first, last, i, xLevel, found, columnOffset
 
 	numCols = DimSize(data, COLS)
 	numRows = DimSize(data, ROWS)
+	numLayers = DimSize(data, LAYERS)
 	numColsFixed = max(1, numCols)
 	xDelta = DimDelta(data, ROWS)
 
@@ -4740,7 +4741,7 @@ threadsafe Function/WAVE FindLevelWrapper(WAVE data, variable level, variable ed
 	ASSERT_TS(edge == FINDLEVEL_EDGE_INCREASING || edge == FINDLEVEL_EDGE_DECREASING || edge == FINDLEVEL_EDGE_BOTH, "Invalid edge type")
 	ASSERT_TS(mode == FINDLEVEL_MODE_SINGLE || mode == FINDLEVEL_MODE_MULTI, "Invalid mode type")
 
-	ASSERT_TS(DimSize(data, LAYERS) <= 1, "Unexpected input dimension")
+	ASSERT_TS(numLayers <= 1, "Unexpected input dimension")
 
 	Redimension/N=(numColsFixed * numRows)/E=1 data
 
@@ -4772,7 +4773,7 @@ threadsafe Function/WAVE FindLevelWrapper(WAVE data, variable level, variable ed
 	endif
 
 	// don't use numColsFixed here as we want to have the original shape
-	Redimension/N=(numRows, numCols)/E=1 data
+	Redimension/N=(numRows, numCols, numLayers)/E=1 data
 
 	switch(mode)
 		case FINDLEVEL_MODE_SINGLE:
