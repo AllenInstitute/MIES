@@ -3531,7 +3531,7 @@ Function FLW_RequiresFiniteLevel([var])
 
 	try
 		Make/FREE data
-		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, var, FINDLEVEL_MODE_SINGLE)
+		FindLevelWrapper(data, var, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_SINGLE)
 		FAIL()
 	catch
 		PASS()
@@ -3542,7 +3542,7 @@ Function FLW_Requires2DWave()
 
 	try
 		Make/FREE/N=(10, 20, 30) data
-		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, 0.1, FINDLEVEL_MODE_SINGLE)
+		FindLevelWrapper(data, 0.1, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_SINGLE)
 		FAIL()
 	catch
 		PASS()
@@ -3553,7 +3553,7 @@ Function FLW_RequiresBigEnoughWave()
 
 	try
 		Make/FREE/N=(1) data
-		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, 0.1, FINDLEVEL_MODE_SINGLE)
+		FindLevelWrapper(data, 0.1, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_SINGLE)
 		FAIL()
 	catch
 		PASS()
