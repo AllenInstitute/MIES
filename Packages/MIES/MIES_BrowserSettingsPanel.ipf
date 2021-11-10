@@ -1592,7 +1592,8 @@ End
 Function BSP_EpochGraphToolTip(s)
 	STRUCT WMTooltipHookStruct &s
 
-	variable idx, first, last
+	variable idx
+	string first, last
 	Variable hookResult = 0 // 0 tells Igor to use the standard tooltip
 
 	// traceName is set only for graphs and only if the mouse hovered near a trace
@@ -1605,10 +1606,10 @@ Function BSP_EpochGraphToolTip(s)
 			ASSERT(WaveExists(epochs), "Missing epoch info")
 			hookResult = 1 // 1 tells Igor to use our custom tooltip
 			idx = w[s.row][s.column][1]
-			first = str2num(epochs[idx][0]) * 1000
-			last  = str2num(epochs[idx][1]) * 1000
+			first = num2strHighPrec(str2num(epochs[idx][0]) * 1000, precision = EPOCHTIME_PRECISION)
+			last  = num2strHighPrec(str2num(epochs[idx][1]) * 1000, precision = EPOCHTIME_PRECISION)
 
-			s.tooltip = num2str(first) + "<->" + num2str(last) + "\n" + epochs[idx][2] + "TreeLevel=" + epochs[idx][3]
+			s.tooltip = first + "<->" + last + "\n" + epochs[idx][2] + "TreeLevel=" + epochs[idx][3]
 		endif
 	endif
 
