@@ -216,6 +216,7 @@ static Function PS_RB1_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -284,6 +285,7 @@ static Function PS_RB2_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -353,6 +355,7 @@ static Function PS_RB3_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -422,6 +425,7 @@ static Function PS_RB4_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 0)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -491,6 +495,7 @@ static Function PS_RB5_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -560,6 +565,7 @@ static Function PS_RB6_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 2)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -629,6 +635,14 @@ static Function PS_RB7_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523}, sweep = 3)
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523}, sweep = 4)
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523}, sweep = 5)
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523}, sweep = 6)
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523}, sweep = 7)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -708,6 +722,7 @@ static Function PS_RB8_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 3)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_LARGE stepsize
@@ -784,6 +799,7 @@ static Function PS_RB9_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), 2)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_SMALL stepsize
@@ -858,6 +874,7 @@ static Function PS_RB10_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520, 1023, 1523})
 End
 
 static Function PS_RB11_IGNORE(string device)
@@ -943,4 +960,5 @@ static Function PS_RB11_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	CheckPSQChunkTimes(str, {20, 520})
 End
