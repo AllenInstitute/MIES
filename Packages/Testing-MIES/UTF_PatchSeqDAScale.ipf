@@ -197,13 +197,13 @@ Function PS_DS_Sub1_REENTRY([str])
 	CHECK_WAVE(baselineRMSShortPassed, NUMERIC_WAVE)
 
 	WAVE/Z baselineRMSLongPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = 0)
-	CHECK_WAVE(baselineRMSLongPassed, NUMERIC_WAVE)
+	CHECK_WAVE(baselineRMSLongPassed, NULL_WAVE)
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
-	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
+	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
-	CHECK_WAVE(targetV, NUMERIC_WAVE)
+	CHECK_WAVE(targetV, NULL_WAVE)
 
 	// chunk 1 does not exist
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
@@ -801,13 +801,13 @@ Function PS_DS_Sub5_REENTRY([str])
 	CHECK_WAVE(baselineRMSShortPassed, NUMERIC_WAVE)
 
 	WAVE/Z baselineRMSLongPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = 0)
-	CHECK_WAVE(baselineRMSLongPassed, NUMERIC_WAVE)
+	CHECK_WAVE(baselineRMSLongPassed, NULL_WAVE)
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
-	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
+	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
-	CHECK_WAVE(targetV, NUMERIC_WAVE)
+	CHECK_WAVE(targetV, NULL_WAVE)
 
 	// chunk 1 does not exist due to early abort
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
@@ -1404,13 +1404,13 @@ Function PS_DS_Sub9_REENTRY([str])
 	CHECK_WAVE(baselineRMSShortPassed, NUMERIC_WAVE)
 
 	WAVE/Z baselineRMSLongPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = 0)
-	CHECK_WAVE(baselineRMSLongPassed, NUMERIC_WAVE)
+	CHECK_WAVE(baselineRMSLongPassed, NULL_WAVE)
 
 	WAVE/Z baselineTargetVPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV_PASS, chunk = 0)
-	CHECK_WAVE(baselineTargetVPassed, NUMERIC_WAVE)
+	CHECK_WAVE(baselineTargetVPassed, NULL_WAVE)
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
-	CHECK_WAVE(targetV, NUMERIC_WAVE)
+	CHECK_WAVE(targetV, NULL_WAVE)
 
 	// chunk 1 does not exist
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)

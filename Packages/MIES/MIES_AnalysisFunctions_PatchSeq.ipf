@@ -339,7 +339,7 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 	variable targetV, index
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
 	variable targetVPassedAll, baselineType, chunkLengthTime
-	variable rmsShortThreshold, rmsLongThreshold
+	variable rmsShortThreshold, rmsLongThreshold, chunkPassedTestOverride
 	string msg, adUnit, ctrl, key
 
 	struct PSQ_PulseSettings ps
@@ -410,6 +410,14 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 
 	targetV = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
 
+	// BEGIN TEST
+	if(PSQ_TestOverrideActive())
+		WAVE overrideResults = GetOverrideResults()
+		NVAR count = $GetCount(panelTitle)
+		chunkPassedTestOverride = overrideResults[chunk][count][0]
+	endif
+	// END TEST
+
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -443,8 +451,13 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 			evalRangeTime = 1.5
 
 			// check 1: RMS of the last 1.5ms of the baseline should be below 0.07mV
-			rmsShort[i]       = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
-			rmsShortPassed[i] = rmsShort[i] < rmsShortThreshold
+			rmsShort[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
+
+			if(PSQ_TestOverrideActive())
+				rmsShortPassed[i] = chunkPassedTestOverride
+			else
+				rmsShortPassed[i] = rmsShort[i] < rmsShortThreshold
+			endif
 
 			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], ToPassFail(rmsShortPassed[i])
 			DEBUGPRINT(msg)
@@ -464,8 +477,13 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 			evalRangeTime = chunkLengthTime
 
 			// check 2: RMS of the last 500ms of the baseline should be below 0.50mV
-			rmsLong[i]       = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
-			rmsLongPassed[i] = rmsLong[i] < rmsLongThreshold
+			rmsLong[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
+
+			if(PSQ_TestOverrideActive())
+				rmsLongPassed[i] = chunkPassedTestOverride
+			else
+				rmsLongPassed[i] = rmsLong[i] < rmsLongThreshold
+			endif
 
 			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], ToPassFail(rmsLongPassed[i])
 			DEBUGPRINT(msg)
@@ -485,8 +503,13 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 			evalRangeTime = chunkLengthTime
 
 			// check 3: Average voltage within 1mV of auto bias target voltage
-			avgVoltage[i]    = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
-			targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
+			avgVoltage[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
+
+			if(PSQ_TestOverrideActive())
+				targetVPassed[i] = chunkPassedTestOverride
+			else
+				targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
+			endif
 
 			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
 			DEBUGPRINT(msg)
@@ -544,15 +567,6 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 
 	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll
 
-	// BEGIN TEST
-
-	if(PSQ_TestOverrideActive())
-		WAVE overrideResults = GetOverrideResults()
-		NVAR count = $GetCount(panelTitle)
-		chunkPassed = overrideResults[chunk][count][0]
-	endif
-	// END TEST
-
 	sprintf msg, "Chunk %d %s", chunk, ToPassFail(chunkPassed)
 	DEBUGPRINT(msg)
 
@@ -561,24 +575,6 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 	result[INDEP_HEADSTAGE] = chunkPassed
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk)
 	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
-
-	if(PSQ_TestOverrideActive())
-		if(baselineType == PSQ_BL_PRE_PULSE)
-			if(!chunkPassed)
-				return ANALYSIS_FUNC_RET_EARLY_STOP
-			else
-				return 0
-			endif
-		elseif(baselineType == PSQ_BL_POST_PULSE)
-			if(!chunkPassed)
-				return PSQ_BL_FAILED
-			else
-				return 0
-			endif
-		else
-			ASSERT(0, "unknown baseline type")
-		endif
-	endif
 
 	if(baselineType == PSQ_BL_PRE_PULSE)
 		if(!rmsShortPassedAll)
