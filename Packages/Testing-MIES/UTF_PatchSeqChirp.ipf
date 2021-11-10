@@ -214,6 +214,7 @@ static Function PS_CR1_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {0}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520})
 End
 
 static Function PS_CR2_IGNORE(string device)
@@ -268,6 +269,7 @@ static Function PS_CR2_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
 static Function PS_CR3_IGNORE(string device)
@@ -322,6 +324,7 @@ static Function PS_CR3_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520})
 End
 
 static Function PS_CR4_IGNORE(string device)
@@ -401,6 +404,12 @@ static Function PS_CR4_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 3)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 4)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 5)
 End
 
 static Function PS_CR5_IGNORE(string device)
@@ -479,6 +488,12 @@ static Function PS_CR5_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 3)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 4)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 5)
 End
 
 static Function PS_CR6_IGNORE(string device)
@@ -557,6 +572,12 @@ static Function PS_CR6_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 3)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 4)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 5)
 End
 
 static Function PS_CR7_IGNORE(string device)
@@ -632,6 +653,11 @@ static Function PS_CR7_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 3)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 4)
 End
 
 static Function PS_CR8_IGNORE(string device)
@@ -707,6 +733,11 @@ static Function PS_CR8_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 3)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 4)
 End
 
 static Function PS_CR9_IGNORE(string device)
@@ -788,6 +819,12 @@ static Function PS_CR9_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 3)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 4)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 5)
 End
 
 static Function PS_CR10_IGNORE(string device)
@@ -865,6 +902,11 @@ static Function PS_CR10_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 3)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 4)
 End
 
 static Function PS_CR11_IGNORE(string device)
@@ -926,6 +968,7 @@ static Function PS_CR11_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {1}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520})
 End
 
 static Function PS_CR12_IGNORE(string device)
@@ -984,6 +1027,7 @@ static Function PS_CR12_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
 static Function PS_CR13_IGNORE(string device)
@@ -1050,6 +1094,11 @@ static Function PS_CR13_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%resistance], {1e9}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 3)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 4)
 End
 
 static Function PS_CR14_IGNORE(string device)
@@ -1106,4 +1155,5 @@ static Function PS_CR14_REENTRY([str])
 	CHECK_EQUAL_WAVES(lbnEntries[%spikeCheck], {0}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, lbnEntries[%setPass])
+	CheckPSQChunkTimes(str, {20, 520})
 End
