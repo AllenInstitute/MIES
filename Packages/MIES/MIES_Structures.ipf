@@ -550,3 +550,10 @@ Structure ActiveChannels
 	int32 numADRack2
 	int32 numTTLRack2
 EndStructure
+
+/// @brief Settings structure filled by PSQ_GetPulseSettingsForType()
+Structure PSQ_PulseSettings
+	variable prePulseChunkLength  // ms
+	variable pulseDuration      // ms
+	variable postPulseChunkLength // ms
+EndStructure

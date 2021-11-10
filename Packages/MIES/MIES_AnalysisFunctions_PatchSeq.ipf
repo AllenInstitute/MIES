@@ -93,13 +93,6 @@ static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
 static Constant PSQ_RHEOBASE_DURATION = 500
 
-/// @brief Settings structure filled by PSQ_GetPulseSettingsForType()
-static Structure PSQ_PulseSettings
-	variable prePulseChunkLength  // ms
-	variable pulseDuration      // ms
-	variable postPulseChunkLength // ms
-EndStructure
-
 /// @brief Fills `s` according to the analysis function type
 static Function PSQ_GetPulseSettingsForType(type, s)
 	variable type
