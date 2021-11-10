@@ -3549,6 +3549,16 @@ Function FLW_Requires2DWave()
 	endtry
 End
 
+Function FLW_PreservesWaveLayout()
+
+	Make/FREE/N=(10, 20, 1) data
+	Duplicate/FREE data, dataOrig
+
+	FindLevelWrapper(data, 0.1, FINDLEVEL_EDGE_BOTH, FINDLEVEL_MODE_SINGLE)
+
+	CHECK_EQUAL_WAVES(data, dataOrig)
+End
+
 Function FLW_RequiresBigEnoughWave()
 
 	try
