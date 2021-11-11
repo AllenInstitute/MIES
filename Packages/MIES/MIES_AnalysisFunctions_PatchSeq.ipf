@@ -3809,6 +3809,11 @@ Function PSQ_Chirp(panelTitle, s)
 	sprintf msg, "Midsweep: insideBounds %g, baselineQCPassed %g, spikeCheck %g, spikeCheckPassed %g", insideBounds, baselineQCPassed, spikeCheck, spikeCheckPassed
 	DEBUGPRINT(msg)
 
+	if(IsFinite(insideBounds) && IsFinite(baselineQCPassed) && (!spikeCheck || (spikeCheck && IsFinite(spikeCheckPassed) && spikeCheckPassed)))
+		// nothing more to do if we did inside bounds check and baseline QC and either did not do spike checking or spike checking passed
+		return NaN
+	endif
+
 	if(spikeCheck && IsNaN(spikeCheckPassed))
 		WAVE durations = PSQ_GetPulseDurations(panelTitle, PSQ_CHIRP, s.sweepNo, totalOnsetDelay)
 
@@ -3839,22 +3844,11 @@ Function PSQ_Chirp(panelTitle, s)
 				ED_AddEntryToLabnotebook(panelTitle, key, spikePass, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 				spikeCheckPassed = spikePass[s.headstage]
-
-				if(!spikeCheckPassed)
-					// adapt DAScale and finish
-					daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)
-					daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", s.params)
-					SetDAScaleModOp(panelTitle, s.headstage, daScaleModifier, daScaleOperator, roundTopA = 1)
-
-					return ANALYSIS_FUNC_RET_EARLY_STOP
-				endif
 			endif
 		endif
 	endif
 
-	if(IsFinite(insideBounds) && IsFinite(baselineQCPassed)) // nothing more to do
-		return NaN
-	endif
+	// no early return here because we want to do baseline QC checks (and chunk creation) always
 
 	if(IsNaN(baselineQCPassed))
 		[ret, chunk] = PSQ_EvaluateBaselineChunks(panelTitle, PSQ_CHIRP, s)
@@ -3864,6 +3858,15 @@ Function PSQ_Chirp(panelTitle, s)
 
 			PSQ_EvaluateBaselinePassed(panelTitle, PSQ_CHIRP, s.sweepNo, s.headstage, chunk, ret)
 		endif
+	endif
+
+	if(spikeCheck && IsFinite(spikeCheckPassed) && !spikeCheckPassed)
+		// adapt DAScale and finish
+		daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)
+		daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", s.params)
+		SetDAScaleModOp(panelTitle, s.headstage, daScaleModifier, daScaleOperator, roundTopA = 1)
+
+		return ANALYSIS_FUNC_RET_EARLY_STOP
 	endif
 
 	WAVE/T cycleXValuesLBN = PSQ_CR_GetCycles(panelTitle, s.sweepNo, s.rawDACWave, totalonsetDelay + PSQ_CR_BL_EVAL_RANGE)
