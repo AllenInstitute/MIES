@@ -1059,6 +1059,7 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 	TPStorage[count][][%AutoTPAmplitude]             = TPResults[%AutoTPAmplitude][q]
 	TPStorage[count][][%AutoTPBaseline]              = TPResults[%AutoTPBaseline][q]
 	TPStorage[count][][%AutoTPBaselineRangeExceeded] = TPResults[%AutoTPBaselineRangeExceeded][q]
+	TPStorage[count][][%AutoTPBaselineFitResult]     = TPResults[%AutoTPBaselineFitResult][q]
 
 	WAVE TPSettings = GetTPSettings(panelTitle)
 	TPStorage[count][][%AutoTPCycleID] = hsProp[q][%Enabled] ? TPSettings[%autoTPCycleID][q] : NaN

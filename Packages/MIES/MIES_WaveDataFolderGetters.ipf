@@ -2375,6 +2375,7 @@ End
 /// - 27: Auto TP Baseline Range Exceeded: True/False
 /// - 28: Auto TP Cycle ID: Unique number which is constant until the "Auto TP"
 ///       state is switched (aka on->off or off->on)
+/// - 29: Auto TP Baseline Fit result: One of @ref TPBaselineFitResults
 Function/Wave GetTPStorage(panelTitle)
 	string panelTitle
 
@@ -2386,7 +2387,7 @@ Function/Wave GetTPStorage(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, NUM_HEADSTAGES, 29)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, 30)/D wv
 
 		if(WaveVersionIsSmaller(wv, 10))
 			wv[][][17]    = NaN
@@ -2403,10 +2404,10 @@ Function/Wave GetTPStorage(panelTitle)
 			wv[][][24] = NaN
 		endif
 		if(WaveVersionIsSmaller(wv, 15))
-			wv[][][25, 28] = NaN
+			wv[][][25, 29] = NaN
 		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 29)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 30)/D dfr:TPStorage/Wave=wv
 
 		wv = NaN
 
@@ -2444,6 +2445,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 26, AutoTPBaseline              , wv
 	SetDimLabel LAYERS, 27, AutoTPBaselineRangeExceeded , wv
 	SetDimLabel LAYERS, 28, AutoTPCycleID               , wv
+	SetDimLabel LAYERS, 29, AutoTPBaselineFitResult     , wv
 
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)

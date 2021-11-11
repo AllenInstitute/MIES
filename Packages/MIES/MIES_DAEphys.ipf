@@ -302,13 +302,13 @@ Function DAP_EphysPanelStartUpSettings()
 	/// needs to be in sync with GetTPSettings()
 	/// @{
 	WAVE TPSettingsRef = GetTPSettingsFree()
-	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $panelTitle,value= _NUM:TPSettingsRef[0][%amplitudeVC]
-	SetVariable SetVar_DataAcq_TPAmplitudeIC WIN = $panelTitle,value= _NUM:TPSettingsRef[0][%amplitudeIC]
+	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $panelTitle,value= _NUM:TPSettingsRef[%amplitudeVC][0]
+	SetVariable SetVar_DataAcq_TPAmplitudeIC WIN = $panelTitle,value= _NUM:TPSettingsRef[%amplitudeIC][0]
 
-	Checkbox check_DataAcq_AutoTP WIN = $panelTitle, value=TPSettingsRef[0][%autoTPEnable], labelBack=0
-	SetVariable setvar_DataAcq_IinjMax WIN = $panelTitle, value= _NUM:TPSettingsRef[0][%autoAmpMaxCurrent]
-	SetVariable setvar_DataAcq_targetVoltage WIN = $panelTitle, value= _NUM:TPSettingsRef[0][%autoAmpVoltage]
-	SetVariable setvar_DataAcq_targetVoltageRange WIN = $panelTitle, value= _NUM:TPSettingsRef[0][%autoAmpVoltageRange]
+	Checkbox check_DataAcq_AutoTP WIN = $panelTitle, labelBack=0, value=TPSettingsRef[%autoTPEnable][0]
+	SetVariable setvar_DataAcq_IinjMax WIN = $panelTitle, value= _NUM:TPSettingsRef[%autoAmpMaxCurrent][0]
+	SetVariable setvar_DataAcq_targetVoltage WIN = $panelTitle, value= _NUM:TPSettingsRef[%autoAmpVoltage][0]
+	SetVariable setvar_DataAcq_targetVoltageRange WIN = $panelTitle, value= _NUM:TPSettingsRef[%autoAmpVoltageRange][0]
 	/// @}
 
 	SetVariable setvar_Settings_autoTP_int WIN = $panelTitle, value = _NUM:0
