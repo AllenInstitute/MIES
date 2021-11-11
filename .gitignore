@@ -51,4 +51,4 @@ bld/
 [Oo]bj/
 UserConfig*.txt
 JU_*.xml
-tools/unit-testing/HardwareTests.nwb
+tools/unit-testing/HardwareTests*.nwb
