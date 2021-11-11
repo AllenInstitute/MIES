@@ -3692,6 +3692,7 @@ Function TPDuringDAQWithTTL_IGNORE(device)
 
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val = 1)
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), str = "StimulusSetA_TTL_0")
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -4848,6 +4849,7 @@ Function CheckPulseInfoGathering_IGNORE(string device)
 
 	ctrl = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	PGC_SetAndActivateControl(device, ctrl, str = "Y4_SRecovery_50H*")
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
 End
 
 /// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1

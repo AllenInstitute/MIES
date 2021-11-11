@@ -36,6 +36,8 @@ static Function AcquireData(s, device)
 	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, PSQ_TEST_HEADSTAGE), val=1)
 	DoUpdate/W=$device
 
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
+
 	PGC_SetAndActivateControl(device, "Popup_Settings_VC_DA", str = "0")
 	PGC_SetAndActivateControl(device, "Popup_Settings_IC_DA", str = "0")
 	PGC_SetAndActivateControl(device, "Popup_Settings_VC_AD", str = "1")

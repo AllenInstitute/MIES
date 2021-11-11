@@ -737,7 +737,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_TPBaselinePerc,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_TPBaselinePerc,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_TPBaselinePerc,userdata(Config_GroupPath)="Test Pulse"
-	SetVariable SetVar_DataAcq_TPBaselinePerc,limits={25,49,1},value=_NUM:25
+	SetVariable SetVar_DataAcq_TPBaselinePerc,limits={25,49,1},value=_NUM:35
 	SetVariable SetVar_DataAcq_TPAmplitude,pos={300.00,417.00},size={69.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TPAmp
 	SetVariable SetVar_DataAcq_TPAmplitude,title="VC"
 	SetVariable SetVar_DataAcq_TPAmplitude,help={"Amplitude of the testpulse in voltage clamp mode"}
