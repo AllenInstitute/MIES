@@ -239,6 +239,8 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 		TPResults[%AutoTPBaselineRangeExceeded][] = NaN
 		TPResults[%AutoTPBaselineFitResult][]     = NaN
 
+		MultiThread TPResults[%AutoTPDeltaV][] = TPResults[%ElevatedSteadyState][q] - TPResults[%BaselineSteadyState][q]
+
 		TP_AutoAmplitudeAndBaseline(panelTitle, TPResults, marker)
 		DQ_ApplyAutoBias(panelTitle, TPResults)
 		TP_RecordTP(panelTitle, TPResults, now, marker)
@@ -569,7 +571,7 @@ static Function TP_AutoAmplitudeAndBaseline(string panelTitle, WAVE TPResults, v
 			indizes[i] += 1
 			SetStringInWaveNote(overrideResults, "Next unread index [amplitude]", NumericWaveToList(indizes, ","))
 		else
-			voltage = (TPResults[%ElevatedSteadyState][i] - TPResults[%BaselineSteadyState][i]) * 1e-3
+			voltage = TPResults[%AutoTPDeltaV][i] * 1e-3
 		endif
 
 		skipAutoBaseline = 0
@@ -662,6 +664,8 @@ static Function TP_AutoTPTurnOff(string panelTitle, WAVE autoTPEnable, variable 
 
 	QC = !!QC
 
+	TP_PublishAutoTPResult(panelTitle, headstage, QC)
+
 	TP_AutoTPGenerateNewCycleID(panelTitle, headstage = headstage)
 
 	WAVE TPSettingsLBN = GetTPSettingsLabnotebook(panelTitle)
@@ -727,6 +731,64 @@ static Function TP_AutoDisableIfFinished(string panelTitle, WAVE TPStorage)
 
 		TP_RestartTestPulse(panelTitle, TPState)
 	endif
+
+	if(needsUpdate)
+		DAP_TPSettingsToGUI(panelTitle, entry = "autoTPEnable")
+	endif
+End
+
+static Function TP_PublishAutoTPResult(string panelTitle, variable headstage, variable result)
+
+	variable jsonID, err
+	string payload, path
+
+	WAVE TPSettings = GetTPSettings(panelTitle)
+	WAVE TPStorage = GetTPStorage(panelTitle)
+
+	WAVE/Z autoTPDeltaV = TP_GetValuesFromTPStorage(TPStorage, headstage, "AutoTPDeltaV", 1)
+	ASSERT(WaveExists(autoTPDeltaV), "Missing auto TP delta V")
+
+	jsonID = FFI_GetJSONTemplate(panelTitle, headstage)
+	JSON_AddTreeObject(jsonID, "results")
+	JSON_AddBoolean(jsonID, "results/QC", result)
+
+	path = "results/amplitude"
+	JSON_AddTreeObject(jsonID, path)
+	JSON_AddVariable(jsonID, path + "/value", TPSettings[%amplitudeIC][headstage])
+	JSON_AddString(jsonID, path + "/unit", "mV")
+
+	path = "results/baseline"
+	JSON_AddTreeObject(jsonID, path)
+	JSON_AddVariable(jsonID, path + "/value", TPSettings[%baselinePerc][INDEP_HEADSTAGE])
+	JSON_AddString(jsonID, path + "/unit", "%")
+
+	path = "results/amplitude IC"
+	JSON_AddTreeObject(jsonID, path)
+	JSON_AddVariable(jsonID, path + "/value", TPSettings[%amplitudeIC][headstage])
+	JSON_AddString(jsonID, path + "/unit", "pA")
+
+	path = "results/amplitude VC"
+	JSON_AddTreeObject(jsonID, path)
+	JSON_AddVariable(jsonID, path + "/value", TPSettings[%amplitudeVC][headstage])
+	JSON_AddString(jsonID, path + "/unit", "mV")
+
+	path = "results/delta V"
+	JSON_AddTreeObject(jsonID, path)
+	JSON_AddVariable(jsonID, path + "/value", autoTPDeltaV[0])
+	JSON_AddString(jsonID, path + "/unit", "mV")
+
+	payload = JSON_Dump(jsonID, indent = 2)
+	JSON_Release(jsonID)
+
+	DEBUGPRINT(payload)
+
+	AssertOnAndClearRTError()
+	try
+		zeromq_pub_send(AUTO_TP_FILTER, payload); AbortOnRTE
+	catch
+		err = ClearRTError()
+		BUG("Could not publish auto TP results " + num2str(err))
+	endtry
 End
 
 
@@ -1060,6 +1122,7 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 	TPStorage[count][][%AutoTPBaseline]              = TPResults[%AutoTPBaseline][q]
 	TPStorage[count][][%AutoTPBaselineRangeExceeded] = TPResults[%AutoTPBaselineRangeExceeded][q]
 	TPStorage[count][][%AutoTPBaselineFitResult]     = TPResults[%AutoTPBaselineFitResult][q]
+	TPStorage[count][][%AutoTPDeltaV]                = TPResults[%AutoTPDeltaV][q]
 
 	WAVE TPSettings = GetTPSettings(panelTitle)
 	TPStorage[count][][%AutoTPCycleID] = hsProp[q][%Enabled] ? TPSettings[%autoTPCycleID][q] : NaN

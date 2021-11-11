@@ -2376,6 +2376,7 @@ End
 /// - 28: Auto TP Cycle ID: Unique number which is constant until the "Auto TP"
 ///       state is switched (aka on->off or off->on)
 /// - 29: Auto TP Baseline Fit result: One of @ref TPBaselineFitResults
+/// - 30: Auto TP Delta V [mV]
 Function/Wave GetTPStorage(panelTitle)
 	string panelTitle
 
@@ -2387,7 +2388,7 @@ Function/Wave GetTPStorage(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, NUM_HEADSTAGES, 30)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, 31)/D wv
 
 		if(WaveVersionIsSmaller(wv, 10))
 			wv[][][17]    = NaN
@@ -2404,10 +2405,10 @@ Function/Wave GetTPStorage(panelTitle)
 			wv[][][24] = NaN
 		endif
 		if(WaveVersionIsSmaller(wv, 15))
-			wv[][][25, 29] = NaN
+			wv[][][25, 30] = NaN
 		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 30)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 31)/D dfr:TPStorage/Wave=wv
 
 		wv = NaN
 
@@ -2446,6 +2447,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 27, AutoTPBaselineRangeExceeded , wv
 	SetDimLabel LAYERS, 28, AutoTPCycleID               , wv
 	SetDimLabel LAYERS, 29, AutoTPBaselineFitResult     , wv
+	SetDimLabel LAYERS, 30, AutoTPDeltaV                , wv
 
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
@@ -2580,6 +2582,7 @@ End
 /// - 6: Auto TP Baseline: Pass/Fail
 /// - 7: Auto TP Baseline range exceeded: True/False
 /// - 8: Auto TP Baseline fit result: One of @ref TPBaselineFitResults
+/// - 9: Auto TP Delta V: [mV]
 ///
 /// Columns:
 /// - NUM_HEADSTAGES
@@ -2592,10 +2595,10 @@ Function/Wave GetTPResults(string panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/D/N=(9, NUM_HEADSTAGES) wv
+		Redimension/D/N=(10, NUM_HEADSTAGES) wv
 		wv = NaN
 	else
-		Make/D/N=(9, NUM_HEADSTAGES) dfr:results/Wave=wv
+		Make/D/N=(10, NUM_HEADSTAGES) dfr:results/Wave=wv
 		wv = NaN
 
 		// initialize with the old 1D waves
@@ -2611,7 +2614,7 @@ Function/Wave GetTPResults(string panelTitle)
 		KillOrMoveToTrash(wv = SSResistance)
 	endif
 
-	SetDimensionLabels(wv, "ResistanceInst;BaselineSteadyState;ResistanceSteadyState;ElevatedSteadyState;ElevatedInst;AutoTPAmplitude;AutoTPBaseline;AutoTPBaselineRangeExceeded;AutoTPBaselineFitResult", ROWS)
+	SetDimensionLabels(wv, "ResistanceInst;BaselineSteadyState;ResistanceSteadyState;ElevatedSteadyState;ElevatedInst;AutoTPAmplitude;AutoTPBaseline;AutoTPBaselineRangeExceeded;AutoTPBaselineFitResult;AutoTPDeltaV", ROWS)
 
 	SetWaveVersion(wv, version)
 

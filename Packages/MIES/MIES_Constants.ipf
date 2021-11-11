@@ -1570,6 +1570,8 @@ Constant LBN_TEXTUAL_VALUES   = 0x8
 StrConstant PRESSURE_STATE_FILTER  = "pressure:state"
 StrConstant PRESSURE_SEALED_FILTER = "pressure:sealed"
 
+StrConstant AUTO_TP_FILTER = "testpulse:autotune result"
+
 /// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.
 Constant EPOCHTIME_PRECISION = 7
 
