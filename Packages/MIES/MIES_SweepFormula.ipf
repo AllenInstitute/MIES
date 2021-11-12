@@ -83,6 +83,7 @@ static StrConstant SF_OP_LABNOTEBOOK = "labnotebook"
 static StrConstant SF_OP_WAVE = "wave"
 static StrConstant SF_OP_FINDLEVEL = "findlevel"
 static StrConstant SF_OP_EPOCHS = "epochs"
+static StrConstant SF_OP_TRANSPOSE = "transpose"
 
 static StrConstant SF_OP_EPOCHS_TYPE_RANGE = "range"
 static StrConstant SF_OP_EPOCHS_TYPE_NAME = "name"
@@ -749,6 +750,9 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			break
 		case SF_OP_APFREQUENCY:
 			WAVE out = SF_OperationApFrequency(jsonId, jsonPath, graph)
+			break
+		case SF_OP_TRANSPOSE:
+			WAVE out = SF_OperationTranspose(jsonId, jsonPath, graph)
 			break
 		default:
 			SF_ASSERT(0, "Undefined Operation", jsonId=jsonId)
@@ -2160,6 +2164,46 @@ static Function/WAVE SF_OperationCursors(variable jsonId, string jsonPath, strin
 			out[i] = xcsr($wvT[i], graph)
 		endif
 	endfor
+
+	return out
+End
+
+// transpose(data) // max 2D array
+// (0, 0) -> (0, 0)
+// (0, N) -> (N, 0)
+// (N) -> (1, N)
+// transfers dimlabels as well
+static Function/WAVE SF_OperationTranspose(variable jsonId, string jsonPath, string graph)
+
+	variable numIndices, numCols, numRows
+
+	numIndices = JSON_GetArraySize(jsonID, jsonPath)
+	SF_ASSERT(numIndices == 1, "Exactly one argument expected.")
+	WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	SF_ASSERT(DimSize(data, LAYERS) == 0, "Only 1D or 2D input supported.")
+
+	numRows = DimSize(data, ROWS)
+	numCols = DimSize(data, COLS)
+	if(!numRows && !numCols)
+		Make/FREE/D/N=(0, 0) out
+		CopyDimLabels/COLS=(ROWS)/ROWS=(COLS) data, out
+		return out
+	endif
+	if(!numRows)
+		Make/FREE/D/N=(numCols, 0) out
+		CopyDimLabels/COLS=(ROWS)/ROWS=(COLS) data, out
+		return out
+	endif
+	if(!numCols)
+		Redimension/N=(-1, 1)/E=1 data
+		numCols = 1
+	endif
+	if(numCols == 1 && numRows == 1)
+		Make/FREE/D/N=(1, 1) out = data[0][0]
+	else
+		MatrixOp/FREE out = data^t
+	endif
+	CopyDimLabels/COLS=(ROWS)/ROWS=(COLS) data, out
 
 	return out
 End
