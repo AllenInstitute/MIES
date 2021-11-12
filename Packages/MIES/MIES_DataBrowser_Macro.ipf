@@ -20,6 +20,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,hook(TA_CURSOR_MOVED)=TimeAlignCursorMovedHook
 	SetWindow kwTopWin,hook(cleanup)=DB_WindowHook
 	SetWindow kwTopWin,hook(traceUserDataCleanup)=TUD_RemoveUserDataWave
+	SetWindow kwTopWin,hook(sweepScrolling)=BSP_SweepsAndMouseWheel
 	SetWindow kwTopWin,userdata(BROWSER)= "D"
 	SetWindow kwTopWin,userdata(DEVICE)= "- none -"
 	SetWindow kwTopWin,userdata(Config_PanelType)= "DataBrowser"
