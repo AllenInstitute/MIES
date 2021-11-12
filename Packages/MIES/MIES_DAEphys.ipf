@@ -4319,6 +4319,10 @@ static Function DAP_AddUserComment(panelTitle)
 	string commentNotebook, comment, formattedComment
 	variable sweepNo
 
+	if(!WindowExists(panelTitle))
+		return NaN
+	endif
+
 	comment = DAG_GetTextualValue(panelTitle, "SetVar_DataAcq_Comment")
 
 	if(isEmpty(comment))
