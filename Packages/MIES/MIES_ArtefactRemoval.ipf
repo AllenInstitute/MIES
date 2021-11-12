@@ -270,8 +270,8 @@ static Function AR_HandleRanges(graph, [removeRange])
 				substituteValue = AD[first]
 				AD[first, last] = substituteValue
 			else
-				sprintf traceName, "T%0*d_HS_%d", TRACE_NAME_NUM_DIGITS, traceIndex, j, i
-				traceIndex += 1
+				sprintf traceName, "%s_HS_%d", GetTraceNamePrefix(traceIndex++), j, i
+
 				AppendToGraph/W=$graph/L=$leftAxis/B=$bottomAxis AD[first, last]/TN=$traceName
 				ModifyGraph/W=$graph mode($traceName)=3, marker($traceName)=8
 				ModifyGraph/W=$graph msize($traceName)=0.5,rgb($traceName)=(65535,0,0,32768)
