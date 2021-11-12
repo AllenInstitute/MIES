@@ -527,7 +527,7 @@ static Function PS_SP8_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqSquarePu_DA_0", "SamplingFrequency", var=10)
 End
 
-// Same as PS_RA8 but with failing sampling interval check
+// Same as PS_SP1 but with failing sampling interval check
 //
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_SP8([str])
