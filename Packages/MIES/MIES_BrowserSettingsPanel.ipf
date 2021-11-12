@@ -329,16 +329,24 @@ End
 
 /// @brief get a FOLDER property from the specified panel
 ///
-/// @param win 						name of external panel or main window
-/// @param MIES_BSP_FOLDER_TYPE 	see the FOLDER constants in this file
+/// @param win                   name of external panel or main window
+/// @param MIES_BSP_FOLDER_TYPE  see the FOLDER constants in this file
+/// @param versionCheck          [optional, defaults to true] abort on outdated window version
 ///
 /// @return DFR to specified folder. No check for invalid folders
-Function/DF BSP_GetFolder(win, MIES_BSP_FOLDER_TYPE)
+Function/DF BSP_GetFolder(win, MIES_BSP_FOLDER_TYPE, [versionCheck])
 	string win, MIES_BSP_FOLDER_TYPE
+	variable versionCheck
 
 	string mainPanel
 
-	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
+	if(ParamIsDefault(versionCheck))
+		versionCheck = 1
+	else
+		versionCheck = !!versionCheck
+	endif
+
+	if(versionCheck && !HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 	endif
 
