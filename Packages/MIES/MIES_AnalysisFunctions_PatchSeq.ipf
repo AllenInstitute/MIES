@@ -79,7 +79,7 @@
 /// Name=Unacquired DA data      U_RA_UD    RA                 Interval of unacquired data             -1
 /// ============================ ========== ================== ======================================= =====
 ///
-/// See also :ref:`_epoch_information_time_specialities`
+/// See also :ref:`epoch_time_specialities`.
 /// \endrst
 
 static Constant PSQ_BL_PRE_PULSE   = 0x0
