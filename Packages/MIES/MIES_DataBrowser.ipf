@@ -736,7 +736,7 @@ Function DB_WindowHook(s)
 			try
 				// catch all error conditions, asserts and aborts
 				// and silently ignore them
-				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER); AbortOnRTE
+				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER, versionCheck = 0); AbortOnRTE
 
 				KillOrMoveToTrash(dfr = dfr); AbortOnRTE
 			catch
