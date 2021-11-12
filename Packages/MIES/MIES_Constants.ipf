@@ -637,7 +637,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 50
+Constant LABNOTEBOOK_VERSION = 52
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
@@ -987,13 +987,16 @@ StrConstant PSQ_FMT_LBN_SPIKE_COUNT        = "%s spike count"
 StrConstant PSQ_FMT_LBN_FINAL_SCALE        = "%s final DAScale"
 StrConstant PSQ_FMT_LBN_INITIAL_SCALE      = "%s initial DAScale"
 StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS     = "%s Chk%d S-RMS QC"
+StrConstant PSQ_FMT_LBN_RMS_SHORT_THRESHOLD= "%s S-RMS Threshold"
 StrConstant PSQ_FMT_LBN_RMS_LONG_PASS      = "%s Chk%d L-RMS QC"
+StrConstant PSQ_FMT_LBN_RMS_LONG_THRESHOLD = "%s L-RMS Threshold"
 StrConstant PSQ_FMT_LBN_TARGETV            = "%s Chk%d T-V BL"
 StrConstant PSQ_FMT_LBN_TARGETV_PASS       = "%s Chk%d T-V BL QC"
 StrConstant PSQ_FMT_LBN_CHUNK_PASS         = "%s Chk%d BL QC"
 StrConstant PSQ_FMT_LBN_BL_QC_PASS         = "%s BL QC"
 StrConstant PSQ_FMT_LBN_SWEEP_PASS         = "%s Sweep QC"
 StrConstant PSQ_FMT_LBN_SET_PASS           = "%s Set QC"
+StrConstant PSQ_FMT_LBN_SAMPLING_PASS      = "%s Sampling interval QC"
 StrConstant PSQ_FMT_LBN_PULSE_DUR          = "%s Pulse duration"
 StrConstant PSQ_FMT_LBN_SPIKE_DASCALE_ZERO = "%s spike with zero"
 StrConstant PSQ_FMT_LBN_RB_LIMITED_RES     = "%s limited resolut."
@@ -1013,11 +1016,11 @@ StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
 
 /// @name Analysis function versions
 /// @{
-Constant PSQ_CHIRP_VERSION         = 1
-Constant PSQ_DA_SCALE_VERSION      = 1
-Constant PSQ_RAMP_VERSION          = 2
-Constant PSQ_RHEOBASE_VERSION      = 1
-Constant PSQ_SQUARE_PULSE_VERSION  = 0
+Constant PSQ_CHIRP_VERSION         = 2
+Constant PSQ_DA_SCALE_VERSION      = 2
+Constant PSQ_RAMP_VERSION          = 3
+Constant PSQ_RHEOBASE_VERSION      = 2
+Constant PSQ_SQUARE_PULSE_VERSION  = 1
 Constant MSQ_FAST_RHEO_EST_VERSION = 0
 Constant MSQ_DA_SCALE_VERSION      = 0
 Constant SC_SPIKE_CONTROL_VERSION  = 0

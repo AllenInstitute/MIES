@@ -40,13 +40,16 @@
 /// PSQ_FMT_LBN_SPIKE_DASCALE_ZERO  Sweep spiked with DAScale of 0                            Numerical                SP                       No                     No
 /// PSQ_FMT_LBN_INITIAL_SCALE       Initial DAScale                                           Numerical                RB, CR                   No                     No
 /// PSQ_FMT_LBN_RMS_SHORT_PASS      Short RMS baseline QC result                              Numerical                DA, RB, RA, CR           Yes                    Yes
+/// PSQ_FMT_LBN_RMS_SHORT_THRESHOLD Short RMS baseline threshold [V]                          Numerical                DA, RB, RA, CR           No                     Yes
 /// PSQ_FMT_LBN_RMS_LONG_PASS       Long RMS baseline QC result                               Numerical                DA, RB, RA, CR           Yes                    Yes
+/// PSQ_FMT_LBN_RMS_LONG_THRESHOLD  Long RMS baseline threshold [V]                           Numerical                DA, RB, RA, CR           No                     Yes
 /// PSQ_FMT_LBN_TARGETV             Target voltage baseline                                   Numerical                DA, RB, RA, CR           Yes                    Yes
 /// PSQ_FMT_LBN_TARGETV_PASS        Target voltage baseline QC result                         Numerical                DA, RB, RA, CR           Yes                    Yes
 /// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                     Numerical                DA, RB, RA, CR           Yes                    Yes
 /// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                  Numerical                DA, RB, RA, CR           No                     Yes
 /// PSQ_FMT_LBN_SWEEP_PASS          Pass/fail state of the complete sweep                     Numerical                DA, SP, RA, CR           No                     No
 /// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                       Numerical                DA, RB, RA, SP, CR       No                     No
+/// PSQ_FMT_LBN_SAMPLING_PASS       Pass/fail state of the sampling interval check            Numerical                DA, RB, RA, SP, CR       No                     No
 /// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally               Numerical                RB, DA (Supra), CR       No                     Yes
 /// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                              Numerical                DA (Supra)               No                     Yes
 /// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value         Numerical                DA (Supra)               No                     No
@@ -216,6 +219,31 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, total
 	return durations
 End
 
+/// @brief Return the baseline RMS short/long thresholds in mV
+static Function [variable rmsShortThreshold, variable rmsLongThreshold] PSQ_GetBaselineRMSThresholds(string params)
+
+	rmsShortThreshold = AFH_GetAnalysisParamNumerical("BaselineRMSShortThreshold", params, defValue = PSQ_RMS_SHORT_THRESHOLD)
+	rmsLongThreshold  = AFH_GetAnalysisParamNumerical("BaselineRMSLongThreshold", params, defValue = PSQ_RMS_LONG_THRESHOLD)
+
+	return [rmsShortThreshold, rmsLongThreshold]
+End
+
+static Function PSQ_StoreRMSThresholdsInLabnotebook(string paneltitle, variable type, variable sweepNo, variable headstage, variable rmsShortThreshold, variable rmsLongThreshold)
+	string key
+
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+
+	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_SHORT_THRESHOLD)
+	// mV -> V
+	values[headstage] = rmsShortThreshold * 1e-3
+	ED_AddEntryToLabnotebook(panelTitle, key, values, unit = "V", overrideSweepNo = sweepNo)
+
+	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_LONG_THRESHOLD)
+	// mV -> V
+	values[headstage] = rmsLongThreshold * 1e-3
+	ED_AddEntryToLabnotebook(panelTitle, key, values, unit = "V", overrideSweepNo = sweepNo)
+End
+
 static Function PSQ_EvaluateBaselinePassed(string panelTitle, variable type, variable sweepNo, variable headstage, variable chunk, variable ret)
 	variable baselineQCPassed
 	string key, msg
@@ -253,7 +281,7 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 
 	for(i = 0; i < numBaselineChunks; i += 1)
 
-		ret = PSQ_EvaluateBaselineProperties(panelTitle, s.scaledDACWave, type, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+		ret = PSQ_EvaluateBaselineProperties(panelTitle, s, type, i, fifoInStimsetTime, totalOnsetDelay)
 
 		if(IsNaN(ret))
 			// NaN: not enough data for check
@@ -295,9 +323,8 @@ End
 /// @brief Evaluate one chunk of the baseline
 ///
 /// @param panelTitle        device
-/// @param scaledDACWave     the scaled DAC wave, usually just AnalysisFunctions_V3::scaledDacWave
+/// @param s                 AnalysisFunction_V3 struct
 /// @param type              analysis function type, one of @ref PatchSeqAnalysisFunctionTypes
-/// @param sweepNo           sweep number
 /// @param chunk             chunk number, `chunk == 0` -> Pre pulse baseline chunk, `chunk >= 1` -> Post pulse baseline
 /// @param fifoInStimsetTime Fifo position in ms *relative* to the start of the stimset (therefore ignoring the totalOnsetDelay)
 /// @param totalOnsetDelay   total onset delay in ms
@@ -305,35 +332,33 @@ End
 /// @return
 /// pre pulse baseline: 0 if the chunk passes, one of the possible @ref AnalysisFuncReturnTypesConstants values otherwise
 /// post pulse baseline: 0 if the chunk passes, PSQ_BL_FAILED if it does not pass
-static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay)
-	string panelTitle
-	WAVE scaledDACWave
-	variable type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay
+static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT AnalysisFunction_V3 &s, variable type, variable chunk, variable fifoInStimsetTime, variable totalOnsetDelay)
 
 	variable , evalStartTime, evalRangeTime
 	variable i, ADC, ADcol, chunkStartTimeMax, chunkStartTime
 	variable targetV, index
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
 	variable targetVPassedAll, baselineType, chunkLengthTime
+	variable rmsShortThreshold, rmsLongThreshold, chunkPassedTestOverride
 	string msg, adUnit, ctrl, key
 
-	struct PSQ_PulseSettings s
-	PSQ_GetPulseSettingsForType(type, s)
+	struct PSQ_PulseSettings ps
+	PSQ_GetPulseSettingsForType(type, ps)
 
 	if(chunk == 0) // pre pulse baseline
 		chunkStartTimeMax  = totalOnsetDelay
-		chunkLengthTime    = s.prePulseChunkLength
+		chunkLengthTime    = ps.prePulseChunkLength
 		baselineType       = PSQ_BL_PRE_PULSE
 	else // post pulse baseline
 		 if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
-			 WAVE durations = PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay)
+			 WAVE durations = PSQ_GetPulseDurations(panelTitle, type, s.sweepNo, totalOnsetDelay)
 		 else
-			 Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = s.pulseDuration
+			 Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = ps.pulseDuration
 		 endif
 
 		 // skip: onset delay, the pulse itself and one chunk of post pulse baseline
-		chunkStartTimeMax = (totalOnsetDelay + s.prePulseChunkLength + WaveMax(durations)) + chunk * s.postPulseChunkLength
-		chunkLengthTime   = s.postPulseChunkLength
+		chunkStartTimeMax = (totalOnsetDelay + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength
+		chunkLengthTime   = ps.postPulseChunkLength
 		baselineType      = PSQ_BL_POST_PULSE
 	endif
 
@@ -346,11 +371,13 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	WAVE textualValues   = GetLBTextualValues(panelTitle)
 
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk, query = 1)
-	chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = NaN)
+	chunkPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = NaN)
 
 	if(IsFinite(chunkPassed)) // already evaluated
 		return !chunkPassed
 	endif
+
+	[rmsShortThreshold, rmsLongThreshold] = PSQ_GetBaselineRMSThresholds(s.params)
 
 	// Rows: baseline types
 	// - 0: pre pulse
@@ -383,6 +410,14 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 
 	targetV = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
 
+	// BEGIN TEST
+	if(PSQ_TestOverrideActive())
+		WAVE overrideResults = GetOverrideResults()
+		NVAR count = $GetCount(panelTitle)
+		chunkPassedTestOverride = overrideResults[chunk][count][0]
+	endif
+	// END TEST
+
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -393,9 +428,12 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 
 		if(chunk == 0) // pre pulse baseline
 			chunkStartTime = totalOnsetDelay
+
+			// store baseline RMS short/long analysis parameters in labnotebook on first use
+			PSQ_StoreRMSThresholdsInLabnotebook(panelTitle, type, s.sweepNo, i, rmsShortThreshold, rmsLongThreshold)
 		else
 			ASSERT(durations[i] != 0, "Invalid calculated durations")
-			chunkStartTime = (totalOnsetDelay + s.prePulseChunkLength + durations[i]) + chunk * s.postPulseChunkLength
+			chunkStartTime = (totalOnsetDelay + ps.prePulseChunkLength + durations[i]) + chunk * ps.postPulseChunkLength
 		endif
 
 		ADC = AFH_GetADCFromHeadstage(panelTitle, i)
@@ -413,8 +451,13 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			evalRangeTime = 1.5
 
 			// check 1: RMS of the last 1.5ms of the baseline should be below 0.07mV
-			rmsShort[i]       = PSQ_Calculate(scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
-			rmsShortPassed[i] = rmsShort[i] < PSQ_RMS_SHORT_THRESHOLD
+			rmsShort[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
+
+			if(PSQ_TestOverrideActive())
+				rmsShortPassed[i] = chunkPassedTestOverride
+			else
+				rmsShortPassed[i] = rmsShort[i] < rmsShortThreshold
+			endif
 
 			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], ToPassFail(rmsShortPassed[i])
 			DEBUGPRINT(msg)
@@ -434,8 +477,13 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			evalRangeTime = chunkLengthTime
 
 			// check 2: RMS of the last 500ms of the baseline should be below 0.50mV
-			rmsLong[i]       = PSQ_Calculate(scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
-			rmsLongPassed[i] = rmsLong[i] < PSQ_RMS_LONG_THRESHOLD
+			rmsLong[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
+
+			if(PSQ_TestOverrideActive())
+				rmsLongPassed[i] = chunkPassedTestOverride
+			else
+				rmsLongPassed[i] = rmsLong[i] < rmsLongThreshold
+			endif
 
 			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], ToPassFail(rmsLongPassed[i])
 			DEBUGPRINT(msg)
@@ -455,8 +503,13 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 			evalRangeTime = chunkLengthTime
 
 			// check 3: Average voltage within 1mV of auto bias target voltage
-			avgVoltage[i]    = PSQ_Calculate(scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
-			targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
+			avgVoltage[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
+
+			if(PSQ_TestOverrideActive())
+				targetVPassed[i] = chunkPassedTestOverride
+			else
+				targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
+			endif
 
 			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
 			DEBUGPRINT(msg)
@@ -477,16 +530,16 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 		// mV -> V
 		avgVoltage[] *= 1000
 		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_TARGETV, chunk = chunk)
-		ED_AddEntryToLabnotebook(panelTitle, key, avgVoltage, unit = "Volt", overrideSweepNo = sweepNo)
+		ED_AddEntryToLabnotebook(panelTitle, key, avgVoltage, unit = "Volt", overrideSweepNo = s.sweepNo)
 	endif
 
 	// document results per headstage and chunk
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, rmsShortPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, rmsShortPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, rmsLongPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, rmsLongPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_TARGETV_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, targetVPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, targetVPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 	if(testMatrix[baselineType][PSQ_RMS_SHORT_TEST])
 		rmsShortPassedAll = WaveMin(rmsShortPassed) == 1
@@ -514,15 +567,6 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 
 	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll
 
-	// BEGIN TEST
-
-	if(PSQ_TestOverrideActive())
-		WAVE overrideResults = GetOverrideResults()
-		NVAR count = $GetCount(panelTitle)
-		chunkPassed = overrideResults[chunk][count][0]
-	endif
-	// END TEST
-
 	sprintf msg, "Chunk %d %s", chunk, ToPassFail(chunkPassed)
 	DEBUGPRINT(msg)
 
@@ -530,25 +574,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 	result[INDEP_HEADSTAGE] = chunkPassed
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
-
-	if(PSQ_TestOverrideActive())
-		if(baselineType == PSQ_BL_PRE_PULSE)
-			if(!chunkPassed)
-				return ANALYSIS_FUNC_RET_EARLY_STOP
-			else
-				return 0
-			endif
-		elseif(baselineType == PSQ_BL_POST_PULSE)
-			if(!chunkPassed)
-				return PSQ_BL_FAILED
-			else
-				return 0
-			endif
-		else
-			ASSERT(0, "unknown baseline type")
-		endif
-	endif
+	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 	if(baselineType == PSQ_BL_PRE_PULSE)
 		if(!rmsShortPassedAll)
@@ -1211,10 +1237,36 @@ Function PSQ_FoundAtLeastOneSpike(panelTitle, sweepNo)
 	return Sum(settings) > 0
 End
 
+/// @brief Return the QC state of the sampling interval/frequency check and store it also in the labnotebook
+static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string panelTitle, variable type, struct AnalysisFunction_V3& s)
+	variable samplingFrequency, expected, actual, samplingFrequencyPassed
+	string key
+
+	samplingFrequency = AFH_GetAnalysisParamNumerical("SamplingFrequency", s.params, defValue = 50)
+
+	ASSERT(!cmpstr(StringByKey("XUNITS", WaveInfo(s.scaledDACWave, 0)), "ms"), "Unexpected wave x unit")
+
+	// dimension delta [ms]
+	actual = 1.0 / (DimDelta(s.scaledDACWave, ROWS) * 1e-3)
+
+	// samplingFrequency [kHz]
+	expected = samplingFrequency * 1e3
+
+	samplingFrequencyPassed = CheckIfClose(expected, actual, tol = 1)
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+	result[INDEP_HEADSTAGE] = samplingFrequencyPassed
+	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_SAMPLING_PASS)
+	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+	return samplingFrequencyPassed
+End
+
 /// @brief Require parameters from stimset
 Function/S PSQ_DAScale_GetParams()
-	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable,[ShowPlot:variable],[OffsetOperator:string]," + \
-		   "[FinalSlopePercent:variable],[MinimumSpikeCount:variable],[MaximumSpikeCount:variable],[DAScaleModifier:variable]"
+	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable,[ShowPlot:variable],[OffsetOperator:string]," +        \
+		   "[FinalSlopePercent:variable],[MinimumSpikeCount:variable],[MaximumSpikeCount:variable],[DAScaleModifier:variable]," + \
+		   "[SamplingFrequency:variable],[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]"
 End
 
 Function/S PSQ_DAScale_GetHelp(string name)
@@ -1226,9 +1278,15 @@ Function/S PSQ_DAScale_GetHelp(string name)
 		case "OperationMode":
 			 return "Operation mode of the analysis function. Can be either \"Sub\" or \"Supra\"."
 			 break
+		case "SamplingFrequency":
+			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
 		case "SamplingMultiplier":
 			 return "Sampling multiplier, use 1 for no multiplier"
 			 break
+		case "BaselineRMSShortThreshold":
+			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		case "BaselineRMSLongThreshold":
+			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		case "OffsetOperator":
 			 return "[Optional, defaults to \"+\"] Set the math operator to use for "      \
 					+ "combining the rheobase DAScale value from the previous run and "    \
@@ -1261,6 +1319,13 @@ Function/S PSQ_DAScale_CheckParam(string name, string params)
 	string str
 
 	strswitch(name)
+		case "BaselineRMSShortThreshold":
+		case "BaselineRMSLongThreshold":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val > 0 && val <= 20))
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		case "DAScales":
 			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, params)
 			if(!WaveExists(wv))
@@ -1276,6 +1341,12 @@ Function/S PSQ_DAScale_CheckParam(string name, string params)
 			str = AFH_GetAnalysisParamTextual(name, params)
 			if(cmpstr(str, PSQ_DS_SUB) && cmpstr(str, PSQ_DS_SUPRA))
 				return "Invalid string " + str
+			endif
+			break
+		case "SamplingFrequency":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0 && val <= 1000))
+				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
@@ -1436,7 +1507,7 @@ Function PSQ_DAScale(panelTitle, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	variable val, totalOnsetDelay, DAScale, baselineQCPassed
-	variable i, numberOfSpikes
+	variable i, numberOfSpikes, samplingFrequencyPassed
 	variable index, ret, showPlot, V_AbortCode, V_FitError, err, enoughSweepsPassed
 	variable sweepPassed, setPassed, numSweepsPass, length, minLength
 	variable minimumSpikeCount, maximumSpikeCount, daScaleModifierParam
@@ -1548,14 +1619,16 @@ Function PSQ_DAScale(panelTitle, s)
 			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			ASSERT(WaveExists(baselineQCPassedLBN), "Expected BL QC passed LBN entry")
 
-			sweepPassed = baselineQCPassedLBN[s.headstage]
+			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(panelTitle, PSQ_DA_SCALE, s)
+
+			sweepPassed = baselineQCPassedLBN[s.headstage] && samplingFrequencyPassed
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 			result[INDEP_HEADSTAGE] = sweepPassed
 			key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
-			sprintf msg, "Sweep %s\r", ToPassFail(sweepPassed)
+			sprintf msg, "SamplingFrequency %s, Sweep %s\r", ToPassFail(samplingFrequencyPassed), ToPassFail(sweepPassed)
 			DEBUGPRINT(msg)
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) fISlope = NaN
@@ -1725,6 +1798,12 @@ Function PSQ_DAScale(panelTitle, s)
 					RA_SkipSweeps(panelTitle, inf)
 					return NaN
 				endif
+
+				if(!samplingFrequencyPassed)
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
+					RA_SkipSweeps(panelTitle, inf)
+					return NaN
+				endif
 			else
 				if(passesInSet >= numSweepsPass)
 					PSQ_ForceSetEvent(panelTitle, s.headstage)
@@ -1829,7 +1908,7 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_SquarePulse_GetParams()
-	return "SamplingMultiplier:variable"
+	return "SamplingMultiplier:variable,[SamplingFrequency:variable],[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]"
 End
 
 Function/S PSQ_SquarePulse_GetHelp(string name)
@@ -1838,6 +1917,12 @@ Function/S PSQ_SquarePulse_GetHelp(string name)
 		case "SamplingMultiplier":
 			 return "Use 1 for no multiplier"
 			 break
+		 case "SamplingFrequency":
+			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
+		 case "BaselineRMSShortThreshold":
+			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		 case "BaselineRMSLongThreshold":
+			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		default:
 			 ASSERT(0, "Unimplemented for parameter " + name)
 			 break
@@ -1849,9 +1934,22 @@ Function/S PSQ_SquarePulse_CheckParam(string name, string params)
 	variable val
 
 	strswitch(name)
+		case "BaselineRMSShortThreshold":
+		case "BaselineRMSLongThreshold":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val > 0 && val <= 20))
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		case "SamplingMultiplier":
 			val = AFH_GetAnalysisParamNumerical(name, params)
 			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "SamplingFrequency":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
 			break
@@ -1902,7 +2000,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	variable stepsize, DAScale, totalOnsetDelay, setPassed, sweepPassed, multiplier
-	variable val
+	variable val, samplingFrequencyPassed
 	string key, msg
 
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
@@ -1968,6 +2066,8 @@ Function PSQ_SquarePulse(panelTitle, s)
 			WAVE DAScalesLBN = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 			DAScale = DAScalesLBN[s.headstage] * 1e-12
 
+			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(panelTitle, PSQ_SQUARE_PULSE, s)
+
 			sweepPassed = 0
 
 			sprintf msg, "DAScale %g, stepSize %g", DAScale, stepSize
@@ -1995,10 +2095,12 @@ Function PSQ_SquarePulse(panelTitle, s)
 					key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE)
 					ED_AddEntryToLabnotebook(panelTitle, key, value)
 
-					sweepPassed = 1
+					sweepPassed = samplingFrequencyPassed
 
-					PSQ_ForceSetEvent(panelTitle, s.headstage)
-					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+					if(sweepPassed)
+						PSQ_ForceSetEvent(panelTitle, s.headstage)
+						RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+					endif
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					PSQ_StoreStepSizeInLBN(panelTitle, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_m50)
 					stepsize = PSQ_SP_INIT_AMP_m50
@@ -2028,6 +2130,11 @@ Function PSQ_SquarePulse(panelTitle, s)
 			value[INDEP_HEADSTAGE] = sweepPassed
 			key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, value, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			if(!samplingFrequencyPassed)
+				PSQ_ForceSetEvent(panelTitle, s.headstage)
+				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+			endif
 
 			break
 		case POST_SET_EVENT:
@@ -2065,7 +2172,7 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_Rheobase_GetParams()
-	return "SamplingMultiplier:variable"
+	return "SamplingMultiplier:variable,[SamplingFrequency:variable],[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]"
 End
 
 Function/S PSQ_Rheobase_GetHelp(string name)
@@ -2074,6 +2181,12 @@ Function/S PSQ_Rheobase_GetHelp(string name)
 		case "SamplingMultiplier":
 			 return "Use 1 for no multiplier"
 			 break
+		 case "SamplingFrequency":
+			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
+		 case "BaselineRMSShortThreshold":
+			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		 case "BaselineRMSLongThreshold":
+			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		default:
 			 ASSERT(0, "Unimplemented for parameter " + name)
 			 break
@@ -2085,9 +2198,22 @@ Function/S PSQ_Rheobase_CheckParam(string name, string params)
 	variable val
 
 	strswitch(name)
+		case "BaselineRMSShortThreshold":
+		case "BaselineRMSLongThreshold":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val > 0 && val <= 20))
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		case "SamplingMultiplier":
 			val = AFH_GetAnalysisParamNumerical(name, params)
 			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "SamplingFrequency":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
 			break
@@ -2140,7 +2266,7 @@ Function PSQ_Rheobase(panelTitle, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed, diff
-	variable baselineQCPassed, finalDAScale, initialDAScale, stepSize, previousStepSize
+	variable baselineQCPassed, finalDAScale, initialDAScale, stepSize, previousStepSize, samplingFrequencyPassed
 	variable totalOnsetDelay
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, multiplier, chunk
 	string key, msg
@@ -2253,13 +2379,26 @@ Function PSQ_Rheobase(panelTitle, s)
 			stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			PSQ_StoreStepSizeInLBN(panelTitle, PSQ_RHEOBASE, s.sweepNo, stepSize)
 
+			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(panelTitle, PSQ_RHEOBASE, s)
+
+			sprintf msg, "numSweeps %d, baselineQCPassed %d, samplingFrequencyPassed %d", numSweeps, baselineQCPassed, samplingFrequencyPassed
+			DEBUGPRINT(msg)
+
+			if(!samplingFrequencyPassed)
+				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
+				result[INDEP_HEADSTAGE] = 0
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+				PSQ_ForceSetEvent(panelTitle, s.headstage)
+				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+				break
+			endif
+
 			key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQCPassedWave = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 
 			baselineQCPassed = WaveExists(baselineQCPassedWave) && baselineQCPassedWave[s.headstage]
-
-			sprintf msg, "numSweeps %d, baselineQCPassed %d", numSweeps, baselineQCPassed
-			DEBUGPRINT(msg)
 
 			if(!baselineQCPassed)
 				break
@@ -2468,15 +2607,21 @@ End
 
 /// @brief Return a list of required parameters
 Function/S PSQ_Ramp_GetParams()
-	return "NumberOfSpikes:variable,SamplingMultiplier:variable"
+	return "NumberOfSpikes:variable,SamplingMultiplier:variable,[SamplingFrequency:variable],[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]"
 End
 
 Function/S PSQ_Ramp_GetHelp(string name)
 
 	strswitch(name)
+		 case "SamplingFrequency":
+			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
 		case "SamplingMultiplier":
 			 return "Use 1 for no multiplier"
 			 break
+		 case "BaselineRMSShortThreshold":
+			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		 case "BaselineRMSLongThreshold":
+			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		 case "NumberOfSpikes":
 			return "Number of spikes required to be found after the pulse onset " \
 			 + "in order to label the cell as having \"spiked\"."
@@ -2491,6 +2636,13 @@ Function/S PSQ_Ramp_CheckParam(string name, string params)
 	variable val
 
 	strswitch(name)
+		case "BaselineRMSShortThreshold":
+		case "BaselineRMSLongThreshold":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val > 0 && val <= 20))
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		case "SamplingMultiplier":
 			val = AFH_GetAnalysisParamNumerical(name, params)
 			if(!IsValidSamplingMultiplier(val))
@@ -2500,6 +2652,12 @@ Function/S PSQ_Ramp_CheckParam(string name, string params)
 		case "NumberOfSpikes":
 			val = AFH_GetAnalysisParamNumerical(name, params)
 			if(!(val > 0))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "SamplingFrequency":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
 			break
@@ -2552,7 +2710,7 @@ Function PSQ_Ramp(panelTitle, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
-	variable baselineQCPassed, finalDAScale, initialDAScale
+	variable baselineQCPassed, finalDAScale, initialDAScale, samplingFrequencyPassed
 	variable lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength
 	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, enoughSpikesFound
@@ -2637,9 +2795,17 @@ Function PSQ_Ramp(panelTitle, s)
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			WAVE textualValues   = GetLBTextualValues(panelTitle)
 
-			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-			sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
-			ASSERT(IsFinite(sweepPassed), "Could not find the sweep passed labnotebook entry")
+			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+			WAVE baselinePassed = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+
+			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(panelTitle, PSQ_RAMP, s)
+
+			sweepPassed = baselinePassed[s.headstage] && samplingFrequencyPassed
+
+			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = sweepPassed
+			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SWEEP_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			WAVE/T stimsets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 			stimset = stimsets[s.headstage]
@@ -2651,6 +2817,9 @@ Function PSQ_Ramp(panelTitle, s)
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
 				if((sweepsInSet - acquiredSweepsInSet) < (PSQ_RA_NUM_SWEEPS_PASS - passesInSet))
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
+					RA_SkipSweeps(panelTitle, inf)
+				elseif(!samplingFrequencyPassed)
 					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf)
 				endif
@@ -2830,11 +2999,6 @@ Function PSQ_Ramp(panelTitle, s)
 
 		if(IsFinite(ret))
 			baselineQCPassed = (ret == 0)
-
-			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-			result[INDEP_HEADSTAGE] = baselineQCPassed
-			key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SWEEP_PASS)
-			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 			// we can return here as we either:
 			// - failed pre pulse BL QC and we don't need to search for a spike
@@ -3210,6 +3374,10 @@ End
 Function/S PSQ_Chirp_GetHelp(string name)
 
 	strswitch(name)
+		 case "BaselineRMSShortThreshold":
+			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		 case "BaselineRMSLongThreshold":
+			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		case "LowerRelativeBound":
 			return "Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV."
 		case "UpperRelativeBound":
@@ -3218,6 +3386,10 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
 		case "NumberOfFailedSweeps":
 			return "Number of failed sweeps which marks the set as failed."
+		 case "SamplingFrequency":
+			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
+		case "SamplingMultiplier":
+			 return "Use 1 for no multiplier"
 		case "SpikeCheck":
 			return "Toggle spike check during the chirp. Defaults to off."
 		case "FailedLevel":
@@ -3238,6 +3410,13 @@ Function/S PSQ_Chirp_CheckParam(string name, string params)
 	string str
 
 	strswitch(name)
+		case "BaselineRMSShortThreshold":
+		case "BaselineRMSLongThreshold":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val > 0 && val <= 20))
+				return "Invalid value " + num2str(val)
+			endif
+			break
 		case "LowerRelativeBound":
 			if(AFH_GetAnalysisParamNumerical("LowerRelativeBound", params) >= AFH_GetAnalysisParamNumerical("UpperRelativeBound", params))
 				return "LowerRelativeBound must be smaller than UpperRelativeBound"
@@ -3259,6 +3438,18 @@ Function/S PSQ_Chirp_CheckParam(string name, string params)
 			val = AFH_GetAnalysisParamNumerical(name, params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
+			endif
+			break
+		case "SamplingFrequency":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0 && val <= 1000))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "SamplingMultiplier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SpikeCheck":
@@ -3287,9 +3478,11 @@ End
 
 /// @brief Return a list of required analysis functions for PSQ_Chirp()
 Function/S PSQ_Chirp_GetParams()
-	return "LowerRelativeBound:variable,UpperRelativeBound:variable," +                                  \
-           "[NumberOfChirpCycles:variable],[SpikeCheck:variable],[FailedLevel:variable]," +             \
-           "[DAScaleOperator:string],[DAScaleModifier:variable],[NumberOfFailedSweeps:variable]"
+	return "LowerRelativeBound:variable,UpperRelativeBound:variable," +                             \
+		   "[NumberOfChirpCycles:variable],[SpikeCheck:variable],[FailedLevel:variable]," +         \
+		   "[DAScaleOperator:string],[DAScaleModifier:variable],[NumberOfFailedSweeps:variable]," + \
+		   "[SamplingMultiplier:variable],[SamplingFrequency:variable]," +                          \
+		   "[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]"
 End
 
 /// @brief Analysis function for determining the impedance of the cell using a sine chirp stim set
@@ -3336,8 +3529,8 @@ Function PSQ_Chirp(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	variable lowerRelativeBound, upperRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk
-	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet
+	variable lowerRelativeBound, upperRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
+	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet, samplingFrequencyPassed
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
 	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck
@@ -3348,6 +3541,7 @@ Function PSQ_Chirp(panelTitle, s)
 	numberOfChirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", s.params, defValue = 1)
 	upperRelativeBound = AFH_GetAnalysisParamNumerical("UpperRelativeBound", s.params)
 	numSweepsFailedAllowed = AFH_GetAnalysisParamNumerical("NumberOfFailedSweeps", s.params, defValue = 3)
+	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params, defValue = PSQ_DEFAULT_SAMPLING_MULTIPLIER)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -3397,6 +3591,8 @@ Function PSQ_Chirp(panelTitle, s)
 
 		case PRE_SET_EVENT: // fallthrough-by-design
 			SetAnalysisFunctionVersion(panelTitle, PSQ_CHIRP, s.headstage, s.sweepNo)
+
+			PSQ_SetSamplingIntervalMultiplier(panelTitle, multiplier)
 
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			WAVE textualValues   = GetLBTextualValues(panelTitle)
@@ -3494,10 +3690,12 @@ Function PSQ_Chirp(panelTitle, s)
 			WAVE/Z spikeCheckPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			spikeCheckPassed = WaveExists(spikeCheckPassedLBN) ? spikeCheckPassedLBN[s.headstage] : 0
 
+			samplingFrequencyPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(panelTitle, PSQ_CHIRP, s)
+
 			if(spikeCheck)
-				sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && spikeCheckPassed == 1)
+				sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1 && spikeCheckPassed == 1)
 			else
-				sweepPassed = (baselineQCPassed == 1 && insideBounds == 1)
+				sweepPassed = (baselineQCPassed == 1 && insideBounds == 1 && samplingFrequencyPassed == 1)
 			endif
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
@@ -3528,6 +3726,9 @@ Function PSQ_Chirp(panelTitle, s)
 					RA_SkipSweeps(panelTitle, inf)
 				elseif(failsInSet >= numSweepsFailedAllowed)
 					// failed too many sweeps
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
+					RA_SkipSweeps(panelTitle, inf)
+				elseif(!samplingFrequencyPassed)
 					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf)
 				endif

@@ -6,15 +6,13 @@
 static Constant PSQ_RHEOBASE_TEST_DURATION = 2
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, finalDAScaleFake, device)
-	STRUCT DAQSettings& s
-	variable finalDAScaleFake
-	string device
+static Function AcquireData(STRUCT DAQSettings& s, variable finalDAScaleFake, string device, [FUNCREF CALLABLE_PROTO preAcquireFunc])
+	string stimset, unlockedPanelTitle
 
 	Make/O/N=(0) root:overrideResults/Wave=overrideResults
 	Note/K overrideResults
 	SetNumberInWaveNote(overrideResults, PSQ_RB_FINALSCALE_FAKE_KEY, finalDaScaleFake)
-	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
+	unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
 	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=device)
 	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
@@ -54,7 +52,10 @@ static Function AcquireData(s, finalDAScaleFake, device)
 	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
 	PGC_SetAndActivateControl(device, GetPanelControl(PSQ_TEST_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "Rheobase*")
+
+	stimset = "Rheobase_DA_0"
+	AdjustAnalysisParamsForPSQ(device, stimset)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimset)
 
 	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
@@ -62,7 +63,6 @@ static Function AcquireData(s, finalDAScaleFake, device)
 	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
 	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
-	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = "4")
 
 	if(!s.MD)
 		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
@@ -71,6 +71,10 @@ static Function AcquireData(s, finalDAScaleFake, device)
 	endif
 
 	DoUpdate/W=$device
+
+	if(!ParamIsDefault(preAcquireFunc))
+		preAcquireFunc(device)
+	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 	DB_OpenDatabrowser()
@@ -123,6 +127,18 @@ static Function/WAVE GetLimitedResolution_IGNORE(sweepNo, device)
 	return val
 End
 
+static Function/WAVE GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
+	variable sweepNo
+	string device
+
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SAMPLING_PASS, query = 1)
+	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB1([str])
 	string str
@@ -154,6 +170,9 @@ static Function PS_RB1_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -199,9 +218,6 @@ static Function PS_RB1_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
 End
 
-// we don't test the BL QC code path here anymore
-// as that is already done in the patchseq square pulse tests
-
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RB2([str])
 	string str
@@ -234,6 +250,9 @@ static Function PS_RB2_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -301,6 +320,9 @@ static Function PS_RB3_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
@@ -366,6 +388,9 @@ static Function PS_RB4_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1}, mode = WAVE_DATA)
@@ -433,6 +458,9 @@ static Function PS_RB5_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1}, mode = WAVE_DATA)
+
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1}, mode = WAVE_DATA)
 
@@ -498,6 +526,9 @@ static Function PS_RB6_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
@@ -565,6 +596,9 @@ static Function PS_RB7_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -634,6 +668,9 @@ static Function PS_RB8_REENTRY([str])
 	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1, 1}, mode = WAVE_DATA)
@@ -709,6 +746,9 @@ static Function PS_RB9_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
@@ -782,6 +822,9 @@ static Function PS_RB10_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1}, mode = WAVE_DATA)
+
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1}, mode = WAVE_DATA)
 
@@ -811,6 +854,91 @@ static Function PS_RB10_REENTRY([str])
 
 	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(limitedResolution, {1}, mode = WAVE_DATA, tol = 0.01)
+
+	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
+
+	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+End
+
+static Function PS_RB11_IGNORE(string device)
+	AFH_AddAnalysisParameter("Rheobase_DA_0", "SamplingFrequency", var=10)
+End
+
+// Same as PS_RB1 but with failing sampling frequency check
+//
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RB11([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str, preAcquireFunc = PS_RB11_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE)
+	// all tests fail, baseline QC and alternating spike finding
+	wv = 0
+End
+
+static Function PS_RB11_REENTRY([str])
+	string str
+
+	variable sweepNo, setPassed, i, numEntries, onsetDelay, initialDAScale
+	variable stepSize
+	string key
+
+	sweepNo = 0
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
+
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 0)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {0}, mode = WAVE_DATA)
+
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(baselineQCWave, {0}, mode = WAVE_DATA)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 1)
+
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	initialDAScale = GetLastSettingIndep(numericalValues, sweeps[0], key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
+
+	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+
+	Make/FREE/D/N=(numEntries) stimScaleRef = PSQ_GetFinalDAScaleFake() * 1e12
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA)
+
+	// no early abort on BL QC failure
+	onsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
+				 GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+
+	Make/FREE/N=(numEntries) stimSetLengths = GetLastSetting(numericalValues, sweeps[p], "Stim set length", DATA_ACQUISITION_MODE)[PSQ_TEST_HEADSTAGE]
+	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(str, sweeps[p]), ROWS)
+
+	sweepLengths[] -= onsetDelay / DimDelta(GetSweepWave(str, sweeps[p]), ROWS)
+
+	CHECK_EQUAL_WAVES(stimSetLengths, sweepLengths, mode = WAVE_DATA)
+
+	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
+	Make/N=(numEntries) durationsRef = 3
+	CHECK_EQUAL_WAVES(durations, durationsRef, mode = WAVE_DATA, tol = 0.01)
+
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(stepSize, PSQ_RB_DASCALE_STEP_LARGE)
+
+	WAVE/Z limitedResolution = GetLimitedResolution_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(limitedResolution, {0}, mode = WAVE_DATA, tol = 0.01)
 
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingLongRHSweep(str, PSQ_TEST_HEADSTAGE, PSQ_RHEOBASE_TEST_DURATION), -1)
 
