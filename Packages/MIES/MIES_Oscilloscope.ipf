@@ -12,7 +12,7 @@
 static Constant SCOPE_TIMEAXIS_RESISTANCE_RANGE = 120
 static Constant SCOPE_GREEN                     = 26122
 static Constant SCOPE_BLUE                      = 39168
-static StrConstant RES_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%d], numMinSignDigits = 2)}\\]1\\K(0, 0, 0)"
+static StrConstant RES_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%%%s][%d], numMinSignDigits = 2)}\\]1\\K(0, 0, 0)"
 static Constant PRESSURE_SPECTRUM_PERCENT       = 0.05
 
 Function/S SCOPE_GetGraph(panelTitle)
@@ -204,7 +204,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	string steadyStateTrace, peakTrace, adcStr
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, resPosPercY
 	variable testPulseLength, cutOff, sampInt, axisMinTop, axisMaxTop
-	variable headStage, activeHeadStage, showPowerSpectrum
+	variable headStage, activeHeadStage, showPowerSpectrum, baselineFrac, pulseLength
 	STRUCT RGBColor peakColor
 	STRUCT RGBColor steadyColor
 
@@ -213,12 +213,12 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	scopeScaleMode = DAG_GetNumericalValue(panelTitle, "Popup_Settings_OsciUpdMode")
 
 	WAVE DAQConfigWave      = GetDAQConfigWave(panelTitle)
-	WAVE SSResistance       = GetSSResistanceWave(panelTitle)
-	WAVE InstResistance     = GetInstResistanceWave(panelTitle)
 	WAVE TPStorage          = GetTPStorage(panelTitle)
 	WAVE OscilloscopeData   = GetOscilloscopeWave(panelTitle)
 	WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
 	WAVE PressureData       = P_GetPressureDataWaveRef(panelTitle)
+	WAVE TPSettings         = GetTPSettings(panelTitle)
+	WAVE TPResults          = GetTPResults(panelTitle)
 
 	WAVE ADCmode = GetADCTypesFromConfig(DAQConfigWave)
 	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
@@ -348,9 +348,9 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			endif
 
 			resPosPercY = 100 * (1 - ((YaxisHigh - YaxisLow) / 2 + YaxisLow))
-			sprintf str, RES_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue, GetWavesDataFolder(SSResistance, 2), headstage
+			sprintf str, RES_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue, GetWavesDataFolder(TPResults, 2), "ResistanceSteadyState", headstage
 			TextBox/W=$graph/A=RT/B=1/F=0/X=-10 /Y=(resPosPercY - 1) str
-			sprintf str, RES_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue, GetWavesDataFolder(InstResistance, 2), headstage
+			sprintf str, RES_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue, GetWavesDataFolder(TPResults, 2), "ResistanceInst", headstage
 			TextBox/W=$graph/A=RT/B=1/F=0/X=-10 /Y=(resPosPercY + 1) str
 
 		endif
@@ -371,11 +371,11 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		ModifyGraph/W=$graph freePos(bottomPS)=0
 	elseif(gotTPChan)
 		Label/W=$graph bottomTP "Time TP (\\U)"
-		sampInt = DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000
-		testPulseLength = ROVar(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) * sampInt
-		NVAR duration = $GetTestpulseDuration(panelTitle)
-		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-		cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
+		WAVE TPSettingsCalc = GetTPSettingsCalculated(panelTitle)
+		testPulseLength = TPSettingsCalc[%totalLengthMS]
+		pulseLength = TPSettingsCalc[%pulseLengthMS]
+		baselineFrac = TPSettingsCalc[%baselineFrac]
+		cutOff = max(0, baseLineFrac * testPulseLength - pulseLength/2)
 		SetAxis/W=$graph bottomTP cutOff, testPulseLength - cutOff
 		ModifyGraph/W=$graph freePos(bottomTP)=0
 	endif
@@ -482,7 +482,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 	string osciUnits
 	variable i, j
 	variable tpChannels, numADCs, numDACs, tpLengthPoints, tpStart, tpEnd, tpStartPos
-	variable TPChanIndex, saveTP, sampleInt
+	variable TPChanIndex, saveTP, sampleInt, clampAmp
 	variable headstage, fifoLatest
 	string hsList
 
@@ -517,15 +517,16 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 
 	if(tpChannels)
 		saveTP = DAG_GetNumericalValue(panelTitle, "check_Settings_TP_SaveTP")
+		WAVE TPSettings     = GetTPSettings(panelTitle)
+		WAVE TPSettingsCalc = GetTPSettingsCalculated(panelTitle)
 
-		tpLengthPoints = ROVAR(GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP))
+		tpLengthPoints = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%totalLengthPointsTP] : TPSettingsCalc[%totalLengthPointsDAQ]
+
 		// use a 'virtual' end position for fifoLatest for TP Mode since the input data contains one TP only
 		fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
 
 		WAVE ADCs = GetADCListFromConfig(config)
 		WAVE hsProp = GetHSProperties(panelTitle)
-		NVAR duration = $GetTestpulseDuration(panelTitle)
-		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 
 		WAVE scaledDataWave = GetScaledDataWave(panelTitle)
 		sampleInt = DimDelta(scaledDataWave, ROWS)
@@ -539,8 +540,8 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 		SetScale/P x, 0, sampleInt, osciUnits, channelData
 
 		tpInput.panelTitle = panelTitle
-		tpInput.duration = duration
-		tpInput.baselineFrac = baselineFrac
+		tpInput.duration = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%pulseLengthPointsTP] : TPSettingsCalc[%pulseLengthPointsDAQ]
+		tpInput.baselineFrac = TPSettingsCalc[%baselineFrac]
 		tpInput.tpLengthPoints = tpLengthPoints
 		tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
 		tpInput.activeADCs = tpChannels
@@ -574,9 +575,9 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 
 					headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
 					if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
-						NVAR clampAmp=$GetTPAmplitudeIC(panelTitle)
+						clampAmp = TPSettings[%amplitudeIC][INDEP_HEADSTAGE]
 					else
-						NVAR clampAmp=$GetTPAmplitudeVC(panelTitle)
+						clampAmp = TPSettings[%amplitudeVC][INDEP_HEADSTAGE]
 					endif
 					tpInput.clampAmp = clampAmp
 					tpInput.clampMode = hsProp[headstage][%ClampMode]
@@ -692,7 +693,8 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 	WAVE allGain = SWS_GETChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		length = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
+		WAVE TPSettingsCalc = GetTPSettingsCalculated(panelTitle)
+		length = TPSettingsCalc[%totalLengthPointsTP]
 		first  = chunk * length
 		last   = first + length - 1
 		ASSERT(first >= 0 && last < DimSize(DAQDataWave, ROWS) && first < last, "Invalid wave subrange")

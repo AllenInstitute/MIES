@@ -281,13 +281,6 @@ Function/S GetDAQDeviceID(panelTitle)
 	return GetNVARAsString(GetDevicePath(panelTitle), "deviceID", initialValue=NaN)
 End
 
-/// @brief Returns the absolute path to the testpulse averaging buffer size
-Function/S GetTPBufferSizeGlobal(panelTitle)
-	string panelTitle
-
-	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "n", initialValue=NaN)
-End
-
 /// @brief Returns the absolute path to the global variable `count` storing the
 ///        number of data acquisition cycles performed.
 ///
@@ -296,28 +289,6 @@ Function/S GetCount(panelTitle)
 	string panelTitle
 
 	return GetNVARAsString(GetDevicePath(panelTitle), "count", initialValue=0)
-End
-
-/// @brief Return the absolute path to the testpulse duration variable
-///
-/// The duration is for a single pulse only without baseline.
-///
-/// The duration is *not* in units of time but in number of points for
-/// the real (compared to #HARDWARE_ITC_MIN_SAMPINT/#HARDWARE_NI_DAC_MIN_SAMPINT) sampling interval
-Function/S GetTestpulseDuration(panelTitle)
-	string panelTitle
-
-	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "duration", initialValue=NaN)
-End
-
-/// @brief Return the absolute path to the testpulse baseline fraction variable
-///
-/// The returned value is the fraction which the baseline occupies relative to the total
-/// testpulse length, before and after the pulse itself.
-Function/S GetTestpulseBaselineFraction(panelTitle)
-	string panelTitle
-
-	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "baselineFrac", initialValue=NaN)
 End
 
 /// @brief Returns the list of locked device panels
@@ -423,27 +394,6 @@ Function/S GetNITestPulseCounter(panelTitle)
 	string panelTitle
 
 	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "NITestPulseCounter", initialValue=0)
-End
-
-/// @brief Returns TestPulse pulseDuration in ms
-Function/S GetTPPulseDuration(panelTitle)
-	string panelTitle
-
-	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "pulseDuration", initialValue=NaN)
-End
-
-/// @brief Returns TestPulse amplitude in voltage clamp mode in mV
-Function/S GetTPAmplitudeVC(panelTitle)
-	string panelTitle
-
-	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "AmplitudeVC", initialValue=NaN)
-End
-
-/// @brief Returns TestPulse amplitude in current clamp mode in pA
-Function/S GetTPAmplitudeIC(panelTitle)
-	string panelTitle
-
-	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "AmplitudeIC", initialValue=NaN)
 End
 
 /// @brief Returns the current NI setup string for analog in through DAQmx_Scan
@@ -619,32 +569,6 @@ Function/S GetPxPVersionForAB(dfr)
 	DFREF dfr
 
 	return GetNVARAsString(dfr, "pxpVersion", initialValue = NaN)
-End
-
-/// @brief Wrapper for fast access during DAQ/TP for TP_GetTestPulseLengthInPoints().
-///
-/// Can only be called during DAQ/TP, returns the same data as
-/// TP_GetTestPulseLengthInPoints().
-///
-/// @param panelTitle device
-/// @param mode       one of @ref DataAcqModes
-Function/S GetTestpulseLengthInPoints(panelTitle, mode)
-	string panelTitle
-	variable mode
-
-	switch(mode)
-		case TEST_PULSE_MODE:
-			DFREF dfr = GetDeviceTestPulse(panelTitle)
-			break
-		case DATA_ACQUISITION_MODE:
-			DFREF dfr = GetDevicePath(panelTitle)
-			break
-		default:
-			ASSERT(0, "Invalid mode")
-			break
-	endswitch
-
-	return GetNVARAsString(dfr, "testpulseLengthInPoints", initialValue=NaN)
 End
 
 /// @brief Return the JSON ID for the sweep formula

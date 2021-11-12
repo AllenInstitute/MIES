@@ -638,12 +638,10 @@ Function ED_TPDocumentation(panelTitle)
 
 	variable sweepNo, RTolerance
 	variable i, j
+
 	WAVE hsProp = GetHSProperties(panelTitle)
-
-	WAVE BaselineSSAvg = GetBaselineAverage(panelTitle)
-	WAVE InstResistance = GetInstResistanceWave(panelTitle)
-	WAVE SSResistance = GetSSResistanceWave(panelTitle)
-
+	WAVE TPSettings = GetTPsettings(panelTitle)
+	WAVE TPResults = GetTPResults(panelTitle)
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	Make/FREE/T/N=(3, 12) TPKeyWave
@@ -677,7 +675,7 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[1][10] = ""
 	TPKeyWave[1][11] = ""
 
-	RTolerance = DAG_GetNumericalValue(panelTitle, "setvar_Settings_TP_RTolerance")
+	RTolerance = TPSettings[%resistanceTol][INDEP_HEADSTAGE]
 	TPKeyWave[2][0]  = "1" // Assume a tolerance of 1 mV for V rest
 	TPKeyWave[2][1]  = "50" // Assume a tolerance of 50pA for I rest
 	TPKeyWave[2][2]  = num2str(RTolerance) // applies the same R tolerance for the instantaneous and steady state resistance
@@ -691,8 +689,8 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = LABNOTEBOOK_NO_TOLERANCE
 
-	TPSettingsWave[0][2][0, NUM_HEADSTAGES - 1]  = InstResistance[r]
-	TPSettingsWave[0][3][0, NUM_HEADSTAGES - 1]  = SSResistance[r]
+	TPSettingsWave[0][2][0, NUM_HEADSTAGES - 1]  = TPResults[%ResistanceInst][r]
+	TPSettingsWave[0][3][0, NUM_HEADSTAGES - 1]  = TPResults[%ResistanceSteadyState][r]
 
 	TPSettingsWave[0][8][0, NUM_HEADSTAGES - 1] = statusHS[r]
 
@@ -716,8 +714,8 @@ Function ED_TPDocumentation(panelTitle)
 		TPSettingsWave[0][7][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN, selectAmp = 0)
 	endfor
 
-	TPSettingsWave[0][1][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? BaselineSSAvg[r] : NaN
-	TPSettingsWave[0][0][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == I_CLAMP_MODE ? BaselineSSAvg[r] : NaN
+	TPSettingsWave[0][1][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? TPResults[%BaselineSteadyState][r] : NaN
+	TPSettingsWave[0][0][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == I_CLAMP_MODE ? TPResults[%BaselineSteadyState][r] : NaN
 
 	TPSettingsWave[0][9][0, NUM_HEADSTAGES - 1]  = hsProp[r][%DAC]
 	TPSettingsWave[0][10][0, NUM_HEADSTAGES - 1] = hsProp[r][%ADC]
@@ -737,41 +735,9 @@ End
 /// @param panelTitle      device
 /// @param sweepNo         sweep number
 /// @param entrySourceType type of reporting subsystem, one of @ref DataAcqModes
-static Function ED_TPSettingsDocumentation(panelTitle, sweepNo, entrySourceType)
-	string panelTitle
-	variable sweepNo, entrySourceType
+static Function ED_TPSettingsDocumentation(string panelTitle, variable sweepNo, variable entrySourceType)
+	WAVE TPSettingsLBN        = GetTPSettingsLabnotebook(panelTitle)
+	WAVE TPSettingsLBNKeyWave = GetTPSettingsLabnotebookKeyWave(panelTitle)
 
-	NVAR pulseDuration = $GetTPPulseDuration(panelTitle)
-	NVAR AmplitudeVC = $GetTPAmplitudeVC(panelTitle)
-	NVAR AmplitudeIC = $GetTPAmplitudeIC(panelTitle)
-	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-
-	Make/FREE/T/N=(3, 4) TPKeyWave
-	Make/FREE/N=(1, 4, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
-
-	// name
-	TPKeyWave[0][0] = "TP Baseline Fraction" // fraction of total TP duration
-	TPKeyWave[0][1] = "TP Amplitude VC"
-	TPKeyWave[0][2] = "TP Amplitude IC"
-	TPKeyWave[0][3] = "TP Pulse Duration"
-
-	// unit
-	TPKeyWave[1][0] = ""
-	TPKeyWave[1][1] = ""
-	TPKeyWave[1][2] = ""
-	TPKeyWave[1][3] = "ms"
-
-	// tolerance
-	TPKeyWave[2][0] = ""
-	TPKeyWave[2][1] = ""
-	TPKeyWave[2][2] = ""
-	TPKeyWave[2][3] = ""
-
-	// the settings are valid for all headstages
-	TPSettingsWave[0][0][INDEP_HEADSTAGE] = baselineFrac
-	TPSettingsWave[0][1][INDEP_HEADSTAGE] = AmplitudeVC
-	TPSettingsWave[0][2][INDEP_HEADSTAGE] = AmplitudeIC
-	TPSettingsWave[0][3][INDEP_HEADSTAGE] = pulseDuration
-
-	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, entrySourceType)
+	ED_AddEntriesToLabnotebook(TPSettingsLBN, TPSettingsLBNKeyWave, sweepNo, panelTitle, entrySourceType)
 End

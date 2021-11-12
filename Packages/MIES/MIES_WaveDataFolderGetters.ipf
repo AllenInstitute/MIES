@@ -446,19 +446,27 @@ End
 /// Column 4: baseline position
 /// Column 5: steady state res position
 /// Column 6: instantaneous res position
-///   - Layers NUM_HEADSTAGES positions with value entries at hsIndex
+/// Column 7: average elevated level (steady state)
+/// Column 8: average elevated level (instantaneous)
+///
+/// Layers:
+/// - NUM_HEADSTAGES positions with value entries at hsIndex
 Function/Wave GetTPResultAsyncBuffer(panelTitle)
 	string panelTitle
+
+	variable versionOfNewWave = 1
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 
 	Wave/Z/SDFR=dfr/D wv = TPResultAsyncBuffer
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 9, -1) wv
+	else
+		Make/N=(0, 9, NUM_HEADSTAGES)/D dfr:TPResultAsyncBuffer/Wave=wv
 	endif
-
-	Make/N=(0, 7, NUM_HEADSTAGES)/D dfr:TPResultAsyncBuffer/Wave=wv
 
 	SetDimLabel COLS, 0, ASYNCDATA, wv
 	SetDimLabel COLS, 1, BASELINE, wv
@@ -467,9 +475,14 @@ Function/Wave GetTPResultAsyncBuffer(panelTitle)
 	SetDimLabel COLS, 4, BASELINE_POS, wv
 	SetDimLabel COLS, 5, STEADYSTATERES_POS, wv
 	SetDimLabel COLS, 6, INSTANTRES_POS, wv
+	SetDimLabel COLS, 7, ELEVATED_SS, wv
+	SetDimLabel COLS, 8, ELEVATED_INST, wv
+
 	SetDimLabel LAYERS, 0, MARKER, wv
 	SetDimLabel LAYERS, 1, REC_CHANNELS, wv
 	SetDimLabel LAYERS, 2, NOW, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
@@ -2538,233 +2551,78 @@ Function/WAVE GetStoredTestPulseWave(panelTitle)
 	return wv
 End
 
-/// @brief Return the testpulse instantenous resistance wave
+/// @brief Return the testpulse results wave
 ///
-/// The rows have NUM_HEADSTAGES size and are initialized with NaN
+/// Rows:
+/// - Resistance Instantaneous: [MOhm]
+/// - Baseline Steady State: [mV] for IC, [pA] for VC
+/// - Resistance Steady State: [MOhm]
+/// - Elevated Steady State: [mV] for IC, [pA] for VC
+/// - Elevated Instantaneous: [mV] for IC, [pA] for VC
 ///
-/// Version 1:
-/// - stores number of headstages entrys, NaN when headstage not active
-/// Version 2:
-/// - upgraded precision to double
+/// Columns:
+/// - NUM_HEADSTAGES
+Function/Wave GetTPResults(string panelTitle)
+	variable version = 2
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = results
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+		return wv
+	elseif(WaveExists(wv))
+		// do upgrade
+	else
+		Make/D/N=(5, NUM_HEADSTAGES) dfr:results/Wave=wv
+		wv = NaN
+
+		SetDimensionLabels(wv, "ResistanceInst;BaselineSteadyState;ResistanceSteadyState;ElevatedSteadyState;ElevatedInst", ROWS)
+
+		// initialize with the old 1D waves
+		WAVE/D/Z/SDFR=dfr InstResistance, BaselineSSAvg, SSResistance
+
+		wv[%ResistanceInst][]        = WaveExists(InstResistance) ? InstResistance[q] : NaN
+		wv[%BaselineSteadyState][]   = WaveExists(BaselineSSAvg) ? BaselineSSAvg[q] : NaN
+		wv[%ResistanceSteadyState][] = WaveExists(SSResistance) ? SSResistance[q] : NaN
+
+		// and get rid of them
+		KillOrMoveToTrash(wv = InstResistance)
+		KillOrMoveToTrash(wv = BaselineSSAvg)
+		KillOrMoveToTrash(wv = SSResistance)
+	endif
+
+	SetWaveVersion(wv, version)
+
+	return wv
+End
+
+/// @brief Return the testpulse results buffer wave
 ///
-/// Unit: MOhm (1e6 Ohm)
-Function/Wave GetInstResistanceWave(panelTitle)
+/// Same layout as GetTPResults() but as many layers as the buffer size.
+Function/Wave GetTPResultsBuffer(panelTitle)
 	string panelTitle
 
 	variable version = 2
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = InstResistance
+	WAVE/D/Z/SDFR=dfr wv = resultsBuffer
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
-
 		return wv
-
 	elseif(WaveExists(wv))
-		// Unversioned wave stored only active headstages
-		Redimension/D/N=(NUM_HEADSTAGES) wv
-		wv = NaN
-
+		// do upgrade
 	else
+		WAVE TPResults = GetTPResults(panelTitle)
+		WAVE TPSettings = GetTPSettings(panelTitle)
 
-		Make/D/N=(NUM_HEADSTAGES) dfr:InstResistance/Wave=wv
+		Duplicate TPResults, dfr:resultsBuffer/WAVE=wv
+		Redimension/N=(-1, -1, TPSettings[%bufferSize][INDEP_HEADSTAGE]) wv
+
 		wv = NaN
-
 	endif
 
 	SetWaveVersion(wv, version)
-
-	return wv
-End
-
-/// @brief Return the testpulse steady state average
-///
-/// The rows have NUM_HEADSTAGES size and are initialized with NaN
-///
-/// Version 1:
-/// - stores number of headstages entrys, NaN when headstage not active
-/// Version 2:
-/// - upgraded precision to double
-///
-/// Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
-Function/Wave GetBaselineAverage(panelTitle)
-	string panelTitle
-
-	variable version = 2
-
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = BaselineSSAvg
-
-	if(ExistsWithCorrectLayoutVersion(wv, version))
-
-		return wv
-
-	elseif(WaveExists(wv))
-		// Unversioned wave stored only active headstages
-		Redimension/D/N=(NUM_HEADSTAGES) wv
-		wv = NaN
-
-	else
-
-		Make/D/N=(NUM_HEADSTAGES) dfr:BaselineSSAvg/Wave=wv
-		wv = NaN
-
-	endif
-
-	SetWaveVersion(wv, version)
-
-	return wv
-End
-
-/// @brief Return the testpulse steady state resistance wave
-///
-/// The rows have NUM_HEADSTAGES size and are initialized with NaN
-///
-/// Version 1:
-/// - stores number of headstages entrys, NaN when headstage not active
-/// Version 2:
-/// - upgraded precision to double
-///
-/// Unit: MOhm (1e6 Ohm)
-Function/Wave GetSSResistanceWave(panelTitle)
-	string panelTitle
-
-	variable version = 2
-
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = SSResistance
-
-	if(ExistsWithCorrectLayoutVersion(wv, version))
-
-		return wv
-
-	elseif(WaveExists(wv))
-		// Unversioned wave stored only active headstages
-		Redimension/D/N=(NUM_HEADSTAGES) wv
-		wv = NaN
-
-	else
-
-		Make/D/N=(NUM_HEADSTAGES) dfr:SSResistance/Wave=wv
-		wv = NaN
-
-	endif
-
-	SetWaveVersion(wv, version)
-
-	return wv
-End
-
-/// @brief Return the testpulse baseline running box average buffer
-///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-/// Currently the initialization and resize is done in TP_CreateTPAvgBuffer()
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
-///
-/// Version 1:
-/// - upgraded precision to double
-///
-/// Unit: Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
-Function/Wave GetGetBaselineBuffer(panelTitle)
-	string panelTitle
-
-	variable version = 1
-
-	dfref dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = TPBaselineBuffer
-
-	if(ExistsWithCorrectLayoutVersion(wv, version))
-
-		return wv
-
-	elseif(WaveExists(wv))
-
-		Redimension/D/N=(-1, -1) wv
-
-	else
-
-		Make/D/N=(0, 0) dfr:TPBaselineBuffer/Wave=wv
-
-	endif
-
-	SetWaveVersion(wv, version)
-
-	return wv
-End
-
-/// @brief Return the testpulse instantaneous resistance running box average buffer
-///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-/// Currently the initialization and resize is done in TP_CreateTPAvgBuffer()
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
-///
-/// Version 1:
-/// - upgraded precision to double
-///
-/// Unit: MOhm (1e6 Ohm)
-Function/Wave GetInstantaneousBuffer(panelTitle)
-	string panelTitle
-
-	variable version = 1
-
-	dfref dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = TPInstBuffer
-
-	if(ExistsWithCorrectLayoutVersion(wv, version))
-
-		return wv
-
-	elseif(WaveExists(wv))
-
-		Redimension/D/N=(-1, -1) wv
-
-	else
-
-		Make/D/N=(0, 0) dfr:TPInstBuffer/Wave=wv
-
-	endif
-
-	SetWaveVersion(wv, version)
-
-	return wv
-End
-
-/// @brief Return the testpulse steady state resistance running box average buffer
-///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-/// Currently the initialization and resize is done in TP_CreateTPAvgBuffer()
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
-///
-/// Version 1:
-/// - upgraded precision to double
-///
-/// Unit: MOhm (1e6 Ohm)
-Function/Wave GetSteadyStateBuffer(panelTitle)
-	string panelTitle
-
-	variable version = 1
-
-	dfref dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/D/Z/SDFR=dfr wv = TPSSBuffer
-
-	if(ExistsWithCorrectLayoutVersion(wv, version))
-
-		return wv
-
-	elseif(WaveExists(wv))
-
-		Redimension/D/N=(-1, -1) wv
-
-	else
-
-		Make/D/N=(0, 0) dfr:TPSSBuffer/Wave=wv
-
-	endif
-
-	SetWaveVersion(wv, version)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
 End
@@ -6901,6 +6759,158 @@ Function/WAVE GetYandXFormulas()
 
 	SetDimLabel COLS, 0, FORMULA_X, wv
 	SetDimLabel COLS, 1, FORMULA_Y, wv
+
+	return wv
+End
+
+/// @brief Return the testpulse GUI settings
+///
+/// Rows:
+/// - Buffer size: Number of elements to average
+/// - Resistance tolerance: Tolerance for labnotebook change reporting of resistance values, see GetTPResults()
+/// - Baseline percentage:
+///       Fraction which the baseline occupies relative to the total
+///       testpulse length, before and after the pulse itself.
+/// - Pulse duration [ms]
+/// - Amplitude VC
+/// - Amplitude IC
+///
+/// Columns:
+/// - LABNOTEBOOK_LAYER_COUNT
+Function/WAVE GetTPSettings(string panelTitle)
+
+	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+
+	WAVE/Z/SDFR=dfr/D wv = settings
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// do upgrade
+	else
+		Make/N=(6, LABNOTEBOOK_LAYER_COUNT)/D dfr:settings/WAVE=wv
+		wv = NaN
+	endif
+
+	SetDimensionLabels(wv, "bufferSize;resistanceTol;baselinePerc;durationMS;amplitudeVC;amplitudeIC", ROWS)
+	DAP_TPSettingsToWave(panelTitle, wv)
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return the calculated/derived TP settings
+///
+/// The entries in this wave are only valid during DAQ/TP and are updated via DC_UpdateGlobals().
+Function/WAVE GetTPSettingsCalculated(string panelTitle)
+
+	variable versionOfNewWave = 1
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+
+	WAVE/Z/SDFR=dfr/D wv = settingsCalculated
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// do upgrade
+	else
+		Make/N=(7)/D dfr:settingsCalculated/WAVE=wv
+		wv = NaN
+	endif
+
+	SetDimensionLabels(wv, "baselineFrac;pulseLengthMS;pulseLengthPointsTP;pulseLengthPointsDAQ;totalLengthMS;totalLengthPointsTP;totalLengthPointsDAQ", ROWS)
+
+	return wv
+End
+
+static Constant TP_SETTINGS_WAVE_VERSION = 1
+
+/// @brief Returns a wave reference to the TP settings key wave
+///
+/// Rows:
+/// - 0: Parameter
+/// - 1: Units
+/// - 2: Tolerance Factor
+///
+/// Columns:
+/// - 0: TP Baseline Fraction
+/// - 1: TP Amplitude VC
+/// - 2: TP Amplitude IC
+/// - 3: TP Pulse Duration
+Function/WAVE GetTPSettingsLabnotebookKeyWave(string panelTitle)
+
+	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
+
+	DFREF dfr = GetDevSpecLabNBTempFolder(panelTitle)
+	WAVE/Z/SDFR=dfr/T wv = TPSettingsKeyWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 4) wv
+	else
+		Make/T/N=(3, 4) dfr:TPSettingsKeyWave/Wave=wv
+	endif
+
+	wv = ""
+
+	SetDimLabel 0, 0, Parameter, wv
+	SetDimLabel 0, 1, Units, wv
+	SetDimLabel 0, 2, Tolerance, wv
+
+	wv[%Parameter][0] = "TP Baseline Fraction" // fraction of total TP duration
+	wv[%Units][0]     = ""
+	wv[%Tolerance][0] = ""
+
+	wv[%Parameter][1] = "TP Amplitude VC"
+	wv[%Units][1]     = ""
+	wv[%Tolerance][1] = ""
+
+	wv[%Parameter][2] = "TP Amplitude IC"
+	wv[%Units][2]     = ""
+	wv[%Tolerance][2] = ""
+
+	wv[%Parameter][3] = "TP Pulse Duration"
+	wv[%Units][3]     = "ms"
+	wv[%Tolerance][3] = ""
+
+	return wv
+End
+
+/// @brief Get TP settings wave for the labnotebook
+///
+/// See GetTPSettingsLabnotebookKeyWave() for the dimension label description.
+Function/Wave GetTPSettingsLabnotebook(string panelTitle)
+
+	variable numCols
+	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
+
+	DFREF dfr = GetDevSpecLabNBTempFolder(panelTitle)
+	WAVE/Z/SDFR=dfr/D wv = TPSettings
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	endif
+
+	WAVE/T keyWave = GetTPSettingsLabnotebookKeyWave(panelTitle)
+	numCols = DimSize(keyWave, COLS)
+
+	if(WaveExists(wv))
+		Redimension/D/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
+	else
+		Make/D/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) dfr:TPSettings/Wave=wv
+	endif
+
+	wv = NaN
+
+	SetSweepSettingsDimLabels(wv, keyWave)
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End

@@ -227,10 +227,9 @@ Function IVS_FinishBaselineQCCheck(s)
 		return 0
 	endif
 
-	// grab the baseline avg value
-	WAVE BaselineSSAvg = GetBaselineAverage(panelTitle)
+	WAVE TPResults = GetTPResults(panelTitle)
 
-	baselineAverage = BaselineSSAvg[headstage]
+	baselineAverage = TPResults[%BaselineSteadyState][headstage]
 
 	printf "baseline Average: %g\r", baselineAverage
 
@@ -309,12 +308,10 @@ Function IVS_finishInitAccessQCCheck(s)
 		return 0
 	endif
 
-	// and grab the initial resistance avg value
-	WAVE InstResistance = GetInstResistanceWave(panelTitle)
-	WAVE SSResistance = GetSSResistanceWave(panelTitle)
+	WAVE TPResults = GetTPResults(panelTitle)
 
-	instResistanceVal = InstResistance[headstage]
-	ssResistanceVal = SSResistance[headstage]
+	instResistanceVal = TPResults[%ResistanceInst][headstage]
+	ssResistanceVal = TPResults[%ResistanceSteadyState][headstage]
 
 	printf "Initial Access Resistance: %g\r", instResistanceVal
 	printf "SS Resistance: %g\r", ssResistanceVal
@@ -430,9 +427,8 @@ Function IVS_finishGigOhmSealQCCheck(s)
 		return 0
 	endif
 
-	// and grab the Steady State Resistance
-	WAVE SSResistance = GetSSResistanceWave(panelTitle)
-	ssResistanceVal = SSResistance[headstage]
+	WAVE TPResults = GetTPResults(panelTitle)
+	ssResistanceVal = TPResults[%ResistanceSteadyState][headstage]
 
 	printf "Steady State Resistance: %g\r", ssResistanceVal
 
@@ -452,7 +448,7 @@ Function IVS_finishGigOhmSealQCCheck(s)
 		endif
 	catch
 		ClearRTError()
-		ssResistanceVal = SSResistance[headstage]
+		ssResistanceVal = TPResults[%ResistanceSteadyState][headstage]
 
 		printf "Second Pass: Steady State Resistance: %g\r", ssResistanceVal
 

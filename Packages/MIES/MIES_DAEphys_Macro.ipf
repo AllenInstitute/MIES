@@ -738,7 +738,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_TPBaselinePerc,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_TPBaselinePerc,userdata(Config_GroupPath)="Test Pulse"
 	SetVariable SetVar_DataAcq_TPBaselinePerc,limits={25,49,1},value=_NUM:35
-	SetVariable SetVar_DataAcq_TPAmplitude,pos={300.00,417.00},size={69.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TPAmp
+	SetVariable SetVar_DataAcq_TPAmplitude,pos={300.00,417.00},size={69.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
 	SetVariable SetVar_DataAcq_TPAmplitude,title="VC"
 	SetVariable SetVar_DataAcq_TPAmplitude,help={"Amplitude of the testpulse in voltage clamp mode"}
 	SetVariable SetVar_DataAcq_TPAmplitude,userdata(tabnum)="0"
@@ -2402,7 +2402,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_SweepsActiveSet,value=_NUM:1
-	SetVariable SetVar_DataAcq_TPAmplitudeIC,pos={373.00,417.00},size={65.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TPAmp
+	SetVariable SetVar_DataAcq_TPAmplitudeIC,pos={373.00,417.00},size={65.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,title="IC"
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,help={"Amplitude of the testpulse in current clamp mode"}
 	SetVariable SetVar_DataAcq_TPAmplitudeIC,userdata(tabnum)="0"
@@ -3322,7 +3322,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq_Get_Set_ITI,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_DataAcq_Get_Set_ITI,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq_Get_Set_ITI,value=1
-	SetVariable setvar_Settings_TPBuffer,pos={334.00,108.00},size={124.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVar_UpdateGuiState
+	SetVariable setvar_Settings_TPBuffer,pos={334.00,108.00},size={124.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
 	SetVariable setvar_Settings_TPBuffer,title="TP Buffer size",userdata(tabnum)="5"
 	SetVariable setvar_Settings_TPBuffer,userdata(tabcontrol)="ADC"
 	SetVariable setvar_Settings_TPBuffer,userdata(ResizeControlsInfo)=A"!!,H]J,hpi!!#@^!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3338,7 +3338,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_SaveAmpSettings,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_Settings_SaveAmpSettings,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_SaveAmpSettings,value=1
-	SetVariable setvar_Settings_TP_RTolerance,pos={313.00,84.00},size={145.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVar_UpdateGuiState
+	SetVariable setvar_Settings_TP_RTolerance,pos={313.00,84.00},size={145.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
 	SetVariable setvar_Settings_TP_RTolerance,title="Min delta R (MΩ)"
 	SetVariable setvar_Settings_TP_RTolerance,help={"Sets the minimum delta required for TP resistance values to be appended as a wave note to the data sweep. TP resistance values are always documented in the Lab Note Book."}
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabnum)="5"

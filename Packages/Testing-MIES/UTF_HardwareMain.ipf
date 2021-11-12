@@ -424,14 +424,15 @@ End
 ///        as reentry part of the given test case.
 ///
 /// Does nothing if the reentry function does not exist. Supports both plain test cases and multi data test cases
-/// accepting string arguments.
+/// accepting string/ref wave arguments.
 Function RegisterReentryFunction(string testcase)
 
 	string reentryFuncName = testcase + "_REENTRY"
 	FUNCREF TEST_CASE_PROTO reentryFuncPlain = $reentryFuncName
 	FUNCREF TEST_CASE_PROTO_MD_STR reentryFuncMDStr = $reentryFuncName
+	FUNCREF TEST_CASE_PROTO_MD_WVWAVEREF reentryFuncRefWave = $reentryFuncName
 
-	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)))
+	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncRefWave)))
 		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
 		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600, failOnTimeout = 1)
@@ -1165,4 +1166,16 @@ Function/S GetExperimentNWBFileForExport()
 	CHECK(cmpstr(experimentName, UNTITLED_EXPERIMENT))
 
 	return S_path + experimentName + ".nwb"
+End
+
+Function StopTPWhenWeHaveOne(STRUCT WMBackgroundStruct &s)
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
+
+	if(TP_TestPulseHasCycled(device, 1))
+		PGC_SetAndActivateControl(device, "StartTestPulseButton")
+		return 1
+	endif
+
+	return 0
 End

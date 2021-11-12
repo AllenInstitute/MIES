@@ -20,7 +20,7 @@ Function DQM_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
 	variable deviceID, isFinished, hardwareType
-	variable i, j, err, fifoLatest, result, channel, lastTP, tpLengthPoints, gotTPChannels
+	variable i, j, err, fifoLatest, result, channel, lastTP, gotTPChannels
 	variable bufferSize
 	string panelTitle, fifoChannelName, fifoName, errMsg
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
@@ -30,6 +30,8 @@ Function DQM_FIFOMonitor(s)
 		deviceID   = ActiveDeviceList[i][%DeviceID]
 		hardwareType = ActiveDeviceList[i][%HardwareType]
 		panelTitle = HW_GetMainDeviceName(hardwareType, deviceID)
+
+		WAVE TPSettingsCalc = GetTPSettingsCalculated(panelTitle)
 
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
@@ -79,8 +81,7 @@ Function DQM_FIFOMonitor(s)
 				// Update ActiveChunk Entry for ITC, not used in DAQ mode
 				gotTPChannels = GotTPChannelsOnADCs(paneltitle)
 				if(gotTPChannels)
-					tpLengthPoints = ROVar(GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE))
-					lastTP = trunc(fifoLatest / tpLengthPoints) - 1
+					lastTP = trunc(fifoLatest / TPSettingsCalc[%totalLengthPointsDAQ]) - 1
 					if(lastTP >= 0 && lastTP != ActiveDeviceList[i][%ActiveChunk])
 						ActiveDeviceList[i][%ActiveChunk] = lastTP
 					endif

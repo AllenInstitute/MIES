@@ -3570,8 +3570,8 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	string device
 	variable expectedNumTPchannels
 
-	variable i, channel, numTPChan, numStored, numTP, tpLength
-	variable tresh, m, tpWidthInMS
+	variable i, channel, numTPChan, numStored, numTP
+	variable tresh, m, tpLength, pulseLengthMS
 
 	WAVE/Z TPStorage = GetTPStorage(device)
 	CHECK_WAVE(TPStorage, NORMAL_WAVE)
@@ -3584,9 +3584,10 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 
 	CHECK(!ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_TP + device, TP_WAIT_TIMEOUT))
 
-	tpLength = TP_GetTestPulseLengthInPoints(device, DATA_ACQUISITION_MODE)
+	WAVE TPSettingsCalculated = GetTPsettingsCalculated(device)
 
-	NVAR duration = $GetTestpulseDuration(device)
+	tpLength = TPSettingsCalculated[%totalLengthPointsDAQ]
+	pulseLengthMS = TPSettingsCalculated[%pulseLengthMS]
 
 	for(i = TP_SKIP_NUM_TPS_START; i < numTP; i += 1)
 
@@ -3607,9 +3608,7 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 			FindLevels/Q/D=levels/M=(TP_EDGE_EPSILON) singleTP, tresh
 
 			CHECK_EQUAL_VAR(2, V_LevelsFound)
-			tpWidthInMS = duration * DimDelta(singleTP, ROWS)
-
-			CHECK(abs(tpWidthInMS - levels[1] + levels[0]) < TP_WIDTH_EPSILON)
+			CHECK(abs(pulseLengthMS - levels[1] + levels[0]) < TP_WIDTH_EPSILON)
 
 		endfor
 	endfor
@@ -3718,16 +3717,18 @@ Function TPDuringDAQWithTTL_REENTRY([str])
 	WAVE/Z sweepWave = GetSweepWave(str, 0)
 	CHECK_WAVE(sweepWave, NORMAL_WAVE)
 
+	WAVE TPSettingsCalculated = GetTPSettingsCalculated(str)
+
 	// correct test pulse lengths calculated for both modes
 #if defined(TESTS_WITH_ITC18USB_HARDWARE)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, DATA_ACQUISITION_MODE)), 1000)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, TEST_PULSE_MODE)), 2000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsDAQ], 1000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsTP], 2000)
 #elif defined(TESTS_WITH_ITC1600_HARDWARE)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, DATA_ACQUISITION_MODE)), 1000)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, TEST_PULSE_MODE)), 2000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsDAQ], 1000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsTP], 2000)
 #elif defined(TESTS_WITH_NI_HARDWARE)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, DATA_ACQUISITION_MODE)), 5000)
-	CHECK_EQUAL_VAR(ROVar(GetTestpulseLengthInPoints(str, TEST_PULSE_MODE)), 5000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsDAQ], 5000)
+	CHECK_EQUAL_VAR(TPSettingsCalculated[%totalLengthPointsTP], 5000)
 #endif
 
 	for(i = 0; i < 2; i += 1)
@@ -4899,4 +4900,139 @@ Function CheckPulseInfoGathering_REENTRY([string str])
 
 	// check total number of pulses
 	CHECK_EQUAL_VAR(DimSize(pulseInfos, ROWS), 60)
+End
+
+Function CheckCalculatedTPEntries_IGNORE(string device)
+	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = "2")
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 25)
+End
+
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckCalculatedTPEntries([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc = CheckCalculatedTPEntries_IGNORE)
+End
+
+Function CheckCalculatedTPEntries_REENTRY([string str])
+	variable samplingInterval, samplingIntervalMult, sweepNo
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	sweepNo = 0
+	samplingInterval = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	samplingIntervalMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval Multiplier", DATA_ACQUISITION_MODE)
+
+	CHECK_EQUAL_VAR(samplingIntervalMult, 2)
+
+	WAVE calculated = GetTPSettingsCalculated(str)
+
+	CHECK_EQUAL_VAR(calculated[%baselineFrac], 0.25)
+
+	CHECK_EQUAL_VAR(calculated[%pulseLengthMS], 10)
+	CHECK_EQUAL_VAR(calculated[%totalLengthMS], 20)
+
+#if defined(TESTS_WITH_ITC18USB_HARDWARE)
+	CHECK_EQUAL_VAR(samplingInterval, 0.02)
+
+	// sampling interval multiplier is ignored for TP
+	CHECK_EQUAL_VAR(calculated[%pulseLengthPointsTP], 10 / 0.01)
+	CHECK_EQUAL_VAR(calculated[%totalLengthPointsTP], 20 / 0.01)
+
+	CHECK_EQUAL_VAR(calculated[%pulseLengthPointsDAQ], 10 / 0.02)
+	CHECK_EQUAL_VAR(calculated[%totalLengthPointsDAQ], 20 / 0.02)
+#elif defined(TESTS_WITH_NI_HARDWARE)
+	CHECK_EQUAL_VAR(samplingInterval, 0.008)
+
+	// sampling interval multiplier is ignored for TP
+	CHECK_EQUAL_VAR(calculated[%pulseLengthPointsTP], 10 / 0.004)
+	CHECK_EQUAL_VAR(calculated[%totalLengthPointsTP], 20 / 0.004)
+
+	CHECK_EQUAL_VAR(calculated[%pulseLengthPointsDAQ], 10 / 0.008)
+	CHECK_EQUAL_VAR(calculated[%totalLengthPointsDAQ], 20 / 0.008)
+#endif
+End
+
+static Function/WAVE GenerateBaselineValues()
+
+	WAVE/T/Z devices = HardwareMain#DeviceNameGeneratorMD1()
+
+	Make/FREE/WAVE/N=(2) wvInner1, wvInner2, wvInner3
+
+	Make/FREE wv1 = {25}
+	Make/FREE wv2 = {35}
+	Make/FREE wv3 = {45}
+
+	wvInner1[] = {wv1, devices}
+	wvInner2[] = {wv2, devices}
+	wvInner3[] = {wv3, devices}
+
+	Make/FREE/WAVE/N=(3) wvOuter = {wvInner1, wvInner2, wvInner3}
+
+	return wvOuter
+End
+
+Function CheckTPBaseline_IGNORE(string device)
+	NVAR/Z TPBaseline
+	CHECK(NVAR_Exists(TPBaseline))
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = TPBaseline)
+	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = 1)
+
+	CtrlNamedBackGround StopTP, start=(ticks + 100), period=1, proc=StopTPWhenWeHaveOne
+End
+
+/// UTF_TD_GENERATOR GenerateBaselineValues
+Function CheckTPBaseline([WAVE/WAVE pair])
+	string device
+
+	WAVE/T devices = pair[1]
+	CHECK_WAVE(devices, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(devices, ROWS), 1)
+	device = devices[0]
+
+	WAVE/Z baselines = pair[0]
+	variable/G TPbaseline = baselines[0]
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, device, startTPInstead = 1, preAcquireFunc = CheckTPBaseline_IGNORE)
+End
+
+Function CheckTPBaseline_REENTRY([WAVE/WAVE pair])
+	string device
+	variable i, numEntries, baselineFraction, pulseDuration, tpLength, samplingInterval
+
+	WAVE/T devices = pair[1]
+	CHECK_WAVE(devices, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(devices, ROWS), 1)
+	device = devices[0]
+
+	WAVE/Z baselineRef = pair[0]
+
+	WAVE/T textualValues   = GetLBTextualValues(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+
+	baselineFraction = GetLastSettingIndep(numericalValues, NaN, "TP Baseline Fraction", TEST_PULSE_MODE)
+	CHECK_CLOSE_VAR(baselineFraction, baselineRef[0] / 100)
+
+	pulseDuration = GetLastSettingIndep(numericalValues, NaN, "TP Pulse Duration", TEST_PULSE_MODE)
+	CHECK_CLOSE_VAR(pulseDuration, 10)
+
+	WAVE/WAVE storedTPs = GetStoredTestPulseWave(device)
+	CHECK_WAVE(storedTPs, WAVE_WAVE)
+
+	numEntries = GetNumberFromWaveNote(storedTPs, NOTE_INDEX)
+	CHECK(numEntries > 0)
+
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/Z singleTP = storedTPs[i]
+		CHECK_WAVE(singleTP, NUMERIC_WAVE)
+
+		samplingInterval = GetValDisplayAsNum(device, "ValDisp_DataAcq_SamplingInt")
+
+		CHECK_CLOSE_VAR(DimSize(singleTP, ROWS), (MIES_TP#TP_CalculateTestPulseLength(pulseDuration, baselineFraction) * 1e3) / samplingInterval, tol = 0.1)
+	endfor
 End
