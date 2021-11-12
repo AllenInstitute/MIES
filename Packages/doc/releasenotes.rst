@@ -3,6 +3,358 @@ Release notes
 
 .. toctree::
 
+Release 2.4
+===========
+
+Controls
+--------
+
+All added, removed or renamed controls of the main GUIs are listed. These lists are intended to help upgrading the JSON
+configuration files. Controls, like GroupBox'es, which can not be read/written with the configuration code are not included.
+
+DA\_Ephys
+~~~~~~~~~
+
+Added
+^^^^^
+
+- ``check_TP_SendToAllHS``
+- ``check_DataAcq_AutoTP``
+- ``setvar_DataAcq_IinjMax``
+- ``setvar_DataAcq_targetVoltage``
+- ``setvar_DataAcq_targetVoltageRange``
+- ``setvar_Settings_autoTP_int``
+- ``setvar_Settings_autoTP_perc``
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Databrowser
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+- ``button_sweepFormula_tofront``
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Wavebuilder
+~~~~~~~~~~~
+
+Added
+^^^^^
+
+None
+
+Removed
+^^^^^^^
+
+None
+
+Renamed
+^^^^^^^
+
+None
+
+Sweep Formula
+-------------
+
+- Allow ``=`` in strings
+- Add ``epoch`` command to extract epoch information, see the `documentation
+  <https://alleninstitute.github.io/MIES/SweepFormula.html#epochs>`__
+- Fix bugs in comment character (``#``) handling
+- Add ``and`` keyword to create multiple graphs from one session, see the
+  `documentation <https://alleninstitute.github.io/MIES/SweepFormula.html#multiple-graphs>`__
+- Improved error handling and made parsing more robust
+- Fixed handling of ``,`` and use a more consistent parsing strategy
+- Fix plotting of 2D vs 0D data
+- Heavily revised the documentation
+- ``data`` now accepts an epoch short name as range
+
+AnalysisBrowser
+---------------
+
+None
+
+DataBrowser
+-----------
+
+None
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Make browsing old labnotebooks prior to 5c9a5e4c (Add "Acquisition State" as
+  default labnotebook entry, 2020-11-27) work again
+- Show the tree level in epoch visualization tooltips as well
+- Require the modifier key ``ALT`` for changing sweeps with the mouse wheel
+- Use a separate axis for displaying epoch information and don't require DA data to be shown anymore
+- Make overlay sweeps selections faster
+- Allow selecting sweeps and set sweep/cycle counts
+- Select a better default x axis when displaying TPStorage data without any acquired sweeps
+- Preselect device and experiment in the SweepBrowser for enhanced usability
+
+Dashboard
+~~~~~~~~~
+
+- Support sampling frequency QC failure
+
+DA\_Ephys
+---------
+
+- Fix updating indexing metadata on changing stimsets in the DA tab with the ALL popup menues
+- Handle adding new stimsets when the DA/TTL tabs already had some selected better
+- Use the correct GUI procedure for Popup_Settings_DecMethod
+- Fix some edge cases where pending comments in the SetVariable or the comment
+  notebook were not handled correctly. The fallout was that these comments were
+  not saved to NWB.
+- Use 35% as default baseline for the Testpulse
+- Added Auto testpulse adaptation, see the `documentation
+  <https://alleninstitute.github.io/MIES/auto_testpulse_tuning.html>`__. This
+  also added the following new entries to TPStorage: ``TPCycleID``,
+  ``AutoTPAmplitude``, ``AutoTPBaseline``, ``AutoTPBaselineRangeExceeded``,
+  ``AutoTPCycleID``, ``AutoTPBaselineFitResult``, ``AutoTPDeltaV``
+- Avoid creating the ITC1600 Device 0 path for yoking if not needed
+
+JSON Configuration
+------------------
+
+- Switch back to Headstage 0 after configuration
+- Assert out on missing or invalid stimulus set file
+
+Downsample
+----------
+
+None
+
+Analysis Functions
+------------------
+
+- ``PSQ_DAScale``/``PSQ_SquarePulse``/``PSQ_Rheobase``/``PSQ_Ramp``/``PSQ_Chirp``:
+
+  - Enforce that we have the expected sampling frequency of 50kHz. See the
+    analysis function parameters ``SamplingMultiplier`` and
+    ``SamplingFrequency`` to accomodate other hardware than ITC.
+
+  - Make setting the ``SamplingMultiplier`` more robust. Previously it was not
+    always set due to a combination of three unrelated bugs.
+
+  - Make the baseline QC RMS long/short thresholds configurable via the
+    analysis parameters ``BaselineRMSShortThreshold`` and ``BaselineRMSLongThreshold``.
+    The used values are written into the labnotebook as well.
+
+  - The time slices used for baseline QC (called chunks in MIES) are now stored
+    as user epochs with the tag ``Name=Baseline Chunk;Index=<X>;ShortName=U_BLC<X>``.
+
+- It is now possible to add user epochs in the ``PRE_SWEEP_CONFIG_EVENT`` and
+  the ``PRE_SET_EVENT`` events in addition to the ``MID_SWEEP_EVENT``.
+
+- ``PSQ_Ramp``: Add user epochs for the unacquired data region due to the restart during DAQ
+
+- ``PSQ_Chirp``:
+
+  - Fix pulse retrieval for certain edge cases of epoch information
+  - Baseline QC is now always done, even if the spike check fails
+  - Complain if ``NumberOfFailedSweeps`` is larger than the number of sweeps in the stimset
+  - Add ``BoundsEvaluationMode`` to selectively evaluate only lower or upper parts of the chirp
+  - Rename ``LowerRelativeBound``/``UpperRelativeBound`` to ``InnerRelativeBound``/``OuterRelativeBound``
+
+- ``SC_SpikeControl``: Enhance reaction to too-many failed spikes and add
+  the new ``DaScaleTooManySpikesOperator`` and ``DaScaleTooManySpikesModifier``
+  analysis parameters.
+
+- Introduce a new signature for ``XXX_CheckParam`` functions. The old signature
+  is still supported, see also `here <https://alleninstitute.github.io/MIES/file/_m_i_e_s___analysis_functions_8ipf.html>`__.
+
+Foreign Function interface
+--------------------------
+
+- New ZeroMQ messages on clamp mode switch, auto TP success/fail, pressure breakin, amplifier auto bridge balance
+
+Pulse Average Plot
+------------------
+
+None
+
+General
+-------
+
+- Remove support for 32bit Igor Pro versions
+- Better inform users about the next steps when trying to turn of ASLR for ITC hardware
+- PGC_SetAndActivateControl: Require valid values for popup menus and sliders
+- PGC_SetAndActivateControl: Make setting a disabled control an error by default
+- Nicified the HTML documentation a bit
+
+ITC XOP 2
+----------
+
+None
+
+ZeroMQ XOP
+----------
+
+None
+
+MCC XOP
+-------
+
+None
+
+MIESUtils XOP
+-------------
+
+None
+
+Labnotebook
+-----------
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+- ``PSQ_FMT_LBN_SAMPLING_PASS``: Pass/Fail state of the sampling interval check
+- ``PSQ_FMT_LBN_RMS_SHORT_PASS``: Short RMS baseline threshold [V]
+- ``PSQ_FMT_LBN_RMS_LONG_PASS``: Long RMS baseline threshold [V]
+- ``TP Auto On/Off``
+- ``TP Auto max current``
+- ``TP Auto voltage``
+- ``TP Auto voltage range``
+- ``TP buffer size`` (INDEP_HEADSTAGE)
+- ``Minimum TP resistance for tolerance`` (INDEP_HEADSTAGE)
+- ``Send TP settings to all headstages`` (INDEP_HEADSTAGE)
+- ``TP Auto percentage`` (INDEP_HEADSTAGE)
+- ``TP Auto interval`` (INDEP_HEADSTAGE)
+- ``TP Auto QC``
+- ``TP Cycle ID``
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+None
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``Set Cycle Count``: This was previously erroneously set to ``0`` for TP
+  channels, it is now always ``NaN`` in this case.
+- ``TP buffer size``: Is now only present when the TP ran and therefore uses
+  ``TEST_PULSE_MODE`` as entrySourceType
+- ``TP Amplitude IC``: New unit ``mV``
+- ``TP Amplitude VC``: New unit ``pA``
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Renamed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+None
+
+Epoch information
+-----------------
+
+- Add short names for all stock epochs in the format ``ShortName=XX``. This allows to use names like ``TP`` in
+  the sweepformula ``epochs`` command instead of the complete tag. See `here
+  <https://alleninstitute.github.io/MIES/epoch_information.html#naming>`__ for the detailed documentation.
+- Don't add epoch information for third-party stimsets or for TP during DAQ simsets
+- Handle prematurely stopped sweeps better. The epochs are now shortend to only
+  cover really acquired data. Epochs which are completely outside the acquired
+  data are dropped. Unacquired data is now also properly tagged with the
+  special epoch ``Unacquired data``.
+- Disallow some characters in epoch tags
+- Add support for user epochs via ``EP_AddUserEpoch``, see the `documentation
+  <https://alleninstitute.github.io/MIES/file/_m_i_e_s___epochs_8ipf.html#_CPPv415EP_AddUserEpoch6string8variable8variable8variable8variable6string6string>`__.
+- Revise naming so that we now have always key value pairs like ``A=B`` and also a more uniform naming.
+
+NWB/IPNWB
+---------
+
+- Export MIES epoch information into NWBv2 files. The epoch information is
+  stored in ``/intervals/epochs``. See :ref:`epoch_information_doc` for the
+  epoch documentation and code examples how to read it.
+- Store the Zero MQ XOP logfile as well if present
+- Only store logfile entries from the same day and not the whole files
+
+File format
+~~~~~~~~~~~
+
+None
+
+Pressure Control
+----------------
+
+None
+
+WaveBuilder
+-----------
+
+- Fixed recreation of third party stimsets
+
+Work Sequencing Engine
+----------------------
+
+- Return success/fail state from ``IVS_ExportAllData``
+
+Internal
+--------
+
+- Added mies-nwb2-compound XOP for writting epoch information into NWBv2 files
+- Fixed and documented the best approach for try/catch situations
+- GetLastSettingChannel: Make returning INDEP_HEADSTAGE entries work again
+- GetSweepsWithSetting: Don't return invalid sweep numbers
+- Updated JSON XOP
+- Rewrote much of the testpulse settings code during testpulse runs for auto testpulse
+- Upgraded documentation toolchain
+- Use a proper name for the DAQ device in the code instead of panelTitle
+
+Tests
+-----
+
+- Add epoch consistency checks to all tests with hardware
+- Use the best test assertion for each case and avoid constructs like CHECK(1 == i)
+- Some test cases were failing with ITC1600 hardware
+
+Async Framework
+---------------
+
+None
+
+Logging
+-------
+
+None
+
+Installer
+---------
+
+- Sign the installer with an EV code signing certificate. This should avoid
+  most problems with antivirus and security software. See `here
+  <https://alleninstitute.github.io/MIES/installation.html#signed-installer>`_
+  for details.
+- Always install the ZeroMQ XOP
+
 Release 2.3
 ===========
 
@@ -86,6 +438,9 @@ Dashboard
 ~~~~~~~~~
 
 - Make the failure messages for PSQ analysis functions more robust and include per sweep information
+- Disable/Enable the Passed Sweeps/Failed Sweeps checkboxes with the Dashboard Enable checkbox
+- Handle bogus sweep data without "Baseline QC" entry better
+- Show result message for prematurely stopped sweeps
 
 DA\_Ephys
 ---------
