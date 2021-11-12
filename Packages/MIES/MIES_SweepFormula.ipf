@@ -2236,7 +2236,7 @@ End
 // apfrequency(data, [frequency calculation method], [spike detection crossing level])
 static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, string graph)
 
-	variable numIndices, i
+	variable numIndices, i, numSweeps
 
 	numIndices = JSON_GetArraySize(jsonID, jsonPath)
 	SF_ASSERT(numIndices <=3, "Maximum number of arguments exceeded.")
@@ -2260,19 +2260,21 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 		Make/FREE method = {SF_APFREQUENCY_FULL}
 	endif
 
+	numSweeps = DimSize(data, COLS)
 	WAVE levels = FindLevelWrapper(data, level[0], FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI)
-	variable numSets = DimSize(levels, ROWS)
-	Make/FREE/N=(numSets) levelPerSet = str2num(GetDimLabel(levels, ROWS, p))
+	ASSERT(DimSize(levels, ROWS) == numSweeps, "Unexpected number of sets returned from FindLevelWrapper")
+
+	Make/FREE/N=(numSweeps) levelPerSet = str2num(GetDimLabel(levels, ROWS, p))
 
 	// @todo we assume that the x-axis of data has a ms scale for FULL/INSTANTANEOUS
 	switch(method[0])
 		case SF_APFREQUENCY_FULL:
-			Make/N=(numSets)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS)) * 1e3
+			Make/N=(numSweeps)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS)) * 1e3
 			break
 		case SF_APFREQUENCY_INSTANTANEOUS:
-			Make/N=(numSets)/D/FREE outD
+			Make/N=(numSweeps)/D/FREE outD
 
-			for(i = 0; i < numSets; i += 1)
+			for(i = 0; i < numSweeps; i += 1)
 				if(levelPerSet[i] <= 1)
 					outD[i] = 0
 				else
@@ -2283,9 +2285,13 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 			endfor
 			break
 		case SF_APFREQUENCY_APCOUNT:
-			Make/N=(numSets)/D/FREE outD = levelPerSet[p]
+			Make/N=(numSweeps)/D/FREE outD = levelPerSet[p]
 			break
 	endswitch
+
+	// FindLevelWrapper supports only one layer in data, i.e. one channel
+	Redimension/N=(1, numSweeps, 1)/E=1 outD
+	CopyDimLabels data, outD
 
 	return outD
 End
