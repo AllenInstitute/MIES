@@ -1497,7 +1497,7 @@ Function BSP_AddTracesForEpochs(string win)
 
 	variable i, j, k, numEntries, start_x, start_y, end_x, end_y, yOffset
 	variable headstage, yLevelOffset, level, idx, numTraces, numEpochs
-	variable sweepNumber
+	variable sweepNumber, traceIndex
 	STRUCT RGBColor c
 	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name
 	string level_0_trace, level_1_trace, level_2_trace, level_3_trace, level_4_trace
@@ -1518,6 +1518,8 @@ Function BSP_AddTracesForEpochs(string win)
 		ControlWindowToFront()
 		return NaN
 	endif
+
+	traceIndex = GetNextTraceIndex(win)
 
 	numTraces = DimSize(traceInfos, ROWS)
 	for(j = 0; j < numTraces; j += 1)
@@ -1582,11 +1584,11 @@ Function BSP_AddTracesForEpochs(string win)
 			currentLevel[level] += 1
 		endfor
 
-		sprintf level_0_trace, "level%d_x_sweep%d_HS%d", 0, sweepNumber, headstage
-		sprintf level_1_trace, "level%d_x_sweep%d_HS%d", 1, sweepNumber, headstage
-		sprintf level_2_trace, "level%d_x_sweep%d_HS%d", 2, sweepNumber, headstage
-		sprintf level_3_trace, "level%d_x_sweep%d_HS%d", 3, sweepNumber, headstage
-		sprintf level_4_trace, "level%d_x_sweep%d_HS%d", 4, sweepNumber, headstage
+		sprintf level_0_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 0, sweepNumber, headstage
+		sprintf level_1_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 1, sweepNumber, headstage
+		sprintf level_2_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 2, sweepNumber, headstage
+		sprintf level_3_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 3, sweepNumber, headstage
+		sprintf level_4_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 4, sweepNumber, headstage
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][0]/TN=$level_0_trace vs levels_x[][0]
 		TUD_SetUserData(win, level_0_trace, "YAXIS", yaxis)
