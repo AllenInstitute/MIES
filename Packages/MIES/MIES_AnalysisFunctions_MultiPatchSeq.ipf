@@ -383,7 +383,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll
 
 	// BEGIN TEST
-	if(MSQ_TestOverrideActive())
+	if(TestOverrideActive())
 		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 		chunkPassed = overrideResults[chunk][count][0]
@@ -399,7 +399,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 	key = CreateAnaFuncLBNKey(type, MSQ_FMT_LBN_CHUNK_PASS, chunk = chunk)
 	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
 
-	if(MSQ_TestOverrideActive())
+	if(TestOverrideActive())
 		if(baselineType == MSQ_BL_PRE_PULSE)
 			if(!chunkPassed)
 				return ANALYSIS_FUNC_RET_EARLY_STOP
@@ -688,7 +688,7 @@ static Function/WAVE MSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, XOP_CHANNEL_TYPE_ADC, config = config)
 	ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
-	if(MSQ_TestOverrideActive())
+	if(TestOverrideActive())
 		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(panelTitle)
 
@@ -746,24 +746,6 @@ static Function/WAVE MSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	ASSERT(IsFinite(spikeDetection[headstage]), "Expected finite result")
 
 	return DEBUGPRINTw(spikeDetection)
-End
-
-/// @brief Return if the analysis function results are overriden for testing purposes
-Function MSQ_TestOverrideActive()
-	variable numberOfOverrideWarnings
-
-	WAVE/Z overrideResults = GetOverrideResults()
-
-	if(WaveExists(overrideResults))
-		numberOfOverrideWarnings = GetNumberFromWaveNote(overrideResults, "OverrideWarningIssued")
-		if(IsNaN(numberOfOverrideWarnings))
-			print "TEST OVERRIDE ACTIVE"
-			SetNumberInWaveNote(overrideResults, "OverrideWarningIssued", 1)
-		endif
-		return 1
-	endif
-
-	return 0
 End
 
 /// @brief Return true if one of the entries is true for the given headstage. False otherwise.
@@ -1270,7 +1252,7 @@ static Function/WAVE MSQ_DS_GetDAScaleOffset(panelTitle, headstage)
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 
-	if(MSQ_TestOverrideActive())
+	if(TestOverrideActive())
 		values[] = MSQ_DS_OFFSETSCALE_FAKE
 		return values
 	endif
@@ -1303,7 +1285,7 @@ static Function MSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
 	string key
 	variable i, numEntries, sweepNo, sweepCol
 
-	if(MSQ_TestOverrideActive())
+	if(TestOverrideActive())
 		return MSQ_DS_SWEEP_FAKE
 	endif
 
@@ -1460,7 +1442,7 @@ Function MSQ_DAScale(panelTitle, s)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-				if(MSQ_TestOverrideActive())
+				if(TestOverrideActive())
 					headstagePassed = 1
 				else
 					headstagePassed = MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, MSQ_DA_SCALE, MSQ_FMT_LBN_HEADSTAGE_PASS, i)

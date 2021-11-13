@@ -18,6 +18,11 @@ static Constant TP_EVAL_POINT_OFFSET          = 5
 // comment in for debugging
 // #define TP_ANALYSIS_DEBUGGING
 
+/// @brief Check if the value is a valid baseline fraction
+Function TP_IsValidBaselineFraction(variable value)
+	return value >= TP_BASELINE_FRACTION_LOW && value <= TP_BASELINE_FRACTION_HIGH
+End
+
 /// @brief Return the total length of a single testpulse with baseline
 ///
 /// @param pulseDuration duration of the high portion of the testpulse in points or time
@@ -25,19 +30,18 @@ static Constant TP_EVAL_POINT_OFFSET          = 5
 Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 	variable pulseDuration, baselineFrac
 
-	ASSERT(baselineFrac > 0 && baselineFrac < 0.5, "baselineFrac is out of range")
+	ASSERT(TP_IsValidBaselineFraction(baselineFrac), "baselineFrac is out of range")
 	return pulseDuration / (1 - 2 * baselineFrac)
 End
 
 /// @brief Stores the given TP wave
 ///
-/// @param panelTitle panel title
+/// @param panelTitle device
+/// @param TPWave     reference to wave holding the TP data, see GetOscilloscopeWave()
+/// @param tpMarker   unique number for this set of TPs from all TP channels
+/// @param hsList     list of headstage numbers in the same order as the columns of TPWave
 ///
-/// @param TPWave reference to wave holding the TP data in the same format as OscilloscopeData
-///
-/// @param tpMarker unique number for this set of TPs from all TP channels
-///
-/// @param hsList list of headstage numbers in the same order as the columns of TPWave
+/// The stored test pulse waves will have column dimension labels in the format `HS_X`.
 Function TP_StoreTP(panelTitle, TPWave, tpMarker, hsList)
 	string panelTitle
 	WAVE TPWave
@@ -50,9 +54,19 @@ Function TP_StoreTP(panelTitle, TPWave, tpMarker, hsList)
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 	EnsureLargeEnoughWave(storedTP, minimumSize=index)
 	Note/K TPWave
+
 	SetStringInWaveNote(TPWave, "TimeStamp", GetISO8601TimeStamp(numFracSecondsDigits = 3))
 	SetNumberInWaveNote(TPWave, "TPMarker", tpMarker, format="%d")
 	SetStringInWaveNote(TPWave, "Headstages", hsList)
+
+	// setting dimension labels only works if the dimension size is not zero
+	if(DimSize(TPWave, COLS) == 0)
+		Redimension/N=(-1, 1, -1, -1) TPWave
+	endif
+
+	hsList = ReplaceString(",", hsList, ";")
+	SetDimensionLabels(TPWave, AddPrefixToEachListItem("HS_", hsList), COLS)
+
 	storedTP[index++] = TPWave
 
 	SetNumberInWaveNote(storedTP, NOTE_INDEX, index)
@@ -413,7 +427,7 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 End
 
 /// @brief Threadsafe wrapper for performing CurveFits on the TPStorage wave
-threadsafe static Function CurveFitWrapper(TPStorage, startRow, endRow, headstage)
+threadsafe static Function TP_FitResistance(TPStorage, startRow, endRow, headstage)
 	WAVE TPStorage
 	variable startRow, endRow, headstage
 
@@ -473,7 +487,7 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 		statusHS[i] = 1
 	endfor
 
-	Multithread TPStorage[0][][%Rss_Slope] = statusHS[q] ? CurveFitWrapper(TPStorage, startRow, endRow, q) : NaN
+	Multithread TPStorage[0][][%Rss_Slope] = statusHS[q] ? TP_FitResistance(TPStorage, startRow, endRow, q) : NaN
 End
 
 /// @brief Stop running background testpulse on all locked devices
@@ -656,8 +670,7 @@ Function TP_Teardown(panelTitle, [fast])
 	endif
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
-		EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
-		DAP_SwitchSingleMultiMode(panelTitle)
+		DAP_HandleSingleDeviceDependentControls(panelTitle)
 	endif
 
 	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)

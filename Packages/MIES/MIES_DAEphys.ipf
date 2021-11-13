@@ -1343,10 +1343,8 @@ static Function DAP_ResetGUIAfterDAQ(panelTitle)
 	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_IDX)
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
-	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
 
-	// fix multi device mode dependent checkbox disabling
-	DAP_SwitchSingleMultiMode(panelTitle)
+	DAP_HandleSingleDeviceDependentControls(panelTitle)
 End
 
 /// @brief One time cleaning up after data acquisition
@@ -3968,55 +3966,33 @@ End
 Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
+	variable checked
+	string panelTitle
+
 	switch(cba.eventCode)
 		case 2: // mouse up
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
-			DAP_SwitchSingleMultiMode(cba.win, stateChange = 1)
+			panelTitle = cba.win
+			checked = cba.checked
+			DAG_Update(panelTitle, cba.ctrlName, val = checked)
+			AdaptDependentControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq", checked)
 			break
 	endswitch
 
 	return 0
 End
 
-/// @brief Enable/Disable the related controls for single and multi device DAQ
+/// @brief Enable controls post DAQ/TP in single device mode
 ///
-/// @param panelTitle  device
-/// @param stateChange [optional, defaults to false] multi device support has been changed from being
-///                                                  enabled/disabled or vice versa.
-Function DAP_SwitchSingleMultiMode(panelTitle, [stateChange])
-	string panelTitle
-	variable stateChange
+/// @param panelTitle device
+Function DAP_HandleSingleDeviceDependentControls(string panelTitle)
 
-	variable checkedState, useMultiDevice
-
-	if(ParamIsDefault(stateChange))
-		stateChange = 0
-	else
-		stateChange = !!stateChange
-	endif
+	variable useMultiDevice
 
 	useMultiDevice = DAG_GetNumericalValue(panelTitle, "check_Settings_MD")
 
-	if(useMultiDevice)
-		if(stateChange)
-			checkedState = DAG_GetNumericalValue(panelTitle, "Check_Settings_BkgTP")
-			SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", num2str(checkedState))
-			checkedState = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
-			SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", num2str(checkedState))
-		endif
-
-		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BkgTP", val = CHECKBOX_SELECTED)
-		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BackgrndDataAcq", val = CHECKBOX_SELECTED)
-		DisableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
-	else
-		EnableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
-
-		if(stateChange)
-			checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BkgTP", "oldState"))
-			PGC_SetAndActivateControl(panelTitle, "Check_Settings_BkgTP", val = checkedState)
-			checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState"))
-			PGC_SetAndActivateControl(panelTitle, "Check_Settings_BackgrndDataAcq", val = checkedState)
-		endif
+	if(!useMultiDevice)
+		ASSERT(!cmpstr(CONTROLS_DISABLE_DURING_DAQ_TP, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq"), "Control lists deviated")
+		EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
 	endif
 End
 
@@ -5569,7 +5545,7 @@ Function DAP_UpdateDeviceInfoWaves(string deviceList, variable hardwareType)
 	for(i = 0; i < numEntries; i += 1)
 		device = StringFromList(i, deviceList)
 		WAVE deviceInfo = GetDeviceInfoWave(device)
-		WAVE devInfoHW = HW_GetDeviceInfoUnregistered(hardwareType, device)
+		WAVE/Z devInfoHW = HW_GetDeviceInfoUnregistered(hardwareType, device)
 		hardwareType = GetHardwareType(device)
 		HW_WriteDeviceInfo(hardwareType, deviceInfo, devInfoHW)
 	endfor

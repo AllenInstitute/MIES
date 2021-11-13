@@ -450,8 +450,11 @@ End
 /// @param device name of the device
 /// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 Function/WAVE HW_GetDeviceInfoUnregistered(variable hardwareType, string device, [variable flags])
-
 	variable deviceID
+
+#ifdef EVIL_KITTEN_EATING_MODE
+	return $""
+#endif
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -474,9 +477,17 @@ End
 /// @brief Update the device info wave
 ///
 /// Query the data via GetDeviceInfoWave().
-Function HW_WriteDeviceInfo(variable hardwareType, WAVE deviceInfo, WAVE devInfoHW)
+Function HW_WriteDeviceInfo(variable hardwareType, WAVE deviceInfo, WAVE/Z devInfoHW)
 
 	deviceInfo[%HardwareType] = hardwareType
+
+#ifdef EVIL_KITTEN_EATING_MODE
+	deviceInfo[%AD]   = 1024
+	deviceInfo[%DA]   = 1024
+	deviceInfo[%TTL]  = 1024
+	deviceInfo[%Rack] = NaN
+#else
+	ASSERT(WaveExists(devInfoHW), "Missing device info hardware wave")
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -493,6 +504,7 @@ Function HW_WriteDeviceInfo(variable hardwareType, WAVE deviceInfo, WAVE devInfo
 			deviceInfo[%Rack] = NaN
 			break
 	endswitch
+#endif // EVIL_KITTEN_EATING_MODE
 End
 
 /// @brief Start data acquisition
@@ -2094,7 +2106,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 
 	AssertOnAndClearRTError()
 	try
-		NewFIFO $fifoName
+		NewFIFO $fifoName; AbortOnRTE
 		aiCnt = 0
 		ttlCnt = 0
 		for(i = 0;i < channels; i += 1)

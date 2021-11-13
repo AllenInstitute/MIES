@@ -7464,3 +7464,22 @@ static Function AddToSweepWave(WAVE/WAVE channelWaves, Wave channelNumbers, WAVE
 		Concatenate {wv}, sweepWave
 	endfor
 End
+
+/// @brief Return if the function results are overriden for testing purposes
+Function TestOverrideActive()
+	variable numberOfOverrideWarnings
+
+	WAVE/Z overrideResults = GetOverrideResults()
+
+	if(WaveExists(overrideResults))
+		numberOfOverrideWarnings = GetNumberFromWaveNote(overrideResults, "OverrideWarningIssued")
+		if(IsNaN(numberOfOverrideWarnings))
+			print "TEST OVERRIDE ACTIVE"
+			SetNumberInWaveNote(overrideResults, "OverrideWarningIssued", 1)
+		endif
+
+		return 1
+	endif
+
+	return 0
+End
