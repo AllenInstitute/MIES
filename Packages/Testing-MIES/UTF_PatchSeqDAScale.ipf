@@ -269,6 +269,7 @@ Function PS_DS_Sub1_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -430,6 +431,7 @@ Function PS_DS_Sub2_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520, 2520, 3020, 3020, 3520})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -572,6 +574,7 @@ Function PS_DS_Sub3_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 4)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -747,6 +750,7 @@ Function PS_DS_Sub4_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 4)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520, 2520, 3020, 3020, 3520})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -873,6 +877,7 @@ Function PS_DS_Sub5_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1049,6 +1054,7 @@ Function PS_DS_Sub6_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 4)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520, 2520, 3020})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1193,6 +1199,13 @@ Function PS_DS_Sub7_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 6)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 3)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 4)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 5)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 6)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1344,6 +1357,15 @@ Function PS_DS_Sub8_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), 8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 2)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 3)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 4)
+	CheckPSQChunkTimes(str, {20, 520}, sweep = 5)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 6)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 7)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520}, sweep = 8)
 End
 
 Function PS_DS_Sub9_Ignore(device)
@@ -1625,6 +1647,7 @@ Function PS_DS_Sub10_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
 // no baseline checks for supra
@@ -1718,6 +1741,7 @@ Function PS_DS_Supra1_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
 Function PS_SetOffsetOp_IGNORE(device)
@@ -1814,6 +1838,7 @@ Function PS_DS_Supra2_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
 // FinalSlopePercent present but not reached
@@ -1911,6 +1936,7 @@ Function PS_DS_Supra3_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
 // FinalSlopePercent present and reached
@@ -2008,6 +2034,7 @@ Function PS_DS_Supra4_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End
 
 static Constant DAScaleModifierPerc = 25
@@ -2122,4 +2149,5 @@ Function PS_DS_Supra5_REENTRY([str])
 	CHECK_EQUAL_VAR(MIES_PSQ#PSQ_GetLastPassingDAScaleSub(str, PSQ_TEST_HEADSTAGE), -1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 2020, 2520})
 End

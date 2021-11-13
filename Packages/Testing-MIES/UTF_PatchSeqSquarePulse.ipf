@@ -164,6 +164,8 @@ static Function PS_SP1_REENTRY([str])
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	Make/FREE/N=0 chunkTimes
+	CheckPSQChunkTimes(str, chunkTimes)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -223,6 +225,8 @@ static Function PS_SP2_REENTRY([str])
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	Make/FREE/N=0 chunkTimes
+	CheckPSQChunkTimes(str, chunkTimes)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -282,6 +286,8 @@ static Function PS_SP3_REENTRY([str])
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	Make/FREE/N=0 chunkTimes
+	CheckPSQChunkTimes(str, chunkTimes)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -341,6 +347,8 @@ static Function PS_SP4_REENTRY([str])
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, NaN, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	Make/FREE/N=0 chunkTimes
+	CheckPSQChunkTimes(str, chunkTimes)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -401,6 +409,8 @@ static Function PS_SP5_REENTRY([str])
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	Make/FREE/N=0 chunkTimes
+	CheckPSQChunkTimes(str, chunkTimes)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -462,6 +472,8 @@ static Function PS_SP6_REENTRY([str])
 	CHECK_EQUAL_WAVES(stepSizes, {-50e-12, NaN, NaN, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	Make/FREE/N=0 chunkTimes
+	CheckPSQChunkTimes(str, chunkTimes)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -521,13 +533,15 @@ static Function PS_SP7_REENTRY([str])
 	CHECK_EQUAL_WAVES(stepSizes, {-50e-12, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	Make/FREE/N=0 chunkTimes
+	CheckPSQChunkTimes(str, chunkTimes)
 End
 
 static Function PS_SP8_IGNORE(string device)
 	AFH_AddAnalysisParameter("PatchSeqSquarePu_DA_0", "SamplingFrequency", var=10)
 End
 
-// Same as PS_RA8 but with failing sampling interval check
+// Same as PS_SP1 but with failing sampling interval check
 //
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_SP8([str])
@@ -585,4 +599,6 @@ static Function PS_SP8_REENTRY([str])
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12}, mode = WAVE_DATA, tol = 1e-13)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {setPassed})
+	Make/FREE/N=0 chunkTimes
+	CheckPSQChunkTimes(str, chunkTimes)
 End

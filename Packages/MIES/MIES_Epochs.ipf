@@ -683,3 +683,48 @@ static Function EP_AdaptEpochInfo(string panelTitle, WAVE configWave, variable a
 		EP_AddEpoch(panelTitle, channel, acquiredTime * 1e6 , lastEnd * 1e6, tags , EPOCH_SN_UNACQUIRED, 0)
 	endfor
 End
+
+/// @brief Get epochs from the LBN filtered by given parameters
+///
+/// @param numericalValues Numerical values from the labnotebook
+/// @param textualValues   Textual values from the labnotebook
+/// @param sweepNo         Number of sweep
+/// @param channelType     type of channel @sa XopChannelConstants
+/// @param channelNumber   number of channel
+/// @param treelevel       tree level of epochs
+/// @param shortname       short name filter as regular expression
+///
+/// @returns Text wave with epoch information, only rows fitting the input parameters are returned. Can also be a null wave.
+Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, variable treelevel, string shortname)
+
+	variable index
+
+	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC, "Only channelType XOP_CHANNEL_TYPE_DAC is supported")
+
+	WAVE/Z settings
+	[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
+	if(!WaveExists(settings))
+		return $""
+	endif
+
+	WAVE/T settingsT = settings
+	WAVE/T epochInfo = EP_EpochStrToWave(settingsT[index])
+
+	WAVE/Z indizesLevel = FindIndizes(epochInfo, col = EPOCH_COL_TREELEVEL, var = treelevel)
+
+	if(!WaveExists(indizesLevel))
+		return $""
+	endif
+
+	// @todo add support for grepping in FindIndizes later
+	Make/FREE/N=(DimSize(epochInfo, ROWS)) indizesName = GrepString(EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS]), shortName) ? p : NaN
+
+	WAVE/Z indizes = GetSetIntersection(indizesLevel, indizesName)
+	if(!WaveExists(indizes))
+		return $""
+	endif
+
+	Make/FREE/T/N=(DimSize(indizes, ROWS), DimSize(epochInfo, COLS)) matches = epochInfo[indizes[p]][q]
+
+	return matches
+End

@@ -204,6 +204,24 @@ static Function/WAVE GetSamplingIntervalQCResults_IGNORE(sweepNo, device)
 	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 End
 
+/// @brief Retrieve the time interval for the post baseline chunk interval
+///        Based on code from @sa PSQ_EvaluateBaselineProperties
+static Function [variable start, variable stop] GetPostBaseLineInterval(string dev, variable sweepNo, variable chunk)
+
+	variable chunkStartTimeMax, chunkLengthTime, totalOnsetDelay
+
+	struct PSQ_PulseSettings s
+	MIES_PSQ#PSQ_GetPulseSettingsForType(PSQ_RAMP, s)
+
+	totalOnsetDelay = DAG_GetNumericalValue(dev, "setvar_DataAcq_OnsetDelayUser") + GetValDisplayAsNum(dev, "valdisp_DataAcq_OnsetDelayAuto")
+	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, dev)
+
+	chunkStartTimeMax = (totalOnsetDelay + s.prePulseChunkLength + durations[sweepNo]) + chunk * s.postPulseChunkLength
+	chunkLengthTime   = s.postPulseChunkLength
+
+	return [chunkStartTimeMax, chunkStartTimeMax + chunkLengthTime]
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RA1([str])
 	string str
@@ -275,6 +293,7 @@ static Function PS_RA1_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {15000, 15000}, mode = WAVE_DATA, tol = 1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -334,6 +353,7 @@ static Function PS_RA2_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {15000, 15000, 15000}, mode = WAVE_DATA, tol = 1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 16020, 16520})
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -355,6 +375,7 @@ static Function PS_RA3_REENTRY([str])
 	string str
 
 	variable sweepNo, i, numEntries
+	variable chunkStart, chunkEnd
 
 	sweepNo = 2
 
@@ -396,6 +417,12 @@ static Function PS_RA3_REENTRY([str])
 	CHECK(durations[2] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[2] < SPIKE_POSITION_TEST_DELAY_MS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 0, 1)
+	CheckPSQChunkTimes(str, {20, 520, chunkStart, chunkEnd}, sweep = 0)
+	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 1, 1)
+	CheckPSQChunkTimes(str, {20, 520, chunkStart, chunkEnd}, sweep = 1)
+	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 2, 1)
+	CheckPSQChunkTimes(str, {20, 520, chunkStart, chunkEnd}, sweep = 2)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -417,6 +444,7 @@ static Function PS_RA4_REENTRY([str])
 	string str
 
 	variable sweepNo, i, numEntries
+	variable chunkStart, chunkEnd
 
 	sweepNo = 2
 
@@ -458,6 +486,10 @@ static Function PS_RA4_REENTRY([str])
 	CHECK_CLOSE_VAR(durations[2], 15000, tol = 1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 0, 1)
+	CheckPSQChunkTimes(str, {20, 520, chunkStart, chunkEnd}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520, 16020, 16520}, sweep = 1)
+	CheckPSQChunkTimes(str, {20, 520, 16020, 16520}, sweep = 2)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -479,6 +511,7 @@ static Function PS_RA5_REENTRY([str])
 	string str
 
 	variable sweepNo, i, numEntries
+	variable chunkStart, chunkEnd
 
 	sweepNo = 2
 
@@ -520,6 +553,11 @@ static Function PS_RA5_REENTRY([str])
 	CHECK(durations[2] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[2] < SPIKE_POSITION_TEST_DELAY_MS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 16020, 16520}, sweep = 0)
+	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 1, 1)
+	CheckPSQChunkTimes(str, {20, 520, chunkStart, chunkEnd}, sweep = 1)
+	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 2, 1)
+	CheckPSQChunkTimes(str, {20, 520, chunkStart, chunkEnd}, sweep = 2)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -541,6 +579,7 @@ static Function PS_RA6_REENTRY([str])
 	string str
 
 	variable sweepNo, i, numEntries
+	variable chunkStart, chunkEnd
 
 	sweepNo = 2
 
@@ -582,13 +621,17 @@ static Function PS_RA6_REENTRY([str])
 	CHECK(durations[2] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[2] < SPIKE_POSITION_TEST_DELAY_MS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 16020, 16520}, sweep = 0)
+	CheckPSQChunkTimes(str, {20, 520, 16020, 16520}, sweep = 1)
+	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 2, 1)
+	CheckPSQChunkTimes(str, {20, 520, chunkStart, chunkEnd}, sweep = 2)
 End
 
 static Function PS_RA7_IGNORE(string device)
 	AFH_AddAnalysisParameter("Ramp_DA_0", "SamplingFrequency", var=10)
 End
 
-// Same as PS_RA1 but with failing sampling interval check
+// Same as PS_RA2 but with failing sampling interval check
 //
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RA7([str])
@@ -660,4 +703,5 @@ static Function PS_RA7_REENTRY([str])
 	CHECK_EQUAL_WAVES(durations, {15000}, mode = WAVE_DATA, tol = 1)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+	CheckPSQChunkTimes(str, {20, 520, 16020, 16520})
 End

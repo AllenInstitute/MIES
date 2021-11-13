@@ -63,9 +63,24 @@
 /// FMT_LBN_ANA_FUNC_VERSION        Integer version of the analysis function                  Numerical                All                      No                     Yes
 /// =============================== ========================================================= ======================== ======================== =====================  =====================
 ///
+/// Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale.
+///
 /// \endrst
 ///
-/// Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale.
+/// The following table lists the user epochs which are added during data acquisition:
+///
+/// \rst
+///
+/// ============================ ========== ================== ======================================= =====
+/// Tags                         Short Name Analysis function  Description                             Level
+/// ============================ ========== ================== ======================================= =====
+/// Name=Baseline Chunk;Index=x  U_BLCx     DA, RB, RA, CR     Baseline QC evaluation chunks           -1
+/// Name=DA Suppression          U_RA_DA    RA                 DA was suppressed in this time interval -1
+/// Name=Unacquired DA data      U_RA_UD    RA                 Interval of unacquired data             -1
+/// ============================ ========== ================== ======================================= =====
+///
+/// See also :ref:`epoch_time_specialities`.
+/// \endrst
 
 static Constant PSQ_BL_PRE_PULSE   = 0x0
 static Constant PSQ_BL_POST_PULSE  = 0x1
@@ -77,13 +92,6 @@ static Constant PSQ_TARGETV_TEST   = 0x2
 static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
 static Constant PSQ_RHEOBASE_DURATION = 500
-
-/// @brief Settings structure filled by PSQ_GetPulseSettingsForType()
-static Structure PSQ_PulseSettings
-	variable prePulseChunkLength  // ms
-	variable pulseDuration      // ms
-	variable postPulseChunkLength // ms
-EndStructure
 
 /// @brief Fills `s` according to the analysis function type
 static Function PSQ_GetPulseSettingsForType(type, s)
@@ -335,12 +343,12 @@ End
 static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT AnalysisFunction_V3 &s, variable type, variable chunk, variable fifoInStimsetTime, variable totalOnsetDelay)
 
 	variable , evalStartTime, evalRangeTime
-	variable i, ADC, ADcol, chunkStartTimeMax, chunkStartTime
+	variable i, DAC, ADC, ADcol, chunkStartTimeMax, chunkStartTime
 	variable targetV, index
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
 	variable targetVPassedAll, baselineType, chunkLengthTime
 	variable rmsShortThreshold, rmsLongThreshold, chunkPassedTestOverride
-	string msg, adUnit, ctrl, key
+	string msg, adUnit, ctrl, key, epName, epShortName
 
 	struct PSQ_PulseSettings ps
 	PSQ_GetPulseSettingsForType(type, ps)
@@ -425,6 +433,12 @@ static Function PSQ_EvaluateBaselineProperties(string panelTitle, STRUCT Analysi
 		if(!statusHS[i])
 			continue
 		endif
+
+		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
+		ASSERT(IsFinite(DAC), "Could not determine DAC channel number for HS " + num2istr(i) + " for device " + panelTitle)
+		epName = "Name=Baseline Chunk;Index=" + num2istr(chunk)
+		epShortName = PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + num2istr(chunk)
+		EP_AddUserEpoch(panelTitle, XOP_CHANNEL_TYPE_DAC, DAC, chunkStartTimeMax / 1E3, (chunkStartTimeMax + chunkLengthTime) / 1E3, epName, shortname = epShortName)
 
 		if(chunk == 0) // pre pulse baseline
 			chunkStartTime = totalOnsetDelay
@@ -3788,6 +3802,11 @@ Function PSQ_Chirp(panelTitle, s)
 	sprintf msg, "Midsweep: insideBounds %g, baselineQCPassed %g, spikeCheck %g, spikeCheckPassed %g", insideBounds, baselineQCPassed, spikeCheck, spikeCheckPassed
 	DEBUGPRINT(msg)
 
+	if(IsFinite(insideBounds) && IsFinite(baselineQCPassed) && (!spikeCheck || (spikeCheck && IsFinite(spikeCheckPassed) && spikeCheckPassed)))
+		// nothing more to do if we did inside bounds check and baseline QC and either did not do spike checking or spike checking passed
+		return NaN
+	endif
+
 	if(spikeCheck && IsNaN(spikeCheckPassed))
 		WAVE durations = PSQ_GetPulseDurations(panelTitle, PSQ_CHIRP, s.sweepNo, totalOnsetDelay)
 
@@ -3818,22 +3837,11 @@ Function PSQ_Chirp(panelTitle, s)
 				ED_AddEntryToLabnotebook(panelTitle, key, spikePass, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 				spikeCheckPassed = spikePass[s.headstage]
-
-				if(!spikeCheckPassed)
-					// adapt DAScale and finish
-					daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)
-					daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", s.params)
-					SetDAScaleModOp(panelTitle, s.headstage, daScaleModifier, daScaleOperator, roundTopA = 1)
-
-					return ANALYSIS_FUNC_RET_EARLY_STOP
-				endif
 			endif
 		endif
 	endif
 
-	if(IsFinite(insideBounds) && IsFinite(baselineQCPassed)) // nothing more to do
-		return NaN
-	endif
+	// no early return here because we want to do baseline QC checks (and chunk creation) always
 
 	if(IsNaN(baselineQCPassed))
 		[ret, chunk] = PSQ_EvaluateBaselineChunks(panelTitle, PSQ_CHIRP, s)
@@ -3843,6 +3851,15 @@ Function PSQ_Chirp(panelTitle, s)
 
 			PSQ_EvaluateBaselinePassed(panelTitle, PSQ_CHIRP, s.sweepNo, s.headstage, chunk, ret)
 		endif
+	endif
+
+	if(spikeCheck && IsFinite(spikeCheckPassed) && !spikeCheckPassed)
+		// adapt DAScale and finish
+		daScaleModifier = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)
+		daScaleOperator = AFH_GetAnalysisParamTextual("DAScaleOperator", s.params)
+		SetDAScaleModOp(panelTitle, s.headstage, daScaleModifier, daScaleOperator, roundTopA = 1)
+
+		return ANALYSIS_FUNC_RET_EARLY_STOP
 	endif
 
 	WAVE/T cycleXValuesLBN = PSQ_CR_GetCycles(panelTitle, s.sweepNo, s.rawDACWave, totalonsetDelay + PSQ_CR_BL_EVAL_RANGE)

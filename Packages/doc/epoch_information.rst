@@ -103,6 +103,23 @@ The following table sketches how epochs of different levels could be distributed
 
 The entries in the wave are sorted by increasing start times and secondary by decreasing end times.
 
+.. _epoch_time_specialities:
+
+Time specialities
+-----------------
+
+The epoch start and end times are stored in seconds with sufficiently large
+precision as text.
+
+It can not be assumed though that the epoch start and end time points coincide
+with the sampling pattern of the DA data. As an example an epoch going from
+1s to 2s might be referring to DA data which has sampling points
+acquired at 0.9995s and 1.0015s and not exactly at 1s.
+
+It is the responsibility of the user evaluating the epochs information to
+select a scientific consistent strategy dealing with that. A good first approach might
+be to use the closest sampling point.
+
 optimized overlap distributed data acquisistion (oodDAQ) regions
 ----------------------------------------------------------------
 

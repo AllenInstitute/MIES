@@ -352,6 +352,80 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 End
 
+/// @brief Checks user epochs for consistency
+static Function CheckUserEpochsFromChunks(string dev)
+
+	variable i, j, sweepCnt, numEpochs, DAC
+
+	WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+
+	if(!WaveExists(sweeps))
+		PASS()
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(dev)
+	WAVE textualValues = GetLBTextualValues(dev)
+
+	sweepCnt = DimSize(sweeps, ROWS)
+
+	for(i = 0; i < sweepCnt; i += 1)
+
+		WAVE statusHS = GetLastSetting(numericalValues, sweeps[i], "Headstage Active", DATA_ACQUISITION_MODE)
+
+		for(j = 0; j <  NUM_HEADSTAGES; j += 1)
+
+			if(!statusHS[j])
+				continue
+			endif
+
+			DAC = AFH_GetDACFromHeadstage(dev, j)
+			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, EPOCH_USER_LEVEL, EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "[0-9]+")
+
+			if(!WaveExists(userChunkEpochs))
+				continue
+			endif
+
+			CheckUserEpochChunkUniqueness(userChunkEpochs)
+			CheckUserEpochChunkNoOverlap(userChunkEpochs)
+		endfor
+	endfor
+
+	PASS()
+End
+
+static Function CheckUserEpochChunkUniqueness(WAVE/T epochInfo)
+
+	variable numEpochs
+
+	numEpochs = DimSize(epochInfo, ROWS)
+	Make/FREE/D/N=(numEpochs) chunkNums, chunkRef
+
+	chunkNums = NumberByKey("Index", epochInfo[p][EPOCH_COL_TAGS], "=")
+	Sort chunkNums, chunkNums
+
+	chunkRef = p
+	CHECK_EQUAL_WAVES(chunkNums, chunkRef) // equal if ascending from 0 with step 1 and thus, unique at the same time
+End
+
+static Function CheckUserEpochChunkNoOverlap(WAVE/T epochInfo)
+
+	variable numEpochs, i, j
+	variable s1, e1, s2, e2, overlap
+
+	numEpochs = DimSize(epochInfo, ROWS)
+	for(i = 0; i < numEpochs - 1; i += 1)
+		s1 = str2num(epochInfo[i][EPOCH_COL_STARTTIME])
+		e1 = str2num(epochInfo[i][EPOCH_COL_ENDTIME])
+		for(j = i + 1; j < numEpochs; j += 1)
+			s2 = str2num(epochInfo[j][EPOCH_COL_STARTTIME])
+			e2 = str2num(epochInfo[j][EPOCH_COL_ENDTIME])
+			overlap = min(e1, e2) - max(s1, s2)
+			CHECK(overlap <= 0) // if overlap is positive the two intervalls intersect
+		endfor
+	endfor
+End
+
 /// @brief Checks epochs for consistency
 ///        - all epochs must have a short name
 ///        - no duplicate short names allowed
@@ -1027,6 +1101,8 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 
 	CheckAnaFuncVersion(device, type)
 	CheckDashboard(device, headstageQC)
+
+	CheckUserEpochsFromChunks(device)
 End
 
 Function AddLabnotebookEntries_IGNORE(s)
@@ -1178,4 +1254,71 @@ Function StopTPWhenWeHaveOne(STRUCT WMBackgroundStruct &s)
 	endif
 
 	return 0
+End
+
+/// @brief chunkTimes in ms, if sweeps is given, the chunkTimes are only checked for this specific sweep
+Function CheckPSQChunkTimes(string dev, WAVE chunkTimes[, variable sweep])
+
+	variable size, numChunks, index, expectedChunkCnt, sweepCnt, DAC
+	variable i, j, k
+	variable startTime, endTime, startRef, endRef
+	string str
+
+	sweep = ParamIsDefault(sweep) ? NaN : sweep
+
+	size = DimSize(chunkTimes, ROWS)
+	REQUIRE(IsEven(size))
+	expectedChunkCnt = size >> 1
+
+	WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+
+	if(!WaveExists(sweeps))
+		FAIL()
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(dev)
+	WAVE textualValues = GetLBTextualValues(dev)
+
+	sweepCnt = DimSize(sweeps, ROWS)
+
+	for(i = 0; i < sweepCnt; i += 1)
+		if(!IsNaN(sweep) && sweep != sweeps[i])
+			continue
+		endif
+
+		WAVE statusHS = GetLastSetting(numericalValues, sweeps[i], "Headstage Active", DATA_ACQUISITION_MODE)
+
+		for(j = 0; j <  NUM_HEADSTAGES; j += 1)
+
+			if(!statusHS[j])
+				continue
+			endif
+
+			DAC = AFH_GetDACFromHeadstage(dev, j)
+			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, EPOCH_USER_LEVEL, EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "[0-9]+")
+			if(!WaveExists(userChunkEpochs))
+				continue
+			endif
+
+			numChunks = DimSize(userChunkEpochs, ROWS)
+
+			Make/FREE/T/N=(numChunks) epochShortNames = EP_GetShortName(userChunkEpochs[p][EPOCH_COL_TAGS])
+			for(k = 0; k < numChunks; k += 1)
+				str = EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + num2istr(k)
+				FindValue/TEXT=str/TXOP=4 epochShortNames
+				index = V_Value
+				CHECK_NEQ_VAR(index, -1)
+				startTime = str2num(userChunkEpochs[k][EPOCH_COL_STARTTIME])
+				endTime = str2num(userChunkEpochs[k][EPOCH_COL_ENDTIME])
+				startRef = chunkTimes[k << 1] / 1E3
+				endRef = chunkTimes[k << 1 + 1] / 1E3
+				CHECK_CLOSE_VAR(startTime, startRef, tol = 0.0005)
+				CHECK_CLOSE_VAR(endTime, endRef, tol = 0.0005)
+			endfor
+		endfor
+	endfor
+
+	// In the case we did not reached the inner checks of the upper loop
+	CHECK_EQUAL_VAR(numChunks, expectedChunkCnt)
 End
