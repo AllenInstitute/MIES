@@ -800,7 +800,9 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 		endfor
 	endif
 
+	WAVE/Z wvX
 	for(j = 0; j < numGraphs; j += 1)
+		WaveClear wvX
 		xFormula = formulaPairs[j][%FORMULA_X]
 		if(!IsEmpty(xFormula))
 			WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(xFormula)), graph = graph)
