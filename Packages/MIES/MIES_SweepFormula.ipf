@@ -2278,7 +2278,7 @@ Function SF_button_sweepFormula_tofront(ba) : ButtonControl
 		case 2: // mouse up
 			// click code here
 			winNameTemplate = SF_GetFormulaWinNameTemplate(GetMainWindow(ba.win))
-			wList = WinList(winNameTemplate + "*", ";", "WIN:1")
+			wList = WinList(winNameTemplate + "*", ";", "WIN:65")
 			numWins = ItemsInList(wList)
 			for(i = 0; i < numWins; i += 1)
 				wName = StringFromList(i, wList)
