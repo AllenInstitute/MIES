@@ -1500,6 +1500,24 @@ End
 
 #if IgorVersion() >= 9.0
 
+static Function BSP_RemoveTraces(string graph)
+	variable i, numEntries
+	string trace
+
+	WAVE/Z/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"EpochVis"})
+
+	if(!WaveExists(traces))
+		return NaN
+	endif
+
+	numEntries = DimSize(traces, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		trace = traces[i]
+		RemoveFromGraph/W=$graph $trace
+		TUD_RemoveUserData(graph, trace)
+	endfor
+End
+
 /// @brief Debug function to add traces with epoch information
 Function BSP_AddTracesForEpochs(string win)
 
@@ -1517,7 +1535,7 @@ Function BSP_AddTracesForEpochs(string win)
 	endif
 
 	DFREF dfr = GetEpochsVisualizationFolder(BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER))
-	RemoveTracesFromGraph(win, dfr = dfr)
+	BSP_RemoveTraces(win)
 
 	WAVE/T/Z traceInfos = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "1"})
 
@@ -1599,19 +1617,19 @@ Function BSP_AddTracesForEpochs(string win)
 		sprintf level_4_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 4, sweepNumber, headstage
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][0]/TN=$level_0_trace vs levels_x[][0]
-		TUD_SetUserData(win, level_0_trace, "YAXIS", yaxis)
+		TUD_SetUserDataFromWaves(win, level_0_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][1]/TN=$level_1_trace vs levels_x[][1]
-		TUD_SetUserData(win, level_1_trace, "YAXIS", yaxis)
+		TUD_SetUserDataFromWaves(win, level_1_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][2]/TN=$level_2_trace vs levels_x[][2]
-		TUD_SetUserData(win, level_2_trace, "YAXIS", yaxis)
+		TUD_SetUserDataFromWaves(win, level_2_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][3]/TN=$level_3_trace vs levels_x[][3]
-		TUD_SetUserData(win, level_3_trace, "YAXIS", yaxis)
+		TUD_SetUserDataFromWaves(win, level_3_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][4]/TN=$level_4_trace vs levels_x[][4]
-		TUD_SetUserData(win, level_4_trace, "YAXIS", yaxis)
+		TUD_SetUserDataFromWaves(win, level_4_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})
 
 		[c] = GetTraceColor(0)
 		ModifyGraph/W=$win marker($level_0_trace)=10, mode($level_0_trace)=4, rgb($level_0_trace)=(c.red, c.green, c.blue)
