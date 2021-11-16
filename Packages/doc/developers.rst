@@ -257,51 +257,47 @@ Setting up a continous integration server (Windows)
 
 -  Start Igor Pro and open a DA\_Ephys panel, lock the device. This will
    not work, so follow the posted suggestions to get it working (registry fix and ASLR fix).
--  Add a fitting ``Igor Pro (new)`` capability to the agent in bamboo.
+-  Add a fitting ``MIES_AgentType`` capability to the agent in bamboo.
 -  Make the agent dedicated to the ``MIES-Igor`` project.
 -  Be sure that the "git" capability and the "bash" executable capability are
    present as well
 -  Create the folder ``$HOME/.credentials`` and place the file ``github_api_token`` from an existing CI machine there
 -  Copy ``tools/start-bamboo-agent-windows.sh`` and ``tools/start-bamboo-agent-windows.bat`` to ``$HOME``
--  Edit ``tools/start-bamboo-agent-windows.bat`` so that is points to the existing Git location
--  Add shortcuts to ``$HOME/start-bamboo-agent-windows.bat`` and ``MC700B.exe`` into ``C:\Users\$User\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup``
+-  Edit ``tools/start-bamboo-agent-windows.bat`` so that it points to the existing Git location
+-  Add shortcuts to ``$HOME/start-bamboo-agent-windows.bat`` and ``MC700B.exe`` into ``C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp``
+- (Only for Code signing machine): Also add a shortcut to ``$HOME/start-bamboo-agent-windows.bat`` in the ``Startup`` folder
 
 Available CI servers
 ~~~~~~~~~~~~~~~~~~~~
 
-Given are the bamboo agent names, their capabilities and notable properties.
+Distributing jobs to agents in bamboo is done via our ``MIES_AgentType`` capability.
 
-Linux MIES Ephys:
+The following capabilities are in use:
 
-- Capabilities:
+- ``Linux``: Two agents run on Linux with
 
-  - Igor Pro (new) = Linux
+  - Debian 10 (buster)
+  - No Hardware
+  - No Igor Pro
+  - Docker
 
-- Debian 10 (buster)
-- No Hardware
-- No Igor Pro
-- Docker
+- ``CodeSigning``: Agent can sign installer packages
 
-NI MIES Ephys:
+  - Windows 10
+  - EV certificate on USB stick
 
-- Capabilities:
+- ``ITC``: Agent can execute hardware tests with ITC18USB hardware
 
-  - Igor Pro (new) = Windows 10
+  - ITC18-USB hardware, 2 AD/DA channels are looped
+  - MCC demo amplifier only
+  - Igor Pro (latest required versions)
 
-- ITC-1600 hardware with one rack, 2 AD/DA channels are looped
-- NI PCIe-6343, 2 AD/DA channels are looped
-- MCC demo amplifier only
-- Latest required nightly version of Igor Pro 8
+- ``NI``: Agent can execute hardware tests with NI/ITC1600 hardware
 
-Windows 10 S30 MIES CI:
-
-- Capabilities:
-
-  - Igor Pro (new) = Windows 7
-
-- ITC18-USB hardware, 2 AD/DA channels are looped
-- MCC demo amplifier only
-- Latest required nightly version of Igor Pro 8
+  - ITC-1600 hardware with one rack, 2 AD/DA channels are looped
+  - NI PCIe-6343, 2 AD/DA channels are looped
+  - MCC demo amplifier only
+  - Igor Pro (latest required versions)
 
 Branch naming scheme
 ~~~~~~~~~~~~~~~~~~~~
