@@ -1557,6 +1557,29 @@ Function TP_UpdateTPSettingsCalculated(string panelTitle)
 	calculated[%totalLengthPointsDAQ] = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsDAQ], calculated[%baselineFrac]))
 End
 
+/// @brief Convert from row names of GetTPSettings()/GetTPSettingsCalculated() to GetTPSettingsLBN() column names.
+Function/S TP_AutoTPLabelToLabnotebookName(string lbl)
+
+	strswitch(lbl)
+		case "autoTPEnable":
+			return "TP Auto"
+		case "autoAmpMaxCurrent":
+			return "TP Auto max current"
+		case "autoAmpVoltage":
+			return "TP Auto voltage"
+		case "autoAmpVoltageRange":
+			return "TP Auto voltage range"
+		case "autoTPPercentage":
+			return "TP Auto percentage"
+		case "autoTPInterval":
+			return "TP Auto interval"
+		case "sendToAllHS":
+			return "Send TP settings to all headstages"
+		default:
+			ASSERT(0, "Invalid value: " + lbl)
+	endswitch
+End
+
 /// @brief Update the Testpulse labnotebook wave
 ///
 /// DAQ:
@@ -1572,6 +1595,7 @@ End
 /// @see DAP_TPGUISettingToWave() for the special auto TP entry handling.
 Function TP_UpdateTPLBNSettings(string panelTitle)
 	variable i, value
+	string lbl, entry
 
 	WAVE TPSettings = GetTPSettings(panelTitle)
 	WAVE calculated = GetTPSettingsCalculated(panelTitle)
@@ -1588,10 +1612,21 @@ Function TP_UpdateTPLBNSettings(string panelTitle)
 		TPSettingsLBN[0][%$"TP Amplitude VC"][i] = TPSettings[%amplitudeVC][i]
 		TPSettingsLBN[0][%$"TP Amplitude IC"][i] = TPSettings[%amplitudeIC][i]
 
-		TPSettingsLBN[0][%$"Auto TP"][i]               = TPSettings[%autoTPEnable][i]
-		TPSettingsLBN[0][%$"Auto TP max current"][i]   = TPSettings[%autoAmpMaxCurrent][i]
-		TPSettingsLBN[0][%$"Auto TP voltage"][i]       = TPSettings[%autoAmpVoltage][i]
-		TPSettingsLBN[0][%$"Auto TP voltage range"][i] = TPSettings[%autoAmpVoltageRange][i]
+		lbl = "autoTPEnable"
+		entry = TP_AutoTPLabelToLabnotebookName(lbl)
+		TPSettingsLBN[0][%$entry][i] = TPSettings[%$lbl][i]
+
+		lbl = "autoAmpMaxCurrent"
+		entry = TP_AutoTPLabelToLabnotebookName(lbl)
+		TPSettingsLBN[0][%$entry][i] = TPSettings[%$lbl][i]
+
+		lbl = "autoAmpVoltage"
+		entry = TP_AutoTPLabelToLabnotebookName(lbl)
+		TPSettingsLBN[0][%$entry][i] = TPSettings[%$lbl][i]
+
+		lbl = "autoAmpVoltageRange"
+		entry = TP_AutoTPLabelToLabnotebookName(lbl)
+		TPSettingsLBN[0][%$entry][i] = TPSettings[%$lbl][i]
 	endfor
 
 	TPSettingsLBN[0][%$"TP Baseline Fraction"][INDEP_HEADSTAGE]                = calculated[%baselineFrac]
@@ -1601,9 +1636,17 @@ Function TP_UpdateTPLBNSettings(string panelTitle)
 	value = ROVar(GetTestpulseCycleID(panelTitle))
 	TPSettingsLBN[0][%$"TP Cycle ID"][INDEP_HEADSTAGE] = value
 
-	TPSettingsLBN[0][%$"Send TP settings to all headstages"][INDEP_HEADSTAGE]  = TPSettings[%sendToAllHS][INDEP_HEADSTAGE]
-	TPSettingsLBN[0][%$"Auto TP percentage"][INDEP_HEADSTAGE]                  = TPSettings[%autoTPPercentage][INDEP_HEADSTAGE]
-	TPSettingsLBN[0][%$"Auto TP interval"][INDEP_HEADSTAGE]                    = TPSettings[%autoTPInterval][INDEP_HEADSTAGE]
+	lbl = "sendToAllHS"
+	entry = TP_AutoTPLabelToLabnotebookName(lbl)
+	TPSettingsLBN[0][%$entry][INDEP_HEADSTAGE] = TPSettings[%$lbl][INDEP_HEADSTAGE]
+
+	lbl = "autoTPPercentage"
+	entry = TP_AutoTPLabelToLabnotebookName(lbl)
+	TPSettingsLBN[0][%$entry][INDEP_HEADSTAGE] = TPSettings[%$lbl][INDEP_HEADSTAGE]
+
+	lbl = "autoTPInterval"
+	entry = TP_AutoTPLabelToLabnotebookName(lbl)
+	TPSettingsLBN[0][%$entry][INDEP_HEADSTAGE] = TPSettings[%$lbl][INDEP_HEADSTAGE]
 End
 
 /// @brief Return the TP cycle ID for the given device
