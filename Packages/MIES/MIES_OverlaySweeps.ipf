@@ -130,7 +130,7 @@ End
 
 /// @brief Remove all stimsets which were only acquired once, disregaring RAC/SCI, this means we just look at all sweeps
 static Function OVS_RemoveLowCountEntries(WAVE/T stimsets, WAVE/T setSweepCounts, WAVE/T dupsRemovedSetSweepCounts, WAVE/T dupsRemovedSetCycleCounts)
-	variable numEntries, i, j
+	variable numEntries, i, j, hasRepetitions
 	string stimset, entry
 
 	numEntries = DimSize(stimsets, ROWS)
@@ -142,17 +142,21 @@ static Function OVS_RemoveLowCountEntries(WAVE/T stimsets, WAVE/T setSweepCounts
 			continue
 		endif
 
-		for(j = 0; i < NUM_HEADSTAGES; i += 1)
-			// Find all stimulus sets with set sweep count == 0
-			entry = stimset + " (0)"
+		// Find all stimulus sets with set sweep count == 0
+		entry = stimset + " (0)"
+
+		hasRepetitions = 0
+
+		for(j = 0; j < NUM_HEADSTAGES; j += 1)
 			WAVE/Z indizes = FindIndizes(setSweepCounts, col = j, str = entry)
 
-			// only one match means this stimulus set was only acquired once
-			if(DimSize(indizes, ROWS) == 1)
-				RemoveTextWaveEntry1D(dupsRemovedSetSweepCounts, stimset, options = 1, all = 1)
-				RemoveTextWaveEntry1D(dupsRemovedSetCycleCounts, stimset, options = 1, all = 1)
-			endif
+			hasRepetitions = hasRepetitions || (WaveExists(indizes) && DimSize(indizes, ROWS) > 1)
 		endfor
+
+		if(!hasRepetitions)
+			RemoveTextWaveEntry1D(dupsRemovedSetSweepCounts, stimset, options = 1, all = 1)
+			RemoveTextWaveEntry1D(dupsRemovedSetCycleCounts, stimset, options = 1, all = 1)
+		endif
 	endfor
 End
 
