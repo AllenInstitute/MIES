@@ -1592,12 +1592,15 @@ Function GetControlCoordinates(win, ctrl, s)
 End
 
 /// @brief Get the text (plain or formatted) from the notebook
-Function/S GetNotebookText(win)
-	string win
+Function/S GetNotebookText(string win, [variable mode])
 
 	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
 
-	Notebook $win getData=1
+	if(ParamIsDefault(mode))
+		mode = 1
+	endif
+
+	Notebook $win getData=mode
 
 	return S_Value
 End
