@@ -909,13 +909,19 @@ Function BSP_UpdateHelpNotebook(win)
 	variable helpVersion
 	string name, text, helpNotebook, path
 
+	helpNotebook = BSP_GetSFHELP(win)
+	text = GetNotebookText(helpNotebook, mode = 2)
+
+	if(!IsEmpty(text))
+		return NaN
+	endif
+
 	name = UniqueName("notebook", 10, 0)
 	path = GetFolder(FunctionPath("")) + "SweepFormulaHelp.ifn"
 
 	OpenNotebook/Z/V=0/N=$name path
 	ASSERT(!V_Flag, "Error opening sweepformula help notebook")
 
-	helpNotebook = BSP_GetSFHELP(win)
 	text = GetNotebookText(name)
 	ReplaceNotebookText(helpNotebook, text)
 	KillWindow/Z $name

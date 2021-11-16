@@ -1440,6 +1440,8 @@ Function SF_TabProc_Formula(tca) : TabControl
 			bsPanel = BSP_GetPanel(mainPanel)
 			if(tca.tab == 1)
 				PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_check")
+			elseif(tca.tab == 2)
+				BSP_UpdateHelpNotebook(mainPanel)
 			endif
 
 			if(!BSP_HasBoundDevice(bsPanel))
