@@ -629,8 +629,8 @@ Function BSP_SweepsAndMouseWheel(s)
 
 			scPanel = BSP_GetSweepControlsPanel(graph)
 
-			// ALT changes the scroll direction
-			if(sign(s.wheelDx) == 1) // positive
+			// ALT changes the scroll direction and the sign
+			if(sign(s.wheelDx) == -1) // negative
 				ctrl = "button_SweepControl_PrevSweep"
 			else //negative
 				ctrl = "button_SweepControl_NextSweep"
