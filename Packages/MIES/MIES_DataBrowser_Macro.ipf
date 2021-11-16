@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(349.5,146,881.25,735.5)/K=1  as "DataBrowser"
+	Display /W=(1256.25,302,1688.25,738.5)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel
 	Button button_BSP_open,title="<<",help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -21,15 +21,15 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,hook(cleanup)=DB_WindowHook
 	SetWindow kwTopWin,hook(traceUserDataCleanup)=TUD_RemoveUserDataWave
 	SetWindow kwTopWin,hook(sweepScrolling)=BSP_SweepsAndMouseWheel
-	SetWindow kwTopWin,userdata(BROWSER)= "D"
-	SetWindow kwTopWin,userdata(DEVICE)= "- none -"
-	SetWindow kwTopWin,userdata(Config_PanelType)= "DataBrowser"
+	SetWindow kwTopWin,userdata(BROWSER)="D"
+	SetWindow kwTopWin,userdata(DEVICE)="- none -"
+	SetWindow kwTopWin,userdata(Config_PanelType)="DataBrowser"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#C=!!#C?5QCcazzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin,userdata(ResizeControlsHookStash)= "ResizeControls#ResizeControlsHook"
-	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)= "1"
-	SetWindow kwTopWin,userdata(JSONSettings_WindowName)= "datasweepbrowser"
+	SetWindow kwTopWin,userdata(ResizeControlsHookStash)="ResizeControls#ResizeControlsHook"
+	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)="1"
+	SetWindow kwTopWin,userdata(JSONSettings_WindowName)="datasweepbrowser"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={324,327,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewPanel/HOST=#/EXT=2/W=(0,0,580,70)  as "Sweep Control"
 	Button button_SweepControl_NextSweep,pos={331.00,4.00},size={150.00,36.00},proc=BSP_ButtonProc_ChangeSweep
@@ -947,7 +947,7 @@ Window DataBrowser() : Graph
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)=A"!!,Cd!!#BPJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
 	GroupBox group_enable_sweepFormula,pos={5.00,25.00},size={388.00,50.00},disable=1
 	GroupBox group_enable_sweepFormula,title="SweepFormula",userdata(tabnum)="5"
 	GroupBox group_enable_sweepFormula,userdata(tabcontrol)="Settings"
@@ -988,7 +988,7 @@ Window DataBrowser() : Graph
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo)=A"!!,E<!!#Co5QF,1!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	TabControl SF_InfoTab,pos={8.00,90.00},size={378.00,450.00},disable=3,proc=ACL_DisplayTab
+	TabControl SF_InfoTab,pos={8.00,90.00},size={378.00,450.00},disable=1,proc=ACL_DisplayTab
 	TabControl SF_InfoTab,help={"Choose between sweep formula input, JSON representation and the help notebook"}
 	TabControl SF_InfoTab,userdata(finalhook)="SF_TabProc_Formula"
 	TabControl SF_InfoTab,userdata(currenttab)="0",userdata(tabnum)="5"
@@ -1207,9 +1207,9 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_numberOfSpikes,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_numberOfSpikes,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_numberOfSpikes,limits={1,inf,1},value=_NUM:NaN
-	CheckBox check_BrowserSettings_VisEpochs,pos={37.00,56.00},size={102.00,15.00},disable=2,proc=BSP_CheckProc_ChangedSetting
+	CheckBox check_BrowserSettings_VisEpochs,pos={37.00,56.00},size={102.00,15.00},proc=BSP_CheckProc_ChangedSetting
 	CheckBox check_BrowserSettings_VisEpochs,title="Visualize Epochs"
-	CheckBox check_BrowserSettings_VisEpochs,help={"Visualize epoch information with additional traces (Igor Pro 9 only). Requires DA channels displayed."}
+	CheckBox check_BrowserSettings_VisEpochs,help={"Visualize epoch information with additional traces (Igor Pro 9 only)."}
 	CheckBox check_BrowserSettings_VisEpochs,userdata(tabnum)="0"
 	CheckBox check_BrowserSettings_VisEpochs,userdata(tabcontrol)="Settings"
 	CheckBox check_BrowserSettings_VisEpochs,userdata(ResizeControlsInfo)=A"!!,D#!!#>n!!#@0!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -1232,22 +1232,22 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#C,J,htM5QCcazzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin,userdata(ResizeControlsGuides)= "UGVL;UGVR;UGVT;UGVB;enableBoxTop;enableBoxBottom;MainBoxBottom;MainBoxTop;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVL)= "NAME:UGVL;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVR)= "NAME:UGVR;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:379.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-20;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVT)= "NAME:UGVT;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:113.00;GUIDE1:FT;GUIDE2:;RELPOSITION:113;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVB)= "NAME:UGVB;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:535.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-50;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxTop)= "NAME:enableBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:25.00;GUIDE1:FT;GUIDE2:;RELPOSITION:25;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxBottom)= "NAME:enableBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:75.00;GUIDE1:enableBoxTop;GUIDE2:;RELPOSITION:50;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxBottom)= "NAME:MainBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:585.00;GUIDE1:FB;GUIDE2:;RELPOSITION:3;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxTop)= "NAME:MainBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:85.00;GUIDE1:enableBoxBottom;GUIDE2:;RELPOSITION:10;"
+	SetWindow kwTopWin,userdata(ResizeControlsGuides)="UGVL;UGVR;UGVT;UGVB;enableBoxTop;enableBoxBottom;MainBoxBottom;MainBoxTop;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVL)="NAME:UGVL;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVR)="NAME:UGVR;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:379.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-20;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVT)="NAME:UGVT;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:113.00;GUIDE1:FT;GUIDE2:;RELPOSITION:113;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVB)="NAME:UGVB;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:535.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-50;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxTop)="NAME:enableBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:25.00;GUIDE1:FT;GUIDE2:;RELPOSITION:25;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxBottom)="NAME:enableBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:75.00;GUIDE1:enableBoxTop;GUIDE2:;RELPOSITION:50;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxBottom)="NAME:MainBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:585.00;GUIDE1:FB;GUIDE2:;RELPOSITION:3;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxTop)="NAME:MainBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:85.00;GUIDE1:enableBoxBottom;GUIDE2:;RELPOSITION:10;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={305.25,330,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewNotebook /F=0 /N=sweepFormula_json /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=12
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(tabnum)= "1"
-	SetWindow kwTopWin,userdata(tabcontrol)= "SF_InfoTab"
+	SetWindow kwTopWin,userdata(tabnum)="1"
+	SetWindow kwTopWin,userdata(tabcontrol)="SF_InfoTab"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
@@ -1259,8 +1259,8 @@ Window DataBrowser() : Graph
 	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z*!1@=S>)+F`2^BZWLb84b@(eDO%R/Lo%!.b8RgERN@q:!Q;Rb=g(\\Ea=4.iptUKJmo0`?;1F7@M*q"
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(tabnum)= "0"
-	SetWindow kwTopWin,userdata(tabcontrol)= "SF_InfoTab"
+	SetWindow kwTopWin,userdata(tabnum)="0"
+	SetWindow kwTopWin,userdata(tabcontrol)="SF_InfoTab"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
@@ -1270,8 +1270,8 @@ Window DataBrowser() : Graph
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1, showRuler=0, rulerUnits=2
 	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,251}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(tabnum)= "2"
-	SetWindow kwTopWin,userdata(tabcontrol)= "SF_InfoTab"
+	SetWindow kwTopWin,userdata(tabnum)="2"
+	SetWindow kwTopWin,userdata(tabcontrol)="SF_InfoTab"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
@@ -1281,8 +1281,8 @@ Window DataBrowser() : Graph
 	Notebook kwTopWin, defaultTab=36, autoSave= 0, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(tabnum)= "6"
-	SetWindow kwTopWin,userdata(tabcontrol)= "Settings"
+	SetWindow kwTopWin,userdata(tabnum)="6"
+	SetWindow kwTopWin,userdata(tabcontrol)="Settings"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
@@ -1353,8 +1353,8 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#D!!!#ACzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin,userdata(ResizeControlsGuides)= "UGV0;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= "NAME:UGV0;WIN:DB_ITC18USB_Dev_0#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:393.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-187;"
+	SetWindow kwTopWin,userdata(ResizeControlsGuides)="UGV0;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)="NAME:UGV0;WIN:DB_ITC18USB_Dev_0#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:393.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-187;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={441,105,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(200,187,395,501)/FG=(FL,FT,UGV0,FB)/HOST=#
 	ModifyGraph margin(right)=74

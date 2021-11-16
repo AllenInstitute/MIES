@@ -1159,13 +1159,6 @@ Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
 						DisableControl(bsPanel, "slider_BrowserSettings_dDAQ")
 					endif
 					break
-				case "check_BrowserSettings_DAC":
-					if(checked)
-						EnableControl(bsPanel, "check_BrowserSettings_VisEpochs")
-					else
-						DisableControl(bsPanel, "check_BrowserSettings_VisEpochs")
-					endif
-					break
 				case "check_BrowserSettings_TTL":
 					if(checked)
 						EnableControl(bsPanel, "check_BrowserSettings_splitTTL")
@@ -1537,12 +1530,15 @@ Function BSP_AddTracesForEpochs(string win)
 	DFREF dfr = GetEpochsVisualizationFolder(BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER))
 	BSP_RemoveTraces(win)
 
-	WAVE/T/Z traceInfos = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "1"})
+	WAVE/T/Z traceInfos = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"AD", "1"})
 
 	if(!WaveExists(traceInfos))
-		printf "Could not find any DA traces. Please enable them for display.\r"
-		ControlWindowToFront()
-		return NaN
+		// fallback to DA traces
+		WAVE/T/Z traceInfos = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "1"})
+
+		if(!WaveExists(traceInfos))
+			return NaN
+		endif
 	endif
 
 	traceIndex = GetNextTraceIndex(win)
@@ -1553,7 +1549,9 @@ Function BSP_AddTracesForEpochs(string win)
 		xaxis = traceInfos[j][%XAXIS]
 
 		// use our own y axis
+		// need to replace for both AD and DA cases
 		yaxis = ReplaceString("_DA", yaxis, "_EP_DA")
+		yaxis = ReplaceString("_AD", yaxis, "_EP_DA")
 
 		headstage   = str2num(traceInfos[j][%headstage])
 		sweepNumber = str2num(traceInfos[j][%sweepNumber])

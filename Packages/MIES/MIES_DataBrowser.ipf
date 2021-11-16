@@ -216,7 +216,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_BrowserSettings_DB_Failed WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_SF WIN = $bsPanel, value= 0
 
-	CheckBox check_BrowserSettings_VisEpochs WIN = $bsPanel, value=0,disable=DISABLE_CONTROL_BIT
+	CheckBox check_BrowserSettings_VisEpochs WIN = $bsPanel, value=0, disable=0
 
 	sfFormula = BSP_GetSFFormula(panelTitle)
 	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps()\r)")
