@@ -850,9 +850,11 @@ static Function LBV_CheckIfXAxisIsTime(string graph)
 
 	list = TraceNameList(graph, ";", 0 + 1)
 
-	// default is sweep axis
 	if(isEmpty(list))
-		return 0
+		WAVE/Z sweeps = GetPlainSweepList(graph)
+		// use sweeps axis as default if we have sweeps, use time axis otherwise
+		// this is useful for plotting TP data without any sweep data
+		return !WaveExists(sweeps)
 	endif
 
 	trace = StringFromList(0, list)
