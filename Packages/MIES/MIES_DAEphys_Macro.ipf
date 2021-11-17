@@ -11,7 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(102,681,580,1557)
+	NewPanel /K=1 /W=(1315,92,1818,968)
 	GroupBox group_pipette_offset_VC,pos={237.00,171.00},size={210.00,27.00},disable=1
 	GroupBox group_pipette_offset_VC,userdata(tabnum)="0"
 	GroupBox group_pipette_offset_VC,userdata(tabcontrol)="tab_DataAcq_Amp"
@@ -3564,8 +3564,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_0,userdata(ControlArray)="valdisp_DataAcq_P"
 	ValDisplay valdisp_DataAcq_P_0,userdata(ControlArrayIndex)="0",fSize=14,frame=0
-	ValDisplay valdisp_DataAcq_P_0,fStyle=0,valueColor=(65000,65000,65000)
-	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_0,fStyle=0,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value=#"0.00"
 	ValDisplay valdisp_DataAcq_P_1,pos={149.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_1,userdata(tabcontrol)="tab_DataAcq_Pressure"
@@ -3574,7 +3573,8 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_1,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_1,userdata(ControlArray)="valdisp_DataAcq_P"
 	ValDisplay valdisp_DataAcq_P_1,userdata(ControlArrayIndex)="1",fSize=14,frame=0
-	ValDisplay valdisp_DataAcq_P_1,fStyle=0,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_1,fStyle=0,valueColor=(65000,65000,65000)
+	ValDisplay valdisp_DataAcq_P_1,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_1,limits={0,0,0},barmisc={0,1000},value=#"0.00"
 	ValDisplay valdisp_DataAcq_P_2,pos={193.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_2,help={"black background:user selected headstage"}
@@ -4299,7 +4299,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_targetVoltageRange,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_targetVoltageRange,userdata(Config_DontRestore)="1"
 	SetVariable setvar_DataAcq_targetVoltageRange,userdata(Config_DontSave)="1"
-	SetVariable setvar_DataAcq_targetVoltageRange,limits={0,inf,1},value=_NUM:0.75
+	SetVariable setvar_DataAcq_targetVoltageRange,limits={0,inf,1},value=_NUM:0.5
 	SetVariable setvar_DataAcq_IinjMax,pos={337.00,405.00},size={127.00,20.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett
 	SetVariable setvar_DataAcq_IinjMax,title="\\[0max I \\Binj\\M \\Z10(pA)\\]0 ±"
 	SetVariable setvar_DataAcq_IinjMax,help={"Maximum current to inject for auto amplitude"}
@@ -4311,7 +4311,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_IinjMax,userdata(Config_DontRestore)="1"
 	SetVariable setvar_DataAcq_IinjMax,userdata(Config_DontSave)="1"
 	SetVariable setvar_DataAcq_IinjMax,limits={1,1500,1},value=_NUM:200
-	CheckBox check_DataAcq_AutoTP,pos={274.00,407.00},size={60.00,15.00},disable=1,proc=DAP_CheckProc_TestPulseSett
+	CheckBox check_DataAcq_AutoTP,pos={276.00,407.00},size={58.00,15.00},disable=1,proc=DAP_CheckProc_TestPulseSett
 	CheckBox check_DataAcq_AutoTP,title="Auto TP"
 	CheckBox check_DataAcq_AutoTP,help={"Auto TP amplitude and baseline tuning. Green background indicates active TP tuning on at least one headstage."}
 	CheckBox check_DataAcq_AutoTP,userdata(tabnum)="0",userdata(tabcontrol)="ADC"
@@ -4319,8 +4319,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DataAcq_AutoTP,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataAcq_AutoTP,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DataAcq_AutoTP,userdata(Config_DontRestore)="1"
-	CheckBox check_DataAcq_AutoTP,userdata(Config_DontSave)="1"
-	CheckBox check_DataAcq_AutoTP,labelBack=(3,52428,1,32768),value=0,side=1
+	CheckBox check_DataAcq_AutoTP,userdata(Config_DontSave)="1",value=0,side=1
 	CheckBox Check_TP_SendToAllHS,pos={184.00,417.00},size={14.00,14.00},disable=1,proc=DAP_CheckProc_TestPulseSett
 	CheckBox Check_TP_SendToAllHS,title=""
 	CheckBox Check_TP_SendToAllHS,help={"Set Testpulse settings from this group to all headstages (checked) or only the currently selected one (unchecked)."}
@@ -4427,12 +4426,12 @@ Window DA_Ephys() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#CW!!#Dl5QCcbzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin,userdata(ResizeControlsGuides)= "UGV0;UGH0;UGV1;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= "NAME:UGV0;WIN:DA_Ephys;TYPE:User;HORIZONTAL:0;POSITION:459.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-25;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= "NAME:UGH0;WIN:DA_Ephys;TYPE:User;HORIZONTAL:1;POSITION:854.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-27;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV1)= "NAME:UGV1;WIN:DA_Ephys;TYPE:User;HORIZONTAL:0;POSITION:481.00;GUIDE1:FL;GUIDE2:;RELPOSITION:481;"
-	SetWindow kwTopWin,userdata(Config_PanelType)= "DA_Ephys"
-	SetWindow kwTopWin,userdata(Config_RadioCouplingFunc)= "DAP_GetRadioButtonCoupling"
-	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)= "1"
-	SetWindow kwTopWin,userdata(JSONSettings_WindowName)= "daephys"
+	SetWindow kwTopWin,userdata(ResizeControlsGuides)="UGV0;UGH0;UGV1;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)="NAME:UGV0;WIN:DA_Ephys;TYPE:User;HORIZONTAL:0;POSITION:459.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-25;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)="NAME:UGH0;WIN:DA_Ephys;TYPE:User;HORIZONTAL:1;POSITION:854.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-27;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV1)="NAME:UGV1;WIN:DA_Ephys;TYPE:User;HORIZONTAL:0;POSITION:481.00;GUIDE1:FL;GUIDE2:;RELPOSITION:481;"
+	SetWindow kwTopWin,userdata(Config_PanelType)="DA_Ephys"
+	SetWindow kwTopWin,userdata(Config_RadioCouplingFunc)="DAP_GetRadioButtonCoupling"
+	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)="1"
+	SetWindow kwTopWin,userdata(JSONSettings_WindowName)="daephys"
 EndMacro
