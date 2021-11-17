@@ -312,6 +312,23 @@ Where ``$prefix`` is one of ``feature``/``bugfix``, ``$pr`` is the number of the
 Contributers are encouraged to install the ``pre-push`` git hook from the tools directory. The script
 ``tools/nextFreePRNumber.sh`` can get the soon-to-be-created PR number on the commandline (requires curl and jq) as well.
 
+Continuous Integration Hints
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As part of the continuous integration pipeline tests are run. A full test run including the hardware tests
+tales several hours. Thus, if a lot of pull requests are updated pending test runs could queue up and
+it might take rather long until results are available.
+
+Thus, for changes where the commits are in a state where no full test run by the CI makes sense it is
+possible to inhibit the automatic tests. Typically this is the case if the developer commits changes
+in progress and pushes these for the purpose of a secondary backup or further commit organization.
+Inhibiting tests for these cases frees testing resources for other pull requests.
+
+To inhibit test runs the key ``[SKIP CI]`` has to be added to the commit message.
+
+The key can be removed later easily through a rebase with rewording the commit message.
+After pushing to the repository the CI queues the tests again for this pull request.
+
 Debugging threadsafe functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
