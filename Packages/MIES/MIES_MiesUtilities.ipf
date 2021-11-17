@@ -2882,7 +2882,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 						xRangeEnd   = NaN
 					endif
 
-					sprintf trace, "T%0*d", TRACE_NAME_NUM_DIGITS, traceIndex
+					trace = GetTraceNamePrefix(traceIndex)
 					traceIndex += 1
 
 					sprintf str, "i=%d, j=%d, k=%d, vertAxis=%s, traceType=%s, name=%s", i, j, k, vertAxis, traceType, name
@@ -2986,6 +2986,15 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	if(!ParamIsDefault(bdi))
 		SetNumberInWaveNote(bdi.traceWaves, NOTE_INDEX, traceCounter)
 	endif
+End
+
+/// @brief Return a trace name prefix suitable for GetNextTraceIndex()
+Function/S GetTraceNamePrefix(variable traceIndex)
+	string name
+
+	sprintf name, "T%0*d", TRACE_NAME_NUM_DIGITS, traceIndex
+
+	return name
 End
 
 ///@brief Runs through all graph groups in the json and appends them to the graph
@@ -4026,8 +4035,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, averagingEnabled, averageD
 			k += 1
 		endif
 
-		sprintf traceName, "T%0*d%s", TRACE_NAME_NUM_DIGITS, (numTraces + traceIndex), averageWaveName
-		traceIndex += 1
+		sprintf traceName, "%s%s", GetTraceNamePrefix(numTraces + traceIndex++), averageWaveName
 
 		WAVE ranges = ExtractFromSubrange(listOfRanges, ROWS)
 

@@ -329,16 +329,24 @@ End
 
 /// @brief get a FOLDER property from the specified panel
 ///
-/// @param win 						name of external panel or main window
-/// @param MIES_BSP_FOLDER_TYPE 	see the FOLDER constants in this file
+/// @param win                   name of external panel or main window
+/// @param MIES_BSP_FOLDER_TYPE  see the FOLDER constants in this file
+/// @param versionCheck          [optional, defaults to true] abort on outdated window version
 ///
 /// @return DFR to specified folder. No check for invalid folders
-Function/DF BSP_GetFolder(win, MIES_BSP_FOLDER_TYPE)
+Function/DF BSP_GetFolder(win, MIES_BSP_FOLDER_TYPE, [versionCheck])
 	string win, MIES_BSP_FOLDER_TYPE
+	variable versionCheck
 
 	string mainPanel
 
-	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
+	if(ParamIsDefault(versionCheck))
+		versionCheck = 1
+	else
+		versionCheck = !!versionCheck
+	endif
+
+	if(versionCheck && !HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 	endif
 
@@ -596,6 +604,40 @@ Function BSP_ClosePanelHook(s)
 			BSP_MainPanelButtonToggle(mainPanel, 1)
 
 			return 2 // don't kill window
+
+	endswitch
+
+	return 0
+End
+
+Function BSP_SweepsAndMouseWheel(s)
+	STRUCT WMWinHookStruct &s
+
+	string graph, scPanel, ctrl
+
+	switch(s.eventCode)
+		case 22: // mouse wheel
+			graph = GetMainWindow(s.winName)
+
+			if(!windowExists(graph))
+				break
+			endif
+
+			if(!(s.eventMod & EVENT_MOD_ALT_OPTION))
+				break
+			endif
+
+			scPanel = BSP_GetSweepControlsPanel(graph)
+
+			// ALT changes the scroll direction and the sign
+			if(sign(s.wheelDx) == -1) // negative
+				ctrl = "button_SweepControl_PrevSweep"
+			else //negative
+				ctrl = "button_SweepControl_NextSweep"
+			endif
+
+			PGC_SetAndActivateControl(scPanel, ctrl)
+			break
 	endswitch
 
 	return 0
@@ -1117,13 +1159,6 @@ Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
 						DisableControl(bsPanel, "slider_BrowserSettings_dDAQ")
 					endif
 					break
-				case "check_BrowserSettings_DAC":
-					if(checked)
-						EnableControl(bsPanel, "check_BrowserSettings_VisEpochs")
-					else
-						DisableControl(bsPanel, "check_BrowserSettings_VisEpochs")
-					endif
-					break
 				case "check_BrowserSettings_TTL":
 					if(checked)
 						EnableControl(bsPanel, "check_BrowserSettings_splitTTL")
@@ -1458,12 +1493,30 @@ End
 
 #if IgorVersion() >= 9.0
 
+static Function BSP_RemoveTraces(string graph)
+	variable i, numEntries
+	string trace
+
+	WAVE/Z/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"EpochVis"})
+
+	if(!WaveExists(traces))
+		return NaN
+	endif
+
+	numEntries = DimSize(traces, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		trace = traces[i]
+		RemoveFromGraph/W=$graph $trace
+		TUD_RemoveUserData(graph, trace)
+	endfor
+End
+
 /// @brief Debug function to add traces with epoch information
 Function BSP_AddTracesForEpochs(string win)
 
 	variable i, j, k, numEntries, start_x, start_y, end_x, end_y, yOffset
 	variable headstage, yLevelOffset, level, idx, numTraces, numEpochs
-	variable sweepNumber
+	variable sweepNumber, traceIndex
 	STRUCT RGBColor c
 	string xaxis, yaxis, axes, axis, levels_x_name, levels_y_name, name
 	string level_0_trace, level_1_trace, level_2_trace, level_3_trace, level_4_trace
@@ -1475,15 +1528,20 @@ Function BSP_AddTracesForEpochs(string win)
 	endif
 
 	DFREF dfr = GetEpochsVisualizationFolder(BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER))
-	RemoveTracesFromGraph(win, dfr = dfr)
+	BSP_RemoveTraces(win)
 
-	WAVE/T/Z traceInfos = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "1"})
+	WAVE/T/Z traceInfos = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"AD", "1"})
 
 	if(!WaveExists(traceInfos))
-		printf "Could not find any DA traces. Please enable them for display.\r"
-		ControlWindowToFront()
-		return NaN
+		// fallback to DA traces
+		WAVE/T/Z traceInfos = GetTraceInfos(win, addFilterKeys = {"channelType", "AssociatedHeadstage"}, addFilterValues = {"DA", "1"})
+
+		if(!WaveExists(traceInfos))
+			return NaN
+		endif
 	endif
+
+	traceIndex = GetNextTraceIndex(win)
 
 	numTraces = DimSize(traceInfos, ROWS)
 	for(j = 0; j < numTraces; j += 1)
@@ -1491,7 +1549,9 @@ Function BSP_AddTracesForEpochs(string win)
 		xaxis = traceInfos[j][%XAXIS]
 
 		// use our own y axis
+		// need to replace for both AD and DA cases
 		yaxis = ReplaceString("_DA", yaxis, "_EP_DA")
+		yaxis = ReplaceString("_AD", yaxis, "_EP_DA")
 
 		headstage   = str2num(traceInfos[j][%headstage])
 		sweepNumber = str2num(traceInfos[j][%sweepNumber])
@@ -1548,26 +1608,26 @@ Function BSP_AddTracesForEpochs(string win)
 			currentLevel[level] += 1
 		endfor
 
-		sprintf level_0_trace, "level%d_x_sweep%d_HS%d", 0, sweepNumber, headstage
-		sprintf level_1_trace, "level%d_x_sweep%d_HS%d", 1, sweepNumber, headstage
-		sprintf level_2_trace, "level%d_x_sweep%d_HS%d", 2, sweepNumber, headstage
-		sprintf level_3_trace, "level%d_x_sweep%d_HS%d", 3, sweepNumber, headstage
-		sprintf level_4_trace, "level%d_x_sweep%d_HS%d", 4, sweepNumber, headstage
+		sprintf level_0_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 0, sweepNumber, headstage
+		sprintf level_1_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 1, sweepNumber, headstage
+		sprintf level_2_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 2, sweepNumber, headstage
+		sprintf level_3_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 3, sweepNumber, headstage
+		sprintf level_4_trace, "%s_level%d_x_sweep%d_HS%d", GetTraceNamePrefix(traceIndex++), 4, sweepNumber, headstage
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][0]/TN=$level_0_trace vs levels_x[][0]
-		TUD_SetUserData(win, level_0_trace, "YAXIS", yaxis)
+		TUD_SetUserDataFromWaves(win, level_0_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][1]/TN=$level_1_trace vs levels_x[][1]
-		TUD_SetUserData(win, level_1_trace, "YAXIS", yaxis)
+		TUD_SetUserDataFromWaves(win, level_1_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][2]/TN=$level_2_trace vs levels_x[][2]
-		TUD_SetUserData(win, level_2_trace, "YAXIS", yaxis)
+		TUD_SetUserDataFromWaves(win, level_2_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][3]/TN=$level_3_trace vs levels_x[][3]
-		TUD_SetUserData(win, level_3_trace, "YAXIS", yaxis)
+		TUD_SetUserDataFromWaves(win, level_3_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})
 
 		AppendToGraph/W=$win/L=$yAxis levels_y[][4]/TN=$level_4_trace vs levels_x[][4]
-		TUD_SetUserData(win, level_4_trace, "YAXIS", yaxis)
+		TUD_SetUserDataFromWaves(win, level_4_trace, {"traceType", "occurence", "XAXIS", "YAXIS"}, {"EpochVis", "", "bottom", yaxis})
 
 		[c] = GetTraceColor(0)
 		ModifyGraph/W=$win marker($level_0_trace)=10, mode($level_0_trace)=4, rgb($level_0_trace)=(c.red, c.green, c.blue)

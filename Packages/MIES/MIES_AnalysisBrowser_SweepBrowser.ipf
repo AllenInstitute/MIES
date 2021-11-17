@@ -381,28 +381,6 @@ Function SB_SweepBrowserWindowHook(s)
 
 			KillOrMoveToTrash(dfr = sweepBrowserDFR)
 			break
-		case 22: // mouse wheel
-			graph = GetMainWindow(s.winName)
-
-			if(!windowExists(graph))
-				break
-			endif
-
-			if(!(s.eventMod & EVENT_MOD_ALT_OPTION))
-				break
-			endif
-
-			scPanel = BSP_GetSweepControlsPanel(graph)
-
-			// ALT changes the scroll direction
-			if(sign(s.wheelDx) == 1) // positive
-				ctrl = "button_SweepControl_PrevSweep"
-			else //negative
-				ctrl = "button_SweepControl_NextSweep"
-			endif
-
-			PGC_SetAndActivateControl(scPanel, ctrl)
-			break
 	endswitch
 
 	// return zero so that other hooks are called as well

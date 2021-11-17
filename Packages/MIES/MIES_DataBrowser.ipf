@@ -216,7 +216,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_BrowserSettings_DB_Failed WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_SF WIN = $bsPanel, value= 0
 
-	CheckBox check_BrowserSettings_VisEpochs WIN = $bsPanel, value=0,disable=DISABLE_CONTROL_BIT
+	CheckBox check_BrowserSettings_VisEpochs WIN = $bsPanel, value=0, disable=0
 
 	sfFormula = BSP_GetSFFormula(panelTitle)
 	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps()\r)")
@@ -736,7 +736,7 @@ Function DB_WindowHook(s)
 			try
 				// catch all error conditions, asserts and aborts
 				// and silently ignore them
-				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER); AbortOnRTE
+				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER, versionCheck = 0); AbortOnRTE
 
 				KillOrMoveToTrash(dfr = dfr); AbortOnRTE
 			catch

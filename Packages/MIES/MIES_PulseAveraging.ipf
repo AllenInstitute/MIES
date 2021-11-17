@@ -1639,7 +1639,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 					for(k = startEntry; k < numEntries; k += 1)
 						idx = indices[k]
 						if(properties[idx][PA_PROPERTIES_INDEX_PULSEHASFAILED])
-							sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, idx, NameOfWave(propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSE])
+							sprintf pulseTrace, "%s%s", GetTraceNamePrefix(idx), NameOfWave(propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSE])
 							if(pa.multipleGraphs)
 								jsonPath = graph + "/hiddenTraces"
 								JSON_AddTreeArray(hideTraceJsonID, jsonPath)
@@ -1668,7 +1668,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STR
 						endif
 
 						WAVE plotWave = propertiesWaves[idx][PA_PROPERTIESWAVES_INDEX_PULSE]
-						sprintf pulseTrace, "T%0*d%s", TRACE_NAME_NUM_DIGITS, idx, NameOfWave(plotWave)
+						sprintf pulseTrace, "%s%s", GetTraceNamePrefix(idx), NameOfWave(plotWave)
 
 						jsonPath = graph + "/" + vertAxis + "/" + horizAxis + "/" + num2str(s.red) + "/" + num2str(s.green) + "/" + num2str(s.blue) + "/" + num2str(alpha) + "/" + num2str(step) + "/"
 						JSON_AddTreeArray(jsonID, jsonPath + "index")
