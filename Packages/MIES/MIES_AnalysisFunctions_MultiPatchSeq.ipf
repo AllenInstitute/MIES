@@ -841,25 +841,25 @@ Function/S MSQ_FastRheoEst_GetHelp(name)
 	endswitch
 End
 
-Function/S MSQ_FastRheoEst_CheckParam(string name, string params)
+Function/S MSQ_FastRheoEst_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val
 
 	strswitch(name)
 		case "PostDAQDAScaleMinOffset":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0))
 				return "Must be zero or positive."
 			endif
 			break
 		case "PostDAQDAScaleForFailedHS":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be finite."
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Not valid."
 			endif
@@ -1374,11 +1374,11 @@ Function/S MSQ_DAScale_GetHelp(name)
 	endswitch
 End
 
-Function/S MSQ_DAScale_CheckParam(string name, string params)
+Function/S MSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 
 	strswitch(name)
 		case "DAScales":
-			WAVE/Z wv = AFH_GetAnalysisParamWave(name, params)
+			WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 			if(!WaveExists(wv))
 				return "Wave must exist"
 			endif

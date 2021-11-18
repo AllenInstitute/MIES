@@ -991,20 +991,20 @@ Function/S ReachTargetVoltage_GetHelp(string name)
 	endswitch
 End
 
-Function/S ReachTargetVoltage_CheckParam(string name, string params)
+Function/S ReachTargetVoltage_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val
 	string str
 
 	strswitch(name)
 		case "EnableIndexing":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "IndexingEndStimsetAllIC":
-			str = AFH_GetAnalysisParamTextual(name, params)
+			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(IsEmpty(str))
 				return "Invalid value " + str
 			endif

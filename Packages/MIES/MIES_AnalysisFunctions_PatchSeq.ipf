@@ -1308,7 +1308,7 @@ Function/S PSQ_DAScale_GetHelp(string name)
 	endswitch
 End
 
-Function/S PSQ_DAScale_CheckParam(string name, string params)
+Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val
 	string str
@@ -1316,13 +1316,13 @@ Function/S PSQ_DAScale_CheckParam(string name, string params)
 	strswitch(name)
 		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "DAScales":
-			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, params)
+			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 			if(!WaveExists(wv))
 				return "Wave must exist"
 			endif
@@ -1333,55 +1333,55 @@ Function/S PSQ_DAScale_CheckParam(string name, string params)
 			endif
 			break
 		case "OperationMode":
-			str = AFH_GetAnalysisParamTextual(name, params)
+			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, PSQ_DS_SUB) && cmpstr(str, PSQ_DS_SUPRA))
 				return "Invalid string " + str
 			endif
 			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "OffsetOperator":
-			str = AFH_GetAnalysisParamTextual(name, params)
+			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, "+") && cmpstr(str, "*"))
 				return "Invalid string " + str
 			endif
 			break
 		case "ShowPlot":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(val != 0 && val != 1)
 				return "Invalid string " + num2str(val)
 			endif
 			break
 		case "FinalSlopePercent":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 100))
 				return "Not a precentage"
 			endif
 			break
 		case "MinimumSpikeCount":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0))
 				return "Not a positive integer or zero"
 			endif
 			break
 		case "MaximumSpikeCount":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0))
 				return "Not a positive integer or zero"
 			endif
 			break
 		case "DAScaleModifier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Not a precentage"
 			endif
@@ -1395,8 +1395,8 @@ Function/S PSQ_DAScale_CheckParam(string name, string params)
 	strswitch(name)
 		case "MinimumSpikeCount":
 		case "MaximumSpikeCount":
-			if(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", params)    \
-			   >= AFH_GetAnalysisParamNumerical("MaximumSpikeCount", params))
+			if(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params)    \
+			   >= AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params))
 			   return "The minimum/maximum spike counts are not ordered properly"
 		   endif
 		   break
@@ -1407,9 +1407,9 @@ Function/S PSQ_DAScale_CheckParam(string name, string params)
 		case "MinimumSpikeCount":
 		case "MaximumSpikeCount":
 		case "DAScaleModifier":
-			if(IsNaN(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", params))    \
-			   || IsNaN(AFH_GetAnalysisParamNumerical("MaximumSpikeCount", params)) \
-			   || IsNaN(AFH_GetAnalysisParamNumerical("DAScaleModifier", params)))
+			if(IsNaN(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params))    \
+			   || IsNaN(AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params)) \
+			   || IsNaN(AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)))
 			   return "One of MinimumSpikeCount/MaximumSpikeCount/DAScaleModifier is not present"
 		   endif
 		   break
@@ -1924,26 +1924,26 @@ Function/S PSQ_SquarePulse_GetHelp(string name)
 	endswitch
 End
 
-Function/S PSQ_SquarePulse_CheckParam(string name, string params)
+Function/S PSQ_SquarePulse_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val
 
 	strswitch(name)
 		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
@@ -2188,26 +2188,26 @@ Function/S PSQ_Rheobase_GetHelp(string name)
 	endswitch
 End
 
-Function/S PSQ_Rheobase_CheckParam(string name, string params)
+Function/S PSQ_Rheobase_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val
 
 	strswitch(name)
 		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
@@ -2626,32 +2626,32 @@ Function/S PSQ_Ramp_GetHelp(string name)
 	endswitch
 End
 
-Function/S PSQ_Ramp_CheckParam(string name, string params)
+Function/S PSQ_Ramp_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val
 
 	strswitch(name)
 		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "NumberOfSpikes":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
@@ -3400,67 +3400,67 @@ Function/S PSQ_Chirp_GetHelp(string name)
 	endswitch
 End
 
-Function/S PSQ_Chirp_CheckParam(string name, string params)
+Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 	variable val
 	string str
 
 	strswitch(name)
 		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "LowerRelativeBound":
-			if(AFH_GetAnalysisParamNumerical("LowerRelativeBound", params) >= AFH_GetAnalysisParamNumerical("UpperRelativeBound", params))
+			if(AFH_GetAnalysisParamNumerical("LowerRelativeBound", s.params) >= AFH_GetAnalysisParamNumerical("UpperRelativeBound", s.params))
 				return "LowerRelativeBound must be smaller than UpperRelativeBound"
 			endif
 		case "UpperRelativeBound": // fallthrough-by-design
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || val < PSQ_CR_LIMIT_BAND_LOW || val > PSQ_CR_LIMIT_BAND_HIGH)
 				return "Out of bounds with value " + num2str(val)
 			endif
 			break
 		case "NumberOfChirpCycles":
 		case "NumberOfFailedSweeps": // fallthrough-by-design
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || !IsInteger(val) || val <= 0)
 				return "Must be a finite non-zero integer"
 			endif
 			break
 		case "FailedLevel":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
 			endif
 			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SpikeCheck":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
 			endif
 			break
 		case "DAScaleOperator":
-			str = AFH_GetAnalysisParamTextual(name, params)
+			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, "+") && cmpstr(str, "*"))
 				return "Invalid string " + str
 			endif
 			break
 		case "DAScaleModifier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Invalid value " + num2str(val)
 			endif
