@@ -3423,10 +3423,15 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 			endif
 			break
 		case "NumberOfChirpCycles":
-		case "NumberOfFailedSweeps": // fallthrough-by-design
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || !IsInteger(val) || val <= 0)
 				return "Must be a finite non-zero integer"
+			endif
+			break
+		case "NumberOfFailedSweeps":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
+				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
 			endif
 			break
 		case "FailedLevel":
