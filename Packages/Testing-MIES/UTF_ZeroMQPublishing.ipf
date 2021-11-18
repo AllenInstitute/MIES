@@ -87,3 +87,41 @@ static Function CheckPressureSealPublishing()
 
 	JSON_Release(jsonID)
 End
+
+static Function CheckClampModePublishing()
+	string device, msg, filter, expected, actual
+	variable headstage, i, jsonID, value
+
+	WaitForPubSubHeartbeat()
+
+	device = "my_device"
+	headstage = 0
+
+	MIES_DAP#DAP_PublishClampModeChange(device, headstage, I_CLAMP_MODE, V_CLAMP_MODE)
+
+	for(i = 0; i < 100; i += 1)
+		msg = zeromq_sub_recv(filter)
+
+		if(!cmpstr(filter, AMPLIFIER_CLAMP_MODE_FILTER))
+			break
+		endif
+
+		Sleep/S 0.1
+	endfor
+
+	expected = AMPLIFIER_CLAMP_MODE_FILTER
+	actual   = filter
+	CHECK_EQUAL_STR(actual, expected)
+
+	jsonID = JSON_Parse(msg)
+
+	expected = "I_CLAMP_MODE"
+	actual   = JSON_GetString(jsonID, "/clamp mode/old")
+	CHECK_EQUAL_STR(actual, expected)
+
+	expected = "V_CLAMP_MODE"
+	actual   = JSON_GetString(jsonID, "/clamp mode/new")
+	CHECK_EQUAL_STR(actual, expected)
+
+	JSON_Release(jsonID)
+End
