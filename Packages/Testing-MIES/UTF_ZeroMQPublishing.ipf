@@ -125,3 +125,40 @@ static Function CheckClampModePublishing()
 
 	JSON_Release(jsonID)
 End
+
+static Function CheckAutoBridgeBalancePublishing()
+	string device, msg, filter, expected, actual
+	variable headstage, i, jsonID, value
+
+	WaitForPubSubHeartbeat()
+
+	device = "my_device"
+	headstage = 0
+
+	MIES_AI#AI_PublishAutoBridgeBalance(device, headstage, 4711)
+
+	for(i = 0; i < 100; i += 1)
+		msg = zeromq_sub_recv(filter)
+
+		if(!cmpstr(filter, AMPLIFIER_AUTO_BRIDGE_BALANCE))
+			break
+		endif
+
+		Sleep/S 0.1
+	endfor
+
+	expected = AMPLIFIER_AUTO_BRIDGE_BALANCE
+	actual   = filter
+	CHECK_EQUAL_STR(actual, expected)
+
+	jsonID = JSON_Parse(msg)
+
+	expected = "Ohm"
+	actual   = JSON_GetString(jsonID, "/bridge balance resistance/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	value = JSON_GetVariable(jsonID, "/bridge balance resistance/value")
+	CHECK_EQUAL_VAR(value, 4711)
+
+	JSON_Release(jsonID)
+End

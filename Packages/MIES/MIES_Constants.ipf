@@ -1659,4 +1659,5 @@ Constant TP_GETVALUES_DEFAULT            = 0x0
 Constant TP_GETVALUES_LATEST_AUTOTPCYCLE = 0x1
 /// @}
 
-StrConstant AMPLIFIER_CLAMP_MODE_FILTER = "amplifier:clamp mode"
+StrConstant AMPLIFIER_CLAMP_MODE_FILTER   = "amplifier:clamp mode"
+StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE = "amplifier:auto bridge balance"
