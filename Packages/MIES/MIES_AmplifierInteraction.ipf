@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors=1
 
 #ifdef AUTOMATED_TESTING
-#pragma ModuleName=MiesTesting
+#pragma ModuleName=MIES_AI
 #endif
 
 /// @file MIES_AmplifierInteraction.ipf
