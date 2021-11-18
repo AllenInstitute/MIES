@@ -117,18 +117,18 @@
 ///        return "param1:variable,[optParam1:wave]"
 ///    End
 ///
-///    Function/S MyAnalysisFunction_CheckParam(string name, string params)
+///    Function/S MyAnalysisFunction_CheckParam(string name, struct CheckParametersStruct& s)
 ///        variable value
 ///
 ///        strswitch(name)
 ///            case "param1":
-///                value = AFH_GetAnalysisParamNumerical(name, params)
+///                value = AFH_GetAnalysisParamNumerical(name, s.params)
 ///                if(!IsFinite(value) || !(value >= 0 && value <= 100))
 ///                    return "Needs to be between 0 and 100."
 ///                endif
 ///                break
 ///            case "optParam1":
-///                WAVE/Z wv = AFH_GetAnalysisParamWave(name, params)
+///                WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 ///                if(!WaveExists(wv) || !IsFloatingPointWave(wv))
 ///                    return "Needs to be an existing floating point wave."
 ///                break

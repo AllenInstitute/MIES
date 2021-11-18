@@ -3007,7 +3007,11 @@ static Function DAP_CheckAnalysisFunctionAndParameter(panelTitle, setName)
 			endswitch
 		endfor
 
-		errorMessage = AFH_CheckAnalysisParameter(func, suppParams)
+		STRUCT CheckParametersStruct s
+		s.params = suppParams
+		s.setName = setName
+
+		errorMessage = AFH_CheckAnalysisParameter(func, s)
 		if(!IsEmpty(errorMessage))
 			printf "(%s) The analysis parameter check for function %s in stim set %s did not pass.\r", panelTitle, func, setName
 			print errorMessage

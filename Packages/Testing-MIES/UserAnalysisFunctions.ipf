@@ -546,6 +546,40 @@ Function Params5_V3(panelTitle, s)
 	anaFuncTracker[s.eventType] += 1
 End
 
+Function/S Params6_V3_CheckParam(string name, STRUCT CheckParametersStruct &s)
+	string expected, actual
+
+	strswitch(name)
+		case "MyStr":
+			expected = "AnaFuncParams6_DA_0"
+			actual   = s.setName
+			CHECK_EQUAL_STR(expected, actual)
+			WAVE/Z stimset = WB_CreateAndGetStimSet(s.setName)
+			CHECK_WAVE(stimset, NUMERIC_WAVE)
+			break
+		default:
+			FAIL()
+			break
+	endswitch
+
+	return ""
+End
+
+Function/S Params6_V3_GetParams()
+	return "MyStr:string"
+End
+
+Function Params6_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType] += 1
+End
+
 Function ChangeToSingleDeviceDAQAF(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType

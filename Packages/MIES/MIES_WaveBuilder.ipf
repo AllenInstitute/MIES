@@ -2457,7 +2457,11 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 	genericFunc = WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
 	params = WPT[%$("Analysis function params (encoded)")][%Set][INDEP_EPOCH_TYPE]
 
-	errorMessage = AFH_CheckAnalysisParameter(genericFunc, params)
+	STRUCT CheckParametersStruct s
+	s.params  = params
+	s.setName = setName
+
+	errorMessage = AFH_CheckAnalysisParameter(genericFunc, s)
 
 	if(!IsEmpty(errorMessage))
 		printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"

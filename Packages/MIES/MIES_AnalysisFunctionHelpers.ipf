@@ -786,21 +786,23 @@ End
 /// @brief Check the analysis parameters according to the optionally present check function
 ///
 /// @param genericFunc Name of an analysis V3 function
-/// @param params      Analysis parameter (encoded)
+/// @param s           struct CheckParametersStruct with additional info
 ///
 /// @return multiline error messages, an empty string on success
-Function/S AFH_CheckAnalysisParameter(genericFunc, params)
-	string genericFunc, params
-
+Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParametersStruct &s)
 	string suggNames, presentNames, message, name
 	string reqNamesAndTypesFromFunc, reqNames
 	string optNamesAndTypesFromFunc, optNames
-	variable index, numParams, i
+	variable index, numParams, i, valid_f1, valid_f2
 	string header, text
 
-	FUNCREF AF_PROTO_PARAM_CHECK f = $(genericFunc + "_CheckParam")
+	FUNCREF AF_PROTO_PARAM_CHECK_V1 f1 = $(genericFunc + "_CheckParam")
+	FUNCREF AF_PROTO_PARAM_CHECK_V2 f2 = $(genericFunc + "_CheckParam")
 
-	if(!FuncRefIsAssigned(FuncRefInfo(f)))
+	valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
+	valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
+
+	if(!valid_f1 && !valid_f2)
 		return ""
 	endif
 
@@ -812,7 +814,7 @@ Function/S AFH_CheckAnalysisParameter(genericFunc, params)
 
 	suggNames = optNames + reqNames
 
-	presentNames = AFH_GetListOfAnalysisParamNames(params)
+	presentNames = AFH_GetListOfAnalysisParamNames(s.params)
 
 	numParams = ItemsInList(suggNames)
 	Make/FREE/T/N=(numParams) errorMessages
@@ -833,7 +835,13 @@ Function/S AFH_CheckAnalysisParameter(genericFunc, params)
 
 		AssertOnAndClearRTError()
 		try
-			message = f(name, params); AbortOnRTE
+			if(valid_f1)
+				message = f1(name, s.params); AbortOnRTE
+			elseif(valid_f2)
+				message = f2(name, s); AbortOnRTE
+			else
+				ASSERT(0, "impossible case")
+			endif
 
 			if(!IsEmpty(message))
 				errorMessages[index++] = name + ": " + trimstring(message)
