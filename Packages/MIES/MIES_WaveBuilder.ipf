@@ -1947,7 +1947,7 @@ Function WB_FormulaSwitchToStimset(formula, fp)
 		stimsetFound = 0
 
 		// search and replace until shorthand isn't found in formula anymore.
-		ASSERT(!SearchWordInString(stimsetSpec, shorthand), "circle reference: shorthand is part of stimset. prevented infinite loop")
+		ASSERT(!SearchWordInString(stimsetSpec, shorthand), "circular reference: shorthand is part of stimset. prevented infinite loop")
 		do
 			if(!SearchWordInString(formula, shorthand, prefix = prefix, suffix = suffix))
 				break
@@ -2239,7 +2239,7 @@ Function/S WB_StimsetRecursion([parent, knownStimsets])
 	stimsetQueue = knownStimsets
 	for(i = 0; i < numAfter - numBefore + numMoved; i += 1)
 		stimset  = StringFromList(i, stimsetQueue)
-		// avoid first order circle references.
+		// avoid first order circular references.
 		if(cmpstr(stimset, parent))
 			knownStimsets = WB_StimsetRecursion(parent = stimset, knownStimsets = knownStimsets)
 		endif
@@ -2468,7 +2468,7 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 
 	DFREF dfr = GetSetParamFolder(stimulusType)
 
-	// avoid circle references of any order
+	// avoid circular references of any order
 	childStimsets = WB_StimsetRecursion()
 	if(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
 		do
