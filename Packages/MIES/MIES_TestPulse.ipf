@@ -777,18 +777,7 @@ static Function TP_PublishAutoTPResult(string device, variable headstage, variab
 	JSON_AddVariable(jsonID, path + "/value", autoTPDeltaV[0])
 	JSON_AddString(jsonID, path + "/unit", "mV")
 
-	payload = JSON_Dump(jsonID, indent = 2)
-	JSON_Release(jsonID)
-
-	DEBUGPRINT(payload)
-
-	AssertOnAndClearRTError()
-	try
-		zeromq_pub_send(AUTO_TP_FILTER, payload); AbortOnRTE
-	catch
-		err = ClearRTError()
-		BUG("Could not publish auto TP results " + num2str(err))
-	endtry
+	FFI_Publish(jsonID, AUTO_TP_FILTER)
 End
 
 

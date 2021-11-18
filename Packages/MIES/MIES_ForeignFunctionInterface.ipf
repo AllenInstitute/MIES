@@ -82,3 +82,20 @@ Function/WAVE FFI_GetAvailableMessageFilters()
 
 	return wv
 End
+
+/// @brief Publish the given message as given by the JSON and the filter
+Function FFI_Publish(variable jsonID, string messageFilter)
+	variable err
+	string payload
+
+	payload = JSON_Dump(jsonID)
+	JSON_Release(jsonID)
+
+	AssertOnAndClearRTError()
+	try
+		zeromq_pub_send(messageFilter, payload); AbortOnRTE
+	catch
+		err = ClearRTError()
+		BUG("Could not publish " + messageFilter + " due to: " + num2str(err))
+	endtry
+End
