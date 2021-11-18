@@ -235,6 +235,15 @@ static Function P_PublishSealedState(string device, variable headstage)
 	FFI_Publish(jsonID, PRESSURE_SEALED_FILTER)
 End
 
+static Function P_PublishBreakin(string device, variable headstage)
+	variable jsonID
+
+	jsonID = FFI_GetJSONTemplate(device, headstage)
+	JSON_AddBoolean(jsonID, "/break in", 1)
+
+	FFI_Publish(jsonID, PRESSURE_BREAKIN_FILTER)
+End
+
 /// @brief Sets the pressure to atmospheric
 static Function P_MethodAtmospheric(device, headstage)
 	string device
@@ -404,6 +413,7 @@ static Function P_MethodBreakIn(device, headStage)
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 		= 0 // reset the time of last slope R check
 		PressureDataWv[headStage][%LastPressureCommand]		= 0
 		print "Break in on head stage:", headstage,"of", device
+		P_PublishBreakin(device, headstage)
 	else // still need to break - in
 		PressureDataWv[headStage][%RealTimePressure] 		= 0
 

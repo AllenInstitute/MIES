@@ -1579,6 +1579,7 @@ Constant LBN_TEXTUAL_VALUES   = 0x8
 
 StrConstant PRESSURE_STATE_FILTER  = "pressure:state"
 StrConstant PRESSURE_SEALED_FILTER = "pressure:sealed"
+StrConstant PRESSURE_BREAKIN_FILTER = "pressure:break in"
 
 StrConstant AUTO_TP_FILTER = "testpulse:autotune result"
 
