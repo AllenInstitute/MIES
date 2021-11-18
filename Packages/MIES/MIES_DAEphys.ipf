@@ -5749,7 +5749,7 @@ End
 
 /// @brief Delete the stimulus set in the given DAEphys
 ///
-/// Internal use only, outside callers should use WB_RemoveStimulusSet()
+/// Internal use only, outside callers should use ST_RemoveStimSet()
 Function DAP_DeleteStimulusSet(string setName, [string device])
 	variable channelType
 
