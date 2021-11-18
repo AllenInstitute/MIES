@@ -1720,7 +1720,6 @@ static Function SetParams8_IGNORE(device)
 
 	string stimSet = "AnaFuncParams5_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
-	AFH_AddAnalysisParameter(stimSet, "MyNum", var = 1)
 End
 
 // test parameter handling with analysis parameter check and help function
