@@ -19,13 +19,15 @@ Function TS_GetNewestFromThreadQueue(tgID, varName)
 	variable tgID
 	string varName
 
-	variable var = NaN
+	variable var
 
 	ASSERT_TS(!isEmpty(varName), "varName must not be empty")
 
 	if(IsNaN(tgID))
 		return NaN
 	endif
+
+	var = NaN
 
 	for(;;)
 		AssertOnAndClearRTError()
