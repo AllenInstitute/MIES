@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bullseye
 MAINTAINER Thomas Braun thomas.braun@byte-physics.de
 
 # MIES documentation script
