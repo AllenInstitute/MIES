@@ -392,7 +392,7 @@ static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 			endif
 
 			hsMarker[headstage] = 1
-			str += prefix + num2str(headstage + 1)
+			str += prefix + num2str(headstage)
 		else
 			str += prefix + "all"
 		endif
