@@ -6,6 +6,7 @@
 #endif
 
 static Constant TS_GET_REPEAT_TIMEOUT_IN_MS = 1
+static Constant TS_ERROR_INVALID_TGID       = 980 // Invalid Thread Group ID or index.
 
 /// @file MIES_ThreadsafeUtilities.ipf
 /// @brief __TS__ Helper functions for threadsafe code and main/worker function interactions.
@@ -19,7 +20,7 @@ Function TS_GetNewestFromThreadQueue(tgID, varName)
 	variable tgID
 	string varName
 
-	variable var
+	variable var, err
 
 	ASSERT_TS(!isEmpty(varName), "varName must not be empty")
 
@@ -31,12 +32,12 @@ Function TS_GetNewestFromThreadQueue(tgID, varName)
 
 	for(;;)
 		AssertOnAndClearRTError()
-		try
-			DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); AbortOnRTE
-		catch
-			ClearRTError()
+		DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); err = GetRTError(1)
+
+		if(err)
+			ASSERT(err == TS_ERROR_INVALID_TGID, "Unexpected error value of " + num2str(err))
 			return NaN
-		endtry
+		endif
 
 		if(!DataFolderRefStatus(dfr))
 			if(IsFinite(var))
@@ -69,7 +70,7 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
 	variable tgID
 	Wave/T varNames
 
-	variable numEntries, i, oneValidEntry
+	variable numEntries, i, oneValidEntry, err
 	string varName
 
 	ASSERT_TS(DimSize(varNames, COLS) == 0, "Expected a 1D wave")
@@ -90,12 +91,12 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
 
 	for(;;)
 		AssertOnAndClearRTError()
-		try
-			DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); AbortOnRTE
-		catch
-			ClearRTError()
+		DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); err = GetRTError(1)
+
+		if(err)
+			ASSERT(err == TS_ERROR_INVALID_TGID, "Unexpected error value of " + num2str(err))
 			return $""
-		endtry
+		endif
 
 		if(!DataFolderRefStatus(dfr))
 			if(TS_ThreadGroupFinished(tgID))
@@ -128,9 +129,16 @@ threadsafe Function TS_ThreadGroupGetVariable(tgID, varName)
 	variable tgID
 	string varName
 
+	variable err
+
 	ASSERT_TS(!isEmpty(varName), "varName must not be empty")
 
-	DFREF dfr = ThreadGroupGetDFR(tgID, 0)
+	DFREF dfr = ThreadGroupGetDFR(tgID, 0); err = GetRTError(1)
+
+	if(err)
+		ASSERT_TS(err == TS_ERROR_INVALID_TGID, "Unexpected error value of " + num2str(err))
+		return NaN
+	endif
 
 	if(!DataFolderExistsDFR(dfr))
 		return NaN
