@@ -960,6 +960,16 @@ Constant PSQ_RA_BL_EVAL_RANGE = 500
 
 Constant PSQ_CR_BL_EVAL_RANGE = 500
 
+StrConstant PSQ_CR_BEM = "Symmetric;Depolarized;Hyperpolarized"
+
+/// @name Different bounds evaluation modes
+/// @anchor PSQChirpBoundsEvaluationMode
+/// @{
+Constant PSQ_CR_BEM_SYMMETRIC      = 0x0 // Upper and Lower
+Constant PSQ_CR_BEM_DEPOLARIZED    = 0x1 // Upper
+Constant PSQ_CR_BEM_HYPERPOLARIZED = 0x2 // Lower
+/// @}
+
 Constant PSQ_SPIKE_LEVEL         = 0.01 // mV
 Constant PSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
 Constant PSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
@@ -1019,7 +1029,7 @@ StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
 
 /// @name Analysis function versions
 /// @{
-Constant PSQ_CHIRP_VERSION         = 3
+Constant PSQ_CHIRP_VERSION         = 4
 Constant PSQ_DA_SCALE_VERSION      = 2
 Constant PSQ_RAMP_VERSION          = 3
 Constant PSQ_RHEOBASE_VERSION      = 2

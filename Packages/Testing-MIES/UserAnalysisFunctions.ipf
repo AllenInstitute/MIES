@@ -575,8 +575,11 @@ Function Params6_V3(panelTitle, s)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
-	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	CHECK_GE_VAR(s.eventType, 0)
+	CHECK_LT_VAR(s.eventType, TOTAL_NUM_EVENTS)
+	CHECK(s.eventType != GENERIC_EVENT)
+	CHECK_GE_VAR(s.eventType, 0)
+	CHECK_LT_VAR(s.eventType, DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
 
