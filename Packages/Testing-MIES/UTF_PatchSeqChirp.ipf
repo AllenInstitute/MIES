@@ -350,8 +350,8 @@ static Function PS_CR4([str])
 	wv[][][0] = 1
 
 	// layer 0: BL
-	// layer 1: Minimum of AD
-	// layer 2: Maximum of AD
+	// layer 1: Maximum of AD
+	// layer 2: Minimum of AD
 	// layer 3: Spikes check during chirp
 
 	// INCREASE (BAAA)
