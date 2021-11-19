@@ -621,3 +621,10 @@ End
 Function/S GetNWBOverrideHistoryAndLogFile()
 	return GetSVARAsString(GetNwBFolder(), "overrideHistoryAndLogFile")
 End
+
+/// @brief Return the absolute path to the test pulse cycle ID
+Function/S GetTestpulseCycleID(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "tpCycleID", initialValue=NaN)
+End

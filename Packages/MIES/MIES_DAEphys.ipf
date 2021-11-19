@@ -295,8 +295,24 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable SetVar_DataAcq_ITI WIN = $panelTitle, value = _NUM:0
 
 	SetVariable SetVar_DataAcq_TPDuration  WIN = $panelTitle,value= _NUM:10
-	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $panelTitle,value= _NUM:10
 	SetVariable SetVar_DataAcq_TPBaselinePerc  WIN = $panelTitle,value= _NUM:35
+
+	Checkbox Check_TP_SendToAllHS WIN = $panelTitle, value=1
+
+	/// needs to be in sync with GetTPSettings()
+	/// @{
+	WAVE TPSettingsRef = GetTPSettingsFree()
+	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $panelTitle,value= _NUM:TPSettingsRef[%amplitudeVC][0]
+	SetVariable SetVar_DataAcq_TPAmplitudeIC WIN = $panelTitle,value= _NUM:TPSettingsRef[%amplitudeIC][0]
+
+	Checkbox check_DataAcq_AutoTP WIN = $panelTitle, labelBack=0, value=TPSettingsRef[%autoTPEnable][0]
+	SetVariable setvar_DataAcq_IinjMax WIN = $panelTitle, value= _NUM:TPSettingsRef[%autoAmpMaxCurrent][0]
+	SetVariable setvar_DataAcq_targetVoltage WIN = $panelTitle, value= _NUM:TPSettingsRef[%autoAmpVoltage][0]
+	SetVariable setvar_DataAcq_targetVoltageRange WIN = $panelTitle, value= _NUM:TPSettingsRef[%autoAmpVoltageRange][0]
+	/// @}
+
+	SetVariable setvar_Settings_autoTP_int WIN = $panelTitle, value = _NUM:0
+	SetVariable setvar_Settings_autoTP_perc WIN = $panelTitle, value = _NUM:90
 
 	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL)
 	PopupMenu Wave_TTL_00 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
@@ -530,7 +546,6 @@ Function DAP_EphysPanelStartUpSettings()
 
 	ValDisplay ValDisp_DataAcq_SamplingInt win = $panelTitle, value= _NUM:0
 
-	SetVariable SetVar_DataAcq_TPAmplitudeIC WIN = $panelTitle,value= _NUM:-50
 	SetVariable SetVar_Hardware_VC_DA_Unit WIN = $panelTitle,value= _STR:"mV"
 	SetVariable SetVar_Hardware_IC_DA_Unit WIN = $panelTitle,value= _STR:"pA"
 	SetVariable SetVar_Hardware_VC_AD_Unit WIN = $panelTitle,value= _STR:"pA"
@@ -613,6 +628,7 @@ Function DAP_EphysPanelStartUpSettings()
 
 	SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", "")
 	SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", "")
+	SetControlUserData(panelTitle, "check_Settings_TP_SaveTP", "oldState", "")
 
 	CheckBox Check_Settings_BkgTP WIN = $panelTitle,value= 1
 	CheckBox Check_Settings_BackgrndDataAcq WIN = $panelTitle, value= 1
@@ -879,14 +895,34 @@ Function DAP_UpdateYokeControls(panelTitle)
 	endif
 End
 
+static Function DAP_UpdateDrawElements(string panelTitle, variable tab)
+	SetDrawLayer/W=$panelTitle/K ProgBack
+
+	switch(tab)
+		case 0:// Daa acqusition
+			SetDrawEnv/W=$panelTitle textrot=-90
+			DrawText/W=$panelTitle 167,441,"All HS"
+
+			break
+		default:
+			// do nothing
+	endswitch
+End
+
 /// @brief Called by ACL tab control after the tab is updated.
 /// see line 257 of ACL_TabUtilities.ipf
 Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
 
-	DAP_UpdateYokeControls(tca.win)
+	string win
 
-	if(DAP_DeviceIsUnLocked(tca.win))
+	win = tca.win
+
+	DAP_UpdateDrawElements(win, tca.tab)
+
+	DAP_UpdateYokeControls(win)
+
+	if(DAP_DeviceIsUnLocked(win))
 		print "Please lock the panel to a DAC in the Hardware tab"
 		ControlWindowToFront()
 		return 0
@@ -3898,6 +3934,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode)
 		SCOPE_SetADAxisLabel(panelTitle, UNKNOWN_MODE, HeadStage)
 		P_RunP_ControlIfTPOFF(panelTitle)
+		DAP_TPSettingsToGUI(panelTitle)
 	endif
 
 	return 0
@@ -4050,6 +4087,50 @@ Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 	endswitch
 
 	return 0
+End
+
+Function DAP_CheckProc_TestPulseSett(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	string panelTitle, ctrl
+	variable saveTP, dataAcqRunMode, checked
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			panelTitle = cba.win
+			ctrl = cba.ctrlName
+			checked = cba.checked
+
+			DAP_AbortIfUnlocked(panelTitle)
+			DAG_Update(panelTitle, ctrl, val = checked)
+
+			DAP_TPGUISettingToWave(panelTitle, ctrl, checked)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_AdaptAutoTPColorAndDependent(string panelTitle)
+	variable runMode, hasAutoTPActive, disabledSaveTP
+
+	runMode = RoVAR(GetTestpulseRunMode(panelTitle))
+
+	hasAutoTPActive = TP_AutoTPActive(panelTitle)
+
+	disabledSaveTP = IsControlDisabled(panelTitle, "check_Settings_TP_SaveTP")
+
+	if(hasAutoTPActive && !disabledSaveTP)
+		AdaptDependentControls(panelTitle, "check_Settings_TP_SaveTP", CHECKBOX_SELECTED)
+	elseif(!hasAutoTPActive && disabledSaveTP)
+		AdaptDependentControls(panelTitle, "check_Settings_TP_SaveTP", CHECKBOX_UNSELECTED)
+	endif
+
+	if(hasAutoTPActive && runMode != TEST_PULSE_NOT_RUNNING && !(runMode & TEST_PULSE_DURING_RA_MOD))
+		CheckBox check_DataAcq_AutoTP, win=$panelTitle, labelBack=(3, 52428, 1, 0.5 * 65535)
+	else
+		CheckBox check_DataAcq_AutoTP, win=$panelTitle, labelBack=0
+	endif
 End
 
 Function DAP_UnlockAllDevices()
@@ -4828,7 +4909,11 @@ Function DAP_LockDevice(string win)
 	DAP_AdaptPanelForDeviceSpecifics(panelTitleLocked)
 
 	WAVE TPSettings = GetTPSettings(panelTitleLocked)
+	// force update the stored TP settings
+	// they could have been changed during panel unlock
 	DAP_TPSettingsToWave(panelTitleLocked, TPSettings)
+
+	TP_AutoTPGenerateNewCycleID(panelTitleLocked)
 
 	LOG_AddEntry(PACKAGE_MIES, "locking", keys = {"device"}, values = {panelTitleLocked})
 End
@@ -5020,6 +5105,11 @@ static Function DAP_UnlockDevice(panelTitle)
 	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
 	DAP_ResetGUIAfterDAQ(panelTitle)
 	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)
+
+	// turn off auto TP on all headstages
+	PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoTP", val = CHECKBOX_UNSELECTED)
+	WAVE TPSettings = GetTPsettings(panelTitle)
+	TPSettings[%autoTPEnable][0, NUM_HEADSTAGES - 1] = 0
 
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitle))
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(panelTitle))
@@ -5673,18 +5763,26 @@ End
 
 /// @brief Write all TP settings from the data acquisition/settings tab to the settings wave
 Function DAP_TPSettingsToWave(string panelTitle, WAVE TPSettings)
-
-	variable i, numEntries
+	variable i, numEntries, headstage, col
 	string ctrl, lbl
 
-	Make/FREE/T genericControls = {"SetVar_DataAcq_TPDuration", "SetVar_DataAcq_TPBaselinePerc", "SetVar_DataAcq_TPAmplitude", "SetVar_DataAcq_TPAmplitudeIC", "setvar_Settings_TPBuffer", "setvar_Settings_TP_RTolerance"}
+	WAVE/T controls = ListToTextWave(DAEPHYS_TP_CONTROLS_ALL, ";")
 
-	numEntries = DimSize(genericControls, ROWS)
+	headstage = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
+
+	numEntries = DimSize(controls, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		ctrl = genericControls[i]
+		ctrl = controls[i]
 		lbl  = DAP_TPControlToLabel(ctrl)
 
-		TPSettings[%$lbl][INDEP_HEADSTAGE] = DAG_GetNumericalValue(panelTitle, ctrl)
+		if(WhichListItem(ctrl, DAEPHYS_TP_CONTROLS_DEPEND) != -1)
+			col = headstage
+		else
+			ASSERT(WhichListItem(ctrl, DAEPHYS_TP_CONTROLS_INDEP) != -1, "Inconsistent control lists")
+			col = INDEP_HEADSTAGE
+		endif
+
+		TPSettings[%$lbl][col] = DAG_GetNumericalValue(panelTitle, ctrl)
 	endfor
 End
 
@@ -5704,6 +5802,20 @@ static Function/S DAP_TPControlToLabel(string ctrl)
 			return "bufferSize"
 		case "setvar_Settings_TP_RTolerance":
 			return "resistanceTol"
+		case "check_DataAcq_AutoTP":
+			return "autoTPEnable"
+		case "setvar_DataAcq_IinjMax":
+			return "autoAmpMaxCurrent"
+		case "setvar_DataAcq_targetVoltage":
+			return "autoAmpVoltage"
+		case "setvar_DataAcq_targetVoltageRange":
+			return "autoAmpVoltageRange"
+		case "Check_TP_SendToAllHS":
+			return "sendToAllHS"
+		case "setvar_Settings_autoTP_perc":
+			return "autoTPPercentage"
+		case "setvar_Settings_autoTP_int":
+			return "autoTPInterval"
 	endswitch
 
 	ASSERT(0, "invalid control")
@@ -5711,16 +5823,18 @@ End
 
 /// @brief Write a new TP setting value to the wave
 static Function DAP_TPGUISettingToWave(string panelTitle, string ctrl, variable val)
-	string lbl
-	variable headstage, TPState
+	string lbl, entry
+	variable first, last, TPState, needsTPRestart
 
 	if(!cmpstr(ctrl, "SetVar_DataAcq_TPDuration") || !cmpstr(ctrl, "SetVar_DataAcq_TPBaselinePerc"))
 		DAP_UpdateOnsetDelay(panelTitle)
 	endif
 
+	needsTPRestart = WhichListItem(ctrl, DAEPHYS_TP_CONTROLS_NO_RESTART) == -1
+
 	// we only want to restart the testpulse if DAQ is not running
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
-	if(dataAcqRunMode == DAQ_NOT_RUNNING)
+	if(dataAcqRunMode == DAQ_NOT_RUNNING && needsTPRestart)
 		TPState = TP_StopTestPulse(panelTitle)
 	else
 		TPState = TEST_PULSE_NOT_RUNNING
@@ -5729,9 +5843,83 @@ static Function DAP_TPGUISettingToWave(string panelTitle, string ctrl, variable 
 	WAVE TPSettings = GetTPSettings(panelTitle)
 
 	lbl = DAP_TPControlToLabel(ctrl)
-	headstage = INDEP_HEADSTAGE
 
-	TPSettings[%$lbl][headstage] = val
+	if(WhichListItem(ctrl, DAEPHYS_TP_CONTROLS_INDEP) != -1)
+		first = INDEP_HEADSTAGE
+		last  = first
+	elseif(TPSettings[%sendToAllHS][INDEP_HEADSTAGE])
+		first = 0
+		last  = NUM_HEADSTAGES - 1
+	else
+		first = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
+		last  = first
+	endif
+
+	TPSettings[%$lbl][first, last] = val
+
+	if(!cmpstr(lbl, "autoTPEnable"))
+		TP_AutoTPGenerateNewCycleID(panelTitle, first = first, last = last)
+		DAP_AdaptAutoTPColorAndDependent(panelTitle)
+	endif
 
 	TP_RestartTestPulse(panelTitle, TPState)
+End
+
+/// @brief Synchronize the TP settings from the wave into the GUI
+///
+/// Needs to be done when the selected headstage changes or the TPsettings wave
+/// contents. This function ignores "Send To All HS" as this does not make sense
+/// to respect here.
+///
+/// @param panelTitle device
+/// @param entry      [optional, defaults to all] Only update one of the entries TPSettings.
+///                   Accepted strings are the labels from DAP_TPControlToLabel().
+Function DAP_TPSettingsToGUI(string panelTitle, [string entry])
+	variable i, numEntries, val, headstage, col, originalHSAll
+	string ctrl, lbl
+	variable TPState
+
+	WAVE/T controls = ListToTextWave(DAEPHYS_TP_CONTROLS_ALL, ";")
+
+	WAVE TPSettings = GetTPSettings(panelTitle)
+	headstage = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
+
+	// turn off send to all headstages temporarily
+	// we want the values for the *current* headstage only be set in the GUI
+	// and only for the *current* headstage
+	originalHSAll = TPSettings[%sendToAllHS][INDEP_HEADSTAGE]
+	TPSettings[%sendToAllHS][INDEP_HEADSTAGE] = 0
+
+	TPState = TP_StopTestPulse(panelTitle)
+
+	numEntries = DimSize(controls, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = controls[i]
+		lbl  = DAP_TPControlToLabel(ctrl)
+
+		if(!ParamIsDefault(entry) && cmpstr(lbl, entry))
+			continue
+		endif
+
+		if(!cmpstr(lbl, "sendToAllHS"))
+			continue
+		endif
+
+		if(WhichListItem(ctrl, DAEPHYS_TP_CONTROLS_INDEP) != -1)
+			col = INDEP_HEADSTAGE
+		else
+			col = headstage
+		endif
+
+		val = TPSettings[%$lbl][col]
+		ASSERT(IsFinite(val), "Value has to be finite")
+
+		PGC_SetAndActivateControl(panelTitle, ctrl, val = val)
+	endfor
+
+	TPSettings[%sendToAllHS][INDEP_HEADSTAGE] = originalHSAll
+
+	if(IsFinite(TPState))
+		TP_RestartTestPulse(panelTitle, TPState)
+	endif
 End

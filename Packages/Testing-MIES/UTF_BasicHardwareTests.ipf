@@ -3218,7 +3218,7 @@ End
 Function TPDuringDAQOnlyTP_REENTRY([str])
 	string str
 
-	variable sweepNo, col, tpAmplitude
+	variable sweepNo, col
 	string ctrl
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
@@ -3255,8 +3255,9 @@ Function TPDuringDAQOnlyTP_REENTRY([str])
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
@@ -3321,7 +3322,7 @@ End
 Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	string str
 
-	variable sweepNo, col, channelTypeUnassoc, tpAmplitude, stimScaleUnassoc
+	variable sweepNo, col, channelTypeUnassoc, stimScaleUnassoc
 	string ctrl, stimsetUnassoc, stimsetUnassocRef, key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
@@ -3371,8 +3372,9 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_DAQ)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
-	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	key = CreateLBNUnassocKey(STIMSET_SCALE_FACTOR_KEY, 1, XOP_CHANNEL_TYPE_DAC)
 	stimScaleUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
@@ -3405,7 +3407,7 @@ End
 Function TPDuringDAQ_REENTRY([str])
 	string str
 
-	variable sweepNo, col, tpAmplitude, daGain
+	variable sweepNo, col, daGain
 	string ctrl
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
@@ -3445,10 +3447,11 @@ Function TPDuringDAQ_REENTRY([str])
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
 	daGain = DAG_GetNumericalValue(str, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = 0)
 
-	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, daGain, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], daGain, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
@@ -3477,7 +3480,7 @@ End
 Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	string str
 
-	variable sweepNo, col, tpAmplitude, daGain, oodDAQ
+	variable sweepNo, col, daGain, oodDAQ
 	string ctrl
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
@@ -3512,7 +3515,9 @@ Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
+
 	daGain = DAG_GetNumericalValue(str, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = 0)
 
 	oodDAQ = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", DATA_ACQUISITION_MODE)
@@ -3521,7 +3526,7 @@ Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	WAVE/Z oodDAQMembers = GetLastSetting(numericalValues, sweepNo, "oodDAQ member", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(oodDAQMembers, {0, 1, 1, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, daGain, daGain, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], daGain, daGain, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "StimulusSetC_DA_0", "", "", "", "", "", ""}, mode = WAVE_DATA)
@@ -5035,4 +5040,209 @@ Function CheckTPBaseline_REENTRY([WAVE/WAVE pair])
 
 		CHECK_CLOSE_VAR(DimSize(singleTP, ROWS), (MIES_TP#TP_CalculateTestPulseLength(pulseDuration, baselineFraction) * 1e3) / samplingInterval, tol = 0.1)
 	endfor
+End
+
+Function CheckTPEntriesFromLBN_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 3)
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPDuration", val = 15)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPBaselinePerc", val = 30)
+
+	PGC_SetAndActivateControl(device, "setvar_Settings_TP_RTolerance", val = 2)
+	PGC_SetAndActivateControl(device, "setvar_Settings_TPBuffer", val = 3)
+
+	// turn off send to all HS
+	PGC_SetAndActivateControl(device, "Check_TP_SendToAllHS", val = CHECKBOX_UNSELECTED)
+
+	// select HS0
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 0)
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = -60)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = 20)
+	PGC_SetAndActivateControl(device, "check_DataAcq_AutoTP", val = 1)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_targetVoltage", val = 10)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_targetVoltageRange", val = 1)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_IinjMax", val = 300)
+
+	// select HS1
+	PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = 1)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = -70)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = 30)
+	PGC_SetAndActivateControl(device, "check_DataAcq_AutoTP", val = 0)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_targetVoltage", val = 15)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_targetVoltageRange", val = 2)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_IinjMax", val = 400)
+
+	ST_SetStimsetParameter("StimulusSetA_DA_0", "Analysis function (generic)", str = "ChangeTPSettings")
+End
+
+/// 2 Headstages
+/// 1 VC, 1 IC
+/// Different amplitudes and different auto amp settings (although this is not enabled)
+/// 2 sweeps with TP during ITI
+/// Check that we find all LBN entries and that they also have the correct entry source type
+/// The analysis function ChangeTPSettings changes some settings in POST_SWEEP of sweep 1 and PRE_SWEEP_CONFIG of sweep 2. We check
+/// that these settings are correctly refelected in the LBN as now TP and DAQ settings for sweep 1 differ.
+///
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckTPEntriesFromLBN([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc = CheckTPEntriesFromLBN_IGNORE)
+End
+
+static Function/WAVE GetTPLBNEntriesWave_IGNORE()
+
+	string list = "bufferSize;resistanceTol;sendToAllHS;baselineFrac;durationMS;"                                \
+	              + "amplitudeVC;amplitudeIC;autoTPEnable;autoAmpMaxCurrent;autoAmpVoltage;autoAmpVoltageRange;" \
+	              + "autoTPPercentage;autoTPInterval;autoTPQC"
+
+	Make/FREE/WAVE/N=(ItemsInList(list)) wv
+	SetDimensionLabels(wv, list, ROWS)
+
+	return wv
+End
+
+static Function/WAVE GetTPLBNEntries_IGNORE(string panelTitle, variable sweepNo, variable entrySourceType)
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	WAVE/WAVE wv = GetTPLBNEntriesWave_IGNORE()
+
+	wv[%baselineFrac] = GetLastSetting(numericalValues, sweepNo, "TP Baseline Fraction", entrySourceType)
+	wv[%durationMS]   = GetLastSetting(numericalValues, sweepNo, "TP Pulse Duration", entrySourceType)
+	wv[%amplitudeIC]  = GetLastSetting(numericalValues, sweepNo, "TP Amplitude IC", entrySourceType)
+	wv[%amplitudeVC]  = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", entrySourceType)
+	wv[%autoTPEnable] = GetLastSetting(numericalValues, sweepNo, "TP Auto", entrySourceType)
+	wv[%autoTPQC]     = GetLastSetting(numericalValues, sweepNo, "TP Auto QC", entrySourceType)
+
+	wv[%autoAmpMaxCurrent]   = GetLastSetting(numericalValues, sweepNo, "TP Auto max current", entrySourceType)
+	wv[%autoAmpVoltage]      = GetLastSetting(numericalValues, sweepNo, "TP Auto voltage", entrySourceType)
+	wv[%autoAmpVoltageRange] = GetLastSetting(numericalValues, sweepNo, "TP Auto voltage range", entrySourceType)
+	wv[%bufferSize]          = GetLastSetting(numericalValues, sweepNo, "TP buffer size", entrySourceType)
+	wv[%resistanceTol]       = GetLastSetting(numericalValues, sweepNo, "Minimum TP resistance for tolerance", entrySourceType)
+	wv[%sendToAllHS]         = GetLastSetting(numericalValues, sweepNo, "Send TP settings to all headstages", entrySourceType)
+	wv[%autoTPPercentage]    = GetLastSetting(numericalValues, sweepNo, "TP Auto percentage", entrySourceType)
+	wv[%autoTPInterval]      = GetLastSetting(numericalValues, sweepNo, "TP Auto interval", entrySourceType)
+
+	return wv
+End
+
+Function CheckTPEntriesFromLBN_REENTRY([string str])
+	// sweep 0
+	WAVE/WAVE/Z entries_S0_DAQ = GetTPLBNEntries_IGNORE(str, 0, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(entries_S0_DAQ, WAVE_WAVE)
+
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.30}, mode = WAVE_DATA, tol = 1e-8)
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%durationMS], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 15}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%amplitudeIC], {-60, -70, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%amplitudeVC], {20, 30, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%autoTPEnable], {1, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%autoAmpMaxCurrent], {300, 400, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%autoAmpVoltage], {10, 15, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%autoAmpVoltageRange], {1, 2, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%bufferSize], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 3}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%resistanceTol], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%sendToAllHS], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%autoTPPercentage], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 90}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_DAQ[%autoTPInterval], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0}, mode = WAVE_DATA)
+
+	CHECK_WAVE(entries_S0_DAQ[%autoTPQC], NULL_WAVE)
+
+	WAVE/WAVE/Z entries_S0_TP = GetTPLBNEntries_IGNORE(str, 0, TEST_PULSE_MODE)
+	CHECK_WAVE(entries_S0_TP, WAVE_WAVE)
+
+	CHECK_EQUAL_WAVES(entries_S0_TP[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.30}, mode = WAVE_DATA, tol = 1e-8)
+	CHECK_EQUAL_WAVES(entries_S0_TP[%durationMS], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 15}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries_S0_TP[%amplitudeIC], {-60, -70, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_TP[%amplitudeVC], {20, 30, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_TP[%autoTPEnable], {1, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_TP[%autoAmpMaxCurrent], {300, 400, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_TP[%autoAmpVoltage], {10, 15, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_TP[%autoAmpVoltageRange], {1, 2, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries_S0_TP[%bufferSize], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 3}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_TP[%resistanceTol], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_TP[%sendToAllHS], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_TP[%autoTPPercentage], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 90}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S0_TP[%autoTPInterval], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0}, mode = WAVE_DATA)
+
+	CHECK_WAVE(entries_S0_TP[%autoTPQC], NULL_WAVE)
+
+	// sweep 1
+	WAVE/WAVE/Z entries_S1_DAQ = GetTPLBNEntries_IGNORE(str, 1, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(entries_S1_DAQ, WAVE_WAVE)
+
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.30}, mode = WAVE_DATA, tol = 1e-8)
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%durationMS], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 15}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%amplitudeIC], {-60, -70, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%amplitudeVC], {20, 30, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%autoTPEnable], {1, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%autoAmpMaxCurrent], {300, 400, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%autoAmpVoltage], {10, 15, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%autoAmpVoltageRange], {1, 2, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%bufferSize], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 3}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%resistanceTol], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%sendToAllHS], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%autoTPPercentage], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 90}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_DAQ[%autoTPInterval], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0}, mode = WAVE_DATA)
+
+	CHECK_WAVE(entries_S1_DAQ[%autoTPQC], NULL_WAVE)
+
+	WAVE/WAVE/Z entries_S1_TP = GetTPLBNEntries_IGNORE(str, 1, TEST_PULSE_MODE)
+	CHECK_WAVE(entries_S1_TP, WAVE_WAVE)
+
+	CHECK_EQUAL_WAVES(entries_S1_TP[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.30}, mode = WAVE_DATA, tol = 1e-8)
+	CHECK_EQUAL_WAVES(entries_S1_TP[%durationMS], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 15}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries_S1_TP[%amplitudeIC], {-80, -70, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_TP[%amplitudeVC], {20, 40, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_TP[%autoTPEnable], {1, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_TP[%autoAmpMaxCurrent], {300, 400, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_TP[%autoAmpVoltage], {10, 15, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_TP[%autoAmpVoltageRange], {1, 2, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries_S1_TP[%bufferSize], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 3}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_TP[%resistanceTol], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_TP[%sendToAllHS], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_TP[%autoTPPercentage], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 90}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S1_TP[%autoTPInterval], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0}, mode = WAVE_DATA)
+
+	CHECK_WAVE(entries_S1_TP[%autoTPQC], NULL_WAVE)
+
+	// sweep 2
+	WAVE/WAVE/Z entries_S2_DAQ = GetTPLBNEntries_IGNORE(str, 2, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(entries_S2_DAQ, WAVE_WAVE)
+
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.30}, mode = WAVE_DATA, tol = 1e-8)
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%durationMS], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 15}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%amplitudeIC], {-90, -70, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%amplitudeVC], {50, 40, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%autoTPEnable], {1, 0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%autoAmpMaxCurrent], {300, 400, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%autoAmpVoltage], {10, 15, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%autoAmpVoltageRange], {1, 2, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%bufferSize], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 3}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%resistanceTol], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 2}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%sendToAllHS], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%autoTPPercentage], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 90}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(entries_S2_DAQ[%autoTPInterval], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0}, mode = WAVE_DATA)
+
+	CHECK_WAVE(entries_S2_DAQ[%autoTPQC], NULL_WAVE)
+
+	WAVE/WAVE/Z entries_S2_TP = GetTPLBNEntries_IGNORE(str, 2, TEST_PULSE_MODE)
+	CHECK_WAVE(entries_S2_TP, WAVE_WAVE)
+
+	Make/N=(DimSize(entries_S2_TP, ROWS)) validWaves = WaveExists(entries_S2_TP[p])
+	CHECK_EQUAL_VAR(Sum(validWaves), 0)
 End

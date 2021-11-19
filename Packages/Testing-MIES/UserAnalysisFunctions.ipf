@@ -832,3 +832,30 @@ Function AddUserEpoch_V3(string panelTitle, STRUCT AnalysisFunction_V3& s)
 	sprintf tags, "HS=%d;eventType=%d;", s.headstage, s.eventType
 	EP_AddUserEpoch(panelTitle, XOP_CHANNEL_TYPE_DAC, DAC, 0.5, 0.6, tags)
 End
+
+Function ChangeTPSettings(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	switch(s.eventType)
+		case POST_SWEEP_EVENT:
+			if(s.sweepNo == 1)
+				PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = 0)
+				PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_TPAmplitudeIC", val = -80)
+
+				PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = 1)
+				PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_TPAmplitude", val = 40)
+			endif
+			break
+		case PRE_SWEEP_CONFIG_EVENT:
+			if(s.sweepNo == 2)
+				PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = 0)
+
+				PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_TPAmplitudeIC", val = -90)
+				PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_TPAmplitude", val = 50)
+			endif
+			break
+		default:
+			// do nothing
+	endswitch
+End

@@ -13,6 +13,7 @@
 // keep sorted
 #include "UTF_AnalysisFunctionManagement"
 #include "UTF_AnalysisFunctionParameters"
+#include "UTF_AutoTestpulse"
 #include "UTF_BasicHardwareTests"
 #include "UTF_DAEphys"
 #include "UTF_Epochs"
@@ -85,6 +86,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list, ";", inf)
 	list = AddListItem("UTF_IVSCC.ipf", list)
+	list = AddListItem("UTF_AutoTestpulse.ipf", list)
 	list = AddListItem("UTF_VeryLastTestSuite.ipf", list, ";", inf)
 
 	if(ParamIsDefault(testsuite))
@@ -1321,4 +1323,25 @@ Function CheckPSQChunkTimes(string dev, WAVE chunkTimes[, variable sweep])
 
 	// In the case we did not reached the inner checks of the upper loop
 	CHECK_EQUAL_VAR(numChunks, expectedChunkCnt)
+End
+
+Function StopTPWhenFinished(STRUCT WMBackgroundStruct &s)
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
+
+	WAVE settings = GetTPSettings(device)
+
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+
+	Duplicate/FREE/RMD=[FindDimLabel(settings, ROWS, "autoTPEnable")][0, NUM_HEADSTAGES - 1] settings, autoTPEnable
+	Redimension/N=(numpnts(autoTPEnable)) autoTPEnable
+
+	autoTPEnable[] = statusHS[p] && autoTPEnable[p]
+
+	if(Sum(autoTPEnable) == 0)
+		PGC_SetAndActivateControl(device, "StartTestPulseButton")
+		return 1
+	endif
+
+	return 0
 End
