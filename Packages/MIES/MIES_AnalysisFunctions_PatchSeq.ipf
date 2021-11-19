@@ -132,6 +132,9 @@ End
 
 /// Return the pulse durations from the labnotebook or calculate them before if required in ms.
 /// For convenience unused headstages will have 0 instead of NaN in the returned wave.
+///
+/// We recalculate the durations on every sweep again as we can not assume that
+/// it is constant for the whole stimulus set.
 static Function/WAVE PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay, [forceRecalculation])
 	string panelTitle
 	variable type, sweepNo, totalOnsetDelay, forceRecalculation
