@@ -723,7 +723,7 @@ End
 ///**Warning! This heavily interacts with the ITC* controllers, don't call
 ///during data/test pulse/whatever acquisition.**
 ///
-///@returns A list of panelTitles with ITC devices which can be opened.
+///@returns A list ITC devices which can be opened.
 ///         Does not include devices which are already open.
 Function/S HW_ITC_ListDevices()
 
