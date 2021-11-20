@@ -34,7 +34,7 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 
 	variable i, TriggerMode
 	variable runMode, numFollower
-	string followerPanelTitle
+	string followerDevice
 
 	runMode = TEST_PULSE_BG_MULTI_DEVICE
 
@@ -64,8 +64,8 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 	try
 		// configure all followers
 		for(i = 0; i < numFollower; i += 1)
-			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-			TP_Setup(followerPanelTitle, runMode)
+			followerDevice = StringFromList(i, listOfFollowerDevices)
+			TP_Setup(followerDevice, runMode)
 		endfor
 
 		TP_Setup(device, runMode)
@@ -73,8 +73,8 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 		ClearRTError()
 		// deconfigure all followers
 		for(i = 0; i < numFollower; i += 1)
-			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-			TP_Teardown(followerPanelTitle)
+			followerDevice = StringFromList(i, listOfFollowerDevices)
+			TP_Teardown(followerDevice)
 		endfor
 
 		// deconfigure leader
@@ -87,8 +87,8 @@ Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
 
 	// set followers in wait for trigger
 	for(i = 0; i < numFollower; i += 1)
-		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-		TPM_BkrdTPMD(followerPanelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
+		followerDevice = StringFromList(i, listOfFollowerDevices)
+		TPM_BkrdTPMD(followerDevice, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 	endfor
 
 	// trigger

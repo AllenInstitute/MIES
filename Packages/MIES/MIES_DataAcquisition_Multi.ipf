@@ -160,7 +160,7 @@ Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 	variable initialSetupReq
 
 	variable numFollower, acrossYokingMaxITI, i
-	string followerPanelTitle
+	string followerDevice
 
 	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1, \
 		"Calling this function directly is not supported, please use PGC_SetAndActivateControl.")
@@ -209,13 +209,13 @@ Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 	AssertOnAndClearRTError()
 	try
 		for(i = 0; i < numFollower; i += 1)
-			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+			followerDevice = StringFromList(i, listOfFollowerDevices)
 
 			if(initialSetupReq)
-				DAP_OneTimeCallBeforeDAQ(followerPanelTitle, DAQ_BG_MULTI_DEVICE)
+				DAP_OneTimeCallBeforeDAQ(followerDevice, DAQ_BG_MULTI_DEVICE)
 			endif
 
-			DC_Configure(followerPanelTitle, DATA_ACQUISITION_MODE)
+			DC_Configure(followerDevice, DATA_ACQUISITION_MODE)
 
 			NVAR maxITI = $GetMaxIntertrialInterval(device)
 			acrossYokingMaxITI = max(maxITI, acrossYokingMaxITI)
@@ -224,8 +224,8 @@ Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 		ClearRTError()
 		if(initialSetupReq)
 			for(i = 0; i < numFollower; i += 1)
-				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-				DAP_OneTimeCallAfterDAQ(followerPanelTitle, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
+				followerDevice = StringFromList(i, listOfFollowerDevices)
+				DAP_OneTimeCallAfterDAQ(followerDevice, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
 			endfor
 
 			DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_CONFIG_FAILED, forcedStop = 1)
@@ -241,9 +241,9 @@ Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 
 	// configure follower devices
 	for(i = 0; i < numFollower; i += 1)
-		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+		followerDevice = StringFromList(i, listOfFollowerDevices)
 
-		NVAR deviceID = $GetDAQDeviceID(followerPanelTitle)
+		NVAR deviceID = $GetDAQDeviceID(followerDevice)
 		HW_ITC_PrepareAcq(deviceID, DATA_ACQUISITION_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 	endfor
 
@@ -252,8 +252,8 @@ Function DQM_StartDAQMultiDevice(device, [initialSetupReq])
 
 	// start follower devices
 	for(i = 0; i < numFollower; i += 1)
-		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-		DQM_BkrdDataAcq(followerPanelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
+		followerDevice = StringFromList(i, listOfFollowerDevices)
+		DQM_BkrdDataAcq(followerDevice, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 	endfor
 
 	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))

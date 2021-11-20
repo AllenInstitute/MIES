@@ -149,7 +149,7 @@ static Function RA_GetTotalNumberOfSweeps(device)
 	string device
 
 	variable i, numFollower, numTotalSweeps
-	string followerPanelTitle
+	string followerDevice
 
 	numTotalSweeps = RA_GetTotalNumberOfSweepsLowLev(device)
 
@@ -157,9 +157,9 @@ static Function RA_GetTotalNumberOfSweeps(device)
 		SVAR listOfFollowerDevices = $GetFollowerList(device)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
-			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+			followerDevice = StringFromList(i, listOfFollowerDevices)
 
-			numTotalSweeps = max(numTotalSweeps, RA_GetTotalNumberOfSweepsLowLev(followerPanelTitle))
+			numTotalSweeps = max(numTotalSweeps, RA_GetTotalNumberOfSweepsLowLev(followerDevice))
 		endfor
 	endif
 
@@ -291,7 +291,7 @@ static Function RA_StartMD(device)
 	string device
 
 	variable i, numFollower, numTotalSweeps
-	string followerPanelTitle
+	string followerDevice
 
 #ifdef PERFING_RA
 	RA_PerfInitialize(device)
@@ -309,12 +309,12 @@ static Function RA_StartMD(device)
 		SVAR listOfFollowerDevices = $GetFollowerList(device)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
-			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+			followerDevice = StringFromList(i, listOfFollowerDevices)
 
-			NVAR followerCount = $GetCount(followerPanelTitle)
+			NVAR followerCount = $GetCount(followerDevice)
 			followerCount = 0
 
-			RA_StepSweepsRemaining(followerPanelTitle)
+			RA_StepSweepsRemaining(followerDevice)
 		endfor
 	endif
 
@@ -455,7 +455,7 @@ Function RA_SkipSweeps(device, skipCount, [limitToSetBorder, document])
 	variable skipCount, limitToSetBorder, document
 
 	variable numFollower, i, sweepsInSet, recalculatedCount
-	string followerPanelTitle, msg
+	string followerDevice, msg
 
 	NVAR count = $GetCount(device)
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
@@ -509,15 +509,15 @@ Function RA_SkipSweeps(device, skipCount, [limitToSetBorder, document])
 		SVAR listOfFollowerDevices = $GetFollowerList(device)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
-			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-			NVAR followerCount = $GetCount(followerPanelTitle)
-			followerCount = RA_SkipSweepCalc(followerPanelTitle, skipCount)
+			followerDevice = StringFromList(i, listOfFollowerDevices)
+			NVAR followerCount = $GetCount(followerDevice)
+			followerCount = RA_SkipSweepCalc(followerDevice, skipCount)
 
 			if(document)
 				RA_DocumentSweepSkipping(device, skipCount)
 			endif
 
-			RA_StepSweepsRemaining(followerPanelTitle)
+			RA_StepSweepsRemaining(followerDevice)
 		endfor
 	endif
 End
