@@ -1203,7 +1203,7 @@ Function P_ITC_FIFOMonitorProc(s)
 	string device
 	variable hwType, moreData, deviceID, headstage
 
-	if(!P_FindPanelTitleExecutingPP(device, deviceID, headStage))
+	if(!P_FindDeviceExecutingPP(device, deviceID, headStage))
 		CtrlNamedBackground P_ITC_FIFOMonitor, stop
 		print "No device can be found that is executing a pressure pulse"
 		return 1
@@ -1243,7 +1243,7 @@ Function P_NI_StopDAQ(device, headStage)
 End
 
 /// @brief Returns the device of the device associated with device conducting a pressure pulse
-static Function P_FindPanelTitleExecutingPP(device, deviceID, headStage)
+static Function P_FindDeviceExecutingPP(device, deviceID, headStage)
 	string &device
 	variable &deviceID, &headStage
 
