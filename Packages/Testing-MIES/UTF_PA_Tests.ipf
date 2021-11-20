@@ -909,7 +909,7 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_END)
 	CHECK(IsFinite(setting))
-	CHECK(setting > 0)
+	CHECK_GT_VAR(setting, 0)
 
 	first = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_START)
 	last  = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_END)
