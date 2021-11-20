@@ -431,7 +431,7 @@ static Function TestEpochsGeneric(device)
 		endT[] = str2num(epochChannel[p][1])
 		// allow epochEnd to exceed range by less than one sample point
 		endTimeEpochs = trunc(WaveMax(endT) / samplingInterval) * samplingInterval
-		CHECK(endTimeEpochs <= endTimeDAC)
+		CHECK_LE_VAR(endTimeEpochs, endTimeDAC)
 		Duplicate/FREE/RMD=[][i] sweep, DAchannel
 		Redimension/N=(-1, 0) DAchannel
 

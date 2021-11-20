@@ -423,7 +423,7 @@ static Function CheckUserEpochChunkNoOverlap(WAVE/T epochInfo)
 			s2 = str2num(epochInfo[j][EPOCH_COL_STARTTIME])
 			e2 = str2num(epochInfo[j][EPOCH_COL_ENDTIME])
 			overlap = min(e1, e2) - max(s1, s2)
-			CHECK(overlap <= 0) // if overlap is positive the two intervalls intersect
+			CHECK_LE_VAR(overlap, 0) // if overlap is positive the two intervalls intersect
 		endfor
 	endfor
 End
