@@ -4814,7 +4814,7 @@ End
 Function DAP_LockDevice(string win)
 
 	variable locked, hardwareType, headstage
-	string panelTitleLocked, msg
+	string deviceLocked, msg
 
 	SVAR miesVersion = $GetMiesVersion()
 
@@ -4822,12 +4822,12 @@ Function DAP_LockDevice(string win)
 		DEBUGPRINT_OR_ABORT("The MIES version is unknown, locking devices is therefore only allowed in debug mode.")
 	endif
 
-	panelTitleLocked = GetPopupMenuString(win, "popup_MoreSettings_Devices")
-	if(windowExists(panelTitleLocked))
+	deviceLocked = GetPopupMenuString(win, "popup_MoreSettings_Devices")
+	if(windowExists(deviceLocked))
 		DoAbortNow("Attempt to duplicate device connection! Please choose another device number as that one is already in use.")
 	endif
 
-	if(!cmpstr(panelTitleLocked, NONE))
+	if(!cmpstr(deviceLocked, NONE))
 		DoAbortNow("Please select a valid device.")
 	endif
 
@@ -4835,8 +4835,8 @@ Function DAP_LockDevice(string win)
 		DoAbortNow("Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one.")
 	endif
 
-	NVAR deviceID = $GetDAQDeviceID(paneltitleLocked)
-	deviceID = HW_OpenDevice(paneltitleLocked, hardwareType)
+	NVAR deviceID = $GetDAQDeviceID(deviceLocked)
+	deviceID = HW_OpenDevice(deviceLocked, hardwareType)
 
 	if(deviceID < 0 || deviceID >= HARDWARE_MAX_DEVICES)
 #ifndef EVIL_KITTEN_EATING_MODE
@@ -4851,56 +4851,56 @@ Function DAP_LockDevice(string win)
 	DisableControls(win,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
 	EnableControl(win,"button_SettingsPlus_unLockDevic")
 
-	DoWindow/W=$win/C $panelTitleLocked
+	DoWindow/W=$win/C $deviceLocked
 
-	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitleLocked))
-	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(panelTitleLocked))
+	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(deviceLocked))
+	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(deviceLocked))
 	// initial fill of the GUI state wave
 	// all other changes are propagated immediately to the GUI state waves
-	DAG_RecordGuiStateNum(panelTitleLocked)
-	DAG_RecordGuiStateTxT(panelTitleLocked)
+	DAG_RecordGuiStateNum(deviceLocked)
+	DAG_RecordGuiStateTxT(deviceLocked)
 
 	locked = 1
-	DAP_UpdateDataFolderDisplay(panelTitleLocked, locked)
+	DAP_UpdateDataFolderDisplay(deviceLocked, locked)
 
 	AI_FindConnectedAmps()
 	DAP_UpdateListOfLockedDevices()
 	DAP_UpdateListOfPressureDevices()
-	headstage = str2num(GetPopupMenuString(panelTitleLocked, "Popup_Settings_HeadStage"))
-	DAP_SyncDeviceAssocSettToGUI(paneltitleLocked, headstage)
+	headstage = str2num(GetPopupMenuString(deviceLocked, "Popup_Settings_HeadStage"))
+	DAP_SyncDeviceAssocSettToGUI(deviceLocked, headstage)
 
-	DAP_UpdateDAQControls(panelTitleLocked, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
+	DAP_UpdateDAQControls(deviceLocked, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 	DAP_UpdateAllYokeControls()
 	// create the amplifier settings waves
-	GetAmplifierParamStorageWave(panelTitleLocked)
-	DAP_UpdateDaEphysStimulusSetPopups(device=panelTitleLocked)
-	DAP_UnlockCommentNotebook(panelTitleLocked)
-	DAP_ToggleAcquisitionButton(panelTitleLocked, DATA_ACQ_BUTTON_TO_DAQ)
-	SI_CalculateMinSampInterval(panelTitleLocked, DATA_ACQUISITION_MODE)
+	GetAmplifierParamStorageWave(deviceLocked)
+	DAP_UpdateDaEphysStimulusSetPopups(device=deviceLocked)
+	DAP_UnlockCommentNotebook(deviceLocked)
+	DAP_ToggleAcquisitionButton(deviceLocked, DATA_ACQ_BUTTON_TO_DAQ)
+	SI_CalculateMinSampInterval(deviceLocked, DATA_ACQUISITION_MODE)
 
 	// deliberately not using the GUIState wave
-	headstage = GetSliderPositionIndex(panelTitleLocked, "slider_DataAcq_ActiveHeadstage")
-	P_SaveUserSelectedHeadstage(panelTitleLocked, headstage)
+	headstage = GetSliderPositionIndex(deviceLocked, "slider_DataAcq_ActiveHeadstage")
+	P_SaveUserSelectedHeadstage(deviceLocked, headstage)
 
 	// upgrade all four labnotebook waves in wanna-be atomic way
-	GetLBNumericalKeys(panelTitleLocked)
-	GetLBNumericalValues(panelTitleLocked)
-	GetLBTextualKeys(panelTitleLocked)
-	GetLBTextualValues(panelTitleLocked)
+	GetLBNumericalKeys(deviceLocked)
+	GetLBNumericalValues(deviceLocked)
+	GetLBTextualKeys(deviceLocked)
+	GetLBTextualValues(deviceLocked)
 
 	NVAR sessionStartTime = $GetSessionStartTime()
 	sessionStartTime = DateTimeInUTC()
 
-	NVAR acqState = $GetAcquisitionState(panelTitleLocked)
+	NVAR acqState = $GetAcquisitionState(deviceLocked)
 	acqState = AS_INACTIVE
 
-	NVAR rngSeed = $GetRNGSeed(panelTitleLocked)
+	NVAR rngSeed = $GetRNGSeed(deviceLocked)
 	NewRandomSeed()
 	rngSeed = GetReproducibleRandom()
 
-	DAP_UpdateOnsetDelay(panelTitleLocked)
+	DAP_UpdateOnsetDelay(deviceLocked)
 
-	HW_RegisterDevice(panelTitleLocked, hardwareType, deviceID)
+	HW_RegisterDevice(deviceLocked, hardwareType, deviceID)
 	if(ItemsInList(GetListOfLockedDevices()) == 1)
 		DAP_LoadBuiltinStimsets()
 		GetPxPVersion()
@@ -4913,17 +4913,17 @@ Function DAP_LockDevice(string win)
 		KillOrMoveToTrash(wv = GetDQMActiveDeviceList())
 	endif
 
-	DAP_UpdateSweepLimitsAndDisplay(panelTitleLocked, initial = 1)
-	DAP_AdaptPanelForDeviceSpecifics(panelTitleLocked)
+	DAP_UpdateSweepLimitsAndDisplay(deviceLocked, initial = 1)
+	DAP_AdaptPanelForDeviceSpecifics(deviceLocked)
 
-	WAVE TPSettings = GetTPSettings(panelTitleLocked)
+	WAVE TPSettings = GetTPSettings(deviceLocked)
 	// force update the stored TP settings
 	// they could have been changed during panel unlock
-	DAP_TPSettingsToWave(panelTitleLocked, TPSettings)
+	DAP_TPSettingsToWave(deviceLocked, TPSettings)
 
-	TP_AutoTPGenerateNewCycleID(panelTitleLocked)
+	TP_AutoTPGenerateNewCycleID(deviceLocked)
 
-	LOG_AddEntry(PACKAGE_MIES, "locking", keys = {"device"}, values = {panelTitleLocked})
+	LOG_AddEntry(PACKAGE_MIES, "locking", keys = {"device"}, values = {deviceLocked})
 End
 
 static Function DAP_AdaptPanelForDeviceSpecifics(string device, [variable forceEnable])
