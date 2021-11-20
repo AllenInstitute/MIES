@@ -21,7 +21,7 @@
 
 static Constant    IVS_DEFAULT_NWBVERSION = 2
 static Constant    IVS_DEFAULT_HEADSTAGE  = 0
-static StrConstant IVS_DEFAULT_PANELTITLE = "ITC18USB_Dev_0"
+static StrConstant IVS_DEFAULT_DEVICE = "ITC18USB_Dev_0"
 
 Function IVS_ConfigureMCC()
 	string device
@@ -29,7 +29,7 @@ Function IVS_ConfigureMCC()
 
 	variable oldTab, numErrors, initResult
 
-	device = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	// explicitly switch to the data acquistion tab to avoid having
@@ -188,7 +188,7 @@ Function IVS_runBaselineCheckQC()
 	string device, ctrl
 	variable headstage
 
-	device = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	DoWindow/F $device
@@ -216,7 +216,7 @@ Function IVS_FinishBaselineQCCheck(s)
 	string device
 	variable headstage, cycles, baselineAverage, qcResult
 
-	device = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	cycles = 5 //define how many cycles the test pulse must run
@@ -258,7 +258,7 @@ Function IVS_runInitAccessResisQC()
 	variable qcResult, adChannel, tpBufferSetting
 	string ctrl
 
-	device = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
@@ -294,7 +294,7 @@ Function IVS_finishInitAccessQCCheck(s)
 	variable instResistanceVal, ssResistanceVal, tpBufferSetting
 	variable qcResult
 
-	device = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	Wave tempWave = GetIVSCCTemporaryWave(device)
@@ -342,7 +342,7 @@ Function IVS_RunGigOhmSealQC()
 	string device, ctrl
 	variable headstage
 
-	device = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
@@ -416,7 +416,7 @@ Function IVS_finishGigOhmSealQCCheck(s)
 	variable headstage, cycles
 	variable ssResistanceVal, qcResult
 
-	device = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	cycles = 10 //define how many times the test pulse must run
@@ -504,7 +504,7 @@ Function IVS_runStimWave(stimWaveName, scaleFactor)
 	variable headstage
 	string device, ctrl
 
-	device = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage = IVS_DEFAULT_HEADSTAGE
 
 	DoWindow/F $device
