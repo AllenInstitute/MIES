@@ -841,7 +841,7 @@ Function InitDAQSettingsFromString(s, str)
 
 	/// @todo use longer names once IP8 is mandatory
 	sscanf str, "MD%d_RA%d_I%d_L%d_BKG_%d_RES_%d", md, ra, idx, lidx, bkg_daq, res
-	REQUIRE(V_Flag >= 5)
+	REQUIRE_GE_VAR(V_Flag, 5)
 
 	s.md        = md
 	s.ra        = ra
@@ -1065,7 +1065,7 @@ static Function CheckAnaFuncVersion(string device, variable type)
 
 		refVersion = GetAnalysisFunctionVersion(type)
 		idx = GetRowIndex(versions, val = refVersion)
-		CHECK(idx >= 0)
+		CHECK_GE_VAR(idx, 0)
 		return NaN
 	endfor
 

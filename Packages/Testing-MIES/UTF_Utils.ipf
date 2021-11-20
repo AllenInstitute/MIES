@@ -31,7 +31,7 @@ Function AssertionThreadsafeFiresWithPassingZero()
 		ASSERT_TS(0, "Kaboom")
 		FAIL()
 	catch
-		CHECK(V_AbortCode >= 1)
+		CHECK_GE_VAR(V_AbortCode, 1)
 	endtry
 End
 

@@ -100,7 +100,7 @@ static Function TestStoredTestPulses(fileID, device)
 		CHECK_EQUAL_VAR(V_Flag, 1)
 
 		idx = str2num(idxStr)
-		CHECK(idx >= 0)
+		CHECK_GE_VAR(idx, 0)
 
 		WAVE/Z TestPulsePXP = storedTestPulses[idx]
 		CHECK_EQUAL_WAVES(TestPulseNWB, TestPulsePXP)
@@ -306,7 +306,7 @@ static Function TestSourceAttribute(groupID, device, channel, sweep, pxpSweepsDF
 	CHECK_EQUAL_WAVES(pxpWave, loadedFromNWB)
 
 	// groupIndex is written by AnalyseChannelName
-	CHECK(params.groupIndex >= 0)
+	CHECK_GE_VAR(params.groupIndex, 0)
 End
 
 static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweepsDFR)
@@ -594,7 +594,7 @@ static Function TestListOfGroups(groupList, wv)
 	string list
 
 	index = GetNumberFromWaveNote(wv, NOTE_INDEX)
-	CHECK(index >= 1)
+	CHECK_GE_VAR(index, 1)
 
 	groupList = SortList(groupList)
 

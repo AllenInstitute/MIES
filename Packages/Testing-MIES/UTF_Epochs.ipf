@@ -280,8 +280,8 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 	Make/FREE/D/N=(epochCnt) startT, endT, levels, isOodDAQ
 	startT[] = str2num(e[p][0])
 	endT[] = str2num(e[p][1])
-	CHECK(WaveMin(startT) >= 0)
-	CHECK(WaveMin(endT) >= 0)
+	CHECK_GE_VAR(WaveMin(startT), 0)
+	CHECK_GE_VAR(WaveMin(endT), 0)
 	isOodDAQ[] = strsearch(e[p][2], EPOCH_OODDAQ_REGION_KEY, 0) != -1
 	levels[] = str2num(e[p][3])
 	CHECK_EQUAL_VAR(WaveMin(startT), 0)
@@ -366,7 +366,7 @@ static Function TestEpochsGeneric(device)
 	WAVE/Z sweep  = $StringFromList(0, sweeps)
 	CHECK_WAVE(sweep, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 	sweepNo = ExtractSweepNumber(NameOfWave(sweep))
-	CHECK(sweepNo >= 0)
+	CHECK_GE_VAR(sweepNo, 0)
 
 	WAVE/Z config = $StringFromList(0, configs)
 	CHECK_WAVE(config, NUMERIC_WAVE)
@@ -452,7 +452,7 @@ static Function TestUnacquiredEpoch(WAVE sweep, WAVE epochChannel)
 	endif
 
 	FindValue/TEXT="Type=Unacquired" epochChannel
-	CHECK(V_row >= 0)
+	CHECK_GE_VAR(V_row, 0)
 	CHECK_EQUAL_VAR(V_col, 2)
 End
 
@@ -691,7 +691,7 @@ Function EP_TestUserEpochs_REENTRY([str])
 				case PRE_SWEEP_CONFIG_EVENT:
 				case MID_SWEEP_EVENT:
 					// user epoch was added
-					CHECK(V_row >= 0)
+					CHECK_GE_VAR(V_row, 0)
 					tags = epochWave[V_row][EPOCH_COL_TAGS]
 					shortName = EP_GetShortName(tags)
 					CHECK(GrepString(shortName, "^U_"))

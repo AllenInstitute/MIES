@@ -268,7 +268,7 @@ static Function AllTests(t, devices)
 			CHECK_PROPER_STR(unit)
 
 			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
-			CHECK(sweepNo >= 0)
+			CHECK_GE_VAR(sweepNo, 0)
 			WAVE/T/Z foundStimSets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 			REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
 
@@ -1821,7 +1821,7 @@ Function SweepSkippingAdvanced_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 2)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_CONFIG_EVENT], 4)
-	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_GE_VAR(anaFuncTracker[MID_SWEEP_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 4)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 2)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
@@ -1962,7 +1962,7 @@ Function SkipSweepsBackDuringITI_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_CONFIG_EVENT], 4)
-	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_GE_VAR(anaFuncTracker[MID_SWEEP_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 4)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
@@ -1982,7 +1982,7 @@ static Function CheckLastLBNEntryFromTP_IGNORE(device)
 	// last LBN entry is from TP
 	WAVE numericalValues = GetLBNumericalValues(device)
 	index = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
-	CHECK(index >= 1)
+	CHECK_GE_VAR(index, 1)
 	CHECK_EQUAL_VAR(numericalValues[index - 1][%EntrySourceType], TEST_PULSE_MODE)
 End
 
@@ -3836,7 +3836,7 @@ Function HasNaNAsDefaultWhenAborted_REENTRY([str])
 	CHECK_WAVE(sweepWave, NUMERIC_WAVE)
 
 	FindValue/FNAN/RMD=[][0] sweepWave
-	CHECK(V_row >= 0)
+	CHECK_GE_VAR(V_row, 0)
 
 	// check that we have NaNs for all columns starting from the first unacquired point
 	Duplicate/FREE/RMD=[V_row,][] sweepWave, unacquiredData
@@ -3875,10 +3875,10 @@ Function TestPulseCachingWorks_REENTRY([str])
 	WAVE/T keyWave = GetCacheKeyWave()
 	// approximate search
 	FindValue/TEXT=("HW Datawave Testpulse") keyWave
-	CHECK(V_Value >= 0)
+	CHECK_GE_VAR(V_Value, 0)
 
 	WAVE stats = GetCacheStatsWave()
-	CHECK(stats[V_Value][%Hits] >= 1)
+	CHECK_GE_VAR(stats[V_Value][%Hits], 1)
 End
 
 Function UnassocChannelsDuplicatedEntry_IGNORE(device)
@@ -4394,7 +4394,7 @@ Function AsyncAcquisitionLBN_REENTRY([str])
 	CHECK_EQUAL_VAR(var, 0.5)
 
 	var = GetLastSettingIndep(numericalValues, 0, "Async AD 2 [myTitle]", DATA_ACQUISITION_MODE)
-	CHECK(var >= 0)
+	CHECK_GE_VAR(var, 0)
 
 	readStr = GetLastSettingTextIndep(textualValues, 0, "Async AD2 Title", DATA_ACQUISITION_MODE)
 	refStr = "myTitle"

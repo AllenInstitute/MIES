@@ -144,10 +144,10 @@ static Function GetStimsetParametersWorksGlobal()
 	CHECK_WAVE(globalParams, TEXT_WAVE)
 
 	FindValue/TXOP=4/TEXT="Flip time axis" globalParams
-	CHECK(V_Value >= 0)
+	CHECK_GE_VAR(V_Value, 0)
 
 	FindValue/TXOP=4/TEXT="Analysis function (generic)" globalParams
-	CHECK(V_Value >= 0)
+	CHECK_GE_VAR(V_Value, 0)
 End
 
 static Function GetStimsetParametersWorksPerEpoch()
@@ -173,7 +173,7 @@ static Function GetStimsetParametersWorksPerEpoch()
 		endif
 
 		FindValue/TXOP=4/TEXT=entry perEpochParams
-		CHECK(V_Value >= 0)
+		CHECK_GE_VAR(V_Value, 0)
 	endfor
 
 	// returns null for invalid epoch

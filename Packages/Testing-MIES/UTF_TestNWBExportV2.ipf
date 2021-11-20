@@ -141,7 +141,7 @@ static Function TestStoredTestPulses(fileID, device)
 		CHECK_EQUAL_VAR(V_Flag, 1)
 
 		idx = str2num(idxStr)
-		CHECK(idx >= 0)
+		CHECK_GE_VAR(idx, 0)
 
 		WAVE/Z TestPulsePXP = storedTestPulses[idx]
 		CHECK_EQUAL_WAVES(TestPulseNWB, TestPulsePXP)
@@ -511,7 +511,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 			CHECK_WAVE(epochs, WAVE_WAVE)
 
 			idx = FindDimlabel(epochs, ROWS, channel)
-			CHECK(idx >= 0)
+			CHECK_GE_VAR(idx, 0)
 
 			WAVE/T/Z epochsSingleChannel = WaveRef(epochs, row=idx)
 			CHECK_WAVE(epochsSingleChannel, TEXT_WAVE)
@@ -620,7 +620,7 @@ static Function TestListOfGroups(groupList, wv)
 	string list
 
 	index = GetNumberFromWaveNote(wv, NOTE_INDEX)
-	CHECK(index >= 1)
+	CHECK_GE_VAR(index, 1)
 
 	groupList = SortList(groupList)
 
