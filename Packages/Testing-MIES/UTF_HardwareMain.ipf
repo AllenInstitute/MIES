@@ -1040,7 +1040,7 @@ static Function CheckDashboard(string device, WAVE headstageQC)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 	numEntries = GetNumberFromWaveNote(listWave, NOTE_INDEX)
-	CHECK(numEntries > 0)
+	CHECK_GT_VAR(numEntries, 0)
 
 	for(i = 0; i < numEntries; i += 1)
 		state = !cmpstr(listWave[i][%Result], DASHBOARD_PASSING_MESSAGE)
@@ -1180,7 +1180,7 @@ static Function TestSweepReconstruction_IGNORE(string panelTitle)
 	Sort wavesReconstructed, wavesReconstructed
 	Sort wavesOriginal, wavesOriginal
 
-	CHECK(DimSize(sweeps, ROWS) > 0)
+	CHECK_GT_VAR(DimSize(sweeps, ROWS), 0)
 	CHECK_EQUAL_VAR(DimSize(wavesReconstructed, ROWS), DimSize(sweeps, ROWS) * 2)
 	CHECK_EQUAL_VAR(DimSize(wavesOriginal, ROWS), DimSize(sweeps, ROWS) * 2)
 

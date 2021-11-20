@@ -162,7 +162,7 @@ static Function GetStimsetParametersWorksPerEpoch()
 	for(i = 0; i < EPOCH_TYPES_TOTAL_NUMBER; i += 1)
 		WAVE/Z perEpochParams = ST_GetStimsetParameters(name, epochType = i)
 		CHECK_WAVE(perEpochParams, TEXT_WAVE)
-		CHECK(DimSize(perEpochParams, ROWS) > 0)
+		CHECK_GT_VAR(DimSize(perEpochParams, ROWS), 0)
 
 		if(i == EPOCH_TYPE_COMBINE)
 			entry = "Combine epoch formula"

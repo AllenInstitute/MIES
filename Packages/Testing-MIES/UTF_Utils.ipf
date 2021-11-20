@@ -607,7 +607,7 @@ Function ELE_HasMinimumSize()
 
 	Make/FREE/N=0 wv
 	EnsureLargeEnoughWave(wv)
-	CHECK(DimSize(wv, ROWS) > 0)
+	CHECK_GT_VAR(DimSize(wv, ROWS), 0)
 	CHECK(DimSize(wv, COLS) == 0)
 End
 
@@ -649,7 +649,7 @@ Function ELE_WorksForColsAsWell()
 	Make/FREE/N=1 wv
 	EnsureLargeEnoughWave(wv, dimension = COLS)
 	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 1)
-	CHECK(DimSize(wv, COLS) > 0)
+	CHECK_GT_VAR(DimSize(wv, COLS), 0)
 End
 
 Function ELE_MinimumSize1()
@@ -663,7 +663,7 @@ Function ELE_MinimumSize2()
 
 	Make/FREE/N=100 wv
 	EnsureLargeEnoughWave(wv, minimumSize = 100)
-	CHECK(DimSize(wv, ROWS) > 100)
+	CHECK_GT_VAR(DimSize(wv, ROWS), 100)
 End
 
 Function ELE_KeepsMinimumWaveSize1()
@@ -686,7 +686,7 @@ Function ELE_KeepsMinimumWaveSize3()
 	// need to check that the index MINIMUM_WAVE_SIZE is now accessible
 	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
 	EnsureLargeEnoughWave(wv, minimumSize = MINIMUM_WAVE_SIZE)
-	CHECK(DimSize(wv, ROWS) > MINIMUM_WAVE_SIZE)
+	CHECK_GT_VAR(DimSize(wv, ROWS), MINIMUM_WAVE_SIZE)
 End
 
 Function ELE_Returns1WithCheckMem()
@@ -4182,7 +4182,7 @@ Function CreateBackupWaveAllowsForcingRecreation()
 
 	WAVE/Z bakAgain = CreateBackupWave(data, forceCreation = 1)
 
-	CHECK(WaveModCount(bakAgain) > modCount)
+	CHECK_GT_VAR(WaveModCount(bakAgain), modCount)
 End
 
 Function/DF PrepareFolderForBackup_IGNORE()
@@ -5049,11 +5049,11 @@ End
 Function GWS_Works([WAVE wv])
 
 	CHECK_WAVE(wv, FREE_WAVE)
-	CHECK(GetWaveSize(wv) > 0)
+	CHECK_GT_VAR(GetWaveSize(wv), 0)
 
 	Make/N=1 junkWave
 	MultiThread junkWave = GetWaveSize(wv)
-	CHECK(junkWave[0] > 0)
+	CHECK_GT_VAR(junkWave[0], 0)
 End
 
 /// @}

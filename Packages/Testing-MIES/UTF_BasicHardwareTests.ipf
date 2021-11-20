@@ -191,7 +191,7 @@ EndStructure
 static Function InitTestStructure(t)
 	STRUCT TestSettings &t
 
-	REQUIRE(t.numSweeps > 0)
+	REQUIRE_GT_VAR(t.numSweeps, 0)
 	Make/T/FREE/N=(t.numSweeps) t.acquiredStimSets_HS0, t.acquiredStimSets_HS1
 	Make/FREE/N=(t.numSweeps) t.sweepCount_HS0, t.sweepCount_HS1
 	Make/FREE/N=(t.numSweeps) t.setCycleCount_HS0, t.setCycleCount_HS1
@@ -3581,7 +3581,7 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	WAVE/Z TPStorage = GetTPStorage(device)
 	CHECK_WAVE(TPStorage, NORMAL_WAVE)
 	numStored = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-	CHECK(numStored > TP_SKIP_NUM_TPS_START)
+	CHECK_GT_VAR(numStored, TP_SKIP_NUM_TPS_START)
 
 	WAVE/Z/WAVE storedTestPulses = GetStoredTestPulseWave(device)
 	CHECK_WAVE(storedTestPulses, WAVE_WAVE)
@@ -3648,9 +3648,9 @@ Function CheckThatTPsCanBeFound_REENTRY([str])
 	CHECK_WAVE(TPStorage, NORMAL_WAVE)
 
 	index = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-	CHECK(index > 0)
+	CHECK_GT_VAR(index, 0)
 	duration = TPStorage[index - 1][0][%DeltaTimeInSeconds]
-	CHECK(duration > TP_DURATION_S * 0.9)
+	CHECK_GT_VAR(duration, TP_DURATION_S * 0.9)
 
 	WaitAndCheckStoredTPs_IGNORE(str, 2)
 
@@ -3951,7 +3951,7 @@ Function UnassocChannelsDuplicatedEntry_REENTRY([str])
 		Make/FREE/T unassocEntries
 		Grep/E=".* u_(AD|DA)\d$" singleRow as unassocEntries
 		CHECK(!V_Flag)
-		CHECK(V_Value > 0)
+		CHECK_GT_VAR(V_Value, 0)
 
 		unassocEntries[] = RemoveTrailingNumber_IGNORE(unassocEntries[p])
 
@@ -4081,7 +4081,7 @@ Function DataBrowserCreatesBackupsByDefault_REENTRY([str])
 	// check that all non-backup waves in singleSweepFolder have a backup
 	list = GetListOfObjects(singleSweepFolder, "^[A-Za-z]{1,}_[0-9]$")
 	numEntries = ItemsInList(list)
-	CHECK(numEntries > 0)
+	CHECK_GT_VAR(numEntries, 0)
 
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, list)
@@ -4526,7 +4526,7 @@ static Function CheckLBNEntries_IGNORE(string device, variable sweepNo, variable
 
 		CHECK_WAVE(indizesEntry, FREE_WAVE)
 		WAVE indizesEntryOneSweep = GetSetIntersection(indizesSweeps, indizesEntry)
-		CHECK(DimSize(indizesEntryOneSweep, ROWS) > 0)
+		CHECK_GT_VAR(DimSize(indizesEntryOneSweep, ROWS), 0)
 
 		// all entries in indizesEntryOneSweep must be in indizesAcqState
 		WAVE/Z indizesAcqState = FindIndizes(wv, colLabel = "AcquisitionState", var = acqState)
@@ -4721,7 +4721,7 @@ Function ExportStimsetsAndRoundtripThem([variable var])
 	CHECK_EQUAL_VAR(DimSize(oldWaves, ROWS), DimSize(newWaves, ROWS))
 
 	numEntries = DimSize(oldWaves, ROWS)
-	CHECK(numEntries > 0)
+	CHECK_GT_VAR(numEntries, 0)
 
 	for(i = 0; i < numEntries; i += 1)
 		WAVE oldWave = $oldWaves[i]
@@ -5030,7 +5030,7 @@ Function CheckTPBaseline_REENTRY([WAVE/WAVE pair])
 	CHECK_WAVE(storedTPs, WAVE_WAVE)
 
 	numEntries = GetNumberFromWaveNote(storedTPs, NOTE_INDEX)
-	CHECK(numEntries > 0)
+	CHECK_GT_VAR(numEntries, 0)
 
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/Z singleTP = storedTPs[i]

@@ -35,9 +35,9 @@ static Function SC_SetControls1_REENTRY([str])
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
 	contents = GetNotebookText("HistoryCarbonCopy")
-	CHECK(strsearch(contents, "The analysis parameter group_DataAcq_ClampMode is a control which can not be set.", 0) > 0)
-	CHECK(strsearch(contents, "The analysis parameter valdisp_DataAcq_SweepsActiveSet is a control which can not be set.", 0) > 0)
-	CHECK(strsearch(contents, "The analysis parameter Title_DataAcq_Bridge is a control which can not be set.", 0) > 0)
+	CHECK_GT_VAR(strsearch(contents, "The analysis parameter group_DataAcq_ClampMode is a control which can not be set.", 0), 0)
+	CHECK_GT_VAR(strsearch(contents, "The analysis parameter valdisp_DataAcq_SweepsActiveSet is a control which can not be set.", 0), 0)
+	CHECK_GT_VAR(strsearch(contents, "The analysis parameter Title_DataAcq_Bridge is a control which can not be set.", 0), 0)
 End
 
 static Function SC_SetControls2_Setter(device)

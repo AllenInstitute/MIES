@@ -95,15 +95,15 @@ Function WB_RegressionTest([string stimset])
 
 	// check that we have a duration for all sweeps/epochs
 	sweepCount = WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Sweep Count")
-	CHECK(sweepCount > 0)
+	CHECK_GT_VAR(sweepCount, 0)
 
 	epochCount = WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Epoch Count")
-	CHECK(epochCount > 0)
+	CHECK_GT_VAR(epochCount, 0)
 
 	for(i = 0; i < sweepCount; i += 1)
 		for(j = 0; j < epochCount; j += 1)
 			duration = WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, key = "Duration", sweep = i, epoch= j)
-			CHECK(duration > 0)
+			CHECK_GT_VAR(duration, 0)
 		endfor
 	endfor
 

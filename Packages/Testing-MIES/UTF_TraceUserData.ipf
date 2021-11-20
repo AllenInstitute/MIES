@@ -36,7 +36,7 @@ Function KillGraphAndCheckEmptyUserData_IGNORE(string graph, WAVE/T graphUserDat
 	DoUpdate
 
 	CHECK(!WindowExists(graph))
-	CHECK(WaveModCount(graphUserData) > modCount)
+	CHECK_GT_VAR(WaveModCount(graphUserData), modCount)
 
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(graphUserData, NOTE_INDEX), 0)
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON), NaN)

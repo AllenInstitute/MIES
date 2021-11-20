@@ -916,7 +916,7 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 	// this requires that the DA and AD channels on the hardware are connected directly when acquiring this data
 	// ditch the first and last 0.1 ms to avoid any decimation issues
 	minimum = WaveMin(pulse, first + 0.1, last - 0.1)
-	CHECK(minimum > 0)
+	CHECK_GT_VAR(minimum, 0)
 End
 
 static Function PAT_CheckImageWaveNote(string win, WAVE iData, STRUCT PA_Test &patest)

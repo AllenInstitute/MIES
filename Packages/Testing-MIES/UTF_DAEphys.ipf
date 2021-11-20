@@ -22,7 +22,7 @@ Function CheckIfAllControlsReferStateWv([str])
 	uniqueControls = MIES_DAG#DAG_GetUniqueCtrlList(str)
 
 	numEntries = ItemsInList(list)
-	CHECK(numEntries > 0)
+	CHECK_GT_VAR(numEntries, 0)
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = StringFromList(i, list)
 		ControlInfo/W=$str $ctrl
@@ -181,7 +181,7 @@ Function CheckStartupSettings([str])
 	list  = ControlNameList(unlockedPanelTitle, ";")
 
 	numEntries = ItemsInList(list)
-	CHECK(numEntries > 0)
+	CHECK_GT_VAR(numEntries, 0)
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = StringFromList(i, list)
 		ControlInfo/W=$unlockedPanelTitle $ctrl

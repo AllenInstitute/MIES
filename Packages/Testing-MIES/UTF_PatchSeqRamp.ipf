@@ -548,8 +548,8 @@ static Function PS_RA5_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 3)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	CHECK(durations[0] > 15000 - PSQ_RA_BL_EVAL_RANGE)
-	CHECK(durations[1] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE)
+	CHECK_GT_VAR(durations[0], 15000 - PSQ_RA_BL_EVAL_RANGE)
+	CHECK_GT_VAR(durations[1], SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE)
 	CHECK(durations[2] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[2] < SPIKE_POSITION_TEST_DELAY_MS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
@@ -616,8 +616,8 @@ static Function PS_RA6_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 3)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	CHECK(durations[0] > 15000 - PSQ_RA_BL_EVAL_RANGE)
-	CHECK(durations[1] > 15000 - PSQ_RA_BL_EVAL_RANGE)
+	CHECK_GT_VAR(durations[0], 15000 - PSQ_RA_BL_EVAL_RANGE)
+	CHECK_GT_VAR(durations[1], 15000 - PSQ_RA_BL_EVAL_RANGE)
 	CHECK(durations[2] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[2] < SPIKE_POSITION_TEST_DELAY_MS)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)

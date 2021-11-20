@@ -110,8 +110,8 @@ static Function TestEpochChannelTight(e)
 
 	numRows = DimSize(e, ROWS)
 	numCols = DimSize(e, COLS)
-	CHECK(numRows > 0)
-	CHECK(numCols > 0)
+	CHECK_GT_VAR(numRows, 0)
+	CHECK_GT_VAR(numCols, 0)
 	for(i = 0; i < numRows; i += 1)
 		for(j = 0; j < numCols; j += 1)
 			s = e[i][j]
@@ -275,7 +275,7 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 			break
 		endif
 	endfor
-	REQUIRE(epochCnt > 0)
+	REQUIRE_GT_VAR(epochCnt, 0)
 
 	Make/FREE/D/N=(epochCnt) startT, endT, levels, isOodDAQ
 	startT[] = str2num(e[p][0])
@@ -466,10 +466,10 @@ static Function TestNaming(WAVE/T epochChannel)
 		tags = epochChannel[i][EPOCH_COL_TAGS]
 
 		numEntries = ItemsInList(tags, ";")
-		CHECK(numEntries > 0)
+		CHECK_GT_VAR(numEntries, 0)
 		for(j = 0; j < numEntries; j += 1)
 			entry = StringFromList(j, tags)
-			CHECK(strsearch(entry, "=", 0) > 0)
+			CHECK_GT_VAR(strsearch(entry, "=", 0), 0)
 		endfor
 	endfor
 End
