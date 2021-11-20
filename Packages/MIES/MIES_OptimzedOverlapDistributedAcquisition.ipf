@@ -292,14 +292,14 @@ static Function OOD_StorePreload(device, preload)
 	string device
 	WAVE preload
 
-	string deviceNumberStr, deviceType, panelTitleNext
+	string deviceNumberStr, deviceType, nextDevice
 	variable deviceNumber
 
 	ParseDeviceString(device, deviceType, deviceNumberStr)
 	deviceNumber = str2num(deviceNumberStr) + 1
-	panelTitleNext = HW_ITC_BuildDeviceString(deviceType, num2str(deviceNumber))
+	nextDevice = HW_ITC_BuildDeviceString(deviceType, num2str(deviceNumber))
 
-	WAVE preloadPerm = GetDistDAQPreloadWave(panelTitleNext)
+	WAVE preloadPerm = GetDistDAQPreloadWave(nextDevice)
 
 	Duplicate/O preload, preloadPerm
 End
