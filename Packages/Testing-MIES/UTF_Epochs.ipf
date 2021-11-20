@@ -297,7 +297,8 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 
 	// check for valid level
 	for(i = 0; i < epochCnt; i += 1)
-		CHECK(IsInteger(levels[i]) && levels[i] >= 0)
+		CHECK(IsInteger(levels[i]))
+		CHECK(levels[i] >= 0)
 	endfor
 
 	// check that a subset of epochs in level x fully cover exactly one epoch in level x - 1

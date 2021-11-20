@@ -599,12 +599,14 @@ static Function PAT_VerifyImageAxes(string graph, string traceName, variable ach
 	ref_from = xLayoutCoord * 100 / sqrt(layoutSize)
 	ref_to = (xLayoutCoord + 1) * 100 / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
-	CHECK(from >= ref_from && to <= ref_to)
+	CHECK(from >= ref_from)
+	CHECK(to <= ref_to)
 
 	ref_to = 100 - yLayoutCoord * 100 / sqrt(layoutSize)
 	ref_from = 100 - (yLayoutCoord + 1) * 100 / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
-	CHECK(from >= ref_from && to <= ref_to)
+	CHECK(from >= ref_from)
+	CHECK(to <= ref_to)
 End
 
 static Function PAT_VerifyTraceAxes(string graph, string traceName, variable achan, variable aregion, STRUCT PA_Test &patest, [variable multiGraphMode])
@@ -651,13 +653,15 @@ static Function PAT_VerifyTraceAxes(string graph, string traceName, variable ach
 	ref_to = (xLayoutCoord + 1) * 100 / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
-	CHECK(from >= ref_from && to <= ref_to)
+	CHECK(from >= ref_from)
+	CHECK(to <= ref_to)
 
 	ref_to = 100 - yLayoutCoord * 100 / sqrt(layoutSize)
 	ref_from = 100 - (yLayoutCoord + 1) * 100 / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
-	CHECK(from >= ref_from && to <= ref_to)
+	CHECK(from >= ref_from)
+	CHECK(to <= ref_to)
 End
 
 static Function PAT_VerifyImageAxesRange(string imageWin, string imageName, STRUCT PA_Test &patest)
@@ -900,17 +904,20 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 	CHECK_EQUAL_VAR(setting, DimSize(pulse, ROWS))
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_START)
-	CHECK(IsFinite(setting) && setting >= 0)
+	CHECK(IsFinite(setting))
+	CHECK(setting >= 0)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_END)
-	CHECK(IsFinite(setting) && setting > 0)
+	CHECK(IsFinite(setting))
+	CHECK(setting > 0)
 
 	first = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_START)
 	last  = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_END)
 	CHECK_LT_VAR(first, last)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_CLAMP_MODE)
-	CHECK(IsFinite(setting) && (setting == V_CLAMP_MODE || setting == I_CLAMP_MODE || setting == I_EQUAL_ZERO_MODE))
+	CHECK(IsFinite(setting))
+	CHECK((setting == V_CLAMP_MODE || setting == I_CLAMP_MODE || setting == I_EQUAL_ZERO_MODE))
 
 	// no zeros inside the pulse
 	// this requires that the DA and AD channels on the hardware are connected directly when acquiring this data

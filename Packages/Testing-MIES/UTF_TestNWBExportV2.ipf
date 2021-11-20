@@ -333,7 +333,8 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 		headstage = NaN
 	else
 		headstage = str2num(RemovePrefix(headstageDesc, start = "Headstage "))
-		REQUIRE(headstage >= 0 && headstage < NUM_HEADSTAGES)
+		REQUIRE(headstage >= 0)
+		REQUIRE(headstage < NUM_HEADSTAGES)
 	endif
 
 	params.electrodeNumber = headstage
