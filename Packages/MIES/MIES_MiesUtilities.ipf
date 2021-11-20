@@ -4524,7 +4524,7 @@ End
 /// @brief Return the list of locked devices
 Function/S GetListOfLockedDevices()
 
-	SVAR list = $GetDevicePanelTitleList()
+	SVAR list = $GetLockedDevices()
 	return list
 End
 

@@ -291,8 +291,8 @@ Function/S GetCount(device)
 	return GetNVARAsString(GetDevicePath(device), "count", initialValue=0)
 End
 
-/// @brief Returns the list of locked device panels
-Function/S GetDevicePanelTitleList()
+/// @brief Returns the list of locked devices
+Function/S GetLockedDevices()
 	string device
 
 	return GetSVARAsString(GetDAQDevicesFolder(), "lockedDevices", initialValue="")

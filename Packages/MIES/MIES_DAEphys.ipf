@@ -5199,7 +5199,7 @@ static Function DAP_UpdateListOfLockedDevices()
 		endif
 	endfor
 
-	SVAR panelList = $GetDevicePanelTitleList()
+	SVAR panelList = $GetLockedDevices()
 	panelList = ITCPanelList + NIPanelList
 End
 

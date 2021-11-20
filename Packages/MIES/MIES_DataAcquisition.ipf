@@ -14,7 +14,7 @@ Function DQ_StopOngoingDAQAllLocked(variable stopReason)
 	variable i, numDev, err
 	string device
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	numDev = ItemsInList(devices)
 	for(i = 0; i < numDev; i += 1)
 		device = StringFromList(i, devices)
