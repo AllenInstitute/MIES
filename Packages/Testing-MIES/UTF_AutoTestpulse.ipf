@@ -340,7 +340,7 @@ static Function AutoTP_SpecialCases_REENTRY([string str])
 
 	CHECK_EQUAL_VAR(amplitudeIC[0], 15)
 	// determined by RNG
-	CHECK(amplitudeIC[1] >= 5)
+	CHECK_GE_VAR(amplitudeIC[1], 5)
 	CHECK(amplitudeIC[1] <= 10)
 
 	CHECK_EQUAL_WAVES(entries[%baselineFrac], {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 0.35}, mode = WAVE_DATA, tol = 1e-6)

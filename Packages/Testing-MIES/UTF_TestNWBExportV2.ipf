@@ -333,7 +333,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 		headstage = NaN
 	else
 		headstage = str2num(RemovePrefix(headstageDesc, start = "Headstage "))
-		REQUIRE(headstage >= 0)
+		REQUIRE_GE_VAR(headstage, 0)
 		REQUIRE_LT_VAR(headstage, NUM_HEADSTAGES)
 	endif
 

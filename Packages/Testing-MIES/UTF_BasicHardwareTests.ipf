@@ -2005,7 +2005,7 @@ static Function CheckDAQStopReason(string device, variable stopReason)
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	CHECK(DimSize(sweeps, ROWS) >= 1)
+	CHECK_GE_VAR(DimSize(sweeps, ROWS), 1)
 
 	sweepNo = sweeps[0]
 	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -4842,7 +4842,7 @@ Function ExportOnlyCommentsIntoNWB([string str])
 	fileID = H5_OpenFile(discLocation)
 	userComment = TestNWBExportV2#TestUserComment(fileID, str)
 	userCommentRef = "abcdefgh ijjkl"
-	CHECK(strsearch(userComment, userCommentRef, 0) >= 0)
+	CHECK_GE_VAR(strsearch(userComment, userCommentRef, 0), 0)
 
 	H5_CloseFile(fileID)
 End

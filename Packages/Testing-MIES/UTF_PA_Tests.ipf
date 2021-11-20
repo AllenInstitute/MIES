@@ -599,13 +599,13 @@ static Function PAT_VerifyImageAxes(string graph, string traceName, variable ach
 	ref_from = xLayoutCoord * 100 / sqrt(layoutSize)
 	ref_to = (xLayoutCoord + 1) * 100 / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
-	CHECK(from >= ref_from)
+	CHECK_GE_VAR(from, ref_from)
 	CHECK(to <= ref_to)
 
 	ref_to = 100 - yLayoutCoord * 100 / sqrt(layoutSize)
 	ref_from = 100 - (yLayoutCoord + 1) * 100 / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
-	CHECK(from >= ref_from)
+	CHECK_GE_VAR(from, ref_from)
 	CHECK(to <= ref_to)
 End
 
@@ -653,14 +653,14 @@ static Function PAT_VerifyTraceAxes(string graph, string traceName, variable ach
 	ref_to = (xLayoutCoord + 1) * 100 / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
-	CHECK(from >= ref_from)
+	CHECK_GE_VAR(from, ref_from)
 	CHECK(to <= ref_to)
 
 	ref_to = 100 - yLayoutCoord * 100 / sqrt(layoutSize)
 	ref_from = 100 - (yLayoutCoord + 1) * 100 / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
-	CHECK(from >= ref_from)
+	CHECK_GE_VAR(from, ref_from)
 	CHECK(to <= ref_to)
 End
 
@@ -905,7 +905,7 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_START)
 	CHECK(IsFinite(setting))
-	CHECK(setting >= 0)
+	CHECK_GE_VAR(setting, 0)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_END)
 	CHECK(IsFinite(setting))
