@@ -27,8 +27,8 @@ static Function DC_UpdateGlobals(string device, variable dataAcqOrTP)
 		TP_UpdateTPLBNSettings(device)
 	endif
 
-	SVAR panelTitleG = $GetPanelTitleGlobal()
-	panelTitleG = device
+	SVAR runningDevice = $GetRunningSingleDevice()
+	runningDevice = device
 
 	NVAR fifoPosition = $GetFifoPosition(device)
 	fifoPosition = 0

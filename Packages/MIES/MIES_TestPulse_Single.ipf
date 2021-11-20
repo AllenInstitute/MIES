@@ -35,10 +35,10 @@ End
 Function TPS_TestPulseFunc(s)
 	STRUCT BackgroundStruct &s
 
-	SVAR panelTitleG = $GetPanelTitleGlobal()
-	// create a copy as panelTitleG is killed in TPS_StopTestPulseSingleDevice
+	SVAR runningDevice = $GetRunningSingleDevice()
+	// create a copy as runningDevice is killed in TPS_StopTestPulseSingleDevice
 	// but we still need it afterwards
-	string device = panelTitleG
+	string device = runningDevice
 
 	NVAR deviceID = $GetDAQDeviceID(device)
 

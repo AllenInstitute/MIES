@@ -137,32 +137,32 @@ Function DQS_FIFOMonitor(s)
 
 	variable fifoPos, moreData, anaFuncReturn, result
 
-	SVAR panelTitleG       = $GetPanelTitleGlobal()
-	NVAR deviceID = $GetDAQDeviceID(panelTitleG)
+	SVAR runningDevice       = $GetRunningSingleDevice()
+	NVAR deviceID = $GetDAQDeviceID(runningDevice)
 
 	moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos, flags=HARDWARE_ABORT_ON_ERROR)
 
-	SCOPE_UpdateOscilloscopeData(panelTitleG, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
+	SCOPE_UpdateOscilloscopeData(runningDevice, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
-	result = AS_HandlePossibleTransition(panelTitleG, AS_MID_SWEEP)
+	result = AS_HandlePossibleTransition(runningDevice, AS_MID_SWEEP)
 
 	if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
-		UpdateLeftOverSweepTime(panelTitleG, fifoPos)
+		UpdateLeftOverSweepTime(runningDevice, fifoPos)
 		moreData = 0
 	elseif(result == ANALYSIS_FUNC_RET_EARLY_STOP)
 		moreData = 0
 	endif
 
-	SCOPE_UpdateGraph(panelTitleG, DATA_ACQUISITION_MODE)
+	SCOPE_UpdateGraph(runningDevice, DATA_ACQUISITION_MODE)
 
 	if(!moreData)
 		DQS_STOPBackgroundFifoMonitor()
-		DQS_StopDataAcq(panelTitleG, DQ_STOP_REASON_FINISHED)
+		DQS_StopDataAcq(runningDevice, DQ_STOP_REASON_FINISHED)
 		return 1
 	endif
 
 	if(GetKeyState(0) & ESCAPE_KEY)
-		DQ_StopOngoingDAQ(panelTitleG, DQ_STOP_REASON_ESCAPE_KEY, startTPAfterDAQ = 0)
+		DQ_StopOngoingDAQ(runningDevice, DQ_STOP_REASON_ESCAPE_KEY, startTPAfterDAQ = 0)
 		return 1
 	endif
 
@@ -211,12 +211,12 @@ Function DQS_Timer(s)
 
 	NVAR repeatedAcqStart    = $GetRepeatedAcquisitionStart()
 	NVAR repeatedAcqDuration = $GetRepeatedAcquisitionDuration()
-	SVAR panelTitleG         = $GetPanelTitleGlobal()
+	SVAR runningDevice         = $GetRunningSingleDevice()
 
 	elapsedTime = RelativeNowHighPrec() - repeatedAcqStart
 	timeLeft    = max(repeatedAcqDuration - elapsedTime, 0)
 
-	SetValDisplay(panelTitleG, "valdisp_DataAcq_ITICountdown", var = timeLeft)
+	SetValDisplay(runningDevice, "valdisp_DataAcq_ITICountdown", var = timeLeft)
 
 	if(elapsedTime >= repeatedAcqDuration)
 		SVAR repeatedAcqFuncList = $GetRepeatedAcquisitionFuncList()

@@ -323,9 +323,9 @@ End
 
 /// @brief Return global device for background tasks
 /// @todo remove and use background struct members for the deviceID and GetDeviceMapping instead
-Function/S GetPanelTitleGlobal()
+Function/S GetRunningSingleDevice()
 
-	return GetSVARAsString(GetDAQDevicesFolder(), "panelTitleG")
+	return GetSVARAsString(GetDAQDevicesFolder(), "runningDevice")
 End
 
 /// @brief Return the active set count
