@@ -39,8 +39,8 @@
 ///        return TextWaveToList(testItems, ";")
 ///    End
 ///
-///    Function/WAVE GetMenuList2(panelTitle)
-///        string panelTitle
+///    Function/WAVE GetMenuList2(device)
+///        string device
 ///
 ///        Make/FREE/T/N=(2) menus
 ///        menus[0] = "Kriemhild;Brünhild"
@@ -51,8 +51,8 @@
 ///        return menus
 ///    End
 ///
-///    Function/WAVE GetMenuList3(panelTitle)
-///        string panelTitle
+///    Function/WAVE GetMenuList3(device)
+///        string device
 ///
 ///        Make/FREE/T menus = {"Kriemhild", "Brünhild", "Siegfried", "Gunther"}
 ///        WAVE/T splitMenu = PEXT_SplitToSubMenus(menus, method = PEXT_SUBSPLIT_ALPHA)
@@ -476,8 +476,8 @@ End
 /// @brief Prototype for the menu item getter that is compatible with the
 ///        former popupmenu value=procedure definition.
 ///
-Function/WAVE PEXT_ITEMGETTER_WAVE_PROTO(panelTitle)
-	string panelTitle
+Function/WAVE PEXT_ITEMGETTER_WAVE_PROTO(device)
+	string device
 End
 
 /// @brief Prototype for the former popupaction procedure, that is only

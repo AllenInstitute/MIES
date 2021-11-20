@@ -56,24 +56,24 @@ static Structure AxonTelegraph_DataStruct
 EndStructure
 
 /// @brief Returns the serial number of the headstage compatible with Axon* functions, @see GetChanAmpAssign
-static Function AI_GetAmpAxonSerial(panelTitle, headStage)
-	string panelTitle
+static Function AI_GetAmpAxonSerial(device, headStage)
+	string device
 	variable headStage
 
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+	Wave ChanAmpAssign = GetChanAmpAssign(device)
 
 	return ChanAmpAssign[%AmpSerialNo][headStage]
 End
 
 /// @brief Returns the serial number of the headstage compatible with MCC* functions, @see GetChanAmpAssign
-static Function/S AI_GetAmpMCCSerial(panelTitle, headStage)
-	string panelTitle
+static Function/S AI_GetAmpMCCSerial(device, headStage)
+	string device
 	variable headStage
 
 	variable axonSerial
 	string mccSerial
 
-	axonSerial = AI_GetAmpAxonSerial(panelTitle, headStage)
+	axonSerial = AI_GetAmpAxonSerial(device, headStage)
 
 	if(axonSerial == 0)
 		return "Demo"
@@ -84,11 +84,11 @@ static Function/S AI_GetAmpMCCSerial(panelTitle, headStage)
 End
 
 ///@brief Return the channel of the currently selected head stage
-static Function AI_GetAmpChannel(panelTitle, headStage)
-	string panelTitle
+static Function AI_GetAmpChannel(device, headStage)
+	string device
 	variable headStage
 
-	Wave ChanAmpAssign = GetChanAmpAssign(panelTitle)
+	Wave ChanAmpAssign = GetChanAmpAssign(device)
 
 	return ChanAmpAssign[%AmpChannelID][headStage]
 End
@@ -188,7 +188,7 @@ End
 /// Additionally setting the GUI value if the given headstage is the selected one
 /// and a value has been passed.
 ///
-/// @param panelTitle       device
+/// @param device       device
 /// @param ctrl             name of the amplifier control
 /// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param value            [optional: defaults to the controls value] value to set. values is in MIES units, see AI_SendToAmp()
@@ -201,8 +201,8 @@ End
 ///                         before use, some callers might save time in doing that once themselves.
 ///
 /// @return 0 on success, 1 otherwise
-Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, checkBeforeWrite, selectAmp])
-	string panelTitle
+Function AI_UpdateAmpModel(device, ctrl, headStage, [value, sendToAll, checkBeforeWrite, selectAmp])
+	string device
 	string ctrl
 	variable headStage, value, sendToAll, checkBeforeWrite, selectAmp
 
@@ -210,14 +210,14 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 	variable runMode = TEST_PULSE_NOT_RUNNING
 	string str, rowLabel, rowLabelOpposite, ctrlToCall, ctrlToCallOpposite
 
-	DAP_AbortIfUnlocked(panelTitle)
+	DAP_AbortIfUnlocked(device)
 
-	selectedHeadstage = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	selectedHeadstage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage")
 
 	if(ParamIsDefault(value))
 		ASSERT(headstage == selectedHeadstage, "Supply the optional argument value if setting values of other headstages than the current one")
 		// we don't use a wrapper here as we want to be able to query different control types
-		ControlInfo/W=$panelTitle $ctrl
+		ControlInfo/W=$device $ctrl
 		ASSERT(V_flag != 0, "non-existing window or control")
 		value = v_value
 	endif
@@ -230,7 +230,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 
 	if(ParamIsDefault(sendToAll))
 		if(headstage == selectedHeadstage)
-			sendToAll = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_SendToAllAmp")
+			sendToAll = DAG_GetNumericalValue(device, "Check_DataAcq_SendToAllAmp")
 		else
 			sendToAll = 0
 		endif
@@ -238,14 +238,14 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 		sendToAll = !!sendToAll
 	endif
 
-	WAVE AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
+	WAVE AmpStoragewave = GetAmplifierParamStorageWave(device)
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 	if(!sendToAll)
 		statusHS[] = (p == headStage ? 1 : 0)
 	endif
 
-	if(!CheckIfValueIsInsideLimits(panelTitle, ctrl, value))
+	if(!CheckIfValueIsInsideLimits(device, ctrl, value))
 		DEBUGPRINT("Ignoring value to set as it is out of range compared to the control limits")
 		return 1
 	endif
@@ -257,8 +257,8 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 	strswitch(ctrl)
 		case "button_DataAcq_AutoPipOffset_IC":
 		case "button_DataAcq_AutoPipOffset_VC":
-			if(!DeviceHasFollower(panelTitle))
-				runMode = TP_StopTestPulseFast(panelTitle)
+			if(!DeviceHasFollower(device))
+				runMode = TP_StopTestPulseFast(device)
 			endif
 		default:
 			// do nothing
@@ -271,7 +271,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 		endif
 
 		if(selectAmp)
-			if(AI_SelectMultiClamp(panelTitle, i) != AMPLIFIER_CONNECTION_SUCCESS)
+			if(AI_SelectMultiClamp(device, i) != AMPLIFIER_CONNECTION_SUCCESS)
 				continue
 			endif
 		endif
@@ -283,79 +283,79 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 			//V-clamp controls
 			case "setvar_DataAcq_Hold_VC":
 				AmpStorageWave[0][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
-				TP_UpdateHoldCmdInTPStorage(panelTitle, headstage)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				TP_UpdateHoldCmdInTPStorage(device, headstage)
 				break
 			case "check_DatAcq_HoldEnableVC":
 				AmpStorageWave[1][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
-				TP_UpdateHoldCmdInTPStorage(panelTitle, headstage)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				TP_UpdateHoldCmdInTPStorage(device, headstage)
 				break
 			case "setvar_DataAcq_WCC":
 				AmpStorageWave[2][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			case "setvar_DataAcq_WCR":
 				AmpStorageWave[3][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			case "button_DataAcq_WCAuto":
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOWHOLECELLCOMP_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
-				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPCAP_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_AUTOWHOLECELLCOMP_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				value = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPCAP_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%WholeCellCap][0][i] = value
-				AI_UpdateAmpView(panelTitle, i, ctrl =  "setvar_DataAcq_WCC")
-				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPRESIST_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_UpdateAmpView(device, i, ctrl =  "setvar_DataAcq_WCC")
+				value = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPRESIST_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%WholeCellRes][0][i] = value
-				AI_UpdateAmpView(panelTitle, i, ctrl =  "setvar_DataAcq_WCR")
-				value = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPENABLE_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_UpdateAmpView(device, i, ctrl =  "setvar_DataAcq_WCR")
+				value = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETWHOLECELLCOMPENABLE_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%WholeCellEnable][0][i] = value
-				AI_UpdateAmpView(panelTitle, i, ctrl =  "check_DatAcq_WholeCellEnable")
+				AI_UpdateAmpView(device, i, ctrl =  "check_DatAcq_WholeCellEnable")
 				break
 			case "check_DatAcq_WholeCellEnable":
 				AmpStorageWave[4][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			case "setvar_DataAcq_RsCorr":
 				diff = value - AmpStorageWave[%Correction][0][i]
 				// abort if the corresponding value with chaining would be outside the limits
-				if(AmpStorageWave[%RSCompChaining][0][i] && !CheckIfValueIsInsideLimits(panelTitle, "setvar_DataAcq_RsPred", AmpStorageWave[%Prediction][0][i] + diff))
-					AI_UpdateAmpView(panelTitle, i, ctrl = ctrl)
+				if(AmpStorageWave[%RSCompChaining][0][i] && !CheckIfValueIsInsideLimits(device, "setvar_DataAcq_RsPred", AmpStorageWave[%Prediction][0][i] + diff))
+					AI_UpdateAmpView(device, i, ctrl = ctrl)
 					return 1
 				endif
 				AmpStorageWave[%Correction][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				if(AmpStorageWave[%RSCompChaining][0][i])
 					AmpStorageWave[%Prediction][0][i] += diff
-					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, AmpStorageWave[%Prediction][0][i], checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
-					AI_UpdateAmpView(panelTitle, i, ctrl =  "setvar_DataAcq_RsPred")
+					AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, AmpStorageWave[%Prediction][0][i], checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+					AI_UpdateAmpView(device, i, ctrl =  "setvar_DataAcq_RsPred")
 				endif
 				break
 			case "setvar_DataAcq_RsPred":
 				diff = value - AmpStorageWave[%Prediction][0][i]
 				// abort if the corresponding value with chaining would be outside the limits
-				if(AmpStorageWave[%RSCompChaining][0][i] && !CheckIfValueIsInsideLimits(panelTitle, "setvar_DataAcq_RsCorr", AmpStorageWave[%Correction][0][i] + diff))
-					AI_UpdateAmpView(panelTitle, i, ctrl = ctrl)
+				if(AmpStorageWave[%RSCompChaining][0][i] && !CheckIfValueIsInsideLimits(device, "setvar_DataAcq_RsCorr", AmpStorageWave[%Correction][0][i] + diff))
+					AI_UpdateAmpView(device, i, ctrl = ctrl)
 					return 1
 				endif
 				AmpStorageWave[%Prediction][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				if(AmpStorageWave[%RSCompChaining][0][i])
 					AmpStorageWave[%Correction][0][i] += diff
-					AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, AmpStorageWave[%Correction][0][i], checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
-					AI_UpdateAmpView(panelTitle, i, ctrl =  "setvar_DataAcq_RsCorr")
+					AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, AmpStorageWave[%Correction][0][i], checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+					AI_UpdateAmpView(device, i, ctrl =  "setvar_DataAcq_RsCorr")
 				endif
 				break
 			case "check_DatAcq_RsCompEnable":
 				AmpStorageWave[7][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			case "setvar_DataAcq_PipetteOffset_VC":
 				AmpStorageWave[%PipetteOffsetVC][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			case "button_DataAcq_AutoPipOffset_IC":
 			case "button_DataAcq_AutoPipOffset_VC":
-				clampMode = DAG_GetHeadstageMode(panelTitle, i)
+				clampMode = DAG_GetHeadstageMode(device, i)
 
 				if(clampMode == V_CLAMP_MODE)
 					ctrlToCall         = "setvar_DataAcq_PipetteOffset_VC"
@@ -371,31 +371,31 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 					oppositeMode       = V_CLAMP_MODE
 				endif
 
-				value = AI_SendToAmp(panelTitle, i, clampMode, MCC_AUTOPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				value = AI_SendToAmp(device, i, clampMode, MCC_AUTOPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
-				AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCall)
+				AI_UpdateAmpView(device, i, ctrl=ctrlToCall)
 				// the pipette offset for the opposite mode has also changed, fetch that too
 				AssertOnAndClearRTError()
 				try
-					oldTab = GetTabID(panelTitle, "ADC")
+					oldTab = GetTabID(device, "ADC")
 					if(oldTab != 0)
-						PGC_SetAndActivateControl(panelTitle, "ADC", val=0)
+						PGC_SetAndActivateControl(device, "ADC", val=0)
 					endif
 
-					DAP_ChangeHeadStageMode(panelTitle, oppositeMode, i, MCC_SKIP_UPDATES)
+					DAP_ChangeHeadStageMode(device, oppositeMode, i, MCC_SKIP_UPDATES)
 					// selecting amplifier here, as the clamp mode is now different
-					value = AI_SendToAmp(panelTitle, i, oppositeMode, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 1)
+					value = AI_SendToAmp(device, i, oppositeMode, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 1)
 					AmpStorageWave[%$rowLabelOpposite][0][i] = value
-					AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCallOpposite)
-					DAP_ChangeHeadStageMode(panelTitle, clampMode, i, MCC_SKIP_UPDATES)
+					AI_UpdateAmpView(device, i, ctrl=ctrlToCallOpposite)
+					DAP_ChangeHeadStageMode(device, clampMode, i, MCC_SKIP_UPDATES)
 
 					if(oldTab != 0)
-						PGC_SetAndActivateControl(panelTitle, "ADC", val=oldTab)
+						PGC_SetAndActivateControl(device, "ADC", val=oldTab)
 					endif
 				catch
 					ClearRTError()
-					if(DAG_GetNumericalValue(panelTitle, "check_Settings_SyncMiesToMCC"))
-						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", panelTitle, ConvertAmplifierModeToString(oppositeMode), i
+					if(DAG_GetNumericalValue(device, "check_Settings_SyncMiesToMCC"))
+						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", device, ConvertAmplifierModeToString(oppositeMode), i
 					endif
 					// do nothing
 				endtry
@@ -403,42 +403,42 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				break
 			case "button_DataAcq_FastComp_VC":
 				AmpStorageWave[%FastCapacitanceComp][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOFASTCOMP_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_AUTOFASTCOMP_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			case "button_DataAcq_SlowComp_VC":
 				AmpStorageWave[%SlowCapacitanceComp][0][i] = value
-				AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_AUTOSLOWCOMP_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_AUTOSLOWCOMP_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			case "check_DataAcq_Amp_Chain":
 				AmpStorageWave[%RSCompChaining][0][i] = value
-				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_RsCorr", i, value=AmpStorageWave[5][0][i], selectAmp = 0)
+				AI_UpdateAmpModel(device, "setvar_DataAcq_RsCorr", i, value=AmpStorageWave[5][0][i], selectAmp = 0)
 				break
 			// I-Clamp controls
 			case "setvar_DataAcq_Hold_IC":
 				AmpStorageWave[16][0][i] = value
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
-				TP_UpdateHoldCmdInTPStorage(panelTitle, headstage)
+				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				TP_UpdateHoldCmdInTPStorage(device, headstage)
 				break
 			case "check_DatAcq_HoldEnable":
 				AmpStorageWave[17][0][i] = value
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
-				TP_UpdateHoldCmdInTPStorage(panelTitle, headstage)
+				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				TP_UpdateHoldCmdInTPStorage(device, headstage)
 				break
 			case "setvar_DataAcq_BB":
 				AmpStorageWave[18][0][i] = value
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETBRIDGEBALRESIST_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETBRIDGEBALRESIST_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			case "check_DatAcq_BBEnable":
 				AmpStorageWave[19][0][i] = value
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			case "setvar_DataAcq_CN":
 				AmpStorageWave[20][0][i] = value
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONCAP_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			case "check_DatAcq_CNEnable":
 				AmpStorageWave[21][0][i] = value
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			case "setvar_DataAcq_AutoBiasV":
 				AmpStorageWave[22][0][i] = value
@@ -453,13 +453,13 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				AmpStorageWave[25][0][i] = value
 				break
 			case "button_DataAcq_AutoBridgeBal_IC":
-				value = AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
-				AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_BB", i, value=value, selectAmp = 0)
-				AI_UpdateAmpModel(panelTitle, "check_DatAcq_BBEnable", i, value=1, selectAmp = 0)
+				value = AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_AUTOBRIDGEBALANCE_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_UpdateAmpModel(device, "setvar_DataAcq_BB", i, value=value, selectAmp = 0)
+				AI_UpdateAmpModel(device, "check_DatAcq_BBEnable", i, value=1, selectAmp = 0)
 				break
 			case "setvar_DataAcq_PipetteOffset_IC":
 				AmpStorageWave[%PipetteOffsetIC][0][i] = value
-				AI_SendToAmp(panelTitle, i, I_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
+				AI_SendToAmp(device, i, I_CLAMP_MODE, MCC_SETPIPETTEOFFSET_FUNC, value, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				break
 			default:
 				ASSERT(0, "Unknown control " + ctrl)
@@ -467,12 +467,12 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 		endswitch
 
 		if(!ParamIsDefault(value))
-			AI_UpdateAmpView(panelTitle, i, ctrl = ctrl)
+			AI_UpdateAmpView(device, i, ctrl = ctrl)
 		endif
 	endfor
 
-	if(!DeviceHasFollower(panelTitle))
-		TP_RestartTestPulse(panelTitle, runMode, fast = 1)
+	if(!DeviceHasFollower(device))
+		TP_RestartTestPulse(device, runMode, fast = 1)
 	endif
 
 	return 0
@@ -481,29 +481,29 @@ End
 /// @brief Convenience wrapper for #AI_UpdateAmpView
 ///
 /// Disallows setting single controls for outside callers as #AI_UpdateAmpModel should be used for that.
-Function AI_SyncAmpStorageToGUI(panelTitle, headstage)
-	string panelTitle
+Function AI_SyncAmpStorageToGUI(device, headstage)
+	string device
 	variable headstage
 
-	return AI_UpdateAmpView(panelTitle, headstage)
+	return AI_UpdateAmpView(device, headstage)
 End
 
 /// @brief Sync the settings from the GUI to the amp storage wave and the MCC application
-Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
-	string panelTitle
+Function AI_SyncGUIToAmpStorageAndMCCApp(device, headStage, clampMode)
+	string device
 	variable headStage, clampMode
 
 	string ctrl, list
 	variable i, numEntries
 
-	DAP_AbortIfUnlocked(panelTitle)
+	DAP_AbortIfUnlocked(device)
 	AI_AssertOnInvalidClampMode(clampMode)
 
-	if(DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
+	if(DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage") != headStage)
 		return NaN
 	endif
 
-	if(AI_EnsureCorrectMode(panelTitle, headStage, selectAmp = 1))
+	if(AI_EnsureCorrectMode(device, headStage, selectAmp = 1))
 		return NaN
 	endif
 
@@ -521,31 +521,31 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 			continue
 		endif
 
-		AI_UpdateAmpModel(panelTitle, ctrl, headStage, checkBeforeWrite=1, sendToAll = 0, selectAmp = 0)
+		AI_UpdateAmpModel(device, ctrl, headStage, checkBeforeWrite=1, sendToAll = 0, selectAmp = 0)
 	endfor
 End
 
 /// @brief Synchronizes the AmpStorageWave to the amplifier GUI control
 ///
-/// @param panelTitle  device
+/// @param device  device
 /// @param headStage   MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param ctrl        [optional, defaults to all controls] name of the control being updated
-static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
-	string panelTitle
+static Function AI_UpdateAmpView(device, headStage, [ctrl])
+	string device
 	variable headStage
 	string ctrl
 
 	string lbl, list
 	variable i, numEntries, value
 
-	DAP_AbortIfUnlocked(panelTitle)
+	DAP_AbortIfUnlocked(device)
 
 	// only update view if headstage is selected
-	if(DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
+	if(DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage") != headStage)
 		return NaN
 	endif
 
-	WAVE AmpStorageWave = GetAmplifierParamStorageWave(panelTitle)
+	WAVE AmpStorageWave = GetAmplifierParamStorageWave(device)
 
 	if(!ParamIsDefault(ctrl))
 		list = ctrl
@@ -565,11 +565,11 @@ static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
 		value = AmpStorageWave[%$lbl][0][headStage]
 
 		if(StringMatch(ctrl, "setvar_*"))
-			SetSetVariable(panelTitle, ctrl, value)
-			DAG_Update(panelTitle, ctrl, val = value)
+			SetSetVariable(device, ctrl, value)
+			DAG_Update(device, ctrl, val = value)
 		elseif(StringMatch(ctrl, "check_*"))
-			SetCheckBoxState(panelTitle, ctrl, value)
-			DAG_Update(panelTitle, ctrl, val = value)
+			SetCheckBoxState(device, ctrl, value)
+			DAG_Update(device, ctrl, val = value)
 		else
 			ASSERT(0, "Unhandled control")
 		endif
@@ -658,8 +658,8 @@ static Function/S AI_AmpStorageControlToRowLabel(ctrl)
 			break
 	endswitch
 End
-Function AI_SetMIESHeadstage(panelTitle, [headstage, increment])
-	string panelTitle
+Function AI_SetMIESHeadstage(device, [headstage, increment])
+	string device
 	variable headstage, increment
 
 	if(ParamIsDefault(headstage) && ParamIsDefault(increment))
@@ -667,35 +667,35 @@ Function AI_SetMIESHeadstage(panelTitle, [headstage, increment])
 	endif
 
 	if(!ParamIsDefault(increment))
-		headstage = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage") + increment
+		headstage = DAG_GetNumericalValue(device, "slider_DataAcq_ActiveHeadstage") + increment
 	endif
 
 	if(headstage >= 0 && headstage < NUM_HEADSTAGES)
-		PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val=headstage)
+		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val=headstage)
 	endif
 End
 
 /// @brief Executes MCC auto zero command if the baseline current exceeds #ZERO_TOLERANCE
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param headStage     [optional: defaults to all active headstages]
-Function AI_ZeroAmps(panelTitle, [headStage])
-	string panelTitle
+Function AI_ZeroAmps(device, [headStage])
+	string device
 	variable headstage
 
 	variable i
 	// Ensure that data in BaselineSSAvg is up to date by verifying that TP is active
-	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulse") || IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
+	if(IsDeviceActiveWithBGTask(device, "TestPulse") || IsDeviceActiveWithBGTask(device, "TestPulseMD"))
 
-		WAVE TPResults = GetTPResults(panelTitle)
+		WAVE TPResults = GetTPResults(device)
 		if(!ParamIsDefault(headstage))
 			if(abs(TPResults[%BaselineSteadyState][headstage]) >= ZERO_TOLERANCE)
-				AI_MIESAutoPipetteOffset(panelTitle, headStage)
+				AI_MIESAutoPipetteOffset(device, headStage)
 			endif
 		else
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 				if(abs(TPResults[%BaselineSteadyState][headstage]) >= ZERO_TOLERANCE)
-					AI_MIESAutoPipetteOffset(panelTitle, i)
+					AI_MIESAutoPipetteOffset(device, i)
 				endif
 			endfor
 		endif
@@ -705,37 +705,37 @@ End
 /// @brief Auto pipette zeroing
 /// Quicker than MCC auto pipette offset
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
-Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
-	string panelTitle
+Function AI_MIESAutoPipetteOffset(device, headStage)
+	string device
 	variable headStage
 
 	variable clampMode, column, vDelta, offset, value
 
-	WAVE TPResults = GetTPResults(panelTitle)
+	WAVE TPResults = GetTPResults(device)
 
-	clampMode = DAG_GetHeadstageMode(panelTitle, headStage)
+	clampMode = DAG_GetHeadstageMode(device, headStage)
 
 	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE, "Headstage must be in VC/IC mode to use this function")
 	ASSERT(column >= 0, "Invalid column number")
 	//calculate delta current to reach zero
 	vdelta = (TPResults[%BaselineSteadyState][headstage] * TPResults[%ResistanceSteadyState][headstage]) / 1000 // set to mV
 	// get current DC V offset
-	offset = AI_SendToAmp(panelTitle, headStage, clampMode, MCC_GETPIPETTEOFFSET_FUNC, nan)
+	offset = AI_SendToAmp(device, headStage, clampMode, MCC_GETPIPETTEOFFSET_FUNC, nan)
 	// add delta to current DC V offset
 	value = offset - vDelta
 	if(value > MIN_PIPETTEOFFSET && value < MAX_PIPETTEOFFSET)
-		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_VC", headStage, value = value, checkBeforeWrite = 1)
-		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_PipetteOffset_IC", headStage, value = value, checkBeforeWrite = 1)
+		AI_UpdateAmpModel(device, "setvar_DataAcq_PipetteOffset_VC", headStage, value = value, checkBeforeWrite = 1)
+		AI_UpdateAmpModel(device, "setvar_DataAcq_PipetteOffset_IC", headStage, value = value, checkBeforeWrite = 1)
 	endif
 End
 
 /// @brief Query the MCC application for the gains and units of the given clamp mode
 ///
 /// Assumes that the correct amplifier is already selected!
-Function AI_QueryGainsUnitsForClampMode(panelTitle, headstage, clampMode, DAGain, ADGain, DAUnit, ADUnit)
-	string panelTitle
+Function AI_QueryGainsUnitsForClampMode(device, headstage, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+	string device
 	variable headstage, clampMode
 	variable &DAGain, &ADGain
 	string &DAUnit, &ADUnit
@@ -747,7 +747,7 @@ Function AI_QueryGainsUnitsForClampMode(panelTitle, headstage, clampMode, DAGain
 
 	AI_AssertOnInvalidClampMode(clampMode)
 
-	AI_RetrieveGains(panelTitle, headstage, clampMode, ADGain, DAGain)
+	AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
 
 	if(clampMode == V_CLAMP_MODE)
 		DAUnit = "mV"
@@ -760,15 +760,15 @@ End
 
 /// @brief Update the `ChanAmpAssign` and `ChanAmpAssignUnit` waves according to the passed
 /// clamp mode with the gains and units.
-Function AI_UpdateChanAmpAssign(panelTitle, headStage, clampMode, DAGain, ADGain, DAUnit, ADUnit)
-	string panelTitle
+Function AI_UpdateChanAmpAssign(device, headStage, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+	string device
 	variable headStage, clampMode, DAGain, ADGain
 	string DAUnit, ADUnit
 
 	AI_AssertOnInvalidClampMode(clampMode)
 
-	WAVE ChanAmpAssign       = GetChanAmpAssign(panelTitle)
-	WAVE/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
+	WAVE ChanAmpAssign       = GetChanAmpAssign(device)
+	WAVE/T ChanAmpAssignUnit = GetChanAmpAssignUnit(device)
 
 	if(clampMode == V_CLAMP_MODE)
 		ChanAmpAssign[%VC_DAGain][headStage]     = DAGain
@@ -921,11 +921,11 @@ End
 #ifdef AMPLIFIER_XOPS_PRESENT
 
 ///@brief Returns the holding command of the amplifier
-Function AI_GetHoldingCommand(panelTitle, headstage)
-	string panelTitle
+Function AI_GetHoldingCommand(device, headstage)
+	string device
 	variable headstage
 
-	if(AI_SelectMultiClamp(panelTitle, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
 		return NaN
 	endif
 
@@ -939,11 +939,11 @@ End
 /// DAP_ChangeHeadStageMode() if possible.
 ///
 /// @brief One of @ref AmplifierClampModes or NaN if no amplifier is connected
-Function AI_GetMode(panelTitle, headstage)
-	string panelTitle
+Function AI_GetMode(device, headstage)
+	string device
 	variable headstage
 
-	if(AI_SelectMultiClamp(panelTitle, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
 		return NaN
 	endif
 
@@ -954,18 +954,18 @@ End
 ///
 /// Gain is returned in mV/V for #V_CLAMP_MODE and V/mV for #I_CLAMP_MODE/#I_EQUAL_ZERO_MODE
 ///
-/// @param      panelTitle device
+/// @param      device device
 /// @param      headstage  headstage [0, NUM_HEADSTAGES[
 /// @param[out] clampMode  clamp mode (expected)
 /// @param[out] ADGain     ADC gain
 /// @param[out] DAGain     DAC gain
-static Function AI_RetrieveGains(panelTitle, headstage, clampMode, ADGain, DAGain)
-	string panelTitle
+static Function AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
+	string device
 	variable headstage,clampMode
 	variable &ADGain, &DAGain
 
-	variable axonSerial = AI_GetAmpAxonSerial(panelTitle, headstage)
-	variable channel    = AI_GetAmpChannel(panelTitle, headStage)
+	variable axonSerial = AI_GetAmpAxonSerial(device, headstage)
+	variable channel    = AI_GetAmpChannel(device, headStage)
 
 	STRUCT AxonTelegraph_DataStruct tds
 	AI_InitAxonTelegraphStruct(tds)
@@ -1003,21 +1003,21 @@ End
 
 /// @brief Wrapper for MCC_SelectMultiClamp700B
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 ///
 /// @returns one of @ref AISelectMultiClampReturnValues
-Function AI_SelectMultiClamp(panelTitle, headStage)
-	string panelTitle
+Function AI_SelectMultiClamp(device, headStage)
+	string device
 	variable headStage
 
 	variable channel, axonSerial, err
 	string mccSerial
 
 	// checking axonSerial is done as a service to the caller
-	axonSerial = AI_GetAmpAxonSerial(panelTitle, headStage)
-	mccSerial  = AI_GetAmpMCCSerial(panelTitle, headStage)
-	channel    = AI_GetAmpChannel(panelTitle, headStage)
+	axonSerial = AI_GetAmpAxonSerial(device, headStage)
+	mccSerial  = AI_GetAmpMCCSerial(device, headStage)
+	channel    = AI_GetAmpChannel(device, headStage)
 
 	if(!AI_IsValidSerialAndChannel(mccSerial=mccSerial, axonSerial=axonSerial, channel=channel))
 		return AMPLIFIER_CONNECTION_INVAL_SER
@@ -1034,8 +1034,8 @@ Function AI_SelectMultiClamp(panelTitle, headStage)
 end
 
 /// @brief Set the clamp mode of user linked MCC based on the headstage number
-Function AI_SetClampMode(panelTitle, headStage, mode, [zeroStep])
-	string panelTitle
+Function AI_SetClampMode(device, headStage, mode, [zeroStep])
+	string device
 	variable headStage
 	variable mode, zeroStep
 
@@ -1047,7 +1047,7 @@ Function AI_SetClampMode(panelTitle, headStage, mode, [zeroStep])
 
 	AI_AssertOnInvalidClampMode(mode)
 
-	if(AI_SelectMultiClamp(panelTitle, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
+	if(AI_SelectMultiClamp(device, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
 		return NaN
 	endif
 
@@ -1065,7 +1065,7 @@ End
 
 /// @brief Generic interface to call MCC amplifier functions
 ///
-/// @param panelTitle       locked panel name to work on
+/// @param device       locked panel name to work on
 /// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param mode             one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func             Function to call, see @ref AI_SendToAmpConstants
@@ -1078,8 +1078,8 @@ End
 ///                         before use, some callers might save time in doing that once themselves.
 ///
 /// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
-Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrite, usePrefixes, selectAmp])
-	string panelTitle
+Function AI_SendToAmp(device, headStage, mode, func, value, [checkBeforeWrite, usePrefixes, selectAmp])
+	string device
 	variable headStage, mode, func, value
 	variable checkBeforeWrite, usePrefixes, selectAmp
 
@@ -1108,19 +1108,19 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		scale = 1
 	endif
 
-	headstageMode = DAG_GetHeadstageMode(panelTitle, headStage)
+	headstageMode = DAG_GetHeadstageMode(device, headStage)
 
 	if(headstageMode != mode)
 		return NaN
 	endif
 
 	if(selectAmp)
-		if(AI_SelectMultiClamp(panelTitle, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+		if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
 			return NaN
 		endif
 	endif
 
-	AI_EnsureCorrectMode(panelTitle, headStage, selectAmp = 0)
+	AI_EnsureCorrectMode(device, headStage, selectAmp = 0)
 
 	sprintf str, "headStage=%d, mode=%d, func=%d, value(passed)=%g, scale=%g\r", headStage, mode, func, value, scale
 	DEBUGPRINT(str)
@@ -1239,7 +1239,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			break
 		case MCC_AUTOBRIDGEBALANCE_FUNC:
 			MCC_AutoBridgeBal()
-			ret = AI_SendToAmp(panelTitle, headstage, mode, MCC_GETBRIDGEBALRESIST_FUNC, NaN, usePrefixes=usePrefixes, selectAmp = 0)
+			ret = AI_SendToAmp(device, headstage, mode, MCC_GETBRIDGEBALRESIST_FUNC, NaN, usePrefixes=usePrefixes, selectAmp = 0)
 			break
 		case MCC_SETNEUTRALIZATIONENABL_FUNC:
 			ret = MCC_SetNeutralizationEnable(value)
@@ -1309,7 +1309,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 			break
 		case MCC_AUTOPIPETTEOFFSET_FUNC:
 			MCC_AutoPipetteOffset()
-			ret = AI_SendToAmp(panelTitle, headStage, mode, MCC_GETPIPETTEOFFSET_FUNC, NaN, usePrefixes=usePrefixes, selectAmp = 0)
+			ret = AI_SendToAmp(device, headStage, mode, MCC_GETPIPETTEOFFSET_FUNC, NaN, usePrefixes=usePrefixes, selectAmp = 0)
 			break
 		case MCC_SETPIPETTEOFFSET_FUNC:
 			ret = MCC_SetPipetteOffset(value)
@@ -1388,14 +1388,14 @@ End
 /// @brief Set the clamp mode in the MCC app to the
 ///        same clamp mode as MIES has stored.
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param headstage  headstage
 /// @paran selectAmp  [optional, defaults to false] selects the amplifier
 ///                   before using, some callers might be able to skip it.
 ///
 /// @return 0 on success, 1 when the headstage does not have an amplifier connected or it could not be selected
-Function AI_EnsureCorrectMode(panelTitle, headStage, [selectAmp])
-	string panelTitle
+Function AI_EnsureCorrectMode(device, headStage, [selectAmp])
+	string device
 	variable headStage, selectAmp
 
 	variable serial, channel, storedMode, setMode, ampConnectionState
@@ -1406,15 +1406,15 @@ Function AI_EnsureCorrectMode(panelTitle, headStage, [selectAmp])
 		selectAmp = !!selectAmp
 	endif
 
-	serial  = AI_GetAmpAxonSerial(panelTitle, headStage)
-	channel = AI_GetAmpChannel(panelTitle, headStage)
+	serial  = AI_GetAmpAxonSerial(device, headStage)
+	channel = AI_GetAmpChannel(device, headStage)
 
 	if(!AI_IsValidSerialAndChannel(channel=channel, axonSerial=serial))
 		return 1
 	endif
 
 	if(selectAmp)
-		ampConnectionState = AI_SelectMultiClamp(panelTitle, headstage)
+		ampConnectionState = AI_SelectMultiClamp(device, headstage)
 		if(ampConnectionState != AMPLIFIER_CONNECTION_SUCCESS)
 			return 1
 		endif
@@ -1423,12 +1423,12 @@ Function AI_EnsureCorrectMode(panelTitle, headStage, [selectAmp])
 	STRUCT AxonTelegraph_DataStruct tds
 	AI_InitAxonTelegraphStruct(tds)
 	AxonTelegraphGetDataStruct(serial, channel, 1, tds)
-	storedMode = DAG_GetHeadstageMode(panelTitle, headStage)
+	storedMode = DAG_GetHeadstageMode(device, headStage)
 	setMode    = tds.operatingMode
 
 	if(setMode != storedMode)
 		print "There was a mismatch in clamp mode between MIES and the MCC. The MCC mode was switched to match the mode specified by MIES."
-		AI_SetClampMode(panelTitle, headStage, storedMode)
+		AI_SetClampMode(device, headStage, storedMode)
 	endif
 
 	return 0
@@ -1436,21 +1436,21 @@ End
 
 /// @brief Fill the amplifier settings wave by querying the MC700B and send the data to ED_AddEntriesToLabnotebook
 ///
-/// @param panelTitle 		 device
+/// @param device 		 device
 /// @param sweepNo           data wave sweep number
-Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
-	string panelTitle
+Function AI_FillAndSendAmpliferSettings(device, sweepNo)
+	string device
 	variable sweepNo
 
 	variable i, axonSerial, channel, ampConnState, clampMode
 	string mccSerial
 
-	WAVE statusHS              = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS              = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 	WAVE ampSettingsWave       = GetAmplifierSettingsWave()
 	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave()
 	WAVE/T ampSettingsTextWave = GetAmplifierSettingsTextWave()
 	WAVE/T ampSettingsTextKey  = GetAmplifierSettingsTextKeyWave()
-	WAVE ampParamStorage       = GetAmplifierParamStorageWave(panelTitle)
+	WAVE ampParamStorage       = GetAmplifierParamStorageWave(device)
 
 	ampSettingsWave = NaN
 
@@ -1460,21 +1460,21 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 			continue
 		endif
 
-		mccSerial  = AI_GetAmpMCCSerial(panelTitle, i)
-		axonSerial = AI_GetAmpAxonSerial(panelTitle, i)
-		channel    = AI_GetAmpChannel(panelTitle, i)
+		mccSerial  = AI_GetAmpMCCSerial(device, i)
+		axonSerial = AI_GetAmpAxonSerial(device, i)
+		channel    = AI_GetAmpChannel(device, i)
 
-		ampConnState = AI_SelectMultiClamp(panelTitle, i)
+		ampConnState = AI_SelectMultiClamp(device, i)
 
 		if(ampConnState != AMPLIFIER_CONNECTION_SUCCESS)
-			if(DAG_GetNumericalValue(panelTitle, "check_Settings_RequireAmpConn"))
+			if(DAG_GetNumericalValue(device, "check_Settings_RequireAmpConn"))
 				BUG("The amplifier could not be selected, but that should work, ampConnState = " + num2str(ampConnState))
 				BUG("Please report that as a bug with a description what you did. Thanks!")
 			endif
 			continue
 		endif
 
-		clampMode = DAG_GetHeadstageMode(panelTitle, i)
+		clampMode = DAG_GetHeadstageMode(device, i)
 		AI_AssertOnInvalidClampMode(clampMode)
 
 		STRUCT AxonTelegraph_DataStruct tds
@@ -1546,8 +1546,8 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * AI_GetMCCScale(NaN, MCC_GETPIPETTEOFFSET_FUNC)
 	endfor
 
-	ED_AddEntriesToLabnotebook(ampSettingsWave, ampSettingsKey, sweepNo, panelTitle, DATA_ACQUISITION_MODE)
-	ED_AddEntriesToLabnotebook(ampSettingsTextWave, ampSettingsTextKey, sweepNo, panelTitle, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(ampSettingsWave, ampSettingsKey, sweepNo, device, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(ampSettingsTextWave, ampSettingsTextKey, sweepNo, device, DATA_ACQUISITION_MODE)
 End
 
 /// @brief Auto fills the units and gains for all headstages connected to amplifiers
@@ -1556,8 +1556,8 @@ End
 /// The data is inserted into `ChanAmpAssign` and `ChanAmpAssignUnit`
 ///
 /// @return number of connected amplifiers
-Function AI_QueryGainsFromMCC(panelTitle)
-	string panelTitle
+Function AI_QueryGainsFromMCC(device)
+	string device
 
 	variable clampMode, old_ClampMode, i, numConnAmplifiers, clampModeSwitchAllowed
 	variable DAGain, ADGain
@@ -1565,7 +1565,7 @@ Function AI_QueryGainsFromMCC(panelTitle)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-		if(AI_SelectMultiClamp(panelTitle, i) != AMPLIFIER_CONNECTION_SUCCESS)
+		if(AI_SelectMultiClamp(device, i) != AMPLIFIER_CONNECTION_SUCCESS)
 			continue
 		endif
 
@@ -1574,8 +1574,8 @@ Function AI_QueryGainsFromMCC(panelTitle)
 		clampMode = MCC_GetMode()
 		AI_AssertOnInvalidClampMode(clampMode)
 
-		AI_QueryGainsUnitsForClampMode(panelTitle, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
-		AI_UpdateChanAmpAssign(panelTitle, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+		AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+		AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
 		clampModeSwitchAllowed = !MCC_GetHoldingEnable()
 
@@ -1593,10 +1593,10 @@ Function AI_QueryGainsFromMCC(panelTitle)
 
 			clampMode = MCC_GetMode()
 
-			AI_QueryGainsUnitsForClampMode(panelTitle, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
-			AI_UpdateChanAmpAssign(panelTitle, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+			AI_QueryGainsUnitsForClampMode(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
+			AI_UpdateChanAmpAssign(device, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
-			AI_SetClampMode(panelTitle, i, old_clampMode)
+			AI_SetClampMode(device, i, old_clampMode)
 		else
 			printf "It appears that a holding potential is being applied, therefore as a precaution, "
 			printf "the gains cannot be imported for the %s.\r", ConvertAmplifierModeToString(clampMode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE)
@@ -1637,22 +1637,22 @@ End
 
 #else // AMPLIFIER_XOPS_PRESENT
 
-Function AI_GetHoldingCommand(panelTitle, headstage)
-	string panelTitle
+Function AI_GetHoldingCommand(device, headstage)
+	string device
 	variable headstage
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_GetMode(panelTitle, headstage)
-	string panelTitle
+Function AI_GetMode(device, headstage)
+	string device
 	variable headstage
 
 	DEBUGPRINT("Unimplemented")
 End
 
-static Function AI_RetrieveGains(panelTitle, headstage, clampMode, ADGain, DAGain)
-	string panelTitle
+static Function AI_RetrieveGains(device, headstage, clampMode, ADGain, DAGain)
+	string device
 	variable headstage, clampMode
 	variable &ADGain, &DAGain
 
@@ -1667,45 +1667,45 @@ static Function AI_SwitchAxonAmpMode()
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_SelectMultiClamp(panelTitle, headStage)
-	string panelTitle
+Function AI_SelectMultiClamp(device, headStage)
+	string device
 	variable headStage
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_SetClampMode(panelTitle, headStage, mode, [zeroStep])
-	string panelTitle
+Function AI_SetClampMode(device, headStage, mode, [zeroStep])
+	string device
 	variable headStage
 	variable mode, zeroStep
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrite, usePrefixes, selectAmp])
-	string panelTitle
+Function AI_SendToAmp(device, headStage, mode, func, value, [checkBeforeWrite, usePrefixes, selectAmp])
+	string device
 	variable headStage, mode, func, value
 	variable checkBeforeWrite, usePrefixes, selectAmp
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_EnsureCorrectMode(panelTitle, headStage, [selectAmp])
-	string panelTitle
+Function AI_EnsureCorrectMode(device, headStage, [selectAmp])
+	string device
 	variable headStage, selectAmp
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
-	string panelTitle
+Function AI_FillAndSendAmpliferSettings(device, sweepNo)
+	string device
 	variable sweepNo
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_QueryGainsFromMCC(panelTitle)
-	string panelTitle
+Function AI_QueryGainsFromMCC(device)
+	string device
 
 	DEBUGPRINT("Unimplemented")
 End

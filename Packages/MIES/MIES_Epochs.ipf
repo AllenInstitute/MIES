@@ -41,17 +41,17 @@ static StrConstant EPOCH_SN_PULSETRAINBASETRAIL = "BT"
 static StrConstant EPOCH_SN_UNACQUIRED = "UA"
 
 /// @brief Clear the list of epochs
-Function EP_ClearEpochs(string panelTitle)
+Function EP_ClearEpochs(string device)
 
-	WAVE/T epochWave = GetEpochsWave(panelTitle)
+	WAVE/T epochWave = GetEpochsWave(device)
 	epochWave = ""
 End
 
 /// @brief Fill the epoch wave with epochs before DAQ/TP
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param s          struct holding all input
-Function EP_CollectEpochInfo(string panelTitle, STRUCT DataConfigurationResult &s)
+Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 	variable i, channel, headstage, singleSetLength, epochOffset, epochBegin, epochEnd
 	variable stimsetCol, startOffset, stopCollectionPoint
 	string tags
@@ -60,9 +60,9 @@ Function EP_CollectEpochInfo(string panelTitle, STRUCT DataConfigurationResult &
 		return NaN
 	endif
 
-	WAVE config = GetDAQConfigWave(panelTitle)
+	WAVE config = GetDAQConfigWave(device)
 
-	stopCollectionPoint = ROVar(GetStopCollectionPoint(panelTitle))
+	stopCollectionPoint = ROVar(GetStopCollectionPoint(device))
 
 	for(i = 0; i < s.numDACEntries; i += 1)
 
@@ -83,7 +83,7 @@ Function EP_CollectEpochInfo(string panelTitle, STRUCT DataConfigurationResult &
 			epochEnd = epochBegin + s.onsetDelayUser * s.samplingInterval
 
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, tags, EPOCH_SN_BL_ONSETDELAYUSER, 0)
+			EP_AddEpoch(device, channel, epochBegin, epochEnd, tags, EPOCH_SN_BL_ONSETDELAYUSER, 0)
 		endif
 
 		if(s.distributedDAQ)
@@ -91,7 +91,7 @@ Function EP_CollectEpochInfo(string panelTitle, STRUCT DataConfigurationResult &
 			epochEnd = startOffset * s.samplingInterval
 			if(epochBegin != epochEnd)
 				tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-				EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, tags, EPOCH_SN_BL_DDAQ, 0)
+				EP_AddEpoch(device, channel, epochBegin, epochEnd, tags, EPOCH_SN_BL_DDAQ, 0)
 			endif
 		endif
 
@@ -99,7 +99,7 @@ Function EP_CollectEpochInfo(string panelTitle, STRUCT DataConfigurationResult &
 			epochBegin = (startOffset + singleSetLength) * s.samplingInterval
 
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(panelTitle, channel, epochBegin, epochBegin + s.terminationDelay * s.samplingInterval, tags, EPOCH_SN_BL_TERMINATIONDELAY, 0)
+			EP_AddEpoch(device, channel, epochBegin, epochBegin + s.terminationDelay * s.samplingInterval, tags, EPOCH_SN_BL_TERMINATIONDELAY, 0)
 		endif
 
 		epochBegin = startOffset * s.samplingInterval
@@ -108,40 +108,40 @@ Function EP_CollectEpochInfo(string panelTitle, STRUCT DataConfigurationResult &
 
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
-			EP_AddEpoch(panelTitle, channel, epochBegin, epochBegin + epochOffset, tags, EPOCH_SN_BL_DDAQOPT, 0)
-			EP_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin + epochOffset, singleSetLength * s.samplingInterval - epochOffset, stimsetCol, s.DACAmp[i][%DASCALE])
+			EP_AddEpoch(device, channel, epochBegin, epochBegin + epochOffset, tags, EPOCH_SN_BL_DDAQOPT, 0)
+			EP_AddEpochsFromStimSetNote(device, channel, singleStimSet, epochBegin + epochOffset, singleSetLength * s.samplingInterval - epochOffset, stimsetCol, s.DACAmp[i][%DASCALE])
 		else
-			EP_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin, singleSetLength * s.samplingInterval, stimsetCol, s.DACAmp[i][%DASCALE])
+			EP_AddEpochsFromStimSetNote(device, channel, singleStimSet, epochBegin, singleSetLength * s.samplingInterval, stimsetCol, s.DACAmp[i][%DASCALE])
 		endif
 
 		if(s.distributedDAQOptOv)
-			EP_AddEpochsFromOodDAQRegions(panelTitle, channel, s.regions[i], epochBegin)
+			EP_AddEpochsFromOodDAQRegions(device, channel, s.regions[i], epochBegin)
 		endif
 
 		// if dDAQ is on then channels 0 to numEntries - 1 have a trailing base line
 		epochBegin = startOffset + singleSetLength + s.terminationDelay
 		if(stopCollectionPoint > epochBegin)
 			tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-			EP_AddEpoch(panelTitle, channel, epochBegin * s.samplingInterval, stopCollectionPoint * s.samplingInterval, tags, EPOCH_SN_BL_DDAQTRAIL, 0)
+			EP_AddEpoch(device, channel, epochBegin * s.samplingInterval, stopCollectionPoint * s.samplingInterval, tags, EPOCH_SN_BL_DDAQTRAIL, 0)
 		endif
 
 		if(s.globalTPInsert)
 			// space in ITCDataWave for the testpulse is allocated via an automatic increase
 			// of the onset delay
-			EP_AddEpochsFromTP(panelTitle, channel, s.baselinefrac, s.testPulseLength * s.samplingInterval, 0, s.DACAmp[i][%TPAMP])
+			EP_AddEpochsFromTP(device, channel, s.baselinefrac, s.testPulseLength * s.samplingInterval, 0, s.DACAmp[i][%TPAMP])
 		endif
 	endfor
 End
 
 /// @brief Adds four epochs for a test pulse and three sub epochs for test pulse components
-/// @param[in] panelTitle      title of device panel
+/// @param[in] device      title of device panel
 /// @param[in] channel         number of DA channel
 /// @param[in] baselinefrac    base line fraction of testpulse
 /// @param[in] testPulseLength test pulse length in micro seconds
 /// @param[in] offset          start time of test pulse in micro seconds
 /// @param[in] amplitude       amplitude of the TP in the DA wave without gain
-static Function EP_AddEpochsFromTP(panelTitle, channel, baselinefrac, testPulseLength, offset, amplitude)
-	string panelTitle
+static Function EP_AddEpochsFromTP(device, channel, baselinefrac, testPulseLength, offset, amplitude)
+	string device
 	variable channel
 	variable baselinefrac, testPulseLength
 	variable offset
@@ -156,34 +156,34 @@ static Function EP_AddEpochsFromTP(panelTitle, channel, baselinefrac, testPulseL
 	// main TP range
 	epochBegin = offset
 	epochEnd = epochBegin + testPulseLength
-	EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epochTags, EPOCH_SN_TP, 0)
+	EP_AddEpoch(device, channel, epochBegin, epochEnd, epochTags, EPOCH_SN_TP, 0)
 
 	// TP sub ranges
 	epochBegin = baselineFrac * testPulseLength + offset
 	epochEnd = (1 - baselineFrac) * testPulseLength + offset
 	epochSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epochTags, EPOCH_PULSE_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 	epochSubTags = ReplaceNumberByKey(EPOCH_AMPLITUDE_KEY, epochSubTags, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_PULSE, 1)
+	EP_AddEpoch(device, channel, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_PULSE, 1)
 
 	// pre pulse BL
 	epochBegin = offset
 	epochEnd = epochBegin + baselineFrac * testPulseLength
 	epochSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epochTags, EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLFRONT, 1)
+	EP_AddEpoch(device, channel, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLFRONT, 1)
 
 	// post pulse BL
 	epochBegin = (1 - baselineFrac) * testPulseLength + offset
 	epochEnd = testPulseLength + offset
-	EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLBACK, 1)
+	EP_AddEpoch(device, channel, epochBegin, epochEnd, epochSubTags, EPOCH_SN_TP_BLBACK, 1)
 End
 
 /// @brief Adds epochs for oodDAQ regions
-/// @param[in] panelTitle    title of device panel
+/// @param[in] device    title of device panel
 /// @param[in] channel       number of DA channel
 /// @param[in] oodDAQRegions string containing list of oodDAQ regions as %d-%d;...
 /// @param[in] stimsetBegin offset time in micro seconds where stim set begins
-static Function EP_AddEpochsFromOodDAQRegions(panelTitle, channel, oodDAQRegions, stimsetBegin)
-	string panelTitle
+static Function EP_AddEpochsFromOodDAQRegions(device, channel, oodDAQRegions, stimsetBegin)
+	string device
 	variable channel
 	string oodDAQRegions
 	variable stimsetBegin
@@ -197,7 +197,7 @@ static Function EP_AddEpochsFromOodDAQRegions(panelTitle, channel, oodDAQRegions
 		Make/FREE/N=(numRegions) epochIndexer
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "oodDAQ", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
-		epochIndexer[] = EP_AddEpoch(panelTitle, channel, str2num(StringFromList(0, regions[p], "-")) * 1E3 + stimsetBegin,                        \
+		epochIndexer[] = EP_AddEpoch(device, channel, str2num(StringFromList(0, regions[p], "-")) * 1E3 + stimsetBegin,                        \
 		                                                  str2num(StringFromList(1, regions[p], "-")) * 1E3 + stimsetBegin,                        \
 		                                                  ReplaceNumberByKey(EPOCH_OODDAQ_REGION_KEY, tags, p, STIMSETKEYNAME_SEP, EPOCHNAME_SEP), \
 		                                                  EPOCH_SN_OODAQ + num2str(p),                                                             \
@@ -207,15 +207,15 @@ End
 
 /// @brief Adds epochs for a stimset and sub epochs for stimset components
 /// currently adds also sub sub epochs for pulse train components
-/// @param[in] panelTitle   title of device panel
+/// @param[in] device   title of device panel
 /// @param[in] channel      number of DA channel
 /// @param[in] stimset      stimset wave
 /// @param[in] stimsetBegin offset time in micro seconds where stim set begins
 /// @param[in] setLength    length of stimset in micro seconds
 /// @param[in] sweep        number of sweep
 /// @param[in] scale        scale factor between the stimsets internal amplitude to the DA wave without gain
-static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimsetBegin, setLength, sweep, scale)
-	string panelTitle
+static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBegin, setLength, sweep, scale)
+	string device
 	variable channel
 	WAVE stimset
 	variable stimsetBegin, setLength, sweep, scale
@@ -236,7 +236,7 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 
 	stimsetEnd = stimsetBegin + setLength
 	epSweepTags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Stimset", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-	EP_AddEpoch(panelTitle, channel, stimsetBegin, stimsetEnd, epSweepTags, EPOCH_SN_STIMSET, 0)
+	EP_AddEpoch(device, channel, stimsetBegin, stimsetEnd, epSweepTags, EPOCH_SN_STIMSET, 0)
 
 	epochCount = WB_GetWaveNoteEntryAsNumber(stimNote, STIMSET_ENTRY, key="Epoch Count")
 	ASSERT(IsFinite(epochCount), "Could not find Epoch Count in stimset wave note.")
@@ -303,7 +303,7 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 		endif
 
 		shortNameEp = EPOCH_SN_EPOCH + num2istr(epochNr)
-		EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, epSubTags, shortNameEp, 1, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+		EP_AddEpoch(device, channel, epochBegin, epochEnd, epSubTags, shortNameEp, 1, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 
 		// Add Sub Sub Epochs
 		if(epochType == EPOCH_TYPE_PULSE_TRAIN)
@@ -354,11 +354,11 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 						   && subEpochBegin > epochBegin && subEpochBegin > stimsetBegin)
 
 							tags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epSubTags, EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-							EP_AddEpoch(panelTitle, channel, epochBegin, subEpochBegin, tags, shortNameEpTypePTPulseBT, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+							EP_AddEpoch(device, channel, epochBegin, subEpochBegin, tags, shortNameEpTypePTPulseBT, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 						endif
 
 						epSubSubTags = ReplaceNumberByKey(EPOCH_PULSE_KEY, epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-						EP_AddEpoch(panelTitle, channel, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTypePTPulse, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+						EP_AddEpoch(device, channel, subEpochBegin, subEpochEnd, epSubSubTags, shortNameEpTypePTPulse, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 
 						// active
 						subsubEpochBegin = subEpochBegin
@@ -380,7 +380,7 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 
 							epSubSubTags = ReplaceNumberByKey(EPOCH_PULSE_KEY, epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 							epSubSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epSubSubTags, "Pulse", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-							EP_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseP, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+							EP_AddEpoch(device, channel, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseP, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 
 							// baseline
 							subsubEpochBegin = subsubEpochEnd
@@ -393,14 +393,14 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 							else
 								epSubSubTags = ReplaceNumberByKey(EPOCH_PULSE_KEY, epSubTags, pulseNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 								epSubSubTags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, epSubSubTags, EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-								EP_AddEpoch(panelTitle, channel, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseB, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+								EP_AddEpoch(device, channel, subsubEpochBegin, subsubEpochEnd, epSubSubTags, shortNameEpTypePTPulseB, 3, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 							endif
 						endif
 					endif
 				endfor
 			else
 				tags = ReplaceStringByKey(EPOCH_SUBTYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-				EP_AddEpoch(panelTitle, channel, epochBegin, epochEnd, tags, shortNameEpTypePTBaseline, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
+				EP_AddEpoch(device, channel, epochBegin, epochEnd, tags, shortNameEpTypePTBaseline, 2, lowerlimit = stimsetBegin, upperlimit = stimsetEnd)
 			endif
 		else
 			// Epoch details on other types not implemented yet
@@ -413,7 +413,7 @@ static Function EP_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 	// therefore we must add a baseline epoch after all defined epochs
 	if(stimsetEnd > stimsetEndLogical)
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", EPOCH_BASELINE_REGION_KEY, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		EP_AddEpoch(panelTitle, channel, stimsetEndLogical, stimsetEnd, tags, EPOCH_SN_STIMSET + "_" + EPOCH_SN_STIMSETBLTRAIL, 1)
+		EP_AddEpoch(device, channel, stimsetEndLogical, stimsetEnd, tags, EPOCH_SN_STIMSET + "_" + EPOCH_SN_STIMSETBLTRAIL, 1)
 	endif
 End
 
@@ -426,15 +426,15 @@ End
 /// - Descending ending time
 /// - Ascending tree level
 ///
-/// @param[in] panelTitle title of device panel
-static Function EP_SortEpochs(panelTitle)
-	string panelTitle
+/// @param[in] device title of device panel
+static Function EP_SortEpochs(device)
+	string device
 
 	variable channel, channelCnt, epochCnt
-	WAVE/T epochWave = GetEpochsWave(panelTitle)
+	WAVE/T epochWave = GetEpochsWave(device)
 	channelCnt = DimSize(epochWave, LAYERS)
 	for(channel = 0; channel < channelCnt; channel += 1)
-		epochCnt = EP_GetEpochCount(panelTitle, channel)
+		epochCnt = EP_GetEpochCount(device, channel)
 		if(epochCnt == 0)
 			continue
 		endif
@@ -462,14 +462,14 @@ static Function EP_SortEpochs(panelTitle)
 End
 
 /// @brief Returns the number of epoch in the epochsWave for the given channel
-/// @param[in] panelTitle title of device panel
+/// @param[in] device title of device panel
 /// @param[in] channel    number of DA channel
 /// @return number of epochs for channel
-static Function EP_GetEpochCount(panelTitle, channel)
-	string panelTitle
+static Function EP_GetEpochCount(device, channel)
+	string device
 	variable channel
 
-	WAVE/T epochWave = GetEpochsWave(panelTitle)
+	WAVE/T epochWave = GetEpochsWave(device)
 	FindValue/Z/RMD=[][][channel]/TXOP=4/TEXT="" epochWave
 	return V_row == -1 ? DimSize(epochWave, ROWS) : V_row
 End
@@ -479,7 +479,7 @@ End
 /// Allows to add user epochs for not yet finished sweeps. The tree level
 /// is fixed to #EPOCH_USER_LEVEL to not collide with stock entries.
 ///
-/// @param panelTitle    device
+/// @param device    device
 /// @param channelType   channel type, currently only #XOP_CHANNEL_TYPE_DAC is supported
 /// @param channelNumber channel number
 /// @param epBegin       start time of the epoch in seconds
@@ -487,22 +487,22 @@ End
 /// @param tags          tags for the epoch
 /// @param shortName     [optional, defaults to auto-generated] user defined short name for the epoch, will
 ///                      be prefixed with #EPOCH_SHORTNAME_USER_PREFIX
-Function EP_AddUserEpoch(string panelTitle, variable channelType, variable channelNumber, variable epBegin, variable epEnd, string tags, [string shortName])
+Function EP_AddUserEpoch(string device, variable channelType, variable channelNumber, variable epBegin, variable epEnd, string tags, [string shortName])
 
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC, "Currently only epochs for the DA channels are supported")
 
 	if(ParamIsDefault(shortName))
-		sprintf shortName, "%s%d", EPOCH_SHORTNAME_USER_PREFIX,  EP_GetEpochCount(panelTitle, channelNumber)
+		sprintf shortName, "%s%d", EPOCH_SHORTNAME_USER_PREFIX,  EP_GetEpochCount(device, channelNumber)
 	else
 		ASSERT(!GrepString(shortName, "^" + EPOCH_SHORTNAME_USER_PREFIX), "short name must not be prefixed with " + EPOCH_SHORTNAME_USER_PREFIX)
 		shortName = EPOCH_SHORTNAME_USER_PREFIX + shortName
 	endif
 
-	return EP_AddEpoch(panelTitle, channelNumber, epBegin * 1e6, epEnd * 1e6, tags, shortName, EPOCH_USER_LEVEL)
+	return EP_AddEpoch(device, channelNumber, epBegin * 1e6, epEnd * 1e6, tags, shortName, EPOCH_USER_LEVEL)
 End
 
 /// @brief Adds a epoch to the epochsWave
-/// @param[in] panelTitle  title of device panel
+/// @param[in] device  title of device panel
 /// @param[in] channel     number of DA channel
 /// @param[in] epBegin     start time of the epoch in micro seconds
 /// @param[in] epEnd       end time of the epoch in micro seconds
@@ -511,15 +511,15 @@ End
 /// @param[in] level       level of epoch
 /// @param[in] lowerlimit  [optional, default = -Inf] epBegin is limited between lowerlimit and Inf, epEnd must be > this limit
 /// @param[in] upperlimit  [optional, default = Inf] epEnd is limited between -Inf and upperlimit, epBegin must be < this limit
-static Function EP_AddEpoch(panelTitle, channel, epBegin, epEnd, epTags, epShortName, level[, lowerlimit, upperlimit])
-	string panelTitle
+static Function EP_AddEpoch(device, channel, epBegin, epEnd, epTags, epShortName, level[, lowerlimit, upperlimit])
+	string device
 	variable channel
 	variable epBegin, epEnd
 	string epTags, epShortName
 	variable level
 	variable lowerlimit, upperlimit
 
-	WAVE/T epochWave = GetEpochsWave(panelTitle)
+	WAVE/T epochWave = GetEpochsWave(device)
 	variable i, j, numEpochs, pos
 	string entry, startTimeStr, endTimeStr
 
@@ -538,7 +538,7 @@ static Function EP_AddEpoch(panelTitle, channel, epBegin, epEnd, epTags, epShort
 	epBegin = limit(epBegin, lowerlimit, Inf)
 	epEnd = limit(epEnd, -Inf, upperlimit)
 
-	i = EP_GetEpochCount(panelTitle, channel)
+	i = EP_GetEpochCount(device, channel)
 	EnsureLargeEnoughWave(epochWave, minimumSize = i + 1, dimension = ROWS)
 
 	startTimeStr = num2strHighPrec(epBegin / 1E6, precision = EPOCHTIME_PRECISION)
@@ -559,10 +559,10 @@ End
 
 /// @brief Write the epoch info into the sweep settings wave
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param sweepWave  sweep wave
 /// @param configWave config wave
-Function EP_WriteEpochInfoIntoSweepSettings(string panelTitle, WAVE sweepWave, WAVE configWave)
+Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE configWave)
 	variable i, numDACEntries, channel, headstage, acquiredTime
 	string entry
 
@@ -573,25 +573,25 @@ Function EP_WriteEpochInfoIntoSweepSettings(string panelTitle, WAVE sweepWave, W
 		ASSERT(V_row >= 0, "Unexpected result")
 
 		acquiredTime = IndexToScale(sweepWave, max(V_row - 1, 0), ROWS) / 1e3
-		EP_AdaptEpochInfo(panelTitle, configWave, acquiredTime)
+		EP_AdaptEpochInfo(device, configWave, acquiredTime)
 	endif
 
-	EP_SortEpochs(panelTitle)
+	EP_SortEpochs(device)
 
 	WAVE DACList = GetDACListFromConfig(configWave)
 	numDACEntries = DimSize(DACList, ROWS)
 
-	WAVE/T epochsWave = GetEpochsWave(panelTitle)
+	WAVE/T epochsWave = GetEpochsWave(device)
 
 	for(i = 0; i < numDACEntries; i += 1)
 		channel = DACList[i]
-		headstage = AFH_GetHeadstageFromDAC(panelTitle, channel)
+		headstage = AFH_GetHeadstageFromDAC(device, channel)
 
 		entry = EP_EpochWaveToStr(epochsWave, channel)
-		DC_DocumentChannelProperty(panelTitle, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=entry)
+		DC_DocumentChannelProperty(device, EPOCHS_ENTRY_KEY, headstage, channel, XOP_CHANNEL_TYPE_DAC, str=entry)
 	endfor
 
-	DC_DocumentChannelProperty(panelTitle, "Epochs Version", INDEP_HEADSTAGE, NaN, NaN, var=SWEEP_EPOCH_VERSION)
+	DC_DocumentChannelProperty(device, "Epochs Version", INDEP_HEADSTAGE, NaN, NaN, var=SWEEP_EPOCH_VERSION)
 End
 
 /// @brief Convert the epochs wave layer given by `channel` to a string suitable for storing the labnotebook
@@ -630,15 +630,15 @@ End
 /// - Blanks out which are then too small or lie outside the acquired region
 /// - Add an unacquired epoch
 ///
-/// @param panelTitle    device
+/// @param device    device
 /// @param configWave    DAQ config wave
 /// @param acquiredTime  Last acquired time point [s]
-static Function EP_AdaptEpochInfo(string panelTitle, WAVE configWave, variable acquiredTime)
+static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acquiredTime)
 	variable i, channel, epoch, numEntries, endTime, startTime, epochCnt
 	variable lastEnd = -inf
 	string tags
 
-	WAVE/T epochWave = GetEpochsWave(panelTitle)
+	WAVE/T epochWave = GetEpochsWave(device)
 
 	numEntries = DimSize(configWave, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -654,7 +654,7 @@ static Function EP_AdaptEpochInfo(string panelTitle, WAVE configWave, variable a
 
 		channel = configWave[i][%ChannelNumber]
 
-		epochCnt = EP_GetEpochCount(panelTitle, channel)
+		epochCnt = EP_GetEpochCount(device, channel)
 		ASSERT(epochCnt > 0, "Unexpected epoch count of zero")
 
 		for(epoch = 0; epoch < epochCnt; epoch += 1)
@@ -680,7 +680,7 @@ static Function EP_AdaptEpochInfo(string panelTitle, WAVE configWave, variable a
 
 		// Add unacquired epoch
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		EP_AddEpoch(panelTitle, channel, acquiredTime * 1e6 , lastEnd * 1e6, tags , EPOCH_SN_UNACQUIRED, 0)
+		EP_AddEpoch(device, channel, acquiredTime * 1e6 , lastEnd * 1e6, tags , EPOCH_SN_UNACQUIRED, 0)
 	endfor
 End
 

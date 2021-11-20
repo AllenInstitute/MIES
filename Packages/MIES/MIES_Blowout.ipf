@@ -18,7 +18,7 @@ static Constant FIFTEEN_SECONDS = 900 // ticks in fifteen seconds
 /// @brief Initiates blowout protocol on single locked device
 Function BWO_SelectDevice()
 
-	string panelTitle
+	string device
 	string lockedDeviceList = GetListOfLockedDevices()
 	variable noOfLockedDevices = ItemsInList(lockedDeviceList)
 	NVAR interactiveMode = $GetInteractiveMode()
@@ -41,24 +41,24 @@ Function BWO_SelectDevice()
 End
 
 /// @brief Executes blowout protocol
-Function BWO_Go(panelTitle)
-	string panelTitle
+Function BWO_Go(device)
+	string device
 
-	If(!BWO_CheckGlobalSettings(panelTitle))
+	If(!BWO_CheckGlobalSettings(device))
 		return NaN
 	endif
 
 	//configure MIES for blowout
-	BWO_SetMIESSettings(panelTitle)
-	BWO_AllMCCCtrlsOFF(panelTitle)
+	BWO_SetMIESSettings(device)
+	BWO_AllMCCCtrlsOFF(device)
 	// start the TP
-	BWO_ConfigureTP(panelTitle)
+	BWO_ConfigureTP(device)
 	// try clearing all pipettes at once
-	BWO_InitParaPipetteClear(panelTitle)
+	BWO_InitParaPipetteClear(device)
 	// check if pipettes are clear, if not try to clear clogged pipettes individually
-	BWO_CheckAndClearPipettes(panelTitle)
+	BWO_CheckAndClearPipettes(device)
 	// acquire blowout sweep
-	BWO_AcquireSweep(panelTitle)
+	BWO_AcquireSweep(device)
 
 	SaveExperiment
 End
@@ -66,17 +66,17 @@ End
 /// @brief Checks that MIES is correctly configured for automated blowout protocol
 ///
 /// @returns one if settings are valid, zero otherwise
-static Function BWO_CheckGlobalSettings(panelTitle)
-	string panelTitle
+static Function BWO_CheckGlobalSettings(device)
+	string device
 
 	string stimSetList
 	variable PressureModeStorageCol, Connected, i
-	WAVE pressure = P_GetPressureDataWaveRef(panelTitle)
+	WAVE pressure = P_GetPressureDataWaveRef(device)
 
 	// check that data acquisition is not running
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 	if(dataAcqRunMode != DAQ_NOT_RUNNING)
-		printf "Please terminate ongoing data acquisition on %s \r" panelTitle
+		printf "Please terminate ongoing data acquisition on %s \r" device
 		return 0
 	endif
 	// check that blowout protocol exists
@@ -86,7 +86,7 @@ static Function BWO_CheckGlobalSettings(panelTitle)
 		return 0
 	endif
 	// check that background TP is on
-	if(!DAG_GetNumericalValue(panelTitle, "Check_Settings_BkgTP"))
+	if(!DAG_GetNumericalValue(device, "Check_Settings_BkgTP"))
 		print "Background TP must be enabled"
 		return 0
 	endif
@@ -100,7 +100,7 @@ static Function BWO_CheckGlobalSettings(panelTitle)
 	endif
 
 	for(i=0; i < NUM_HEADSTAGES; i += 1)
-		connected = min(connected, AI_SelectMultiClamp(panelTitle, i))
+		connected = min(connected, AI_SelectMultiClamp(device, i))
 	endfor
 
 	if(connected != AMPLIFIER_CONNECTION_SUCCESS)
@@ -112,63 +112,63 @@ static Function BWO_CheckGlobalSettings(panelTitle)
 End
 
 /// @brief Initates test pulse
-static Function BWO_ConfigureTP(panelTitle)
-	string panelTitle
+static Function BWO_ConfigureTP(device)
+	string device
 
-	if(!TP_CheckIfTestpulseIsRunning(panelTitle))
-		PGC_SetAndActivateControl(panelTitle,"StartTestPulseButton", switchTab = 1)
+	if(!TP_CheckIfTestpulseIsRunning(device))
+		PGC_SetAndActivateControl(device,"StartTestPulseButton", switchTab = 1)
 	endif
 
-	DoUpdate/W=$SCOPE_GetPanel(panelTitle)
+	DoUpdate/W=$SCOPE_GetPanel(device)
 End
 
 /// @brief Configures data acquisition settings for blowout
-static Function BWO_SetMIESSettings(panelTitle)
-	string panelTitle
+static Function BWO_SetMIESSettings(device)
+	string device
 
 	// turn on insert TP
-	PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
+	PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
 	// select blowout stim set
-	PGC_SetAndActivateControl(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "MIES_Blowout*", switchTab = 1)
-	PGC_SetAndActivateControl(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "MIES_Blowout*", switchTab = 1)
+	PGC_SetAndActivateControl(device, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "MIES_Blowout*", switchTab = 1)
+	PGC_SetAndActivateControl(device, GetPanelControl(CHANNEL_INDEX_ALL, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "MIES_Blowout*", switchTab = 1)
 	// set repeatsets to 1
-	PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_SetRepeats", val = 1)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = 1)
 	// set delays
-	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_OnsetDelayUser", val = 0)
-	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_TerminationDelay", val = 0)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = 0)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_TerminationDelay", val = 0)
 	// turn off dDAQ modes
-	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = CHECKBOX_UNSELECTED)
 End
 
 /// @brief Applies a pressure pulse to all headstages with valid pressure settings
-static Function BWO_InitParaPipetteClear(panelTitle)
-	string panelTitle
+static Function BWO_InitParaPipetteClear(device)
+	string device
 
 	variable 	startTime
 	STRUCT BackgroundStruct s
 	s.wmbs.name = "TestPulseMD"
 
-	PGC_SetAndActivateControl(panelTitle, "check_DataAcq_ManPressureAll", val = CHECKBOX_SELECTED, switchTab = 1)
-	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_SSPressure", val = BWO_INIT_PRESSURE) // set the initial manual pressure
-	PGC_SetAndActivateControl(panelTitle, "button_DataAcq_SSSetPressureMan")// turn on manual pressure
+	PGC_SetAndActivateControl(device, "check_DataAcq_ManPressureAll", val = CHECKBOX_SELECTED, switchTab = 1)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = BWO_INIT_PRESSURE) // set the initial manual pressure
+	PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan")// turn on manual pressure
 	startTime = ticks
 	Do
 		TPM_BkrdTPFuncMD(s)
-		DoUpdate/W=$SCOPE_GetPanel(panelTitle)
+		DoUpdate/W=$SCOPE_GetPanel(device)
 	While(ticks - startTime < 90 ) // wait for 1.5 seconds but update oscilloscope
-	PGC_SetAndActivateControl(panelTitle, "button_DataAcq_SSSetPressureMan") // turn OFF manual pressure
-	PGC_SetAndActivateControl(panelTitle, "check_DataAcq_ManPressureAll", val = CHECKBOX_UNSELECTED) // turn off apply pressure mode to all HS
+	PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan") // turn OFF manual pressure
+	PGC_SetAndActivateControl(device, "check_DataAcq_ManPressureAll", val = CHECKBOX_UNSELECTED) // turn off apply pressure mode to all HS
 End
 
 /// @brief Attempts to clear pipettes that have a resistance larger than MAX_RESISTANCE
-static Function BWO_CheckAndClearPipettes(panelTitle)
-	string panelTitle
+static Function BWO_CheckAndClearPipettes(device)
+	string device
 
 	variable i, j, col, initPressure, startTime, pressurePulseStartTime, pressurePulseTime
 
-	wave TPResults = GetTPResults(panelTitle)
-	WAVE pressure = P_GetPressureDataWaveRef(panelTitle)
+	wave TPResults = GetTPResults(device)
+	WAVE pressure = P_GetPressureDataWaveRef(device)
 
 	STRUCT BackgroundStruct s
 	s.wmbs.name = "TestPulseMD"
@@ -178,24 +178,24 @@ static Function BWO_CheckAndClearPipettes(panelTitle)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 
-		if(!P_ValidatePressureSetHeadstage(panelTitle, i) || TPResults[%ResistanceSteadyState][i] < BWO_MAX_RESISTANCE)
+		if(!P_ValidatePressureSetHeadstage(device, i) || TPResults[%ResistanceSteadyState][i] < BWO_MAX_RESISTANCE)
 			continue
 		endif
 
-		PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = i)
-		PGC_SetAndActivateControl(panelTitle, "button_DataAcq_SSSetPressureMan") // turn on manual pressure
+		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = i)
+		PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan") // turn on manual pressure
 
 		TPM_BkrdTPFuncMD(s)
-		DoUpdate/W=$SCOPE_GetPanel(panelTitle)
+		DoUpdate/W=$SCOPE_GetPanel(device)
 		startTime = ticks
-		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_SSPressure", val = PressureTracking[i])
+		PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = PressureTracking[i])
 		pressurePulseStartTime = ticks
 		PressureTracking[i] += BWO_PRESSURE_INCREMENT
 
 		do
 			pressurePulseTime = ticks - pressurePulseStartTime
 			if(pressurePulseTime >= TWO_SECONDS)
-				PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_SSPressure", val = PressureTracking[i])
+				PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = PressureTracking[i])
 				if(PressureTracking[i] <= MAX_REGULATOR_PRESSURE) // only increase pressure if less than or equal to max pressure
 					PressureTracking[i] += 1
 				endif
@@ -203,11 +203,11 @@ static Function BWO_CheckAndClearPipettes(panelTitle)
 				pressurePulseStartTime = ticks
 			endif
 			TPM_BkrdTPFuncMD(s)
-			DoUpdate/W=$SCOPE_GetPanel(panelTitle)
+			DoUpdate/W=$SCOPE_GetPanel(device)
 		while(TPResults[%ResistanceSteadyState][i] > BWO_MAX_RESISTANCE && ticks - startTime < FIFTEEN_SECONDS) // continue if the pipette is not clear AND the timeout hasn't been exceeded
 
-		PGC_SetAndActivateControl(panelTitle, "button_DataAcq_SSSetPressureMan") // turn off manual pressure
-		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_SSPressure", val = 0)
+		PGC_SetAndActivateControl(device, "button_DataAcq_SSSetPressureMan") // turn off manual pressure
+		PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = 0)
 
 		if(TPResults[%ResistanceSteadyState][i] > BWO_MAX_RESISTANCE)
 			printf "Unable to clear pipette on headstage %d with %g psi\r" i, PressureTracking[i]
@@ -216,32 +216,32 @@ static Function BWO_CheckAndClearPipettes(panelTitle)
 End
 
 /// @brief Turns OFF all relevant MCC amplifier controls in I- and V-clamp modes
-static Function BWO_AllMCCCtrlsOFF(panelTitle)
-	string panelTitle
+static Function BWO_AllMCCCtrlsOFF(device)
+	string device
 
-	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_SELECTED)
-	BWO_SetClampModeAll(panelTitle, I_CLAMP_MODE)
-	DoUpdate/W=$panelTitle
-	BWO_DisableMCCIClampCtrls(panelTitle)
-	BWO_SetClampModeAll(panelTitle, V_CLAMP_MODE)
-	BWO_DisableMCCVClampCtrls(panelTitle)
-	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_SELECTED)
+	BWO_SetClampModeAll(device, I_CLAMP_MODE)
+	DoUpdate/W=$device
+	BWO_DisableMCCIClampCtrls(device)
+	BWO_SetClampModeAll(device, V_CLAMP_MODE)
+	BWO_DisableMCCVClampCtrls(device)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
 End
 
 /// @brief Wrapper function for setting the clamp mode on all headstages (T̶h̶o̶m̶a̶s̶ ̶p̶r̶o̶b̶a̶b̶l̶y̶ ̶w̶o̶n̶'̶t̶ ̶l̶i̶k̶e̶ ̶i̶t̶  He liked it!! :/ ).
-static Function BWO_SetClampModeAll(panelTitle, mode)
-	string panelTitle
+static Function BWO_SetClampModeAll(device, mode)
+	string device
 	variable mode
 
 	switch(mode)
 		case V_CLAMP_MODE:
-			PGC_SetAndActivateControl(panelTitle, "Radio_ClampMode_AllVClamp", val = CHECKBOX_SELECTED)
+			PGC_SetAndActivateControl(device, "Radio_ClampMode_AllVClamp", val = CHECKBOX_SELECTED)
 			break
 		case I_CLAMP_MODE:
-			PGC_SetAndActivateControl(panelTitle, "Radio_ClampMode_AllIClamp", val = CHECKBOX_SELECTED)
+			PGC_SetAndActivateControl(device, "Radio_ClampMode_AllIClamp", val = CHECKBOX_SELECTED)
 			break
 		case I_EQUAL_ZERO_MODE:
-			PGC_SetAndActivateControl(panelTitle, "Radio_ClampMode_AllIZero", val = CHECKBOX_SELECTED)
+			PGC_SetAndActivateControl(device, "Radio_ClampMode_AllIZero", val = CHECKBOX_SELECTED)
 			break
 		default:
 			ASSERT(0, "unhandled case")
@@ -249,28 +249,28 @@ static Function BWO_SetClampModeAll(panelTitle, mode)
 End
 
 /// @brief Turns OFF I-clamp controls
-static Function BWO_DisableMCCIClampCtrls(panelTitle)
-	string panelTitle
+static Function BWO_DisableMCCIClampCtrls(device)
+	string device
 
-	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_HoldEnable", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_BBEnable", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_CNEnable", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnable", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "check_DatAcq_BBEnable", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "check_DatAcq_CNEnable", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = CHECKBOX_UNSELECTED)
 End
 
 /// @brief Turns OFF V-clamp controls
-static Function BWO_DisableMCCVClampCtrls(panelTitle)
-	string panelTitle
+static Function BWO_DisableMCCVClampCtrls(device)
+	string device
 
-	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_WholeCellEnable", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_RsCompEnable", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "check_DatAcq_WholeCellEnable", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(device, "check_DatAcq_RsCompEnable", val = CHECKBOX_UNSELECTED)
 End
 
 /// @brief Acquires blowout sweep
-static Function BWO_AcquireSweep(panelTitle)
-	string panelTitle
+static Function BWO_AcquireSweep(device)
+	string device
 
-	PGC_SetAndActivateControl(panelTitle, "Radio_ClampMode_AllIClamp", val = CHECKBOX_SELECTED)
-	PGC_SetAndActivateControl(panelTitle, "DataAcquireButton")
+	PGC_SetAndActivateControl(device, "Radio_ClampMode_AllIClamp", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End

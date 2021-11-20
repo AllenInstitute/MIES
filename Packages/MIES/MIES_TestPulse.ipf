@@ -44,28 +44,28 @@ End
 
 /// @brief Stores the given TP wave
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param TPWave     reference to wave holding the TP data, see GetOscilloscopeWave()
 /// @param tpMarker   unique number for this set of TPs from all TP channels
 /// @param hsList     list of headstage numbers in the same order as the columns of TPWave
 ///
 /// The stored test pulse waves will have column dimension labels in the format `HS_X`.
-Function TP_StoreTP(panelTitle, TPWave, tpMarker, hsList)
-	string panelTitle
+Function TP_StoreTP(device, TPWave, tpMarker, hsList)
+	string device
 	WAVE TPWave
 	variable tpMarker
 	string hsList
 
 	variable index
 
-	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 	EnsureLargeEnoughWave(storedTP, minimumSize=index)
 	Note/K TPWave
 
 	SetStringInWaveNote(TPWave, "TimeStamp", GetISO8601TimeStamp(numFracSecondsDigits = 3))
 	SetNumberInWaveNote(TPWave, "TPMarker", tpMarker, format="%d")
-	SetNumberInWaveNote(TPWave, "TPCycleID", ROVAR(GetTestpulseCycleID(panelTitle)), format="%d")
+	SetNumberInWaveNote(TPWave, "TPCycleID", ROVAR(GetTestpulseCycleID(device)), format="%d")
 	SetStringInWaveNote(TPWave, "Headstages", hsList)
 
 	// setting dimension labels only works if the dimension size is not zero
@@ -85,11 +85,11 @@ End
 /// identified by tpMarker.
 ///
 /// The wave reference wave will have as many columns as active headstages were used.
-Function/WAVE TP_GetStoredTPs(string panelTitle, variable tpMarker, variable number)
+Function/WAVE TP_GetStoredTPs(string device, variable tpMarker, variable number)
 
 	variable numEntries
 
-	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
 	numEntries = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 
 	if(numEntries == 0)
@@ -128,13 +128,13 @@ End
 
 /// @brief Split the stored testpulse wave reference wave into single waves
 ///        for easier handling
-Function TP_SplitStoredTestPulseWave(panelTitle)
-	string panelTitle
+Function TP_SplitStoredTestPulseWave(device)
+	string device
 
 	variable numEntries, i
 
-	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
+	DFREF dfr = GetDeviceTestPulse(device)
 
 	numEntries = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 	for(i = 0; i < numEntries; i += 1)
@@ -177,11 +177,11 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 	WAVE/SDFR=dfr inData=outData
 	NVAR/SDFR=dfr now=now
 	NVAR/SDFR=dfr hsIndex=hsIndex
-	SVAR/SDFR=dfr panelTitle=panelTitle
+	SVAR/SDFR=dfr device=device
 	NVAR/SDFR=dfr marker=marker
 	NVAR/SDFR=dfr activeADCs=activeADCs
 
-	WAVE asyncBuffer = GetTPResultAsyncBuffer(panelTitle)
+	WAVE asyncBuffer = GetTPResultAsyncBuffer(device)
 
 	bufSize = DimSize(asyncBuffer, ROWS)
 	posMarker = FindDimLabel(asyncBuffer, LAYERS, "MARKER")
@@ -214,8 +214,8 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 	// got one set of results ready
 	if(asyncBuffer[i][posAsync][%REC_CHANNELS] == activeADCs)
 
-		WAVE TPResults  = GetTPResults(panelTitle)
-		WAVE TPSettings = GetTPSettings(panelTitle)
+		WAVE TPResults  = GetTPResults(device)
+		WAVE TPSettings = GetTPSettings(device)
 
 		MultiThread TPResults[%BaselineSteadyState][]   = asyncBuffer[i][posBaseline][q]
 		MultiThread TPResults[%ResistanceSteadyState][] = asyncBuffer[i][posSSRes][q]
@@ -230,7 +230,7 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 		endif
 
 		if(TPSettings[%bufferSize][INDEP_HEADSTAGE] > 1)
-			WAVE TPResultsBuffer = GetTPResultsBuffer(panelTitle)
+			WAVE TPResultsBuffer = GetTPResultsBuffer(device)
 			TP_CalculateAverage(TPResultsBuffer, TPResults)
 		endif
 
@@ -241,13 +241,13 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 
 		MultiThread TPResults[%AutoTPDeltaV][] = TPResults[%ElevatedSteadyState][q] - TPResults[%BaselineSteadyState][q]
 
-		TP_AutoAmplitudeAndBaseline(panelTitle, TPResults, marker)
-		DQ_ApplyAutoBias(panelTitle, TPResults)
-		TP_RecordTP(panelTitle, TPResults, now, marker)
+		TP_AutoAmplitudeAndBaseline(device, TPResults, marker)
+		DQ_ApplyAutoBias(device, TPResults)
+		TP_RecordTP(device, TPResults, now, marker)
 	endif
 End
 
-static Function/WAVE TP_CreateOverrideResults(string panelTitle, variable type)
+static Function/WAVE TP_CreateOverrideResults(string device, variable type)
 	variable numRows, numCols, numLayers
 	string labels
 
@@ -286,9 +286,9 @@ End
 ///
 /// Columns:
 /// - Active headstages
-static Function/WAVE TP_GetTPWaveForAutoTP(string paneltitle, variable marker)
+static Function/WAVE TP_GetTPWaveForAutoTP(string device, variable marker)
 
-	WAVE/WAVE/Z TPs = TP_GetStoredTPs(panelTitle, marker, 2)
+	WAVE/WAVE/Z TPs = TP_GetStoredTPs(device, marker, 2)
 
 	if(!WaveExists(TPs))
 		return $""
@@ -299,14 +299,14 @@ static Function/WAVE TP_GetTPWaveForAutoTP(string paneltitle, variable marker)
 	return allData
 End
 
-static Function TP_AutoBaseline(string panelTitle, variable headstage, WAVE TPResults, WAVE TPs)
+static Function TP_AutoBaseline(string device, variable headstage, WAVE TPResults, WAVE TPs)
 	variable idx, pulseLengthMS, tau, baseline, fac, baselineFracCand, needsUpdate
 	variable rangeExceeded, result
 	string msg
 
-	WAVE TPSettings = GetTPSettings(panelTitle)
+	WAVE TPSettings = GetTPSettings(device)
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	Make/D/FREE/N=(NUM_HEADSTAGES) baselineFrac = NaN
 
@@ -376,7 +376,7 @@ static Function TP_AutoBaseline(string panelTitle, variable headstage, WAVE TPRe
 
 		TPSettings[%baselinePerc][INDEP_HEADSTAGE] = RoundNumber(WaveMax(baselineFracClean) * 100, TP_SET_PRECISION)
 
-		DAP_TPSettingsToGUI(panelTitle, entry = "baselinePerc")
+		DAP_TPSettingsToGUI(device, entry = "baselinePerc")
 	endif
 End
 
@@ -506,12 +506,12 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 	return [TP_BASELINE_FIT_RESULT_OK, coefWave[2], baseline]
 End
 
-static Function TP_AutoAmplitudeAndBaseline(string panelTitle, WAVE TPResults, variable marker)
+static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, variable marker)
 	variable i, maximumCurrent, targetVoltage, targetVoltageTol, resistance, voltage, current
 	variable needsUpdate, lastInvocation, curTime, scalar, skipAutoBaseline
 	string msg
 
-	NVAR daqRunMode = $GetDataAcqRunMode(panelTitle)
+	NVAR daqRunMode = $GetDataAcqRunMode(device)
 
 	if(daqRunMode != DAQ_NOT_RUNNING)
 		// don't do anything for TP during DAQ
@@ -519,15 +519,15 @@ static Function TP_AutoAmplitudeAndBaseline(string panelTitle, WAVE TPResults, v
 		return NaN
 	endif
 
-	WAVE TPSettings = GetTPSettings(panelTitle)
+	WAVE TPSettings = GetTPSettings(device)
 
-	WAVE/Z TPs = TP_GetTPWaveForAutoTP(panelTitle, marker)
+	WAVE/Z TPs = TP_GetTPWaveForAutoTP(device, marker)
 
 	if(!WaveExists(TPs))
 		return NaN
 	endif
 
-	Wave TPStorage = GetTPStorage(panelTitle)
+	Wave TPStorage = GetTPStorage(device)
 	lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOTP_LAST_INVOCATION_KEY)
 	curTime = ticks * TICKS_TO_SECONDS
 
@@ -537,7 +537,7 @@ static Function TP_AutoAmplitudeAndBaseline(string panelTitle, WAVE TPResults, v
 
 	SetNumberInWaveNote(TPStorage, AUTOTP_LAST_INVOCATION_KEY, curTime, format="%.06f")
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -545,7 +545,7 @@ static Function TP_AutoAmplitudeAndBaseline(string panelTitle, WAVE TPResults, v
 			continue
 		endif
 
-		if(DAG_GetHeadstageMode(panelTitle, i) != I_CLAMP_MODE)
+		if(DAG_GetHeadstageMode(device, i) != I_CLAMP_MODE)
 			continue
 		endif
 
@@ -594,7 +594,7 @@ static Function TP_AutoAmplitudeAndBaseline(string panelTitle, WAVE TPResults, v
 		if(skipAutoBaseline)
 			TPResults[%AutoTPAmplitude][i] = 0
 		else
-			TP_AutoBaseline(panelTitle, i, TPResults, TPs)
+			TP_AutoBaseline(device, i, TPResults, TPs)
 
 			ASSERT(IsFinite(TPResults[%AutoTPBaseline][i]), "Unexpected AutoTPBaseline result")
 
@@ -642,14 +642,14 @@ static Function TP_AutoAmplitudeAndBaseline(string panelTitle, WAVE TPResults, v
 	endfor
 
 	if(needsUpdate)
-		DAP_TPSettingsToGUI(panelTitle, entry = "amplitudeIC")
+		DAP_TPSettingsToGUI(device, entry = "amplitudeIC")
 	endif
 End
 
-Function TP_AutoTPActive(string panelTitle)
-	WAVE settings = GetTPSettings(panelTitle)
+Function TP_AutoTPActive(string device)
+	WAVE settings = GetTPSettings(device)
 
-	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 	Duplicate/FREE/RMD=[FindDimLabel(settings, ROWS, "autoTPEnable")][0, NUM_HEADSTAGES - 1] settings, autoTPEnable
 	Redimension/N=(numpnts(autoTPEnable))/E=1 autoTPEnable
@@ -659,26 +659,26 @@ Function TP_AutoTPActive(string panelTitle)
 	return Sum(autoTPEnable) > 0
 End
 
-static Function TP_AutoTPTurnOff(string panelTitle, WAVE autoTPEnable, variable headstage, variable QC)
+static Function TP_AutoTPTurnOff(string device, WAVE autoTPEnable, variable headstage, variable QC)
 	autoTPEnable[headstage] = 0
 
 	QC = !!QC
 
-	TP_PublishAutoTPResult(panelTitle, headstage, QC)
+	TP_PublishAutoTPResult(device, headstage, QC)
 
-	TP_AutoTPGenerateNewCycleID(panelTitle, headstage = headstage)
+	TP_AutoTPGenerateNewCycleID(device, headstage = headstage)
 
-	WAVE TPSettingsLBN = GetTPSettingsLabnotebook(panelTitle)
+	WAVE TPSettingsLBN = GetTPSettingsLabnotebook(device)
 	TPSettingsLBN[0][%$"TP Auto QC"][headstage] = QC
 End
 
 /// @brief Disable Auto TP if it passed `TP_AUTO_TP_CONSECUTIVE_PASSES` times in a row.
-static Function TP_AutoDisableIfFinished(string panelTitle, WAVE TPStorage)
+static Function TP_AutoDisableIfFinished(string device, WAVE TPStorage)
 	variable i, needsUpdate, TPState
 
-	WAVE TPSettings = GetTPSettings(panelTitle)
+	WAVE TPSettings = GetTPSettings(device)
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) autoTPEnable = TPSettings[%autoTPEnable][p]
 
@@ -691,7 +691,7 @@ static Function TP_AutoDisableIfFinished(string panelTitle, WAVE TPStorage)
 			continue
 		endif
 
-		if(DAG_GetHeadstageMode(panelTitle, i) != I_CLAMP_MODE)
+		if(DAG_GetHeadstageMode(device, i) != I_CLAMP_MODE)
 			continue
 		endif
 
@@ -702,7 +702,7 @@ static Function TP_AutoDisableIfFinished(string panelTitle, WAVE TPStorage)
 		if((WaveExists(amplitudePasses) && Sum(amplitudePasses) == TP_AUTO_TP_CONSECUTIVE_PASSES)  \
 		   && (WaveExists(baselinePasses) && Sum(baselinePasses) == TP_AUTO_TP_CONSECUTIVE_PASSES))
 
-			TP_AutoTPTurnOff(panelTitle, autoTPEnable, i, 1)
+			TP_AutoTPTurnOff(device, autoTPEnable, i, 1)
 
 			needsUpdate = 1
 			continue
@@ -713,7 +713,7 @@ static Function TP_AutoDisableIfFinished(string panelTitle, WAVE TPStorage)
 			printf "Auto TP baseline adaptation failed %d times in a row for headstage %d to calculate a value in range, turning it off.\r", TP_AUTO_TP_BASELINE_RANGE_EXCEEDED_FAILS, i
 			ControlWindowToFront()
 
-			TP_AutoTPTurnOff(panelTitle, autoTPEnable, i, 0)
+			TP_AutoTPTurnOff(device, autoTPEnable, i, 0)
 
 			needsUpdate = 1
 			continue
@@ -722,33 +722,33 @@ static Function TP_AutoDisableIfFinished(string panelTitle, WAVE TPStorage)
 
 	if(needsUpdate)
 		// implicitly transfers TPSettings to TPSettingsLBN and write entries to labnotebook
-		TPState = TP_StopTestPulse(panelTitle)
+		TPState = TP_StopTestPulse(device)
 
 		// only now can we apply the new auto TP enabled state
 		TPSettings[%autoTPEnable][] = autoTPEnable[q]
 
-		DAP_TPSettingsToGUI(panelTitle, entry = "autoTPEnable")
+		DAP_TPSettingsToGUI(device, entry = "autoTPEnable")
 
-		TP_RestartTestPulse(panelTitle, TPState)
+		TP_RestartTestPulse(device, TPState)
 	endif
 
 	if(needsUpdate)
-		DAP_TPSettingsToGUI(panelTitle, entry = "autoTPEnable")
+		DAP_TPSettingsToGUI(device, entry = "autoTPEnable")
 	endif
 End
 
-static Function TP_PublishAutoTPResult(string panelTitle, variable headstage, variable result)
+static Function TP_PublishAutoTPResult(string device, variable headstage, variable result)
 
 	variable jsonID, err
 	string payload, path
 
-	WAVE TPSettings = GetTPSettings(panelTitle)
-	WAVE TPStorage = GetTPStorage(panelTitle)
+	WAVE TPSettings = GetTPSettings(device)
+	WAVE TPStorage = GetTPStorage(device)
 
 	WAVE/Z autoTPDeltaV = TP_GetValuesFromTPStorage(TPStorage, headstage, "AutoTPDeltaV", 1)
 	ASSERT(WaveExists(autoTPDeltaV), "Missing auto TP delta V")
 
-	jsonID = FFI_GetJSONTemplate(panelTitle, headstage)
+	jsonID = FFI_GetJSONTemplate(device, headstage)
 	JSON_AddTreeObject(jsonID, "results")
 	JSON_AddBoolean(jsonID, "results/QC", result)
 
@@ -796,11 +796,11 @@ End
 ///
 /// This is required everytime we lock a device or toggle Auto TP for a headstage
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param headstage  [optional, default to all headstages] only update it for a specific headstage
 /// @param first      [optional, default to all headstages] only update the range [first, last]
 /// @param last       [optional, default to all headstages] only update the range [first, last]
-Function TP_AutoTPGenerateNewCycleID(string panelTitle, [variable headstage, variable first, variable last])
+Function TP_AutoTPGenerateNewCycleID(string device, [variable headstage, variable first, variable last])
 
 	if(!ParamIsDefault(headstage))
 		first = headstage
@@ -812,10 +812,10 @@ Function TP_AutoTPGenerateNewCycleID(string panelTitle, [variable headstage, var
 		last  = NUM_HEADSTAGES
 	endif
 
-	WAVE TPSettings = GetTPSettings(panelTitle)
+	WAVE TPSettings = GetTPSettings(device)
 
 	// we don't look at HS activeness here, this is done in TP_RecordTP()
-	TPSettings[%autoTPCycleID][first, last] = GetNextRandomNumberForDevice(panelTitle)
+	TPSettings[%autoTPCycleID][first, last] = GetNextRandomNumberForDevice(device)
 End
 
 /// @brief Return the last `numReqEntries` non-NaN values from layer `entry` of `headstage`
@@ -915,7 +915,7 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	NVAR/SDFR=dfrInp lengthTPInPoints = param5
 	NVAR/SDFR=dfrInp now = param6
 	NVAR/SDFR=dfrInp hsIndex = param7
-	SVAR/SDFR=dfrInp panelTitle = param8
+	SVAR/SDFR=dfrInp device = param8
 	NVAR/SDFR=dfrInp marker = param9
 	NVAR/SDFR=dfrInp activeADCs = param10
 
@@ -1007,7 +1007,7 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	// additional data copy
 	variable/G dfrOut:now = now
 	variable/G dfrOut:hsIndex = hsIndex
-	string/G dfrOut:panelTitle = panelTitle
+	string/G dfrOut:device = device
 	variable/G dfrOut:marker = marker
 	variable/G dfrOut:activeADCs = activeADCs
 
@@ -1041,14 +1041,14 @@ End
 /// @brief Records values from TPResults into TPStorage at defined intervals.
 ///
 /// Used for analysis of TP over time.
-static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
-	string panelTitle
+static Function TP_RecordTP(device, TPResults, now, tpMarker)
+	string device
 	WAVE TPResults
 	variable now, tpMarker
 
 	variable delta, i, ret, lastPressureCtrl, timestamp, cycleID
-	WAVE TPStorage = GetTPStorage(panelTitle)
-	WAVE hsProp = GetHSProperties(panelTitle)
+	WAVE TPStorage = GetTPStorage(device)
+	WAVE hsProp = GetHSProperties(device)
 	variable count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	variable lastRescaling = GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC)
 
@@ -1056,7 +1056,7 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 		// time of the first sweep
 		TPStorage[0][][%TimeInSeconds] = now
 
-		WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 		for(i = 0 ; i < NUM_HEADSTAGES; i += 1)
 
@@ -1064,7 +1064,7 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 				continue
 			endif
 
-			TP_UpdateHoldCmdInTPStorage(panelTitle, i)
+			TP_UpdateHoldCmdInTPStorage(device, i)
 		endfor
 	endif
 
@@ -1074,8 +1074,8 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 		printf "The amount of free memory is too low to increase TPStorage, please create a new experiment.\r"
 		ControlWindowToFront()
 		LOG_AddEntry(PACKAGE_MIES, "out of memory")
-		DQ_StopDAQ(panelTitle, DQ_STOP_REASON_OUT_OF_MEMORY, startTPAfterDAQ = 0)
-		TP_StopTestPulse(panelTitle)
+		DQ_StopDAQ(device, DQ_STOP_REASON_OUT_OF_MEMORY, startTPAfterDAQ = 0)
+		TP_StopTestPulse(device)
 		return NaN
 	endif
 
@@ -1115,7 +1115,7 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 	TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 	TPStorage[count][][%TPMarker] = tpMarker
 
-	cycleID = ROVAR(GetTestpulseCycleID(panelTitle))
+	cycleID = ROVAR(GetTestpulseCycleID(device))
 	TPStorage[count][][%TPCycleID] = cycleID
 
 	TPStorage[count][][%AutoTPAmplitude]             = TPResults[%AutoTPAmplitude][q]
@@ -1124,16 +1124,16 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 	TPStorage[count][][%AutoTPBaselineFitResult]     = TPResults[%AutoTPBaselineFitResult][q]
 	TPStorage[count][][%AutoTPDeltaV]                = TPResults[%AutoTPDeltaV][q]
 
-	WAVE TPSettings = GetTPSettings(panelTitle)
+	WAVE TPSettings = GetTPSettings(device)
 	TPStorage[count][][%AutoTPCycleID] = hsProp[q][%Enabled] ? TPSettings[%autoTPCycleID][q] : NaN
 
 	lastPressureCtrl = GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC)
 	if((now - lastPressureCtrl) > TP_PRESSURE_INTERVAL)
-		P_PressureControl(panelTitle)
+		P_PressureControl(device)
 		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, now, format="%.06f")
 	endif
 
-	TP_AnalyzeTP(panelTitle, TPStorage, count)
+	TP_AnalyzeTP(device, TPStorage, count)
 
 	WAVE TPStorageDat = ExtractLogbookSliceTimeStamp(TPStorage)
 	EnsureLargeEnoughWave(TPStorageDat, minimumSize=count, dimension=ROWS, initialValue=NaN)
@@ -1141,7 +1141,7 @@ static Function TP_RecordTP(panelTitle, TPResults, now, tpMarker)
 
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
 
-	TP_AutoDisableIfFinished(panelTitle, TPStorage)
+	TP_AutoDisableIfFinished(device, TPStorage)
 End
 
 /// @brief Threadsafe wrapper for performing CurveFits on the TPStorage wave
@@ -1176,11 +1176,11 @@ End
 /// @brief Determine the slope of the steady state resistance
 /// over a user defined window (in seconds)
 ///
-/// @param panelTitle       locked device string
+/// @param device       locked device string
 /// @param TPStorage        test pulse storage wave
 /// @param endRow           last valid row index in TPStorage
-static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
-	string panelTitle
+static Function TP_AnalyzeTP(device, TPStorage, endRow)
+	string device
 	Wave/Z TPStorage
 	variable endRow
 
@@ -1198,7 +1198,7 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 
 		headstage = TPStorage[endRow][i][%Headstage]
 
-		if(!IsFinite(headstage) || DC_GetChannelTypefromHS(panelTitle, headstage) != DAQ_CHANNEL_TYPE_TP)
+		if(!IsFinite(headstage) || DC_GetChannelTypefromHS(device, headstage) != DAQ_CHANNEL_TYPE_TP)
 			continue
 		endif
 
@@ -1215,28 +1215,28 @@ Function TP_StopTestPulseOnAllDevices()
 End
 
 /// @sa TP_StopTestPulseWrapper
-Function TP_StopTestPulseFast(panelTitle)
-	string panelTitle
+Function TP_StopTestPulseFast(device)
+	string device
 
-	return TP_StopTestPulseWrapper(panelTitle, fast = 1)
+	return TP_StopTestPulseWrapper(device, fast = 1)
 End
 
 /// @sa TP_StopTestPulseWrapper
-Function TP_StopTestPulse(panelTitle)
-	string panelTitle
+Function TP_StopTestPulse(device)
+	string device
 
-	return TP_StopTestPulseWrapper(panelTitle, fast = 0)
+	return TP_StopTestPulseWrapper(device, fast = 0)
 End
 
 /// @brief Stop any running background test pulses
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param fast       [optional, defaults to false] Performs only the totally
 ///                   necessary steps for tear down.
 ///
 /// @return One of @ref TestPulseRunModes
-static Function TP_StopTestPulseWrapper(panelTitle, [fast])
-	string panelTitle
+static Function TP_StopTestPulseWrapper(device, [fast])
+	string device
 	variable fast
 
 	variable runMode
@@ -1247,7 +1247,7 @@ static Function TP_StopTestPulseWrapper(panelTitle, [fast])
 		fast = !!fast
 	endif
 
-	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
+	NVAR runModeGlobal = $GetTestpulseRunMode(device)
 
 	// create copy as TP_TearDown() will change runModeGlobal
 	runMode = runModeGlobal
@@ -1256,10 +1256,10 @@ static Function TP_StopTestPulseWrapper(panelTitle, [fast])
 	runMode = runMode & ~TEST_PULSE_DURING_RA_MOD
 
 	if(runMode == TEST_PULSE_BG_SINGLE_DEVICE)
-		TPS_StopTestPulseSingleDevice(panelTitle, fast = fast)
+		TPS_StopTestPulseSingleDevice(device, fast = fast)
 		return runMode
 	elseif(runMode == TEST_PULSE_BG_MULTI_DEVICE)
-		TPM_StopTestPulseMultiDevice(panelTitle, fast = fast)
+		TPM_StopTestPulseMultiDevice(device, fast = fast)
 		return runMode
 	elseif(runMode == TEST_PULSE_FG_SINGLE_DEVICE)
 		// can not be stopped
@@ -1270,8 +1270,8 @@ static Function TP_StopTestPulseWrapper(panelTitle, [fast])
 End
 
 /// @brief Restarts a test pulse previously stopped with #TP_StopTestPulse
-Function TP_RestartTestPulse(panelTitle, testPulseMode, [fast])
-	string panelTitle
+Function TP_RestartTestPulse(device, testPulseMode, [fast])
+	string device
 	variable testPulseMode, fast
 
 	if(ParamIsDefault(fast))
@@ -1284,10 +1284,10 @@ Function TP_RestartTestPulse(panelTitle, testPulseMode, [fast])
 		case TEST_PULSE_NOT_RUNNING:
 			break // nothing to do
 		case TEST_PULSE_BG_SINGLE_DEVICE:
-			TPS_StartTestPulseSingleDevice(panelTitle, fast = fast)
+			TPS_StartTestPulseSingleDevice(device, fast = fast)
 			break
 		case TEST_PULSE_BG_MULTI_DEVICE:
-			TPM_StartTestPulseMultiDevice(panelTitle, fast = fast)
+			TPM_StartTestPulseMultiDevice(device, fast = fast)
 			break
 		default:
 			DEBUGPRINT("Ignoring unknown value:", var=testPulseMode)
@@ -1296,11 +1296,11 @@ Function TP_RestartTestPulse(panelTitle, testPulseMode, [fast])
 End
 
 /// @brief Prepare device for TestPulse
-/// @param panelTitle  device
+/// @param device  device
 /// @param runMode     Testpulse running mode, one of @ref TestPulseRunModes
 /// @param fast        [optional, defaults to false] Performs only the totally necessary steps for setup
-Function TP_Setup(panelTitle, runMode, [fast])
-	string panelTitle
+Function TP_Setup(device, runMode, [fast])
+	string device
 	variable runMode
 	variable fast
 
@@ -1313,45 +1313,45 @@ Function TP_Setup(panelTitle, runMode, [fast])
 	endif
 
 	if(fast)
-		NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
+		NVAR runModeGlobal = $GetTestpulseRunMode(device)
 		runModeGlobal = runMode
 
 		// fast restart is considered to be part of the same cycle
 
-		NVAR deviceID = $GetDAQDeviceID(panelTitle)
-		HW_PrepareAcq(GetHardwareType(panelTitle), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+		NVAR deviceID = $GetDAQDeviceID(device)
+		HW_PrepareAcq(GetHardwareType(device), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 		return NaN
 	endif
 
 	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
 
-	TP_SetupCommon(panelTitle)
+	TP_SetupCommon(device)
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
-		DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_STOP)
-		DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
+		DAP_ToggleTestpulseButton(device, TESTPULSE_BUTTON_TO_STOP)
+		DisableControls(device, CONTROLS_DISABLE_DURING_DAQ_TP)
 	endif
 
-	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
+	NVAR runModeGlobal = $GetTestpulseRunMode(device)
 	runModeGlobal = runMode
 
-	DAP_AdaptAutoTPColorAndDependent(panelTitle)
+	DAP_AdaptAutoTPColorAndDependent(device)
 
-	DC_Configure(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
+	DC_Configure(device, TEST_PULSE_MODE, multiDevice=multiDevice)
 
-	NVAR deviceID = $GetDAQDeviceID(panelTitle)
-	HW_PrepareAcq(GetHardwareType(panelTitle), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
+	NVAR deviceID = $GetDAQDeviceID(device)
+	HW_PrepareAcq(GetHardwareType(device), deviceID, TEST_PULSE_MODE, flags=HARDWARE_ABORT_ON_ERROR)
 End
 
 /// @brief Common setup calls for TP and TP during DAQ
-Function TP_SetupCommon(panelTitle)
-	string panelTitle
+Function TP_SetupCommon(device)
+	string device
 
 	variable now, index
 
 	// ticks are relative to OS start time
 	// so we can have "future" timestamps from existing experiments
-	WAVE TPStorage = GetTPStorage(panelTitle)
+	WAVE TPStorage = GetTPStorage(device)
 	now = ticks * TICKS_TO_SECONDS
 
 	if(GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC) > now)
@@ -1373,16 +1373,16 @@ Function TP_SetupCommon(panelTitle)
 	index = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	SetNumberInWaveNote(TPStorage, INDEX_ON_TP_START, index)
 
-	NVAR tpCycleID = $GetTestpulseCycleID(panelTitle)
-	tpCycleID = TP_GetTPCycleID(panelTitle)
+	NVAR tpCycleID = $GetTestpulseCycleID(device)
+	tpCycleID = TP_GetTPCycleID(device)
 
-	WAVE tpAsyncBuffer = GetTPResultAsyncBuffer(panelTitle)
+	WAVE tpAsyncBuffer = GetTPResultAsyncBuffer(device)
 	KillOrMoveToTrash(wv=tpAsyncBuffer)
 End
 
 /// @brief Perform common actions after the testpulse
-Function TP_Teardown(panelTitle, [fast])
-	string panelTitle
+Function TP_Teardown(device, [fast])
+	string device
 	variable fast
 
 	if(ParamIsDefault(fast))
@@ -1391,7 +1391,7 @@ Function TP_Teardown(panelTitle, [fast])
 		fast = !!fast
 	endif
 
-	NVAR runMode = $GetTestpulseRunMode(panelTitle)
+	NVAR runMode = $GetTestpulseRunMode(device)
 
 	if(fast)
 		runMode = TEST_PULSE_NOT_RUNNING
@@ -1399,29 +1399,29 @@ Function TP_Teardown(panelTitle, [fast])
 	endif
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
-		DAP_HandleSingleDeviceDependentControls(panelTitle)
+		DAP_HandleSingleDeviceDependentControls(device)
 	endif
 
-	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)
+	DAP_ToggleTestpulseButton(device, TESTPULSE_BUTTON_TO_START)
 
-	ED_TPDocumentation(panelTitle)
+	ED_TPDocumentation(device)
 
-	SCOPE_KillScopeWindowIfRequest(panelTitle)
+	SCOPE_KillScopeWindowIfRequest(device)
 
 	runMode = TEST_PULSE_NOT_RUNNING
 
-	DAP_AdaptAutoTPColorAndDependent(panelTitle)
+	DAP_AdaptAutoTPColorAndDependent(device)
 
-	TP_TeardownCommon(panelTitle)
+	TP_TeardownCommon(device)
 End
 
 /// @brief Common teardown calls for TP and TP during DAQ
-Function TP_TeardownCommon(panelTitle)
-	string panelTitle
+Function TP_TeardownCommon(device)
+	string device
 
-	P_LoadPressureButtonState(panelTitle)
+	P_LoadPressureButtonState(device)
 
-	NVAR tpCycleID = $GetTestpulseCycleID(panelTitle)
+	NVAR tpCycleID = $GetTestpulseCycleID(device)
 	tpCycleID = NaN
 End
 
@@ -1429,13 +1429,13 @@ End
 Function TP_GetNumDevicesWithTPRunning()
 
 	variable numEntries, i, count
-	string list, panelTitle
+	string list, device
 
 	list = GetListOfLockedDevices()
 	numEntries = ItemsInList(list)
 	for(i= 0; i < numEntries;i += 1)
-		panelTitle = StringFromList(i, list)
-		count += TP_CheckIfTestpulseIsRunning(panelTitle)
+		device = StringFromList(i, list)
+		count += TP_CheckIfTestpulseIsRunning(device)
 	endfor
 
 	return count
@@ -1444,25 +1444,25 @@ End
 /// @brief Check if the testpulse is running
 ///
 /// Can not be used to check for foreground TP as during foreground TP/DAQ nothing else runs.
-Function TP_CheckIfTestpulseIsRunning(panelTitle)
-	string panelTitle
+Function TP_CheckIfTestpulseIsRunning(device)
+	string device
 
-	NVAR runMode = $GetTestpulseRunMode(panelTitle)
+	NVAR runMode = $GetTestpulseRunMode(device)
 
-	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING && (IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TP) || IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TPMD))
+	return isFinite(runMode) && runMode != TEST_PULSE_NOT_RUNNING && (IsDeviceActiveWithBGTask(device, TASKNAME_TP) || IsDeviceActiveWithBGTask(device, TASKNAME_TPMD))
 End
 
 /// @brief See if the testpulse has run enough times to create valid measurements
 ///
-/// @param panelTitle		DA_Ephys panel name
+/// @param device		DA_Ephys panel name
 /// @param cycles		number of cycles that test pulse must run
-Function TP_TestPulseHasCycled(panelTitle, cycles)
-	string panelTitle
+Function TP_TestPulseHasCycled(device, cycles)
+	string device
 	variable cycles
 
 	variable index, indexOnTPStart
 
-	WAVE TPStorage = GetTPStorage(panelTitle)
+	WAVE TPStorage = GetTPStorage(device)
 	index          = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	indexOnTPStart = GetNumberFromWaveNote(TPStorage, INDEX_ON_TP_START)
 
@@ -1470,17 +1470,17 @@ Function TP_TestPulseHasCycled(panelTitle, cycles)
 End
 
 /// @brief Save the amplifier holding command in the TPStorage wave
-Function TP_UpdateHoldCmdInTPStorage(panelTitle, headStage)
-	string panelTitle
+Function TP_UpdateHoldCmdInTPStorage(device, headStage)
+	string device
 	variable headStage
 
 	variable count, clampMode
 
-	if(!TP_CheckIfTestpulseIsRunning(panelTitle))
+	if(!TP_CheckIfTestpulseIsRunning(device))
 		return NaN
 	endif
 
-	WAVE TPStorage = GetTPStorage(panelTitle)
+	WAVE TPStorage = GetTPStorage(device)
 
 	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
@@ -1492,21 +1492,21 @@ Function TP_UpdateHoldCmdInTPStorage(panelTitle, headStage)
 	clampMode = TPStorage[count][headstage][%ClampMode]
 
 	if(clampMode == V_CLAMP_MODE)
-		TPStorage[count][headstage][%HoldingCmd_VC] = AI_GetHoldingCommand(panelTitle, headStage)
+		TPStorage[count][headstage][%HoldingCmd_VC] = AI_GetHoldingCommand(device, headStage)
 	else
-		TPStorage[count][headstage][%HoldingCmd_IC] = AI_GetHoldingCommand(panelTitle, headStage)
+		TPStorage[count][headstage][%HoldingCmd_IC] = AI_GetHoldingCommand(device, headStage)
 	endif
 End
 
 /// @brief Create the testpulse wave with the current settings
-Function TP_CreateTestPulseWave(panelTitle, dataAcqOrTP)
-	string panelTitle
+Function TP_CreateTestPulseWave(device, dataAcqOrTP)
+	string device
 	variable dataAcqOrTP
 
 	variable length, baselineFrac
 
 	WAVE TestPulse = GetTestPulse()
-	WAVE TPSettingsCalc = GetTPsettingsCalculated(panelTitle)
+	WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
 
 	length = (dataAcqOrTP == TEST_PULSE_MODE) ? TPSettingsCalc[%totalLengthPointsTP] : TPSettingsCalc[%totalLengthPointsDAQ]
 
@@ -1520,11 +1520,11 @@ End
 
 /// @brief Send a TP data set to the asynchroneous analysis function TP_TSAnalysis
 ///
-/// @param[in] panelTitle title of panel that ran this test pulse
+/// @param[in] device title of panel that ran this test pulse
 /// @param tpInput holds the parameters send to analysis
-Function TP_SendToAnalysis(string panelTitle, STRUCT TPAnalysisInput &tpInput)
+Function TP_SendToAnalysis(string device, STRUCT TPAnalysisInput &tpInput)
 
-	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", WORKLOADCLASS_TP + panelTitle, inOrder=0)
+	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", WORKLOADCLASS_TP + device, inOrder=0)
 	ASYNC_AddParam(threadDF, w=tpInput.data)
 	ASYNC_AddParam(threadDF, var=tpInput.clampAmp)
 	ASYNC_AddParam(threadDF, var=tpInput.clampMode)
@@ -1533,24 +1533,24 @@ Function TP_SendToAnalysis(string panelTitle, STRUCT TPAnalysisInput &tpInput)
 	ASYNC_AddParam(threadDF, var=tpInput.tpLengthPoints)
 	ASYNC_AddParam(threadDF, var=tpInput.readTimeStamp)
 	ASYNC_AddParam(threadDF, var=tpInput.hsIndex)
-	ASYNC_AddParam(threadDF, str=tpInput.panelTitle)
+	ASYNC_AddParam(threadDF, str=tpInput.device)
 	ASYNC_AddParam(threadDF, var=tpInput.measurementMarker)
 	ASYNC_AddParam(threadDF, var=tpInput.activeADCs)
 	ASYNC_Execute(threadDF)
 End
 
-Function TP_UpdateTPSettingsCalculated(string panelTitle)
-	WAVE TPSettings = GetTPSettings(panelTitle)
+Function TP_UpdateTPSettingsCalculated(string device)
+	WAVE TPSettings = GetTPSettings(device)
 
-	WAVE calculated = GetTPSettingsCalculated(panelTitle)
+	WAVE calculated = GetTPSettingsCalculated(device)
 	calculated = NaN
 
 	// update the calculated values
 	calculated[%baselineFrac]         = TPSettings[%baselinePerc][INDEP_HEADSTAGE] / 100
 
 	calculated[%pulseLengthMS]        = TPSettings[%durationMS][INDEP_HEADSTAGE] // here for completeness
-	calculated[%pulseLengthPointsTP]  = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000))
-	calculated[%pulseLengthPointsDAQ] = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(panelTitle, DATA_ACQUISITION_MODE) / 1000))
+	calculated[%pulseLengthPointsTP]  = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(device, TEST_PULSE_MODE) / 1000))
+	calculated[%pulseLengthPointsDAQ] = trunc(TPSettings[%durationMS][INDEP_HEADSTAGE] / (DAP_GetSampInt(device, DATA_ACQUISITION_MODE) / 1000))
 
 	calculated[%totalLengthMS]        = TP_CalculateTestPulseLength(calculated[%pulseLengthMS], calculated[%baselineFrac])
 	calculated[%totalLengthPointsTP]  = trunc(TP_CalculateTestPulseLength(calculated[%pulseLengthPointsTP], calculated[%baselineFrac]))
@@ -1593,16 +1593,16 @@ End
 ///   which do restart TP we always have the current values. See also the DAEPHYS_TP_CONTROLS_XXX constants.
 ///
 /// @see DAP_TPGUISettingToWave() for the special auto TP entry handling.
-Function TP_UpdateTPLBNSettings(string panelTitle)
+Function TP_UpdateTPLBNSettings(string device)
 	variable i, value
 	string lbl, entry
 
-	WAVE TPSettings = GetTPSettings(panelTitle)
-	WAVE calculated = GetTPSettingsCalculated(panelTitle)
+	WAVE TPSettings = GetTPSettings(device)
+	WAVE calculated = GetTPSettingsCalculated(device)
 
-	WAVE TPSettingsLBN = GetTPSettingsLabnotebook(panelTitle)
+	WAVE TPSettingsLBN = GetTPSettingsLabnotebook(device)
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!statusHS[i])
@@ -1633,7 +1633,7 @@ Function TP_UpdateTPLBNSettings(string panelTitle)
 	TPSettingsLBN[0][%$"TP Pulse Duration"][INDEP_HEADSTAGE]                   = calculated[%pulseLengthMS]
 	TPSettingsLBN[0][%$"TP buffer size"][INDEP_HEADSTAGE]                      = TPSettings[%bufferSize][INDEP_HEADSTAGE]
 	TPSettingsLBN[0][%$"Minimum TP resistance for tolerance"][INDEP_HEADSTAGE] = TPSettings[%resistanceTol][INDEP_HEADSTAGE]
-	value = ROVar(GetTestpulseCycleID(panelTitle))
+	value = ROVar(GetTestpulseCycleID(device))
 	TPSettingsLBN[0][%$"TP Cycle ID"][INDEP_HEADSTAGE] = value
 
 	lbl = "sendToAllHS"
@@ -1652,15 +1652,15 @@ End
 /// @brief Return the TP cycle ID for the given device
 ///
 /// Follower and leader will have the same TP cycle ID.
-static Function TP_GetTPCycleID(panelTitle)
-	string panelTitle
+static Function TP_GetTPCycleID(device)
+	string device
 
-	DAP_AbortIfUnlocked(panelTitle)
+	DAP_AbortIfUnlocked(device)
 
-	if(DeviceIsFollower(panelTitle))
+	if(DeviceIsFollower(device))
 		NVAR tpCycleIDLead = $GetTestpulseCycleID(ITC1600_FIRST_DEVICE)
 		return tpCycleIDLead
 	else
-		return GetNextRandomNumberForDevice(panelTitle)
+		return GetNextRandomNumberForDevice(device)
 	endif
 End

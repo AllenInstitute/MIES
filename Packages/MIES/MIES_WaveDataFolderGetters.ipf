@@ -40,10 +40,10 @@ static StrConstant TP_SETTINGS_LABELS = "bufferSize;resistanceTol;sendToAllHS;ba
 /// Columns:
 /// - Head stage number
 ///
-Function/Wave GetChanAmpAssign(panelTitle)
-	string panelTitle
+Function/Wave GetChanAmpAssign(device)
+	string device
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	variable versionOfNewWave = 3
 
 	Wave/D/Z/SDFR=dfr wv = ChanAmpAssign
@@ -57,7 +57,7 @@ Function/Wave GetChanAmpAssign(panelTitle)
 		wv = NaN
 
 		// we don't have dimension labels yet
-		if(DeviceCanLead(panelTitle) || DeviceCanFollow(panelTitle))
+		if(DeviceCanLead(device) || DeviceCanFollow(device))
 			// Use AD channels 0-3 and then 8-11 so that
 			// they are all on the same rack
 			wv[0][0, 7] = q
@@ -102,10 +102,10 @@ End
 /// Columns:
 /// - Head stage number
 ///
-Function/Wave GetChanAmpAssignUnit(panelTitle)
-	string panelTitle
+Function/Wave GetChanAmpAssignUnit(device)
+	string device
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	variable versionOfNewWave = 1
 
 	Wave/T/Z/SDFR=dfr wv = ChanAmpAssignUnit
@@ -155,10 +155,10 @@ End
 /// \rst
 /// .. code-block:: igorpro
 ///
-/// 	Function/Wave GetMyWave(panelTitle)
-/// 		string panelTitle
+/// 	Function/Wave GetMyWave(device)
+/// 		string device
 ///
-/// 		DFREF dfr = GetMyPath(panelTitle)
+/// 		DFREF dfr = GetMyPath(device)
 /// 		variable versionOfNewWave = 2
 ///
 /// 		Wave/Z/SDFR=dfr wv = myWave
@@ -351,15 +351,15 @@ End
 /// \rst
 /// .. code-block:: igorpro
 ///
-///		Function/WAVE GetMyWave(panelTitle)
-///			string panelTitle
+///		Function/WAVE GetMyWave(device)
+///			string device
 ///
 ///			variable versionOfNewWave = 1
 ///			string newName = "newAndNiceName"
-///			DFREF newDFR = GetNewAndFancyFolder(panelTitle)
+///			DFREF newDFR = GetNewAndFancyFolder(device)
 ///
 ///			STRUCT WaveLocationMod p
-///			p.dfr     = $(GetSomeFolder(panelTitle) + ":oldSubFolder")
+///			p.dfr     = $(GetSomeFolder(device) + ":oldSubFolder")
 ///			p.newDFR  = newDFR
 ///			p.name    = "oldAndUglyName"
 ///			p.newName = newName
@@ -453,12 +453,12 @@ End
 ///
 /// Layers:
 /// - NUM_HEADSTAGES positions with value entries at hsIndex
-Function/Wave GetTPResultAsyncBuffer(panelTitle)
-	string panelTitle
+Function/Wave GetTPResultAsyncBuffer(device)
+	string device
 
 	variable versionOfNewWave = 1
 
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	DFREF dfr = GetDeviceTestPulse(device)
 
 	Wave/Z/SDFR=dfr/D wv = TPResultAsyncBuffer
 
@@ -504,10 +504,10 @@ End
 /// Layers:
 /// - 0: Clamp Mode
 /// - 1: Headstage
-Function/Wave GetChannelClampMode(panelTitle)
-	string panelTitle
+Function/Wave GetChannelClampMode(device)
+	string device
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	variable versionOfNewWave = 1
 
 	Wave/Z/SDFR=dfr wv = ChannelClampMode
@@ -518,8 +518,8 @@ Function/Wave GetChannelClampMode(panelTitle)
 		Redimension/N=(-1, -1, 2) wv
 
 		// prefill with existing algorithm for easier upgrades
-		wv[][%DAC][1] = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
-		wv[][%ADC][1] = GetHeadstageFromSettings(panelTitle, XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
+		wv[][%DAC][1] = GetHeadstageFromSettings(device, XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
+		wv[][%ADC][1] = GetHeadstageFromSettings(device, XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
 	else
 		Make/R/N=(NUM_AD_CHANNELS, 2, 2) dfr:ChannelClampMode/Wave=wv
 		wv = NaN
@@ -539,10 +539,10 @@ End
 /// @brief Return properties for the headstages *during* TP/DAQ
 ///
 /// @sa DC_UpdateHSProperties()
-Function/WAVE GetHSProperties(panelTitle)
-	string panelTitle
+Function/WAVE GetHSProperties(device)
+	string device
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	variable versionOfNewWave = 1
 
 	Wave/Z/SDFR=dfr wv = HSProperties
@@ -617,9 +617,9 @@ threadsafe Function/S GetDeviceTypePathAsString(deviceType)
 End
 
 /// @brief Return a datafolder reference to the device folder
-threadsafe Function/DF GetDevicePath(panelTitle)
-	string panelTitle
-	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
+threadsafe Function/DF GetDevicePath(device)
+	string device
+	return createDFWithAllParents(GetDevicePathAsString(device))
 End
 
 /// @brief Return the path to the device info folder, e.g. root:mies:HardwareDevices:DeviceInfo
@@ -635,13 +635,13 @@ threadsafe Function/DF GetDeviceInfoPath()
 End
 
 /// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0
-threadsafe Function/S GetDevicePathAsString(panelTitle)
-	string panelTitle
+threadsafe Function/S GetDevicePathAsString(device)
+	string device
 
 	string deviceType, deviceNumber
-	ASSERT_TS(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Invalid/Non-locked paneltitle")
+	ASSERT_TS(ParseDeviceString(device, deviceType, deviceNumber), "Invalid/Non-locked device")
 
-	switch(GetHardwareType(panelTitle))
+	switch(GetHardwareType(device))
 		case HARDWARE_NI_DAC:
 			return GetDeviceTypePathAsString(deviceType)
 			break
@@ -654,15 +654,15 @@ threadsafe Function/S GetDevicePathAsString(panelTitle)
 End
 
 /// @brief Return a datafolder reference to the device data folder
-Function/DF GetDeviceDataPath(panelTitle)
-	string panelTitle
-	return createDFWithAllParents(GetDeviceDataPathAsString(panelTitle))
+Function/DF GetDeviceDataPath(device)
+	string device
+	return createDFWithAllParents(GetDeviceDataPathAsString(device))
 End
 
 /// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:Data
-Function/S GetDeviceDataPathAsString(panelTitle)
-	string panelTitle
-	return GetDevicePathAsString(panelTitle) + ":Data"
+Function/S GetDeviceDataPathAsString(device)
+	string device
+	return GetDevicePathAsString(device) + ":Data"
 End
 
 /// @brief Returns a data folder reference to the mies base folder
@@ -734,14 +734,14 @@ End
 /// Note:
 /// #TP_PROPERTIES_HASH: Unique hash for a combination of all properties which influence the test pulse.
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param mode       One of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-Function/Wave GetDAQDataWave(string panelTitle, variable mode)
+Function/Wave GetDAQDataWave(string device, variable mode)
 
 	string name
 
-	DFREF dfr = GetDevicePath(panelTitle)
-	variable hardwareType = GetHardwareType(panelTitle)
+	DFREF dfr = GetDevicePath(device)
+	variable hardwareType = GetHardwareType(device)
 
 	switch(mode)
 		case DATA_ACQUISITION_MODE:
@@ -779,14 +779,14 @@ End
 ///
 /// Special use function, normal callers should use GetDAQDataWave()
 /// instead.
-Function/WAVE GetNIDAQChannelWave(panelTitle, channel)
-	string panelTitle
+Function/WAVE GetNIDAQChannelWave(device, channel)
+	string device
 	variable channel
 
 	string name
 
 	name = "NI_Channel" + num2str(channel)
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 
 	WAVE/Z/SDFR=dfr wv = $name
 
@@ -839,10 +839,10 @@ static Constant EPOCHS_WAVE_VERSION = 2
 ///
 /// For these three formats we have tests in RPI_WorksWithOldData(). When
 /// changing the tags format this test needs to be updated.
-Function/Wave GetEpochsWave(panelTitle)
-	string panelTitle
+Function/Wave GetEpochsWave(device)
+	string device
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	WAVE/T/Z/SDFR=dfr wv = EpochsWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, EPOCHS_WAVE_VERSION))
@@ -908,10 +908,10 @@ End
 ///
 /// Version 2 changes:
 /// - DAQChannelType column added
-Function/Wave GetDAQConfigWave(panelTitle)
-	string panelTitle
+Function/Wave GetDAQConfigWave(device)
+	string device
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 
 	WAVE/I/Z/SDFR=dfr wv = DAQConfigWave
 
@@ -1002,11 +1002,11 @@ Function/Wave GetDQMActiveDeviceList()
 End
 
 /// @brief Return the intermediate storage wave for the TTL data
-Function/Wave GetTTLWave(panelTitle)
-	string panelTitle
+Function/Wave GetTTLWave(device)
+	string device
 
-	DFREF dfr = GetDevicePath(panelTitle)
-	variable hardwareType = GetHardwareType(panelTitle)
+	DFREF dfr = GetDevicePath(device)
+	variable hardwareType = GetHardwareType(device)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -1046,10 +1046,10 @@ End
 /// Columns:
 /// - 0: Stimset fingerprint of the previous sweep
 /// - 1: Current stimset acquisition cycle ID
-Function/Wave GetStimsetAcqIDHelperWave(panelTitle)
-	string panelTitle
+Function/Wave GetStimsetAcqIDHelperWave(device)
+	string device
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 
 	WAVE/D/Z/SDFR=dfr wv = stimsetAcqIDHelper
 
@@ -1081,21 +1081,21 @@ Function/S GetLabNotebookFolderAsString()
 End
 
 /// @brief Return the data folder reference to the device specific lab notebook
-Function/DF GetDevSpecLabNBFolder(panelTitle)
-	string panelTitle
+Function/DF GetDevSpecLabNBFolder(device)
+	string device
 
-	return createDFWithAllParents(GetDevSpecLabNBFolderAsString(panelTitle))
+	return createDFWithAllParents(GetDevSpecLabNBFolderAsString(device))
 End
 
 /// @brief Return the full path to the device specific lab notebook, e.g. root:MIES:LabNoteBook:ITC18USB:Device0
-Function/S GetDevSpecLabNBFolderAsString(panelTitle)
-	string panelTitle
+Function/S GetDevSpecLabNBFolderAsString(device)
+	string device
 
 	string deviceType, deviceNumber
 
-	ASSERT(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Could not parse the panelTitle")
+	ASSERT(ParseDeviceString(device, deviceType, deviceNumber), "Could not parse the device")
 
-	switch(GetHardwareType(panelTitle))
+	switch(GetHardwareType(device))
 		case HARDWARE_NI_DAC:
 			return GetLabNotebookFolderAsString() + ":" + deviceType
 			break
@@ -1121,14 +1121,14 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetLBTextualValues(panelTitle)
-	string panelTitle
+Function/Wave GetLBTextualValues(device)
+	string device
 
 	string newName = "textualValues"
-	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
+	DFREF newDFR = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
-	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocumentation")
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":textDocumentation")
 	p.newDFR  = newDFR
 	p.name    = "txtDocWave"
 	p.newName = newName
@@ -1166,28 +1166,28 @@ End
 /// - Fix unit and tolerance of "Repeat Sets"
 /// - Reapplying the dimension labels as the old ones were cut off after 31 bytes
 /// - Making dimension labels valid liberal object names
-static Function UpgradeLabNotebook(panelTitle)
-	string panelTitle
+static Function UpgradeLabNotebook(device)
+	string device
 
 	variable numCols, i, col, numEntries, sourceCol
 	string list, key
 
-	WAVE  numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE/T textualValues  = GetLBTextualValues(panelTitle)
+	WAVE  numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues  = GetLBTextualValues(device)
 
 	// we only have to check the new place and name as we are called
 	// later than UpgradeWaveLocationAndGetIt from both key wave getters
 	//
 	// avoid recursion by checking the wave location first
-	Wave/Z/T/SDFR=GetDevSpecLabNBFolder(panelTitle) numericalKeys
-	Wave/Z/T/SDFR=GetDevSpecLabNBFolder(panelTitle) textualKeys
+	Wave/Z/T/SDFR=GetDevSpecLabNBFolder(device) numericalKeys
+	Wave/Z/T/SDFR=GetDevSpecLabNBFolder(device) textualKeys
 
 	if(!WaveExists(numericalKeys))
-		WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
+		WAVE/T numericalKeys = GetLBNumericalKeys(device)
 	endif
 
 	if(!WaveExists(textualKeys))
-		WAVE/T textualKeys = GetLBTextualKeys(panelTitle)
+		WAVE/T textualKeys = GetLBTextualKeys(device)
 	endif
 
 	ASSERT(DimSize(numericalKeys, COLS) == DimSize(numericalValues, COLS), "Non matching number of rows for numeric labnotebook")
@@ -1296,7 +1296,7 @@ static Function UpgradeLabNotebook(panelTitle)
 	key = "Repeat Sets"
 	col = FindDimLabel(numericalKeys, COLS, key)
 	if(col >= 0 && cmpstr(numericalKeys[%Units][col], ""))
-		WAVE/T sweepKeyWave = GetSweepSettingsKeyWave(panelTitle)
+		WAVE/T sweepKeyWave = GetSweepSettingsKeyWave(device)
 		sourceCol = FindDimLabel(sweepKeyWave, COLS, key)
 		ASSERT(sourceCol >= 0, "Unexpected sweep key wave format")
 		numericalKeys[%Units][col]     = sweepKeyWave[%Units][sourceCol]
@@ -1403,15 +1403,15 @@ End
 /// - 3: Source entry type, one of @ref DataAcqModes
 /// - 4: Acquisition state, one of @ref AcquisitionStates
 /// - other columns are filled at runtime
-Function/Wave GetLBTextualKeys(panelTitle)
-	string panelTitle
+Function/Wave GetLBTextualKeys(device)
+	string device
 
 	variable versionOfNewWave = LABNOTEBOOK_VERSION
 	string newName = "textualKeys"
-	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
+	DFREF newDFR = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
-	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":TextDocKeyWave")
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":TextDocKeyWave")
 	p.newDFR  = newDFR
 	p.name    = "txtDocKeyWave"
 	p.newName = newName
@@ -1421,7 +1421,7 @@ Function/Wave GetLBTextualKeys(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		UpgradeLabNotebook(panelTitle)
+		UpgradeLabNotebook(device)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
@@ -1456,16 +1456,16 @@ End
 /// - 3: Source entry type, one of @ref DataAcqModes
 /// - 4: Acquisition state, one of @ref AcquisitionStates
 /// - other columns are filled at runtime
-Function/Wave GetLBNumericalKeys(panelTitle)
-	string panelTitle
+Function/Wave GetLBNumericalKeys(device)
+	string device
 
 	variable versionOfNewWave = LABNOTEBOOK_VERSION
 	/// @todo move the renaming stuff into one function for all four labnotebook waves
 	string newName = "numericalKeys"
-	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
+	DFREF newDFR = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
-	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":KeyWave")
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":KeyWave")
 	p.newDFR  = newDFR
 	p.name    = "keyWave"
 	p.newName = newName
@@ -1475,7 +1475,7 @@ Function/Wave GetLBNumericalKeys(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		UpgradeLabNotebook(panelTitle)
+		UpgradeLabNotebook(device)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
@@ -1507,14 +1507,14 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetLBNumericalValues(panelTitle)
-	string panelTitle
+Function/Wave GetLBNumericalValues(device)
+	string device
 
 	string newName = "numericalValues"
-	DFREF newDFR = GetDevSpecLabNBFolder(panelTitle)
+	DFREF newDFR = GetDevSpecLabNBFolder(device)
 
 	STRUCT WaveLocationMod p
-	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":settingsHistory")
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":settingsHistory")
 	p.newDFR  = newDFR
 	p.name    = "settingsHistory"
 	p.newName = newName
@@ -1790,17 +1790,17 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetSweepSettingsWave(panelTitle)
-	string panelTitle
+Function/Wave GetSweepSettingsWave(device)
+	string device
 
 	variable numCols
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsNumericValues"
-	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
+	DFREF newDFR = GetDevSpecLabNBTempFolder(device)
 
 	STRUCT WaveLocationMod p
-	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":settingsHistory")
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":settingsHistory")
 	p.newDFR  = newDFR
 	p.name    = "sweepSettingsWave"
 	p.newName = newName
@@ -1811,7 +1811,7 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 		return wv
 	endif
 
-	WAVE/T keyWave = GetSweepSettingsKeyWave(panelTitle)
+	WAVE/T keyWave = GetSweepSettingsKeyWave(device)
 	numCols = DimSize(keyWave, COLS)
 
 	if(WaveExists(wv))
@@ -1896,15 +1896,15 @@ End
 /// - 52: Autobias Interval (DAEphys->Settings->Amplifier)
 /// - 53: TP after DAQ
 /// - 54: Epochs version
-Function/Wave GetSweepSettingsKeyWave(panelTitle)
-	string panelTitle
+Function/Wave GetSweepSettingsKeyWave(device)
+	string device
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsNumericKeys"
-	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
+	DFREF newDFR = GetDevSpecLabNBTempFolder(device)
 
 	STRUCT WaveLocationMod p
-	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":KeyWave")
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":KeyWave")
 	p.newDFR  = newDFR
 	p.name    = "sweepSettingsKeyWave"
 	p.newName = newName
@@ -2164,17 +2164,17 @@ End
 /// Layers:
 /// - 0-7: data for a particular headstage using the layer index
 /// - 8: headstage independent data
-Function/Wave GetSweepSettingsTextWave(panelTitle)
-	string panelTitle
+Function/Wave GetSweepSettingsTextWave(device)
+	string device
 
 	variable numCols
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsTextValues"
-	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
+	DFREF newDFR = GetDevSpecLabNBTempFolder(device)
 
 	STRUCT WaveLocationMod p
-	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocumentation")
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":textDocumentation")
 	p.newDFR  = newDFR
 	p.name    = "SweepSettingsTxtData"
 	p.newName = newName
@@ -2185,7 +2185,7 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 		return wv
 	endif
 
-	WAVE/T keyWave = GetSweepSettingsTextKeyWave(panelTitle)
+	WAVE/T keyWave = GetSweepSettingsTextKeyWave(device)
 	numCols = DimSize(keyWave, COLS)
 
 	if(WaveExists(wv))
@@ -2254,15 +2254,15 @@ End
 /// - 38: TTL rack zero set cycle counts (ITC hardware)
 /// - 39: TTL rack one set cycle counts (ITC hardware)
 /// - 40: TTL set cycle counts (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
-Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
-	string panelTitle
+Function/Wave GetSweepSettingsTextKeyWave(device)
+	string device
 
 	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsTextKeys"
-	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
+	DFREF newDFR = GetDevSpecLabNBTempFolder(device)
 
 	STRUCT WaveLocationMod p
-	p.dfr     = $(GetDevSpecLabNBFolderAsString(panelTitle) + ":textDocKeyWave")
+	p.dfr     = $(GetDevSpecLabNBFolderAsString(device) + ":textDocKeyWave")
 	p.newDFR  = newDFR
 	p.name    = "SweepSettingsKeyTxtData"
 	p.newName = newName
@@ -2377,10 +2377,10 @@ End
 ///       state is switched (aka on->off or off->on)
 /// - 29: Auto TP Baseline Fit result: One of @ref TPBaselineFitResults
 /// - 30: Auto TP Delta V [mV]
-Function/Wave GetTPStorage(panelTitle)
-	string panelTitle
+Function/Wave GetTPStorage(device)
+	string device
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
+	dfref dfr = GetDeviceTestPulse(device)
 	variable versionOfNewWave = 15
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
@@ -2475,15 +2475,15 @@ Function/Wave GetAcqTPStorage()
 End
 
 /// @brief Return a datafolder reference to the test pulse folder
-Function/DF GetDeviceTestPulse(panelTitle)
-	string panelTitle
-	return createDFWithAllParents(GetDeviceTestPulseAsString(panelTitle))
+Function/DF GetDeviceTestPulse(device)
+	string device
+	return createDFWithAllParents(GetDeviceTestPulseAsString(device))
 End
 
 /// @brief Return the path to the test pulse folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:TestPulse
-Function/S GetDeviceTestPulseAsString(panelTitle)
-	string panelTitle
-	return GetDevicePathAsString(panelTitle) + ":TestPulse"
+Function/S GetDeviceTestPulseAsString(device)
+	string device
+	return GetDevicePathAsString(device) + ":TestPulse"
 End
 
 /// @brief Return a wave which holds undecimated and scaled data
@@ -2496,17 +2496,17 @@ End
 ///
 /// Type:
 /// - FP32 or FP64, as returned by SWS_GetRawDataFPType()
-Function/Wave GetScaledDataWave(panelTitle)
-	string panelTitle
+Function/Wave GetScaledDataWave(device)
+	string device
 
-	dfref dfr = GetDevicePath(panelTitle)
+	dfref dfr = GetDevicePath(device)
 	WAVE/Z/SDFR=dfr wv = ScaledData
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/Y=(SWS_GetRawDataFPType(panelTitle))/N=(1, NUM_DA_TTL_CHANNELS) dfr:ScaledData/Wave=wv
+	Make/Y=(SWS_GetRawDataFPType(device))/N=(1, NUM_DA_TTL_CHANNELS) dfr:ScaledData/Wave=wv
 
 	return wv
 End
@@ -2514,10 +2514,10 @@ End
 /// @brief Return a wave for displaying scaled data in the oscilloscope window
 ///
 /// Contents can be decimated for faster display.
-Function/Wave GetOscilloscopeWave(panelTitle)
-	string panelTitle
+Function/Wave GetOscilloscopeWave(device)
+	string device
 
-	dfref dfr = GetDevicePath(panelTitle)
+	dfref dfr = GetDevicePath(device)
 	WAVE/Z/SDFR=dfr wv = OscilloscopeData
 
 	if(WaveExists(wv))
@@ -2537,10 +2537,10 @@ End
 ///
 /// Columns:
 /// - DA/AD/TTLs data, same order as GetDAQDataWave()
-Function/Wave GetTPOscilloscopeWave(panelTitle)
-	string panelTitle
+Function/Wave GetTPOscilloscopeWave(device)
+	string device
 
-	dfref dfr = GetDevicePath(panelTitle)
+	dfref dfr = GetDevicePath(device)
 	WAVE/Z/SDFR=dfr wv = TPOscilloscopeData
 
 	if(WaveExists(wv))
@@ -2553,10 +2553,10 @@ Function/Wave GetTPOscilloscopeWave(panelTitle)
 End
 
 /// @brief Return a wave reference wave for storing the *full* test pulses
-Function/WAVE GetStoredTestPulseWave(panelTitle)
-	string panelTitle
+Function/WAVE GetStoredTestPulseWave(device)
+	string device
 
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	DFREF dfr = GetDeviceTestPulse(device)
 	WAVE/WAVE/Z/SDFR=dfr wv = StoredTestPulses
 
 	if(WaveExists(wv))
@@ -2586,10 +2586,10 @@ End
 ///
 /// Columns:
 /// - NUM_HEADSTAGES
-Function/Wave GetTPResults(string panelTitle)
+Function/Wave GetTPResults(string device)
 	variable version = 3
 
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	DFREF dfr = GetDeviceTestPulse(device)
 	WAVE/D/Z/SDFR=dfr wv = results
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
@@ -2624,12 +2624,12 @@ End
 /// @brief Return the testpulse results buffer wave
 ///
 /// Same layout as GetTPResults() but as many layers as the buffer size.
-Function/Wave GetTPResultsBuffer(panelTitle)
-	string panelTitle
+Function/Wave GetTPResultsBuffer(device)
+	string device
 
 	variable version = 2
 
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	DFREF dfr = GetDeviceTestPulse(device)
 	WAVE/D/Z/SDFR=dfr wv = resultsBuffer
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
@@ -2637,8 +2637,8 @@ Function/Wave GetTPResultsBuffer(panelTitle)
 	elseif(WaveExists(wv))
 		// do upgrade
 	else
-		WAVE TPResults = GetTPResults(panelTitle)
-		WAVE TPSettings = GetTPSettings(panelTitle)
+		WAVE TPResults = GetTPResults(device)
+		WAVE TPSettings = GetTPSettings(device)
 
 		Duplicate TPResults, dfr:resultsBuffer/WAVE=wv
 		Redimension/N=(-1, -1, TPSettings[%bufferSize][INDEP_HEADSTAGE]) wv
@@ -2679,8 +2679,8 @@ End
 ///
 /// Contents:
 /// - numerical amplifier settings
-Function/Wave GetAmplifierParamStorageWave(panelTitle)
-	string panelTitle
+Function/Wave GetAmplifierParamStorageWave(device)
+	string device
 
 	variable versionOfNewWave = 4
 	STRUCT WaveLocationMod p
@@ -2689,7 +2689,7 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	p.dfr = $(GetAmplifierFolderAsString() + ":Settings")
 	p.newDFR = newDFR
 	// wave's name is like ITC18USB_Dev_0
-	p.name = panelTitle
+	p.name = device
 
 	WAVE/Z/D wv = UpgradeWaveLocationAndGetIt(p)
 
@@ -2698,7 +2698,7 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	elseif(WaveExists(wv))
 		// nothing to do
 	else
-		Make/N=(31, 1, NUM_HEADSTAGES)/D newDFR:$panelTitle/Wave=wv
+		Make/N=(31, 1, NUM_HEADSTAGES)/D newDFR:$device/Wave=wv
 	endif
 
 	SetDimLabel LAYERS, -1, Headstage             , wv
@@ -3982,33 +3982,33 @@ End
 /// @{
 
 /// @brief Returns device specific pressure folder as string
-Function/S P_GetDevicePressureFolderAS(panelTitle)
-	string panelTitle
+Function/S P_GetDevicePressureFolderAS(device)
+	string device
 
 	string 	DeviceNumber
 	string 	DeviceType
-	ParseDeviceString(panelTitle, deviceType, deviceNumber)
+	ParseDeviceString(device, deviceType, deviceNumber)
 	string 	FolderPathString
 	sprintf FolderPathString, "%s:Pressure:%s:Device_%s" GetMiesPathAsString(), DeviceType, DeviceNumber
 	return FolderPathString
 End
 
 /// @brief Creates device specific pressure folder - used to store data for pressure regulators
-Function/DF P_DeviceSpecificPressureDFRef(panelTitle)
-	string panelTitle
-	return CreateDFWithAllParents(P_GetDevicePressureFolderAS(panelTitle))
+Function/DF P_DeviceSpecificPressureDFRef(device)
+	string device
+	return CreateDFWithAllParents(P_GetDevicePressureFolderAS(device))
 End
 
 /// @brief Returns pressure folder as string
-Function/S P_GetPressureFolderAS(panelTitle)
-	string panelTitle
+Function/S P_GetPressureFolderAS(device)
+	string device
 	return GetMiesPathAsString() + ":Pressure"
 End
 
 /// @brief Returns the data folder reference for the main pressure folder "root:MIES:Pressure"
-Function/DF P_PressureFolderReference(panelTitle)
-	string panelTitle
-	return CreateDFWithAllParents(P_GetPressureFolderAS(panelTitle))
+Function/DF P_PressureFolderReference(device)
+	string device
+	return CreateDFWithAllParents(P_GetPressureFolderAS(device))
 End
 
 /// @brief Returns a wave reference to the DAQ data wave used for pressure pulses
@@ -4021,10 +4021,10 @@ End
 /// - 1: AD data
 /// - 2: TTL data rack 0
 /// - 3: TTL data rack 1 (available if supported by the device)
-Function/WAVE P_GetITCData(panelTitle)
-	string panelTitle
+Function/WAVE P_GetITCData(device)
+	string device
 
-	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+	dfref dfr = P_DeviceSpecificPressureDFRef(device)
 
 	Wave/Z/T/SDFR=dfr P_ITCData
 
@@ -4056,10 +4056,10 @@ End
 /// - 1: Channel number
 /// - 2: Sampling interval
 /// - 3: Decimation
-Function/WAVE P_GetITCChanConfig(panelTitle)
-	string panelTitle
+Function/WAVE P_GetITCChanConfig(device)
+	string device
 
-	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+	dfref dfr = P_DeviceSpecificPressureDFRef(device)
 
 	Wave/Z/T/SDFR=dfr P_ChanConfig
 
@@ -4219,11 +4219,11 @@ End
 /// - 45: User pressure deviceID
 /// - 46: User pressure device hardware type
 /// - 47: User pressure ADC
-Function/WAVE P_GetPressureDataWaveRef(panelTitle)
-	string	panelTitle
+Function/WAVE P_GetPressureDataWaveRef(device)
+	string	device
 
 	variable versionOfNewWave = 8
-	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
 	Wave/D/Z/SDFR=dfr wv=PressureData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -4284,11 +4284,11 @@ End
 /// - 0: Digitial to analog converter device type string.
 /// - 1: DA unit.
 /// - 2: AD unit.
-Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
-	string panelTitle
+Function/WAVE P_PressureDataTxtWaveRef(device)
+	string device
 
 	variable versionOfNewWave = 1
-	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
 
 	Wave/Z/T/SDFR=dfr wv=PressureDataTextWv
 
@@ -4328,10 +4328,10 @@ End
 /// Rows:
 /// - 0: tpBuffer, used to hold previous tp settings.
 ///      Setting will be restored upon completion of qc function.
-Function/Wave GetIVSCCTemporaryWave(panelTitle)
-	string panelTitle
+Function/Wave GetIVSCCTemporaryWave(device)
+	string device
 
-	DFREF dfr = GetDevSpecLabNBTempFolder(panelTitle)
+	DFREF dfr = GetDevSpecLabNBTempFolder(device)
 
 	WAVE/D/Z/SDFR=dfr wv = IVSCCTemporary
 
@@ -4346,17 +4346,17 @@ Function/Wave GetIVSCCTemporaryWave(panelTitle)
 End
 
 /// @brief Return the data folder reference to the device specific lab notebook folder for temporary waves
-Function/DF GetDevSpecLabNBTempFolder(panelTitle)
-	string panelTitle
+Function/DF GetDevSpecLabNBTempFolder(device)
+	string device
 
-	return createDFWithAllParents(GetDevSpecLabNBTempFolderAS(panelTitle))
+	return createDFWithAllParents(GetDevSpecLabNBTempFolderAS(device))
 End
 
 /// @brief Return the full path to the device specific lab notebook temp folder, e.g. root:MIES:LabNoteBook:ITC18USB:Device0:Temp
-Function/S GetDevSpecLabNBTempFolderAS(panelTitle)
-	string panelTitle
+Function/S GetDevSpecLabNBTempFolderAS(device)
+	string device
 
-	return GetDevSpecLabNBFolderAsString(panelTitle) + ":Temp"
+	return GetDevSpecLabNBFolderAsString(device) + ":Temp"
 End
 
 /// @name Analysis Browser
@@ -4814,10 +4814,10 @@ End
 ///
 /// Layers:
 /// - Channels
-Function/Wave GetIndexingStorageWave(panelTitle)
-	string panelTitle
+Function/Wave GetIndexingStorageWave(device)
+	string device
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	variable versionOfNewWave = 1
 
 	WAVE/Z/SDFR=dfr wv = IndexingStorageWave
@@ -4947,13 +4947,13 @@ End
 /// - 15: Internal number stored in control min_AsyncAD__RowNum. The minium value alarm trigger.
 /// - 16: Internal number stored in control max_AsyncAD_RowNum. The max value alarm trigger.
 /// - 17+: Unique controls
-Function/Wave GetDA_EphysGuiStateNum(panelTitle)
-	string panelTitle
+Function/Wave GetDA_EphysGuiStateNum(device)
+	string device
 
 	variable uniqueCtrlCount
 	string uniqueCtrlList
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	WAVE/Z/D/SDFR=dfr wv = DA_EphysGuiStateNum
 
 	if(ExistsWithCorrectLayoutVersion(wv, DA_EPHYS_PANEL_VERSION))
@@ -4961,12 +4961,12 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	elseif(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
-		uniqueCtrlList = DAG_GetUniqueSpecCtrlListNum(panelTitle)
+		uniqueCtrlList = DAG_GetUniqueSpecCtrlListNum(device)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Redimension/D/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount, -1, -1) wv
 		wv = Nan
 	else
-		uniqueCtrlList = DAG_GetUniqueSpecCtrlListNum(panelTitle)
+		uniqueCtrlList = DAG_GetUniqueSpecCtrlListNum(device)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount)/D dfr:DA_EphysGuiStateNum/Wave=wv
 		wv = Nan
@@ -4994,7 +4994,7 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	SetDimensionLabels(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_NUM)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
-	DAG_RecordGuiStateNum(panelTitle, GuiState = wv)
+	DAG_RecordGuiStateNum(device, GuiState = wv)
 	return wv
 End
 
@@ -5015,10 +5015,10 @@ End
 /// - 8: (Async) Title
 /// - 9: (Async) Unit
 /// - 10+: Unique controls (SetVariable and PopupMenu only)
-Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
-	string panelTitle
+Function/Wave GetDA_EphysGuiStateTxT(device)
+	string device
 
-	DFREF dfr= GetDevicePath(panelTitle)
+	DFREF dfr= GetDevicePath(device)
 	Wave/Z/T/SDFR=dfr wv = DA_EphysGuiStateTxT
 	variable uniqueCtrlCount
 	string uniqueCtrlList
@@ -5028,12 +5028,12 @@ Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
 	elseif(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
-		uniqueCtrlList = DAG_GetUniqueSpecCtrlListTxt(panelTitle)
+		uniqueCtrlList = DAG_GetUniqueSpecCtrlListTxt(device)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Redimension/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount, -1, -1) wv
 		wv = ""
 	else
-		uniqueCtrlList = DAG_GetUniqueSpecCtrlListTxt(panelTitle)
+		uniqueCtrlList = DAG_GetUniqueSpecCtrlListTxt(device)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Make/T/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount) dfr:DA_EphysGuiStateTxT/Wave=wv
 		wv = ""
@@ -5053,7 +5053,7 @@ Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
 	SetDimensionLabels(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_TXT)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
-	DAG_RecordGuiStateTxT(panelTitle, Guistate = wv)
+	DAG_RecordGuiStateTxT(device, Guistate = wv)
 	return wv
 End
 
@@ -5077,7 +5077,7 @@ End
 /// - One column for each supported HW type
 ///
 /// LAYERS:
-/// - 0: Main device (aka panelTitle of a DA_Ephys panel), used for deriving datafolders for storage
+/// - 0: Main device (aka device of a DA_Ephys panel), used for deriving datafolders for storage
 /// - 1: Name of the device used for pressure control (maybe empty)
 Function/WAVE GetDeviceMapping()
 
@@ -5239,11 +5239,11 @@ End
 /// @brief Return the wave used for storing preloadable data
 ///
 /// Required for yoked oodDAQ only.
-Function/WAVE GetDistDAQPreloadWave(panelTitle)
-	string panelTitle
+Function/WAVE GetDistDAQPreloadWave(device)
+	string device
 
 	DFREF dfr = GetDistDAQFolder()
-	string wvName = "preload_" + panelTitle
+	string wvName = "preload_" + device
 
 	WAVE/Z/SDFR=dfr wv = $wvName
 
@@ -5263,11 +5263,11 @@ End
 /// the headstage refers to the logical entity inside MIES.
 ///
 /// Will be written into the labnotebook and used for the NWB export.
-Function/WAVE GetCellElectrodeNames(panelTitle)
-	string panelTitle
+Function/WAVE GetCellElectrodeNames(device)
+	string device
 
 	variable versionOfNewWave = 1
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 
 	WAVE/Z/T/SDFR=dfr wv = cellElectrodeNames
 
@@ -5291,10 +5291,10 @@ End
 /// - One row for each headstage
 ///
 /// @sa P_UpdatePressureType
-Function/WAVE GetPressureTypeWv(panelTitle)
-	string panelTitle
+Function/WAVE GetPressureTypeWv(device)
+	string device
 
-	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
+	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
 
 	WAVE/Z/SDFR=dfr wv = pressureType
 
@@ -5852,11 +5852,11 @@ End
 /// @brief Return a wave reference which holds an headstage-dependent index
 ///
 /// Can be used by analysis function to count the number of invocations.
-Function/WAVE GetAnalysisFuncIndexingHelper(panelTitle)
-	string panelTitle
+Function/WAVE GetAnalysisFuncIndexingHelper(device)
+	string device
 
 	variable versionOfNewWave = 1
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	WAVE/D/Z/SDFR=dfr wv = analysisFuncIndexing
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -5880,11 +5880,11 @@ End
 ///
 /// Columns:
 /// - Headstages
-Function/WAVE GetAnalysisFuncDAScaleDeltaV(panelTitle)
-	string panelTitle
+Function/WAVE GetAnalysisFuncDAScaleDeltaV(device)
+	string device
 
 	variable versionOfNewWave = 1
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	WAVE/D/Z/SDFR=dfr wv = analysisFuncDAScaleDeltaV
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -5914,11 +5914,11 @@ End
 ///
 /// Columns:
 /// - Headstages
-Function/WAVE GetAnalysisFuncDAScaleDeltaI(panelTitle)
-	string panelTitle
+Function/WAVE GetAnalysisFuncDAScaleDeltaI(device)
+	string device
 
 	variable versionOfNewWave = 1
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	WAVE/D/Z/SDFR=dfr wv = analysisFuncDAScaleDeltaI
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -5946,11 +5946,11 @@ End
 /// Columns:
 /// - Value
 /// - Error (standard deviation)
-Function/WAVE GetAnalysisFuncDAScaleRes(panelTitle)
-	string panelTitle
+Function/WAVE GetAnalysisFuncDAScaleRes(device)
+	string device
 
 	variable versionOfNewWave = 1
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	WAVE/D/Z/SDFR=dfr wv = analysisFuncDAScaleRes
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -5973,14 +5973,14 @@ End
 /// @brief Return a wave reference to the fitted resistance wave created by `CurveFit`
 ///
 /// Used by PSQ_AdjustDAScale().
-Function/WAVE GetAnalysisFuncDAScaleResFit(panelTitle, headstage)
-	string panelTitle
+Function/WAVE GetAnalysisFuncDAScaleResFit(device, headstage)
+	string device
 	variable headstage
 
 	variable versionOfNewWave = 1
 	string name
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	name = "analysisFuncDAScaleResFit" + "_" + num2str(headstage)
 
 	WAVE/D/Z/SDFR=dfr wv = $name
@@ -6003,14 +6003,14 @@ End
 /// @brief Return a wave reference to the spikes frequency wave
 ///
 /// Used by PSQ_AdjustDAScale().
-Function/WAVE GetAnalysisFuncDAScaleSpikeFreq(panelTitle, headstage)
-	string panelTitle
+Function/WAVE GetAnalysisFuncDAScaleSpikeFreq(device, headstage)
+	string device
 	variable headstage
 
 	variable versionOfNewWave = 1
 	string name
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	name = "analysisFuncDAScaleSpikeFreq" + "_" + num2str(headstage)
 
 	WAVE/D/Z/SDFR=dfr wv = $name
@@ -6032,14 +6032,14 @@ End
 /// @brief Return a wave reference to the spikes frequency wave
 ///
 /// Used by PSQ_AdjustDAScale().
-Function/WAVE GetAnalysisFuncDAScaleFreqFit(panelTitle, headstage)
-	string panelTitle
+Function/WAVE GetAnalysisFuncDAScaleFreqFit(device, headstage)
+	string device
 	variable headstage
 
 	variable versionOfNewWave = 1
 	string name
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	name = "analysisFuncDAScaleFreqFit" + "_" + num2str(headstage)
 
 	WAVE/D/Z/SDFR=dfr wv = $name
@@ -6061,14 +6061,14 @@ End
 /// @brief Return a wave reference to the DAScale wave
 ///
 /// Used by PSQ_AdjustDAScale().
-Function/WAVE GetAnalysisFuncDAScales(panelTitle, headstage)
-	string panelTitle
+Function/WAVE GetAnalysisFuncDAScales(device, headstage)
+	string device
 	variable headstage
 
 	variable versionOfNewWave = 1
 	string name
 
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	name = "analysisFuncDAScales" + "_" + num2str(headstage)
 
 	WAVE/D/Z/SDFR=dfr wv = $name
@@ -6101,11 +6101,11 @@ End
 /// Columns:
 /// - 0-#TOTAL_NUM_EVENTS - 1:   Analysis functions
 /// - #ANALYSIS_FUNCTION_PARAMS: Analysis function params (only for V3 generic functions)
-Function/WAVE GetAnalysisFunctionStorage(panelTitle)
-	string panelTitle
+Function/WAVE GetAnalysisFunctionStorage(device)
+	string device
 
 	variable versionOfWave = 4
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	WAVE/T/Z/SDFR=dfr wv = analysisFunctions
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
@@ -6131,11 +6131,11 @@ End
 /// Columns:
 /// - PRE_SET_EVENT
 /// - POST_SET_EVENT
-Function/WAVE GetSetEventFlag(panelTitle)
-	string panelTitle
+Function/WAVE GetSetEventFlag(device)
+	string device
 
 	variable versionOfWave = 1
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	WAVE/D/Z/SDFR=dfr wv = setEventFlag
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
@@ -6156,11 +6156,11 @@ End
 
 /// @brief Return the wave for storing timestamps for perf testing repeated
 ///        acquisition
-Function/WAVE GetRAPerfWave(panelTitle)
-	string panelTitle
+Function/WAVE GetRAPerfWave(device)
+	string device
 
 	variable versionOfWave = 1
-	DFREF dfr = GetDevicePath(panelTitle)
+	DFREF dfr = GetDevicePath(device)
 	WAVE/D/Z/SDFR=dfr wv = perfingRA
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
@@ -6379,20 +6379,20 @@ Function/WAVE GetAnaFuncDashboardHelpWave(dfr)
 End
 
 /// @brief Return a wave with device information
-Function/WAVE GetDeviceInfoWave(panelTitle)
-	string panelTitle
+Function/WAVE GetDeviceInfoWave(device)
+	string device
 
 	variable versionOfNewWave = 1
 
 	DFREF dfr = GetDeviceInfoPath()
-	WAVE/D/Z/SDFR=dfr wv = $panelTitle
+	WAVE/D/Z/SDFR=dfr wv = $device
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/D/N=(5) dfr:$panelTitle/Wave=wv
+		Make/D/N=(5) dfr:$device/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, AD, wv
@@ -6830,11 +6830,11 @@ End
 ///
 /// Columns:
 /// - LABNOTEBOOK_LAYER_COUNT
-Function/WAVE GetTPSettings(string panelTitle)
+Function/WAVE GetTPSettings(string device)
 
 	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
 
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	DFREF dfr = GetDeviceTestPulse(device)
 
 	WAVE/Z/SDFR=dfr/D wv = settings
 
@@ -6848,7 +6848,7 @@ Function/WAVE GetTPSettings(string panelTitle)
 		MoveWave wv, dfr:settings
 	endif
 
-	DAP_TPSettingsToWave(panelTitle, wv)
+	DAP_TPSettingsToWave(device, wv)
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -6858,11 +6858,11 @@ End
 /// @brief Return the calculated/derived TP settings
 ///
 /// The entries in this wave are only valid during DAQ/TP and are updated via DC_UpdateGlobals().
-Function/WAVE GetTPSettingsCalculated(string panelTitle)
+Function/WAVE GetTPSettingsCalculated(string device)
 
 	variable versionOfNewWave = 1
 
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	DFREF dfr = GetDeviceTestPulse(device)
 
 	WAVE/Z/SDFR=dfr/D wv = settingsCalculated
 
@@ -6905,11 +6905,11 @@ static Constant TP_SETTINGS_WAVE_VERSION = 2
 /// - 12: TP Auto interval (INDEP_HEADSTAGE)
 /// - 13: TP Auto QC
 /// - 14: TP Cycle ID
-Function/WAVE GetTPSettingsLabnotebookKeyWave(string panelTitle)
+Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 
 	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
 
-	DFREF dfr = GetDevSpecLabNBTempFolder(panelTitle)
+	DFREF dfr = GetDevSpecLabNBTempFolder(device)
 	WAVE/Z/SDFR=dfr/T wv = TPSettingsKeyWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -6992,19 +6992,19 @@ End
 /// @brief Get TP settings wave for the labnotebook
 ///
 /// See GetTPSettingsLabnotebookKeyWave() for the dimension label description.
-Function/Wave GetTPSettingsLabnotebook(string panelTitle)
+Function/Wave GetTPSettingsLabnotebook(string device)
 
 	variable numCols
 	variable versionOfNewWave = TP_SETTINGS_WAVE_VERSION
 
-	DFREF dfr = GetDevSpecLabNBTempFolder(panelTitle)
+	DFREF dfr = GetDevSpecLabNBTempFolder(device)
 	WAVE/Z/SDFR=dfr/D wv = TPSettings
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	endif
 
-	WAVE/T keyWave = GetTPSettingsLabnotebookKeyWave(panelTitle)
+	WAVE/T keyWave = GetTPSettingsLabnotebookKeyWave(device)
 	numCols = DimSize(keyWave, COLS)
 
 	if(WaveExists(wv))

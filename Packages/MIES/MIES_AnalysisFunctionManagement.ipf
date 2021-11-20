@@ -12,8 +12,8 @@
 /// @brief Call the analysis function associated with the stimset from the wavebuilder
 ///
 /// @return Valid analysis function return types, zero otherwise, see also @ref AnalysisFunctionReturnTypes
-Function AFM_CallAnalysisFunctions(panelTitle, eventType)
-	string panelTitle
+Function AFM_CallAnalysisFunctions(device, eventType)
+	string device
 	variable eventType
 
 	variable i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet
@@ -21,18 +21,18 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	string func, msg
 	struct AnalysisFunction_V3 s
 
-	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs"))
+	if(DAG_GetNumericalValue(device, "Check_Settings_SkipAnalysFuncs"))
 		return 0
 	endif
 
-	NVAR count = $GetCount(panelTitle)
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	WAVE setEventFlag = GetSetEventFlag(panelTitle)
-	fifoPosition = ROVar(GetFifoPosition(panelTitle))
+	NVAR count = $GetCount(device)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	WAVE/T allSetNames = DAG_GetChannelTextual(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	WAVE setEventFlag = GetSetEventFlag(device)
+	fifoPosition = ROVar(GetFifoPosition(device))
 
-	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
+	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(device)
 
 	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_CONFIG_EVENT)
 		realDataLength = NaN
@@ -51,7 +51,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			continue
 		endif
 
-		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
+		DAC = AFH_GetDACFromHeadstage(device, i)
 
 		if(!cmpstr(allSetNames[DAC], STIMSET_TP_WHILE_DAQ, 1))
 			continue
@@ -82,14 +82,14 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			case PRE_SWEEP_CONFIG_EVENT:
 			case PRE_SET_EVENT:
 			case MID_SWEEP_EVENT: // fallthrough-by-design
-				sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
-				WAVE scaledDataWave = GetScaledDataWave(panelTitle)
+				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
+				WAVE scaledDataWave = GetScaledDataWave(device)
 				break
 			case POST_SWEEP_EVENT:
 			case POST_SET_EVENT:
 			case POST_DAQ_EVENT: // fallthrough-by-design
-				sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep") - 1
-				WAVE scaledDataWave = GetSweepWave(panelTitle, sweepNo)
+				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep") - 1
+				WAVE scaledDataWave = GetSweepWave(device, sweepNo)
 				break
 			default:
 				ASSERT(0, "Invalid eventType")
@@ -105,7 +105,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		valid_f3 = FuncRefIsAssigned(FuncRefInfo(f3))
 
 		// all functions are valid
-		WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
+		WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 		ChangeWaveLock(DAQDataWave, 1)
 
 		ChangeWaveLock(scaledDataWave, 1)
@@ -114,9 +114,9 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		AssertOnAndClearRTError()
 		try
 			if(valid_f1)
-				ret = f1(panelTitle, eventType, DAQDataWave, i); AbortOnRTE
+				ret = f1(device, eventType, DAQDataWave, i); AbortOnRTE
 			elseif(valid_f2)
-				ret = f2(panelTitle, eventType, DAQDataWave, i, realDataLength); AbortOnRTE
+				ret = f2(device, eventType, DAQDataWave, i, realDataLength); AbortOnRTE
 			elseif(valid_f3)
 				s.eventType          = eventType
 				WAVE s.rawDACWave    = DAQDataWave
@@ -128,7 +128,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 				s.sweepsInSet        = sweepsInSet
 				s.params             = analysisFunctions[i][ANALYSIS_FUNCTION_PARAMS]
 
-				ret = f3(panelTitle, s); AbortOnRTE
+				ret = f3(device, s); AbortOnRTE
 			else
 				ASSERT(0, "impossible case")
 			endif
@@ -137,7 +137,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			ClearRTError()
 			printf "The analysis function %s aborted with error \"%s\", this is dangerous and must *not* happen!\r", func, msg
 
-			NVAR errorCounter = $GetAnalysisFuncErrorCounter(panelTitle)
+			NVAR errorCounter = $GetAnalysisFuncErrorCounter(device)
 			errorCounter += 1
 
 			// abort early
@@ -165,14 +165,14 @@ End
 /// @brief Update the analysis function storage wave from the stimset waves notes
 ///
 /// We are called earlier than DAP_CheckSettings() so we can not rely on anything setup in a sane way.
-Function AFM_UpdateAnalysisFunctionWave(panelTitle)
-	string panelTitle
+Function AFM_UpdateAnalysisFunctionWave(device)
+	string device
 
 	variable i, j, DAC
 	string ctrl, setName, possibleFunctions, func
 
-	WAVE statusHS            = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
+	WAVE statusHS            = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(device)
 
 	analysisFunctions = ""
 	possibleFunctions = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_ALL)
@@ -183,7 +183,7 @@ Function AFM_UpdateAnalysisFunctionWave(panelTitle)
 			continue
 		endif
 
-		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
+		DAC = AFH_GetDACFromHeadstage(device, i)
 
 		// ignore unassociated DACs
 		if(!IsFinite(DAC))
@@ -192,7 +192,7 @@ Function AFM_UpdateAnalysisFunctionWave(panelTitle)
 
 		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		// deliberately not using the GUI state wave
-		setName = GetPopupMenuString(panelTitle, ctrl)
+		setName = GetPopupMenuString(device, ctrl)
 
 		WAVE/Z stimSet = WB_CreateAndGetStimSet(setName)
 

@@ -39,8 +39,8 @@ Function GetDimLabelVsCtrlInfo(win)
 End
 
 // This is a testing function to make sure the experiment documentation function is working correctly
-Function createDummySettingsWave(panelTitle, SweepCount)
-	string panelTitle
+Function createDummySettingsWave(device, SweepCount)
+	string device
 	Variable SweepCount
 
 	Make /FREE /N = (1, 6, 8) dummySettingsWave
@@ -95,7 +95,7 @@ Function createDummySettingsWave(panelTitle, SweepCount)
 	endfor
 
 	// now call the function that will create the wave notes
-	ED_AddEntriesToLabnotebook(dummySettingsWave, dummySettingsKey, SweepCount, panelTitle, UNKNOWN_MODE)
+	ED_AddEntriesToLabnotebook(dummySettingsWave, dummySettingsKey, SweepCount, device, UNKNOWN_MODE)
 End
 
 /// @brief Exhaust all memory so that only `amountOfFreeMemoryLeft` [GB] is left

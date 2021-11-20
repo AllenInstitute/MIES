@@ -239,16 +239,16 @@ End
 /// fill it in the passed structure
 ///
 /// @return number of active channels
-static Function SI_FillActiveChannelsStruct(panelTitle, ac)
-	string panelTitle
+static Function SI_FillActiveChannelsStruct(device, ac)
+	string device
 	STRUCT ActiveChannels &ac
 
 	ASSERT(IsEven(NUM_DA_TTL_CHANNELS), "Expected even number of DA/TTL channels")
 	ASSERT(IsEven(NUM_AD_CHANNELS), "Expected even number of AD channels")
 
-	WAVE statusDA  = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusAD  = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ADC)
-	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusDA  = DAG_GetChannelState(device, CHANNEL_TYPE_DAC)
+	WAVE statusAD  = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
+	WAVE statusTTL = DAG_GetChannelState(device, CHANNEL_TYPE_TTL)
 
 	ac.numDARack1 = sum(statusDA, 0, NUM_DA_TTL_CHANNELS/2 - 1)
 	ac.numDARack2 = sum(statusDA, NUM_DA_TTL_CHANNELS/2, inf)
@@ -269,10 +269,10 @@ End
 /// `(a + 1) * (b + 1) * (c + 1)` by ignoring the order of the active channels. `a`/`b`/`c` are
 /// here the total number of DA/AD/TTL channels
 ///
-/// @param panelTitle device, must be locked
+/// @param device device, must be locked
 /// @param ignoreChannelOrder [optional: defaults to false] ignore the order of the active channels
-Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
-	string panelTitle
+Function SI_CreateLookupWave(device, [ignoreChannelOrder])
+	string device
 	variable ignoreChannelOrder
 
 	variable i, j, k, numChannels, numPerms, ret, idx, numRows
@@ -287,18 +287,18 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 		ignoreChannelOrder = !!ignoreChannelOrder
 	endif
 
-	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
+	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(device)
 	raCycleID = 1
 
-	DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
+	DC_Configure(device, DATA_ACQUISITION_MODE)
 
-	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
-	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
+	WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+	WAVE DAQConfigWave = GetDAQConfigWave(device)
 
-	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(device)
 
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-	ASSERT(ret, "Could not parse panelTitle")
+	ret = ParseDeviceString(device, deviceType, deviceNumber)
+	ASSERT(ret, "Could not parse device")
 
 	if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC16USB") || !cmpstr(deviceType, "ITC16"))
 		totalNumDA    = 4
@@ -371,7 +371,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 
 				SI_FillITCConfig(DAQConfigWave, results, idx, totalNumDA, totalNumAD, totalNumTTL)
 
-				results[idx][%minSampInt] = SI_TestSampInt(panelTitle)
+				results[idx][%minSampInt] = SI_TestSampInt(device)
 				idx += 1
 			endfor
 		endfor
@@ -422,7 +422,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 			results[i][1]   = numAD
 			results[i][2]   = numTTL
 			results[i][3,5] = 0
-			results[i][6] = SI_TestSampInt(panelTitle)
+			results[i][6] = SI_TestSampInt(device)
 		endfor
 	endif
 
@@ -433,15 +433,15 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 End
 
 /// @brief Test the preset sampling interval
-static Function SI_TestSampInt(panelTitle)
-	string panelTitle
+static Function SI_TestSampInt(device)
+	string device
 
 	variable i, sampInt, sampIntRead, numChannels, sampIntRef, iLast
 	variable numConsecutive = -1
 	variable numTries = 1001
 
-	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
-	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
+	WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+	WAVE DAQConfigWave = GetDAQConfigWave(device)
 	numChannels = DimSize(DAQConfigWave, ROWS)
 
 	Make/D/FREE/N=(20, numChannels) ResultWave
@@ -496,15 +496,15 @@ End
 
 #else
 
-Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
-	string panelTitle
+Function SI_CreateLookupWave(device, [ignoreChannelOrder])
+	string device
 	variable ignoreChannelOrder
 
 	DEBUGPRINT("Unimplemented")
 End
 
-static Function SI_TestSampInt(panelTitle)
-	string panelTitle
+static Function SI_TestSampInt(device)
+	string device
 
 	DEBUGPRINT("Unimplemented")
 End
@@ -513,21 +513,21 @@ End
 
 /// @brief Calculate the minimum sampling interval
 ///
-/// @param panelTitle  device
+/// @param device  device
 /// @param dataAcqOrTP one of @ref DataAcqModes, ignores TTL channels for #TEST_PULSE_MODE
 ///
 /// @returns sampling interval in microseconds (1e-6)
-Function SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
-	string panelTitle
+Function SI_CalculateMinSampInterval(device, dataAcqOrTP)
+	string device
 	variable dataAcqOrTP
 
-	variable hardwareType = GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(device)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			return SI_ITC_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
+			return SI_ITC_CalculateMinSampInterval(device, dataAcqOrTP)
 			break
 		case HARDWARE_NI_DAC:
-			return SI_NI_CalculateMinSampInterval(panelTitle)
+			return SI_NI_CalculateMinSampInterval(device)
 			break
 	endswitch
 End
@@ -537,31 +537,31 @@ End
 /// @sa SI_CalculateMinSampInterval
 ///
 /// @returns sampling interval in microseconds (1e-6)
-static Function SI_NI_CalculateMinSampInterval(panelTitle)
-	string panelTitle
+static Function SI_NI_CalculateMinSampInterval(device)
+	string device
 
-	WAVE channelStatus = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE channelStatus = DAG_GetChannelState(device, CHANNEL_TYPE_ADC)
 	return HARDWARE_NI_DAC_MIN_SAMPINT * 1000 * sum(channelStatus)
 End
 
 /// @brief Calculate the minimum sampling interval for ITC hardware using the lookup waves on disk
 ///
-/// @param panelTitle  device
+/// @param device  device
 /// @param dataAcqOrTP one of @ref DataAcqModes, ignores TTL channels for #TEST_PULSE_MODE
 ///
 /// @sa SI_CalculateMinSampInterval
 ///
 /// @returns sampling interval in microseconds (1e-6)
-static Function SI_ITC_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
-	string panelTitle
+static Function SI_ITC_CalculateMinSampInterval(device, dataAcqOrTP)
+	string device
 	variable dataAcqOrTP
 
 	variable numActiveChannels
 	string deviceType, deviceNumber
 
-	ASSERT(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Could not parse device string")
+	ASSERT(ParseDeviceString(device, deviceType, deviceNumber), "Could not parse device string")
 
-	WAVE/Z lut = SI_GetMinSampIntWave(panelTitle)
+	WAVE/Z lut = SI_GetMinSampIntWave(device)
 	if(!WaveExists(lut))
 		printf "Warning: Could not load the minimum sampling interval table from disk\r"
 		printf "Falling back to %g microseconds as sampling interval\r", SAMPLING_INTERVAL_FALLBACK * 1000
@@ -569,7 +569,7 @@ static Function SI_ITC_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
 	endif
 
 	STRUCT ActiveChannels ac
-	numActiveChannels = SI_FillActiveChannelsStruct(panelTitle, ac)
+	numActiveChannels = SI_FillActiveChannelsStruct(device, ac)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE) // disregard TTL channels for testpulse
 		numActiveChannels -= ac.numTTLRack1
@@ -597,13 +597,13 @@ End
 ///
 /// This functions tries to load the wave from disk on the first
 /// call so this function might take a while to execute.
-static Function/WAVE SI_GetMinSampIntWave(panelTitle)
-	string panelTitle
+static Function/WAVE SI_GetMinSampIntWave(device)
+	string device
 
 	variable ret
 	string deviceType, deviceNumber
 
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
+	ret = ParseDeviceString(device, deviceType, deviceNumber)
 	ASSERT(ret, "Could not parse device string")
 
 	DFREF dfr = GetStaticDataFolder()

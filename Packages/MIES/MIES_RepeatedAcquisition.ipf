@@ -13,63 +13,63 @@
 /// @brief __RA__ Repated acquisition functionality
 
 /// @brief Recalculate the Inter trial interval (ITI) for the given device.
-static Function RA_RecalculateITI(panelTitle)
-	string panelTitle
+static Function RA_RecalculateITI(device)
+	string device
 
 	variable ITI
 
-	NVAR repurposedTime = $GetRepurposedSweepTime(panelTitle)
-	ITI = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_ITI") - DQ_StopDAQDeviceTimer(panelTitle) + repurposedTime
+	NVAR repurposedTime = $GetRepurposedSweepTime(device)
+	ITI = DAG_GetNumericalValue(device, "SetVar_DataAcq_ITI") - DQ_StopDAQDeviceTimer(device) + repurposedTime
 	repurposedTime = 0
 
 	return ITI
 End
 
-static Function RA_HandleITI_MD(panelTitle)
-	string panelTitle
+static Function RA_HandleITI_MD(device)
+	string device
 
 	variable ITI
 	string funcList
 
-	DAP_ApplyDelayedClampModeChange(panelTitle)
+	DAP_ApplyDelayedClampModeChange(device)
 
-	AS_HandlePossibleTransition(panelTitle, AS_ITI)
+	AS_HandlePossibleTransition(device, AS_ITI)
 
-	ITI = RA_RecalculateITI(panelTitle)
+	ITI = RA_RecalculateITI(device)
 
-	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP") || ITI <= 0)
+	if(!DAG_GetNumericalValue(device, "check_Settings_ITITP") || ITI <= 0)
 
-		funcList = "RA_CounterMD(\"" + panelTitle + "\")"
+		funcList = "RA_CounterMD(\"" + device + "\")"
 
 		if(ITI <= 0 && !IsBackgroundTaskRunning("ITC_TimerMD")) // we are the only device currently
 			ExecuteListOfFunctions(funcList)
 			return NaN
 		endif
 
-		DQM_StartBackgroundTimer(panelTitle, ITI, funcList)
+		DQM_StartBackgroundTimer(device, ITI, funcList)
 
 		return NaN
 	endif
 
-	TPM_StartTPMultiDeviceLow(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
+	TPM_StartTPMultiDeviceLow(device, runModifier=TEST_PULSE_DURING_RA_MOD)
 
-	funcList = "TPM_StopTestPulseMultiDevice(\"" + panelTitle + "\")" + ";" + "RA_CounterMD(\"" + panelTitle + "\")"
-	DQM_StartBackgroundTimer(panelTitle, ITI, funcList)
+	funcList = "TPM_StopTestPulseMultiDevice(\"" + device + "\")" + ";" + "RA_CounterMD(\"" + device + "\")"
+	DQM_StartBackgroundTimer(device, ITI, funcList)
 End
 
-static Function RA_WaitUntiIITIDone(panelTitle, elapsedTime)
-	string panelTitle
+static Function RA_WaitUntiIITIDone(device, elapsedTime)
+	string device
 	variable elapsedTime
 
 	variable reftime, timeLeft
 	string oscilloscopeSubwindow
 
 	refTime = RelativeNowHighPrec()
-	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
+	oscilloscopeSubwindow = SCOPE_GetGraph(device)
 
 	do
 		timeLeft = max((refTime + elapsedTime) - RelativeNowHighPrec(), 0)
-		SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = timeLeft)
+		SetValDisplay(device, "valdisp_DataAcq_ITICountdown", var = timeLeft)
 
 		DoUpdate/W=$oscilloscopeSubwindow
 
@@ -81,30 +81,30 @@ static Function RA_WaitUntiIITIDone(panelTitle, elapsedTime)
 	return 1
 End
 
-static Function RA_HandleITI(panelTitle)
-	string panelTitle
+static Function RA_HandleITI(device)
+	string device
 
 	variable ITI, refTime, background, aborted
 	string funcList
 
-	DAP_ApplyDelayedClampModeChange(panelTitle)
-	AS_HandlePossibleTransition(panelTitle, AS_ITI)
+	DAP_ApplyDelayedClampModeChange(device)
+	AS_HandlePossibleTransition(device, AS_ITI)
 
-	ITI = RA_RecalculateITI(panelTitle)
-	background = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
-	funcList = "RA_Counter(\"" + panelTitle + "\")"
+	ITI = RA_RecalculateITI(device)
+	background = DAG_GetNumericalValue(device, "Check_Settings_BackgrndDataAcq")
+	funcList = "RA_Counter(\"" + device + "\")"
 
-	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP") || ITI <= 0)
+	if(!DAG_GetNumericalValue(device, "check_Settings_ITITP") || ITI <= 0)
 
 		if(ITI <= 0)
 			ExecuteListOfFunctions(funcList)
 		elseif(background)
-			DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
+			DQS_StartBackgroundTimer(device, ITI, funcList)
 		else
-			aborted = RA_WaitUntiIITIDone(panelTitle, ITI)
+			aborted = RA_WaitUntiIITIDone(device, ITI)
 
 			if(aborted)
-				RA_FinishAcquisition(panelTitle)
+				RA_FinishAcquisition(device)
 			else
 				ExecuteListOfFunctions(funcList)
 			endif
@@ -114,17 +114,17 @@ static Function RA_HandleITI(panelTitle)
 	endif
 
 	if(background)
-		TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
-		TPS_StartBackgroundTestPulse(panelTitle)
-		funcList = "TPS_StopTestPulseSingleDevice(\"" + panelTitle + "\")" + ";" + "RA_Counter(\"" + panelTitle + "\")"
-		DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
+		TP_Setup(device, TEST_PULSE_BG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
+		TPS_StartBackgroundTestPulse(device)
+		funcList = "TPS_StopTestPulseSingleDevice(\"" + device + "\")" + ";" + "RA_Counter(\"" + device + "\")"
+		DQS_StartBackgroundTimer(device, ITI, funcList)
 	else
-		TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
-		aborted = TPS_StartTestPulseForeground(panelTitle, elapsedTime = ITI)
-		TP_Teardown(panelTitle)
+		TP_Setup(device, TEST_PULSE_FG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
+		aborted = TPS_StartTestPulseForeground(device, elapsedTime = ITI)
+		TP_Teardown(device)
 
 		if(aborted)
-			RA_FinishAcquisition(panelTitle)
+			RA_FinishAcquisition(device)
 		else
 			ExecuteListOfFunctions(funcList)
 		endif
@@ -134,27 +134,27 @@ End
 /// @brief Calculate the total number of sweeps for repeated acquisition
 ///
 /// Helper function for plain calculation without lead and follower logic
-static Function RA_GetTotalNumberOfSweepsLowLev(panelTitle)
-	string panelTitle
+static Function RA_GetTotalNumberOfSweepsLowLev(device)
+	string device
 
-	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
-		return GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
+	if(DAG_GetNumericalValue(device, "Check_DataAcq_Indexing"))
+		return GetValDisplayAsNum(device, "valdisp_DataAcq_SweepsInSet")
 	else
-		return IDX_CalculcateActiveSetCount(panelTitle)
+		return IDX_CalculcateActiveSetCount(device)
 	endif
 End
 
 /// @brief Calculate the total number of sweeps for repeated acquisition
-static Function RA_GetTotalNumberOfSweeps(panelTitle)
-	string panelTitle
+static Function RA_GetTotalNumberOfSweeps(device)
+	string device
 
 	variable i, numFollower, numTotalSweeps
 	string followerPanelTitle
 
-	numTotalSweeps = RA_GetTotalNumberOfSweepsLowLev(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweepsLowLev(device)
 
-	if(DeviceHasFollower(panelTitle))
-		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+	if(DeviceHasFollower(device))
+		SVAR listOfFollowerDevices = $GetFollowerList(device)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
@@ -167,104 +167,104 @@ static Function RA_GetTotalNumberOfSweeps(panelTitle)
 End
 
 /// @brief Update the "Sweeps remaining" control
-Function RA_StepSweepsRemaining(panelTitle)
-	string panelTitle
+Function RA_StepSweepsRemaining(device)
+	string device
 
-	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		variable numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
-		NVAR count = $GetCount(panelTitle)
+	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
+		variable numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
+		NVAR count = $GetCount(device)
 
-		SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var = numTotalSweeps - count - 1)
+		SetValDisplay(device, "valdisp_DataAcq_TrialsCountdown", var = numTotalSweeps - count - 1)
 	else
-		SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var = 0)
+		SetValDisplay(device, "valdisp_DataAcq_TrialsCountdown", var = 0)
 	endif
 End
 
 /// @brief Function gets called after the first sweep is already
 /// acquired and if repeated acquisition is on
-static Function RA_Start(panelTitle)
-	string panelTitle
+static Function RA_Start(device)
+	string device
 
 	variable numTotalSweeps
 
 #ifdef PERFING_RA
-	RA_PerfInitialize(panelTitle)
+	RA_PerfInitialize(device)
 #endif
 
-	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
 
 	if(numTotalSweeps == 1)
-		return RA_FinishAcquisition(panelTitle)
+		return RA_FinishAcquisition(device)
 	endif
 
-	RA_StepSweepsRemaining(panelTitle)
-	RA_HandleITI(panelTitle)
+	RA_StepSweepsRemaining(device)
+	RA_HandleITI(device)
 End
 
-Function RA_Counter(panelTitle)
-	string panelTitle
+Function RA_Counter(device)
+	string device
 
 	variable numTotalSweeps, runMode
 	string str
 
-	runMode = ROVar(GetDataAcqRunMode(panelTitle))
+	runMode = ROVar(GetDataAcqRunMode(device))
 
 	if(runMode == DAQ_NOT_RUNNING)
 		return NaN
 	endif
 
-	DAP_ApplyDelayedClampModeChange(panelTitle)
+	DAP_ApplyDelayedClampModeChange(device)
 
-	NVAR count = $GetCount(panelTitle)
-	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	NVAR count = $GetCount(device)
+	NVAR activeSetCount = $GetActiveSetCount(device)
 
 	count += 1
 	activeSetCount -= 1
 
 #ifdef PERFING_RA
-	RA_PerfAddMark(panelTitle, count)
+	RA_PerfAddMark(device, count)
 #endif
 
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
 
-	RA_StepSweepsRemaining(panelTitle)
-	IDX_HandleIndexing(panelTitle)
+	RA_StepSweepsRemaining(device)
+	IDX_HandleIndexing(device)
 
-	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
 
 	if(Count < numTotalSweeps)
 		AssertOnAndClearRTError()
 		try
-			DC_Configure(panelTitle, DATA_ACQUISITION_MODE)
+			DC_Configure(device, DATA_ACQUISITION_MODE)
 
-			if(DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"))
-				DQS_BkrdDataAcq(panelTitle)
+			if(DAG_GetNumericalValue(device, "Check_Settings_BackgrndDataAcq"))
+				DQS_BkrdDataAcq(device)
 			else
-				DQS_DataAcq(panelTitle)
+				DQS_DataAcq(device)
 			endif
 		catch
 			ClearRTError()
-			RA_FinishAcquisition(panelTitle)
+			RA_FinishAcquisition(device)
 		endtry
 	else
-		RA_FinishAcquisition(panelTitle)
+		RA_FinishAcquisition(device)
 	endif
 End
 
-static Function RA_FinishAcquisition(panelTitle)
-	string panelTitle
+static Function RA_FinishAcquisition(device)
+	string device
 
 	string list
 	variable numEntries, i
 
-	DQ_StopDAQDeviceTimer(panelTitle)
+	DQ_StopDAQDeviceTimer(device)
 
 #ifdef PERFING_RA
-	RA_PerfFinish(panelTitle)
+	RA_PerfFinish(device)
 #endif
 
-	list = GetListofLeaderAndPossFollower(panelTitle)
+	list = GetListofLeaderAndPossFollower(device)
 
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
@@ -272,41 +272,41 @@ static Function RA_FinishAcquisition(panelTitle)
 	endfor
 End
 
-static Function RA_BckgTPwithCallToRACounter(panelTitle)
-	string panelTitle
+static Function RA_BckgTPwithCallToRACounter(device)
+	string device
 
 	variable numTotalSweeps
-	NVAR count = $GetCount(panelTitle)
+	NVAR count = $GetCount(device)
 
-	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
 
 	if(Count < (numTotalSweeps - 1))
-		RA_HandleITI(panelTitle)
+		RA_HandleITI(device)
 	else
-		RA_FinishAcquisition(panelTitle)
+		RA_FinishAcquisition(device)
 	endif
 End
 
-static Function RA_StartMD(panelTitle)
-	string panelTitle
+static Function RA_StartMD(device)
+	string device
 
 	variable i, numFollower, numTotalSweeps
 	string followerPanelTitle
 
 #ifdef PERFING_RA
-	RA_PerfInitialize(panelTitle)
+	RA_PerfInitialize(device)
 #endif
 
-	RA_StepSweepsRemaining(panelTitle)
+	RA_StepSweepsRemaining(device)
 
-	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
 
 	if(numTotalSweeps == 1)
-		return RA_FinishAcquisition(panelTitle)
+		return RA_FinishAcquisition(device)
 	endif
 
-	if(DeviceHasFollower(panelTitle))
-		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+	if(DeviceHasFollower(device))
+		SVAR listOfFollowerDevices = $GetFollowerList(device)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
@@ -318,60 +318,60 @@ static Function RA_StartMD(panelTitle)
 		endfor
 	endif
 
-	RA_HandleITI_MD(panelTitle)
+	RA_HandleITI_MD(device)
 End
 
-Function RA_CounterMD(panelTitle)
-	string panelTitle
+Function RA_CounterMD(device)
+	string device
 
 	variable numTotalSweeps
-	NVAR count = $GetCount(panelTitle)
-	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	NVAR count = $GetCount(device)
+	NVAR activeSetCount = $GetActiveSetCount(device)
 	variable i, runMode
 	string str
 
-	runMode = ROVar(GetDataAcqRunMode(panelTitle))
+	runMode = ROVar(GetDataAcqRunMode(device))
 
 	if(runMode == DAQ_NOT_RUNNING)
 		return NaN
 	endif
 
-	DAP_ApplyDelayedClampModeChange(panelTitle)
+	DAP_ApplyDelayedClampModeChange(device)
 
 	Count += 1
 	ActiveSetCount -= 1
 
 #ifdef PERFING_RA
-	RA_PerfAddMark(panelTitle, count)
+	RA_PerfAddMark(device, count)
 #endif
 
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
 
-	RA_StepSweepsRemaining(panelTitle)
-	IDX_HandleIndexing(panelTitle)
+	RA_StepSweepsRemaining(device)
+	IDX_HandleIndexing(device)
 
-	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
 
 	if(count < numTotalSweeps)
-		DQM_StartDAQMultiDevice(panelTitle, initialSetupReq=0)
+		DQM_StartDAQMultiDevice(device, initialSetupReq=0)
 	else
-		RA_FinishAcquisition(panelTitle)
+		RA_FinishAcquisition(device)
 	endif
 End
 
-static Function RA_BckgTPwithCallToRACounterMD(panelTitle)
-	string panelTitle
+static Function RA_BckgTPwithCallToRACounterMD(device)
+	string device
 
 	variable numTotalSweeps
-	NVAR count = $GetCount(panelTitle)
+	NVAR count = $GetCount(device)
 
-	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(device)
 
 	if(count < (numTotalSweeps - 1))
-		RA_HandleITI_MD(panelTitle)
+		RA_HandleITI_MD(device)
 	else
-		RA_FinishAcquisition(panelTitle)
+		RA_FinishAcquisition(device)
 	endif
 End
 
@@ -402,12 +402,12 @@ static Function RA_AreLeaderAndFollowerFinished()
 	return 1
 End
 
-static Function RA_YokedRAStartMD(panelTitle)
-	string panelTitle
+static Function RA_YokedRAStartMD(device)
+	string device
 
 	// catches independent devices and leader with no follower
-	if(!DeviceCanFollow(panelTitle) || !DeviceHasFollower(ITC1600_FIRST_DEVICE))
-		RA_StartMD(panelTitle)
+	if(!DeviceCanFollow(device) || !DeviceHasFollower(ITC1600_FIRST_DEVICE))
+		RA_StartMD(device)
 		return NaN
 	endif
 
@@ -416,12 +416,12 @@ static Function RA_YokedRAStartMD(panelTitle)
 	endif
 End
 
-static Function RA_YokedRABckgTPCallRACounter(panelTitle)
-	string panelTitle
+static Function RA_YokedRABckgTPCallRACounter(device)
+	string device
 
 	// catches independent devices and leader with no follower
-	if(!DeviceCanFollow(panelTitle) || !DeviceHasFollower(ITC1600_FIRST_DEVICE))
-		RA_BckgTPwithCallToRACounterMD(panelTitle)
+	if(!DeviceCanFollow(device) || !DeviceHasFollower(ITC1600_FIRST_DEVICE))
+		RA_BckgTPwithCallToRACounterMD(device)
 		return NaN
 	endif
 
@@ -433,16 +433,16 @@ End
 /// @brief Return one if we are acquiring currently the very first sweep of a
 ///        possible repeated acquisition cycle. Zero means that we acquire a later
 ///        sweep than the first one in a repeated acquisition cycle.
-Function RA_IsFirstSweep(panelTitle)
-	string panelTitle
+Function RA_IsFirstSweep(device)
+	string device
 
-	NVAR count = $GetCount(panelTitle)
+	NVAR count = $GetCount(device)
 	return !count
 End
 
 /// @brief Allows skipping forward or backwards the sweep count during data acquistion
 ///
-/// @param panelTitle       device
+/// @param device       device
 /// @param skipCount        The number of sweeps to skip (forward or backwards)
 ///                         during repeated acquisition
 /// @param limitToSetBorder [optional, defaults to false] Limits skipCount so
@@ -450,16 +450,16 @@ End
 ///                         stimset with the most number of sweeps.
 /// @param document         [optional, defaults to false] Add labnotebook
 ///                         entries to document the sweep skipping.
-Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder, document])
-	string panelTitle
+Function RA_SkipSweeps(device, skipCount, [limitToSetBorder, document])
+	string device
 	variable skipCount, limitToSetBorder, document
 
 	variable numFollower, i, sweepsInSet, recalculatedCount
 	string followerPanelTitle, msg
 
-	NVAR count = $GetCount(panelTitle)
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
-	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	NVAR count = $GetCount(device)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+	NVAR activeSetCount = $GetActiveSetCount(device)
 
 	//Skip sweeps if, and only if, data acquisition is ongoing.
 	if(dataAcqRunMode == DAQ_NOT_RUNNING)
@@ -485,12 +485,12 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder, document])
 		if(skipCount > 0)
 			skipCount = limit(skipCount, 0, activeSetCount - 1)
 		else
-			sweepsInSet = IDX_CalculcateActiveSetCount(panelTitle)
+			sweepsInSet = IDX_CalculcateActiveSetCount(device)
 			skipCount = limit(skipCount, activeSetCount - sweepsInSet - 1, 0)
 		endif
 	endif
 
-	recalculatedCount = RA_SkipSweepCalc(panelTitle, skipCount)
+	recalculatedCount = RA_SkipSweepCalc(device, skipCount)
 	skipCount = recalculatedCount - count
 	count = recalculatedCount
 
@@ -500,13 +500,13 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder, document])
 	DEBUGPRINT(msg)
 
 	if(document)
-		RA_DocumentSweepSkipping(panelTitle, skipCount)
+		RA_DocumentSweepSkipping(device, skipCount)
 	endif
 
-	RA_StepSweepsRemaining(panelTitle)
+	RA_StepSweepsRemaining(device)
 
-	if(DeviceHasFollower(panelTitle))
-		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+	if(DeviceHasFollower(device))
+		SVAR listOfFollowerDevices = $GetFollowerList(device)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
@@ -514,7 +514,7 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder, document])
 			followerCount = RA_SkipSweepCalc(followerPanelTitle, skipCount)
 
 			if(document)
-				RA_DocumentSweepSkipping(panelTitle, skipCount)
+				RA_DocumentSweepSkipping(device, skipCount)
 			endif
 
 			RA_StepSweepsRemaining(followerPanelTitle)
@@ -523,13 +523,13 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder, document])
 End
 
 /// @brief Document the number of skipped sweeps
-static Function RA_DocumentSweepSkipping(string panelTitle, variable skipCount)
+static Function RA_DocumentSweepSkipping(string device, variable skipCount)
 
 	variable sweepNo, skipCountExisting
 
-	sweepNo = AS_GetSweepNumber(panelTitle)
+	sweepNo = AS_GetSweepNumber(device)
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
 	skipCountExisting = GetLastSettingIndep(numericalValues, sweepNo, SKIP_SWEEPS_KEY, UNKNOWN_MODE, defValue = 0)
 
 	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
@@ -539,27 +539,27 @@ static Function RA_DocumentSweepSkipping(string panelTitle, variable skipCount)
 	keys[1] = "a. u."
 	keys[2] = "0.1"
 
-	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, panelTitle, UNKNOWN_MODE)
+	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, device, UNKNOWN_MODE)
 End
 
 ///@brief Returns valid count after adding skipCount
 ///
-///@param panelTitle device
+///@param device device
 ///@param skipCount The number of sweeps to skip (forward or backwards) during repeated acquisition.
-static Function RA_SkipSweepCalc(panelTitle, skipCount)
-	string panelTitle
+static Function RA_SkipSweepCalc(device, skipCount)
+	string device
 	variable skipCount
 
 	string msg
 	variable totSweeps
 
-	totSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
-	NVAR count = $GetCount(panelTitle)
+	totSweeps = RA_GetTotalNumberOfSweeps(device)
+	NVAR count = $GetCount(device)
 
 	sprintf msg, "skipCount %d, totSweeps %d, count %d", skipCount, totSweeps, count
 	DEBUGPRINT(msg)
 
-	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 		// RA_counter and RA_counterMD increment count at initialization, -1 accounts for this and allows a skipping back to sweep 0
 		return DEBUGPRINTv(min(totSweeps - 1, max(count + skipCount, -1)))
 	else
@@ -567,31 +567,31 @@ static Function RA_SkipSweepCalc(panelTitle, skipCount)
 	endif
 End
 
-static Function RA_PerfInitialize(panelTitle)
-	string panelTitle
+static Function RA_PerfInitialize(device)
+	string device
 
-	KillOrMoveToTrash(wv = GetRAPerfWave(panelTitle))
-	WAVE perfWave = GetRAPerfWave(panelTitle)
+	KillOrMoveToTrash(wv = GetRAPerfWave(device))
+	WAVE perfWave = GetRAPerfWave(device)
 
 	perfWave[0] = RelativeNowHighPrec()
 End
 
-static Function RA_PerfAddMark(panelTitle, idx)
-	string panelTitle
+static Function RA_PerfAddMark(device, idx)
+	string device
 	variable idx
 
-	WAVE perfWave = GetRAPerfWave(panelTitle)
+	WAVE perfWave = GetRAPerfWave(device)
 
 	EnsureLargeEnoughWave(perfWave, minimumSize = idx, initialValue = NaN)
 	perfWave[idx] = RelativeNowHighPrec()
 End
 
-static Function RA_PerfFinish(panelTitle)
-	string panelTitle
+static Function RA_PerfFinish(device)
+	string device
 
-	WAVE perfWave = GetRAPerfWave(panelTitle)
+	WAVE perfWave = GetRAPerfWave(device)
 
-	NVAR count = $GetCount(panelTitle)
+	NVAR count = $GetCount(device)
 
 	Redimension/N=(count + 1) perfWave
 
@@ -611,10 +611,10 @@ End
 
 /// @brief Continue DAQ if requested or stop it
 ///
-/// @param panelTitle  device
+/// @param device  device
 /// @param multiDevice [optional, defaults to false] DAQ mode
-Function RA_ContinueOrStop(panelTitle, [multiDevice])
-	string panelTitle
+Function RA_ContinueOrStop(device, [multiDevice])
+	string device
 	variable multiDevice
 
 	if(ParamIsDefault(multiDevice))
@@ -623,21 +623,21 @@ Function RA_ContinueOrStop(panelTitle, [multiDevice])
 		multiDevice = !!multiDevice
 	endif
 
-	if(RA_IsFirstSweep(panelTitle))
-		if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	if(RA_IsFirstSweep(device))
+		if(DAG_GetNumericalValue(device, "Check_DataAcq1_RepeatAcq"))
 			if(multiDevice)
-				RA_YokedRAStartMD(panelTitle)
+				RA_YokedRAStartMD(device)
 			else
-				RA_Start(panelTitle)
+				RA_Start(device)
 			endif
 		else
-			DAP_OneTimeCallAfterDAQ(panelTitle, DQ_STOP_REASON_FINISHED)
+			DAP_OneTimeCallAfterDAQ(device, DQ_STOP_REASON_FINISHED)
 		endif
 	else
 		if(multiDevice)
-			RA_YokedRABckgTPCallRACounter(panelTitle)
+			RA_YokedRABckgTPCallRACounter(device)
 		else
-			RA_BckgTPwithCallToRACounter(panelTitle)
+			RA_BckgTPwithCallToRACounter(device)
 		endif
 	endif
 End

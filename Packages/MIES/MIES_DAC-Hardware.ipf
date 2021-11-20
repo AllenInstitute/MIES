@@ -1109,7 +1109,7 @@ Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, f
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 
 	variable i, numEntries
-	string panelTitle
+	string device
 
 	DEBUGPRINTSTACKINFO()
 
@@ -1120,13 +1120,13 @@ Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, f
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 	if(zeroDAC)
-		panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+		device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
 		if(ParamIsDefault(config))
 			if(ParamIsDefault(configFunc))
-				WAVE config = GetDAQConfigWave(panelTitle)
+				WAVE config = GetDAQConfigWave(device)
 			else
-				WAVE config = configFunc(panelTitle)
+				WAVE config = configFunc(device)
 			endif
 		endif
 
@@ -1207,17 +1207,17 @@ Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 	variable  flags
 
-	string panelTitle
+	string device
 
 	DEBUGPRINTSTACKINFO()
 
-	panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
 	if(ParamIsDefault(config))
 		if(ParamIsDefault(configFunc))
-			WAVE config = GetDAQConfigWave(panelTitle)
+			WAVE config = GetDAQConfigWave(device)
 		else
-			WAVE config = configFunc(panelTitle)
+			WAVE config = configFunc(device)
 		endif
 	endif
 
@@ -1416,25 +1416,25 @@ Function HW_ITC_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, 
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
 	variable flags, offset
 
-	string panelTitle
+	string device
 
 	DEBUGPRINTSTACKINFO()
 
-	panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
-			WAVE data = GetDAQDataWave(panelTitle, mode)
+			WAVE data = GetDAQDataWave(device, mode)
 		else
-			WAVE data = dataFunc(panelTitle)
+			WAVE data = dataFunc(device)
 		endif
 	endif
 
 	if(ParamIsDefault(config))
 		if(ParamIsDefault(configFunc))
-			WAVE config = GetDAQConfigWave(panelTitle)
+			WAVE config = GetDAQConfigWave(device)
 		else
-			WAVE config = configFunc(panelTitle)
+			WAVE config = configFunc(device)
 		endif
 	endif
 
@@ -1532,27 +1532,27 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 	variable flags
 
 	variable fifoPosValue, offset
-	string panelTitle
+	string device
 
 	DEBUGPRINTSTACKINFO()
 
-	panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
 	if(ParamIsDefault(ADChannelToMonitor))
-		NVAR ADChannelToMonitor_NVAR = $GetADChannelToMonitor(panelTitle)
+		NVAR ADChannelToMonitor_NVAR = $GetADChannelToMonitor(device)
 		ADChannelToMonitor = ADChannelToMonitor_NVAR
 	endif
 
 	if(ParamIsDefault(stopCollectionPoint))
-		NVAR stopCollectionPoint_NVAR = $GetStopCollectionPoint(panelTitle)
+		NVAR stopCollectionPoint_NVAR = $GetStopCollectionPoint(device)
 		stopCollectionPoint = stopCollectionPoint_NVAR
 	endif
 
 	if(ParamIsDefault(config))
 		if(ParamIsDefault(configFunc))
-			WAVE config = GetDAQConfigWave(panelTitle)
+			WAVE config = GetDAQConfigWave(device)
 		else
-			WAVE config = configFunc(panelTitle)
+			WAVE config = configFunc(device)
 		endif
 	endif
 
@@ -1823,10 +1823,10 @@ End
 /// @brief Returns the device channel offset for the given device
 ///
 /// @returns 16 for ITC1600 and 0 for all other types
-Function HW_ITC_CalculateDevChannelOff(panelTitle)
-	string panelTitle
+Function HW_ITC_CalculateDevChannelOff(device)
+	string device
 
-	if(IsITC1600(panelTitle))
+	if(IsITC1600(device))
 		return 16
 	endif
 
@@ -1853,11 +1853,11 @@ End
 ///
 /// The DA_Ephys panel e.g. labels the first ttlBit of #RACK_ONE as 4, but the
 /// ITC XOP treats that as 0.
-Function HW_ITC_ClipTTLBit(panelTitle, ttlBit)
-	string panelTitle
+Function HW_ITC_ClipTTLBit(device, ttlBit)
+	string device
 	variable ttlBit
 
-	if(HW_ITC_GetRackForTTLBit(panelTitle, ttlBit) == RACK_ONE)
+	if(HW_ITC_GetRackForTTLBit(device, ttlBit) == RACK_ONE)
 		return ttlBit - NUM_ITC_TTL_BITS_PER_RACK
 	else
 		return ttlBit
@@ -1866,14 +1866,14 @@ End
 
 /// @brief Return the rack number for the given ttlBit (the ttlBit is
 /// called `TTL channel` in the DA Ephys panel)
-Function HW_ITC_GetRackForTTLBit(panelTitle, ttlBit)
-	string panelTitle
+Function HW_ITC_GetRackForTTLBit(device, ttlBit)
+	string device
 	variable ttlBit
 
 	ASSERT(ttlBit < NUM_DA_TTL_CHANNELS, "Invalid channel index")
 
 	if(ttlBit >= NUM_ITC_TTL_BITS_PER_RACK)
-		ASSERT(IsITC1600(panelTitle), "Only the ITC1600 has multiple racks")
+		ASSERT(IsITC1600(device), "Only the ITC1600 has multiple racks")
 		return RACK_ONE
 	else
 		return RACK_ZERO
@@ -1884,18 +1884,18 @@ End
 ///
 /// Only the ITC1600 has two racks. The channel numbers differ for the
 /// different ITC device types.
-Function HW_ITC_GetITCXOPChannelForRack(panelTitle, rack)
-	string panelTitle
+Function HW_ITC_GetITCXOPChannelForRack(device, rack)
+	string device
 	variable rack
 
 	if(rack == RACK_ZERO)
-		if(IsITC1600(panelTitle))
+		if(IsITC1600(device))
 			return HARDWARE_ITC_TTL_1600_RACK_ZERO
 		else
 			return HARDWARE_ITC_TTL_DEF_RACK_ZERO
 		endif
 	elseif(rack == RACK_ONE)
-		ASSERT(IsITC1600(panelTitle), "Only the ITC1600 has multiple racks")
+		ASSERT(IsITC1600(device), "Only the ITC1600 has multiple racks")
 		return HARDWARE_ITC_TTL_1600_RACK_ONE
 	else
 		ASSERT(0, "Unknown rack")
@@ -1910,10 +1910,10 @@ End
 ///
 /// NI:
 /// - NaN (concept is not applicable)
-Function HW_ITC_GetNumberOfRacks(panelTitle)
-	string panelTitle
+Function HW_ITC_GetNumberOfRacks(device)
+	string device
 
-	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
+	WAVE deviceInfo = GetDeviceInfoWave(device)
 
 	return deviceInfo[%Rack]
 End
@@ -1993,7 +1993,7 @@ static Constant HW_NI_FIFO_MIN_FREE_DISK_SPACE = 960000000
 Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	variable deviceID, triggerMode, flags, repeat
 
-	string panelTitle, realDeviceOrPressure, FIFONote, noteID, fifoName, errMsg
+	string device, realDeviceOrPressure, FIFONote, noteID, fifoName, errMsg
 	variable i, pos, endpos, channelTimeOffset, err
 
 	DEBUGPRINTSTACKINFO()
@@ -2002,14 +2002,14 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		repeat = 0
 	endif
 
-	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
-	SVAR scanStr = $GetNI_AISetup(panelTitle)
+	SVAR scanStr = $GetNI_AISetup(device)
 	fifoName = GetNIFIFOName(deviceID)
 	AssertOnAndClearRTError()
 	try
 		if(!HasEnoughDiskspaceFree(SpecialDirPath("Temporary", 0, 0, 0), HW_NI_FIFO_MIN_FREE_DISK_SPACE))
-			printf "%s: Can not start acquisition. Not enough free disk space for data buffer.\rThe free disk space is less than %.0W0PB.\r", panelTitle, HW_NI_FIFO_MIN_FREE_DISK_SPACE
+			printf "%s: Can not start acquisition. Not enough free disk space for data buffer.\rThe free disk space is less than %.0W0PB.\r", device, HW_NI_FIFO_MIN_FREE_DISK_SPACE
 			ControlWindowToFront()
 			return NaN
 		endif
@@ -2019,7 +2019,7 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		else
 			DAQmx_Scan/DEV=realDeviceOrPressure/BKG FIFO=scanStr;AbortOnRTE
 		endif
-		NVAR taskIDADC = $GetNI_ADCTaskID(panelTitle)
+		NVAR taskIDADC = $GetNI_ADCTaskID(device)
 		taskIDADC = 1
 
 		// The following code just gathers additional information that is printed out
@@ -2038,7 +2038,7 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		err = ClearRTError()
 		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
-		ASSERT(0, "Start acquisition of NI device " + panelTitle + " failed with code: " + num2str(err) + "\r" + errMsg)
+		ASSERT(0, "Start acquisition of NI device " + device + " failed with code: " + num2str(err) + "\r" + errMsg)
 	endtry
 End
 
@@ -2058,27 +2058,27 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
 	variable flags, offset
 
-	string panelTitle, tempStr, realDeviceOrPressure, filename, clkStr, wavegenStr, TTLStr, fifoName, errMsg
+	string device, tempStr, realDeviceOrPressure, filename, clkStr, wavegenStr, TTLStr, fifoName, errMsg
 	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize, err, minimum, maximum
 
 	DEBUGPRINTSTACKINFO()
 
-	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
-			WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, mode)
+			WAVE/WAVE NIDataWave = GetDAQDataWave(device, mode)
 		else
-			WAVE/WAVE NIDataWave = dataFunc(panelTitle)
+			WAVE/WAVE NIDataWave = dataFunc(device)
 		endif
 	endif
 
 	if(ParamIsDefault(config))
 		if(ParamIsDefault(configFunc))
-			WAVE config = GetDAQConfigWave(panelTitle)
+			WAVE config = GetDAQConfigWave(device)
 		else
-			WAVE config = configFunc(panelTitle)
+			WAVE config = configFunc(device)
 		endif
 	endif
 
@@ -2086,11 +2086,11 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 		ASSERT(0, "Offset is not supported")
 	endif
 
-	WAVE gain = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
+	WAVE gain = SWS_GetChannelGains(device, timing = GAIN_BEFORE_DAQ)
 
 	fifoName = GetNIFIFOName(deviceID)
 	channels = DimSize(config, ROWS)
-	SVAR scanStr = $GetNI_AISetup(panelTitle)
+	SVAR scanStr = $GetNI_AISetup(device)
 	scanStr = fifoName + ";"
 	wavegenStr = ""
 	TTLStr = ""
@@ -2133,11 +2133,11 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 
 		sampleIntervall = config[0][%SamplingInterval] * 1E-6
 		fifoSize = HW_NI_FIFOSIZE/sampleIntervall
-		NVAR fifopos = $GetFifoPosition(panelTitle)
+		NVAR fifopos = $GetFifoPosition(device)
 		fifopos = 0
-		NVAR fnum = $GetFIFOFileRef(panelTitle)
+		NVAR fnum = $GetFIFOFileRef(device)
 		NewPath/O/Q tempNIAcqPath, SpecialDirPath("Temporary", 0, 0, 0)
-		filename = "MIES_FIFO_" + paneltitle + ".DAT"
+		filename = "MIES_FIFO_" + device + ".DAT"
 		Open/P=tempNIAcqPath fnum as filename
 		KillPath tempNIAcqPath
 		CtrlFIFO $fifoName, deltaT=sampleIntervall, size=fifoSize, file=fnum, note="MIES Analog In File"
@@ -2150,7 +2150,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 #else
 		DAQmx_WaveFormGen/DEV=realDeviceOrPressure/STRT=1/CLK={clkStr, 0} wavegenStr;AbortOnRTE
 #endif
-		NVAR taskIDDAC = $GetNI_DACTaskID(panelTitle)
+		NVAR taskIDDAC = $GetNI_DACTaskID(device)
 		taskIDDAC = 1
 
 		switch(ttlCnt)
@@ -2181,7 +2181,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6], TTLWaves[7]} TTLStr;AbortOnRTE
 				break
 		endswitch
-		NVAR taskIDTTL = $GetNI_TTLTaskID(panelTitle)
+		NVAR taskIDTTL = $GetNI_TTLTaskID(device)
 		taskIDTTL = ttlCnt ? V_DAQmx_DIO_TaskNumber : NaN
 
 	catch
@@ -2189,7 +2189,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 		err = ClearRTError()
 		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
-		ASSERT(0, "Prepare acquisition of NI device " + panelTitle + " failed with code: " + num2str(err) + "\r" + errMsg)
+		ASSERT(0, "Prepare acquisition of NI device " + device + " failed with code: " + num2str(err) + "\r" + errMsg)
 	endtry
 End
 
@@ -2537,7 +2537,7 @@ End
 Function HW_NI_StopAcq(deviceID, [zeroDAC, flags])
 	variable deviceID, zeroDAC, flags
 
-	string panelTitle
+	string device
 
 	HW_NI_StopADC(deviceID, flags=flags)
 	HW_NI_StopDAC(deviceID, flags=flags)
@@ -2559,10 +2559,10 @@ Function HW_NI_StopADC(deviceID, [flags])
 	DEBUGPRINTSTACKINFO()
 
 	variable ret
-	string realDeviceOrPressure, panelTitle
+	string realDeviceOrPressure, device
 
-	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	NVAR taskIDADC = $GetNI_ADCTaskID(panelTitle)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	NVAR taskIDADC = $GetNI_ADCTaskID(device)
 	if(!isNaN(taskIDADC))
 		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 		ret = fDAQmx_ScanStop(realDeviceOrPressure)
@@ -2589,10 +2589,10 @@ Function HW_NI_StopDAC(deviceID, [flags])
 	DEBUGPRINTSTACKINFO()
 
 	variable ret
-	string realDeviceOrPressure, panelTitle
+	string realDeviceOrPressure, device
 
-	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	NVAR taskIDDAC = $GetNI_DACTaskID(panelTitle)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	NVAR taskIDDAC = $GetNI_DACTaskID(device)
 	if(!isNaN(taskIDDAC))
 		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 		ret = fDAQmx_WaveformStop(realDeviceOrPressure)
@@ -2618,10 +2618,10 @@ Function HW_NI_StopTTL(deviceID, [flags])
 	DEBUGPRINTSTACKINFO()
 
 	variable ret
-	string realDeviceOrPressure, panelTitle
+	string realDeviceOrPressure, device
 
-	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	NVAR taskIDTTL = $GetNI_TTLTaskID(panelTitle)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	NVAR taskIDTTL = $GetNI_TTLTaskID(device)
 	if(!isNaN(taskIDTTL))
 		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 		ret = fDAQmx_DIO_Finished(realDeviceOrPressure, taskIDTTL)
@@ -2646,12 +2646,12 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	string realDeviceOrPressure, panelTitle, paraStr
+	string realDeviceOrPressure, device, paraStr
 	variable channels, i
 
 	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
-	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	WAVE config = GetDAQConfigWave(panelTitle)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	WAVE config = GetDAQConfigWave(device)
 
 	paraStr = ""
 	channels = DimSize(config, ROWS)
@@ -2682,10 +2682,10 @@ Function HW_NI_KillFifo(deviceID)
 
 	DEBUGPRINTSTACKINFO()
 
-	string fifoName, errMsg, panelTitle
+	string fifoName, errMsg, device
 	variable err
 
-	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	fifoName = GetNIFIFOName(deviceID)
 
 	FIFOStatus/Q $fifoName
@@ -2703,7 +2703,7 @@ Function HW_NI_KillFifo(deviceID)
 	catch
 		errMsg = GetRTErrMessage()
 		err = ClearRTError()
-		print "Could not cleanup FIFO of NI device " + panelTitle + ", failed with code: " + num2str(err) + "\r" + errMsg
+		print "Could not cleanup FIFO of NI device " + device + ", failed with code: " + num2str(err) + "\r" + errMsg
 		ControlWindowToFront()
 	endtry
 End

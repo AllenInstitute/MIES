@@ -38,56 +38,56 @@ End
 /// @brief Utility function to generate new window recreation macro of DataBrowser (also used for SweepBrowser)
 ///        after GUI editor adapted controls in development process
 Function DB_ResetAndStoreCurrentDBPanel()
-	string panelTitle, bsPanel, scPanel, shPanel, recreationCode
+	string device, bsPanel, scPanel, shPanel, recreationCode
 	string sfFormula, sfJSON
 
-	panelTitle = GetMainWindow(GetCurrentWindow())
-	if(!windowExists(panelTitle))
+	device = GetMainWindow(GetCurrentWindow())
+	if(!windowExists(device))
 		print "The top panel does not exist"
 		ControlWindowToFront()
 		return NaN
 	endif
-	if(CmpStr(panelTitle, DATABROWSER_WINDOW_TITLE))
+	if(CmpStr(device, DATABROWSER_WINDOW_TITLE))
 		printf "The top window is not named \"%s\"\r", DATABROWSER_WINDOW_TITLE
 		return NaN
 	endif
 
 	// allow an already used panel to be used again
-	if(!HasPanelLatestVersion(panelTitle, DATA_SWEEP_BROWSER_PANEL_VERSION))
-		AddVersionToPanel(panelTitle, DATA_SWEEP_BROWSER_PANEL_VERSION)
+	if(!HasPanelLatestVersion(device, DATA_SWEEP_BROWSER_PANEL_VERSION))
+		AddVersionToPanel(device, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	endif
 
-	bsPanel = BSP_GetPanel(panelTitle)
-	scPanel = BSP_GetSweepControlsPanel(panelTitle)
-	shPanel = LBV_GetSettingsHistoryPanel(panelTitle)
+	bsPanel = BSP_GetPanel(device)
+	scPanel = BSP_GetSweepControlsPanel(device)
+	shPanel = LBV_GetSettingsHistoryPanel(device)
 
 	ASSERT(WindowExists(bsPanel) && WindowExists(scPanel) && WindowExists(shPanel), "BrowserSettings or SweepControl or SettingsHistory panel subwindow does not exist.")
 
 	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = NONE)
-	panelTitle = GetMainWindow(GetCurrentWindow())
+	device = GetMainWindow(GetCurrentWindow())
 
-	if(CmpStr(panelTitle, DATABROWSER_WINDOW_TITLE))
+	if(CmpStr(device, DATABROWSER_WINDOW_TITLE))
 		printf "The top window is not named \"%s\" after unlocking\r", DATABROWSER_WINDOW_TITLE
 		return NaN
 	endif
 
 	// The following block resets the GUI state of the window and subwindows
-	HideTools/W=$panelTitle/A
+	HideTools/W=$device/A
 	HideTools/W=$bsPanel/A
 	HideTools/W=$scPanel/A
 	HideTools/W=$shPanel/A
 
-	PGC_SetAndActivateControl(panelTitle, "button_BSP_open")
+	PGC_SetAndActivateControl(device, "button_BSP_open")
 	DB_ClearAllGraphs()
-	LBV_ClearGraph(panelTitle)
+	LBV_ClearGraph(device)
 
 	Checkbox check_BrowserSettings_OVS WIN = $bsPanel, value= 0
 
-	BSP_InitPanel(panelTitle)
+	BSP_InitPanel(device)
 
-	BSP_UnsetDynamicSweepControlOfDataBrowser(panelTitle)
-	BSP_UnsetDynamicStartupSettingsOfDataBrowser(panelTitle)
-	BSP_UnsetDynamicSettingsHistory(panelTitle)
+	BSP_UnsetDynamicSweepControlOfDataBrowser(device)
+	BSP_UnsetDynamicStartupSettingsOfDataBrowser(device)
+	BSP_UnsetDynamicSettingsHistory(device)
 
 	// store current positions as reference
 	StoreCurrentPanelsResizeInfo(bsPanel)
@@ -95,15 +95,15 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	TabControl SF_InfoTab, WIN = $bsPanel, value=0, disable=1
 
 	// invalidate main panel
-	SetWindow $panelTitle, userData(panelVersion) = ""
-	SetWindow $panelTitle, userdata(Config_FileName) = ""
-	SetWindow $panelTitle, userdata(Config_FileHash) = ""
-	SetWindow $panelTitle, userdata(Config_FileHash) = ""
-	SetWindow $panelTitle, userdata(PulseAverageSettings) = ""
+	SetWindow $device, userData(panelVersion) = ""
+	SetWindow $device, userdata(Config_FileName) = ""
+	SetWindow $device, userdata(Config_FileHash) = ""
+	SetWindow $device, userdata(Config_FileHash) = ""
+	SetWindow $device, userdata(PulseAverageSettings) = ""
 
 	// invalidate hooks
 #if IgorVersion() >= 9.00
-	SetWindow $panelTitle,tooltiphook(hook)=$""
+	SetWindow $device,tooltiphook(hook)=$""
 #endif
 
 	// static defaults for SweepControl subwindow
@@ -218,16 +218,16 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	CheckBox check_BrowserSettings_VisEpochs WIN = $bsPanel, value=0, disable=0
 
-	sfFormula = BSP_GetSFFormula(panelTitle)
+	sfFormula = BSP_GetSFFormula(device)
 	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps()\r)")
 
-	sfJSON = BSP_GetSFJSON(panelTitle)
+	sfJSON = BSP_GetSFJSON(device)
 	ReplaceNotebookText(sfJSON, "")
 
 	SetVariable setvar_sweepFormula_parseResult WIN = $bsPanel, value=_STR:""
 	ValDisplay status_sweepFormula_parser, WIN = $bsPanel, value=1
 
-	SearchForInvalidControlProcs(panelTitle)
+	SearchForInvalidControlProcs(device)
 	print "Do not forget to increase DATA_SWEEP_BROWSER_PANEL_VERSION."
 
 	Execute/P/Z "DoWindow/R " + DATABROWSER_WINDOW_TITLE
@@ -690,8 +690,8 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 End
 
 /// @brief Find a Databrowser which is locked to the given DAEphys panel
-Function/S DB_FindDataBrowser(panelTitle)
-	string panelTitle
+Function/S DB_FindDataBrowser(device)
+	string device
 
 	string panelList
 	string panel
@@ -707,7 +707,7 @@ Function/S DB_FindDataBrowser(panelTitle)
 			continue
 		endif
 
-		if(!cmpstr(panelTitle, BSP_GetDevice(panel)))
+		if(!cmpstr(device, BSP_GetDevice(panel)))
 			return panel
 		endif
 	endfor

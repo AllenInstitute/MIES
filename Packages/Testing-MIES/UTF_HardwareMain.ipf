@@ -869,14 +869,14 @@ Function StopAllBackgroundTasks()
 	endfor
 End
 
-Function CheckLBIndexCache_IGNORE(string panelTitle)
+Function CheckLBIndexCache_IGNORE(string device)
 
 	variable i, j, k, l, numEntries, numSweeps, numRows, numCols, numLayers
 	variable entry, sweepNo, entrySourceType
 	string setting, msg
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues = GetLBTextualValues(device)
 
 	Make/FREE/WAVE entries = {numericalValues, textualValues}
 	numEntries = DimSize(entries, ROWS)
@@ -940,12 +940,12 @@ Function CheckLBIndexCache_IGNORE(string panelTitle)
 	endfor
 End
 
-Function CheckLBRowCache_IGNORE(string panelTitle)
+Function CheckLBRowCache_IGNORE(string device)
 
 	variable i, j, k, numEntries, numRows, numCols, numLayers, first, last, sweepNo, entrySourceType
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues = GetLBTextualValues(device)
 
 	Make/FREE/WAVE entries = {numericalValues, textualValues}
 
@@ -1100,11 +1100,11 @@ Function AddLabnotebookEntries_IGNORE(s)
 	return 0
 End
 
-static Function TestSweepReconstruction_IGNORE(string panelTitle)
+static Function TestSweepReconstruction_IGNORE(string device)
 	variable i, numEntries, sweepNo
 	string list, nameRecon, nameOrig
 
-	WAVE numericalValues = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBTextualValues(device)
 
 	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
 
@@ -1114,7 +1114,7 @@ static Function TestSweepReconstruction_IGNORE(string panelTitle)
 		return NaN
 	endif
 
-	DFREF deviceDFR = GetDeviceDataPath(panelTitle)
+	DFREF deviceDFR = GetDeviceDataPath(device)
 
 	DuplicateDataFolder/O=1 deviceDFR, deviceDataBorkedUp
 	DFREF deviceDataBorkedUp = deviceDataBorkedUp
@@ -1128,7 +1128,7 @@ static Function TestSweepReconstruction_IGNORE(string panelTitle)
 	for(i = 0; i < numEntries; i += 1)
 		sweepNo = sweeps[i]
 
-		WAVE sweepWave  = GetSweepWave(panelTitle, sweepNo)
+		WAVE sweepWave  = GetSweepWave(device, sweepNo)
 		WAVE configWave = GetConfigWave(sweepWave)
 
 		DFREF singleSweepDFR = GetSingleSweepFolder(deviceDataBorkedUp, sweepNo)
@@ -1140,7 +1140,7 @@ static Function TestSweepReconstruction_IGNORE(string panelTitle)
 	list = GetListOfObjects(deviceDataBorkedUp, ".*", typeFlag = COUNTOBJECTS_WAVES, fullPath = 1)
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
 
-	RecreateMissingSweepAndConfigWaves(panelTitle, deviceDataBorkedUp)
+	RecreateMissingSweepAndConfigWaves(device, deviceDataBorkedUp)
 
 	// compare the 2D sweep and config waves in deviceDFR and reconstructed
 	DFREF reconstructed = root:reconstructed

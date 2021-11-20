@@ -289,7 +289,7 @@ End
 /// @ingroup StimsetAPIFunctions
 Function ST_RemoveStimSet(string setName)
 	variable i, numPanels, channelType
-	string lockedDevices, panelTitle
+	string lockedDevices, device
 
 	lockedDevices = GetListOfLockedDevices()
 	if(IsEmpty(lockedDevices))
@@ -299,9 +299,9 @@ Function ST_RemoveStimSet(string setName)
 
 	numPanels = ItemsInList(lockedDevices)
 	for(i = 0; i < numPanels; i += 1)
-		panelTitle = StringFromList(i, lockedDevices)
+		device = StringFromList(i, lockedDevices)
 
-		DAP_DeleteStimulusSet(setName, device = panelTitle)
+		DAP_DeleteStimulusSet(setName, device = device)
 	endfor
 End
 

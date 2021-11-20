@@ -21,8 +21,8 @@ static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 ///
 /// Handles the TP initiation for all DAQ devices. Yoked ITC1600s are handled specially using the external trigger.
 /// The external trigger is assumed to be a arduino device using the arduino squencer.
-Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
-	string panelTitle
+Function TPM_StartTPMultiDeviceLow(device, [runModifier, fast])
+	string device
 	variable runModifier
 	variable fast
 
@@ -42,14 +42,14 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 		runMode = runMode | runModifier
 	endif
 
-	if(!DeviceHasFollower(panelTitle))
+	if(!DeviceHasFollower(device))
 		AssertOnAndClearRTError()
 		try
-			TP_Setup(panelTitle, runMode, fast = fast)
-			TPM_BkrdTPMD(panelTitle)
+			TP_Setup(device, runMode, fast = fast)
+			TPM_BkrdTPMD(device)
 		catch
 			ClearRTError()
-			TP_Teardown(panelTitle)
+			TP_Teardown(device)
 		endtry
 
 		return NaN
@@ -57,7 +57,7 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 		ASSERT(!fast, "fast mode does not work with yoking")
 	endif
 
-	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+	SVAR listOfFollowerDevices = $GetFollowerList(device)
 	numFollower = ItemsInList(listOfFollowerDevices)
 
 	AssertOnAndClearRTError()
@@ -68,7 +68,7 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 			TP_Setup(followerPanelTitle, runMode)
 		endfor
 
-		TP_Setup(panelTitle, runMode)
+		TP_Setup(device, runMode)
 	catch
 		ClearRTError()
 		// deconfigure all followers
@@ -78,12 +78,12 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 		endfor
 
 		// deconfigure leader
-		TP_Teardown(panelTitle)
+		TP_Teardown(device)
 		return NaN
 	endtry
 
 	// Sets lead board in wait for trigger
-	TPM_BkrdTPMD(panelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
+	TPM_BkrdTPMD(device, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 
 	// set followers in wait for trigger
 	for(i = 0; i < numFollower; i += 1)
@@ -96,8 +96,8 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 End
 
 /// @brief Start a multi device test pulse, always done in background mode
-Function TPM_StartTestPulseMultiDevice(panelTitle, [fast])
-	string panelTitle
+Function TPM_StartTestPulseMultiDevice(device, [fast])
+	string device
 	variable fast
 
 	if(ParamIsDefault(fast))
@@ -107,28 +107,28 @@ Function TPM_StartTestPulseMultiDevice(panelTitle, [fast])
 	endif
 
 	if(fast)
-		TPM_StartTPMultiDeviceLow(panelTitle, fast = 1)
+		TPM_StartTPMultiDeviceLow(device, fast = 1)
 		return NaN
 	endif
 
-	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
+	AbortOnValue DAP_CheckSettings(device, TEST_PULSE_MODE),1
 
-	DQ_StopOngoingDAQ(panelTitle, DQ_STOP_REASON_TP_STARTED)
+	DQ_StopOngoingDAQ(device, DQ_STOP_REASON_TP_STARTED)
 
 	// stop early as "TP after DAQ" might be already running
-	if(TP_CheckIfTestpulseIsRunning(panelTitle))
+	if(TP_CheckIfTestpulseIsRunning(device))
 		return NaN
 	endif
 
-	TPM_StartTPMultiDeviceLow(panelTitle)
-	P_InitBeforeTP(panelTitle)
+	TPM_StartTPMultiDeviceLow(device)
+	P_InitBeforeTP(device)
 End
 
 /// @brief Stop the TP on yoked devices simultaneously
 ///
 /// Handles also non-yoked devices in multi device mode correctly.
-Function TPM_StopTestPulseMultiDevice(panelTitle, [fast])
-	string panelTitle
+Function TPM_StopTestPulseMultiDevice(device, [fast])
+	string device
 	variable fast
 
 	if(ParamIsDefault(fast))
@@ -138,25 +138,25 @@ Function TPM_StopTestPulseMultiDevice(panelTitle, [fast])
 	endif
 
 	if(fast)
-		DQM_CallFuncForDevicesYoked(panelTitle, TPM_StopTPMDFast)
+		DQM_CallFuncForDevicesYoked(device, TPM_StopTPMDFast)
 	else
-		DQM_CallFuncForDevicesYoked(panelTitle, TPM_StopTPMD)
+		DQM_CallFuncForDevicesYoked(device, TPM_StopTPMD)
 	endif
 End
 
-static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
-	string panelTitle
+static Function TPM_BkrdTPMD(device, [triggerMode])
+	string device
 	variable triggerMode
 
-	variable hardwareType = GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(device)
 
 	if(ParamIsDefault(triggerMode))
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
 
-	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(device)
 
-	TPM_AddDevice(panelTitle)
+	TPM_AddDevice(device)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -166,7 +166,7 @@ static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
 			break
 		case HARDWARE_NI_DAC:
 			HW_StartAcq(HARDWARE_NI_DAC, deviceID, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR, repeat=1)
-			NVAR tpCounter = $GetNITestPulseCounter(panelTitle)
+			NVAR tpCounter = $GetNITestPulseCounter(device)
 			tpCounter = 0
 			break
 	endswitch
@@ -184,7 +184,7 @@ Function TPM_BkrdTPFuncMD(s)
 	variable i, j, deviceID, fifoPos, hardwareType, checkAgain, updateInt, endOfPulse
 	variable fifoLatest, lastTP, now
 	variable channelNr, tpLengthPoints, err
-	string panelTitle, fifoChannelName, fifoName, errMsg
+	string device, fifoChannelName, fifoName, errMsg
 
 	variable debTime
 
@@ -207,24 +207,24 @@ Function TPM_BkrdTPFuncMD(s)
 	for(i = 0; i < GetNumberFromWaveNote(ActiveDeviceList, NOTE_INDEX); i += 1)
 		deviceID = ActiveDeviceList[i][%DeviceID]
 		hardwareType = ActiveDeviceList[i][%HardwareType]
-		panelTitle = HW_GetMainDeviceName(hardwareType, deviceID)
+		device = HW_GetMainDeviceName(hardwareType, deviceID)
 
-		WAVE TPSettingsCalc = GetTPsettingsCalculated(panelTitle)
+		WAVE TPSettingsCalc = GetTPsettingsCalculated(device)
 
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
 				// Pull data until end of FIFO, after BGTask finishes Graph shows only last update
 				do
 					checkAgain = 0
-					NVAR tpCounter = $GetNITestPulseCounter(panelTitle)
-					NVAR datapoints = $GetStopCollectionPoint(panelTitle)
+					NVAR tpCounter = $GetNITestPulseCounter(device)
+					NVAR datapoints = $GetStopCollectionPoint(device)
 					fifoName = GetNIFIFOName(deviceID)
 
 					FIFOStatus/Q $fifoName
 					ASSERT(V_Flag != 0,"FIFO does not exist!")
 					endOfPulse = datapoints * tpCounter + datapoints
 					if(V_FIFOChunks >= endOfPulse)
-						WAVE/WAVE NIDataWave = GetDAQDataWave(panelTitle, TEST_PULSE_MODE)
+						WAVE/WAVE NIDataWave = GetDAQDataWave(device, TEST_PULSE_MODE)
 
 						AssertOnAndClearRTError()
 						try
@@ -236,12 +236,12 @@ Function TPM_BkrdTPFuncMD(s)
 								SetScale/P x, 0, DimDelta(NIChannel, ROWS) * 1000, "ms", NIChannel
 							endfor
 
-							SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, deviceID=deviceID)
+							SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, deviceID=deviceID)
 						catch
 							errMsg = GetRTErrMessage()
 							err = ClearRTError()
 							LOG_AddEntry(PACKAGE_MIES, "hardware error")
-							DQ_StopOngoingDAQ(panelTitle, DQ_STOP_REASON_HW_ERROR)
+							DQ_StopOngoingDAQ(device, DQ_STOP_REASON_HW_ERROR)
 							if(err == 18)
 								ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
 							else
@@ -265,10 +265,10 @@ Function TPM_BkrdTPFuncMD(s)
 				while(checkAgain)
 			break
 		case HARDWARE_ITC_DAC:
-			WAVE ITCDataWave = GetDAQDataWave(panelTitle, TEST_PULSE_MODE)
+			WAVE ITCDataWave = GetDAQDataWave(device, TEST_PULSE_MODE)
 
-			NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
-			if(DeviceHasFollower(panelTitle))
+			NVAR tgID = $GetThreadGroupIDFIFO(device)
+			if(DeviceHasFollower(device))
 				WAVE/Z/D result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"})
 
 				if(WaveExists(result))
@@ -294,7 +294,7 @@ Function TPM_BkrdTPFuncMD(s)
 				endif
 
 				// give up
-				TPM_StopTestPulseMultiDevice(panelTitle)
+				TPM_StopTestPulseMultiDevice(device)
 				return 0
 			endif
 
@@ -309,17 +309,17 @@ Function TPM_BkrdTPFuncMD(s)
 			// Ensures that the new TP chunk isn't the same as the last one.
 			// This is required to keep the TP buffer in sync.
 			if(lastTP >= 0 && lastTP != ActiveDeviceList[i][%ActiveChunk])
-				SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, chunk=lastTP)
+				SCOPE_UpdateOscilloscopeData(device, TEST_PULSE_MODE, chunk=lastTP)
 				ActiveDeviceList[i][%ActiveChunk] = lastTP
 			endif
 
 			break
 		endswitch
 
-		SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)
+		SCOPE_UpdateGraph(device, TEST_PULSE_MODE)
 
 		if(GetKeyState(0) & ESCAPE_KEY)
-			DQ_StopOngoingDAQ(panelTitle, DQ_STOP_REASON_ESCAPE_KEY)
+			DQ_StopOngoingDAQ(device, DQ_STOP_REASON_ESCAPE_KEY)
 		endif
 	endfor
 
@@ -329,21 +329,21 @@ Function TPM_BkrdTPFuncMD(s)
 End
 
 /// @brief Wrapper for DQM_CallFuncForDevicesYoked()
-static Function TPM_StopTPMD(panelTitle)
-	string panelTitle
+static Function TPM_StopTPMD(device)
+	string device
 
-	return TPM_StopTPMDWrapper(panelTitle, fast = 0)
+	return TPM_StopTPMDWrapper(device, fast = 0)
 End
 
 /// @brief Wrapper for DQM_CallFuncForDevicesYoked()
-static Function TPM_StopTPMDFast(panelTitle)
-	string panelTitle
+static Function TPM_StopTPMDFast(device)
+	string device
 
-	return TPM_StopTPMDWrapper(panelTitle, fast = 1)
+	return TPM_StopTPMDWrapper(device, fast = 1)
 End
 
-static Function TPM_StopTPMDWrapper(panelTitle, [fast])
-	string panelTitle
+static Function TPM_StopTPMDWrapper(device, [fast])
+	string device
 	variable fast
 
 	if(ParamIsDefault(fast))
@@ -352,9 +352,9 @@ static Function TPM_StopTPMDWrapper(panelTitle, [fast])
 		fast = !!fast
 	endif
 
-	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(device)
 
-	variable hardwareType = GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(device)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		TFH_StopFifoDaemon(HARDWARE_ITC_DAC, deviceID)
 	endif
@@ -362,12 +362,12 @@ static Function TPM_StopTPMDWrapper(panelTitle, [fast])
 	if(!HW_SelectDevice(hardwareType, deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP) \
 	   && HW_IsRunning(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR))
 		HW_StopAcq(hardwareType, deviceID, zeroDAC = 1)
-		TPM_RemoveDevice(panelTitle)
+		TPM_RemoveDevice(device)
 		if(!TPM_HasActiveDevices())
 			CtrlNamedBackground $TASKNAME_TPMD, stop
 		endif
 
-		TP_Teardown(panelTitle, fast = fast)
+		TP_Teardown(device, fast = fast)
 	endif
 End
 
@@ -377,14 +377,14 @@ static Function TPM_HasActiveDevices()
 	return GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX) > 0
 End
 
-static Function TPM_RemoveDevice(panelTitle)
-	string panelTitle
+static Function TPM_RemoveDevice(device)
+	string device
 
 	variable idx
 	string msg
 
 	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
-	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(device)
 
 	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX) - 1
 	ASSERT(idx >= 0, "Invalid index")
@@ -399,28 +399,28 @@ static Function TPM_RemoveDevice(panelTitle)
 
 	SetNumberInWaveNote(ActiveDevicesTPMD, NOTE_INDEX, idx)
 
-	sprintf msg, "Remove device %s in row %d", panelTitle, V_Value
+	sprintf msg, "Remove device %s in row %d", device, V_Value
 	DEBUGPRINT(msg)
 End
 
-static Function TPM_AddDevice(panelTitle)
-	string panelTitle
+static Function TPM_AddDevice(device)
+	string device
 
 	variable idx
 	string msg
 
-	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(device)
 	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
 
 	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX)
 	EnsureLargeEnoughWave(ActiveDevicesTPMD, minimumSize=idx + 1)
 
 	ActiveDevicesTPMD[idx][%DeviceID]     = deviceID
-	ActiveDevicesTPMD[idx][%HardwareType] = GetHardwareType(panelTitle)
+	ActiveDevicesTPMD[idx][%HardwareType] = GetHardwareType(device)
 	ActiveDevicesTPMD[idx][%activeChunk] = NaN
 
 	SetNumberInWaveNote(ActiveDevicesTPMD, NOTE_INDEX, idx + 1)
 
-	sprintf msg, "Adding device %s with deviceID %d in row %d", panelTitle, deviceID, idx
+	sprintf msg, "Adding device %s with deviceID %d in row %d", device, deviceID, idx
 	DEBUGPRINT(msg)
 End

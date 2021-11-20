@@ -24,50 +24,50 @@
 
 /// @brief Return the headstage the AD channel is assigned to
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param AD         AD channel in the range [0,8[ or [0,16[
 ///                   depending on the hardware
 ///
 /// @return headstage or NaN (for non-associated channels)
-Function AFH_GetHeadstageFromADC(panelTitle, AD)
-	string panelTitle
+Function AFH_GetHeadstageFromADC(device, AD)
+	string device
 	variable AD
 
-	WAVE channelClampMode = GetChannelClampMode(panelTitle)
+	WAVE channelClampMode = GetChannelClampMode(device)
 
 	return channelClampMode[AD][%ADC][%Headstage]
 End
 
 /// @brief Return the headstage the DA channel is assigned to
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param DA         DA channel in the range [0,4[ or [0,8[
 ///                   depending on the hardware
 ///
 /// @return headstage or NaN (for non-associated channels)
-Function AFH_GetHeadstageFromDAC(panelTitle, DA)
-	string panelTitle
+Function AFH_GetHeadstageFromDAC(device, DA)
+	string device
 	variable DA
 
-	WAVE channelClampMode = GetChannelClampMode(panelTitle)
+	WAVE channelClampMode = GetChannelClampMode(device)
 
 	return channelClampMode[DA][%DAC][%Headstage]
 End
 
 /// @brief Return the AD channel assigned to the headstage
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param headstage  headstage in the range [0,8[
 ///
 /// @return AD channel or NaN (for non-associated channels)
-Function AFH_GetADCFromHeadstage(panelTitle, headstage)
-	string panelTitle
+Function AFH_GetADCFromHeadstage(device, headstage)
+	string device
 	variable headstage
 
 	variable i, retHeadstage
 
 	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
-		retHeadstage = AFH_GetHeadstageFromADC(panelTitle, i)
+		retHeadstage = AFH_GetHeadstageFromADC(device, i)
 		if(isFinite(retHeadstage) && retHeadstage == headstage)
 			return i
 		endif
@@ -78,18 +78,18 @@ End
 
 /// @brief Return the DA channel assigned to the headstage
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param headstage  headstage in the range [0,8[
 ///
 /// @return DA channel or NaN (for non-associated channels)
-Function AFH_GetDACFromHeadstage(panelTitle, headstage)
-	string panelTitle
+Function AFH_GetDACFromHeadstage(device, headstage)
+	string device
 	variable headstage
 
 	variable i, retHeadstage
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		retHeadstage = AFH_GetHeadstageFromDAC(panelTitle, i)
+		retHeadstage = AFH_GetHeadstageFromDAC(device, i)
 		if(isFinite(retHeadstage) && retHeadstage == headstage)
 			return i
 		endif
@@ -102,7 +102,7 @@ End
 ///        combination
 ///
 /// @param DAQConfigWave DAQ configuration wave, most users need to call
-///                      `GetDAQConfigWave(panelTitle)` to get that wave.
+///                      `GetDAQConfigWave(device)` to get that wave.
 /// @param channelNumber channel number (0-based)
 /// @param channelType   channel type, one of @ref XopChannelConstants
 threadsafe Function AFH_GetDAQDataColumn(DAQConfigWave, channelNumber, channelType)
@@ -137,7 +137,7 @@ End
 /// @brief Return all channel units as free text wave
 ///
 /// @param DAQConfigWave DAQ configuration wave, most users need to call
-///                      `GetDAQConfigWave(panelTitle)` to get that wave.
+///                      `GetDAQConfigWave(device)` to get that wave.
 threadsafe Function/WAVE AFH_GetChannelUnits(DAQConfigWave)
 	WAVE DAQConfigWave
 
@@ -155,7 +155,7 @@ End
 /// @brief Return the channel unit
 ///
 /// @param DAQConfigWave DAQ configuration wave, most users need to call
-///                      `GetDAQConfigWave(panelTitle)` to get that wave.
+///                      `GetDAQConfigWave(device)` to get that wave.
 /// @param channelNumber channel number (0-based)
 /// @param channelType   channel type, one of @ref XopChannelConstants
 Function/S AFH_GetChannelUnit(DAQConfigWave, channelNumber, channelType)
@@ -179,13 +179,13 @@ End
 /// Handles sweep number rollback properly.
 ///
 /// @return a non-negative integer sweep number or NaN if there is no data
-Function AFH_GetLastSweepAcquired(panelTitle)
-	string panelTitle
+Function AFH_GetLastSweepAcquired(device)
+	string device
 
 	string list, name
 	variable numItems, i, sweep
 
-	list = GetListOfObjects(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP)
+	list = GetListOfObjects(GetDeviceDataPath(device), DATA_SWEEP_REGEXP)
 	list = SortList(list, ";", 1 + 16) // descending and case-insensitive alphanumeric
 
 	numItems = ItemsInList(list)
@@ -193,7 +193,7 @@ Function AFH_GetLastSweepAcquired(panelTitle)
 		name = StringFromList(i, list)
 		sweep = ExtractSweepNumber(name)
 
-		if(WaveExists(GetSweepWave(panelTitle, sweep)))
+		if(WaveExists(GetSweepWave(device, sweep)))
 			return sweep
 		endif
 	endfor
@@ -204,26 +204,26 @@ End
 /// @brief Return the sweep wave of the last acquired sweep
 ///
 /// @return an existing sweep wave or an invalid wave reference if there is no data
-Function/WAVE AFH_GetLastSweepWaveAcquired(panelTitle)
-	string panelTitle
+Function/WAVE AFH_GetLastSweepWaveAcquired(device)
+	string device
 
-	return GetSweepWave(panelTitle, AFH_GetLastSweepAcquired(panelTitle))
+	return GetSweepWave(device, AFH_GetLastSweepAcquired(device))
 End
 
 /// @brief Return the stimset for the given channel
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param chanNo	channel number (0-based)
 /// @param channelType		one of the type constants from @ref ChannelTypeAndControlConstants
 /// @return an existing stimulus set name for a DA channel
-Function/S AFH_GetStimSetName(panelTitle, chanNo, channelType)
-	string panelTitle
+Function/S AFH_GetStimSetName(device, chanNo, channelType)
+	string device
 	variable chanNo
 	variable channelType
 
 	string ctrl, stimset
 	ctrl = GetPanelControl(chanNo, channelType, CHANNEL_CONTROL_WAVE)
-	ControlInfo/W=$panelTitle $ctrl
+	ControlInfo/W=$device $ctrl
 	stimset = S_Value
 
 	ASSERT(!isEmpty(stimset), "Empty stimset")
@@ -368,9 +368,9 @@ End
 /// .. code-block:: igorpro
 ///
 /// 	variable sweepNo = 5
-/// 	WAVE sweep = GetSweepWave(panelTitle, sweepNo)
+/// 	WAVE sweep = GetSweepWave(device, sweepNo)
 /// 	variable headstage = 1
-/// 	WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, XOP_CHANNEL_TYPE_ADC)
+/// 	WAVE data = AFH_ExtractOneDimDataFromSweep(device, sweep, headstage, XOP_CHANNEL_TYPE_ADC)
 /// \endrst
 ///
 /// Extract the TTL channel 1:
@@ -379,18 +379,18 @@ End
 /// .. code-block:: igorpro
 ///
 /// 	variable sweepNo = 6
-/// 	WAVE sweep = GetSweepWave(panelTitle, sweepNo)
+/// 	WAVE sweep = GetSweepWave(device, sweepNo)
 /// 	variable ttlChannel = 1
-/// 	WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, ttlChannel, XOP_CHANNEL_TYPE_TTL)
+/// 	WAVE data = AFH_ExtractOneDimDataFromSweep(device, sweep, ttlChannel, XOP_CHANNEL_TYPE_TTL)
 /// \endrst
 ///
-/// @param panelTitle            device
+/// @param device            device
 /// @param sweep                 sweep wave
 /// @param headstageOrChannelNum headstage [0, NUM_HEADSTAGES[ or channel number for TTL channels [0, NUM_DA_TTL_CHANNELS]
 /// @param channelType           One of @ref XopChannelConstants
 /// @param config                [optional, defaults to config wave of the sweep returned by GetConfigWave()] config wave
-Function/WAVE AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstageOrChannelNum, channelType, [config])
-	string panelTitle
+Function/WAVE AFH_ExtractOneDimDataFromSweep(device, sweep, headstageOrChannelNum, channelType, [config])
+	string device
 	WAVE sweep
 	variable headstageOrChannelNum, channelType
 	WAVE config
@@ -403,10 +403,10 @@ Function/WAVE AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstageOrChann
 
 	switch(channelType)
 		case XOP_CHANNEL_TYPE_DAC:
-			channelNum = AFH_GetDACFromHeadstage(panelTitle, headstageOrChannelNum)
+			channelNum = AFH_GetDACFromHeadstage(device, headstageOrChannelNum)
 			break
 		case XOP_CHANNEL_TYPE_ADC:
-			channelNum = AFH_GetADCFromHeadstage(panelTitle, headstageOrChannelNum)
+			channelNum = AFH_GetADCFromHeadstage(device, headstageOrChannelNum)
 			break
 		case XOP_CHANNEL_TYPE_TTL:
 			channelNum = headstageOrChannelNum

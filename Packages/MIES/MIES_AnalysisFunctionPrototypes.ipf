@@ -13,15 +13,15 @@
 
 /// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V3() instead
 ///
-/// @param panelTitle  device
+/// @param device  device
 /// @param eventType   eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
 ///                    always compare `eventType` with the constants, never use the current numerical value directly
 /// @param DAQDataWave data wave (locked to prevent changes using `SetWaveLock`)
 /// @param headStage   active headstage index
 ///
 /// @return ignored
-Function AF_PROTO_ANALYSIS_FUNC_V1(panelTitle, eventType, DAQDataWave, headStage)
-	string panelTitle
+Function AF_PROTO_ANALYSIS_FUNC_V1(device, eventType, DAQDataWave, headStage)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage
@@ -29,7 +29,7 @@ End
 
 /// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V3() instead
 ///
-/// @param panelTitle     device
+/// @param device     device
 /// @param eventType      eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
 ///                       always compare `eventType` with the constants, never use the current numerical value directly
 /// @param DAQDataWave    data wave (locked to prevent changes using `SetWaveLock`)
@@ -38,8 +38,8 @@ End
 ///                       higher due to alignment requirements of the data acquisition hardware. `NaN` for #PRE_DAQ_EVENT events.
 ///
 /// @return see @ref AnalysisFunction_V3DescriptionTable
-Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
-	string panelTitle
+Function AF_PROTO_ANALYSIS_FUNC_V2(device, eventType, DAQDataWave, headStage, realDataLength)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage, realDataLength
@@ -47,12 +47,12 @@ Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, DAQDataWave, headStage
 	return 0
 End
 
-/// @param panelTitle device
+/// @param device device
 /// @param s          analysis event structure
 ///
 /// @return see @ref AnalysisFunction_V3DescriptionTable
-Function AF_PROTO_ANALYSIS_FUNC_V3(panelTitle, s)
-	string panelTitle
+Function AF_PROTO_ANALYSIS_FUNC_V3(device, s)
+	string device
 	STRUCT AnalysisFunction_V3 &s
 
 	return 0

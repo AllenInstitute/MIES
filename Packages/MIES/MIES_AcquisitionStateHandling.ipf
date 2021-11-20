@@ -48,16 +48,16 @@ End
 ///
 /// We track the acquisition state so that we can perform actions for state transitions when required.
 ///
-/// @param panelTitle  device
+/// @param device  device
 /// @param newAcqState One of @ref AcquisitionStates
 /// @param call        [optional, defaults to false] Call analysis function
 ///                    which is connected to the state transition.
-Function AS_HandlePossibleTransition(string panelTitle, variable newAcqState, [variable call])
+Function AS_HandlePossibleTransition(string device, variable newAcqState, [variable call])
 
 	variable oldAcqState
 	string msg
 
-	NVAR acqState = $GetAcquisitionState(panelTitle)
+	NVAR acqState = $GetAcquisitionState(device)
 
 	if(ParamIsDefault(call))
 		call = 1
@@ -69,7 +69,7 @@ Function AS_HandlePossibleTransition(string panelTitle, variable newAcqState, [v
 	acqState = newAcqState
 
 	if(oldAcqState == AS_PRE_SWEEP && newAcqState == AS_MID_SWEEP)
-		ED_MarkSweepStart(panelTitle)
+		ED_MarkSweepStart(device)
 	endif
 
 #ifdef AUTOMATED_TESTING
@@ -91,27 +91,27 @@ Function AS_HandlePossibleTransition(string panelTitle, variable newAcqState, [v
 			// do nothing
 			break
 		case AS_PRE_DAQ:
-			return AFM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT)
+			return AFM_CallAnalysisFunctions(device, PRE_DAQ_EVENT)
 			break
 		case AS_PRE_SWEEP_CONFIG:
-			return AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_CONFIG_EVENT)
+			return AFM_CallAnalysisFunctions(device, PRE_SWEEP_CONFIG_EVENT)
 			break
 		case AS_PRE_SWEEP:
 			// nothing to do
 			break
 		case AS_MID_SWEEP:
 			if(oldAcqState == AS_MID_SWEEP)
-				return AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
+				return AFM_CallAnalysisFunctions(device, MID_SWEEP_EVENT)
 			endif
 			break
 		case AS_POST_SWEEP:
-			return AFM_CallAnalysisFunctions(panelTitle, POST_SWEEP_EVENT)
+			return AFM_CallAnalysisFunctions(device, POST_SWEEP_EVENT)
 			break
 		case AS_ITI:
 			// nothing to do
 			break
 		case AS_POST_DAQ:
-			return AFM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
+			return AFM_CallAnalysisFunctions(device, POST_DAQ_EVENT)
 			break
 		default:
 			ASSERT(0, "Invalid acqState")
@@ -139,11 +139,11 @@ End
 /// The ITI between sweeps belongs to the earlier sweep. The main use is to add
 /// a labnotebook entry during data acquisition. The similiar named function
 /// AFH_GetLastSweepAcquired() returns the last acquired sweep in comparison.
-Function AS_GetSweepNumber(string panelTitle)
+Function AS_GetSweepNumber(string device)
 
 	variable acqState, sweepNo
 
-	acqState = ROVAR(GetAcquisitionState(panelTitle))
+	acqState = ROVAR(GetAcquisitionState(device))
 
 	// same sweep number derivation logic as in AFM_CallAnalysisFunctions
 	switch(acqState)
@@ -155,12 +155,12 @@ Function AS_GetSweepNumber(string panelTitle)
 		case AS_PRE_SWEEP_CONFIG:
 		case AS_PRE_SWEEP:
 		case AS_MID_SWEEP:  // fallthrough-by-design
-			sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
+			sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
 			break
 		case AS_POST_SWEEP:
 		case AS_ITI:
 		case AS_POST_DAQ:  // fallthrough-by-design
-			sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep") - 1
+			sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep") - 1
 			break
 		default:
 			ASSERT(0, "Invalid acqState")

@@ -1762,18 +1762,18 @@ End
 
 /// @brief Checks if a window is tagged as certain type
 ///
-/// @param[in] panelTitle Window name to check
+/// @param[in] device Window name to check
 /// @param[in] typeTag one of PANELTAG_* constants @sa panelTags
 /// returns 1 if window is a DA_Ephys panel
-Function PanelIsType(panelTitle, typeTag)
-	string panelTitle
+Function PanelIsType(device, typeTag)
+	string device
 	string typeTag
 
-	if(!WindowExists(panelTitle))
+	if(!WindowExists(device))
 		return 0
 	endif
 
-	return !CmpStr(GetUserData(panelTitle, "", EXPCONFIG_UDATA_PANELTYPE), typeTag)
+	return !CmpStr(GetUserData(device, "", EXPCONFIG_UDATA_PANELTYPE), typeTag)
 End
 
 /// @brief Show a contextual popup menu which allows the user to change the set variable limit's increment
@@ -2110,7 +2110,7 @@ End
 /// Enables a list of checkbox controls and stores their
 /// current values as user data before disabling them. On switching back their
 /// previous values are restored and they are also enabled again.
-Function AdaptDependentControls(string panelTitle, string controls, variable newState)
+Function AdaptDependentControls(string device, string controls, variable newState)
 
 	variable numControls, oldState, i
 	string ctrl
@@ -2122,30 +2122,30 @@ Function AdaptDependentControls(string panelTitle, string controls, variable new
 		for(i = 0; i < numControls; i += 1)
 			ctrl = StringFromList(i, controls)
 			// store current state
-			oldState = DAG_GetNumericalValue(panelTitle, ctrl)
-			SetControlUserData(panelTitle, ctrl, "oldState", num2str(oldState))
+			oldState = DAG_GetNumericalValue(device, ctrl)
+			SetControlUserData(device, ctrl, "oldState", num2str(oldState))
 
 			// and check
-			PGC_SetAndActivateControl(panelTitle, ctrl, val = CHECKBOX_SELECTED)
+			PGC_SetAndActivateControl(device, ctrl, val = CHECKBOX_SELECTED)
 		endfor
 
 		// and disable
-		DisableControls(panelTitle, controls)
+		DisableControls(device, controls)
 	else
 		// enable
-		EnableControls(panelTitle, controls)
+		EnableControls(device, controls)
 
 		for(i = 0; i < numControls; i += 1)
 			ctrl = StringFromList(i, controls)
 
 			// and read old state
-			oldState = str2num(GetUserData(panelTitle, ctrl, "oldState"))
+			oldState = str2num(GetUserData(device, ctrl, "oldState"))
 
 			// invalidate old state
-			SetControlUserData(panelTitle, ctrl, "oldState", "")
+			SetControlUserData(device, ctrl, "oldState", "")
 
 			// set old state
-			PGC_SetAndActivateControl(panelTitle, ctrl, val = oldState)
+			PGC_SetAndActivateControl(device, ctrl, val = oldState)
 		endfor
 	endif
 End

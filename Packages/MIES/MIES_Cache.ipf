@@ -336,13 +336,13 @@ threadsafe Function/S CA_TemporaryWaveKey(dims)
 End
 
 /// @brief Calculate the cache key for the hardware device info wave
-Function/S CA_HWDeviceInfoKey(panelTitle, hardwareType, deviceID)
-	string panelTitle
+Function/S CA_HWDeviceInfoKey(device, hardwareType, deviceID)
+	string device
 	variable hardwareType, deviceID
 
 	variable crc
 
-	crc = StringCrc(crc, panelTitle)
+	crc = StringCrc(crc, device)
 	crc = StringCrc(crc, num2str(hardwareType))
 	crc = StringCrc(crc, num2str(deviceID))
 
@@ -355,7 +355,7 @@ End
 /// - hardwareType
 /// - numDA (filled columns)
 /// - numActiveChannels (number of columns)
-/// - number of rows, return from DC_CalculateDAQDataWaveLength(panelTitle, TEST_PULSE_MODE)
+/// - number of rows, return from DC_CalculateDAQDataWaveLength(device, TEST_PULSE_MODE)
 /// - samplingInterval
 /// - DAGain
 /// - DACAmp[][%TPAmp] column

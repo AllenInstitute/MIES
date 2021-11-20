@@ -14,12 +14,12 @@
 static StrConstant SC_PULSE_PREFIX_RE = "^[^:]+:"
 
 /// @brief Store the newly calculated rerun trials in the labnotebook and return the minimum and maximum of it
-static Function [variable minTrials, variable maxTrials] SC_GetTrials(string panelTitle, variable sweepNo, variable headstage)
+static Function [variable minTrials, variable maxTrials] SC_GetTrials(string device, variable sweepNo, variable headstage)
 
 	string key, msg
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues = GetLBTextualValues(device)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL, query = 1)
 	WAVE trialsInSCI = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
@@ -33,7 +33,7 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string pan
 	WAVE/Z trialsLBN = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
 	ASSERT(WaveExists(trialsLBN), "Missing trials LBN wave")
 
-	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 	// check if we are still repeating the same sweep or have started a new one
 
@@ -50,7 +50,7 @@ static Function [variable minTrials, variable maxTrials] SC_GetTrials(string pan
 	endif
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL)
-	ED_AddEntryToLabnotebook(panelTitle, key, trialsLBN)
+	ED_AddEntryToLabnotebook(device, key, trialsLBN)
 
 	sprintf msg, "rerun trials \"%s\"", NumericWaveToList(trialsLBN, "|")
 	DebugPrint(msg)
@@ -74,19 +74,19 @@ End
 ///
 /// Cols:
 /// - Stimulus set sweep count
-static Function/WAVE SC_GetHeadstageQCForSetCount(string panelTitle, variable sweepNo)
+static Function/WAVE SC_GetHeadstageQCForSetCount(string device, variable sweepNo)
 
 	variable DAC, sweepsInSet, i, numSweeps, setSweepCount, headstage
 	string stimset, key, msg
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
 
 	// use the first active headstage
-	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 	headstage = GetRowIndex(statusHS, val = 1)
 
-	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
-	stimset = AFH_GetStimSetName(paneltitle, DAC, CHANNEL_TYPE_DAC)
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
+	stimset = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 	sweepsInSet = IDX_NumberOfSweepsInSet(stimset)
 
 	// now we need to check that we have for every set sweep count
@@ -141,9 +141,9 @@ End
 /// @brief Return pass/fail state of the set
 ///
 /// This is true iff we have for very stimulus set sweep count a passing headstage
-static Function SC_GetSetPassed(string panelTitle, variable sweepNo)
+static Function SC_GetSetPassed(string device, variable sweepNo)
 
-	WAVE headstageQCTotalPerSweepCount = SC_GetHeadstageQCForSetCount(panelTitle, sweepNo)
+	WAVE headstageQCTotalPerSweepCount = SC_GetHeadstageQCForSetCount(device, sweepNo)
 
 	FindValue/V=(0.0) headstageQCTotalPerSweepCount
 
@@ -153,13 +153,13 @@ End
 /// @brief Return pass/fail state of the sweep
 ///
 /// This is true iff we have for the current stimulus set sweep count a passing headstage
-static Function SC_GetSweepPassed(string panelTitle, variable sweepNo)
+static Function SC_GetSweepPassed(string device, variable sweepNo)
 
 	variable setSweepCount
 
-	WAVE headstageQCTotalPerSweepCount = SC_GetHeadstageQCForSetCount(panelTitle, sweepNo)
+	WAVE headstageQCTotalPerSweepCount = SC_GetHeadstageQCForSetCount(device, sweepNo)
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
 	setSweepCount = SC_GetSetSweepCount(numericalValues, sweepNo)
 
 	FindValue/RMD=[][setSweepCount]/V=(0.0) headstageQCTotalPerSweepCount
@@ -168,14 +168,14 @@ static Function SC_GetSweepPassed(string panelTitle, variable sweepNo)
 End
 
 /// @brief Return 1 if we are currently acquiring the last sweep in the stimulus set, 0 otherwise
-static Function SC_LastSweepInSet(string panelTitle, variable sweepNo, variable headstage)
+static Function SC_LastSweepInSet(string device, variable sweepNo, variable headstage)
 
 	variable DAC, sweepsInSet
 
-	DAC = AFH_GetHeadstageFromDAC(panelTitle, headstage)
-	sweepsInSet = IDX_NumberOfSweepsInSet(AFH_GetStimSetName(paneltitle, DAC, CHANNEL_TYPE_DAC))
+	DAC = AFH_GetHeadstageFromDAC(device, headstage)
+	sweepsInSet = IDX_NumberOfSweepsInSet(AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC))
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE sweepSetCount = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
 
 	return (sweepSetCount[headstage] + 1) == sweepsInSet
@@ -240,11 +240,11 @@ static Function SC_AddPulseRegionLBNEntries(WAVE/T inputLBN, variable pulseIndex
 End
 
 /// @brief Return the PA plot waves from the databrowser connected to the given device
-static Function [WAVE properties, WAVE/WAVE propertiesWaves] SC_GetPulseAveragePropertiesWaves(string paneltitle)
+static Function [WAVE properties, WAVE/WAVE propertiesWaves] SC_GetPulseAveragePropertiesWaves(string device)
 
 	string databrowser
 
-	databrowser = DB_FindDataBrowser(panelTitle)
+	databrowser = DB_FindDataBrowser(device)
 	DFREF dfr = BSP_GetFolder(databrowser, MIES_BSP_PANEL_FOLDER)
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(dfr)
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
@@ -273,7 +273,7 @@ static Function/WAVE SC_GetPulseIndizes(WAVE properties, WAVE/WAVE propertiesWav
 End
 
 /// @brief Return the spike numbers and positions in waves prepared for labnotebook writing
-static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNumbersAndPositions(string panelTitle, variable sweepNo)
+static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNumbersAndPositions(string device, variable sweepNo)
 	variable i, idx, numFailedPulses, sweepPassed, size, numPulses
 	variable pulseIndex, region, pulseFailedState, headstageProp, sweepNoProp, numberOfSpikes
 	variable pulseStart, pulseEnd, numSpikes
@@ -281,7 +281,7 @@ static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNu
 
 	WAVE/Z properties
 	WAVE/WAVE/Z propertiesWaves
-	[properties, propertiesWaves] = SC_GetPulseAveragePropertiesWaves(paneltitle)
+	[properties, propertiesWaves] = SC_GetPulseAveragePropertiesWaves(device)
 
 	WAVE/Z indizesAllPulses = SC_GetPulseIndizes(properties, propertiesWaves, sweepNo)
 
@@ -337,25 +337,25 @@ static Function [WAVE/T spikeNumbersLBN, WAVE/T spikePositionsLBN] SC_GetSpikeNu
 End
 
 /// @brief Fetch the pulses from the PA plot and write the results into the labnotebooks
-static Function SC_ProcessPulses(string panelTitle, variable sweepNo, variable minimumSpikePosition, variable idealNumberOfSpikes)
+static Function SC_ProcessPulses(string device, variable sweepNo, variable minimumSpikePosition, variable idealNumberOfSpikes)
 	string key
 
-	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 	WAVE/T/Z spikeNumbersLBN, spikePositionsLBN
-	[spikeNumbersLBN, spikePositionsLBN] = SC_GetSpikeNumbersAndPositions(panelTitle, sweepNo)
+	[spikeNumbersLBN, spikePositionsLBN] = SC_GetSpikeNumbersAndPositions(device, sweepNo)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS)
-	ED_AddEntryToLabnotebook(panelTitle, key, spikeNumbersLBN, unit = "a. u.")
+	ED_AddEntryToLabnotebook(device, key, spikeNumbersLBN, unit = "a. u.")
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_POSITIONS)
-	ED_AddEntryToLabnotebook(panelTitle, key, spikePositionsLBN, unit = "PA crd")
+	ED_AddEntryToLabnotebook(device, key, spikePositionsLBN, unit = "PA crd")
 
 	if(!HasOneValidEntry(spikePositionsLBN))
 		KillWaves/Z spikePositionsLBN
 	endif
 
-	SC_DetermineQCState(panelTitle, sweepNo, spikeNumbersLBN, spikePositionsLBN, minimumSpikePosition, idealNumberOfSpikes)
+	SC_DetermineQCState(device, sweepNo, spikeNumbersLBN, spikePositionsLBN, minimumSpikePosition, idealNumberOfSpikes)
 End
 
 /// @brief Convert a numeric spike counts state to its string
@@ -410,12 +410,12 @@ static Function SC_SpikeCountsCalcDetail(variable minimum, variable maximum, var
 End
 
 /// @brief Determine the spike counts state for all headstages
-static Function/WAVE SC_SpikeCountsCalc(string panelTitle, WAVE minimum, WAVE maximum, variable idealNumberOfSpikes)
+static Function/WAVE SC_SpikeCountsCalc(string device, WAVE minimum, WAVE maximum, variable idealNumberOfSpikes)
 	variable i
 	string msg
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) state = NaN
-	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!statusHS[i])
@@ -434,7 +434,7 @@ End
 /// @brief Check that the we have found the expected number of spikes per pulse
 ///
 /// @return Spike counts state according to @ref SpikeCountsStateConstants stringified
-static Function/WAVE SC_SpikeCountsQC(string panelTitle, WAVE/T spikeNumbersLBN, variable idealNumberOfSpikes)
+static Function/WAVE SC_SpikeCountsQC(string device, WAVE/T spikeNumbersLBN, variable idealNumberOfSpikes)
 	string msg, str
 	variable i
 
@@ -445,7 +445,7 @@ static Function/WAVE SC_SpikeCountsQC(string panelTitle, WAVE/T spikeNumbersLBN,
 #ifdef DEBUGGING_ENABLED
 	if(DP_DebuggingEnabledForCaller())
 
-		WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+		WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 		str = ""
 
@@ -467,7 +467,7 @@ static Function/WAVE SC_SpikeCountsQC(string panelTitle, WAVE/T spikeNumbersLBN,
 	minimum[] = WaveMin(spikeNumbers[p])
 	maximum[] = WaveMax(spikeNumbers[p])
 
-	WAVE state = SC_SpikeCountsCalc(panelTitle, minimum, maximum, idealNumberOfSpikes)
+	WAVE state = SC_SpikeCountsCalc(device, minimum, maximum, idealNumberOfSpikes)
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/T stateAsString = SC_SpikeCountStateToString(state[p])
 
@@ -495,16 +495,16 @@ End
 ///
 /// All values are in PA crd, see SC_SpikeControl().
 ///
-/// @param panelTitle           device
+/// @param device           device
 /// @param spikePositionsLBN    spike position of each pulse, ordered per headstage, for the current sweep
 /// @param minimumSpikePosition minimum allowed spike position
-static Function/WAVE SC_SpikePositionQC(string panelTitle, WAVE/T/Z spikePositionsLBN, variable minimumSpikePosition)
+static Function/WAVE SC_SpikePositionQC(string device, WAVE/T/Z spikePositionsLBN, variable minimumSpikePosition)
 	string list, msg
 	variable numPulses, i, j
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spikePositionsQCLBN = NaN
 
-	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 	spikePositionsQCLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 0 : NaN
 
 	if(!WaveExists(spikePositionsLBN))
@@ -570,15 +570,15 @@ static Function/WAVE SC_RegionBlanked(WAVE data, variable totalOnsetDelay, WAVE/
 End
 
 /// @brief Return a wave ready for the labnotebook with the spontaneous spike check QC entries
-static Function/WAVE SC_SpontaneousSpikingCheckQC(string panelTitle, variable sweepNo)
+static Function/WAVE SC_SpontaneousSpikingCheckQC(string device, variable sweepNo)
 
 	variable failedPulseLevel, totalOnsetDelay, i, maximum, headstage
 	string key, msg, entry
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
 
 	// use the first active headstage
-	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 	headstage = GetRowIndex(statusHS, val = 1)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_FAILED_PULSE_LEVEL, query = 1)
@@ -587,13 +587,13 @@ static Function/WAVE SC_SpontaneousSpikingCheckQC(string panelTitle, variable sw
 
 	totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
-	WAVE sweepWave = GetSweepWave(paneltitle, sweepNo)
+	WAVE sweepWave = GetSweepWave(device, sweepNo)
 
-	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) spontaneousSpikingCheckLBN = NaN
 	spontaneousSpikingCheckLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 0 : NaN
 
-	WAVE textualValues = GetLBTextualValues(panelTitle)
+	WAVE textualValues = GetLBTextualValues(device)
 	WAVE/Z/T oodDAQRegions = GetLastSetting(textualValues, sweepNo, "oodDAQ regions", DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(oodDAQRegions), "Could not find oodDAQ regions")
 
@@ -603,7 +603,7 @@ static Function/WAVE SC_SpontaneousSpikingCheckQC(string panelTitle, variable sw
 			continue
 		endif
 
-		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, i, XOP_CHANNEL_TYPE_ADC)
+		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(device, sweepWave, i, XOP_CHANNEL_TYPE_ADC)
 		WAVE oodDAQRegion = ListToTextWave(oodDAQRegions[i], ";")
 
 		SC_RegionBlanked(singleAD, totalOnsetDelay, oodDAQRegion)
@@ -631,12 +631,12 @@ static Function/WAVE SC_SpontaneousSpikingCheckQC(string panelTitle, variable sw
 End
 
 /// @brief Determine the headstage QC result
-static Function/WAVE SC_HeadstageQC(string panelTitle, WAVE/T spikeCountStateLBN, WAVE spontaneousSpikingCheckLBN)
+static Function/WAVE SC_HeadstageQC(string device, WAVE/T spikeCountStateLBN, WAVE spontaneousSpikingCheckLBN)
 	string msg
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) headstageQCLBN = NaN
 
-	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 	// spike positions QC does not influence headstage QC
 	headstageQCLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? (spontaneousSpikingCheckLBN[p] == 1 && !cmpstr(spikeCountStateLBN[p], SC_SPIKE_COUNT_STATE_STR_GOOD)) : NaN
@@ -648,28 +648,28 @@ static Function/WAVE SC_HeadstageQC(string panelTitle, WAVE/T spikeCountStateLBN
 End
 
 /// @brief Determine and write the QC states to the labnotebook
-static Function SC_DetermineQCState(string panelTitle, variable sweepNo, WAVE spikeNumbersLBN, WAVE/Z spikePositionsLBN, variable minimumSpikePosition, variable idealNumberOfSpikes)
+static Function SC_DetermineQCState(string device, variable sweepNo, WAVE spikeNumbersLBN, WAVE/Z spikePositionsLBN, variable minimumSpikePosition, variable idealNumberOfSpikes)
 	string key, msg
 
 	// spontaneous spiking check
-	WAVE spontaneousSpikingCheckLBN = SC_SpontaneousSpikingCheckQC(panelTitle, sweepNo)
+	WAVE spontaneousSpikingCheckLBN = SC_SpontaneousSpikingCheckQC(device, sweepNo)
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPONT_SPIKE_PASS)
-	ED_AddEntryToLabnotebook(panelTitle, key, spontaneousSpikingCheckLBN, unit = LABNOTEBOOK_BINARY_UNIT)
+	ED_AddEntryToLabnotebook(device, key, spontaneousSpikingCheckLBN, unit = LABNOTEBOOK_BINARY_UNIT)
 
 	// spike counts
-	WAVE/T spikeCountStateLBN = SC_SpikeCountsQC(panelTitle, spikeNumbersLBN, idealNumberOfSpikes)
+	WAVE/T spikeCountStateLBN = SC_SpikeCountsQC(device, spikeNumbersLBN, idealNumberOfSpikes)
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS_STATE)
-	ED_AddEntryToLabnotebook(panelTitle, key, spikeCountStateLBN, unit = "a. u.")
+	ED_AddEntryToLabnotebook(device, key, spikeCountStateLBN, unit = "a. u.")
 
 	// headstage QC
-	WAVE headstageQCLBN = SC_HeadstageQC(panelTitle, spikeCountStateLBN, spontaneousSpikingCheckLBN)
+	WAVE headstageQCLBN = SC_HeadstageQC(device, spikeCountStateLBN, spontaneousSpikingCheckLBN)
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_HEADSTAGE_PASS)
-	ED_AddEntryToLabnotebook(panelTitle, key, headstageQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
+	ED_AddEntryToLabnotebook(device, key, headstageQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
 
 	// spike positions
-	WAVE spikePositionsQCLBN = SC_SpikePositionQC(panelTitle, spikePositionsLBN, minimumSpikePosition)
+	WAVE spikePositionsQCLBN = SC_SpikePositionQC(device, spikePositionsLBN, minimumSpikePosition)
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_POSITION_PASS)
-	ED_AddEntryToLabnotebook(panelTitle, key, spikePositionsQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
+	ED_AddEntryToLabnotebook(device, key, spikePositionsQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
 End
 
 /// @brief Check if we can still skip sweeps without running more than `maxTrials`
@@ -692,7 +692,7 @@ static Function SC_SkipsExhausted(variable minTrials, string params)
 End
 
 /// @brief Perform various actions on QC failures
-static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string params)
+static Function SC_ReactToQCFailures(string device, variable sweepNo, string params)
 	variable daScaleSpikePositionModifier, daScaleModifier, daScaleTooManySpikesModifier, i, autoBiasV, autobiasModifier, prevSliderPos
 	string daScaleOperator, daScaleSpikePositionOperator, daScaleTooManySpikesOperator
 	string key, msg
@@ -706,9 +706,9 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 
 	autobiasModifier = AFH_GetAnalysisParamNumerical("AutoBiasBaselineModifier", params)
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues = GetLBTextualValues(panelTitle)
-	WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues = GetLBTextualValues(device)
+	WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, query = 1)
 	WAVE/T spikeCountStateLBN = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
@@ -722,7 +722,7 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 	key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_HEADSTAGE_PASS, query = 1)
 	WAVE headstageQCLBN = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
-	prevSliderPos = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	prevSliderPos = GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage")
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(!statusHS[i])
@@ -733,7 +733,7 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 			if(!spikePositionsQCLBN[i])
 				sprintf msg, "spike position QC failed on HS%d, adapting DAScale", i
 				DebugPrint(msg)
-				SetDAScaleModOp(panelTitle, i, daScaleSpikePositionModifier, daScaleSpikePositionOperator)
+				SetDAScaleModOp(device, i, daScaleSpikePositionModifier, daScaleSpikePositionOperator)
 			endif
 
 			continue
@@ -745,9 +745,9 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 			sprintf msg, "spontaneous spiking QC failed on HS%d, adapting autobiasV", i
 			DebugPrint(msg)
 
-			PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = i)
-			autoBiasV = GetSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV") + autobiasModifier
-			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_AutoBiasV", val = autoBiasV)
+			PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = i)
+			autoBiasV = GetSetVariable(device, "setvar_DataAcq_AutoBiasV") + autobiasModifier
+			PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = autoBiasV)
 		endif
 
 		if(cmpstr(spikeCountStateLBN[i], SC_SPIKE_COUNT_STATE_STR_GOOD))
@@ -757,7 +757,7 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 
 		strswitch(spikeCountStateLBN[i])
 			case SC_SPIKE_COUNT_STATE_STR_TOO_MANY:
-				SetDAScaleModOp(panelTitle, i, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator)
+				SetDAScaleModOp(device, i, daScaleTooManySpikesModifier, daScaleTooManySpikesOperator)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_MIXED:
 				printf "The spike count on headstage %d in sweep %d is mixed (some pulses have too few, others too many)\n", i, sweepNo
@@ -771,7 +771,7 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 					ControlWindowToFront()
 				endif
 			case SC_SPIKE_COUNT_STATE_STR_TOO_FEW: // fallthrough-by-design
-				SetDAScaleModOp(panelTitle, i, daScaleModifier, daScaleOperator)
+				SetDAScaleModOp(device, i, daScaleModifier, daScaleOperator)
 				break
 			case SC_SPIKE_COUNT_STATE_STR_GOOD:
 				// nothing to do
@@ -782,8 +782,8 @@ static Function SC_ReactToQCFailures(string panelTitle, variable sweepNo, string
 		endswitch
 	endfor
 
-	if(prevSliderPos != GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage"))
-		PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = prevSliderPos)
+	if(prevSliderPos != GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage"))
+		PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = prevSliderPos)
 	endif
 End
 
@@ -962,8 +962,8 @@ End
 /// Therefore the spike position will be 110 in `PA crd` which is one point after the end of the pulse.
 ///
 /// The graphs were made with http://asciiflow.com.
-Function SC_SpikeControl(panelTitle, s)
-	string panelTitle
+Function SC_SpikeControl(device, s)
+	string device
 	STRUCT AnalysisFunction_V3 &s
 
 	variable i, index, ret, headstagePassed, sweepPassed, val, failedPulseLevel, maxTrialsAllowed, minimumSpikePosition
@@ -973,17 +973,17 @@ Function SC_SpikeControl(panelTitle, s)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
-			return MSQ_CommonPreDAQ(panelTitle, s.headstage)
+			return MSQ_CommonPreDAQ(device, s.headstage)
 
 			break
 		case PRE_SET_EVENT:
-			SetAnalysisFunctionVersion(panelTitle, SC_SPIKE_CONTROL, s.headstage, s.sweepNo)
+			SetAnalysisFunctionVersion(device, SC_SPIKE_CONTROL, s.headstage, s.sweepNo)
 
-			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage, clampMode = I_CLAMP_MODE))
+			if(!DAG_HeadstageIsHighestActive(device, s.headstage, clampMode = I_CLAMP_MODE))
 				return NaN
 			endif
 
-			databrowser = DB_FindDataBrowser(panelTitle)
+			databrowser = DB_FindDataBrowser(device)
 			if(IsEmpty(databrowser)) // not yet open
 				databrowser = DB_OpenDataBrowser()
 			endif
@@ -992,8 +992,8 @@ Function SC_SpikeControl(panelTitle, s)
 			scPanel = BSP_GetSweepControlsPanel(databrowser)
 
 			if(!BSP_HasBoundDevice(bsPanel))
-				PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = panelTitle)
-				databrowser = DB_FindDataBrowser(panelTitle)
+				PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
+				databrowser = DB_FindDataBrowser(device)
 				bsPanel = BSP_GetPanel(databrowser)
 			endif
 
@@ -1014,7 +1014,7 @@ Function SC_SpikeControl(panelTitle, s)
 			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) settingsLBN = NaN
 			settingsLBN[INDEP_HEADSTAGE] = failedPulseLevel
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_FAILED_PULSE_LEVEL)
-			ED_AddEntryToLabnotebook(panelTitle, key, settingsLBN, unit = "a. u.", overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(device, key, settingsLBN, unit = "a. u.", overrideSweepNo = s.sweepNo)
 
 			idealNumberOfSpikes = AFH_GetAnalysisParamNumerical("IdealNumberOfSpikesPerPulse", s.params)
 			PGC_SetAndActivateControl(bsPanel, "setvar_pulseAver_numberOfSpikes", val = idealNumberOfSpikes)
@@ -1022,19 +1022,19 @@ Function SC_SpikeControl(panelTitle, s)
 			settingsLBN = NaN
 			settingsLBN[INDEP_HEADSTAGE] = idealNumberOfSpikes
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS)
-			ED_AddEntryToLabnotebook(panelTitle, key, settingsLBN, unit = "a. u.", overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(device, key, settingsLBN, unit = "a. u.", overrideSweepNo = s.sweepNo)
 
 			// turn on PA plot at the end to skip expensive updating
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_PA", val = 1)
 
-			WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+			WAVE statusTTL = DAG_GetChannelState(device, CHANNEL_TYPE_TTL)
 			if(Sum(statusTTL) != 0)
-				printf "(%s) Analysis function does not support TTL channels.\r", panelTitle
+				printf "(%s) Analysis function does not support TTL channels.\r", device
 				ControlWindowToFront()
 				return 1
 			endif
 
-			WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+			WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1042,89 +1042,89 @@ Function SC_SpikeControl(panelTitle, s)
 					continue
 				endif
 
-				DAC = AFH_GetDACFromHeadstage(panelTitle, i)
+				DAC = AFH_GetDACFromHeadstage(device, i)
 				ASSERT(IsFinite(DAC), "Unexpected unassociated DAC")
-				stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
+				stimset = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 				stimsets = AddListItem(stimset, stimsets, ";", inf)
 			endfor
 
 			if(ItemsInList(GetUniqueTextEntriesFromList(stimsets)) > 1)
-				printf "(%s): Not all headstages have the same stimset.\r", panelTitle
+				printf "(%s): Not all headstages have the same stimset.\r", device
 				ControlWindowToFront()
 				return 1
 			endif
 
 			// set more controls usually done from SetControlInEvent analysis function
 			// remove once https://github.com/AllenInstitute/MIES/issues/671 is resolved
-			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_OnsetDelayUser", val = 500)
-			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_TerminationDelay", val = 1000)
-			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_dDAQDelay", val = 0)
-			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_dDAQOptOvPre", val = 0)
-			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_dDAQOptOvPost", val = 250)
-			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_SetRepeats", val = 1)
+			PGC_SetAndActivateControl(device, "setvar_DataAcq_OnsetDelayUser", val = 500)
+			PGC_SetAndActivateControl(device, "setvar_DataAcq_TerminationDelay", val = 1000)
+			PGC_SetAndActivateControl(device,"Check_DataAcq1_dDAQOptOv", val = 1)
+			PGC_SetAndActivateControl(device, "setvar_DataAcq_dDAQDelay", val = 0)
+			PGC_SetAndActivateControl(device, "setvar_DataAcq_dDAQOptOvPre", val = 0)
+			PGC_SetAndActivateControl(device, "setvar_DataAcq_dDAQOptOvPost", val = 250)
+			PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = 1)
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) rerunExceeded = NaN
 			rerunExceeded[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? 0 : NaN
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC)
-			ED_AddEntryToLabnotebook(panelTitle, key, rerunExceeded, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(device, key, rerunExceeded, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) trialsLBN = NaN
 			trialsLBN[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1 ? 0 : NaN)
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL)
-			ED_AddEntryToLabnotebook(panelTitle, key, trialsLBN, unit = "a. u.", overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(device, key, trialsLBN, unit = "a. u.", overrideSweepNo = s.sweepNo)
 
 			break
 		case POST_SWEEP_EVENT:
 
-			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage, clampMode = I_CLAMP_MODE))
+			if(!DAG_HeadstageIsHighestActive(device, s.headstage, clampMode = I_CLAMP_MODE))
 				return NaN
 			endif
 
 			minimumSpikePosition = AFH_GetAnalysisParamNumerical("MinimumSpikePosition", s.params)
 
-			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+			WAVE numericalValues = GetLBNumericalValues(device)
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS, query = 1)
 			idealNumberOfSpikes = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
-			SC_ProcessPulses(panelTitle, s.sweepNo, minimumSpikePosition, idealNumberOfSpikes)
+			SC_ProcessPulses(device, s.sweepNo, minimumSpikePosition, idealNumberOfSpikes)
 
 			// sweep QC
-			sweepPassed = SC_GetSweepPassed(panelTitle, s.sweepNo)
+			sweepPassed = SC_GetSweepPassed(device, s.sweepNo)
 
 			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) sweepQCLBN = NaN
 			sweepQCLBN[INDEP_HEADSTAGE] = sweepPassed
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SWEEP_PASS)
-			ED_AddEntryToLabnotebook(panelTitle, key, sweepQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
+			ED_AddEntryToLabnotebook(device, key, sweepQCLBN, unit = LABNOTEBOOK_BINARY_UNIT)
 
-			[minTrials, maxTrials] = SC_GetTrials(panelTitle, s.sweepNo, s.headstage)
+			[minTrials, maxTrials] = SC_GetTrials(device, s.sweepNo, s.headstage)
 
-			SC_ReactToQCFailures(panelTitle, s.sweepNo, s.params)
+			SC_ReactToQCFailures(device, s.sweepNo, s.params)
 
 			if(!sweepPassed)
 				if(SC_CanStillSkip(maxTrials, s.params))
 					skippedBack = 1
-					RA_SkipSweeps(panelTitle, -1, limitToSetBorder=1)
+					RA_SkipSweeps(device, -1, limitToSetBorder=1)
 				else
 					rerunExceededResult = 1
 				endif
 			endif
 
-			WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+			WAVE statusHS = DAG_GetActiveHeadstages(device, I_CLAMP_MODE)
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) rerunExceeded = NaN
 			rerunExceeded[0, NUM_HEADSTAGES - 1] = (statusHS[p] == 1) ? rerunExceededResult : NaN
 			key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC)
-			ED_AddEntryToLabnotebook(panelTitle, key, rerunExceeded, unit = LABNOTEBOOK_BINARY_UNIT)
+			ED_AddEntryToLabnotebook(device, key, rerunExceeded, unit = LABNOTEBOOK_BINARY_UNIT)
 
-			setPassed = SC_GetSetPassed(panelTitle, s.sweepNo)
+			setPassed = SC_GetSetPassed(device, s.sweepNo)
 
 			// check if we can still pass
 			if(!setPassed)
 				if(SC_SkipsExhausted(minTrials, s.params))
 					// if the minimum trials value has already reached the maximum
 					// allowed trials, we are done and the set has not passed
-				elseif(SC_LastSweepInSet(panelTitle, s.sweepNo, s.headstage) && !skippedBack)
+				elseif(SC_LastSweepInSet(device, s.sweepNo, s.headstage) && !skippedBack)
 					// work around broken XXX_SET_EVENT
 					// we are done and were not successful
 				else
@@ -1140,9 +1140,9 @@ Function SC_SpikeControl(panelTitle, s)
 				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) setQC = NaN
 				setQC[INDEP_HEADSTAGE] = setPassed
 				key = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, MSQ_FMT_LBN_SET_PASS)
-				ED_AddEntryToLabnotebook(panelTitle, key, setQC, unit = LABNOTEBOOK_BINARY_UNIT)
+				ED_AddEntryToLabnotebook(device, key, setQC, unit = LABNOTEBOOK_BINARY_UNIT)
 
-				RA_SkipSweeps(panelTitle, inf, limitToSetBorder=1)
+				RA_SkipSweeps(device, inf, limitToSetBorder=1)
 				AD_UpdateAllDatabrowser()
 			endif
 
@@ -1152,7 +1152,7 @@ Function SC_SpikeControl(panelTitle, s)
 			break
 		case POST_DAQ_EVENT:
 
-			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage, clampMode = I_CLAMP_MODE))
+			if(!DAG_HeadstageIsHighestActive(device, s.headstage, clampMode = I_CLAMP_MODE))
 				return NaN
 			endif
 
