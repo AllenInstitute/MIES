@@ -1003,7 +1003,7 @@ static Function TASYNC_StopTimeOut()
 	Make/N=0 returnOrder
 	timeout=ASYNC_Stop(timeout=0)
 	CHECK(timeout)
-	CHECK(numpnts(returnOrder) < WORK_COUNT_GENERIC)
+	CHECK_LT_VAR(numpnts(returnOrder), WORK_COUNT_GENERIC)
 End
 
 /// @brief Test if a stop on blocking workloads forcefully stops the threads and throws an assertion

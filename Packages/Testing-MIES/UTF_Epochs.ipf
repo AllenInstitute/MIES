@@ -698,7 +698,7 @@ Function EP_TestUserEpochs_REENTRY([str])
 					break
 				default:
 					// no user epochs for all other events
-					CHECK(V_row < 0)
+					CHECK_LT_VAR(V_row, 0)
 					break
 			endswitch
 		endfor

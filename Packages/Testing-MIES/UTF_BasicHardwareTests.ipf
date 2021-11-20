@@ -3613,7 +3613,7 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 			FindLevels/Q/D=levels/M=(TP_EDGE_EPSILON) singleTP, tresh
 
 			CHECK_EQUAL_VAR(2, V_LevelsFound)
-			CHECK(abs(pulseLengthMS - levels[1] + levels[0]) < TP_WIDTH_EPSILON)
+			CHECK_LT_VAR(abs(pulseLengthMS - levels[1] + levels[0]), TP_WIDTH_EPSILON)
 
 		endfor
 	endfor

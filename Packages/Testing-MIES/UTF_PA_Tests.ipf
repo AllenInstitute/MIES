@@ -907,7 +907,7 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 
 	first = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_START)
 	last  = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_PULSE_END)
-	CHECK(first < last)
+	CHECK_LT_VAR(first, last)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_CLAMP_MODE)
 	CHECK(IsFinite(setting) && (setting == V_CLAMP_MODE || setting == I_CLAMP_MODE || setting == I_EQUAL_ZERO_MODE))
