@@ -5122,14 +5122,14 @@ static Function DAP_UnlockDevice(device)
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(device))
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(device))
 
-	string panelTitleUnlocked = BASE_WINDOW_TITLE
-	if(CheckName(panelTitleUnlocked,CONTROL_PANEL_TYPE))
-		panelTitleUnlocked = UniqueName(BASE_WINDOW_TITLE + "_",CONTROL_PANEL_TYPE,1)
+	string unlockedDevice = BASE_WINDOW_TITLE
+	if(CheckName(unlockedDevice,CONTROL_PANEL_TYPE))
+		unlockedDevice = UniqueName(BASE_WINDOW_TITLE + "_",CONTROL_PANEL_TYPE,1)
 	endif
-	DoWindow/W=$device/C $panelTitleUnlocked
+	DoWindow/W=$device/C $unlockedDevice
 
 	variable locked = 0
-	DAP_UpdateDataFolderDisplay(panelTitleUnlocked,locked)
+	DAP_UpdateDataFolderDisplay(unlockedDevice,locked)
 
 	NVAR/SDFR=GetDevicePath(device) deviceID
 
@@ -5142,7 +5142,7 @@ static Function DAP_UnlockDevice(device)
 	HW_ResetDevice(hardwareType, deviceID, flags=flags)
 	HW_DeRegisterDevice(hardwareType, deviceID, flags=flags)
 
-	DAP_UpdateYokeControls(panelTitleUnlocked)
+	DAP_UpdateYokeControls(unlockedDevice)
 	DAP_UpdateListOfLockedDevices()
 	DAP_UpdateAllYokeControls()
 
@@ -5179,8 +5179,8 @@ static Function DAP_UnlockDevice(device)
 		KillOrMoveToTrash(wv = GetDeviceMapping())
 	endif
 
-	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitleUnlocked))
-	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(panelTitleUnlocked))
+	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(unlockedDevice))
+	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(unlockedDevice))
 End
 
 /// @brief Update the list of locked devices
