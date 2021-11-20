@@ -98,7 +98,7 @@ Function ValidFunc_V2(panelTitle, eventType, DAQDataWave, headStage, realDataLen
 		WAVE/WAVE DAQDataWaveRef = DAQDataWave
 		Make/FREE/N=(DimSize(DAQDataWaveRef, ROWS)) sizes = DimSize(DAQDataWaveRef[p], ROWS)
 		CHECK_GE_VAR(realDataLength, 0)
-		CHECK(realDataLength <= WaveMax(sizes))
+		CHECK_LE_VAR(realDataLength, WaveMax(sizes))
 	else
 		FAIL()
 	endif
@@ -327,13 +327,13 @@ Function ValidFunc_V3(panelTitle, s)
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
 				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, COLS), DimSize(s.rawDACWave, COLS))
-				CHECK(DimSize(s.scaledDACWave, ROWS) <= DimSize(s.rawDACWave, ROWS))
+				CHECK_LE_VAR(DimSize(s.scaledDACWave, ROWS), DimSize(s.rawDACWave, ROWS))
 				break
 			case HARDWARE_NI_DAC:
 				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, COLS), DimSize(s.rawDACWave, ROWS))
 				WAVE/WAVE rawDACWaveRef = s.rawDACWave
 				Make/FREE/N=(DimSize(rawDACWaveRef, ROWS)) sizes = DimSize(rawDACWaveRef[p], ROWS)
-				CHECK(DimSize(s.scaledDACWave, ROWS) <= WaveMax(sizes))
+				CHECK_LE_VAR(DimSize(s.scaledDACWave, ROWS), WaveMax(sizes))
 				break
 			default:
 				FAIL()

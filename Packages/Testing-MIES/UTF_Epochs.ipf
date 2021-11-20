@@ -291,7 +291,7 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 	// check that start times are monotonously increasing
 	if(epochCnt > 1)
 		for(i = 1; i < epochCnt; i += 1)
-			CHECK(startT[i - 1] <= startT[i])
+			CHECK_LE_VAR(startT[i - 1], startT[i])
 		endfor
 	endif
 

@@ -600,13 +600,13 @@ static Function PAT_VerifyImageAxes(string graph, string traceName, variable ach
 	ref_to = (xLayoutCoord + 1) * 100 / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
 	CHECK_GE_VAR(from, ref_from)
-	CHECK(to <= ref_to)
+	CHECK_LE_VAR(to, ref_to)
 
 	ref_to = 100 - yLayoutCoord * 100 / sqrt(layoutSize)
 	ref_from = 100 - (yLayoutCoord + 1) * 100 / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
 	CHECK_GE_VAR(from, ref_from)
-	CHECK(to <= ref_to)
+	CHECK_LE_VAR(to, ref_to)
 End
 
 static Function PAT_VerifyTraceAxes(string graph, string traceName, variable achan, variable aregion, STRUCT PA_Test &patest, [variable multiGraphMode])
@@ -654,14 +654,14 @@ static Function PAT_VerifyTraceAxes(string graph, string traceName, variable ach
 	[from, to] = PAT_GetAxisLayout(graph, xaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
 	CHECK_GE_VAR(from, ref_from)
-	CHECK(to <= ref_to)
+	CHECK_LE_VAR(to, ref_to)
 
 	ref_to = 100 - yLayoutCoord * 100 / sqrt(layoutSize)
 	ref_from = 100 - (yLayoutCoord + 1) * 100 / sqrt(layoutSize)
 	[from, to] = PAT_GetAxisLayout(graph, yaxis)
 	// TOOD rewrite using PAT_CHECKSmallOrClose or CHECK_SMALL_VAR/CHECK_CLOSE_VAR
 	CHECK_GE_VAR(from, ref_from)
-	CHECK(to <= ref_to)
+	CHECK_LE_VAR(to, ref_to)
 End
 
 static Function PAT_VerifyImageAxesRange(string imageWin, string imageName, STRUCT PA_Test &patest)
