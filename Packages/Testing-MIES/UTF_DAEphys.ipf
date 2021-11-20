@@ -7,14 +7,14 @@
 Function CheckIfAllControlsReferStateWv([str])
 	string str
 
-	string unlockedPanelTitle, list, ctrl, stri, expected, lbl, uniqueControls
+	string unlockedDevice, list, ctrl, stri, expected, lbl, uniqueControls
 	variable i, numEntries, val, channelIndex, channelType, controlType, index, oldVal
 	variable err, inputModified
 
-	unlockedPanelTitle = DAP_CreateDAEphysPanel()
+	unlockedDevice = DAP_CreateDAEphysPanel()
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=str)
-	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
+	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 	REQUIRE(WindowExists(str))
 
 	list  = ControlNameList(str, ";")
@@ -161,30 +161,30 @@ End
 Function CheckStartupSettings([str])
 	string str
 
-	string unlockedPanelTitle, list, ctrl, expected, lbl
+	string unlockedDevice, list, ctrl, expected, lbl
 	variable i, numEntries, val, channelIndex, channelType, controlType, index, oldVal
 
 	SetRandomSeed/BETR=1 1
 
-	unlockedPanelTitle = DAP_CreateDAEphysPanel()
+	unlockedDevice = DAP_CreateDAEphysPanel()
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=str)
-	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
+	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 	REQUIRE(WindowExists(str))
 
 	Duplicate/O GetDA_EphysGuiStateNum(str), guiStateNumRef
 	Duplicate/O GetDA_EphysGuiStateTxT(str), guiStateTxTRef
 
 	PGC_SetAndActivateControl(str, "button_SettingsPlus_unLockDevic")
-	unlockedPanelTitle = GetCurrentWindow()
+	unlockedDevice = GetCurrentWindow()
 
-	list  = ControlNameList(unlockedPanelTitle, ";")
+	list  = ControlNameList(unlockedDevice, ";")
 
 	numEntries = ItemsInList(list)
 	CHECK_GT_VAR(numEntries, 0)
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = StringFromList(i, list)
-		ControlInfo/W=$unlockedPanelTitle $ctrl
+		ControlInfo/W=$unlockedDevice $ctrl
 
 		switch(abs(V_Flag))
 			case CONTROL_TYPE_BUTTON:
@@ -196,35 +196,35 @@ Function CheckStartupSettings([str])
 			case CONTROL_TYPE_CHECKBOX:
 				oldVal = V_Value
 				val    = !oldVal
-				SetCheckBoxState(unlockedPanelTitle, ctrl, val)
+				SetCheckBoxState(unlockedDevice, ctrl, val)
 				break
 			case CONTROL_TYPE_SETVARIABLE:
 				if(DoesControlHaveInternalString(S_recreation))
-					SetSetVariableString(unlockedPanelTitle, ctrl, num2str(enoise(1, 2)))
+					SetSetVariableString(unlockedDevice, ctrl, num2str(enoise(1, 2)))
 				else
-					SetSetVariable(unlockedPanelTitle, ctrl, enoise(5, 2))
+					SetSetVariable(unlockedDevice, ctrl, enoise(5, 2))
 				endif
 				break
 			case CONTROL_TYPE_SLIDER:
 
 				oldVal = V_Value
-				SetSliderPositionIndex(unlockedPanelTitle, ctrl, oldVal + 1)
+				SetSliderPositionIndex(unlockedDevice, ctrl, oldVal + 1)
 
 				break
 			case CONTROL_TYPE_POPUPMENU:
 
-				SetPopupMenuIndex(unlockedPanelTitle, ctrl, 1 + enoise(2, 2))
+				SetPopupMenuIndex(unlockedDevice, ctrl, 1 + enoise(2, 2))
 				break
 		endswitch
 	endfor
 
 	DAP_EphysPanelStartUpSettings()
 
-	SCOPE_OpenScopeWindow(unlockedPanelTitle)
-	AddVersionToPanel(unlockedPanelTitle, DA_EPHYS_PANEL_VERSION)
+	SCOPE_OpenScopeWindow(unlockedDevice)
+	AddVersionToPanel(unlockedDevice, DA_EPHYS_PANEL_VERSION)
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=str)
-	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
+	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 	REQUIRE(WindowExists(str))
 
 	Duplicate/O GetDA_EphysGuiStateNum(str), guiStateNumNew
@@ -241,10 +241,10 @@ Function CheckStimsetPopupMetadata([str])
 	string controls, stimsetlist, ctrl, menuExp
 	variable i, numControls, channelIndex, channelType, controlType
 
-	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
+	string unlockedDevice = DAP_CreateDAEphysPanel()
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=str)
-	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=str)
+	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 
 	controls = ControlNameList(str)
 	numControls = ItemsInList(controls)

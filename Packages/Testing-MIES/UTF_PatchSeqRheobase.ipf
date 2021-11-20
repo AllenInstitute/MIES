@@ -7,15 +7,15 @@ static Constant PSQ_RHEOBASE_TEST_DURATION = 2
 
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(STRUCT DAQSettings& s, variable finalDAScaleFake, string device, [FUNCREF CALLABLE_PROTO preAcquireFunc])
-	string stimset, unlockedPanelTitle
+	string stimset, unlockedDevice
 
 	Make/O/N=(0) root:overrideResults/Wave=overrideResults
 	Note/K overrideResults
 	SetNumberInWaveNote(overrideResults, PSQ_RB_FINALSCALE_FAKE_KEY, finalDaScaleFake)
-	unlockedPanelTitle = DAP_CreateDAEphysPanel()
+	unlockedDevice = DAP_CreateDAEphysPanel()
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
+	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 
 	REQUIRE(WindowExists(device))
 

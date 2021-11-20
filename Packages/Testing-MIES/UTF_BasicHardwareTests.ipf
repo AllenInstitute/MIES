@@ -72,7 +72,7 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 	variable setAnalysisFuncs, startTPInstead
 
-	string unlockedPanelTitle, device
+	string unlockedDevice, device
 	variable i, numEntries
 
 	KillOrMoveToTrash(wv = GetTrackSweepCounts())
@@ -103,10 +103,10 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 	for(i = 0; i < numEntries; i += 1)
 		device = stringFromList(i, devices)
 
-		unlockedPanelTitle = DAP_CreateDAEphysPanel()
+		unlockedDevice = DAP_CreateDAEphysPanel()
 
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=device)
-		PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+		PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
+		PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 
 		REQUIRE(WindowExists(device))
 

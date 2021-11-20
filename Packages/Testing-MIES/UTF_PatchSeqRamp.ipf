@@ -11,15 +11,15 @@ Constant SPIKE_POSITION_TEST_DELAY_MS = 10500
 
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLABLE_PROTO preAcquireFunc])
-	string stimset, unlockedPanelTitle
+	string stimset, unlockedDevice
 
 	// create an empty one so that the preDAQ analysis function can find it
 	Make/N=0/O root:overrideResults
 
-	unlockedPanelTitle = DAP_CreateDAEphysPanel()
+	unlockedDevice = DAP_CreateDAEphysPanel()
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
+	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 
 	REQUIRE(WindowExists(device))
 
