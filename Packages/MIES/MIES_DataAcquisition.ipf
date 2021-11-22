@@ -33,7 +33,7 @@ End
 /// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled
 Function DQ_StopOngoingDAQ(string panelTitle, variable stopReason, [variable startTPAfterDAQ])
 	variable i, numEntries
-	string list, device
+	string list, leaderAndFollower
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
@@ -41,8 +41,8 @@ Function DQ_StopOngoingDAQ(string panelTitle, variable stopReason, [variable sta
 	numEntries = ItemsInList(list)
 
 	for(i = 0; i < numEntries; i += 1)
-		device = StringFromList(i, list)
-		DQ_StopOngoingDAQHelper(device, stopReason, startTPAfterDAQ)
+		leaderAndFollower = StringFromList(i, list)
+		DQ_StopOngoingDAQHelper(leaderAndFollower, stopReason, startTPAfterDAQ)
 	endfor
 End
 
