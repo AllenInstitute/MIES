@@ -201,7 +201,7 @@ End
 Function HW_WriteDAC(hardwareType, deviceID, channel, value, [flags])
 	variable hardwareType, deviceID, channel, value, flags
 
-	string device
+	string realDeviceOrPressure
 
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
@@ -210,9 +210,9 @@ Function HW_WriteDAC(hardwareType, deviceID, channel, value, [flags])
 			HW_ITC_WriteDAC(deviceID, channel, value, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetDeviceName(hardwareType, deviceID)
-			HW_NI_AssertOnInvalid(device)
-			HW_NI_WriteAnalogSingleAndSlow(device, channel, value, flags=flags)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(realDeviceOrPressure)
+			HW_NI_WriteAnalogSingleAndSlow(realDeviceOrPressure, channel, value, flags=flags)
 			break
 	endswitch
 End
@@ -228,7 +228,7 @@ End
 Function HW_ReadADC(hardwareType, deviceID, channel, [flags])
 	variable hardwareType, deviceID, channel, flags
 
-	string device
+	string realDeviceOrPressure
 
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
@@ -237,9 +237,9 @@ Function HW_ReadADC(hardwareType, deviceID, channel, [flags])
 			return HW_ITC_ReadADC(deviceID, channel, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetDeviceName(hardwareType, deviceID)
-			HW_NI_AssertOnInvalid(device)
-			return HW_NI_ReadAnalogSingleAndSlow(device, channel, flags=flags)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(realDeviceOrPressure)
+			return HW_NI_ReadAnalogSingleAndSlow(realDeviceOrPressure, channel, flags=flags)
 			break
 	endswitch
 End
@@ -258,26 +258,26 @@ End
 Function HW_ReadDigital(hardwareType, deviceID, channel, [line, flags])
 	variable hardwareType, deviceID, channel, line, flags
 
-	string device, panelTitle
+	string realDeviceOrPressure
 	variable rack, xopChannel, ttlBit
 
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			panelTitle = HW_GetDeviceName(HARDWARE_ITC_DAC, deviceID)
-			ttlBit	   = channel
-			rack	   = HW_ITC_GetRackForTTLBit(panelTitle, ttlBit)
-			xopChannel = HW_ITC_GetITCXOPChannelForRack(panelTitle, rack)
+			realDeviceOrPressure = HW_GetDeviceName(HARDWARE_ITC_DAC, deviceID)
+			ttlBit     = channel
+			rack       = HW_ITC_GetRackForTTLBit(realDeviceOrPressure, ttlBit)
+			xopChannel = HW_ITC_GetITCXOPChannelForRack(realDeviceOrPressure, rack)
 			return HW_ITC_ReadDigital(deviceID, xopChannel, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetDeviceName(hardwareType, deviceID)
-			HW_NI_AssertOnInvalid(device)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			if(ParamisDefault(line))
-				return HW_NI_ReadDigital(device, DIOPort=channel, flags=flags)
+				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort=channel, flags=flags)
 			else
-				return HW_NI_ReadDigital(device, DIOPort=channel, DIOline=line, flags=flags)
+				return HW_NI_ReadDigital(realDeviceOrPressure, DIOPort=channel, DIOline=line, flags=flags)
 			endif
 			break
 	endswitch
@@ -296,26 +296,26 @@ End
 Function HW_WriteDigital(hardwareType, deviceID, channel, value, [line, flags])
 	variable hardwareType, deviceID, value, channel, line, flags
 
-	string device, panelTitle
+	string realDeviceOrPressure
 	variable ttlBit, rack, xopChannel
 
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			panelTitle = HW_GetDeviceName(HARDWARE_ITC_DAC, deviceID)
+			realDeviceOrPressure = HW_GetDeviceName(HARDWARE_ITC_DAC, deviceID)
 			ttlBit     = channel
-			rack       = HW_ITC_GetRackForTTLBit(panelTitle, ttlBit)
-			xopChannel = HW_ITC_GetITCXOPChannelForRack(panelTitle, rack)
+			rack       = HW_ITC_GetRackForTTLBit(realDeviceOrPressure, ttlBit)
+			xopChannel = HW_ITC_GetITCXOPChannelForRack(realDeviceOrPressure, rack)
 			HW_ITC_WriteDigital(deviceID, xopChannel, value, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetDeviceName(hardwareType, deviceID)
-			HW_NI_AssertOnInvalid(device)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(realDeviceOrPressure)
 			if(ParamisDefault(line))
-				HW_NI_WriteDigital(device, value, DIOPort=channel, flags=flags)
+				HW_NI_WriteDigital(realDeviceOrPressure, value, DIOPort=channel, flags=flags)
 			else
-				HW_NI_WriteDigital(device, value, DIOPort=channel, DIOline=line, flags=flags)
+				HW_NI_WriteDigital(realDeviceOrPressure, value, DIOPort=channel, DIOline=line, flags=flags)
 			endif
 			break
 	endswitch
@@ -402,7 +402,7 @@ End
 Function HW_IsRunning(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
 
-	string device
+	string realDeviceOrPressure
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
@@ -410,9 +410,9 @@ Function HW_IsRunning(hardwareType, deviceID, [flags])
 			return HW_ITC_IsRunning(deviceID, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetDeviceName(hardwareType, deviceID)
-			HW_NI_AssertOnInvalid(device)
-			return HW_NI_IsRunning(device)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(realDeviceOrPressure)
+			return HW_NI_IsRunning(realDeviceOrPressure)
 			break
 	endswitch
 End
@@ -427,7 +427,7 @@ End
 Function/WAVE HW_GetDeviceInfo(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
 
-	string device
+	string realDeviceOrPressure
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
@@ -435,9 +435,9 @@ Function/WAVE HW_GetDeviceInfo(hardwareType, deviceID, [flags])
 			return HW_ITC_GetDeviceInfo(deviceID, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetDeviceName(hardwareType, deviceID)
-			HW_NI_AssertOnInvalid(device)
-			return HW_NI_GetDeviceInfo(device, flags=flags)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(realDeviceOrPressure)
+			return HW_NI_GetDeviceInfo(realDeviceOrPressure, flags=flags)
 			break
 	endswitch
 End
@@ -540,7 +540,7 @@ End
 Function HW_ResetDevice(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
 
-	string device
+	string realDeviceOrPressure
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
@@ -548,9 +548,9 @@ Function HW_ResetDevice(hardwareType, deviceID, [flags])
 			// no equivalent functionality
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetDeviceName(hardwareType, deviceID)
-			HW_NI_AssertOnInvalid(device)
-			HW_NI_ResetDevice(device, flags=flags)
+			realDeviceOrPressure = HW_GetDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(realDeviceOrPressure)
+			HW_NI_ResetDevice(realDeviceOrPressure, flags=flags)
 			break
 	endswitch
 End
@@ -2001,7 +2001,7 @@ static Constant HW_NI_FIFO_MIN_FREE_DISK_SPACE = 960000000
 Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	variable deviceID, triggerMode, flags, repeat
 
-	string panelTitle, device, FIFONote, noteID, fifoName, errMsg
+	string panelTitle, realDeviceOrPressure, FIFONote, noteID, fifoName, errMsg
 	variable i, pos, endpos, channelTimeOffset, err
 
 	DEBUGPRINTSTACKINFO()
@@ -2011,7 +2011,7 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	endif
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 	SVAR scanStr = $GetNI_AISetup(panelTitle)
 	fifoName = GetNIFIFOName(deviceID)
 	AssertOnAndClearRTError()
@@ -2023,9 +2023,9 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		endif
 		CtrlFIFO $fifoName, start
 		if(repeat)
-			DAQmx_Scan/DEV=device/BKG/RPTC FIFO=scanStr;AbortOnRTE
+			DAQmx_Scan/DEV=realDeviceOrPressure/BKG/RPTC FIFO=scanStr;AbortOnRTE
 		else
-			DAQmx_Scan/DEV=device/BKG FIFO=scanStr;AbortOnRTE
+			DAQmx_Scan/DEV=realDeviceOrPressure/BKG FIFO=scanStr;AbortOnRTE
 		endif
 		NVAR taskIDADC = $GetNI_ADCTaskID(panelTitle)
 		taskIDADC = 1
@@ -2066,13 +2066,13 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
 	variable flags, offset
 
-	string panelTitle, tempStr, device, filename, clkStr, wavegenStr, TTLStr, fifoName, errMsg
+	string panelTitle, tempStr, realDeviceOrPressure, filename, clkStr, wavegenStr, TTLStr, fifoName, errMsg
 	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize, err, minimum, maximum
 
 	DEBUGPRINTSTACKINFO()
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
@@ -2132,7 +2132,7 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 					wavegenStr += tempStr + ";"
 					break
 				case XOP_CHANNEL_TYPE_TTL:
-					TTLStr += "/" + device + "/port" + num2str(HARDWARE_NI_TTL_PORT) +"/line" + num2str(config[i][%ChannelNumber]) + ","
+					TTLStr += "/" + realDeviceOrPressure + "/port" + num2str(HARDWARE_NI_TTL_PORT) +"/line" + num2str(config[i][%ChannelNumber]) + ","
 					TTLWaves[ttlCnt]= NIDataWave[i]
 					ttlCnt += 1
 					break
@@ -2150,13 +2150,13 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 		KillPath tempNIAcqPath
 		CtrlFIFO $fifoName, deltaT=sampleIntervall, size=fifoSize, file=fnum, note="MIES Analog In File"
 
-		clkStr = "/" + device + "/ai/sampleclock"
+		clkStr = "/" + realDeviceOrPressure + "/ai/sampleclock"
 		// note actually this does already 'starts' a measurement
 #ifdef EVIL_KITTEN_EATING_MODE
 		// don't set any clock source to make the USB6001 work with DAQ
-		DAQmx_WaveFormGen/DEV=device/STRT=1 wavegenStr;AbortOnRTE
+		DAQmx_WaveFormGen/DEV=realDeviceOrPressure/STRT=1 wavegenStr;AbortOnRTE
 #else
-		DAQmx_WaveFormGen/DEV=device/STRT=1/CLK={clkStr, 0} wavegenStr;AbortOnRTE
+		DAQmx_WaveFormGen/DEV=realDeviceOrPressure/STRT=1/CLK={clkStr, 0} wavegenStr;AbortOnRTE
 #endif
 		NVAR taskIDDAC = $GetNI_DACTaskID(panelTitle)
 		taskIDDAC = 1
@@ -2165,28 +2165,28 @@ Function HW_NI_PrepareAcq(deviceID, mode, [data, dataFunc, config, configFunc, f
 			case 0:
 				break
 			case 1:
-				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0]} TTLStr;AbortOnRTE
 				break
 			case 2:
-				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1]} TTLStr;AbortOnRTE
 				break
 			case 3:
-				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2]} TTLStr;AbortOnRTE
 				break
 			case 4:
-				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3]} TTLStr;AbortOnRTE
 				break
 			case 5:
-				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4]} TTLStr;AbortOnRTE
 				break
 			case 6:
-				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5]} TTLStr;AbortOnRTE
 				break
 			case 7:
-				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6]} TTLStr;AbortOnRTE
 				break
 			case 8:
-				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6], TTLWaves[7]} TTLStr;AbortOnRTE
+				DAQmx_DIO_Config/DEV=realDeviceOrPressure/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6], TTLWaves[7]} TTLStr;AbortOnRTE
 				break
 		endswitch
 		NVAR taskIDTTL = $GetNI_TTLTaskID(panelTitle)
@@ -2567,13 +2567,13 @@ Function HW_NI_StopADC(deviceID, [flags])
 	DEBUGPRINTSTACKINFO()
 
 	variable ret
-	string device, panelTitle
+	string realDeviceOrPressure, panelTitle
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	NVAR taskIDADC = $GetNI_ADCTaskID(panelTitle)
 	if(!isNaN(taskIDADC))
-		device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
-		ret = fDAQmx_ScanStop(device)
+		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+		ret = fDAQmx_ScanStop(realDeviceOrPressure)
 		if(ret)
 			print fDAQmx_ErrorString()
 			printf "Error %d: fDAQmx_ScanStop\r", ret
@@ -2597,13 +2597,13 @@ Function HW_NI_StopDAC(deviceID, [flags])
 	DEBUGPRINTSTACKINFO()
 
 	variable ret
-	string device, panelTitle
+	string realDeviceOrPressure, panelTitle
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	NVAR taskIDDAC = $GetNI_DACTaskID(panelTitle)
 	if(!isNaN(taskIDDAC))
-		device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
-		ret = fDAQmx_WaveformStop(device)
+		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+		ret = fDAQmx_WaveformStop(realDeviceOrPressure)
 		if(ret)
 			print fDAQmx_ErrorString()
 			printf "Error %d: fDAQmx_WaveformStop\r", ret
@@ -2626,13 +2626,13 @@ Function HW_NI_StopTTL(deviceID, [flags])
 	DEBUGPRINTSTACKINFO()
 
 	variable ret
-	string device, panelTitle
+	string realDeviceOrPressure, panelTitle
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	NVAR taskIDTTL = $GetNI_TTLTaskID(panelTitle)
 	if(!isNaN(taskIDTTL))
-		device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
-		ret = fDAQmx_DIO_Finished(device, taskIDTTL)
+		realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+		ret = fDAQmx_DIO_Finished(realDeviceOrPressure, taskIDTTL)
 		if(ret)
 			print fDAQmx_ErrorString()
 			printf "Error %d: fDAQmx_DIO_Finished\r", ret
@@ -2654,10 +2654,10 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	string device, panelTitle, paraStr
+	string realDeviceOrPressure, panelTitle, paraStr
 	variable channels, i
 
-	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+	realDeviceOrPressure = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	WAVE config = GetDAQConfigWave(panelTitle)
 
@@ -2670,7 +2670,7 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 	endfor
 
 	AssertOnAndClearRTError()
-	DAQmx_AO_SetOutputs/DEV=device paraStr
+	DAQmx_AO_SetOutputs/DEV=realDeviceOrPressure paraStr
 
 	if(ClearRTError())
 		print fDAQmx_ErrorString()
