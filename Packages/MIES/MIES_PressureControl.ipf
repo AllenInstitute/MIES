@@ -1126,7 +1126,7 @@ static Function P_DataAcq(panelTitle, headStage)
 	variable headstage
 
 	variable deviceID, hwType, TTL, DAC, ADC, startTime, elapsedTime, duration
-	string str, pfi, device, endFunc
+	string str, pfi, pressureDevice, endFunc
 
 	Wave pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
@@ -1161,14 +1161,14 @@ static Function P_DataAcq(panelTitle, headStage)
 		HW_WriteDigital(HARDWARE_NI_DAC, deviceID, 0, 0, line=TTL)
 
 		// @todo write proper wrappers once we finalized the functionality
-		device = HW_GetDeviceName(hwType, deviceID)
+		pressureDevice = HW_GetDeviceName(hwType, deviceID)
 		sprintf str, "%s, %d/Diff;", GetWavesDataFolder(ad, 2), ADC
-		sprintf pfi, "/%s/pfi0", device
+		sprintf pfi, "/%s/pfi0", pressureDevice
 		sprintf endFunc, "P_NI_StopDAQ(\"%s\", %d)", panelTitle, headStage
-		DAQmx_Scan/DEV=device/TRIG={pfi, 1, 1}/BKG/EOSH=endFunc WAVES=str
+		DAQmx_Scan/DEV=pressureDevice/TRIG={pfi, 1, 1}/BKG/EOSH=endFunc WAVES=str
 		sprintf str, "%s, %d/Diff;", GetWavesDataFolder(da, 2), DAC
-		sprintf pfi, "/%s/pfi1", device
-		DAQmx_WaveformGen/DEV=device/NPRD=1/TRIG={pfi, 1, 1} str
+		sprintf pfi, "/%s/pfi1", pressureDevice
+		DAQmx_WaveformGen/DEV=pressureDevice/NPRD=1/TRIG={pfi, 1, 1} str
 
 		// start acquisition by setting our special TTL port 1 line 0 high
 		// this TTL line must be manually hardwired to the PFI0 and PFI1 lines.
