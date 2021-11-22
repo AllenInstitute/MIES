@@ -5,3 +5,6 @@ margin-bottom: 50px;
 div.body {
   max-width: 100%;
 }
+
+/* change the cursor for zoomable images */
+a[data-lightbox] {cursor: zoom-in;}
