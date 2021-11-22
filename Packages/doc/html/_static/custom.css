@@ -1,3 +1,7 @@
 dl.function {
 margin-bottom: 50px;
 }
+
+div.body {
+  max-width: 100%;
+}
