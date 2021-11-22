@@ -11,8 +11,6 @@
 
 /// @brief Stop DAQ and TP on all locked devices
 Function DQ_StopOngoingDAQAllLocked(variable stopReason)
-	string panelTitle
-
 	variable i, numDev, err
 	string device
 
