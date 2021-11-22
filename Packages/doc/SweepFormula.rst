@@ -453,6 +453,8 @@ Although being listed near the end, the `data()` function is the core of the
 
    data(array range, array channels, array sweeps)
 
+   data(string epochShortName, array channels, array sweeps)
+
 It returns `[[sweeps][channel]]` for all `[sweeps]` in the array containing the
 sweep numbers.
 
@@ -462,6 +464,9 @@ in the OVS tab.
 The range can be either supplied explicitly using `[100, 300]` which would
 select `100 ms` to `300 ms` or by using `cursors()`. In case `cursors()` is
 used but there are no cursors on the graph, the full x-range is used.
+
+Instead of a numerical range also the short name of an epoch can be given. Then the range
+is determined from the epoch information of each sweep/channel data iterates through.
 
 The function does not return errors for unmatched entries. If no entry was found
 data returns a single element wave with a `NaN` value.
@@ -474,8 +479,11 @@ When executed by the Formula Executor the data wave has the layout:
 
 .. code-block:: bash
 
-   // Shows the first second of the AD channels of all sweeps
+   // Shows the AD channels of all sweeps
    data([0, 1000], channels(AD), sweeps())
+
+   // Shows epoch "E1" range of the AD channels of all sweeps
+   data("E1", channels(AD), sweeps())
 
 labnotebook
 """""""""""
