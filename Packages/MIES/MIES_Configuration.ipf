@@ -541,7 +541,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 
 	variable i, fnum, restoreMask, numPotentialUnlocked, err, winConfigChanged, isTagged, sweepRollback
 	string panelTitle, getWName, jsonPath, potentialUnlockedList, winHandle, errMsg
-	string AmpSerialLocal, AmpTitleLocal, device, StimSetPath, path, filename, rStateSync
+	string AmpSerialLocal, AmpTitleLocal, deviceToRecreate, StimSetPath, path, filename, rStateSync
 	string input = ""
 
 	AssertOnAndClearRTError()
@@ -552,10 +552,10 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		if(forceNewPanel)
 			panelTitle = DAP_CreateDAEphysPanel()
 		else
-			device = CONF_GetStringFromSavedControl(jsonID, "popup_MoreSettings_Devices")
+			deviceToRecreate = CONF_GetStringFromSavedControl(jsonID, "popup_MoreSettings_Devices")
 			panelTitle = ""
-			if(WindowExists(device))
-				panelTitle = device
+			if(WindowExists(deviceToRecreate))
+				panelTitle = deviceToRecreate
 				if(PanelIsType(panelTitle, PANELTAG_DAEPHYS))
 					winHandle = num2istr(GetUniqueInteger())
 					SetWindow $panelTitle, userdata($EXPCONFIG_UDATA_WINHANDLE) = winHandle
