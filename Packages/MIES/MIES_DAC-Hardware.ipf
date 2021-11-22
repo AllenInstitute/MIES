@@ -329,8 +329,6 @@ End
 Function HW_EnableYoking(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
 
-	string device
-
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
@@ -338,8 +336,6 @@ Function HW_EnableYoking(hardwareType, deviceID, [flags])
 			HW_ITC_EnableYoking(deviceID, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetDeviceName(hardwareType, deviceID)
-			HW_NI_AssertOnInvalid(device)
 			ASSERT(0, "Not implemented")
 			break
 	endswitch
@@ -353,8 +349,6 @@ End
 Function HW_DisableYoking(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
 
-	string device
-
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
@@ -362,8 +356,6 @@ Function HW_DisableYoking(hardwareType, deviceID, [flags])
 			HW_ITC_DisableYoking(deviceID, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetDeviceName(hardwareType, deviceID)
-			HW_NI_AssertOnInvalid(device)
 			ASSERT(0, "Not implemented")
 			break
 	endswitch
