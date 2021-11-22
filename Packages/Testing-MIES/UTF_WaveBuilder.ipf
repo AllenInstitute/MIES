@@ -202,5 +202,5 @@ Function WB_CheckEpochParameters()
 	newCode = TrimString(newCode, 1)
 	existingCode = TrimString(existingCode, 1)
 
-	CHECK(strsearch(existingCode, newCode, 0) >= 0)
+	CHECK_GE_VAR(strsearch(existingCode, newCode, 0), 0)
 End

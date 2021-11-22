@@ -191,7 +191,7 @@ EndStructure
 static Function InitTestStructure(t)
 	STRUCT TestSettings &t
 
-	REQUIRE(t.numSweeps > 0)
+	REQUIRE_GT_VAR(t.numSweeps, 0)
 	Make/T/FREE/N=(t.numSweeps) t.acquiredStimSets_HS0, t.acquiredStimSets_HS1
 	Make/FREE/N=(t.numSweeps) t.sweepCount_HS0, t.sweepCount_HS1
 	Make/FREE/N=(t.numSweeps) t.setCycleCount_HS0, t.setCycleCount_HS1
@@ -268,7 +268,7 @@ static Function AllTests(t, devices)
 			CHECK_PROPER_STR(unit)
 
 			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
-			CHECK(sweepNo >= 0)
+			CHECK_GE_VAR(sweepNo, 0)
 			WAVE/T/Z foundStimSets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 			REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
 
@@ -1821,7 +1821,7 @@ Function SweepSkippingAdvanced_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 2)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_CONFIG_EVENT], 4)
-	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_GE_VAR(anaFuncTracker[MID_SWEEP_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 4)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 2)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
@@ -1962,7 +1962,7 @@ Function SkipSweepsBackDuringITI_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_CONFIG_EVENT], 4)
-	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_GE_VAR(anaFuncTracker[MID_SWEEP_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 4)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
@@ -1982,7 +1982,7 @@ static Function CheckLastLBNEntryFromTP_IGNORE(device)
 	// last LBN entry is from TP
 	WAVE numericalValues = GetLBNumericalValues(device)
 	index = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
-	CHECK(index >= 1)
+	CHECK_GE_VAR(index, 1)
 	CHECK_EQUAL_VAR(numericalValues[index - 1][%EntrySourceType], TEST_PULSE_MODE)
 End
 
@@ -2005,7 +2005,7 @@ static Function CheckDAQStopReason(string device, variable stopReason)
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	CHECK(DimSize(sweeps, ROWS) >= 1)
+	CHECK_GE_VAR(DimSize(sweeps, ROWS), 1)
 
 	sweepNo = sweeps[0]
 	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -3581,7 +3581,7 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	WAVE/Z TPStorage = GetTPStorage(device)
 	CHECK_WAVE(TPStorage, NORMAL_WAVE)
 	numStored = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-	CHECK(numStored > TP_SKIP_NUM_TPS_START)
+	CHECK_GT_VAR(numStored, TP_SKIP_NUM_TPS_START)
 
 	WAVE/Z/WAVE storedTestPulses = GetStoredTestPulseWave(device)
 	CHECK_WAVE(storedTestPulses, WAVE_WAVE)
@@ -3613,7 +3613,7 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 			FindLevels/Q/D=levels/M=(TP_EDGE_EPSILON) singleTP, tresh
 
 			CHECK_EQUAL_VAR(2, V_LevelsFound)
-			CHECK(abs(pulseLengthMS - levels[1] + levels[0]) < TP_WIDTH_EPSILON)
+			CHECK_LT_VAR(abs(pulseLengthMS - levels[1] + levels[0]), TP_WIDTH_EPSILON)
 
 		endfor
 	endfor
@@ -3648,9 +3648,9 @@ Function CheckThatTPsCanBeFound_REENTRY([str])
 	CHECK_WAVE(TPStorage, NORMAL_WAVE)
 
 	index = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-	CHECK(index > 0)
+	CHECK_GT_VAR(index, 0)
 	duration = TPStorage[index - 1][0][%DeltaTimeInSeconds]
-	CHECK(duration > TP_DURATION_S * 0.9)
+	CHECK_GT_VAR(duration, TP_DURATION_S * 0.9)
 
 	WaitAndCheckStoredTPs_IGNORE(str, 2)
 
@@ -3836,7 +3836,7 @@ Function HasNaNAsDefaultWhenAborted_REENTRY([str])
 	CHECK_WAVE(sweepWave, NUMERIC_WAVE)
 
 	FindValue/FNAN/RMD=[][0] sweepWave
-	CHECK(V_row >= 0)
+	CHECK_GE_VAR(V_row, 0)
 
 	// check that we have NaNs for all columns starting from the first unacquired point
 	Duplicate/FREE/RMD=[V_row,][] sweepWave, unacquiredData
@@ -3875,10 +3875,10 @@ Function TestPulseCachingWorks_REENTRY([str])
 	WAVE/T keyWave = GetCacheKeyWave()
 	// approximate search
 	FindValue/TEXT=("HW Datawave Testpulse") keyWave
-	CHECK(V_Value >= 0)
+	CHECK_GE_VAR(V_Value, 0)
 
 	WAVE stats = GetCacheStatsWave()
-	CHECK(stats[V_Value][%Hits] >= 1)
+	CHECK_GE_VAR(stats[V_Value][%Hits], 1)
 End
 
 Function UnassocChannelsDuplicatedEntry_IGNORE(device)
@@ -3951,7 +3951,7 @@ Function UnassocChannelsDuplicatedEntry_REENTRY([str])
 		Make/FREE/T unassocEntries
 		Grep/E=".* u_(AD|DA)\d$" singleRow as unassocEntries
 		CHECK(!V_Flag)
-		CHECK(V_Value > 0)
+		CHECK_GT_VAR(V_Value, 0)
 
 		unassocEntries[] = RemoveTrailingNumber_IGNORE(unassocEntries[p])
 
@@ -4081,7 +4081,7 @@ Function DataBrowserCreatesBackupsByDefault_REENTRY([str])
 	// check that all non-backup waves in singleSweepFolder have a backup
 	list = GetListOfObjects(singleSweepFolder, "^[A-Za-z]{1,}_[0-9]$")
 	numEntries = ItemsInList(list)
-	CHECK(numEntries > 0)
+	CHECK_GT_VAR(numEntries, 0)
 
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, list)
@@ -4394,7 +4394,7 @@ Function AsyncAcquisitionLBN_REENTRY([str])
 	CHECK_EQUAL_VAR(var, 0.5)
 
 	var = GetLastSettingIndep(numericalValues, 0, "Async AD 2 [myTitle]", DATA_ACQUISITION_MODE)
-	CHECK(var >= 0)
+	CHECK_GE_VAR(var, 0)
 
 	readStr = GetLastSettingTextIndep(textualValues, 0, "Async AD2 Title", DATA_ACQUISITION_MODE)
 	refStr = "myTitle"
@@ -4526,7 +4526,7 @@ static Function CheckLBNEntries_IGNORE(string device, variable sweepNo, variable
 
 		CHECK_WAVE(indizesEntry, FREE_WAVE)
 		WAVE indizesEntryOneSweep = GetSetIntersection(indizesSweeps, indizesEntry)
-		CHECK(DimSize(indizesEntryOneSweep, ROWS) > 0)
+		CHECK_GT_VAR(DimSize(indizesEntryOneSweep, ROWS), 0)
 
 		// all entries in indizesEntryOneSweep must be in indizesAcqState
 		WAVE/Z indizesAcqState = FindIndizes(wv, colLabel = "AcquisitionState", var = acqState)
@@ -4721,7 +4721,7 @@ Function ExportStimsetsAndRoundtripThem([variable var])
 	CHECK_EQUAL_VAR(DimSize(oldWaves, ROWS), DimSize(newWaves, ROWS))
 
 	numEntries = DimSize(oldWaves, ROWS)
-	CHECK(numEntries > 0)
+	CHECK_GT_VAR(numEntries, 0)
 
 	for(i = 0; i < numEntries; i += 1)
 		WAVE oldWave = $oldWaves[i]
@@ -4842,7 +4842,7 @@ Function ExportOnlyCommentsIntoNWB([string str])
 	fileID = H5_OpenFile(discLocation)
 	userComment = TestNWBExportV2#TestUserComment(fileID, str)
 	userCommentRef = "abcdefgh ijjkl"
-	CHECK(strsearch(userComment, userCommentRef, 0) >= 0)
+	CHECK_GE_VAR(strsearch(userComment, userCommentRef, 0), 0)
 
 	H5_CloseFile(fileID)
 End
@@ -5030,7 +5030,7 @@ Function CheckTPBaseline_REENTRY([WAVE/WAVE pair])
 	CHECK_WAVE(storedTPs, WAVE_WAVE)
 
 	numEntries = GetNumberFromWaveNote(storedTPs, NOTE_INDEX)
-	CHECK(numEntries > 0)
+	CHECK_GT_VAR(numEntries, 0)
 
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/Z singleTP = storedTPs[i]

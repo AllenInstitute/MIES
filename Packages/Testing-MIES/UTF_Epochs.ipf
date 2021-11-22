@@ -110,8 +110,8 @@ static Function TestEpochChannelTight(e)
 
 	numRows = DimSize(e, ROWS)
 	numCols = DimSize(e, COLS)
-	CHECK(numRows > 0)
-	CHECK(numCols > 0)
+	CHECK_GT_VAR(numRows, 0)
+	CHECK_GT_VAR(numCols, 0)
 	for(i = 0; i < numRows; i += 1)
 		for(j = 0; j < numCols; j += 1)
 			s = e[i][j]
@@ -275,13 +275,13 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 			break
 		endif
 	endfor
-	REQUIRE(epochCnt > 0)
+	REQUIRE_GT_VAR(epochCnt, 0)
 
 	Make/FREE/D/N=(epochCnt) startT, endT, levels, isOodDAQ
 	startT[] = str2num(e[p][0])
 	endT[] = str2num(e[p][1])
-	CHECK(WaveMin(startT) >= 0)
-	CHECK(WaveMin(endT) >= 0)
+	CHECK_GE_VAR(WaveMin(startT), 0)
+	CHECK_GE_VAR(WaveMin(endT), 0)
 	isOodDAQ[] = strsearch(e[p][2], EPOCH_OODDAQ_REGION_KEY, 0) != -1
 	levels[] = str2num(e[p][3])
 	CHECK_EQUAL_VAR(WaveMin(startT), 0)
@@ -291,13 +291,14 @@ static Function TestEpochsMonotony(e, DAChannel, activeDAChannel)
 	// check that start times are monotonously increasing
 	if(epochCnt > 1)
 		for(i = 1; i < epochCnt; i += 1)
-			CHECK(startT[i - 1] <= startT[i])
+			CHECK_LE_VAR(startT[i - 1], startT[i])
 		endfor
 	endif
 
 	// check for valid level
 	for(i = 0; i < epochCnt; i += 1)
-		CHECK(IsInteger(levels[i]) && levels[i] >= 0)
+		CHECK(IsInteger(levels[i]))
+		CHECK_GE_VAR(levels[i], 0)
 	endfor
 
 	// check that a subset of epochs in level x fully cover exactly one epoch in level x - 1
@@ -366,7 +367,7 @@ static Function TestEpochsGeneric(device)
 	WAVE/Z sweep  = $StringFromList(0, sweeps)
 	CHECK_WAVE(sweep, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 	sweepNo = ExtractSweepNumber(NameOfWave(sweep))
-	CHECK(sweepNo >= 0)
+	CHECK_GE_VAR(sweepNo, 0)
 
 	WAVE/Z config = $StringFromList(0, configs)
 	CHECK_WAVE(config, NUMERIC_WAVE)
@@ -431,7 +432,7 @@ static Function TestEpochsGeneric(device)
 		endT[] = str2num(epochChannel[p][1])
 		// allow epochEnd to exceed range by less than one sample point
 		endTimeEpochs = trunc(WaveMax(endT) / samplingInterval) * samplingInterval
-		CHECK(endTimeEpochs <= endTimeDAC)
+		CHECK_LE_VAR(endTimeEpochs, endTimeDAC)
 		Duplicate/FREE/RMD=[][i] sweep, DAchannel
 		Redimension/N=(-1, 0) DAchannel
 
@@ -452,7 +453,7 @@ static Function TestUnacquiredEpoch(WAVE sweep, WAVE epochChannel)
 	endif
 
 	FindValue/TEXT="Type=Unacquired" epochChannel
-	CHECK(V_row >= 0)
+	CHECK_GE_VAR(V_row, 0)
 	CHECK_EQUAL_VAR(V_col, 2)
 End
 
@@ -466,10 +467,10 @@ static Function TestNaming(WAVE/T epochChannel)
 		tags = epochChannel[i][EPOCH_COL_TAGS]
 
 		numEntries = ItemsInList(tags, ";")
-		CHECK(numEntries > 0)
+		CHECK_GT_VAR(numEntries, 0)
 		for(j = 0; j < numEntries; j += 1)
 			entry = StringFromList(j, tags)
-			CHECK(strsearch(entry, "=", 0) > 0)
+			CHECK_GT_VAR(strsearch(entry, "=", 0), 0)
 		endfor
 	endfor
 End
@@ -691,14 +692,14 @@ Function EP_TestUserEpochs_REENTRY([str])
 				case PRE_SWEEP_CONFIG_EVENT:
 				case MID_SWEEP_EVENT:
 					// user epoch was added
-					CHECK(V_row >= 0)
+					CHECK_GE_VAR(V_row, 0)
 					tags = epochWave[V_row][EPOCH_COL_TAGS]
 					shortName = EP_GetShortName(tags)
 					CHECK(GrepString(shortName, "^U_"))
 					break
 				default:
 					// no user epochs for all other events
-					CHECK(V_row < 0)
+					CHECK_LT_VAR(V_row, 0)
 					break
 			endswitch
 		endfor

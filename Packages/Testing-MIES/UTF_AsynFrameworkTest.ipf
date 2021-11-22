@@ -69,7 +69,7 @@ static Function TASYNC_Start_Stop()
 	CHECK(NVAR_Exists(ThreadCnt))
 	CHECK_EQUAL_VAR(ThreadCnt, ThreadProcessorCount)
 	CtrlNamedBackground _all_, status
-	CHECK(strsearch(S_Info,"NAME:AsyncFramework;PROC:ASYNC_BackgroundReadOut;RUN:1;",0) >= 0)
+	CHECK_GE_VAR(strsearch(S_Info,"NAME:AsyncFramework;PROC:ASYNC_BackgroundReadOut;RUN:1;",0), 0)
 
 	ASYNC_Stop(timeout=1)
 End
@@ -1003,7 +1003,7 @@ static Function TASYNC_StopTimeOut()
 	Make/N=0 returnOrder
 	timeout=ASYNC_Stop(timeout=0)
 	CHECK(timeout)
-	CHECK(numpnts(returnOrder) < WORK_COUNT_GENERIC)
+	CHECK_LT_VAR(numpnts(returnOrder), WORK_COUNT_GENERIC)
 End
 
 /// @brief Test if a stop on blocking workloads forcefully stops the threads and throws an assertion

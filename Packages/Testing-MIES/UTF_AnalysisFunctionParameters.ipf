@@ -21,7 +21,7 @@ static Function UpgradeToEncodedAnalysisParamsWorks()
 	// force wave upgrade
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
-	CHECK(GetWaveVersion(WPT) >= 10)
+	CHECK_GE_VAR(GetWaveVersion(WPT), 10)
 
 	expected = ""
 	actual = WPT[10][%Set][INDEP_EPOCH_TYPE]

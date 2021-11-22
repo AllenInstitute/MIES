@@ -423,7 +423,7 @@ static Function CheckUserEpochChunkNoOverlap(WAVE/T epochInfo)
 			s2 = str2num(epochInfo[j][EPOCH_COL_STARTTIME])
 			e2 = str2num(epochInfo[j][EPOCH_COL_ENDTIME])
 			overlap = min(e1, e2) - max(s1, s2)
-			CHECK(overlap <= 0) // if overlap is positive the two intervalls intersect
+			CHECK_LE_VAR(overlap, 0) // if overlap is positive the two intervalls intersect
 		endfor
 	endfor
 End
@@ -841,7 +841,7 @@ Function InitDAQSettingsFromString(s, str)
 
 	/// @todo use longer names once IP8 is mandatory
 	sscanf str, "MD%d_RA%d_I%d_L%d_BKG_%d_RES_%d", md, ra, idx, lidx, bkg_daq, res
-	REQUIRE(V_Flag >= 5)
+	REQUIRE_GE_VAR(V_Flag, 5)
 
 	s.md        = md
 	s.ra        = ra
@@ -1040,7 +1040,7 @@ static Function CheckDashboard(string device, WAVE headstageQC)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
 	numEntries = GetNumberFromWaveNote(listWave, NOTE_INDEX)
-	CHECK(numEntries > 0)
+	CHECK_GT_VAR(numEntries, 0)
 
 	for(i = 0; i < numEntries; i += 1)
 		state = !cmpstr(listWave[i][%Result], DASHBOARD_PASSING_MESSAGE)
@@ -1065,7 +1065,7 @@ static Function CheckAnaFuncVersion(string device, variable type)
 
 		refVersion = GetAnalysisFunctionVersion(type)
 		idx = GetRowIndex(versions, val = refVersion)
-		CHECK(idx >= 0)
+		CHECK_GE_VAR(idx, 0)
 		return NaN
 	endfor
 
@@ -1180,7 +1180,7 @@ static Function TestSweepReconstruction_IGNORE(string panelTitle)
 	Sort wavesReconstructed, wavesReconstructed
 	Sort wavesOriginal, wavesOriginal
 
-	CHECK(DimSize(sweeps, ROWS) > 0)
+	CHECK_GT_VAR(DimSize(sweeps, ROWS), 0)
 	CHECK_EQUAL_VAR(DimSize(wavesReconstructed, ROWS), DimSize(sweeps, ROWS) * 2)
 	CHECK_EQUAL_VAR(DimSize(wavesOriginal, ROWS), DimSize(sweeps, ROWS) * 2)
 

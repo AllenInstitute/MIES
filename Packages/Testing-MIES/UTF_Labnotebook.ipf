@@ -181,8 +181,8 @@ Function GetLastSettingWorks()
 	last  = LABNOTEBOOK_GET_RANGE
 	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK_WAVE(settings, NUMERIC_WAVE)
-	CHECK(first >= 0)
-	CHECK(last  >= 0)
+	CHECK_GE_VAR(first, 0)
+	CHECK_GE_VAR(last , 0)
 
 	firstAgain = first
 	lastAgain  = last
@@ -291,8 +291,8 @@ Function GetLastSettingTextWorks()
 	last  = LABNOTEBOOK_GET_RANGE
 	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK_WAVE(settings, TEXT_WAVE)
-	CHECK(first >= 0)
-	CHECK(last  >= 0)
+	CHECK_GE_VAR(first, 0)
+	CHECK_GE_VAR(last , 0)
 
 	firstAgain = first
 	lastAgain  = last
@@ -640,8 +640,8 @@ Function LabnotebookUpgradeForValidDimensionLabelsNum([WAVE/T wv])
 	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
 
 	// and check that this entry is now renamed
-	CHECK(FindDimLabel(numericalKeys, COLS, newName) >= 0)
-	CHECK(FindDimLabel(numericalValues, COLS, newName) >= 0)
+	CHECK_GE_VAR(FindDimLabel(numericalKeys, COLS, newName), 0)
+	CHECK_GE_VAR(FindDimLabel(numericalValues, COLS, newName), 0)
 	txtSetting = numericalKeys[%Parameter][%$newName]
 	CHECK_EQUAL_STR(txtSetting, newName)
 End
@@ -679,8 +679,8 @@ Function LabnotebookUpgradeForValidDimensionLabelsText([WAVE/T wv])
 	MIES_WAVEGETTERS#UpgradeLabNotebook(device)
 
 	// and check that this entry is now renamed
-	CHECK(FindDimLabel(textualKeys, COLS, newName) >= 0)
-	CHECK(FindDimLabel(textualKeys, COLS, newName) >= 0)
+	CHECK_GE_VAR(FindDimLabel(textualKeys, COLS, newName), 0)
+	CHECK_GE_VAR(FindDimLabel(textualKeys, COLS, newName), 0)
 	setting = textualKeys[%Parameter][%$newName]
 	CHECK_EQUAL_STR(setting, newName)
 End

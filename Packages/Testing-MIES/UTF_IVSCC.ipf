@@ -59,5 +59,5 @@ Function CheckThatPublishingWorks()
 		Sleep/S 0.1
 	endfor
 
-	CHECK(found > 0)
+	CHECK_GT_VAR(found, 0)
 End

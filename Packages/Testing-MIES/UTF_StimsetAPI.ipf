@@ -144,10 +144,10 @@ static Function GetStimsetParametersWorksGlobal()
 	CHECK_WAVE(globalParams, TEXT_WAVE)
 
 	FindValue/TXOP=4/TEXT="Flip time axis" globalParams
-	CHECK(V_Value >= 0)
+	CHECK_GE_VAR(V_Value, 0)
 
 	FindValue/TXOP=4/TEXT="Analysis function (generic)" globalParams
-	CHECK(V_Value >= 0)
+	CHECK_GE_VAR(V_Value, 0)
 End
 
 static Function GetStimsetParametersWorksPerEpoch()
@@ -162,7 +162,7 @@ static Function GetStimsetParametersWorksPerEpoch()
 	for(i = 0; i < EPOCH_TYPES_TOTAL_NUMBER; i += 1)
 		WAVE/Z perEpochParams = ST_GetStimsetParameters(name, epochType = i)
 		CHECK_WAVE(perEpochParams, TEXT_WAVE)
-		CHECK(DimSize(perEpochParams, ROWS) > 0)
+		CHECK_GT_VAR(DimSize(perEpochParams, ROWS), 0)
 
 		if(i == EPOCH_TYPE_COMBINE)
 			entry = "Combine epoch formula"
@@ -173,7 +173,7 @@ static Function GetStimsetParametersWorksPerEpoch()
 		endif
 
 		FindValue/TXOP=4/TEXT=entry perEpochParams
-		CHECK(V_Value >= 0)
+		CHECK_GE_VAR(V_Value, 0)
 	endfor
 
 	// returns null for invalid epoch

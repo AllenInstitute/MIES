@@ -15,7 +15,7 @@ static Function TestHistory(fileID)
 
 	WAVE/Z/T history = H5_LoadDataSet(fileID, "/general/history")
 	CHECK_WAVE(history, TEXT_WAVE)
-	CHECK(DimSize(history, ROWS) > 0)
+	CHECK_GT_VAR(DimSize(history, ROWS), 0)
 
 	WAVE/Z/T matches = GrepTextWave(history, LOGFILE_NWB_MARKER)
 	CHECK_WAVE(history, TEXT_WAVE)
@@ -100,7 +100,7 @@ static Function TestStoredTestPulses(fileID, device)
 		CHECK_EQUAL_VAR(V_Flag, 1)
 
 		idx = str2num(idxStr)
-		CHECK(idx >= 0)
+		CHECK_GE_VAR(idx, 0)
 
 		WAVE/Z TestPulsePXP = storedTestPulses[idx]
 		CHECK_EQUAL_WAVES(TestPulseNWB, TestPulsePXP)
@@ -118,7 +118,7 @@ static Function TestStimsetParamWaves(fileID, device, sweeps)
 	WAVE/T textualValues = GetLBTextualValues(device)
 
 	stimsetParamsNWB = H5_ListGroupMembers(fileID, "/general/stimsets")
-	CHECK(ItemsInList(stimsetParamsNWB) > 0)
+	CHECK_GT_VAR(ItemsInList(stimsetParamsNWB), 0)
 
 	numEntries = DimSize(sweeps, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -306,7 +306,7 @@ static Function TestSourceAttribute(groupID, device, channel, sweep, pxpSweepsDF
 	CHECK_EQUAL_WAVES(pxpWave, loadedFromNWB)
 
 	// groupIndex is written by AnalyseChannelName
-	CHECK(params.groupIndex >= 0)
+	CHECK_GE_VAR(params.groupIndex, 0)
 End
 
 static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweepsDFR)
@@ -594,7 +594,7 @@ static Function TestListOfGroups(groupList, wv)
 	string list
 
 	index = GetNumberFromWaveNote(wv, NOTE_INDEX)
-	CHECK(index >= 1)
+	CHECK_GE_VAR(index, 1)
 
 	groupList = SortList(groupList)
 
@@ -622,7 +622,7 @@ Function TestNwbExportV1()
 
 	WAVE/Z sweeps = GetAnalysisChannelSweepWave(entry[%DataFolder], device)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-	CHECK(GetNumberFromWaveNote(sweeps, NOTE_INDEX) > 0)
+	CHECK_GT_VAR(GetNumberFromWaveNote(sweeps, NOTE_INDEX), 0)
 
 	WAVE/Z/T acquisitions = GetAnalysisChannelAcqWave(entry[%DataFolder], device)
 	CHECK_WAVE(acquisitions, TEXT_WAVE)
