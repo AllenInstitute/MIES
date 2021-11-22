@@ -658,16 +658,16 @@ static Function P_CloseDeviceLowLevel(panelTitle, deviceToClose, refHeadstage)
 End
 
 /// @brief Returns a list of rows that contain a particular string
-static Function/S P_HeadstageUsingDevice(panelTitle, device)
+static Function/S P_HeadstageUsingDevice(panelTitle, pressureDevice)
 	string panelTitle
-	string device
+	string pressureDevice
 
 	variable i
 	string list = ""
 	WAVE/T PressureDataTxtWv = P_PressureDataTxtWaveRef(panelTitle)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		if(cmpstr(device, PressureDataTxtWv[i][0]) == 0)
+		if(cmpstr(pressureDevice, PressureDataTxtWv[i][0]) == 0)
 			list = AddListItem(num2str(i), list)
 		endif
 	endfor
