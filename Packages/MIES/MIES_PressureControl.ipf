@@ -118,7 +118,6 @@ End
 static Function P_RecordUserPressure(panelTitle)
 	string panelTitle
 
-	string device
 	variable ADC, i, deviceID, hwType
 
 	WAVE TPStorage = GetTPStorage(panelTitle)
