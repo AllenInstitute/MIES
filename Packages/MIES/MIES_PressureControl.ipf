@@ -682,24 +682,24 @@ End
 static Function/S P_GetListOfPressureCtrlDevices(panelTitle)
 	string panelTitle
 
-	string deviceList = ""
-	string device
+	string pressureDeviceList = ""
+	string pressureDevice
 	variable i
 
 	WAVE/T pressureDataTxtWave = P_PressureDataTxtWaveRef(panelTitle)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		device = pressureDataTxtWave[i][0]
-		if(!isEmpty(device) && cmpstr(device,NONE) != 0)
-			if(WhichListItem(device, deviceList) == -1)
-				deviceList = AddListItem(device, deviceList)
+		pressureDevice = pressureDataTxtWave[i][0]
+		if(!isEmpty(pressureDevice) && cmpstr(pressureDevice,NONE) != 0)
+			if(WhichListItem(pressureDevice, pressureDeviceList) == -1)
+				pressureDeviceList = AddListItem(pressureDevice, pressureDeviceList)
 			endif
 		endif
 	endfor
 
 	// sort the list so that the devices are opened in the correct sequence
 	// (low deviceID to high deviceID)
-	return SortList(deviceList)
+	return SortList(pressureDeviceList)
 End
 
 /// @brief Sets the pressure on a headStage
