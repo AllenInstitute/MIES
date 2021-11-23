@@ -1,30 +1,29 @@
 digraph G {
-	graph [center=true,
-		compound=true,
-		fontcolor=black,
-		fontname=Helvetica,
-		fontsize=14,
-		penwidth=0.1,
-		ratio=compress
-	];
-	node [color=2,
-		colorscheme=blues4,
-		fillcolor=1,
-		fontcolor=4,
-		fontname=Helvetica,
-		fontsize=13,
-		label="\N",
-		shape=ellipse,
-		style=filled
-	];
-	edge [color=2,
-		colorscheme=blues3,
-		comment="Wildcard edge",
-		fontcolor=3,
-		fontname=Helvetica,
-		fontsize=10,
-		style=solid
-	];
+graph [center=true,
+  color=white,
+  compound=true,
+  fontcolor=black,
+  fontname=Helvetica,
+  fontsize=14,
+  penwidth=0.1,
+  ratio="0,01"
+]
+node [
+  color="#bdd7e7", /* /blues4/2 */
+  fillcolor="#eff3ff", /* /blues4/1 */
+  fontcolor="#2171b5", /* /blues4/4 */
+  fontname=Helvetica,
+  fontsize = 13,
+  shape = ellipse,
+  style = filled
+]
+edge [
+  color="#9ecae1", /* /blues3/2 */
+  fontcolor="#3182bd", /* /blues3/3 */
+  fontname=Helvetica,
+  fontsize = 10,
+  style = solid
+]
 	"Start DAQ/RA (only call for last active headstage)" -> "Post DAQ Event";
 	"Prepare DAQ"	 [label="Pre DAQ Event"];
 	"Start DAQ/RA (only call for last active headstage)" -> "Prepare DAQ";
