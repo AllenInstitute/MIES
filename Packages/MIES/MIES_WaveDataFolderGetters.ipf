@@ -1886,7 +1886,7 @@ End
 /// - 42: Stimset cycle ID
 /// - 43: Digitizer Hardware Type, one of @ref HardwareDACTypeConstants
 /// - 44: Fixed frequency acquisition
-/// - 45: Headstage Active
+/// - 45: Headstage Active, binary flag that indicates the enabled headstage(s), the index is the headstage number
 /// - 46: Clamp Mode
 /// - 47: Igor Pro bitness
 /// - 48: DA ChannelType, one of @ref DaqChannelTypeConstants
