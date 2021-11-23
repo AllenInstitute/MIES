@@ -1665,7 +1665,7 @@ Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
 	endif
 
 	// @todo IP9: Make it threadsafe once FindDuplicates is threadsafe
-	return DeleteDuplicates(sweeps)
+	return GetUniqueEntries(sweeps)
 End
 
 /// @brief Return the last numerical value of a setting from the labnotebook

@@ -2790,60 +2790,6 @@ Function/S ResolveAlias(path, [pathName])
 	endif
 End
 
-/// @brief Return a text or numeric free wave with all duplicates deleted, might change the
-/// relative order of the entries
-Function/WAVE DeleteDuplicates(Wv)
-	WAVE wv
-
-	switch(WaveType(wv, 1))
-		case 1:
-			return DeleteDuplicatesNum(wv)
-			break
-		case 2:
-			return DeleteDuplicatesTxt(wv)
-			break
-		default:
-			ASSERT(0, "Can not work with this wave type")
-	endswitch
-End
-
-/// @brief Return a text free wave with all duplicates removed, might change the
-/// relative order of the entries
-static Function/WAVE DeleteDuplicatesTxt(txtWave)
-	WAVE/T txtWave
-
-	variable i, numRows
-	numRows = DimSize(txtWave, ROWS)
-
-	Duplicate/FREE/T txtWave, dest
-
-	if(numRows <= 1)
-		return dest
-	endif
-
-	FindDuplicates/RT=dest txtWave
-
-	return dest
-End
-
-/// @brief Return a numeric free wave with all duplicates removed, might change the
-/// relative order of the entries
-static Function/WAVE DeleteDuplicatesNum(numWave)
-	WAVE numWave
-
-	variable i, numRows
-	numRows = DimSize(numWave, ROWS)
-
-	Duplicate/FREE numWave, dest
-	if(numRows <= 1)
-		return dest
-	endif
-
-	FindDuplicates/RN=dest numWave
-
-	return dest
-End
-
 /// @brief Return the number of bits of the architecture
 ///        Igor Pro was built for.
 Function GetArchitectureBits()
