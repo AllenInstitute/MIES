@@ -752,11 +752,6 @@ static Function TP_PublishAutoTPResult(string device, variable headstage, variab
 	JSON_AddTreeObject(jsonID, "results")
 	JSON_AddBoolean(jsonID, "results/QC", result)
 
-	path = "results/amplitude"
-	JSON_AddTreeObject(jsonID, path)
-	JSON_AddVariable(jsonID, path + "/value", TPSettings[%amplitudeIC][headstage])
-	JSON_AddString(jsonID, path + "/unit", "mV")
-
 	path = "results/baseline"
 	JSON_AddTreeObject(jsonID, path)
 	JSON_AddVariable(jsonID, path + "/value", TPSettings[%baselinePerc][INDEP_HEADSTAGE])
