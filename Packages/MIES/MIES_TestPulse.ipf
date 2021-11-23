@@ -506,6 +506,13 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 	return [TP_BASELINE_FIT_RESULT_OK, coefWave[2], baseline]
 End
 
+/// @brief Automatically tune the Testpulse amplitude and baseline
+///
+/// Decision logic flowchart:
+///
+/// \rst
+/// .. image:: /dot/auto-testpulse.svg
+/// \endrst
 static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, variable marker)
 	variable i, maximumCurrent, targetVoltage, targetVoltageTol, resistance, voltage, current
 	variable needsUpdate, lastInvocation, curTime, scalar, skipAutoBaseline

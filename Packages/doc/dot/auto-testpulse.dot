@@ -1,0 +1,99 @@
+digraph G {
+	graph [center=true,
+		color=white,
+		compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1,
+		ratio="0,01"
+	];
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
+	n0	 [label="Evaluate TP properties and fill TPResults"];
+	n6	 [label="Is DAQ running?"];
+	n0 -> n6;
+	n36	 [label="Iterate over all IC headstages"];
+	n0 -> n36;
+	n1	 [label="Iterate over all IC headstages"];
+	n3	 [label="Auto TP enabled?"];
+	n1 -> n3;
+	n2	 [label="Has \"Auto TP interval [s]\" elapsed\nsince the last call"];
+	n2 -> n1	 [label=Yes];
+	n4	 [label="Are two testpulse waveforms\n present from the same TP cycle ID?"];
+	n3 -> n4	 [label=Yes];
+	n5	 [label="Calculate delta V using\nelevated and baseline steady state voltages"];
+	n4 -> n5	 [label=Yes];
+	n14	 [label="Does the sign of the target voltage\n and the IC amplitude differ?"];
+	n5 -> n14;
+	n6 -> n2	 [label=No];
+	n7	 [label="Is the IC amplitude smaller than 5pA?"];
+	n8	 [label="Generate a random IC amplitude\n in the range [5, 10)\n using the target voltage sign"];
+	n7 -> n8	 [label=Yes];
+	n15	 [label="Concatenate the two testpulses\n and perform an exponential fit"];
+	n7 -> n15	 [label=No];
+	n11	 [label="Mark Auto TP amplitude as failed"];
+	n8 -> n11;
+	n12	 [label="Set the new IC amplitude"];
+	n11 -> n12;
+	n13	 [label="Adapt the IC amplitude sign"];
+	n13 -> n7;
+	n13 -> n11;
+	n14 -> n7	 [label=No];
+	n14 -> n13	 [label=Yes];
+	n18	 [label="Store Fit result in TPStorage"];
+	n15 -> n18;
+	n16	 [Label="Did the fit fail?",
+		label="Fit suceeded?"];
+	n17	 [label="Mark Auto TP baseline as failed"];
+	n16 -> n17	 [label=No];
+	n19	 [label="Residuals are too noisy?"];
+	n16 -> n19	 [label=Yes];
+	n18 -> n16;
+	n19 -> n17	 [label=Yes];
+	n20	 [label="Is tau/baseline in the desired range?"];
+	n19 -> n20	 [label=No];
+	n22	 [label="Mark Auto TP baseline as passed"];
+	n20 -> n22	 [label=Yes];
+	n23	 [label="Calculate a new baseline fraction\n Is that in the allowed range?"];
+	n20 -> n23	 [label=No];
+	n26	 [label="Is the target voltage for\n Auto TP amplitude in range?"];
+	n22 -> n26;
+	n24	 [label="Clip it to the allowed range\n and add a Auto TP\n baseline range exceeded entry in TPStorage"];
+	n23 -> n24	 [label=No];
+	n25	 [label="Set the new baseline fraction\n as maximum of the per headstage\n calculated  ones"];
+	n23 -> n25	 [label=Yes];
+	n24 -> n25;
+	n25 -> n17;
+	n27	 [label="Mark Auto TP amplitude as passed"];
+	n26 -> n27	 [label=Yes];
+	n28	 [label="Calculate new IC amplitude"];
+	n26 -> n28	 [label=No];
+	n29	 [label="Is the IC amplitude in range?"];
+	n28 -> n29;
+	n29 -> n11	 [label=Yes];
+	n30	 [label="Check if auto TP amplitude and baseline\n passed three times in a row?"];
+	n32	 [label="Do we have 10 baseline range exceeded entries in a row?"];
+	n30 -> n32	 [label=No];
+	n33	 [label="Turn off Auto TP on that headstage"];
+	n30 -> n33	 [label=Yes];
+	n31	 [label="Store result in the labnotebook\n and send out zeromq message"];
+	n32 -> n33	 [label=Yes];
+	n33 -> n31;
+	n37	 [label="Auto TP enabled?"];
+	n36 -> n37;
+	n37 -> n30	 [label=Yes];
+}
