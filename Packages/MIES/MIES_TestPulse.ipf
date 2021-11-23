@@ -810,7 +810,7 @@ End
 /// @param numReqEntries Number of entries to return, supports integer values and inf
 /// @param options       [optional, default to nothing] One of @ref TPStorageQueryingOptions
 Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, string entry, variable numReqEntries, [variable options])
-	variable i, idx, value, entryLayer, lastValidEntry, currentAutoTPCycleID, latestAutoTPCycleID
+	variable i, idx, value, entryLayer, lastValidEntry, numValidEntries, currentAutoTPCycleID, latestAutoTPCycleID
 
 	if(ParamIsDefault(options))
 		options = TP_GETVALUES_DEFAULT
@@ -818,12 +818,14 @@ Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, stri
 		ASSERT(options == TP_GETVALUES_DEFAULT || options == TP_GETVALUES_LATEST_AUTOTPCYCLE, "Invalid option")
 	endif
 
-	lastValidEntry = GetNumberFromWaveNote(TPStorage, NOTE_INDEX) - 1
+	// NOTE_INDEX gives the next free index *and* therefore also the number of valid entries
+	numValidEntries = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 
-	// no valid entries available
-	if(lastValidEntry < 0)
+	if(numValidEntries <= 0)
 		return $""
 	endif
+
+	lastValidEntry = numValidEntries - 1
 
 	latestAutoTPCycleID = TPStorage[lastValidEntry][headstage][%autoTPCycleID]
 
@@ -843,18 +845,16 @@ Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, stri
 
 	ASSERT(IsInteger(numReqEntries) && numReqEntries > 0, "Number of required entries must be larger than zero")
 
-	if(numReqEntries > lastValidEntry)
+	if(numReqEntries > numValidEntries)
 		return $""
 	endif
 
 	Make/FREE/D/N=(numReqEntries) result = NaN
 
 	// take the last finite values
-	// count is an unused entry, therefore - 1
 	for(i = lastValidEntry; i >= 0; i -= 1)
 		if(idx == numReqEntries)
-			ASSERT(!IsNaN(Sum(result)), "Expected non-nan sum")
-			return result
+			break
 		endif
 
 		value = TPStorage[i][headstage][%$entry]
@@ -873,6 +873,11 @@ Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, stri
 
 		result[idx++] = value
 	endfor
+
+	if(idx == numReqEntries)
+		ASSERT(!IsNaN(Sum(result)), "Expected non-nan sum")
+		return result
+	endif
 
 	return $""
 End
