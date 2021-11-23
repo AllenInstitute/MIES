@@ -868,10 +868,14 @@ static Function DAP_UpdateAllYokeControls()
 End
 
 Function/S DAP_GUIListOfYokedDevices()
+	string devicePath
 
-	SVAR listOfFollowerDevices = $GetFollowerList(ITC1600_FIRST_DEVICE)
-	if(cmpstr(listOfFollowerDevices, "") != 0)
-		return listOfFollowerDevices
+	// avoid creating the whole device path just for checking
+	if(DataFolderExists(GetDevicePathAsString(ITC1600_FIRST_DEVICE)))
+		SVAR listOfFollowerDevices = $GetFollowerList(ITC1600_FIRST_DEVICE)
+		if(cmpstr(listOfFollowerDevices, "") != 0)
+			return listOfFollowerDevices
+		endif
 	endif
 
 	return "No Yoked Devices"
@@ -5163,8 +5167,10 @@ static Function DAP_UnlockDevice(panelTitle)
 		DAP_ClearWaveIfExists(ActiveDevTimeParam)
 		DAP_ClearWaveIfExists(TimerFunctionListWave)
 
-		SVAR listOfFollowers = $GetFollowerList(ITC1600_FIRST_DEVICE)
-		listOfFollowers = ""
+		if(DataFolderExists(GetDevicePathAsString(ITC1600_FIRST_DEVICE)))
+			SVAR listOfFollowers = $GetFollowerList(ITC1600_FIRST_DEVICE)
+			listOfFollowers = ""
+		endif
 
 		KillOrMoveToTrash(wv = GetDeviceMapping())
 	endif
