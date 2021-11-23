@@ -5,6 +5,8 @@
 
 static Function TEST_CASE_BEGIN_OVERRIDE(string testname)
 
+	AdditionalExperimentCleanup()
+
 	StartZeroMQSockets(forceRestart = 1)
 
 	zeromq_sub_add_filter("")
