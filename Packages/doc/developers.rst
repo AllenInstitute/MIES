@@ -399,3 +399,74 @@ The programmer might consider evaluating ``V_AbortCode`` after catch.
 
 It is recommended to comment in the code before the try what the construct is
 intended to handle (RTE, Abort or both).
+
+Original Developer Docu on SweepFormula
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Notebook scans from Matthias (`ukos-git`_):
+
+.. _ukos-git: https://github.com/ukos-git
+
+.. figure:: Scans/SweepFormula_data_1.png
+   :align: center
+
+.. figure:: Scans/SweepFormula_data_2.png
+   :align: center
+
+.. figure:: Scans/SweepFormula_data_3.png
+   :align: center
+
+The following information is taken from annotated excerpts from the above:
+
+- getter functions
+
+.. figure:: Scans/SweepFormulaDataModelNotes1.png
+   :align: center
+
+- Return data array with sweep and channel information
+
+.. figure:: Scans/SweepFormulaDataModelNotes2.png
+   :align: center
+
+- Data slicing with 2d location functions
+
+.. figure:: Scans/SweepFormulaDataModelNotes3.png
+   :align: center
+
+- no comment given
+
+.. figure:: Scans/SweepFormulaDataModelNotes4.png
+   :align: center
+
+.. figure:: Scans/SweepFormulaDataModelNotes5.png
+   :align: center
+
+.. figure:: Scans/SweepFormulaDataModelNotes6.png
+   :align: center
+
+.. figure:: Scans/SweepFormulaDataModelNotes7.png
+   :align: center
+
+- Plot
+
+.. figure:: Scans/SweepFormulaDataModelNotes8.png
+   :align: center
+
+.. figure:: Scans/SweepFormulaDataModelNotes9.png
+   :align: center
+
+- Functions reducing a dimension of data
+
+.. figure:: Scans/SweepFormulaDataModelNotes10.png
+   :align: center
+
+.. figure:: Scans/SweepFormulaDataModelNotes11.png
+   :align: center
+
+.. figure:: Scans/SweepFormulaDataModelNotes12.png
+   :align: center
+
+.. figure:: Scans/SweepFormulaDataModelNotes13.png
+   :align: center
+
+- Note on time aka xvalue concatenation logics
