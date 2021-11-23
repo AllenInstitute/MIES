@@ -1,29 +1,28 @@
 digraph G {
-graph [center=true,
-  color=white,
-  compound=true,
-  fontcolor=black,
-  fontname=Helvetica,
-  fontsize=14,
-  penwidth=0.1,
-  ratio="0,01"
-]
-node [
-  color="#bdd7e7", /* /blues4/2 */
-  fillcolor="#eff3ff", /* /blues4/1 */
-  fontcolor="#2171b5", /* /blues4/4 */
-  fontname=Helvetica,
-  fontsize = 13,
-  shape = ellipse,
-  style = filled
-]
-edge [
-  color="#9ecae1", /* /blues3/2 */
-  fontcolor="#3182bd", /* /blues3/3 */
-  fontname=Helvetica,
-  fontsize = 10,
-  style = solid
-]
+	graph [center=true,
+		color=white,
+		compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1,
+		ratio="0,01"
+	];
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
 	"Start DAQ/RA (only call for last active headstage)" -> "Post DAQ Event";
 	"Prepare DAQ"	 [label="Pre DAQ Event"];
 	"Start DAQ/RA (only call for last active headstage)" -> "Prepare DAQ";
@@ -72,13 +71,41 @@ edge [
 	n69 -> n71	 [label=No];
 	n72	 [label="Set \"Failed Pulse Level\" in PA plot"];
 	n69 -> n72	 [label=Yes];
+	n61	 [label="Set \"Spontaneous spike check\"\n as passed in labnotebook."];
+	n85 -> n61	 [label=Yes];
+	n64	 [label="Set \"Spontaneous spike check\"\n as failed in labnotebook."];
+	n85 -> n64	 [label=No];
+	n93	 [label="Compare the \"Ideal number of spikes\"\n with the actual number of spikes\n in each pulse for all\n pulses for a headstage"];
+	n78 -> n93;
+	n89	 [label="Check if the average is larger than\n the analysis parameter \"Minimum Spike Position\"."];
+	n92 -> n89;
 	n60	 [label="Add \"Failed Pulse Level\" into labnotebook"];
 	n71 -> n60;
 	n72 -> n60;
+	n99	 [label="Spontaneous spike QC"];
+	n61 -> n99;
+	n64 -> n99;
+	n97	 [label="Add \"Spike counts state\" with\n \"Good/Too few/Too many/Mixed\" to\n textual labnotebook.\n \"Mixed\" happens when it is\n \"Too Few\" \
+on some pulses\n and \"Too Many\" on others."];
+	n93 -> n97;
+	n91	 [label="Set \"Spike position QC\"\n as failed in labnotebook"];
+	n89 -> n91	 [label=No];
+	n98	 [label="Set \"Spike position QC\"\n as passed in labnotebook"];
+	n89 -> n98	 [label=Yes];
 	n40	 [label="Enable PA plot"];
 	n60 -> n40;
+	n100	 [label="Mark headstage as failed"];
+	n99 -> n100	 [label=Failed];
+	n101	 [label="Spike counts state"];
+	n99 -> n101	 [label=Passed];
+	n97 -> n99;
 	n42	 [label="Enable OVS"];
 	n40 -> n42;
+	n58	 [label="Determine the number of trials\n for the current set sweep count."];
+	n100 -> n58;
+	n101 -> n100;
+	n103	 [label="Mark headstage as passed"];
+	n101 -> n103	 [label=Good];
 	n43	 [label="Enable \"Clear on new SCI\""];
 	n42 -> n43;
 	n41	 [label="Enable \"Display last sweep acquired\""];
@@ -111,7 +138,7 @@ edge [
 	n65 -> n66	 [label=Yes];
 	n67	 [label="Mark set as failed"];
 	n66 -> n67;
-	n58	 [label="Determine the number of trials\n for the current set sweep count."];
+	n67 -> n68;
 	n59	 [label="Add \"Rerun Trials\" into numerical\n labnotebook"];
 	n58 -> n59;
 	n73	 [label="Iterate over all active IC headstages"];
@@ -137,33 +164,5 @@ edge [
 	n94 -> n77	 [label=Failed];
 	n62	 [label="Increase DA scale according to analysis parameters\n \"DAScaleModifier\" and \"DAScaleOperator\""];
 	n82 -> n62;
-	n67 -> n68;
-	n61	 [label="Set \"Spontaneous spike check\"\n as passed in labnotebook."];
-	n85 -> n61	 [label=Yes];
-	n64	 [label="Set \"Spontaneous spike check\"\n as failed in labnotebook."];
-	n85 -> n64	 [label=No];
-	n93	 [label="Compare the \"Ideal number of spikes\"\n with the actual number of spikes\n in each pulse for all\n pulses for a headstage"];
-	n78 -> n93;
-	n89	 [label="Check if the average is larger than\n the analysis parameter \"Minimum Spike Position\"."];
-	n92 -> n89;
-	n99	 [label="Spontaneous spike QC"];
-	n61 -> n99;
-	n64 -> n99;
-	n97	 [label="Add \"Spike counts state\" with\n \"Good/Too few/Too many/Mixed\" to\n textual labnotebook.\n \"Mixed\" happens when it is\n \"Too Few\" \
-on some pulses\n and \"Too Many\" on others."];
-	n93 -> n97;
-	n91	 [label="Set \"Spike position QC\"\n as failed in labnotebook"];
-	n89 -> n91	 [label=No];
-	n98	 [label="Set \"Spike position QC\"\n as passed in labnotebook"];
-	n89 -> n98	 [label=Yes];
-	n100	 [label="Mark headstage as failed"];
-	n99 -> n100	 [label=Failed];
-	n101	 [label="Spike counts state"];
-	n99 -> n101	 [label=Passed];
-	n100 -> n58;
-	n101 -> n100;
-	n103	 [label="Mark headstage as passed"];
-	n101 -> n103	 [label=Good];
 	n103 -> n58;
-	n97 -> n99;
 }

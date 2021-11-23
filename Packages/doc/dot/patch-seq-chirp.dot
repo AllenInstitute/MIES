@@ -1,193 +1,136 @@
 digraph G {
-graph [center=true,
-  color=white,
-  compound=true,
-  fontcolor=black,
-  fontname=Helvetica,
-  fontsize=14,
-  penwidth=0.1,
-  ratio="0,01"
-]
-node [
-  color="#bdd7e7", /* /blues4/2 */
-  fillcolor="#eff3ff", /* /blues4/1 */
-  fontcolor="#2171b5", /* /blues4/4 */
-  fontname=Helvetica,
-  fontsize = 13,
-  shape = ellipse,
-  style = filled
-]
-edge [
-  color="#9ecae1", /* /blues3/2 */
-  fontcolor="#3182bd", /* /blues3/3 */
-  fontname=Helvetica,
-  fontsize = 10,
-  style = solid
-]
-	"Start DAQ/RA" -> "Mid Sweep Event"	 [comment="Wildcard edge"];
-	"Start DAQ/RA" -> "Post DAQ Event"	 [comment="Wildcard edge"];
-	"Start DAQ/RA" -> "Post Set Event"	 [comment="Wildcard edge"];
-	"Start DAQ/RA" -> "Post Sweep Event"	 [comment="Wildcard edge"];
-	"Start DAQ/RA" -> "Prepare DAQ/Pre Set Event"	 [comment="Wildcard edge"];
-	"Mid Sweep Event" -> "BL QC passed?"	 [comment="Wildcard edge"];
-	"Mid Sweep Event" -> "\"Inside Bounds\" labnotebook\n entry present?"	 [comment="Wildcard edge"];
+	graph [center=true,
+		color=white,
+		compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1,
+		ratio="0,01"
+	];
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
+	"Start DAQ/RA" -> "Mid Sweep Event";
+	"Start DAQ/RA" -> "Post DAQ Event";
+	"Start DAQ/RA" -> "Post Set Event";
+	"Start DAQ/RA" -> "Post Sweep Event";
+	"Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
+	"Mid Sweep Event" -> "BL QC passed?";
+	"Mid Sweep Event" -> "\"Inside Bounds\" labnotebook\n entry present?";
 	n63	 [label="Is \"SpikeCheck\" enabled?\n (Given by optional analysis parameter\n \"SpikeCheck\" defaulting to 1)"];
-	"Mid Sweep Event" -> n63	 [color=1,
-		comment="Wildcard edge"];
-	"Post DAQ Event" -> "Update Dashboard"	 [comment="Wildcard edge"];
-	"Post Set Event" -> "Update Dashboard"	 [comment="Wildcard edge"];
-	"Post Set Event" -> "Has three passing sweeps in set\n with the same DAScale value? [1]"	 [comment="Wildcard edge"];
+	"Mid Sweep Event" -> n63;
+	"Post DAQ Event" -> "Update Dashboard";
+	"Post Set Event" -> "Update Dashboard";
+	"Post Set Event" -> "Has three passing sweeps in set\n with the same DAScale value? [1]";
 	n73	 [label="\"Spike Check\" labnotebook entry is true?"];
-	"Post Sweep Event" -> n73	 [color=1,
-		comment="Wildcard edge"];
+	"Post Sweep Event" -> n73;
 	"Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
 	"Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
-	"BL QC passed?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [comment="Wildcard edge",
-		label=No];
-	"\"Inside Bounds\" labnotebook\n entry present?" -> "Calculate number of cycles\n in chirp, store in labnotebook"	 [comment="Wildcard edge",
-		label=No];
+	"BL QC passed?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [label=No];
+	"\"Inside Bounds\" labnotebook\n entry present?" -> "Calculate number of cycles\n in chirp, store in labnotebook"	 [label=No];
 	n64	 [label="Store Spike check in labnotebook"];
-	n63 -> n64	 [color=1,
-		comment="Wildcard edge"];
+	n63 -> n64;
 	n65	 [label="Spike QC labnotebook entry found?"];
-	n63 -> n65	 [color=1,
-		comment="Wildcard edge"];
-	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as failed\n in labnotebook"	 [comment="Wildcard edge",
-		label=No];
-	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as passed\n in labnotebook"	 [comment="Wildcard edge",
-		label=Yes];
-	n73 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	 [color=1,
-		comment="Wildcard edge",
-		label=No];
+	n63 -> n65;
+	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as failed\n in labnotebook"	 [label=No];
+	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as passed\n in labnotebook"	 [label=Yes];
+	n73 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	 [label=No];
 	n74	 [label="Spike QC passed?"];
-	n73 -> n74	 [color=1,
-		comment="Wildcard edge",
-		label=Yes];
+	n73 -> n74	 [label=Yes];
 	"Enable \"Autobias\"" -> "Enable \"TP during ITI\"";
 	"Valid Autobias voltage (finite and non-zero)" -> "Check if no TTL channels are active";
-	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Chunk already evaluated?"	 [comment="Wildcard edge",
-		label="Have one"];
-	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Last chunk?"	 [comment="Wildcard edge",
-		label="None left"];
-	"Calculate number of cycles\n in chirp, store in labnotebook" -> "Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)"	 [comment="Wildcard edge"];
+	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Chunk already evaluated?"	 [label="Have one"];
+	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Last chunk?"	 [label="None left"];
+	"Calculate number of cycles\n in chirp, store in labnotebook" -> "Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)";
 	n66	 [label="Has acquired data in chirp region?"];
-	n65 -> n66	 [color=1,
-		comment="Wildcard edge",
-		label=No];
-	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> "Mark sweep as failed\n in labnotebook"	 [comment="Wildcard edge",
-		label=No];
+	n65 -> n66	 [label=No];
+	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> "Mark sweep as failed\n in labnotebook"	 [label=No];
 	n76	 [label="Read \"SamplingFrequency\" analysis parameter\n (defaulting to 50kHz) if not present"];
 	"Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> n76	 [label=Yes];
-	n74 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	 [color=1,
-		comment="Wildcard edge",
-		label=Yes];
-	n74 -> "Mark sweep as failed\n in labnotebook"	 [color=1,
-		comment="Wildcard edge",
-		label=No];
+	n74 -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?"	 [label=Yes];
+	n74 -> "Mark sweep as failed\n in labnotebook"	 [label=No];
 	"Enable \"TP during ITI\"" -> "Enable \"Multidevice DAQ\"";
 	"Check if no TTL channels are active" -> "Stimset is large enough";
-	"Chunk already evaluated?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [comment="Wildcard edge",
-		label=Yes];
-	"Chunk already evaluated?" -> "Baseline chunk type"	 [comment="Wildcard edge",
-		label=No];
-	"Last chunk?" -> "Mark Sweep as failed"	 [comment="Wildcard edge",
-		label=Yes];
-	"Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)" -> "Calculate min/max of AD data during these cycles"	 [comment="Wildcard edge",
-		label=Yes];
+	"Chunk already evaluated?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [label=Yes];
+	"Chunk already evaluated?" -> "Baseline chunk type"	 [label=No];
+	"Last chunk?" -> "Mark Sweep as failed"	 [label=Yes];
+	"Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)" -> "Calculate min/max of AD data during these cycles"	 [label=Yes];
 	n68	 [label="Has spike in AD data of acquired chirp region?\nUses \"FailedLevel\" analysis parameter for spike search."];
-	n66 -> n68	 [color=1,
-		comment="Wildcard edge",
-		label=Yes];
-	"Mark sweep as failed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]"	 [comment="Wildcard edge"];
+	n66 -> n68	 [label=Yes];
+	"Mark sweep as failed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]";
 	n85	 [label="Check if the acquired data\n has that sampling interval"];
 	n76 -> n85;
 	"Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
 	"Stimset is large enough" -> "Check if mode is IC";
-	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Enable \"Repeated Acquisition\"";
-	"Enable \"Repeated Acquisition\"" -> "Enable \"Insert TP\"";
-	n89	 [label="Use \"SamplingMultiplier\" analysis parameter\n (defaulting to 4 if not present) and set it."];
-	"Enable \"Insert TP\"" -> n89;
-	"Check if mode is IC" -> "Check if only one headstage is active";
-	n89 -> "At least three sweeps";
-	"At least three sweeps" -> "All checks passed";
-	"All checks passed" -> Abort	 [label=No];
-	"All checks passed" -> "Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode"	 [label=Yes];
-	"Check if only one headstage is active" -> "All checks passed";
-	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> Abort	 [label="Not found"];
-	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> "Get DeltaI/DeltaV from labnotebook"	 [label=Found];
-	"Get DeltaI/DeltaV from labnotebook" -> "Calculate Resistance from it\n store in labnotebook";
-	"Calculate Resistance from it\n store in labnotebook" -> "Calculate initial DAScale\n store in labnotebook";
-	"Calculate initial DAScale\n store in labnotebook" -> "Set DAScale";
-	"Baseline chunk type" -> "Check RMS short"	 [comment="Wildcard edge",
-		label="pre pulse"];
-	"Baseline chunk type" -> "Check target voltage [2]"	 [comment="Wildcard edge",
-		label="post pulse"];
-	"Check RMS short" -> "Check RMS long"	 [comment="Wildcard edge",
-		label=Passed];
-	"Check RMS short" -> "Add BL QC failed labnotebook entry"	 [comment="Wildcard edge",
-		label=Failed];
-	"Check target voltage [2]" -> "Mark chunk as passed/failed [2]"	 [comment="Wildcard edge"];
-	"Check RMS long" -> "Add BL QC failed labnotebook entry"	 [comment="Wildcard edge",
-		label=Failed];
-	"Check RMS long" -> "Check target voltage [1]"	 [comment="Wildcard edge",
-		label=Passed];
-	"Add BL QC failed labnotebook entry" -> "Early Sweep stop"	 [comment="Wildcard edge"];
-	"Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [comment="Wildcard edge",
-		label=Failed];
-	"Mark chunk as passed/failed [2]" -> "Add BL QC passed labnotebook entry"	 [comment="Wildcard edge",
-		label=Passed];
-	"Check target voltage [1]" -> "Mark chunk as passed/failed [1]"	 [comment="Wildcard edge"];
-	"Add BL QC passed labnotebook entry" -> "Early Sweep stop"	 [comment="Wildcard edge"];
-	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [comment="Wildcard edge",
-		label=Passed];
-	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	 [comment="Wildcard edge",
-		label=Failed];
-	"Calculate min/max of AD data during these cycles" -> "Determine bounds state and action\n from min/max values and table\n store in labnotebook"	 [comment="Wildcard edge"];
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as true in labnotebook"	 [comment="Wildcard edge",
-		label=PASS];
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook"	 [comment="Wildcard edge",
-		label=RERUN];
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook"	 [comment="Wildcard edge",
-		label=INCREASE];
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook"	 [comment="Wildcard edge",
-		label=DECREASE];
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Abort Sweep"	 [comment="Wildcard edge",
-		label=RERUN];
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Calculate scaling factor\n to be inside the bounds"	 [comment="Wildcard edge",
-		label=INCREASE];
-	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Calculate scaling factor\n to be inside the bounds"	 [comment="Wildcard edge",
-		label=DECREASE];
-	"Calculate scaling factor\n to be inside the bounds" -> "Adjust DAScale (rounded to full pA)\n according to scaling factor"	 [comment="Wildcard edge"];
-	"Adjust DAScale (rounded to full pA)\n according to scaling factor" -> "Abort Sweep"	 [comment="Wildcard edge"];
-	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Skip to end of set"	 [comment="Wildcard edge",
-		label=Yes];
-	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?"	 [comment="Wildcard edge",
-		label=No];
+	"Baseline chunk type" -> "Check RMS short"	 [label="pre pulse"];
+	"Baseline chunk type" -> "Check target voltage [2]"	 [label="post pulse"];
+	"Calculate min/max of AD data during these cycles" -> "Determine bounds state and action\n from min/max values and table\n store in labnotebook";
+	n69	 [label="Add Spike QC failed labnotebook entry"];
+	n68 -> n69	 [label=Yes];
+	n71	 [label="Has acquired past the end of chirp?"];
+	n68 -> n71	 [label=No];
+	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Skip to end of set"	 [label=Yes];
+	"Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?"	 [label=No];
 	n85 -> "Mark sweep as failed\n in labnotebook"	 [label=No];
 	n85 -> "Mark sweep as passed\n in labnotebook"	 [label=Yes];
 	n85 -> "Skip to end of DAQ"	 [label=No];
-	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Skip to end of DAQ"	 [comment="Wildcard edge",
-		label=Yes];
-	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Set can still pass?"	 [label=No];
-	"Mark sweep as passed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]"	 [comment="Wildcard edge"];
-	"Set can still pass?" -> "Skip to end of DAQ"	 [comment="Wildcard edge",
-		label=No];
-	n69	 [label="Add Spike QC failed labnotebook entry"];
-	n68 -> n69	 [color=1,
-		comment="Wildcard edge",
-		label=Yes];
-	n71	 [label="Has acquired past the end of chirp?"];
-	n68 -> n71	 [color=1,
-		comment="Wildcard edge",
-		label=No];
+	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Enable \"Repeated Acquisition\"";
+	"Check if mode is IC" -> "Check if only one headstage is active";
+	"Check RMS short" -> "Check RMS long"	 [label=Passed];
+	"Check RMS short" -> "Add BL QC failed labnotebook entry"	 [label=Failed];
+	"Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as true in labnotebook"	 [label=PASS];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook"	 [label=RERUN];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook"	 [label=INCREASE];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook"	 [label=DECREASE];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Abort Sweep"	 [label=RERUN];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Calculate scaling factor\n to be inside the bounds"	 [label=INCREASE];
+	"Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Calculate scaling factor\n to be inside the bounds"	 [label=DECREASE];
 	n67	 [label="Increase DA scale according to analysis parameters\n \"DAScaleModifier\" and \"DAScaleOperator\""];
-	n69 -> n67	 [color=1,
-		comment="Wildcard edge"];
+	n69 -> n67;
 	n72	 [label="Add Spike QC passed labnotebook entry"];
-	n71 -> n72	 [color=1,
-		comment="Wildcard edge",
-		label=Yes];
+	n71 -> n72	 [label=Yes];
+	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Skip to end of DAQ"	 [label=Yes];
+	"Read analysis parameter \"NumberOfFailedSweeps\",\n if not present use 3.\n Have that many sweeps failed?" -> "Set can still pass?"	 [label=No];
+	"Mark sweep as passed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]";
+	"Enable \"Repeated Acquisition\"" -> "Enable \"Insert TP\"";
+	"Check if only one headstage is active" -> "All checks passed";
+	"Check RMS long" -> "Add BL QC failed labnotebook entry"	 [label=Failed];
+	"Check RMS long" -> "Check target voltage [1]"	 [label=Passed];
+	"Add BL QC failed labnotebook entry" -> "Early Sweep stop";
+	"Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [label=Failed];
+	"Mark chunk as passed/failed [2]" -> "Add BL QC passed labnotebook entry"	 [label=Passed];
+	"Calculate scaling factor\n to be inside the bounds" -> "Adjust DAScale (rounded to full pA)\n according to scaling factor";
 	n75	 [label="Abort sweep"];
-	n67 -> n75	 [color=1,
-		comment="Wildcard edge"];
+	n67 -> n75;
+	"Set can still pass?" -> "Skip to end of DAQ"	 [label=No];
+	n89	 [label="Use \"SamplingMultiplier\" analysis parameter\n (defaulting to 4 if not present) and set it."];
+	"Enable \"Insert TP\"" -> n89;
+	"All checks passed" -> Abort	 [label=No];
+	"All checks passed" -> "Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode"	 [label=Yes];
+	"Check target voltage [1]" -> "Mark chunk as passed/failed [1]";
+	"Add BL QC passed labnotebook entry" -> "Early Sweep stop";
+	"Adjust DAScale (rounded to full pA)\n according to scaling factor" -> "Abort Sweep";
+	n89 -> "At least three sweeps";
+	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> Abort	 [label="Not found"];
+	"Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> "Get DeltaI/DeltaV from labnotebook"	 [label=Found];
+	"At least three sweeps" -> "All checks passed";
+	"Get DeltaI/DeltaV from labnotebook" -> "Calculate Resistance from it\n store in labnotebook";
+	"Calculate Resistance from it\n store in labnotebook" -> "Calculate initial DAScale\n store in labnotebook";
+	"Calculate initial DAScale\n store in labnotebook" -> "Set DAScale";
+	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [label=Passed];
+	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	 [label=Failed];
 }

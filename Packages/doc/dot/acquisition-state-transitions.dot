@@ -16,7 +16,6 @@ digraph G {
 	];
 	edge [color=2,
 		colorscheme=blues3,
-		comment="Wildcard edge",
 		fontcolor=3,
 		fontname=Helvetica,
 		fontsize=10
