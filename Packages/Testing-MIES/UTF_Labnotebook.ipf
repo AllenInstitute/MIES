@@ -717,6 +717,12 @@ Function [string device, string key, string keyTxt] PrepareLBN_IGNORE()
 	keys[] = "ADC"
 	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	values[]  = 0
+	values[0][0][0] = 1
+	values[0][0][1] = 1
+	keys[] = "Headstage Active"
+	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
 	// numerical entries
 
 	// DAC 4: unassoc (old)
@@ -772,6 +778,12 @@ Function [string device, string key, string keyTxt] PrepareLBN_IGNORE()
 	valuesADC[0][0][1] = 7
 	keys[] = "ADC"
 	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	values[]  = 0
+	values[0][0][0] = 1
+	values[0][0][1] = 1
+	keys[] = "Headstage Active"
+	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// numerical entries
 
@@ -829,6 +841,12 @@ Function [string device, string key, string keyTxt] PrepareLBN_IGNORE()
 	keys[] = "ADC"
 	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	values[]  = 0
+	values[0][0][0] = 1
+	values[0][0][1] = 1
+	keys[] = "Headstage Active"
+	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
 	// indep headstage
 	values[] = NaN
 	values[0][0][INDEP_HEADSTAGE] = 252627
@@ -841,6 +859,49 @@ Function [string device, string key, string keyTxt] PrepareLBN_IGNORE()
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	return [device, key, keyTxt]
+End
+
+static Function Test_GetHeadstageForChannel()
+
+	string device, key, keyTxt
+	variable index, sweepNo, channelCnt, channel, hs, i
+
+	[device, key, keyTxt] = PrepareLBN_IGNORE()
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	Make/FREE/N=(NUM_DA_TTL_CHANNELS) chanNums = p
+	Make/FREE hsNumsADC = {NaN, NaN, NaN, NaN, NaN, NaN, 0, 1}
+	Make/FREE hsNumsDAC = {NaN, NaN, 0, 1, NaN, NaN, NaN, NaN}
+	Duplicate/FREE chanNums, hsResultADC, hsResultDAC
+
+	channelCnt = DimSize(chanNums, ROWS)
+	for(sweepNo = 0; sweepNo < 2; sweepNo += 1)
+		for(i = 0; i < channelCnt; i += 1)
+			hsResultADC[i] = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_ADC, chanNums[i], DATA_ACQUISITION_MODE)
+			hsResultDAC[i] = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_DAC, chanNums[i], DATA_ACQUISITION_MODE)
+		endfor
+		CHECK_EQUAL_WAVES(hsResultADC, hsNumsADC, mode=WAVE_DATA)
+		CHECK_EQUAL_WAVES(hsResultDAC, hsNumsDAC, mode=WAVE_DATA)
+	endfor
+
+	sweepNo = 0
+	channel = 8 // Invalid channel
+
+	hs = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_ADC, channel, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(hs, NaN)
+
+	channel = 6
+	try
+		hs = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_TTL, channel, DATA_ACQUISITION_MODE); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+		ClearRTError()
+	endtry
+	hs = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_DAC, channel, TEST_PULSE_MODE)
+	CHECK_EQUAL_VAR(hs, NaN)
+	hs = GetHeadstageForChannel(numericalValues, sweepNo, XOP_CHANNEL_TYPE_ADC, channel, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(hs, 0)
 End
 
 Function Test_GetLastSettingChannel()

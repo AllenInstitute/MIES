@@ -7491,3 +7491,28 @@ Function TestOverrideActive()
 
 	return 0
 End
+
+/// @brief Returns the active headstage for a given sweep, channelType, channelNumber from the LBN
+///
+/// @param numericalValues LBN wave with numerical values
+/// @param sweep           sweep number
+/// @param channelType     channel type number
+/// @param channelNumber   channel number
+/// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes
+/// @return headstage number or NaN if no headstage was found
+Function GetHeadstageForChannel(WAVE numericalValues, variable sweep, variable channelType, variable channelNumber, variable entrySourceType)
+
+	variable index
+
+	WAVE/Z settings
+	[settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "Headstage Active", channelNumber, channelType, entrySourceType)
+	if(!WaveExists(settings))
+		return NaN
+	endif
+
+	if(!settings[index])
+		return NaN
+	endif
+
+	return index
+End
