@@ -3465,9 +3465,9 @@ Function/S PSQ_Chirp_GetHelp(string name)
 		 case "BoundsEvaluationMode":
 			 return "Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
 		case "LowerRelativeBound":
-			return "Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV."
+			return "Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
 		case "UpperRelativeBound":
-			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV."
+			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
 		case "NumberOfChirpCycles":
 			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
 		case "NumberOfFailedSweeps":
