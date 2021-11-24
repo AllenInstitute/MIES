@@ -133,7 +133,7 @@ Function CHI_CheckInstallation()
 
 	listOfXOPs = ListMatch(allFilesUser + "|" + allFilesSystem, "*.xop", "|")
 	WAVE/T list = ListToTextWave(listOfXOPs, "|")
-	WAVE/T listNoDups = DeleteDuplicates(list)
+	WAVE/T listNoDups = GetUniqueEntries(list)
 	listOfXOPs = TextWaveToList(listNoDups, "|")
 
 	STRUCT CHI_InstallationState state

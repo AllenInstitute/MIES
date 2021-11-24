@@ -291,7 +291,8 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 		if(WhichListItem(name, LIST_OF_TESTS_WITH_SWEEP_ROLLBACK) == -1)
 			// ascending sweep numbers in both labnotebooks
-			WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+			WAVE numericalValues = GetLBNumericalValues(dev)
+			WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
 
 			if(!WaveExists(sweeps))
 				PASS()
@@ -302,7 +303,8 @@ Function TEST_CASE_END_OVERRIDE(name)
 			Sort sweeps, sweeps
 			CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
 
-			WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "textualValues")
+			WAVE textualValues = GetLBTextualValues(dev)
+			WAVE/Z sweeps = GetSweepsWithSetting(textualValues, "SweepNum")
 
 			if(!WaveExists(sweeps))
 				PASS()
@@ -359,18 +361,17 @@ static Function CheckUserEpochsFromChunks(string dev)
 
 	variable i, j, sweepCnt, numEpochs, DAC
 
-	WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+	WAVE numericalValues = GetLBNumericalValues(dev)
+	WAVE textualValues = GetLBTextualValues(dev)
+
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
 
 	if(!WaveExists(sweeps))
 		PASS()
 		return NaN
 	endif
 
-	WAVE numericalValues = GetLBNumericalValues(dev)
-	WAVE textualValues = GetLBTextualValues(dev)
-
 	sweepCnt = DimSize(sweeps, ROWS)
-
 	for(i = 0; i < sweepCnt; i += 1)
 
 		WAVE statusHS = GetLastSetting(numericalValues, sweeps[i], "Headstage Active", DATA_ACQUISITION_MODE)
@@ -436,7 +437,10 @@ static Function CheckEpochs(string dev)
 	variable sweepCnt, i, j, k, index, channelTypeCount, channelCnt
 	string str
 
-	WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+	WAVE numericalValues = GetLBNumericalValues(dev)
+	WAVE textualValues = GetLBTextualValues(dev)
+
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
 
 	if(!WaveExists(sweeps))
 		PASS()
@@ -445,9 +449,6 @@ static Function CheckEpochs(string dev)
 
 	Make/D/FREE channelTypes = {XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_TYPE_DAC} // note: XOP_CHANNEL_TYPE_TTL not supported by GetLastSettingChannel
 	channelTypeCount = DimSize(channelTypes, ROWS)
-
-	WAVE numericalValues = GetLBNumericalValues(dev)
-	WAVE textualValues = GetLBTextualValues(dev)
 
 	sweepCnt = DimSize(sweeps, ROWS)
 
@@ -513,36 +514,6 @@ Function RegisterReentryFunction(string testcase)
 		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
 		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600, failOnTimeout = 1)
 	endif
-End
-
-static Function/WAVE GetSweepsFromLBN_IGNORE(device, name)
-	string device, name
-
-	variable col
-
-	DFREF dfr = GetDevSpecLabNBFolder(device)
-	WAVE/Z values = dfr:$name
-
-	if(!WaveExists(values))
-		return $""
-	endif
-
-	// all sweep numbers are ascending
-	col = GetSweepColumn(values)
-
-	if(IsTextWave(values))
-		Duplicate/T/FREE/RMD=[*][col][0] values, sweepsText
-		Redimension/N=-1 sweepsText
-
-		Make/FREE/N=(DimSize(sweepsText, ROWS)) sweeps = str2num(sweepsText[p])
-	else
-		Duplicate/FREE/RMD=[*][col][0] values, sweeps
-		Redimension/N=-1 sweeps
-	endif
-
-	WaveTransform/O zapNaNs, sweeps
-
-	return sweeps
 End
 
 /// @brief Background function to wait until DAQ is finished.
@@ -1272,15 +1243,15 @@ Function CheckPSQChunkTimes(string dev, WAVE chunkTimes[, variable sweep])
 	REQUIRE(IsEven(size))
 	expectedChunkCnt = size >> 1
 
-	WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+	WAVE numericalValues = GetLBNumericalValues(dev)
+	WAVE textualValues = GetLBTextualValues(dev)
+
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
 
 	if(!WaveExists(sweeps))
 		FAIL()
 		return NaN
 	endif
-
-	WAVE numericalValues = GetLBNumericalValues(dev)
-	WAVE textualValues = GetLBTextualValues(dev)
 
 	sweepCnt = DimSize(sweeps, ROWS)
 
