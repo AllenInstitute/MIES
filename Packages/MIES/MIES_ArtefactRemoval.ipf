@@ -382,7 +382,8 @@ Function AR_UpdateTracesIfReq(graph, sweepFolder, sweepNo)
 		return NaN
 	endif
 
-	WAVE numericalValues = BSP_GetLBNWave(device, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	WAVE/Z numericalValues = BSP_GetLBNWave(device, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")
 
 	DFREF singleSweepDFR = GetSingleSweepFolder(sweepFolder, sweepNo)
 	WAVE ranges = AR_ComputeRanges(singleSweepDFR, sweepNo, numericalValues)

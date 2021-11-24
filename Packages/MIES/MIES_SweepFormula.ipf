@@ -1273,7 +1273,10 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 			continue
 		endif
 
-		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		if(!WaveExists(numericalValues))
+			continue
+		endif
 
 		for(j = 0; j < DimSize(channels, ROWS); j += 1)
 			channelType = channels[j][0]
@@ -1604,8 +1607,11 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 			continue
 		endif
 
-		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-		WAVE textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		if(!WaveExists(numericalValues) || !WaveExists(textualValues))
+			continue
+		endif
 
 		for(j = 0; j <  activeChannelCnt; j += 1)
 			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, activeChannels[j][%channelNumber], activeChannels[j][%channelType], DATA_ACQUISITION_MODE)
@@ -2145,8 +2151,11 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 			continue
 		endif
 
-		WAVE numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-		WAVE textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		if(!WaveExists(numericalValues) || !WaveExists(textualValues))
+			continue
+		endif
 
 		for(j = 0; j <  DimSize(activeChannels, ROWS); j += 1)
 			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], str, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
