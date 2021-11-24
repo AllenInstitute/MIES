@@ -148,7 +148,7 @@ Function/S SB_GetListOfExperiments(graph)
 
 	numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
 	for(i = 0; i < numEntries; i += 1)
-		experiment = sweepMap[i][%FileName]
+		experiment = sweepMap[i][%DataFolder]
 		if(WhichListItem(experiment, list) == -1)
 			list = AddListItem(experiment, list, ";", Inf)
 		endif

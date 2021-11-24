@@ -290,7 +290,7 @@ Function/S LBV_GetExperiments(string win)
 	if(BSP_IsDataBrowser(win))
 		return NONE + ";" + GetExperimentName()
 	else
-		return NONE + ";" + AB_GetAllExperiments()
+		return NONE + ";" + SB_GetListOfExperiments(win)
 	endif
 End
 
@@ -898,13 +898,17 @@ Function LBV_SelectExperimentAndDevice(string win)
 	experiments = LBV_GetExperiments(shPanel)
 	if(ItemsInList(experiments) == 2)
 		SetPopupMenuIndex(shPanel, "popup_Experiment", 1)
+		DisableControl(shPanel, "popup_Experiment")
 	else
 		SetPopupMenuIndex(shPanel, "popup_Experiment", 0)
 	endif
 
 	devices = LBV_GetAllDevicesForExperiment(shPanel)
+
+	// select the device if we have only one (NONE is always present)
 	if(ItemsInList(devices) == 2)
 		SetPopupMenuIndex(shPanel, "popup_Device", 1)
+		DisableControl(shPanel, "popup_Device")
 	else
 		SetPopupMenuIndex(shPanel, "popup_Device", 0)
 	endif
