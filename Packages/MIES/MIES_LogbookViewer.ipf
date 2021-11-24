@@ -290,7 +290,7 @@ Function/S LBV_GetExperiments(string win)
 	if(BSP_IsDataBrowser(win))
 		return NONE + ";" + GetExperimentName()
 	else
-		return NONE + ";" + AB_GetAllExperiments()
+		return NONE + ";" + SB_GetListOfExperiments(win)
 	endif
 End
 
