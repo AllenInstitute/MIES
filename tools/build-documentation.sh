@@ -135,6 +135,7 @@ fi
 echo "Start zipping the results"
 rm -f mies-docu*.zip
 "$ZIP_EXE" -qr0 mies-docu-$version.zip html
+"$ZIP_EXE" -qd mies-docu-$version.zip "html/.doctrees/*" > /dev/null
 
 Passed
 
