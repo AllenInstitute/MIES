@@ -558,7 +558,10 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 				return ""
 			endif
 
-			ASSERT(WaveExists(baselineQC), "Missing baseline QC LBN entry")
+			if(!WaveExists(baselineQC))
+				BUG("Missing baseline QC LBN entry")
+				return ""
+			endif
 
 			if(!baselineQC[headstage])
 				for(i = 0; ;i += 1)
