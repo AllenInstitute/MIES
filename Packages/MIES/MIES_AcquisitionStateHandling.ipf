@@ -70,6 +70,8 @@ Function AS_HandlePossibleTransition(string device, variable newAcqState, [varia
 
 	if(oldAcqState == AS_PRE_SWEEP && newAcqState == AS_MID_SWEEP)
 		ED_MarkSweepStart(device)
+	elseif(newAcqState == AS_PRE_SWEEP_CONFIG)
+		DC_ClearWaves(device)
 	endif
 
 #ifdef AUTOMATED_TESTING

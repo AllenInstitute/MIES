@@ -20,9 +20,6 @@ static Function DC_UpdateGlobals(string device, variable dataAcqOrTP)
 
 	TP_UpdateTPSettingsCalculated(device)
 
-	KillOrMoveToTrash(wv=GetTPSettingsLabnotebook(device))
-	KillOrMoveToTrash(wv=GetTPSettingsLabnotebookKeyWave(device))
-
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		TP_UpdateTPLBNSettings(device)
 	endif
@@ -32,6 +29,21 @@ static Function DC_UpdateGlobals(string device, variable dataAcqOrTP)
 
 	NVAR fifoPosition = $GetFifoPosition(device)
 	fifoPosition = 0
+End
+
+Function DC_ClearWaves(string device)
+
+	KillOrMoveToTrash(wv=GetTPSettingsLabnotebook(device))
+	KillOrMoveToTrash(wv=GetTPSettingsLabnotebookKeyWave(device))
+
+	KillOrMoveToTrash(wv = GetTPResultsBuffer(device))
+
+	KillOrMoveToTrash(wv=GetSweepSettingsWave(device))
+	KillOrMoveToTrash(wv=GetSweepSettingsTextWave(device))
+	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(device))
+	KillOrMoveToTrash(wv=GetSweepSettingsTextKeyWave(device))
+
+	EP_ClearEpochs(device)
 End
 
 /// @brief Prepare test pulse/data acquisition
@@ -67,12 +79,9 @@ Function DC_Configure(device, dataAcqOrTP, [multiDevice])
 	variable hardwareType = GetHardwareType(device)
 	ASSERT(!HW_IsRunning(hardwareType, deviceID, flags=HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP), "Hardware is still running and it shouldn't. Please report that as a bug.")
 
-	KillOrMoveToTrash(wv=GetSweepSettingsWave(device))
-	KillOrMoveToTrash(wv=GetSweepSettingsTextWave(device))
-	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(device))
-	KillOrMoveToTrash(wv=GetSweepSettingsTextKeyWave(device))
-
-	EP_ClearEpochs(device)
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		DC_ClearWaves(device)
+	endif
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		if(AFM_CallAnalysisFunctions(device, PRE_SET_EVENT))
@@ -101,8 +110,6 @@ Function DC_Configure(device, dataAcqOrTP, [multiDevice])
 
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(device)
 	ADChannelToMonitor = DimSize(GetDACListFromConfig(DAQConfigWave), ROWS)
-
-	KillOrMoveToTrash(wv = GetTPResultsBuffer(device))
 
 	DC_MakeHelperWaves(device, dataAcqOrTP)
 	SCOPE_CreateGraph(device, dataAcqOrTP)
