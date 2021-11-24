@@ -68,11 +68,8 @@ Function AD_Update(win)
 		selWave[][][%foreColors] = AD_GetColorForResultMessage(listWave[p][%Result])
 
 		helpWave[] = "Result:\r" + listWave[p][%Result]
-
-		EnableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	else
 		SetNumberInWaveNote(listWave, NOTE_INDEX, 0)
-		DisableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	endif
 
 	DEBUGPRINT_ELAPSED(refTime)
@@ -857,9 +854,19 @@ End
 Function AD_CheckProc_Toggle(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
+	string win
+
 	switch(cba.eventCode)
 		case 2: // mouse up
-			AD_Update(cba.win)
+			win = cba.win
+			AD_Update(win)
+
+			if(cba.checked)
+				EnableControls(win, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
+			else
+				DisableControls(win, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
+			endif
+
 			break
 	endswitch
 
