@@ -3184,13 +3184,13 @@ End
 /// @param sweepNo              sweep number
 /// @param chirpStart           x-position relative to stimset start where the chirp starts
 /// @param cycleEnd             x-position relative to stimset start where the requested number of cycles finish
-/// @param lowerRelativeBound   analysis parameter
-/// @param upperRelativeBound   analysis parameter
+/// @param innerRelativeBound   analysis parameter
+/// @param outerRelativeBound   analysis parameter
 /// @param boundsEvaluationMode bounds evaluation mode, one of @ref PSQChirpBoundsEvaluationMode
 ///
 /// @return boundsAction, one of @ref ChirpBoundsAction
 /// @return scalingFactorDAScale, scaling factor to be inside the bounds for actions PSQ_CR_INCREASE/PSQ_CR_DECREASE
-static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_DetermineBoundsAction(string panelTitle, WAVE scaledDACWave, variable headstage, variable sweepNo, variable chirpStart, variable cycleEnd, variable lowerRelativeBound, variable upperRelativeBound, variable boundsEvaluationMode)
+static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_DetermineBoundsAction(string panelTitle, WAVE scaledDACWave, variable headstage, variable sweepNo, variable chirpStart, variable cycleEnd, variable innerRelativeBound, variable outerRelativeBound, variable boundsEvaluationMode)
 
 	variable targetV, lowerValue, upperValue, upperMax, upperMin, lowerMax, lowerMin
 	variable lowerValueOverride, upperValueOverride, totalOnsetDelay, scalingFactor, baselineVoltage
@@ -3234,10 +3234,10 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 
 	// See the bounds actions sketch at PSQ_Chirp for an explanation regarding the naming
 
-	upperMax = baselineVoltage + upperRelativeBound
-	upperMin = baselineVoltage + lowerRelativeBound
-	lowerMax = baselineVoltage - lowerRelativeBound
-	lowerMin = baselineVoltage - upperRelativeBound
+	upperMax = baselineVoltage + outerRelativeBound
+	upperMin = baselineVoltage + innerRelativeBound
+	lowerMax = baselineVoltage - innerRelativeBound
+	lowerMin = baselineVoltage - outerRelativeBound
 
 	STRUCT ChirpBoundsInfo upperInfo
 	STRUCT ChirpBoundsInfo lowerInfo
@@ -3464,9 +3464,9 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
 		 case "BoundsEvaluationMode":
 			 return "Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
-		case "LowerRelativeBound":
+		case "InnerRelativeBound":
 			return "Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
-		case "UpperRelativeBound":
+		case "OuterRelativeBound":
 			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
 		case "NumberOfChirpCycles":
 			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
@@ -3509,11 +3509,11 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 				return "Invalid value " + num2str(val)
 			endif
 			break
-		case "LowerRelativeBound":
-			if(AFH_GetAnalysisParamNumerical("LowerRelativeBound", s.params) >= AFH_GetAnalysisParamNumerical("UpperRelativeBound", s.params))
-				return "LowerRelativeBound must be smaller than UpperRelativeBound"
+		case "InnerRelativeBound":
+			if(AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params) >= AFH_GetAnalysisParamNumerical("OuterRelativeBound", s.params))
+				return "InnerRelativeBound must be smaller than OuterRelativeBound"
 			endif
-		case "UpperRelativeBound": // fallthrough-by-design
+		case "OuterRelativeBound": // fallthrough-by-design
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || val < PSQ_CR_LIMIT_BAND_LOW || val > PSQ_CR_LIMIT_BAND_HIGH)
 				return "Out of bounds with value " + num2str(val)
@@ -3575,7 +3575,7 @@ End
 
 /// @brief Return a list of required analysis functions for PSQ_Chirp()
 Function/S PSQ_Chirp_GetParams()
-	return "LowerRelativeBound:variable,UpperRelativeBound:variable," +                            \
+	return "InnerRelativeBound:variable,OuterRelativeBound:variable," +                            \
 		   "[NumberOfChirpCycles:variable],[SpikeCheck:variable],[FailedLevel:variable]," +         \
 		   "[DAScaleOperator:string],[DAScaleModifier:variable],[NumberOfFailedSweeps:variable]," + \
 		   "[SamplingMultiplier:variable],[SamplingFrequency:variable]," +                          \
@@ -3647,7 +3647,7 @@ Function PSQ_Chirp(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	variable lowerRelativeBound, upperRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
+	variable InnerRelativeBound, OuterRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet, samplingFrequencyPassed
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
 	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration
@@ -3655,9 +3655,9 @@ Function PSQ_Chirp(panelTitle, s)
 	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode
 	string setName, key, msg, stimset, str, daScaleOperator
 
-	lowerRelativeBound = AFH_GetAnalysisParamNumerical("LowerRelativeBound", s.params)
+	innerRelativeBound = AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params)
 	numberOfChirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", s.params, defValue = 1)
-	upperRelativeBound = AFH_GetAnalysisParamNumerical("UpperRelativeBound", s.params)
+	outerRelativeBound = AFH_GetAnalysisParamNumerical("OuterRelativeBound", s.params)
 	numSweepsFailedAllowed = AFH_GetAnalysisParamNumerical("NumberOfFailedSweeps", s.params, defValue = 3)
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params, defValue = PSQ_DEFAULT_SAMPLING_MULTIPLIER)
 	boundsEvaluationMode = PSQ_CR_ParseBoundsEvaluationModeString(AFH_GetAnalysisParamTextual("BoundsEvaluationMode", s.params))
@@ -3772,7 +3772,7 @@ Function PSQ_Chirp(panelTitle, s)
 				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_RESISTANCE)
 				ED_AddEntryToLabnotebook(panelTitle, key, result, overrideSweepNo = s.sweepNo, unit = "Ohm")
 
-				targetVoltage = ((upperRelativeBound + lowerRelativeBound) / 2) * 1e-3
+				targetVoltage = ((outerRelativeBound + innerRelativeBound) / 2) * 1e-3
 				initialDAScale = targetVoltage / resistance
 
 				sprintf msg, "Initial DAScale: %g [Amperes]\r", initialDAScale
@@ -3981,7 +3981,7 @@ Function PSQ_Chirp(panelTitle, s)
 		// and we have acquired enough cycles
 		// and baselineQC is not failing
 
-		[boundsAction, scalingFactorDaScale] = PSQ_CR_DetermineBoundsAction(panelTitle, s.scaledDACWave, s.headstage, s.sweepNo, chirpStart, cycleEnd, lowerRelativeBound, upperRelativeBound, boundsEvaluationMode)
+		[boundsAction, scalingFactorDaScale] = PSQ_CR_DetermineBoundsAction(panelTitle, s.scaledDACWave, s.headstage, s.sweepNo, chirpStart, cycleEnd, innerRelativeBound, outerRelativeBound, boundsEvaluationMode)
 
 		insideBounds = (boundsAction == PSQ_CR_PASS)
 		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN

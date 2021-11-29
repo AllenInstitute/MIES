@@ -163,8 +163,8 @@ End
 
 static Function PS_CR1_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
@@ -220,8 +220,8 @@ End
 
 static Function PS_CR2_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
@@ -276,8 +276,8 @@ End
 
 static Function PS_CR2a_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
@@ -332,8 +332,8 @@ End
 
 static Function PS_CR2b_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
@@ -388,8 +388,8 @@ End
 
 static Function PS_CR3_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
@@ -446,8 +446,8 @@ End
 
 static Function PS_CR4_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
@@ -532,8 +532,8 @@ End
 
 static Function PS_CR4a_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
@@ -618,8 +618,8 @@ End
 
 static Function PS_CR4b_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
@@ -704,8 +704,8 @@ End
 
 static Function PS_CR5_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
@@ -791,8 +791,8 @@ End
 
 static Function PS_CR6_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
@@ -878,8 +878,8 @@ End
 
 static Function PS_CR7_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
@@ -961,8 +961,8 @@ End
 
 static Function PS_CR8_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
@@ -1044,8 +1044,8 @@ End
 
 static Function PS_CR9_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
@@ -1132,8 +1132,8 @@ End
 
 static Function PS_CR9a_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Depolarized")
@@ -1220,8 +1220,8 @@ End
 
 static Function PS_CR9b_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Hyperpolarized")
@@ -1308,8 +1308,8 @@ End
 
 static Function PS_CR10_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "BoundsEvaluationMode", str="Symmetric")
@@ -1393,8 +1393,8 @@ End
 
 static Function PS_CR11_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
@@ -1458,8 +1458,8 @@ End
 
 static Function PS_CR12_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
@@ -1520,8 +1520,8 @@ End
 
 static Function PS_CR13_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=2)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "FailedLevel", var=10)
@@ -1594,8 +1594,8 @@ End
 
 static Function PS_CR14_IGNORE(string device)
 
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "LowerRelativeBound", var=20)
-	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "UpperRelativeBound", var=40)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "InnerRelativeBound", var=20)
+	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "OuterRelativeBound", var=40)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "NumberOfChirpCycles", var=1)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SpikeCheck", var=0)
 	AFH_AddAnalysisParameter("PatchSeqChirp_DA_0", "SamplingFrequency", var=10)
