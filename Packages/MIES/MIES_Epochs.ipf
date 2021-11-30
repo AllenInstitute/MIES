@@ -691,15 +691,16 @@ End
 /// @param sweepNo         Number of sweep
 /// @param channelType     type of channel @sa XopChannelConstants
 /// @param channelNumber   number of channel
-/// @param treelevel       tree level of epochs
 /// @param shortname       short name filter as regular expression
+/// @param treelevel       [optional: default = not set] tree level of epochs, if not set then treelevel is ignored
 ///
 /// @returns Text wave with epoch information, only rows fitting the input parameters are returned. Can also be a null wave.
-Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, variable treelevel, string shortname)
+Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable channelType, variable channelNumber, string shortname[, variable treelevel])
 
-	variable index
+	variable index, epochCnt
 
 	ASSERT(channelType == XOP_CHANNEL_TYPE_DAC, "Only channelType XOP_CHANNEL_TYPE_DAC is supported")
+	treelevel = ParamIsDefault(treelevel) ? NaN : treelevel
 
 	WAVE/Z settings
 	[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweepNo, EPOCHS_ENTRY_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
@@ -709,15 +710,20 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 
 	WAVE/T settingsT = settings
 	WAVE/T epochInfo = EP_EpochStrToWave(settingsT[index])
+	epochCnt = DimSize(epochInfo, ROWS)
 
-	WAVE/Z indizesLevel = FindIndizes(epochInfo, col = EPOCH_COL_TREELEVEL, var = treelevel)
+	if(IsNaN(treelevel))
+		Make/FREE/N=(epochCnt) indizesLevel = p
+	else
+		WAVE/Z indizesLevel = FindIndizes(epochInfo, col = EPOCH_COL_TREELEVEL, var = treelevel)
 
-	if(!WaveExists(indizesLevel))
-		return $""
+		if(!WaveExists(indizesLevel))
+			return $""
+		endif
 	endif
 
 	// @todo add support for grepping in FindIndizes later
-	Make/FREE/N=(DimSize(epochInfo, ROWS)) indizesName = GrepString(EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS]), shortName) ? p : NaN
+	Make/FREE/N=(epochCnt) indizesName = GrepString(EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS]), shortName) ? p : NaN
 
 	WAVE/Z indizes = GetSetIntersection(indizesLevel, indizesName)
 	if(!WaveExists(indizes))

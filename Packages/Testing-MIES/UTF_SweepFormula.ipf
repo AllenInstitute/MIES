@@ -1147,10 +1147,11 @@ End
 
 Function TestLabNotebook()
 	Variable i, j, sweepNumber, channelNumber
-	String str, trace, key, name
+	String str, trace, key, name, epochStr
 
 	Variable numSweeps = 10
 	Variable numChannels = 5
+	Variable dataSize = 128
 	Variable mode = DATA_ACQUISITION_MODE
 	String channelType = StringFromList(XOP_CHANNEL_TYPE_ADC, XOP_CHANNEL_NAMES)
 	String win = DATABROWSER_WINDOW_TITLE
@@ -1176,8 +1177,12 @@ Function TestLabNotebook()
 	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
 	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	epochStr = "0,0." + num2istr(datasize - 1) + ",ShortName=TestEpoch,0"
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = epochStr
+	Make/FREE/T/N=(1, 1) epochKeys = EPOCHS_ENTRY_KEY
+	Make/FREE/T/N=(1, 1) dacKeys = "DAC"
 
-	Make/FREE/N=(128, numSweeps, numChannels) input = q + p^r // + gnoise(1)
+	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
 
 	for(i = 0; i < numSweeps; i += 1)
 		sweepNumber = i
@@ -1194,8 +1199,11 @@ Function TestLabNotebook()
 
 		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
 		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
+		ED_AddEntriesToLabnotebook(values, dacKeys, sweepNumber, device, mode)
 		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values
 		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
+
+		ED_AddEntriesToLabnotebook(epochInfo, epochKeys, sweepNumber, device, mode)
 	endfor
 	ModifyGraph/W=$win log(left)=1
 
@@ -1210,6 +1218,15 @@ Function TestLabNotebook()
 	str = "data(cursors(A,B),channels(AD),sweeps())"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(input, data, mode = WAVE_DATA)
+
+	str = "data(TestEpoch,channels(AD),sweeps())"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(input, data, mode = WAVE_DATA)
+
+	str = "data(TestEpoch,channels(AD4),sweeps())"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	Duplicate/FREE/RMD=[][][2] input, singleChannelData
+	REQUIRE_EQUAL_WAVES(singleChannelData, data, mode = WAVE_DATA)
 End
 
 /// @brief Test Epoch operation of SweepFormula

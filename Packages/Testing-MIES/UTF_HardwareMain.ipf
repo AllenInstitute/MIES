@@ -383,7 +383,7 @@ static Function CheckUserEpochsFromChunks(string dev)
 			endif
 
 			DAC = AFH_GetDACFromHeadstage(dev, j)
-			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, EPOCH_USER_LEVEL, EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "[0-9]+")
+			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "[0-9]+", treelevel = EPOCH_USER_LEVEL)
 
 			if(!WaveExists(userChunkEpochs))
 				continue
@@ -1269,7 +1269,7 @@ Function CheckPSQChunkTimes(string dev, WAVE chunkTimes[, variable sweep])
 			endif
 
 			DAC = AFH_GetDACFromHeadstage(dev, j)
-			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, EPOCH_USER_LEVEL, EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "[0-9]+")
+			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "[0-9]+", treelevel = EPOCH_USER_LEVEL)
 			if(!WaveExists(userChunkEpochs))
 				continue
 			endif

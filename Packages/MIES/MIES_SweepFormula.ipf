@@ -975,18 +975,85 @@ static Function SF_SplitPlotting(wv, dim, i, split)
 	return min(i, floor(DimSize(wv, dim) / split) - 1) * split
 End
 
+/// @brief Returns a range from a epochName
+///
+/// @param graph name of databrowser graph
+/// @param epochName name epoch
+/// @param sweep number of sweep
+/// @param channel number of DA channel
+/// @returns a 1D wave with two elements, [startTime, endTime] in ms, if no epoch could be resolved [NaN, NaN] is returned
+static Function/WAVE SF_GetRangeFromEpoch(string graph, string epochName, variable sweep, variable channel)
+
+	string regex
+	variable numEpochs
+
+	Make/FREE/D range = {NaN, NaN}
+	if(IsEmpty(epochName) || !IsValidSweepNumber(sweep))
+		return range
+	endif
+
+	WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
+	if(!WaveExists(numericalValues))
+		return range
+	endif
+	WAVE/Z textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweep)
+	if(!WaveExists(textualValues))
+		return range
+	endif
+
+	regex = "^" + epochName + "$"
+	WAVE/T/Z epochs = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, channel, regex)
+	if(!WaveExists(epochs))
+		return range
+	endif
+	numEpochs = DimSize(epochs, ROWS)
+	SF_ASSERT(numEpochs <= 1, "Found several fitting epochs. Currently only a single epoch is supported")
+	if(numEpochs == 0)
+		return range
+	endif
+
+	range[0] = str2num(epochs[0][EPOCH_COL_STARTTIME]) * 1E3
+	range[1] = str2num(epochs[0][EPOCH_COL_ENDTIME]) * 1E3
+
+	return range
+End
+
+static Function SF_GetDAChannel(string graph, variable sweep, variable channelType, variable channelNumber)
+
+	variable DAC, index
+
+	WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
+	if(!WaveExists(numericalValues))
+		return NaN
+	endif
+	WAVE/Z settings
+	[settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", channelNumber, channelType, DATA_ACQUISITION_MODE)
+	if(WaveExists(settings))
+		DAC = settings[index]
+		ASSERT(IsFinite(DAC) && index < NUM_HEADSTAGES, "Only associated channels are supported.")
+		return DAC
+	endif
+
+	return NaN
+End
+
 static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 	String graph
 	WAVE range, channels, sweeps
 
-	variable i, j, rangeStart, rangeEnd, pOffset, delta, numRows
+	variable i, j, rangeStart, rangeEnd, pOffset, delta, numRows, DAChannel
 	string dimLabel
 	variable channelType = -1
 	variable xStart = NaN, xEnd = NaN
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
-	SF_ASSERT(DimSize(range, ROWS) == 2, "A range is of the form [rangeStart, rangeEnd].")
-	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelName, channelNumber]+].")
+	if(IsTextWave(range))
+		SF_ASSERT(DimSize(range, ROWS) == 1, "A epoch range must be a single string with the epoch name.")
+		WAVE/T wEpochName = range
+	else
+		SF_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is of the form [rangeStart, rangeEnd].")
+	endif
+	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 	SF_ASSERT(DimSize(range, COLS) <= 1, "Multidimensional ranges not fully implemented.")
 
@@ -1058,6 +1125,11 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 
 			delta = max(delta, DimDelta(sweep, ROWS))
 			SF_ASSERT(delta == DimDelta(sweep, ROWS), "Sweeps are not equally spaced. Data would need to get resampled.")
+
+			if(WaveExists(wEpochName))
+				DAChannel = SF_GetDAChannel(graph, sweeps[i], channels[j][0], channels[j][1])
+				WAVE range = SF_GetRangeFromEpoch(graph, wEpochName[0], sweeps[i], DAChannel)
+			endif
 
 			if(DimSize(range, COLS) == DimSize(sweeps, ROWS) && DimSize(range, LAYERS) == DimSize(channels, ROWS))
 				rangeStart = range[0][i][j]
@@ -1991,8 +2063,12 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 	SF_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
 
 	WAVE range = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-	SF_ASSERT(DimSize(range, ROWS) == 2, "A range is of the form [rangeStart, rangeEnd].")
-	range[][][] = !IsNaN(range[p][q][r]) ? range[p][q][r] : (p == 0 ? -1 : 1) * inf
+	if(IsTextWave(range))
+		SF_ASSERT(DimSize(range, ROWS) == 1, "For range from epoch only a single name is supported.")
+	else
+		SF_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is of the form [rangeStart, rangeEnd].")
+		range[][][] = !IsNaN(range[p][q][r]) ? range[p][q][r] : (p == 0 ? -1 : 1) * inf
+	endif
 
 	WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
 	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
