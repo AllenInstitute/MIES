@@ -253,8 +253,6 @@ threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedO
 			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
 			print "################################"
 
-			printf "Assertion FAILED with message %s\r", errorMsg
-
 			LOG_AddEntry_TS(PACKAGE_MIES, "assert", "ASSERT_TS", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
 		endif
 
