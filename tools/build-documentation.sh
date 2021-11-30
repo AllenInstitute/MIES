@@ -37,6 +37,8 @@ echo "Start building the documentation"
 
 cd "$top_level/Packages/doc"
 
+git clean -fdx xml struct group file namespace _images html
+
 output=$( (cat Doxyfile ; echo "HAVE_DOT = NO" ; echo "GENERATE_HTML = NO") | doxygen - 2>&1  >/dev/null | grep -v "warning: ignoring unsupported tag" )
 
 if [ ! -z  "$output" ]
