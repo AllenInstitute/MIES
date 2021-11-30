@@ -653,7 +653,7 @@ static Function P_CloseDeviceLowLevel(device, deviceToClose, refHeadstage)
 	endfor
 
 	if(doDeRegister)
-		HW_CloseDevice(hwType, deviceID)
+		HW_CloseDevice(hwType, deviceID, flags = flags)
 		HW_DeRegisterDevice(hwType, deviceID)
 	endif
 End
