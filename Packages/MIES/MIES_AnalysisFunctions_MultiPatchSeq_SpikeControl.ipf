@@ -840,20 +840,20 @@ Function/S SC_SpikeControl_GetHelp(name)
 	endswitch
 End
 
-Function/S SC_SpikeControl_CheckParam(string name, string params)
+Function/S SC_SpikeControl_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val, modifier
 	string str, operator
 
 	strswitch(name)
 		case "FailedPulseLevel":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "MaxTrials":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Invalid value " + num2str(val)
 			endif
@@ -861,7 +861,7 @@ Function/S SC_SpikeControl_CheckParam(string name, string params)
 		case "DAScaleOperator":
 		case "DAScaleSpikePositionOperator":
 		case "DaScaleTooManySpikesOperator":
-			str = AFH_GetAnalysisParamTextual(name, params)
+			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, "+") && cmpstr(str, "*"))
 				return "Invalid string " + str
 			endif
@@ -869,25 +869,25 @@ Function/S SC_SpikeControl_CheckParam(string name, string params)
 		case "DAScaleModifier":
 		case "DAScaleSpikePositionModifier":
 		case "DaScaleTooManySpikesModifier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "MinimumSpikePosition":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || !(val >= 0 && val <= 100))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "IdealNumberOfSpikesPerPulse":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsInteger(val) || val <= 0)
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "AutoBiasBaselineModifier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || abs(val) >= 1000)
 				return "Invalid value " + num2str(val)
 			endif
@@ -897,8 +897,8 @@ Function/S SC_SpikeControl_CheckParam(string name, string params)
 	strswitch(name)
 		case "DaScaleTooManySpikesModifier":
 		case "DaScaleTooManySpikesOperator":
-			modifier = AFH_GetAnalysisParamNumerical("DaScaleTooManySpikesModifier", params)
-			operator = AFH_GetAnalysisParamTextual("DaScaleTooManySpikesOperator", params)
+			modifier = AFH_GetAnalysisParamNumerical("DaScaleTooManySpikesModifier", s.params)
+			operator = AFH_GetAnalysisParamTextual("DaScaleTooManySpikesOperator", s.params)
 
 			// check that their combination results in something which reduces the DAScale
 			if(!cmpstr(operator, "*"))

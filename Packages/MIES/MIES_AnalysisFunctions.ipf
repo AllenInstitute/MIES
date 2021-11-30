@@ -109,10 +109,7 @@
 /// \rst
 /// .. code-block:: igorpro
 ///
-///    Function MyAnalysisFunction(panelTitle, s)
-///        string panelTitle
-///        struct AnalysisFunction_V3& s
-///
+///    Function MyAnalysisFunction(string panelTitle, struct AnalysisFunction_V3& s)
 ///        // ...
 ///    End
 ///
@@ -120,20 +117,18 @@
 ///        return "param1:variable,[optParam1:wave]"
 ///    End
 ///
-///    Function/S MyAnalysisFunction_CheckParam(name, params)
-///        string name, params
-///
+///    Function/S MyAnalysisFunction_CheckParam(string name, struct CheckParametersStruct& s)
 ///        variable value
 ///
 ///        strswitch(name)
 ///            case "param1":
-///                value = AFH_GetAnalysisParamNumerical(name, params)
+///                value = AFH_GetAnalysisParamNumerical(name, s.params)
 ///                if(!IsFinite(value) || !(value >= 0 && value <= 100))
 ///                    return "Needs to be between 0 and 100."
 ///                endif
 ///                break
 ///            case "optParam1":
-///                WAVE/Z wv = AFH_GetAnalysisParamWave(name, params)
+///                WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 ///                if(!WaveExists(wv) || !IsFloatingPointWave(wv))
 ///                    return "Needs to be an existing floating point wave."
 ///                break
@@ -143,8 +138,7 @@
 ///        return ""
 ///    End
 ///
-///    Function/S MyAnalysisFunction_GetHelp(name)
-///        string name, params
+///    Function/S MyAnalysisFunction_GetHelp(string name)
 ///
 ///        strswitch(name)
 ///            case "param1":
@@ -997,20 +991,20 @@ Function/S ReachTargetVoltage_GetHelp(string name)
 	endswitch
 End
 
-Function/S ReachTargetVoltage_CheckParam(string name, string params)
+Function/S ReachTargetVoltage_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val
 	string str
 
 	strswitch(name)
 		case "EnableIndexing":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "IndexingEndStimsetAllIC":
-			str = AFH_GetAnalysisParamTextual(name, params)
+			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(IsEmpty(str))
 				return "Invalid value " + str
 			endif

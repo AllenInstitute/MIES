@@ -132,6 +132,9 @@ End
 
 /// Return the pulse durations from the labnotebook or calculate them before if required in ms.
 /// For convenience unused headstages will have 0 instead of NaN in the returned wave.
+///
+/// We recalculate the durations on every sweep again as we can not assume that
+/// it is constant for the whole stimulus set.
 static Function/WAVE PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay, [forceRecalculation])
 	string panelTitle
 	variable type, sweepNo, totalOnsetDelay, forceRecalculation
@@ -1308,7 +1311,7 @@ Function/S PSQ_DAScale_GetHelp(string name)
 	endswitch
 End
 
-Function/S PSQ_DAScale_CheckParam(string name, string params)
+Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val
 	string str
@@ -1316,13 +1319,13 @@ Function/S PSQ_DAScale_CheckParam(string name, string params)
 	strswitch(name)
 		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "DAScales":
-			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, params)
+			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 			if(!WaveExists(wv))
 				return "Wave must exist"
 			endif
@@ -1333,55 +1336,55 @@ Function/S PSQ_DAScale_CheckParam(string name, string params)
 			endif
 			break
 		case "OperationMode":
-			str = AFH_GetAnalysisParamTextual(name, params)
+			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, PSQ_DS_SUB) && cmpstr(str, PSQ_DS_SUPRA))
 				return "Invalid string " + str
 			endif
 			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "OffsetOperator":
-			str = AFH_GetAnalysisParamTextual(name, params)
+			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, "+") && cmpstr(str, "*"))
 				return "Invalid string " + str
 			endif
 			break
 		case "ShowPlot":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(val != 0 && val != 1)
 				return "Invalid string " + num2str(val)
 			endif
 			break
 		case "FinalSlopePercent":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 100))
 				return "Not a precentage"
 			endif
 			break
 		case "MinimumSpikeCount":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0))
 				return "Not a positive integer or zero"
 			endif
 			break
 		case "MaximumSpikeCount":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0))
 				return "Not a positive integer or zero"
 			endif
 			break
 		case "DAScaleModifier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Not a precentage"
 			endif
@@ -1395,8 +1398,8 @@ Function/S PSQ_DAScale_CheckParam(string name, string params)
 	strswitch(name)
 		case "MinimumSpikeCount":
 		case "MaximumSpikeCount":
-			if(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", params)    \
-			   >= AFH_GetAnalysisParamNumerical("MaximumSpikeCount", params))
+			if(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params)    \
+			   >= AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params))
 			   return "The minimum/maximum spike counts are not ordered properly"
 		   endif
 		   break
@@ -1407,9 +1410,9 @@ Function/S PSQ_DAScale_CheckParam(string name, string params)
 		case "MinimumSpikeCount":
 		case "MaximumSpikeCount":
 		case "DAScaleModifier":
-			if(IsNaN(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", params))    \
-			   || IsNaN(AFH_GetAnalysisParamNumerical("MaximumSpikeCount", params)) \
-			   || IsNaN(AFH_GetAnalysisParamNumerical("DAScaleModifier", params)))
+			if(IsNaN(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params))    \
+			   || IsNaN(AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params)) \
+			   || IsNaN(AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)))
 			   return "One of MinimumSpikeCount/MaximumSpikeCount/DAScaleModifier is not present"
 		   endif
 		   break
@@ -1924,26 +1927,26 @@ Function/S PSQ_SquarePulse_GetHelp(string name)
 	endswitch
 End
 
-Function/S PSQ_SquarePulse_CheckParam(string name, string params)
+Function/S PSQ_SquarePulse_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val
 
 	strswitch(name)
 		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
@@ -2188,26 +2191,26 @@ Function/S PSQ_Rheobase_GetHelp(string name)
 	endswitch
 End
 
-Function/S PSQ_Rheobase_CheckParam(string name, string params)
+Function/S PSQ_Rheobase_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val
 
 	strswitch(name)
 		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
@@ -2626,32 +2629,32 @@ Function/S PSQ_Ramp_GetHelp(string name)
 	endswitch
 End
 
-Function/S PSQ_Ramp_CheckParam(string name, string params)
+Function/S PSQ_Ramp_CheckParam(string name, struct CheckParametersStruct &s)
 
 	variable val
 
 	strswitch(name)
 		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "NumberOfSpikes":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
@@ -3129,9 +3132,10 @@ static Function PSQ_CR_DetermineBoundsActionFromState(string upperState, string 
 
 	variable action
 
-	Make/FREE/N=9 comb
+	Make/FREE/N=15 comb
 	SetNumberInWaveNote(comb, NOTE_INDEX, 0)
 
+	// symmetric
 	PSQ_CR_DetermineBoundsActionHelper(comb, "BA" + "BA", PSQ_CR_PASS)
 	PSQ_CR_DetermineBoundsActionHelper(comb, "AA" + "BA", PSQ_CR_DECREASE)
 	PSQ_CR_DetermineBoundsActionHelper(comb, "BA" + "BB", PSQ_CR_DECREASE)
@@ -3142,32 +3146,51 @@ static Function PSQ_CR_DetermineBoundsActionFromState(string upperState, string 
 	PSQ_CR_DetermineBoundsActionHelper(comb, "AA" + "AA", PSQ_CR_RERUN)
 	PSQ_CR_DetermineBoundsActionHelper(comb, "BB" + "BB", PSQ_CR_RERUN)
 
+	// hyperpolarized
+	PSQ_CR_DetermineBoundsActionHelper(comb, "__" + "BA", PSQ_CR_PASS)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "__" + "AA", PSQ_CR_INCREASE)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "__" + "BB", PSQ_CR_DECREASE)
+
+	// depolarized
+	PSQ_CR_DetermineBoundsActionHelper(comb, "BA" + "__", PSQ_CR_PASS)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "AA" + "__", PSQ_CR_DECREASE)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "BB" + "__", PSQ_CR_INCREASE)
+
 	action = comb[%$(upperState + lowerState)]
 	ASSERT(IsFinite(action), "Invalid action")
 	return action
 End
 
 /// @brief Determine the scaling factor for DAScale which is required for being inside the bounds
-///
-/// This assumes that the envelope of the damped sine wave is symmetric around the baseline.
-static Function PSQ_CR_DetermineScalingFactor(STRUCT ChirpBoundsInfo &lowerInfo, STRUCT ChirpBoundsInfo &upperInfo)
-	return (lowerInfo.centerFac + upperInfo.centerFac) / 2
+static Function PSQ_CR_DetermineScalingFactor(STRUCT ChirpBoundsInfo &lowerInfo, STRUCT ChirpBoundsInfo &upperInfo, variable boundsEvaluationMode)
+
+	switch(boundsEvaluationMode)
+		case PSQ_CR_BEM_SYMMETRIC:
+			return (lowerInfo.centerFac + upperInfo.centerFac) / 2
+		case PSQ_CR_BEM_HYPERPOLARIZED:
+			return lowerInfo.centerFac
+		case PSQ_CR_BEM_DEPOLARIZED:
+			return upperInfo.centerFac
+		default:
+			ASSERT(0, "Invalid case")
+	endswitch
 End
 
 /// @brief Determine the bounds action given the requested chirp slice
 ///
-/// @param panelTitle                  device
-/// @param scaledDACWave               DAQ data wave with correct units and scaling
-/// @param headstage                   headstage
-/// @param sweepNo                     sweep number
-/// @param chirpStart                  x-position relative to stimset start where the chirp starts
-/// @param cycleEnd                    x-position relative to stimset start where the requested number of cycles finish
-/// @param lowerRelativeBound analysis parameter
-/// @param upperRelativeBound analysis parameter
+/// @param panelTitle           device
+/// @param scaledDACWave        DAQ data wave with correct units and scaling
+/// @param headstage            headstage
+/// @param sweepNo              sweep number
+/// @param chirpStart           x-position relative to stimset start where the chirp starts
+/// @param cycleEnd             x-position relative to stimset start where the requested number of cycles finish
+/// @param innerRelativeBound   analysis parameter
+/// @param outerRelativeBound   analysis parameter
+/// @param boundsEvaluationMode bounds evaluation mode, one of @ref PSQChirpBoundsEvaluationMode
 ///
 /// @return boundsAction, one of @ref ChirpBoundsAction
 /// @return scalingFactorDAScale, scaling factor to be inside the bounds for actions PSQ_CR_INCREASE/PSQ_CR_DECREASE
-static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_DetermineBoundsAction(string panelTitle, WAVE scaledDACWave, variable headstage, variable sweepNo, variable chirpStart, variable cycleEnd, variable lowerRelativeBound, variable upperRelativeBound)
+static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_DetermineBoundsAction(string panelTitle, WAVE scaledDACWave, variable headstage, variable sweepNo, variable chirpStart, variable cycleEnd, variable innerRelativeBound, variable outerRelativeBound, variable boundsEvaluationMode)
 
 	variable targetV, lowerValue, upperValue, upperMax, upperMin, lowerMax, lowerMin
 	variable lowerValueOverride, upperValueOverride, totalOnsetDelay, scalingFactor, baselineVoltage
@@ -3206,21 +3229,38 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 		ASSERT(IsFinite(baselineVoltage), "Invalid baseline voltage")
 	endif
 
-	sprintf msg, "baselineVoltage %g, lowerValue %g, upperValue %g", baselineVoltage, lowerValue, upperValue
+	sprintf msg, "boundsEvaluationMode %s, baselineVoltage %g, lowerValue %g, upperValue %g", PSQ_CR_BoundsEvaluationModeToString(boundsEvaluationMode),  baselineVoltage, lowerValue, upperValue
 	DEBUGPRINT(msg)
 
 	// See the bounds actions sketch at PSQ_Chirp for an explanation regarding the naming
 
-	upperMax = baselineVoltage + upperRelativeBound
-	upperMin = baselineVoltage + lowerRelativeBound
-	lowerMax = baselineVoltage - lowerRelativeBound
-	lowerMin = baselineVoltage - upperRelativeBound
+	upperMax = baselineVoltage + outerRelativeBound
+	upperMin = baselineVoltage + innerRelativeBound
+	lowerMax = baselineVoltage - innerRelativeBound
+	lowerMin = baselineVoltage - outerRelativeBound
 
 	STRUCT ChirpBoundsInfo upperInfo
 	STRUCT ChirpBoundsInfo lowerInfo
 
 	[upperInfo] = PSQ_CR_DetermineBoundsState(baselineVoltage, upperMin, upperMax, upperValue)
 	[lowerInfo] = PSQ_CR_DetermineBoundsState(baselineVoltage, lowerMin, lowerMax, lowerValue)
+
+	switch(boundsEvaluationMode)
+		case PSQ_CR_BEM_SYMMETRIC:
+			// do nothing
+			break
+		case PSQ_CR_BEM_HYPERPOLARIZED:
+			// only look at Lower
+			upperInfo.state = "__"
+			break
+		case PSQ_CR_BEM_DEPOLARIZED:
+			// only look at Upper
+			lowerInfo.state = "__"
+			break
+		default:
+			ASSERT(0, "Invalid case")
+	endswitch
+
 	boundsAction = PSQ_CR_DetermineBoundsActionFromState(upperInfo.state, lowerInfo.state)
 
 	sprintf msg, "upper: value %g, info: min %g, center %g, max %g, state %s", upperValue, upperInfo.minimumFac, upperInfo.centerFac, upperInfo.maximumFac, upperInfo.state
@@ -3242,12 +3282,33 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 		chirpVisDebug = NaN
 		chirpVisDebugX = 0
 
-		chirpVisDebug[0] = lowerMin
-		chirpVisDebug[1] = lowerMax
-		chirpVisDebug[2] = upperMin
-		chirpVisDebug[3] = upperMax
-		chirpVisDebug[4] = lowerValue
-		chirpVisDebug[5] = upperValue
+		switch(boundsEvaluationMode)
+			case PSQ_CR_BEM_SYMMETRIC:
+				chirpVisDebug[0] = lowerMin
+				chirpVisDebug[1] = lowerMax
+				chirpVisDebug[2] = upperMin
+				chirpVisDebug[3] = upperMax
+				chirpVisDebug[4] = lowerValue
+				chirpVisDebug[5] = upperValue
+
+				break
+			case PSQ_CR_BEM_HYPERPOLARIZED:
+				// only look at Lower
+				chirpVisDebug[0] = lowerMin
+				chirpVisDebug[1] = lowerMax
+				chirpVisDebug[4] = lowerValue
+
+				break
+			case PSQ_CR_BEM_DEPOLARIZED:
+				// only look at Upper
+				chirpVisDebug[2] = upperMin
+				chirpVisDebug[3] = upperMax
+				chirpVisDebug[5] = upperValue
+
+				break
+			default:
+				ASSERT(0, "Invalid case")
+		endswitch
 
 		graph = "ChirpVisDebugGraph_" + num2str(sweepNo)
 		KillWindow/Z $graph
@@ -3255,18 +3316,20 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 		ModifyGraph/W=$graph mode=3, marker(chirpVisDebug[4])=19, marker(chirpVisDebug[5])=19, nticks(bottom)=0, rgb(chirpVisDebug[5])=(0,0,65535), grid(left)=1,nticks(left)=10
 		sprintf str "State: Upper %s, Lower %s\r\\s(chirpVisDebug) borders\r\n\\s(chirpVisDebug[5]) upperValue\r\\s(chirpVisDebug[4]) lowerValue", upperInfo.state, lowerInfo.state
 		Legend/C/N=text2/J str
+		SetAxis/A/E=1/W=$graph left
 	endif
 #endif // DEBUGGING_ENABLED
 
 	switch(boundsAction)
-		case PSQ_CR_PASS:
 		case PSQ_CR_RERUN:
+			ASSERT(boundsEvaluationMode == PSQ_CR_BEM_SYMMETRIC, "Invalid bounds action")
+		case PSQ_CR_PASS:
 			scalingFactor = NaN
 			// do nothing
 			break
 		case PSQ_CR_INCREASE:
 		case PSQ_CR_DECREASE:
-				scalingFactor = PSQ_CR_DetermineScalingFactor(lowerInfo, upperInfo)
+				scalingFactor = PSQ_CR_DetermineScalingFactor(lowerInfo, upperInfo, boundsEvaluationMode)
 				if(!IsFinite(scalingFactor))
 					// unlikely edge case
 					boundsAction = PSQ_CR_Rerun
@@ -3366,6 +3429,32 @@ static Function/WAVE PSQ_CR_DetermineCycles(string panelTitle, WAVE rawDACWave, 
 	return cycles
 End
 
+static Function/S PSQ_CR_BoundsEvaluationModeToString(variable val)
+	switch(val)
+		case PSQ_CR_BEM_SYMMETRIC:
+			return "Symmetric"
+		case PSQ_CR_BEM_HYPERPOLARIZED:
+			return "Hyperpolarized"
+		case PSQ_CR_BEM_DEPOLARIZED:
+			return "Depolarized"
+		default:
+			ASSERT(0, "Invalid value: " + num2str(val))
+	endswitch
+End
+
+static Function PSQ_CR_ParseBoundsEvaluationModeString(string str)
+	strswitch(str)
+		case "Symmetric":
+			return PSQ_CR_BEM_SYMMETRIC
+		case "Hyperpolarized":
+			return PSQ_CR_BEM_HYPERPOLARIZED
+		case "Depolarized":
+			return PSQ_CR_BEM_DEPOLARIZED
+		default:
+			ASSERT(0, "Invalid value: " + str)
+	endswitch
+End
+
 Function/S PSQ_Chirp_GetHelp(string name)
 
 	strswitch(name)
@@ -3373,10 +3462,12 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
 		 case "BaselineRMSLongThreshold":
 			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
-		case "LowerRelativeBound":
-			return "Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV."
-		case "UpperRelativeBound":
-			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV."
+		 case "BoundsEvaluationMode":
+			 return "Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
+		case "InnerRelativeBound":
+			return "Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
+		case "OuterRelativeBound":
+			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV. Must be positive."
 		case "NumberOfChirpCycles":
 			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
 		case "NumberOfFailedSweeps":
@@ -3400,67 +3491,78 @@ Function/S PSQ_Chirp_GetHelp(string name)
 	endswitch
 End
 
-Function/S PSQ_Chirp_CheckParam(string name, string params)
+Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 	variable val
 	string str
 
 	strswitch(name)
+		case "BoundsEvaluationMode":
+			str = AFH_GetAnalysisParamTextual(name, s.params)
+			if(WhichListItem(str, PSQ_CR_BEM) == -1)
+				return "Invalid value " + str
+			endif
+			break
 		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0 && val <= 20))
 				return "Invalid value " + num2str(val)
 			endif
 			break
-		case "LowerRelativeBound":
-			if(AFH_GetAnalysisParamNumerical("LowerRelativeBound", params) >= AFH_GetAnalysisParamNumerical("UpperRelativeBound", params))
-				return "LowerRelativeBound must be smaller than UpperRelativeBound"
+		case "InnerRelativeBound":
+			if(AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params) >= AFH_GetAnalysisParamNumerical("OuterRelativeBound", s.params))
+				return "InnerRelativeBound must be smaller than OuterRelativeBound"
 			endif
-		case "UpperRelativeBound": // fallthrough-by-design
-			val = AFH_GetAnalysisParamNumerical(name, params)
+		case "OuterRelativeBound": // fallthrough-by-design
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || val < PSQ_CR_LIMIT_BAND_LOW || val > PSQ_CR_LIMIT_BAND_HIGH)
 				return "Out of bounds with value " + num2str(val)
 			endif
 			break
 		case "NumberOfChirpCycles":
-		case "NumberOfFailedSweeps": // fallthrough-by-design
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val) || !IsInteger(val) || val <= 0)
 				return "Must be a finite non-zero integer"
 			endif
 			break
+		case "NumberOfFailedSweeps":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
+				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
+			endif
+			break
 		case "FailedLevel":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
 			endif
 			break
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsValidSamplingMultiplier(val))
 				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SpikeCheck":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
 			endif
 			break
 		case "DAScaleOperator":
-			str = AFH_GetAnalysisParamTextual(name, params)
+			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, "+") && cmpstr(str, "*"))
 				return "Invalid string " + str
 			endif
 			break
 		case "DAScaleModifier":
-			val = AFH_GetAnalysisParamNumerical(name, params)
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Invalid value " + num2str(val)
 			endif
@@ -3473,11 +3575,12 @@ End
 
 /// @brief Return a list of required analysis functions for PSQ_Chirp()
 Function/S PSQ_Chirp_GetParams()
-	return "LowerRelativeBound:variable,UpperRelativeBound:variable," +                             \
+	return "InnerRelativeBound:variable,OuterRelativeBound:variable," +                            \
 		   "[NumberOfChirpCycles:variable],[SpikeCheck:variable],[FailedLevel:variable]," +         \
 		   "[DAScaleOperator:string],[DAScaleModifier:variable],[NumberOfFailedSweeps:variable]," + \
 		   "[SamplingMultiplier:variable],[SamplingFrequency:variable]," +                          \
-		   "[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]"
+		   "[BaselineRMSShortThreshold:variable],[BaselineRMSLongThreshold:variable]," +            \
+		   "BoundsEvaluationMode:string"
 End
 
 /// @brief Analysis function for determining the impedance of the cell using a sine chirp stim set
@@ -3498,11 +3601,31 @@ End
 ///	.. image:: /dot/patch-seq-chirp.svg
 /// \endrst
 ///
-/// The bounds action is derived from the state according to the following sketch:
+/// The bounds action for Symmetric (Upper and Lower) is derived from the state according to the following sketch:
 ///
 /// \rst
 ///	.. image:: ../patch-seq-chirp-bounds-state-action.png
 /// \endrst
+///
+/// Depolarized (Upper only):
+///
+/// ======= ==========
+///  State   Action
+/// ======= ==========
+///  BA      Pass
+///  AA      Decrease
+///  BB      Increase
+/// ======= ==========
+///
+/// Hyperpolarized (Lower only):
+///
+/// ======= ==========
+///  State   Action
+/// ======= ==========
+///  BA      Pass
+///  AA      Increase
+///  BB      Decrease
+/// ======= ==========
 ///
 /// @verbatim
 ///
@@ -3524,19 +3647,20 @@ Function PSQ_Chirp(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	variable lowerRelativeBound, upperRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
+	variable InnerRelativeBound, OuterRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps, chunk, multiplier
 	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet, samplingFrequencyPassed
 	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
 	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, chirpStart, chirpDuration
 	variable numberOfChirpCycles, cycleEnd, maxOccurences, level, numberOfSpikesFound, abortDueToSpikes, spikeCheck
-	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed
+	variable spikeCheckPassed, daScaleModifier, chirpEnd, numSweepsFailedAllowed, boundsEvaluationMode
 	string setName, key, msg, stimset, str, daScaleOperator
 
-	lowerRelativeBound = AFH_GetAnalysisParamNumerical("LowerRelativeBound", s.params)
+	innerRelativeBound = AFH_GetAnalysisParamNumerical("InnerRelativeBound", s.params)
 	numberOfChirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", s.params, defValue = 1)
-	upperRelativeBound = AFH_GetAnalysisParamNumerical("UpperRelativeBound", s.params)
+	outerRelativeBound = AFH_GetAnalysisParamNumerical("OuterRelativeBound", s.params)
 	numSweepsFailedAllowed = AFH_GetAnalysisParamNumerical("NumberOfFailedSweeps", s.params, defValue = 3)
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params, defValue = PSQ_DEFAULT_SAMPLING_MULTIPLIER)
+	boundsEvaluationMode = PSQ_CR_ParseBoundsEvaluationModeString(AFH_GetAnalysisParamTextual("BoundsEvaluationMode", s.params))
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -3648,7 +3772,7 @@ Function PSQ_Chirp(panelTitle, s)
 				key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_RESISTANCE)
 				ED_AddEntryToLabnotebook(panelTitle, key, result, overrideSweepNo = s.sweepNo, unit = "Ohm")
 
-				targetVoltage = ((upperRelativeBound + lowerRelativeBound) / 2) * 1e-3
+				targetVoltage = ((outerRelativeBound + innerRelativeBound) / 2) * 1e-3
 				initialDAScale = targetVoltage / resistance
 
 				sprintf msg, "Initial DAScale: %g [Amperes]\r", initialDAScale
@@ -3857,7 +3981,7 @@ Function PSQ_Chirp(panelTitle, s)
 		// and we have acquired enough cycles
 		// and baselineQC is not failing
 
-		[boundsAction, scalingFactorDaScale] = PSQ_CR_DetermineBoundsAction(panelTitle, s.scaledDACWave, s.headstage, s.sweepNo, chirpStart, cycleEnd, lowerRelativeBound, upperRelativeBound)
+		[boundsAction, scalingFactorDaScale] = PSQ_CR_DetermineBoundsAction(panelTitle, s.scaledDACWave, s.headstage, s.sweepNo, chirpStart, cycleEnd, innerRelativeBound, outerRelativeBound, boundsEvaluationMode)
 
 		insideBounds = (boundsAction == PSQ_CR_PASS)
 		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN

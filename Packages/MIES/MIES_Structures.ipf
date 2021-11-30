@@ -557,3 +557,8 @@ Structure PSQ_PulseSettings
 	variable pulseDuration      // ms
 	variable postPulseChunkLength // ms
 EndStructure
+
+Structure CheckParametersStruct
+	string params // supplied analysis functions parameters
+	string setName // name of the stimulus set
+EndStructure

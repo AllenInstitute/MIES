@@ -3007,7 +3007,11 @@ static Function DAP_CheckAnalysisFunctionAndParameter(panelTitle, setName)
 			endswitch
 		endfor
 
-		errorMessage = AFH_CheckAnalysisParameter(func, suppParams)
+		STRUCT CheckParametersStruct s
+		s.params = suppParams
+		s.setName = setName
+
+		errorMessage = AFH_CheckAnalysisParameter(func, s)
 		if(!IsEmpty(errorMessage))
 			printf "(%s) The analysis parameter check for function %s in stim set %s did not pass.\r", panelTitle, func, setName
 			print errorMessage
@@ -5745,7 +5749,7 @@ End
 
 /// @brief Delete the stimulus set in the given DAEphys
 ///
-/// Internal use only, outside callers should use WB_RemoveStimulusSet()
+/// Internal use only, outside callers should use ST_RemoveStimSet()
 Function DAP_DeleteStimulusSet(string setName, [string device])
 	variable channelType
 

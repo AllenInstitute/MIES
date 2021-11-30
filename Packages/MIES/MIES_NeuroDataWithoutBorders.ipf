@@ -1676,7 +1676,7 @@ End
 /// @param groupID           Open Stimset Group of HDF5 File. See OpenStimset()
 /// @param stimsets          ";" separated list of all stimsets of the current sweep.
 /// @param processedStimsets [optional] the list indicates which stimsets were already loaded.
-///                          on recursion this parameter avoids duplicate circle references.
+///                          on recursion this parameter avoids duplicate circular references.
 /// @param overwrite         indicate whether the stored stimsets should be deleted if they exist
 ///
 /// @return 1 on error and 0 on success

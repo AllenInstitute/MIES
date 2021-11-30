@@ -1947,7 +1947,7 @@ Function WB_FormulaSwitchToStimset(formula, fp)
 		stimsetFound = 0
 
 		// search and replace until shorthand isn't found in formula anymore.
-		ASSERT(!SearchWordInString(stimsetSpec, shorthand), "circle reference: shorthand is part of stimset. prevented infinite loop")
+		ASSERT(!SearchWordInString(stimsetSpec, shorthand), "circular reference: shorthand is part of stimset. prevented infinite loop")
 		do
 			if(!SearchWordInString(formula, shorthand, prefix = prefix, suffix = suffix))
 				break
@@ -2239,7 +2239,7 @@ Function/S WB_StimsetRecursion([parent, knownStimsets])
 	stimsetQueue = knownStimsets
 	for(i = 0; i < numAfter - numBefore + numMoved; i += 1)
 		stimset  = StringFromList(i, stimsetQueue)
-		// avoid first order circle references.
+		// avoid first order circular references.
 		if(cmpstr(stimset, parent))
 			knownStimsets = WB_StimsetRecursion(parent = stimset, knownStimsets = knownStimsets)
 		endif
@@ -2457,18 +2457,9 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 	genericFunc = WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
 	params = WPT[%$("Analysis function params (encoded)")][%Set][INDEP_EPOCH_TYPE]
 
-	errorMessage = AFH_CheckAnalysisParameter(genericFunc, params)
-
-	if(!IsEmpty(errorMessage))
-		printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"
-		print errorMessage
-		ControlWindowToFront()
-		return ""
-	endif
-
 	DFREF dfr = GetSetParamFolder(stimulusType)
 
-	// avoid circle references of any order
+	// avoid circular references of any order
 	childStimsets = WB_StimsetRecursion()
 	if(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
 		do
@@ -2482,12 +2473,28 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 	Duplicate/O WP, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
 	Duplicate/O WPT, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
 
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	ASSERT(WaveExists(stimset), "Could not recreate stimset")
+
+	// _CheckParam users rely on the stimset being present already
+	// in case of errors the stimulus set is deleted again
+	STRUCT CheckParametersStruct s
+	s.params  = params
+	s.setName = setName
+
+	errorMessage = AFH_CheckAnalysisParameter(genericFunc, s)
+
+	if(!IsEmpty(errorMessage))
+		printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"
+		print errorMessage
+		ControlWindowToFront()
+		ST_RemoveStimSet(setName)
+		return ""
+	endif
+
 	// propagate the existence of the new set
 	DAP_UpdateDaEphysStimulusSetPopups()
 	WB_UpdateEpochCombineList(stimulusType)
-
-	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
-	ASSERT(WaveExists(stimset), "Could not recreate stimset")
 
 	return setName
 End

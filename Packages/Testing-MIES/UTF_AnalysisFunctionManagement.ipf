@@ -1720,7 +1720,6 @@ static Function SetParams8_IGNORE(device)
 
 	string stimSet = "AnaFuncParams5_DA_0"
 	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
-	AFH_AddAnalysisParameter(stimSet, "MyNum", var = 1)
 End
 
 // test parameter handling with analysis parameter check and help function
@@ -1739,6 +1738,49 @@ static Function AFT14g([str])
 End
 
 static Function AFT14g_REENTRY([str])
+	string str
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_CONFIG_EVENT], 1)
+	CHECK_GE_VAR(anaFuncTracker[MID_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+End
+
+static Function SetParams9_IGNORE(device)
+	string device
+
+	string stimSet = "AnaFuncParams6_DA_0"
+	AFH_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
+End
+
+// test parameter handling with new analysis parameter check signature
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function AFT14h([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	FUNCREF CALLABLE_PROTO f = SetParams9_IGNORE
+
+	AcquireData(s, "AnaFuncParams6_DA_0", str, postInitializeFunc = f)
+End
+
+static Function AFT14h_REENTRY([str])
 	string str
 
 	variable sweepNo

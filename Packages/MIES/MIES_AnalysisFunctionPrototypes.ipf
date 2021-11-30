@@ -71,7 +71,12 @@ Function/S AF_PROTO_PARAM_HELP_GETTER_V3(name)
 
 End
 
+/// @brief Prototype function for the user supplied parameter check function (legacy signature)
+///
+Function/S AF_PROTO_PARAM_CHECK_V1(string name, string params)
+End
+
 /// @brief Prototype function for the user supplied parameter check function
 ///
-Function/S AF_PROTO_PARAM_CHECK(string name, string params)
+Function/S AF_PROTO_PARAM_CHECK_V2(string name, struct CheckParametersStruct &s)
 End
