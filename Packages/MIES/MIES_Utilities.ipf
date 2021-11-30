@@ -58,9 +58,10 @@ End
 
 /// @brief Low overhead function to check assertions
 ///
-/// @param var      if zero an error message is printed into the history and procedure execution is aborted,
-///                 nothing is done otherwise.  If the debugger is enabled, it also steps into it.
-/// @param errorMsg error message to output in failure case
+/// @param var            if zero an error message is printed into the history and procedure execution is aborted,
+///                       nothing is done otherwise.  If the debugger is enabled, it also steps into it.
+/// @param errorMsg       error message to output in failure case
+/// @param extendedOutput [optional, defaults to true] Output additional information on failure
 ///
 /// Example usage:
 /// \rst
@@ -73,26 +74,41 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function ASSERT(var, errorMsg)
-	variable var
-	string errorMsg
-
+Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 	string stracktrace, miesVersionStr, lockedDevicesStr, device
 	string stacktrace = ""
-	variable i, numLockedDevices
+	variable i, numLockedDevices, doCallDebugger
 
 	try
 		AbortOnValue var==0, 1
 	catch
+		if(ParamIsDefault(extendedOutput))
+			extendedOutput = 1
+		else
+			extendedOutput = !!extendedOutput
+		endif
+
+		doCallDebugger = 1
+
+#ifdef AUTOMATED_TESTING
+		doCallDebugger = 0
+		extendedOutput = 0
+#ifdef AUTOMATED_TESTING_DEBUGGING
+		doCallDebugger = 1
+		extendedOutput = 1
+#endif // AUTOMATED_TESTING_DEBUGGING
+#endif // AUTOMATED_TESTING
+
 		// Recursion detection, if ASSERT appears multiple times in StackTrace
 		if (ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) > 1)
 
 			// Happens e.g. when ASSERT is encounterd in cleanup functions
 			print "Double Assertion Fail encountered !"
-#ifndef AUTOMATED_TESTING
-			ControlWindowToFront()
-			Debugger
-#endif // AUTOMATED_TESTING
+
+			if(doCallDebugger)
+				ControlWindowToFront()
+				Debugger
+			endif
 
 			Abort
 		endif
@@ -100,75 +116,70 @@ Function ASSERT(var, errorMsg)
 		print "!!! Assertion FAILED !!!"
 		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
 
-#ifndef AUTOMATED_TESTING
-		// hard coding the path here so that we don't depend on GetMiesVersion()
-		// in MIES_GlobalStringAndVariableAccess.ipf
-		SVAR/Z miesVersion = root:MIES:version
+		if(extendedOutput)
+			// hard coding the path here so that we don't depend on GetMiesVersion()
+			// in MIES_GlobalStringAndVariableAccess.ipf
+			SVAR/Z miesVersion = root:MIES:version
 
-		if(SVAR_Exists(miesVersion))
-			miesVersionStr = miesVersion
-		else
-			miesVersionStr = ""
+			if(SVAR_Exists(miesVersion))
+				miesVersionStr = miesVersion
+			else
+				miesVersionStr = ""
+			endif
+
+			SVAR/Z lockedDevices = root:MIES:HardwareDevices:lockedDevices
+
+			Make/FREE/T sweeps = { NONE }
+			Make/FREE/T tpStates = { NONE }
+			Make/FREE/T daqStates = { NONE }
+
+			if(!SVAR_Exists(lockedDevices) || strlen(lockedDevices) == 0)
+				lockedDevicesStr = NONE
+			else
+				lockedDevicesStr = lockedDevices
+
+				numLockedDevices = ItemsInList(lockedDevicesStr)
+
+				Redimension/N=(numLockedDevices) sweeps, daqStates, tpStates
+
+				for(i = 0; i < numLockedDevices; i += 1)
+					device = StringFromList(i, lockedDevicesStr)
+					NVAR runMode = $GetDataAcqRunMode(device)
+					NVAR testpulseMode = $GetTestpulseRunMode(device)
+
+					sweeps[i]    = num2str(AFH_GetLastSweepAcquired(device))
+					tpStates[i]  = TestPulseRunModeToString(testpulseMode)
+					daqStates[i] = DAQRunModeToString(runMode)
+				endfor
+			endif
+
+			print "Please provide the following information if you contact the MIES developers:"
+			print "################################"
+			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+			stacktrace = GetStackTrace()
+			print stacktrace
+
+			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
+			printf "Locked device: [%s]\r", RemoveEnding(lockedDevicesStr, ";")
+			printf "Current sweep: [%s]\r", RemoveEnding(TextWaveToList(sweeps, ";"), ";")
+			printf "DAQ: [%s]\r", RemoveEnding(TextWaveToList(daqStates, ";"), ";")
+			printf "Testpulse: [%s]\r", RemoveEnding(TextWaveToList(tpStates, ";"), ";")
+			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
+			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
+			print "MIES version:"
+			print miesVersionStr
+			print "################################"
+
+			LOG_AddEntry(PACKAGE_MIES, "assert", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
+
+			ControlWindowToFront()
 		endif
 
-		SVAR/Z lockedDevices = root:MIES:HardwareDevices:lockedDevices
-
-		Make/FREE/T sweeps = { NONE }
-		Make/FREE/T tpStates = { NONE }
-		Make/FREE/T daqStates = { NONE }
-
-		if(!SVAR_Exists(lockedDevices) || strlen(lockedDevices) == 0)
-			lockedDevicesStr = NONE
-		else
-			lockedDevicesStr = lockedDevices
-
-			numLockedDevices = ItemsInList(lockedDevicesStr)
-
-			Redimension/N=(numLockedDevices) sweeps, daqStates, tpStates
-
-			for(i = 0; i < numLockedDevices; i += 1)
-				device = StringFromList(i, lockedDevicesStr)
-				NVAR runMode = $GetDataAcqRunMode(device)
-				NVAR testpulseMode = $GetTestpulseRunMode(device)
-
-				sweeps[i]    = num2str(AFH_GetLastSweepAcquired(device))
-				tpStates[i]  = TestPulseRunModeToString(testpulseMode)
-				daqStates[i] = DAQRunModeToString(runMode)
-			endfor
+		if(doCallDebugger)
+			Debugger
 		endif
-
-		print "Please provide the following information if you contact the MIES developers:"
-		print "################################"
-		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-#endif // AUTOMATED_TESTING
-
-#if !defined(AUTOMATED_TESTING) || defined(AUTOMATED_TESTING_DEBUGGING)
-		stacktrace = GetStackTrace()
-		print stacktrace
-#endif
-
-#ifndef AUTOMATED_TESTING
-		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
-		printf "Locked device: [%s]\r", RemoveEnding(lockedDevicesStr, ";")
-		printf "Current sweep: [%s]\r", RemoveEnding(TextWaveToList(sweeps, ";"), ";")
-		printf "DAQ: [%s]\r", RemoveEnding(TextWaveToList(daqStates, ";"), ";")
-		printf "Testpulse: [%s]\r", RemoveEnding(TextWaveToList(tpStates, ";"), ";")
-		printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
-		printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
-		print "MIES version:"
-		print miesVersionStr
-		print "################################"
-
-		LOG_AddEntry(PACKAGE_MIES, "assert", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
-
-		ControlWindowToFront()
-		Debugger
-#endif // AUTOMATED_TESTING
-
-#ifdef AUTOMATED_TESTING_DEBUGGING
-		Debugger
-#endif
 
 		Abort
 	endtry
@@ -176,9 +187,10 @@ End
 
 /// @brief Low overhead function to check assertions (threadsafe variant)
 ///
-/// @param var      if zero an error message is printed into the history and procedure
-///                 execution is aborted, nothing is done otherwise.
-/// @param errorMsg error message to output in failure case
+/// @param var            if zero an error message is printed into the history and procedure
+///                       execution is aborted, nothing is done otherwise.
+/// @param errorMsg       error message to output in failure case
+/// @param extendedOutput [optional, defaults to true] Output additional information on failure
 ///
 /// Example usage:
 /// \rst
@@ -192,15 +204,25 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-threadsafe Function ASSERT_TS(var, errorMsg)
-	variable var
-	string errorMsg
-
+threadsafe Function ASSERT_TS(variable var, string errorMsg, [variable extendedOutput])
 	string stacktrace
 
 	try
 		AbortOnValue var==0, 1
 	catch
+		if(ParamIsDefault(extendedOutput))
+			extendedOutput = 1
+		else
+			extendedOutput = !!extendedOutput
+		endif
+
+#ifdef AUTOMATED_TESTING
+		extendedOutput = 0
+#ifdef AUTOMATED_TESTING_DEBUGGING
+		extendedOutput = 1
+#endif // AUTOMATED_TESTING_DEBUGGING
+#endif // AUTOMATED_TESTING
+
 #if IgorVersion() >= 9.0
 		// Recursion detection, if ASSERT_TS appears multiple times in StackTrace
 		if (ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) > 1)
@@ -214,37 +236,27 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 		print "!!! Threadsafe assertion FAILED !!!"
 		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
 
-#ifndef AUTOMATED_TESTING
-
-		print "Please provide the following information if you contact the MIES developers:"
-		print "################################"
-		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-#endif // AUTOMATED_TESTING
-
-#if !defined(AUTOMATED_TESTING) || defined(AUTOMATED_TESTING_DEBUGGING)
-
+		if(extendedOutput)
+			print "Please provide the following information if you contact the MIES developers:"
+			print "################################"
+			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 #if IgorVersion() >= 9.0
-		stacktrace = GetStackTrace()
+			stacktrace = GetStackTrace()
 #else
-		stacktrace = "stacktrace not available"
+			stacktrace = "stacktrace not available"
 #endif
-		print stacktrace
+			print stacktrace
 
-#endif // !AUTOMATED_TESTING || AUTOMATED_TESTING_DEBUGGING
+			print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+			printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
+			printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
+			printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
+			print "################################"
 
-#ifndef AUTOMATED_TESTING
+			printf "Assertion FAILED with message %s\r", errorMsg
 
-		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
-		printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
-		printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
-		print "################################"
-
-		printf "Assertion FAILED with message %s\r", errorMsg
-
-		LOG_AddEntry_TS(PACKAGE_MIES, "assert", "ASSERT_TS", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
-
-#endif // AUTOMATED_TESTING
+			LOG_AddEntry_TS(PACKAGE_MIES, "assert", "ASSERT_TS", keys = {"message", "stacktrace"}, values = {errorMsg, stacktrace})
+		endif
 
 		AbortOnValue 1, 1
 	endtry
