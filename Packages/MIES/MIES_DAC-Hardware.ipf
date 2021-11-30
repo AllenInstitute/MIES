@@ -1018,8 +1018,10 @@ Function HW_ITC_CloseDevice(deviceID, [flags])
 	endif
 
 	do
-		ITCCloseDevice2/DEV=(deviceID)/Z
+		ITCCloseDevice2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @see HW_SelectDevice
