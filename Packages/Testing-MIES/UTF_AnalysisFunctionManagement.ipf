@@ -178,6 +178,47 @@ Function RewriteAnalysisFunctions_IGNORE()
 	SaveStimsets()
 End
 
+/// Return the analysis function calls
+Function/WAVE GetAnalysisFunctionCallCountsFromLBN(string device, [variable sweepTotals])
+	variable i, j, numSweeps
+
+	if(ParamIsDefault(sweepTotals))
+		sweepTotals = 1
+	else
+		sweepTotals = !!sweepTotals
+	endif
+
+	WAVE/T textualValues = GetLBTextualValues(device)
+
+	WAVE/Z sweeps = GetSweepsWithSetting(textualValues, "Analysis Function call count")
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+
+	numSweeps = DimSize(sweeps, ROWS)
+	Make/FREE/D/N=(NUM_HEADSTAGES, TOTAL_NUM_EVENTS, numSweeps) results = NaN
+
+	for(i = 0; i < numSweeps; i += 1)
+		WAVE/T/Z entries = GetLastSetting(textualValues, sweeps[i], "Analysis Function call count", DATA_ACQUISITION_MODE)
+		CHECK_WAVE(entries, TEXT_WAVE)
+		WAVE/T/Z funcs = GetLastSetting(textualValues, sweeps[i], "Generic function", DATA_ACQUISITION_MODE)
+		CHECK_WAVE(funcs, TEXT_WAVE)
+
+		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
+			if(j == GENERIC_EVENT)
+				continue
+			endif
+
+			results[][j][i] = NumberByKey(funcs[p] + ":" + StringFromList(j, EVENT_NAME_LIST), entries[p], "=", ";")
+		endfor
+	endfor
+
+	if(sweepTotals)
+		MatrixOp/FREE summedUp = sumBeams(results)
+		return summedUp
+	endif
+
+	return results
+End
+
 Function/WAVE TrackAnalysisFunctionCalls([numHeadstages])
 	variable numHeadstages
 
@@ -750,15 +791,15 @@ static Function AFT6a_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 19)
 
-	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
-	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_CONFIG_EVENT], 20)
-	CHECK_GE_VAR(anaFuncTracker[MID_SWEEP_EVENT], 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 20)
-	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+	WAVE anaFuncTracker = GetAnalysisFunctionCallCountsFromLBN(str)
+	CHECK_EQUAL_VAR(anaFuncTracker[0][PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[0][PRE_SET_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[0][PRE_SWEEP_CONFIG_EVENT], 20)
+	CHECK_GE_VAR(anaFuncTracker[0][MID_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[0][POST_SWEEP_EVENT], 20)
+	CHECK_EQUAL_VAR(anaFuncTracker[0][POST_SET_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[0][POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[0][GENERIC_EVENT], NaN)
 
 	WAVE/T textualValues = GetLBTextualValues(str)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
