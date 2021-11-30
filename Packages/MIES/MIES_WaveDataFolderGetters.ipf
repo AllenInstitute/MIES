@@ -6122,6 +6122,34 @@ Function/WAVE GetAnalysisFunctionStorage(device)
 	return wv
 End
 
+/// @brief Return the call count wave for the analysis functions
+///
+/// Rows:
+/// - Head stage number
+///
+/// Columns:
+/// - 0-#TOTAL_NUM_EVENTS - 1: Counts how often the analysis function was called during a complete sweep
+Function/WAVE GetAnalysisFunctionCallCount(string device)
+	variable versionOfWave = 1
+	DFREF dfr = GetDevicePath(device)
+	WAVE/D/Z/SDFR=dfr wv = analysisFunctionCallCount
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	elseif(WaveExists(wv))
+		 // handle upgrade
+		Redimension/N=(NUM_HEADSTAGES, TOTAL_NUM_EVENTS) wv
+	else
+		Make/D/N=(NUM_HEADSTAGES, TOTAL_NUM_EVENTS) dfr:analysisFunctionCallCount/WAVE=wv
+	endif
+
+	wv = NaN
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
 /// @brief Used for storing a true/false state that the pre and/or post set event
 /// should be fired *after* the sweep which is currently prepared in DC_PlaceDataInDAQDataWave().
 ///

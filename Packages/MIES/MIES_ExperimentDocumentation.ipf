@@ -492,6 +492,67 @@ Function ED_MarkSweepStart(device)
 	sweepSettingsTxtWave[0][%$HIGH_PREC_SWEEP_START_KEY][INDEP_HEADSTAGE] = GetISO8601TimeStamp(numFracSecondsDigits = 3)
 End
 
+/// @brief Add the analysis function call count labnotebook entry
+///
+/// Name: Analysis function call count
+/// Format: `$analysisFunctionName:$eventName=$callCount;...`
+Function ED_WriteAnalysisFunctionCallCount(string device)
+	variable i, j, callCount, sweepNo
+	string str, entry, func
+
+	WAVE analysisFunctionCallCount = GetAnalysisFunctionCallCount(device)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	ASSERT(IsValidSweepNumber(sweepNo), "Unexpected sweep number")
+
+	WAVE/T textualValues = GetLBTextualValues(device)
+
+	WAVE/T/Z funcs = GetLastSetting(textualValues, sweepNo, "Generic function", DATA_ACQUISITION_MODE)
+
+	if(!WaveExists(funcs))
+		// nothing to do
+		return NaN
+	endif
+
+	if(!HasOneValidEntry(analysisFunctionCallCount))
+		// nothing to do
+		return NaN
+	endif
+
+	Make/T/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
+	Make/T/FREE/N=(1, 1) keys = "Analysis function call count"
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		func = funcs[i]
+
+		if(IsEmpty(func))
+			continue
+		endif
+
+		str = ""
+		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
+			if(j == GENERIC_EVENT)
+				// generic events are never send to analysis functions
+				continue
+			endif
+
+			callCount = analysisFunctionCallCount[i][j]
+
+			if(IsNaN(callCount))
+				callCount = 0
+			endif
+
+			ASSERT(IsInteger(callCount), "Expected integer value")
+			sprintf entry, "%s:%s=%d;", func, StringFromList(j, EVENT_NAME_LIST), callCount
+			str += entry
+		endfor
+
+		values[i] = str
+	endfor
+
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+End
+
 /// @brief Add sweep specific information to the labnotebook
 Function ED_createWaveNoteTags(device, sweepCount)
 	string device

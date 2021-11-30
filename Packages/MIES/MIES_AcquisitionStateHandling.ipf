@@ -74,6 +74,14 @@ Function AS_HandlePossibleTransition(string device, variable newAcqState, [varia
 		DC_ClearWaves(device)
 	endif
 
+	if(newAcqState == AS_PRE_DAQ)
+		AFM_ClearCallCount(device)
+	elseif(oldAcqState == AS_ITI && newAcqState == AS_PRE_SWEEP_CONFIG \
+		   || oldAcqState == AS_POST_DAQ && newAcqState == AS_INACTIVE)
+		ED_WriteAnalysisFunctionCallCount(device)
+		AFM_ClearCallCount(device)
+	endif
+
 #ifdef AUTOMATED_TESTING
 	AS_RecordStateTransition(oldAcqState, newAcqState)
 #endif

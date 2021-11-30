@@ -128,6 +128,7 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 				s.sweepsInSet        = sweepsInSet
 				s.params             = analysisFunctions[i][ANALYSIS_FUNCTION_PARAMS]
 
+				AFM_IncreaseCallCount(device, i, eventType)
 				ret = f3(device, s); AbortOnRTE
 			else
 				ASSERT(0, "impossible case")
@@ -212,4 +213,19 @@ Function AFM_UpdateAnalysisFunctionWave(device)
 
 		analysisFunctions[i][ANALYSIS_FUNCTION_PARAMS] = ExtractAnalysisFunctionParams(stimSet)
 	endfor
+End
+
+Function AFM_ClearCallCount(string device)
+	WAVE callCount = GetAnalysisFunctionCallCount(device)
+	callCount[][] = NaN
+End
+
+static Function AFM_IncreaseCallCount(string device, variable headstage, variable event)
+	WAVE callCount = GetAnalysisFunctionCallCount(device)
+
+	if(IsNaN(callCount[headstage][event]))
+		callCount[headstage][event] = 1
+	else
+		callCount[headstage][event] +=1
+	endif
 End
