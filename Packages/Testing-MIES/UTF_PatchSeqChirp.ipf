@@ -8,7 +8,7 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	string device
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
-	string stimset, unlockedPanelTitle
+	string stimset, unlockedDevice
 
 	KillWaves/Z root:overrideResults
 	Make/O/N=(0) root:overrideResults/Wave=overrideResults
@@ -18,10 +18,10 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 		postInitializeFunc(device)
 	endif
 
-	unlockedPanelTitle = DAP_CreateDAEphysPanel()
+	unlockedDevice = DAP_CreateDAEphysPanel()
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=device)
-	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
+	PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 
 	REQUIRE(WindowExists(device))
 

@@ -11,10 +11,10 @@
 
 /// @brief Save the acquired sweep permanently
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param forcedStop [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false)
-Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
-	string panelTitle
+Function SWS_SaveAcquiredData(device, [forcedStop])
+	string device
 	variable forcedStop
 
 	variable sweepNo
@@ -22,15 +22,15 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 
 	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 
-	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
+	sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep")
 
-	WAVE DAQDataWave = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
-	WAVE hardwareConfigWave = GetDAQConfigWave(panelTitle)
-	WAVE scaledDataWave = GetScaledDataWave(panelTitle)
+	WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+	WAVE hardwareConfigWave = GetDAQConfigWave(device)
+	WAVE scaledDataWave = GetScaledDataWave(device)
 
 	ASSERT(IsValidSweepAndConfig(DAQDataWave, hardwareConfigWave), "Data and config wave are not compatible")
 
-	DFREF dfr = GetDeviceDataPath(panelTitle)
+	DFREF dfr = GetDeviceDataPath(device)
 
 	configName = GetConfigWaveName(sweepNo)
 	WAVE/SDFR=dfr/Z configWave = $configName
@@ -43,41 +43,41 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 	Duplicate hardwareConfigWave, dfr:$configName
 	MoveWave scaledDataWave, dfr:$sweepName
 
-	WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
+	WAVE sweepWave = GetSweepWave(device, sweepNo)
 	WAVE configWave = GetConfigWave(sweepWave)
 
-	SetSetVariableLimits(panelTitle, "SetVar_Sweep", 0, sweepNo + 1, 1)
+	SetSetVariableLimits(device, "SetVar_Sweep", 0, sweepNo + 1, 1)
 	// SetVar_Sweep currently disabled so we have to write manually in the GUIStateWave
-	SetSetVariable(panelTitle, "SetVar_Sweep", sweepNo + 1)
-	DAG_Update(panelTitle, "SetVar_Sweep", val = sweepNo + 1)
+	SetSetVariable(device, "SetVar_Sweep", sweepNo + 1)
+	DAG_Update(device, "SetVar_Sweep", val = sweepNo + 1)
 
-	EP_WriteEpochInfoIntoSweepSettings(panelTitle, sweepWave, configWave)
+	EP_WriteEpochInfoIntoSweepSettings(device, sweepWave, configWave)
 
 	// Add labnotebook entries for the acquired sweep
-	ED_createWaveNoteTags(panelTitle, sweepNo)
+	ED_createWaveNoteTags(device, sweepNo)
 
-	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_NwbExport"))
-		NWB_AppendSweepDuringDAQ(panelTitle, sweepWave, configWave, sweepNo, str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_NwbVersion")))
+	if(DAG_GetNumericalValue(device, "Check_Settings_NwbExport"))
+		NWB_AppendSweepDuringDAQ(device, sweepWave, configWave, sweepNo, str2num(DAG_GetTextualValue(device, "Popup_Settings_NwbVersion")))
 	endif
 
-	SWS_AfterSweepDataChangeHook(panelTitle)
+	SWS_AfterSweepDataChangeHook(device)
 
-	AS_HandlePossibleTransition(panelTitle, AS_POST_SWEEP, call = !forcedStop)
+	AS_HandlePossibleTransition(device, AS_POST_SWEEP, call = !forcedStop)
 
 	if(!forcedStop)
-		AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
+		AFM_CallAnalysisFunctions(device, POST_SET_EVENT)
 	endif
 End
 
 /// @brief General hook function which gets always executed after sweep data was added or removed
 ///
-/// @param panelTitle device name
-static Function SWS_AfterSweepDataChangeHook(panelTitle)
-	string panelTitle
+/// @param device device name
+static Function SWS_AfterSweepDataChangeHook(device)
+	string device
 
 	string databrowser, scPanel
 
-	databrowser = DB_FindDataBrowser(panelTitle)
+	databrowser = DB_FindDataBrowser(device)
 
 	if(IsEmpty(databrowser))
 		return NaN
@@ -124,12 +124,12 @@ End
 ///
 /// \endrst
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param timing     One of @ref GainTimeParameter
 ///
 /// @see GetDAQDataWave()
-Function/WAVE SWS_GetChannelGains(panelTitle, [timing])
-	string panelTitle
+Function/WAVE SWS_GetChannelGains(device, [timing])
+	string device
 	variable timing
 
 	variable numDACs, numADCs, numTTLs
@@ -137,10 +137,10 @@ Function/WAVE SWS_GetChannelGains(panelTitle, [timing])
 
 	ASSERT(!ParamIsDefault(timing) && (timing == GAIN_BEFORE_DAQ || timing == GAIN_AFTER_DAQ), "time argument is missing or wrong")
 
-	WAVE DAQConfigWave = GetDAQConfigWave(panelTitle)
+	WAVE DAQConfigWave = GetDAQConfigWave(device)
 	numCols = DimSize(DAQConfigWave, ROWS)
 
-	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
+	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(device)
 	WAVE ADCs = GetADCListFromConfig(DAQConfigWave)
 	WAVE DACs = GetDACListFromConfig(DAQConfigWave)
 	WAVE TTLs = GetTTLListFromConfig(DAQConfigWave)
@@ -151,7 +151,7 @@ Function/WAVE SWS_GetChannelGains(panelTitle, [timing])
 
 	Make/D/FREE/N=(numCols) gain
 
-	hardwareType = GetHardwareType(panelTitle)
+	hardwareType = GetHardwareType(device)
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
 			//  in mV^-1, w'(V) = w * g
@@ -196,23 +196,23 @@ End
 
 /// @brief Delete all sweep and config waves having a sweep number
 /// of `sweepNo` and higher
-Function SWS_DeleteDataWaves(panelTitle)
-	string panelTitle
+Function SWS_DeleteDataWaves(device)
+	string device
 
 	string list, path, name, absolutePath
 	variable i, numItems, waveSweepNo, sweepNo, refTime
 
 	refTime = DEBUG_TIMER_START()
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE/Z sweepRollbackUsed = GetSweepsWithSetting(numericalValues, SWEEP_ROLLBACK_KEY)
 
 	if(!WaveExists(sweepRollbackUsed))
 		return NaN
 	endif
 
-	sweepNo   = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
-	DFREF dfr = GetDeviceDataPath(panelTitle)
+	sweepNo   = DAG_GetNumericalValue(device, "SetVar_Sweep")
+	DFREF dfr = GetDeviceDataPath(device)
 	list      = GetListOfObjects(dfr, DATA_SWEEP_REGEXP + "|" + DATA_SWEEP_REGEXP_BAK + "|" + DATA_CONFIG_REGEXP + "|" + DATA_CONFIG_REGEXP_BAK)
 	list     += GetListOfObjects(dfr, ".*", typeFlag=COUNTOBJECTS_DATAFOLDER)
 
@@ -233,9 +233,9 @@ Function SWS_DeleteDataWaves(panelTitle)
 		return NaN
 	endif
 
-	path = GetDeviceDataPathAsString(panelTitle)
+	path = GetDeviceDataPathAsString(device)
 
-	DFREF deletedFolder = UniqueDataFolder($GetDevicePathAsString(panelTitle), "Data_deleted")
+	DFREF deletedFolder = UniqueDataFolder($GetDevicePathAsString(device), "Data_deleted")
 	ASSERT(IsDataFolderEmpty(deletedFolder), "Invalid target datafolder")
 
 	numItems = DimSize(matches, ROWS)
@@ -259,14 +259,14 @@ Function SWS_DeleteDataWaves(panelTitle)
 
 	DEBUGPRINT_ELAPSED(refTime)
 
-	SWS_AfterSweepDataChangeHook(panelTitle)
+	SWS_AfterSweepDataChangeHook(device)
 End
 
 /// @brief Return the floating point type for storing the raw data
 ///
 /// The returned values are the same as for `WaveType`
-Function SWS_GetRawDataFPType(panelTitle)
-	string panelTitle
+Function SWS_GetRawDataFPType(device)
+	string device
 
-	return DAG_GetNumericalValue(panelTitle, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT
+	return DAG_GetNumericalValue(device, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT
 End

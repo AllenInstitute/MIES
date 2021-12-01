@@ -98,31 +98,31 @@ static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 	return ranges
 End
 
-static Function AR_UpdatePanel(panelTitle, ranges, sweepDFR)
-	string panelTitle
+static Function AR_UpdatePanel(device, ranges, sweepDFR)
+	string device
 	WAVE ranges
 	DFREF sweepDFR
 
-	AR_SetSweepFolder(panelTitle, sweepDFR)
+	AR_SetSweepFolder(device, sweepDFR)
 
-	DFREF dfr = AR_GetFolder(panelTitle)
+	DFREF dfr = AR_GetFolder(device)
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
 	WAVE artefactWave  = GetArtefactRemovalDataWave(dfr)
 
 	Redimension/N=(DimSize(ranges, ROWS), -1) listBoxWave, artefactWave
 
 	MultiThread artefactWave[][] = ranges[p][q]
-	AR_UpdateListBoxWave(panelTitle)
+	AR_UpdateListBoxWave(device)
 End
 
-static Function AR_UpdateListBoxWave(panelTitle)
-	string panelTitle
+static Function AR_UpdateListBoxWave(device)
+	string device
 
 	variable cutoffLength_before, cutoffLength_after
 	string extPanel
 
-	extPanel = BSP_GetPanel(panelTitle)
-	DFREF dfr = AR_GetFolder(panelTitle)
+	extPanel = BSP_GetPanel(device)
+	DFREF dfr = AR_GetFolder(device)
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
 	WAVE artefactWave  = GetArtefactRemovalDataWave(dfr)
 
@@ -285,35 +285,35 @@ End
 /// @brief Return the datafolder reference to the folder storing the listbox wave and the artefact data wave
 ///
 /// Requires the user data `PANEL_FOLDER` of the external artefact removal panel.
-static Function/DF AR_GetFolder(panelTitle)
-	string panelTitle
+static Function/DF AR_GetFolder(device)
+	string device
 
-	if(!AR_IsActive(panelTitle))
+	if(!AR_IsActive(device))
 		return $""
 	endif
 
-	return BSP_GetFolder(panelTitle, MIES_BSP_PANEL_FOLDER)
+	return BSP_GetFolder(device, MIES_BSP_PANEL_FOLDER)
 End
 
 /// @brief Return the datafolder reference to the folder storing the single 1D sweep waves
 ///
 /// Requires the user data `AR_SWEEPFOLDER` of the external artefact removal panel.
-static Function/DF AR_GetSweepFolder(panelTitle)
-	string panelTitle
+static Function/DF AR_GetSweepFolder(device)
+	string device
 
-	if(!AR_IsActive(panelTitle))
+	if(!AR_IsActive(device))
 		return $""
 	endif
 
-	return BSP_GetFolder(panelTitle, MIES_BSP_AR_SWEEPFOLDER)
+	return BSP_GetFolder(device, MIES_BSP_AR_SWEEPFOLDER)
 End
 
 /// @brief Updates the `AR_SWEEPFOLDER` user data of the artefact removal panel
-static Function AR_SetSweepFolder(panelTitle, sweepDFR)
-	string panelTitle
+static Function AR_SetSweepFolder(device, sweepDFR)
+	string device
 	DFREF sweepDFR
 
-	BSP_SetFolder(panelTitle, sweepDFR, MIES_BSP_AR_SWEEPFOLDER)
+	BSP_SetFolder(device, sweepDFR, MIES_BSP_AR_SWEEPFOLDER)
 End
 
 Function AR_MainListBoxProc(lba) : ListBoxControl
@@ -335,15 +335,15 @@ End
 Function AR_SetVarProcCutoffLength(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
-	string graph, panelTitle
+	string graph, device
 
 	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			panelTitle = GetMainWindow(sva.win)
-			graph = GetMainWindow(panelTitle)
-			AR_UpdateListBoxWave(panelTitle)
+			device = GetMainWindow(sva.win)
+			graph = GetMainWindow(device)
+			AR_UpdateListBoxWave(device)
 			AR_HandleRanges(graph)
 			break
 	endswitch
@@ -374,19 +374,19 @@ Function AR_UpdateTracesIfReq(graph, sweepFolder, sweepNo)
 	variable sweepNo
 	DFREF sweepFolder
 
-	string panelTitle
+	string device
 
-	panelTitle = GetMainWindow(graph)
+	device = GetMainWindow(graph)
 
-	if(!AR_IsActive(panelTitle))
+	if(!AR_IsActive(device))
 		return NaN
 	endif
 
-	WAVE numericalValues = BSP_GetLBNWave(panelTitle, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	WAVE numericalValues = BSP_GetLBNWave(device, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
 
 	DFREF singleSweepDFR = GetSingleSweepFolder(sweepFolder, sweepNo)
 	WAVE ranges = AR_ComputeRanges(singleSweepDFR, sweepNo, numericalValues)
-	AR_UpdatePanel(panelTitle, ranges, singleSweepDFR)
+	AR_UpdatePanel(device, ranges, singleSweepDFR)
 	AR_HandleRanges(graph)
 End
 

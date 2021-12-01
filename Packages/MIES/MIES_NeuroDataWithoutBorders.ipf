@@ -65,7 +65,7 @@ End
 /// Return NaN if no sweeps could be found
 static Function NWB_FirstStartTimeOfAllSweeps()
 
-	string devicesWithData, panelTitle, list, name
+	string devicesWithData, device, list, name
 	variable numEntries, numWaves, sweepNo, i, j
 	variable oldest = Inf
 
@@ -77,11 +77,11 @@ static Function NWB_FirstStartTimeOfAllSweeps()
 
 	numEntries = ItemsInList(devicesWithData)
 	for(i = 0; i < numEntries; i += 1)
-		panelTitle = StringFromList(i, devicesWithData)
+		device = StringFromList(i, devicesWithData)
 
-		WAVE/T textualValues = GetLBTextualValues(panelTitle)
+		WAVE/T textualValues = GetLBTextualValues(device)
 
-		DFREF dfr = GetDeviceDataPath(panelTitle)
+		DFREF dfr = GetDeviceDataPath(device)
 		list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
 		numWaves = ItemsInList(list)
 		for(j = 0; j < numWaves; j += 1)
@@ -288,11 +288,11 @@ threadsafe static Function NWB_AddDevice(STRUCT NWBAsyncParameters &s)
 	AddDevice(s.locationID, s.device, s.nwbVersion, deviceDesc)
 End
 
-threadsafe static Function/S NWB_GenerateDeviceDescription(string panelTitle, WAVE numericalValues, WAVE/T textualValues)
+threadsafe static Function/S NWB_GenerateDeviceDescription(string device, WAVE numericalValues, WAVE/T textualValues)
 	variable hardwareType, sweepNo
 	string desc, deviceType, deviceNumber, hardwareName
 
-	// digitizer info is fixed per "panelTitle" device
+	// digitizer info is fixed per "device" device
 	sweepNo = 0
 
 	hardwareType = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", UNKNOWN_MODE)
@@ -301,14 +301,14 @@ threadsafe static Function/S NWB_GenerateDeviceDescription(string panelTitle, WA
 		// if we don't have a hardware type this must be ITC hardware
 		hardwareType = HARDWARE_ITC_DAC
 
-		ASSERT_TS(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Could not parse panelTitle")
+		ASSERT_TS(ParseDeviceString(device, deviceType, deviceNumber), "Could not parse device")
 		hardwareName = deviceType
 	else
 		// present since e2302f5d (DC_PlaceDataInHardwareDataWave: Add hardware name and serial numbers to the labnotebook, 2019-02-22)
 		hardwareName = GetLastSettingTextIndep(textualValues, sweepNo, "Digitizer Hardware Name", UNKNOWN_MODE)
 
 		if(IsEmpty(hardwareName))
-			hardwareName = panelTitle
+			hardwareName = device
 		endif
 	endif
 
@@ -484,7 +484,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	string overrideFilePath
 	variable writeStoredTestPulses, writeIgorHistory, compressionMode, keepFileOpen, overwrite
 
-	string devicesWithContent, panelTitle, list, name
+	string devicesWithContent, device, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves, createdNewNWBFile
 	string stimsetList = ""
 
@@ -568,28 +568,28 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 
 	numEntries = ItemsInList(devicesWithContent)
 	for(i = 0; i < numEntries; i += 1)
-		panelTitle = StringFromList(i, devicesWithContent)
+		device = StringFromList(i, devicesWithContent)
 
 		// init: 2/3
-		s.device = panelTitle
+		s.device = device
 
-		DAP_SerializeCommentNotebook(panelTitle)
-		s.userComment = ROStr(GetUserComment(panelTitle))
+		DAP_SerializeCommentNotebook(device)
+		s.userComment = ROStr(GetUserComment(device))
 
-		WAVE s.numericalValues = GetLBNumericalValues(panelTitle)
-		WAVE/T s.numericalKeys = GetLBNumericalKeys(panelTitle)
-		WAVE/T s.textualValues = GetLBTextualValues(panelTitle)
-		WAVE/T s.textualKeys   = GetLBTextualKeys(panelTitle)
+		WAVE s.numericalValues = GetLBNumericalValues(device)
+		WAVE/T s.numericalKeys = GetLBNumericalKeys(device)
+		WAVE/T s.textualValues = GetLBTextualValues(device)
+		WAVE/T s.textualKeys   = GetLBTextualKeys(device)
 
 		NWB_AddDeviceSpecificData(s, writeStoredTestPulses)
 
-		DFREF dfr = GetDeviceDataPath(panelTitle)
+		DFREF dfr = GetDeviceDataPath(device)
 		list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
 		numWaves = ItemsInList(list)
 
-		NWB_CheckForMissingSweeps(panelTitle, ListToTextWave(list, ";"))
+		NWB_CheckForMissingSweeps(device, ListToTextWave(list, ";"))
 
-		LOG_AddEntry(PACKAGE_MIES, "export", keys = {"device", "#sweeps"}, values = {panelTitle, num2str(numWaves)})
+		LOG_AddEntry(PACKAGE_MIES, "export", keys = {"device", "#sweeps"}, values = {device, num2str(numWaves)})
 
 		for(j = 0; j < numWaves; j += 1)
 			name = StringFromList(j, list)
@@ -608,7 +608,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 			WAVE s.DAQConfigWave = configWave
 
 			NWB_AppendSweepLowLevel(s)
-			stimsetList += NWB_GetStimsetFromPanel(panelTitle, sweep)
+			stimsetList += NWB_GetStimsetFromPanel(device, sweep)
 
 			NVAR fileIDExport = $GetNWBFileIDExport()
 			fileIDExport = s.locationID
@@ -634,12 +634,12 @@ End
 ///
 /// Currently wait up to 10min (NWB_ASYNC_WRITING_TIMEOUT * NWB_ASYNC_MAX_ITERATIONS),
 /// everything above 5s is considered a bug.
-Function NWB_ASYNC_FinishWriting(string panelTitle)
+Function NWB_ASYNC_FinishWriting(string device)
 
 	string workload, msg
 	variable i
 
-	workload = NWB_ASYNC_WorkLoadName(panelTitle)
+	workload = NWB_ASYNC_WorkLoadName(device)
 
 	for(i = 0; i < NWB_ASYNC_MAX_ITERATIONS; i += 1)
 		if(!ASYNC_WaitForWLCToFinishAndRemove(workload, NWB_ASYNC_WRITING_TIMEOUT))
@@ -651,12 +651,12 @@ Function NWB_ASYNC_FinishWriting(string panelTitle)
 	endfor
 End
 
-static Function/S NWB_ASYNC_WorkLoadName(string paneltitle)
-	return NWB_WORKLOAD_CLASS + "_" + paneltitle
+static Function/S NWB_ASYNC_WorkLoadName(string device)
+	return NWB_WORKLOAD_CLASS + "_" + device
 End
 
-Function NWB_CheckForMissingSweeps(string panelTitle, WAVE/T sweepNames)
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+Function NWB_CheckForMissingSweeps(string device, WAVE/T sweepNames)
+	WAVE numericalValues = GetLBNumericalValues(device)
 
 	WAVE/Z sweepsFromLBN = GetSweepsWithSetting(numericalValues, "SweepNum")
 
@@ -674,7 +674,7 @@ Function NWB_CheckForMissingSweeps(string panelTitle, WAVE/T sweepNames)
 		return 0
 	endif
 
-	printf "The labnotebook and the device data folder from device %s differ in the number of recorded sweeps.\r", panelTitle
+	printf "The labnotebook and the device data folder from device %s differ in the number of recorded sweeps.\r", device
 	printf "If you have used sweep rollback, this can be totally normal and expected.\r"
 	printf "In other cases, or if you think that data is unexpectedly missing please see RecreateSweepWaveFromBackupAndLBN().\r"
 	printf "Labnotebook: \r"
@@ -802,14 +802,14 @@ Function NWB_ExportWithDialog(exportType, [nwbVersion])
 End
 
 /// @brief Write the stored test pulses to the NWB file
-static Function NWB_AppendStoredTestPulses(panelTitle, nwbVersion, locationID, compressionMode)
-	string panelTitle
+static Function NWB_AppendStoredTestPulses(device, nwbVersion, locationID, compressionMode)
+	string device
 	variable locationID, nwbVersion, compressionMode
 
 	variable index, numZeros, i
 	string name
 
-	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(device)
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 
 	if(!index)
@@ -885,7 +885,7 @@ Function NWB_PrepareExport(nwbVersion)
 	return locationID
 End
 
-Function NWB_AppendSweepDuringDAQ(string panelTitle, WAVE DAQDataWave, WAVE DAQConfigWave, variable sweep, variable nwbVersion)
+Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfigWave, variable sweep, variable nwbVersion)
 	variable locationID, createdNewNWBFile
 	string workload
 
@@ -897,10 +897,10 @@ Function NWB_AppendSweepDuringDAQ(string panelTitle, WAVE DAQDataWave, WAVE DAQC
 
 	STRUCT NWBAsyncParameters s
 
-	s.device = panelTitle
+	s.device = device
 
-	DAP_SerializeCommentNotebook(panelTitle)
-	s.userComment = ROStr(GetUserComment(panelTitle))
+	DAP_SerializeCommentNotebook(device)
+	s.userComment = ROStr(GetUserComment(device))
 
 	s.sweep = sweep
 	s.compressionMode = NO_COMPRESSION
@@ -911,10 +911,10 @@ Function NWB_AppendSweepDuringDAQ(string panelTitle, WAVE DAQDataWave, WAVE DAQC
 	WAVE s.DAQDataWave = DAQDataWave
 	WAVE s.DAQConfigWave = DAQConfigWave
 
-	WAVE s.numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE/T s.numericalKeys = GetLBNumericalKeys(panelTitle)
-	WAVE/T s.textualValues = GetLBTextualValues(panelTitle)
-	WAVE/T s.textualKeys = GetLBTextualKeys(panelTitle)
+	WAVE s.numericalValues = GetLBNumericalValues(device)
+	WAVE/T s.numericalKeys = GetLBNumericalKeys(device)
+	WAVE/T s.textualValues = GetLBTextualValues(device)
+	WAVE/T s.textualKeys = GetLBTextualKeys(device)
 
 	workload = NWB_ASYNC_WorkLoadName(s.device)
 
@@ -927,15 +927,15 @@ End
 
 /// @brief Get stimsets by analysing currently loaded sweep
 ///
-/// numericalValues and textualValues are generated from panelTitle
+/// numericalValues and textualValues are generated from device
 ///
 /// @returns list of stimsets
-static Function/S NWB_GetStimsetFromPanel(panelTitle, sweep)
-	string panelTitle
+static Function/S NWB_GetStimsetFromPanel(device, sweep)
+	string device
 	variable sweep
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE/T textualValues = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues = GetLBTextualValues(device)
 
 	return NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textualValues)
 End

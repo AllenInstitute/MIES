@@ -72,7 +72,7 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 	variable setAnalysisFuncs, startTPInstead
 
-	string unlockedPanelTitle, device
+	string unlockedDevice, device
 	variable i, numEntries
 
 	KillOrMoveToTrash(wv = GetTrackSweepCounts())
@@ -103,10 +103,10 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 	for(i = 0; i < numEntries; i += 1)
 		device = stringFromList(i, devices)
 
-		unlockedPanelTitle = DAP_CreateDAEphysPanel()
+		unlockedDevice = DAP_CreateDAEphysPanel()
 
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=device)
-		PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+		PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
+		PGC_SetAndActivateControl(unlockedDevice, "button_SettingsPlus_LockDevice")
 
 		REQUIRE(WindowExists(device))
 
@@ -4135,12 +4135,12 @@ Function IncrementalLabnotebookCacheUpdate_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 2)
 End
 
-Function ILCUCheck_IGNORE(string panelTitle, STRUCT AnalysisFunction_V3& s)
+Function ILCUCheck_IGNORE(string device, STRUCT AnalysisFunction_V3& s)
 
 	variable nonExistingSweep
 
-	WAVE/T textualValues = GetLBTextualValues(panelTitle)
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE/T textualValues = GetLBTextualValues(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
 
 	// fetch some existing entries from the LBN
 	WAVE/Z sweepCounts = GetLastSetting(numericalValues, s.sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
@@ -5106,9 +5106,9 @@ static Function/WAVE GetTPLBNEntriesWave_IGNORE()
 	return wv
 End
 
-static Function/WAVE GetTPLBNEntries_IGNORE(string panelTitle, variable sweepNo, variable entrySourceType)
+static Function/WAVE GetTPLBNEntries_IGNORE(string device, variable sweepNo, variable entrySourceType)
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
 
 	WAVE/WAVE wv = GetTPLBNEntriesWave_IGNORE()
 

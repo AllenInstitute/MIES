@@ -37,20 +37,20 @@ End
 static Function TFH_StartFIFODeamonInternal(hwType, deviceID, mode, [triggerMode])
 	variable hwType, deviceID, mode, triggerMode
 
-	string panelTitle
+	string device
 
 	if(ParamIsDefault(triggerMode))
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
 
-	panelTitle = HW_GetMainDeviceName(hwType, deviceID)
+	device = HW_GetMainDeviceName(hwType, deviceID)
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
-	WAVE DAQConfigWave   = GetDAQConfigWave(panelTitle)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
+	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(device)
+	WAVE DAQConfigWave   = GetDAQConfigWave(device)
 
 	TFH_StopFifoDaemon(hwType, deviceID)
-	NVAR tgID  = $GetThreadGroupIDFifo(panelTitle)
+	NVAR tgID  = $GetThreadGroupIDFifo(device)
 	tgID = ThreadGroupCreate(1)
 
 	Duplicate/FREE DAQConfigWave, config
@@ -69,10 +69,10 @@ End
 Function TFH_StopFIFODaemon(hwType, deviceID)
 	variable hwType, deviceID
 
-	string panelTitle
+	string device
 
-	panelTitle = HW_GetMainDeviceName(hwType, deviceID)
-	NVAR tgID = $GetThreadGroupIDFifo(panelTitle)
+	device = HW_GetMainDeviceName(hwType, deviceID)
+	NVAR tgID = $GetThreadGroupIDFifo(device)
 
 	TS_StopThreadGroup(tgID)
 	tgID = NaN

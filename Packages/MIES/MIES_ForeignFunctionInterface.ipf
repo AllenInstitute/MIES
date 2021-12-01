@@ -21,7 +21,7 @@ Function/WAVE FFI_ReturnTPValues()
 	string currentPanel
 	variable tpCycleCount
 
-	//Get the active panelTitle
+	//Get the active device
 	// get the da_ephys panel names
 	lockedDevList=GetListOfLockedDevices()
 	noLockedDevs=ItemsInList(lockedDevList)
@@ -58,15 +58,15 @@ End
 ///
 /// Publishers in MIES should in general supply additional information like device/sweep number/timestamp.
 /// This function allows to autofill these entries.
-Function FFI_GetJSONTemplate(string panelTitle, variable headstage)
+Function FFI_GetJSONTemplate(string device, variable headstage)
 	variable jsonID
 
 	jsonID = JSON_New()
 	JSON_AddTreeObject(jsonID, "")
-	JSON_AddString(jsonID, "device", panelTitle)
+	JSON_AddString(jsonID, "device", device)
 	JSON_AddVariable(jsonID, "headstage", headstage)
 	JSON_AddString(jsonID, "timestamp", GetISO8601TimeStamp())
-	JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(panelTitle))
+	JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(device))
 
 	return jsonID
 End

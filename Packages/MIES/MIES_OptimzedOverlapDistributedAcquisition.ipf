@@ -235,10 +235,10 @@ static Function/WAVE OOD_CalculateOffsets(setRegions, baseRegions, yoked)
 End
 
 /// @brief Calculated the offsets for normal acquisition and yoked mode
-/// @param[in] panelTitle title of the device panel
+/// @param[in] device title of the device panel
 /// @param[in] params     OOdDAQParams structure with oodDAQ setup data
-static Function OOD_CalculateOffsetsYoked(panelTitle, params)
-	string panelTitle
+static Function OOD_CalculateOffsetsYoked(device, params)
+	string device
 	STRUCT OOdDAQParams &params
 
 	variable resolution
@@ -247,21 +247,21 @@ static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 	Make/FREE/N=0 preload
 
 	// normal acquisition
-	if(!DeviceHasFollower(panelTitle) && !DeviceIsFollower(panelTitle))
+	if(!DeviceHasFollower(device) && !DeviceIsFollower(device))
 		WAVE params.offsets = OOD_CalculateOffsets(setRegions, preload, 0)
 
 	else
 
-		if(DeviceHasFollower(panelTitle))
+		if(DeviceHasFollower(device))
 			KillOrMoveToTrash(dfr=GetDistDAQFolder())
-		elseif(DeviceIsFollower(panelTitle))
-			OOD_LoadPreload(panelTitle, params)
+		elseif(DeviceIsFollower(device))
+			OOD_LoadPreload(device, params)
 		else
 			ASSERT(0, "Impossible case")
 		endif
 
 		WAVE params.offsets = OOD_CalculateOffsets(setRegions, preload, 1)
-		OOD_StorePreload(panelTitle, preload)
+		OOD_StorePreload(device, preload)
 	endif
 	WAVE/T params.regions = OOD_GetFeatureRegions(setRegions, params.offsets)
 	WAVE params.preload = preload
@@ -275,31 +275,31 @@ static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 End
 
 /// @brief Load the preload data into `params.preload`
-/// @param[in] panelTitle title of the device panel
+/// @param[in] device title of the device panel
 /// @param[in] params     OOdDAQParams structure where the data is preloaded into
-static Function OOD_LoadPreload(panelTitle, params)
-	string panelTitle
+static Function OOD_LoadPreload(device, params)
+	string device
 	STRUCT OOdDAQParams &params
 
 	DFREF dfr = GetDistDAQFolder()
-	WAVE params.preload = GetDistDAQPreloadWave(panelTitle)
+	WAVE params.preload = GetDistDAQPreloadWave(device)
 End
 
 /// @brief Store the preload data so that the next device can use it.
-/// @param[in] panelTitle title of the device panel
+/// @param[in] device title of the device panel
 /// @param[in] preload    wave that is stored containing the preload data
-static Function OOD_StorePreload(panelTitle, preload)
-	string panelTitle
+static Function OOD_StorePreload(device, preload)
+	string device
 	WAVE preload
 
-	string deviceNumberStr, deviceType, panelTitleNext
+	string deviceNumberStr, deviceType, nextDevice
 	variable deviceNumber
 
-	ParseDeviceString(panelTitle, deviceType, deviceNumberStr)
+	ParseDeviceString(device, deviceType, deviceNumberStr)
 	deviceNumber = str2num(deviceNumberStr) + 1
-	panelTitleNext = HW_ITC_BuildDeviceString(deviceType, num2str(deviceNumber))
+	nextDevice = HW_ITC_BuildDeviceString(deviceType, num2str(deviceNumber))
 
-	WAVE preloadPerm = GetDistDAQPreloadWave(panelTitleNext)
+	WAVE preloadPerm = GetDistDAQPreloadWave(nextDevice)
 
 	Duplicate/O preload, preloadPerm
 End
@@ -362,11 +362,11 @@ End
 /// The offsets and the regions are returned in `params` and all results are
 /// cached.
 ///
-/// @param[in] panelTitle title of the device panel
+/// @param[in] device title of the device panel
 /// @param[in] params     OOdDAQParams structure with the initial settings
 /// @return one dimensional numberic wave with the offsets in points for each stimset
-Function/WAVE OOD_GetResultWaves(panelTitle, params)
-	string panelTitle
+Function/WAVE OOD_GetResultWaves(device, params)
+	string device
 	STRUCT OOdDAQParams &params
 
 	string key
@@ -381,7 +381,7 @@ Function/WAVE OOD_GetResultWaves(panelTitle, params)
 		return cache[%stimSetsWithOffset]
 	endif
 
-	OOD_CalculateOffsetsYoked(panelTitle, params)
+	OOD_CalculateOffsetsYoked(device, params)
 	WAVE stimSetsWithOffset = OOD_CreateStimSet(params)
 
 	Make/FREE/WAVE/N=3 cache

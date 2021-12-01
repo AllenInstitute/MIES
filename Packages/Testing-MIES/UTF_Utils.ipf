@@ -1549,7 +1549,7 @@ Function oodDAQRegTests_0()
 	variable index
 	STRUCT OOdDAQParams params
 	DFREF dfr = root:oodDAQ
-	string panelTitle = "ITC18USB_Dev_0"
+	string device = "ITC18USB_Dev_0"
 	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
@@ -1558,7 +1558,7 @@ Function oodDAQRegTests_0()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1573,7 +1573,7 @@ Function oodDAQRegTests_1()
 	variable index
 	STRUCT OOdDAQParams params
 	DFREF dfr = root:oodDAQ
-	string panelTitle = "ITC18USB_Dev_0"
+	string device = "ITC18USB_Dev_0"
 	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
@@ -1582,7 +1582,7 @@ Function oodDAQRegTests_1()
 	InitOOdDAQParams(params, stimSet, {1, 0}, 0, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1597,7 +1597,7 @@ Function oodDAQRegTests_2()
 	variable index
 	STRUCT OOdDAQParams params
 	DFREF dfr = root:oodDAQ
-	string panelTitle = "ITC18USB_Dev_0"
+	string device = "ITC18USB_Dev_0"
 	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
@@ -1606,7 +1606,7 @@ Function oodDAQRegTests_2()
 	InitOOdDAQParams(params, stimSet, {0, 1}, 0, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1621,7 +1621,7 @@ Function oodDAQRegTests_3()
 	variable index
 	STRUCT OOdDAQParams params
 	DFREF dfr = root:oodDAQ
-	string panelTitle = "ITC18USB_Dev_0"
+	string device = "ITC18USB_Dev_0"
 	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
@@ -1630,7 +1630,7 @@ Function oodDAQRegTests_3()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 20, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1645,7 +1645,7 @@ Function oodDAQRegTests_4()
 	variable index
 	STRUCT OOdDAQParams params
 	DFREF dfr = root:oodDAQ
-	string panelTitle = "ITC18USB_Dev_0"
+	string device = "ITC18USB_Dev_0"
 	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
@@ -1654,7 +1654,7 @@ Function oodDAQRegTests_4()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 20)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1669,7 +1669,7 @@ Function oodDAQRegTests_5()
 	variable index
 	STRUCT OOdDAQParams params
 	DFREF dfr = root:oodDAQ
-	string panelTitle = "ITC18USB_Dev_0"
+	string device = "ITC18USB_Dev_0"
 	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
@@ -1678,7 +1678,7 @@ Function oodDAQRegTests_5()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1693,7 +1693,7 @@ Function oodDAQRegTests_6()
 	variable index
 	STRUCT OOdDAQParams params
 	DFREF dfr = root:oodDAQ
-	string panelTitle = "ITC18USB_Dev_0"
+	string device = "ITC18USB_Dev_0"
 	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=2/WAVE stimset = singleStimset
 
@@ -1702,7 +1702,7 @@ Function oodDAQRegTests_6()
 	InitOOdDAQParams(params, stimSet, {0, 1}, 20, 30)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1717,7 +1717,7 @@ Function oodDAQRegTests_7()
 	variable index
 	STRUCT OOdDAQParams params
 	DFREF dfr = root:oodDAQ
-	string panelTitle = "ITC18USB_Dev_0"
+	string device = "ITC18USB_Dev_0"
 	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
 	Make/FREE/N=3/WAVE stimset = singleStimset
 
@@ -1726,7 +1726,7 @@ Function oodDAQRegTests_7()
 	InitOOdDAQParams(params, stimSet, {0, 0, 0}, 0, 0)
 	// END CHANGE ME
 
-	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(device,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1747,19 +1747,19 @@ End
 /// @{
 Function HAH_ReturnsZero()
 
-	string panelTitle = "IGNORE"
+	string device = "IGNORE"
 	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
 
-	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p)
+	isHighestActive[] = DAG_HeadstageIsHighestActive(device, p)
 	CHECK_EQUAL_WAVES(isHighestActive, {0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 End
 
 Function HAH_Works1()
 
-	string panelTitle = "IGNORE"
+	string device = "IGNORE"
 	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
@@ -1767,13 +1767,13 @@ Function HAH_Works1()
 
 	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
 
-	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p)
+	isHighestActive[] = DAG_HeadstageIsHighestActive(device, p)
 	CHECK_EQUAL_WAVES(isHighestActive, {1, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 End
 
 Function HAH_Works2()
 
-	string panelTitle = "IGNORE"
+	string device = "IGNORE"
 	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
@@ -1781,18 +1781,18 @@ Function HAH_Works2()
 
 	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
 
-	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p)
+	isHighestActive[] = DAG_HeadstageIsHighestActive(device, p)
 	CHECK_EQUAL_WAVES(isHighestActive, {0, 0, 0, 0, 0, 0, 1, 0}, mode = WAVE_DATA)
 End
 
 Function HAH_ChecksClampMode()
 
-	string panelTitle = "IGNORE"
+	string device = "IGNORE"
 	Make/O/N=(NUM_HEADSTAGES) statusHS = 1
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	try
-		DAG_HeadstageIsHighestActive(panelTitle, 0, clampMode = NaN); AbortOnRTE
+		DAG_HeadstageIsHighestActive(device, 0, clampMode = NaN); AbortOnRTE
 		FAIL()
 	catch
 		PASS()
@@ -1801,19 +1801,19 @@ End
 
 Function HAH_ReturnsZeroWithClampMode()
 
-	string panelTitle = "IGNORE"
+	string device = "IGNORE"
 	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
 	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
 
-	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p)
+	isHighestActive[] = DAG_HeadstageIsHighestActive(device, p)
 	CHECK_EQUAL_WAVES(isHighestActive, {0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 End
 
 Function HAH_WorksWithClampMode1()
 
-	string panelTitle = "IGNORE"
+	string device = "IGNORE"
 	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
@@ -1822,13 +1822,13 @@ Function HAH_WorksWithClampMode1()
 
 	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
 
-	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p, clampMode = I_CLAMP_MODE)
+	isHighestActive[] = DAG_HeadstageIsHighestActive(device, p, clampMode = I_CLAMP_MODE)
 	CHECK_EQUAL_WAVES(isHighestActive, {0, 1, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 End
 
 Function HAH_WorksWithClampMode2()
 
-	string panelTitle = "IGNORE"
+	string device = "IGNORE"
 	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
 	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
 
@@ -1838,7 +1838,7 @@ Function HAH_WorksWithClampMode2()
 
 	Make/FREE/N=(NUM_HEADSTAGES) isHighestActive, expected
 
-	isHighestActive[] = DAG_HeadstageIsHighestActive(panelTitle, p, clampMode = V_CLAMP_MODE)
+	isHighestActive[] = DAG_HeadstageIsHighestActive(device, p, clampMode = V_CLAMP_MODE)
 	CHECK_EQUAL_WAVES(isHighestActive, {0, 0, 0, 0, 0, 0, 1, 0}, mode = WAVE_DATA)
 End
 /// @}

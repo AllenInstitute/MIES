@@ -341,13 +341,13 @@ End
 
 /// @brief Checks if a channel of TP type exists on ADCs
 ///
-/// @param panelTitle device
+/// @param device device
 ///
 /// @return 1 if TP type present, 0 otherwise
-Function GotTPChannelsOnADCs(panelTitle)
-	string panelTitle
+Function GotTPChannelsOnADCs(device)
+	string device
 
-	WAVE config = GetDAQConfigWave(panelTitle)
+	WAVE config = GetDAQConfigWave(device)
 	WAVE ADCmode = GetADCTypesFromConfig(config)
 	FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
 	return (V_Value != -1)
@@ -2065,11 +2065,11 @@ Function/Wave GetConfigWave(sweepWave)
 End
 
 /// @brief Returns the, possibly non existing, sweep data wave for the given sweep number
-Function/Wave GetSweepWave(panelTitle, sweepNo)
-	string panelTitle
+Function/Wave GetSweepWave(device, sweepNo)
+	string device
 	variable sweepNo
 
-	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) wv = $GetSweepWaveName(sweepNo)
+	Wave/Z/SDFR=GetDeviceDataPath(device) wv = $GetSweepWaveName(sweepNo)
 
 	return wv
 End
@@ -2133,11 +2133,11 @@ End
 /// @brief Return the hardware type of the device
 ///
 /// @return One of @ref HardwareDACTypeConstants
-threadsafe Function GetHardwareType(panelTitle)
-	string panelTitle
+threadsafe Function GetHardwareType(device)
+	string device
 
 	string deviceType, deviceNumber
-	ASSERT_TS(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Error parsing device string!")
+	ASSERT_TS(ParseDeviceString(device, deviceType, deviceNumber), "Error parsing device string!")
 
 	if(WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1)
 		return HARDWARE_ITC_DAC
@@ -4524,7 +4524,7 @@ End
 /// @brief Return the list of locked devices
 Function/S GetListOfLockedDevices()
 
-	SVAR list = $GetDevicePanelTitleList()
+	SVAR list = $GetLockedDevices()
 	return list
 End
 
@@ -4877,8 +4877,8 @@ Function/S GetWaveBuilderParameterTypeName(type)
 End
 
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysSetVarNum(panelTitle, channelType, controlType)
-	string panelTitle
+Function/Wave GetAllDAEphysSetVarNum(device, channelType, controlType)
+	string device
 	variable channelType, controlType
 
 	variable CtrlNum = GetNumberFromType(var=channelType)
@@ -4887,14 +4887,14 @@ Function/Wave GetAllDAEphysSetVarNum(panelTitle, channelType, controlType)
 	variable i
 	for(i = 0; i < CtrlNum; i+=1)
 		ctrl = GetPanelControl(i, channelType, controlType)
-		wv[i] = GetSetVariable(panelTitle, ctrl)
+		wv[i] = GetSetVariable(device, ctrl)
 	endfor
 	return wv
 End
 
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysSetVarTxT(panelTitle, channelType, controlType)
-	string panelTitle
+Function/Wave GetAllDAEphysSetVarTxT(device, channelType, controlType)
+	string device
 	variable channelType, controlType
 
 	variable CtrlNum = GetNumberFromType(var=channelType)
@@ -4903,14 +4903,14 @@ Function/Wave GetAllDAEphysSetVarTxT(panelTitle, channelType, controlType)
 	variable i
 	for(i = 0; i < CtrlNum; i+=1)
 		ctrl = GetPanelControl(i, channelType, controlType)
-		wv[i] = GetSetVariableString(panelTitle, ctrl)
+		wv[i] = GetSetVariableString(device, ctrl)
 	endfor
 	return wv
 End
 
 /// @brief Returns the index of all popupmenus in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType)
-	string panelTitle
+Function/Wave GetAllDAEphysPopMenuIndex(device, channelType, controlType)
+	string device
 	variable channelType, controlType
 
 	variable CtrlNum = GetNumberFromType(var=channelType)
@@ -4919,14 +4919,14 @@ Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType)
 	variable i
 	for(i = 0; i < CtrlNum; i+=1)
 		ctrl = GetPanelControl(i, channelType, controlType)
-		wv[i] = GetPopupMenuIndex(panelTitle, ctrl)
+		wv[i] = GetPopupMenuIndex(device, ctrl)
 	endfor
 	return wv
 End
 
 /// @brief Returns the string contents of all popupmenus in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysPopMenuString(panelTitle, channelType, controlType)
-	string panelTitle
+Function/Wave GetAllDAEphysPopMenuString(device, channelType, controlType)
+	string device
 	variable channelType, controlType
 
 	variable CtrlNum = GetNumberFromType(var=channelType)
@@ -4935,7 +4935,7 @@ Function/Wave GetAllDAEphysPopMenuString(panelTitle, channelType, controlType)
 	variable i
 	for(i = 0; i < CtrlNum; i+=1)
 		ctrl = GetPanelControl(i, channelType, controlType)
-		wv[i] = GetPopupMenuString(panelTitle, ctrl)
+		wv[i] = GetPopupMenuString(device, ctrl)
 	endfor
 	return wv
 End
@@ -5030,8 +5030,8 @@ End
 
 /// @brief Check wether the given background task is running and that the
 ///        device is active in multi device mode.
-Function IsDeviceActiveWithBGTask(panelTitle, task)
-	string panelTitle, task
+Function IsDeviceActiveWithBGTask(device, task)
+	string device, task
 
 	if(!IsBackgroundTaskRunning(task))
 		return 0
@@ -5063,7 +5063,7 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 		return 1
 	endif
 
-	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(device)
 
 	// running in multi device mode
 	FindValue/V=(deviceID)/RMD=[][0] deviceIDList
@@ -5431,11 +5431,11 @@ Function SearchForDuplicates(wv)
 End
 
 /// @brief Check that the device can act as a follower
-Function DeviceCanFollow(panelTitle)
-	string panelTitle
+Function DeviceCanFollow(device)
+	string device
 
 	string deviceType, deviceNumber
-	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber))
+	if(!ParseDeviceString(device, deviceType, deviceNumber))
 		return 0
 	endif
 
@@ -5443,47 +5443,47 @@ Function DeviceCanFollow(panelTitle)
 End
 
 /// @brief Check that the device is of type ITC1600
-Function IsITC1600(panelTitle)
-	string panelTitle
+Function IsITC1600(device)
+	string device
 
 	string deviceType, deviceNumber
 	variable ret
 
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-	ASSERT(ret, "Could not parse panelTitle")
+	ret = ParseDeviceString(device, deviceType, deviceNumber)
+	ASSERT(ret, "Could not parse device")
 
 	return !cmpstr(deviceType, "ITC1600")
 End
 
 /// @brief Check that the device is a follower
-Function DeviceIsFollower(panelTitle)
-	string panelTitle
+Function DeviceIsFollower(device)
+	string device
 
-	if(!DeviceCanFollow(panelTitle))
+	if(!DeviceCanFollow(device))
 		return 0
 	endif
 
 	SVAR listOfFollowerDevices = $GetFollowerList(ITC1600_FIRST_DEVICE)
 
-	return WhichListItem(panelTitle, listOfFollowerDevices) != -1
+	return WhichListItem(device, listOfFollowerDevices) != -1
 End
 
 /// @brief Check that the device can act as a leader
-Function DeviceCanLead(panelTitle)
-	string panelTitle
+Function DeviceCanLead(device)
+	string device
 
-	return !cmpstr(panelTitle, ITC1600_FIRST_DEVICE)
+	return !cmpstr(device, ITC1600_FIRST_DEVICE)
 End
 
 /// @brief Check that the device is a leader and has followers
-Function DeviceHasFollower(panelTitle)
-	string panelTitle
+Function DeviceHasFollower(device)
+	string device
 
-	if(!DeviceCanLead(panelTitle))
+	if(!DeviceCanLead(device))
 		return 0
 	endif
 
-	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+	SVAR listOfFollowerDevices = $GetFollowerList(device)
 
 	return ItemsInList(listOfFollowerDevices) > 0
 End
@@ -5491,16 +5491,16 @@ End
 /// @brief Convenience wrapper for GetFollowerList()
 ///
 /// For iterating over a list of all followers and the leader. Returns just
-/// panelTitle if the device can not lead.
-Function/S GetListofLeaderAndPossFollower(panelTitle)
-	string panelTitle
+/// device if the device can not lead.
+Function/S GetListofLeaderAndPossFollower(device)
+	string device
 
-	if(!DeviceCanLead(panelTitle))
-		return panelTitle
+	if(!DeviceCanLead(device))
+		return device
 	endif
 
-	SVAR followerList = $GetFollowerList(panelTitle)
-	return AddListItem(panelTitle, followerList, ";", 0)
+	SVAR followerList = $GetFollowerList(device)
+	return AddListItem(device, followerList, ";", 0)
 End
 
 /// @brief Return a path to the program folder with trailing dir separator
@@ -5789,17 +5789,17 @@ End
 /// @brief Update the repurposed sweep time global variable
 ///
 /// Currently only useful for handling mid sweep analysis functions.
-Function UpdateLeftOverSweepTime(panelTitle, fifoPos)
-	string panelTitle
+Function UpdateLeftOverSweepTime(device, fifoPos)
+	string device
 	variable fifoPos
 
 	string msg
 
 	ASSERT(IsFinite(fifoPos), "Unexpected non-finite fifoPos")
 
-	WAVE DAQDataWave         = GetDAQDataWave(panelTitle, DATA_ACQUISITION_MODE)
-	NVAR repurposedTime      = $GetRepurposedSweepTime(panelTitle)
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	WAVE DAQDataWave         = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+	NVAR repurposedTime      = $GetRepurposedSweepTime(device)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 
 	repurposedTime += max(0, IndexToScale(DAQDataWave, stopCollectionPoint - fifoPos, ROWS)) / 1e3
 
@@ -6030,10 +6030,10 @@ threadsafe Function IsValidSweepAndConfig(sweep, config, [configVersion])
 End
 
 /// @brief Return the next random number using the device specific RNG seed
-Function GetNextRandomNumberForDevice(panelTitle)
-	string panelTitle
+Function GetNextRandomNumberForDevice(device)
+	string device
 
-	NVAR rngSeed = $GetRNGSeed(panelTitle)
+	NVAR rngSeed = $GetRNGSeed(device)
 	ASSERT(IsFinite(rngSeed), "Invalid rngSeed")
 	SetRandomSeed/BETR=1 rngSeed
 	rngSeed += 1
@@ -6981,14 +6981,14 @@ Function GetAnalysisFunctionVersion(variable type)
 End
 
 /// @brief Add a labnotebook entry denoting the analysis function version
-Function SetAnalysisFunctionVersion(string panelTitle, variable type, variable headstage, variable sweepNo)
+Function SetAnalysisFunctionVersion(string device, variable type, variable headstage, variable sweepNo)
 
 	string key
 
 	key = CreateAnaFuncLBNKey(type, FMT_LBN_ANA_FUNC_VERSION)
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	values[headstage] = GetAnalysisFunctionVersion(type)
-	ED_AddEntryToLabnotebook(panelTitle, key, values, overrideSweepNo = sweepNo, tolerance = 0.1)
+	ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = sweepNo, tolerance = 0.1)
 End
 
 /// @brief Return JSON text with default entries for upload
@@ -7125,19 +7125,19 @@ End
 /// - Proceed with the data as usual
 ///
 /// In case the routine throws an assertion, please open an issue so that we can investigate.
-Function RecreateMissingSweepAndConfigWaves(string panelTitle, DFREF deviceDataDFR)
+Function RecreateMissingSweepAndConfigWaves(string device, DFREF deviceDataDFR)
 
-	printf "Trying to resurrect missing sweeps from device %s\r", panelTitle
+	printf "Trying to resurrect missing sweeps from device %s\r", device
 
 	variable i, numEntries, sweepNo, samplingInterval
 	string path
 
-	WAVE numericalKeys = GetLBTextualKeys(panelTitle)
-	WAVE textualKeys = GetLBNumericalKeys(panelTitle)
+	WAVE numericalKeys = GetLBTextualKeys(device)
+	WAVE textualKeys = GetLBNumericalKeys(device)
 
 	// now the labnotebooks are upgraded to the latest version
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues = GetLBTextualValues(device)
 
 	WAVE/Z sweepsFromNum = GetSweepsWithSetting(numericalValues, "SweepNum")
 	WAVE/Z sweepsFromText = GetSweepsWithSetting(textualValues, "SweepNum")
@@ -7204,7 +7204,7 @@ Function RecreateMissingSweepAndConfigWaves(string panelTitle, DFREF deviceDataD
 		endif
 
 		if(missingConfig[i])
-			WAVE configWave = RecreateConfigWaveFromLBN(panelTitle, numericalValues, textualValues, sweepNo)
+			WAVE configWave = RecreateConfigWaveFromLBN(device, numericalValues, textualValues, sweepNo)
 		else
 			WAVE/Z configWave
 		endif
@@ -7293,15 +7293,15 @@ End
 /// @brief Try recreating the DAQ config wave from labnotebook entries
 ///
 /// @return `$""` if recreation failed or a free wave on success.
-Function/WAVE RecreateConfigWaveFromLBN(string panelTitle, WAVE numericalValues, WAVE textualValues, variable sweepNo)
+Function/WAVE RecreateConfigWaveFromLBN(string device, WAVE numericalValues, WAVE textualValues, variable sweepNo)
 
 	variable samplingInterval
 
 	// ensure we start with a fresh config wave
-	WAVE configWave = GetDAQConfigWave(panelTitle)
+	WAVE configWave = GetDAQConfigWave(device)
 	MoveToTrash(wv=configWave)
 
-	WAVE configWave = GetDAQConfigWave(panelTitle)
+	WAVE configWave = GetDAQConfigWave(device)
 	Redimension/N=(0, -1) configWave
 
 	ASSERT(GetWaveVersion(configWave) == 2, "Reconstruction might need adaptation for new config wave version")

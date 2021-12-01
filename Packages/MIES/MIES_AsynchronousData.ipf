@@ -12,8 +12,8 @@
 /// @brief Check if the given asynchronous channel is in alarm state
 ///
 /// @return true if in alarm state, false if not in alarm state or not enabled.
-Function ASD_CheckAsynAlarmState(panelTitle, channel, value)
-	string panelTitle
+Function ASD_CheckAsynAlarmState(device, channel, value)
+	string device
 	variable channel, value
 
 	string minCtrl, maxCtrl, checkCtrl
@@ -21,33 +21,33 @@ Function ASD_CheckAsynAlarmState(panelTitle, channel, value)
 
 	checkCtrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
 
-	if(!DAG_GetNumericalValue(panelTitle, checkCtrl, index = channel))
+	if(!DAG_GetNumericalValue(device, checkCtrl, index = channel))
 		return 0
 	endif
 
 	minCtrl   = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 	maxCtrl   = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-	paramMin = DAG_GetNumericalValue(panelTitle, minCtrl, index = channel)
-	paramMax = DAG_GetNumericalValue(panelTitle, maxCtrl, index = channel)
+	paramMin = DAG_GetNumericalValue(device, minCtrl, index = channel)
+	paramMax = DAG_GetNumericalValue(device, maxCtrl, index = channel)
 
 	return value >= ParamMax || value <= ParamMin
 End
 
 /// @brief Read the given asynchronous channel and return the scaled value
-Function ASD_ReadChannel(panelTitle, channel)
-	string panelTitle
+Function ASD_ReadChannel(device, channel)
+	string device
 	variable channel
 
 	string ctrl
 	variable gain, deviceChannelOffset, rawChannelValue
 
-	NVAR deviceID = $GetDAQDeviceID(panelTitle)
-	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(device)
+	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(device)
 
 	rawChannelValue = HW_ReadADC(HARDWARE_ITC_DAC, deviceID, channel + deviceChannelOffset)
 
 	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
-	gain = DAG_GetNumericalValue(panelTitle, ctrl, index = channel)
+	gain = DAG_GetNumericalValue(device, ctrl, index = channel)
 
 	return rawChannelValue / gain
 End

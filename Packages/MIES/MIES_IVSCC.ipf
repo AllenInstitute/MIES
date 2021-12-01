@@ -21,151 +21,151 @@
 
 static Constant    IVS_DEFAULT_NWBVERSION = 2
 static Constant    IVS_DEFAULT_HEADSTAGE  = 0
-static StrConstant IVS_DEFAULT_PANELTITLE = "ITC18USB_Dev_0"
+static StrConstant IVS_DEFAULT_DEVICE = "ITC18USB_Dev_0"
 
 Function IVS_ConfigureMCC()
-	string panelTitle
+	string device
 	variable headstage
 
 	variable oldTab, numErrors, initResult
 
-	panelTitle = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	// explicitly switch to the data acquistion tab to avoid having
 	// the control layout messed up
-	oldTab = GetTabID(panelTitle, "ADC")
-	PGC_SetAndActivateControl(panelTitle, "ADC", val=0)
+	oldTab = GetTabID(device, "ADC")
+	PGC_SetAndActivateControl(device, "ADC", val=0)
 
-	if(AI_SelectMultiClamp(panelTitle, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+	if(AI_SelectMultiClamp(device, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
 		print "MCC not valid...cannot initialize Amplifier Settings"
 		numErrors += 1
 	else
 		// Do Current Clamp stuff
 		// switch to IC
-		PGC_SetAndActivateControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, headstage), val=CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, headstage), val=CHECKBOX_SELECTED)
 
-		initResult = AI_SendToAmp(panelTitle, headstage, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, 0)
+		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETBRIDGEBALENABLE_FUNC, 0)
 		if(!IsFinite(initResult))
 			print "Error setting Bridge Balance Enable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, I_CLAMP_MODE,  MCC_SETNEUTRALIZATIONCAP_FUNC, 0.0)
+		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE,  MCC_SETNEUTRALIZATIONCAP_FUNC, 0.0)
 		if(!IsFinite(initResult))
 			print "Error setting Neutralization Cap to 0.0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, 0)
+		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETNEUTRALIZATIONENABL_FUNC, 0)
 		if(!IsFinite(initResult))
 			print "Error setting Neutralization Enable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJENABL_FUNC, 0)
+		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJENABL_FUNC, 0)
 		if(!IsFinite(initResult))
 			print "Error setting  SlowCurrentInjEnable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJLEVEL_FUNC, 0.0)
+		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJLEVEL_FUNC, 0.0)
 		if(!IsFinite(initResult))
 			print "Error setting SlowCurrentInjLevel to 0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJSETLT_FUNC, 1)
+		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETSLOWCURRENTINJSETLT_FUNC, 1)
 		if(!IsFinite(initResult))
 			print "Error setting SlowCurrentInjSetlTime to 1 second"
 			numErrors += 1
 		endif
 
 		// these commands work for both IC and VC...here's the IC part
-		initResult = AI_SendToAmp(panelTitle, headstage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, 0.0)
+		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETHOLDING_FUNC, 0.0)
 		if(!IsFinite(initResult))
 			print "Error setting Holding Voltage to 0.0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
+		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
 		if(!IsFinite(initResult))
 			print "Error setting Holding Enable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, I_CLAMP_MODE, MCC_SETOSCKILLERENABLE_FUNC, 1)
+		initResult = AI_SendToAmp(device, headstage, I_CLAMP_MODE, MCC_SETOSCKILLERENABLE_FUNC, 1)
 		if(!IsFinite(initResult))
 			print "Error setting OscKillerEnable to on"
 			numErrors += 1
 		endif
 
 		// switch to VC
-		PGC_SetAndActivateControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, headstage), val=CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, headstage), val=CHECKBOX_SELECTED)
 
 		// These commands work with both current clamp and voltage clamp...so now do the voltage clamp mode
-		initResult = AI_SendToAmp(panelTitle, headstage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, 0.0)
+		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETHOLDING_FUNC, 0.0)
 		if(!IsFinite(initResult))
 			print "Error setting Holding Voltage to 0.0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
+		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETHOLDINGENABLE_FUNC, 0)
 		if(!IsFinite(initResult))
 			print "Error setting Holding Enable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, V_CLAMP_MODE, MCC_SETOSCKILLERENABLE_FUNC, 1)
+		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETOSCKILLERENABLE_FUNC, 1)
 		if(!IsFinite(initResult))
 			print "Error setting OscKillerEnable to on"
 			numErrors += 1
 		endif
 
 		// Voltage Clamp Mode only settings
-		initResult =  AI_SendToAmp(panelTitle, headstage, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, 0.0)
+		initResult =  AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETRSCOMPCORRECTION_FUNC, 0.0)
 		if(!IsFinite(initResult))
 			print "Error setting RsCompCorrection to 0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, 0)
+		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETRSCOMPENABLE_FUNC, 0)
 		if(!IsFinite(initResult))
 			print "Error setting RsCompEnable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, 0)
+		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETRSCOMPPREDICTION_FUNC, 0)
 		if(!IsFinite(initResult))
 			print "Error setting RsCompPrediction to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, V_CLAMP_MODE, MCC_SETSLOWCOMPTAUX20ENAB_FUNC, 0)
+		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETSLOWCOMPTAUX20ENAB_FUNC, 0)
 		if(!IsFinite(initResult))
 			print "Error setting SlowCompTauX20Enable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, V_CLAMP_MODE, MCC_SETRSCOMPBANDWIDTH_FUNC, 0.0)
+		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETRSCOMPBANDWIDTH_FUNC, 0.0)
 		if(!IsFinite(initResult))
 			print "Error setting RsCompBandwidth to 0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, 0.0)
+		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPCAP_FUNC, 0.0)
 		if(!IsFinite(initResult))
 			print "Error setting WholeCellCompCap to 0"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, 0)
+		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPENABLE_FUNC, 0)
 		if(!IsFinite(initResult))
 			print "Error setting  WholeCellCompEnable to off"
 			numErrors += 1
 		endif
 
-		initResult = AI_SendToAmp(panelTitle, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, 0)
+		initResult = AI_SendToAmp(device, headstage, V_CLAMP_MODE, MCC_SETWHOLECELLCOMPRESIST_FUNC, 0)
 		if(!IsFinite(initResult))
 			print "Error setting WholeCellCompResist to 0"
 			numErrors += 1
@@ -173,7 +173,7 @@ Function IVS_ConfigureMCC()
 	endif
 
 	if(oldTab != 0)
-		PGC_SetAndActivateControl(panelTitle, "ADC", val=oldTab)
+		PGC_SetAndActivateControl(device, "ADC", val=oldTab)
 	endif
 
 	return numErrors
@@ -185,23 +185,23 @@ End
 /// already calculated during the TestPulse. The EXTPINBATH wave will also be run as a way of making
 /// sure the baseline is recorded into the data set for post-experiment analysis
 Function IVS_runBaselineCheckQC()
-	string panelTitle, ctrl
+	string device, ctrl
 	variable headstage
 
-	panelTitle = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
-	DoWindow/F $panelTitle
+	DoWindow/F $device
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	PGC_SetAndActivateControl(panelTitle, ctrl, str = "EXTPINBATH*")
+	PGC_SetAndActivateControl(device, ctrl, str = "EXTPINBATH*")
 
 	// Check to see if Test Pulse is already running...if not running, turn it on...
-	if(!TP_CheckIfTestpulseIsRunning(panelTitle))
-		PGC_SetAndActivateControl(panelTitle, "StartTestPulseButton")
+	if(!TP_CheckIfTestpulseIsRunning(device))
+		PGC_SetAndActivateControl(device, "StartTestPulseButton")
 	endif
 
 	// and now hit the Auto pipette offset
-	AI_UpdateAmpModel(panelTitle, "button_DataAcq_AutoPipOffset_VC", headStage)
+	AI_UpdateAmpModel(device, "button_DataAcq_AutoPipOffset_VC", headStage)
 
 	CtrlNamedBackground IVS_finishBaselineQCCheck, period=2, proc=IVS_finishBaselineQCCheck
 	CtrlNamedBackground IVS_finishBaselineQCCheck, start
@@ -213,21 +213,21 @@ End
 Function IVS_FinishBaselineQCCheck(s)
 	STRUCT WMBackgroundStruct &s
 
-	string panelTitle
+	string device
 	variable headstage, cycles, baselineAverage, qcResult
 
-	panelTitle = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	cycles = 5 //define how many cycles the test pulse must run
-	if(TP_TestPulseHasCycled(panelTitle, cycles))
+	if(TP_TestPulseHasCycled(device, cycles))
 		print "Enough Cycles passed..."
 	else
 		IVS_PublishQCState(0, "Too few TP cycles")
 		return 0
 	endif
 
-	WAVE TPResults = GetTPResults(panelTitle)
+	WAVE TPResults = GetTPResults(device)
 
 	baselineAverage = TPResults[%BaselineSteadyState][headstage]
 
@@ -235,7 +235,7 @@ Function IVS_FinishBaselineQCCheck(s)
 
 	// See if we pass the baseline QC
 	if (abs(baselineAverage) < 100.0)
-		PGC_SetAndActivateControl(panelTitle, "DataAcquireButton")
+		PGC_SetAndActivateControl(device, "DataAcquireButton")
 		qcResult = baselineAverage
 		IVS_PublishQCState(qcResult, "Baseline average")
 	endif
@@ -252,31 +252,31 @@ End
 /// is recorded into the data set for post-experiment analysis
 Function IVS_runInitAccessResisQC()
 
-	string panelTitle
+	string device
 	variable headstage
 	variable baselineValue, instResistanceVal, ssResistanceVal
 	variable qcResult, adChannel, tpBufferSetting
 	string ctrl
 
-	panelTitle = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	PGC_SetAndActivateControl(panelTitle, ctrl, str = "EXTPBREAKN*")
+	PGC_SetAndActivateControl(device, ctrl, str = "EXTPBREAKN*")
 
 	// save the current test pulse buffer setting
-	tpBufferSetting = GetSetVariable(panelTitle, "setvar_Settings_TPBuffer")
+	tpBufferSetting = GetSetVariable(device, "setvar_Settings_TPBuffer")
 
 	// set the test pulse buffer up to a higher value to account for noise...using 5 for now
-	PGC_SetAndActivateControl(panelTitle, "setvar_Settings_TPBuffer", val = 5)
+	PGC_SetAndActivateControl(device, "setvar_Settings_TPBuffer", val = 5)
 
 	// Check to see if Test Pulse is already running...if not running, turn it on...
-	if(!TP_CheckIfTestpulseIsRunning(panelTitle))
-		PGC_SetAndActivateControl(panelTitle, "StartTestPulseButton")
+	if(!TP_CheckIfTestpulseIsRunning(device))
+		PGC_SetAndActivateControl(device, "StartTestPulseButton")
 	endif
 
 	// Set up the QC Wave so the background task can get the information it needs
-	Wave tempWave = GetIVSCCTemporaryWave(panelTitle)
+	Wave tempWave = GetIVSCCTemporaryWave(device)
 	tempWave[%tpBuffer] = tpBufferSetting
 
 	CtrlNamedBackground IVS_finishInitAccessQCCheck, period=2, proc=IVS_finishInitAccessQCCheck
@@ -289,26 +289,26 @@ End
 Function IVS_finishInitAccessQCCheck(s)
 	STRUCT WMBackgroundStruct &s
 
-	string panelTitle
+	string device
 	variable headstage, cycles
 	variable instResistanceVal, ssResistanceVal, tpBufferSetting
 	variable qcResult
 
-	panelTitle = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
-	Wave tempWave = GetIVSCCTemporaryWave(panelTitle)
+	Wave tempWave = GetIVSCCTemporaryWave(device)
 	tpBufferSetting = tempWave[%tpBuffer]
 
 	cycles = 5 //define how many cycles the test pulse must run
-	if(TP_TestPulseHasCycled(panelTitle, cycles))
+	if(TP_TestPulseHasCycled(device, cycles))
 		print "Enough Cycles passed..."
 	else
 		IVS_PublishQCState(qcResult, "Too few TP cycles")
 		return 0
 	endif
 
-	WAVE TPResults = GetTPResults(panelTitle)
+	WAVE TPResults = GetTPResults(device)
 
 	instResistanceVal = TPResults[%ResistanceInst][headstage]
 	ssResistanceVal = TPResults[%ResistanceSteadyState][headstage]
@@ -323,12 +323,12 @@ Function IVS_finishInitAccessQCCheck(s)
 	endif
 
 	// and now run the EXTPBREAKN wave so that things are saved into the data record
-	PGC_SetAndActivateControl(panelTitle, "DataAcquireButton")
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
 
 	IVS_PublishQCState(qcResult, "Result before finishing")
 
 	// set the test pulse buffer back to 1
-	PGC_SetAndActivateControl(panelTitle, "setvar_Settings_TPBuffer", val = tpBufferSetting)
+	PGC_SetAndActivateControl(device, "setvar_Settings_TPBuffer", val = tpBufferSetting)
 
 	return 1
 End
@@ -339,18 +339,18 @@ End
 /// The EXTPCIIATT wave will also be run as a way of making sure the baseline
 /// is recorded into the data set for post-experiment analysis.
 Function IVS_RunGigOhmSealQC()
-	string panelTitle, ctrl
+	string device, ctrl
 	variable headstage
 
-	panelTitle = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	PGC_SetAndActivateControl(panelTitle, ctrl, str = "EXTPCllATT*")
+	PGC_SetAndActivateControl(device, ctrl, str = "EXTPCllATT*")
 
 	// Check to see if Test Pulse is already running...if not running, turn it on...
-	if(!TP_CheckIfTestpulseIsRunning(panelTitle))
-		PGC_SetAndActivateControl(panelTitle, "StartTestPulseButton")
+	if(!TP_CheckIfTestpulseIsRunning(device))
+		PGC_SetAndActivateControl(device, "StartTestPulseButton")
 	endif
 
 	CtrlNamedBackground IVS_finishGigOhmSealQCCheck, period=2, proc=IVS_finishGigOhmSealQCCheck
@@ -412,22 +412,22 @@ End
 Function IVS_finishGigOhmSealQCCheck(s)
 	STRUCT WMBackgroundStruct &s
 
-	string panelTitle
+	string device
 	variable headstage, cycles
 	variable ssResistanceVal, qcResult
 
-	panelTitle = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage  = IVS_DEFAULT_HEADSTAGE
 
 	cycles = 10 //define how many times the test pulse must run
-	if(TP_TestPulseHasCycled(panelTitle, cycles))
+	if(TP_TestPulseHasCycled(device, cycles))
 		print "Enough Cycles passed..."
 	else
 		IVS_PublishQCState(0, "Too few TP cycles")
 		return 0
 	endif
 
-	WAVE TPResults = GetTPResults(panelTitle)
+	WAVE TPResults = GetTPResults(device)
 	ssResistanceVal = TPResults[%ResistanceSteadyState][headstage]
 
 	printf "Steady State Resistance: %g\r", ssResistanceVal
@@ -438,7 +438,7 @@ Function IVS_finishGigOhmSealQCCheck(s)
 	try
 		if(ssResistanceVal > 1000) // ssResistance value is in MOhms
 			// and now run the EXTPCIIATT wave so that things are saved into the data record
-			PGC_SetAndActivateControl(panelTitle, "DataAcquireButton")
+			PGC_SetAndActivateControl(device, "DataAcquireButton")
 			qcResult = ssResistanceVal
 			IVS_PublishQCState(qcResult, "Steady state resistance")
 		else
@@ -458,7 +458,7 @@ Function IVS_finishGigOhmSealQCCheck(s)
 		endif
 
 		// Run the EXTPCIIATT wave so that things are saved into the data record
-		PGC_SetAndActivateControl(panelTitle, "DataAcquireButton")
+		PGC_SetAndActivateControl(device, "DataAcquireButton")
 	endtry
 
 	IVS_PublishQCState(qcResult, "Result before finishing")
@@ -502,19 +502,19 @@ Function IVS_runStimWave(stimWaveName, scaleFactor)
 	variable scaleFactor
 
 	variable headstage
-	string panelTitle, ctrl
+	string device, ctrl
 
-	panelTitle = IVS_DEFAULT_PANELTITLE
+	device = IVS_DEFAULT_DEVICE
 	headstage = IVS_DEFAULT_HEADSTAGE
 
-	DoWindow/F $panelTitle
+	DoWindow/F $device
 
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	PGC_SetAndActivateControl(panelTitle, ctrl, str = stimWaveName + "*")
+	PGC_SetAndActivateControl(device, ctrl, str = stimWaveName + "*")
 
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-	PGC_SetAndActivateControl(panelTitle, ctrl, val = scaleFactor)
-	PGC_SetAndActivateControl(panelTitle, "DataAcquireButton")
+	PGC_SetAndActivateControl(device, ctrl, val = scaleFactor)
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
 Function IVS_ButtonProc_Setup(ba) : ButtonControl
@@ -582,15 +582,15 @@ EndMacro
 ///
 /// @return 1 if passed, 0 if not (or not yet) and
 /// asserts out on all other errors.
-Function IVS_GetSetQCForSweep(panelTitle, sweepNo)
-	string panelTitle
+Function IVS_GetSetQCForSweep(device, sweepNo)
+	string device
 	variable sweepNo
 
 	string key
 	variable headstage, anaFuncType
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE/T textualValues = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE/T textualValues = GetLBTextualValues(device)
 
 	WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(headstages), "The given sweep number does not exist.")

@@ -273,7 +273,7 @@ Function TEST_CASE_END_OVERRIDE(name)
 	// cut off multi data suffix
 	name = StringFromList(0, name, ":")
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
@@ -523,7 +523,7 @@ Function WaitUntilDAQDone_IGNORE(s)
 	string dev
 	variable numEntries, i
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
@@ -554,7 +554,7 @@ Function WaitUntilTPDone_IGNORE(s)
 	string device
 	variable numEntries, i
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
@@ -578,7 +578,7 @@ End
 Function StopAcqDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	NVAR runMode = $GetTestpulseRunMode(device)
@@ -594,7 +594,7 @@ End
 Function StopAcqByUnlocking_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	NVAR runMode = $GetTestpulseRunMode(device)
@@ -610,7 +610,7 @@ End
 Function StopAcqByUncompiled_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	NVAR runMode = $GetTestpulseRunMode(device)
@@ -626,7 +626,7 @@ End
 Function StartTPDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	NVAR runMode = $GetTestpulseRunMode(device)
@@ -642,7 +642,7 @@ End
 Function SkipToEndDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	NVAR runMode = $GetTestpulseRunMode(device)
@@ -658,7 +658,7 @@ End
 Function SkipSweepBackDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	NVAR runMode = $GetTestpulseRunMode(device)
@@ -675,7 +675,7 @@ End
 Function StopAcq_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 	variable runMode = ROVAR(GetDataAcqRunMode(device))
 
@@ -697,7 +697,7 @@ End
 Function AutoPipetteOffsetAndStopTP_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	PGC_SetAndActivateControl(device, "button_DataAcq_AutoPipOffset_VC")
@@ -709,7 +709,7 @@ End
 Function StopTP_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 	PGC_SetAndActivateControl(device, "StartTestPulseButton")
 
@@ -719,7 +719,7 @@ End
 Function StartAcq_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
@@ -731,7 +731,7 @@ Function ChangeStimSet_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
 	string ctrl
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
@@ -751,7 +751,7 @@ End
 Function ClampModeDuringSweep_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
@@ -767,7 +767,7 @@ End
 Function ClampModeDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
@@ -783,7 +783,7 @@ End
 Function StopTPAfterFiveSeconds_IGNORE(s)
    STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	PGC_SetAndActivateControl(device, "StartTestPulseButton")
@@ -869,14 +869,14 @@ Function StopAllBackgroundTasks()
 	endfor
 End
 
-Function CheckLBIndexCache_IGNORE(string panelTitle)
+Function CheckLBIndexCache_IGNORE(string device)
 
 	variable i, j, k, l, numEntries, numSweeps, numRows, numCols, numLayers
 	variable entry, sweepNo, entrySourceType
 	string setting, msg
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues = GetLBTextualValues(device)
 
 	Make/FREE/WAVE entries = {numericalValues, textualValues}
 	numEntries = DimSize(entries, ROWS)
@@ -940,12 +940,12 @@ Function CheckLBIndexCache_IGNORE(string panelTitle)
 	endfor
 End
 
-Function CheckLBRowCache_IGNORE(string panelTitle)
+Function CheckLBRowCache_IGNORE(string device)
 
 	variable i, j, k, numEntries, numRows, numCols, numLayers, first, last, sweepNo, entrySourceType
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues = GetLBTextualValues(device)
 
 	Make/FREE/WAVE entries = {numericalValues, textualValues}
 
@@ -1081,7 +1081,7 @@ End
 Function AddLabnotebookEntries_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	NVAR runMode = $GetTestpulseRunMode(device)
@@ -1100,11 +1100,11 @@ Function AddLabnotebookEntries_IGNORE(s)
 	return 0
 End
 
-static Function TestSweepReconstruction_IGNORE(string panelTitle)
+static Function TestSweepReconstruction_IGNORE(string device)
 	variable i, numEntries, sweepNo
 	string list, nameRecon, nameOrig
 
-	WAVE numericalValues = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBTextualValues(device)
 
 	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, "SweepNum")
 
@@ -1114,7 +1114,7 @@ static Function TestSweepReconstruction_IGNORE(string panelTitle)
 		return NaN
 	endif
 
-	DFREF deviceDFR = GetDeviceDataPath(panelTitle)
+	DFREF deviceDFR = GetDeviceDataPath(device)
 
 	DuplicateDataFolder/O=1 deviceDFR, deviceDataBorkedUp
 	DFREF deviceDataBorkedUp = deviceDataBorkedUp
@@ -1128,7 +1128,7 @@ static Function TestSweepReconstruction_IGNORE(string panelTitle)
 	for(i = 0; i < numEntries; i += 1)
 		sweepNo = sweeps[i]
 
-		WAVE sweepWave  = GetSweepWave(panelTitle, sweepNo)
+		WAVE sweepWave  = GetSweepWave(device, sweepNo)
 		WAVE configWave = GetConfigWave(sweepWave)
 
 		DFREF singleSweepDFR = GetSingleSweepFolder(deviceDataBorkedUp, sweepNo)
@@ -1140,7 +1140,7 @@ static Function TestSweepReconstruction_IGNORE(string panelTitle)
 	list = GetListOfObjects(deviceDataBorkedUp, ".*", typeFlag = COUNTOBJECTS_WAVES, fullPath = 1)
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
 
-	RecreateMissingSweepAndConfigWaves(panelTitle, deviceDataBorkedUp)
+	RecreateMissingSweepAndConfigWaves(device, deviceDataBorkedUp)
 
 	// compare the 2D sweep and config waves in deviceDFR and reconstructed
 	DFREF reconstructed = root:reconstructed
@@ -1218,7 +1218,7 @@ Function/S GetExperimentNWBFileForExport()
 End
 
 Function StopTPWhenWeHaveOne(STRUCT WMBackgroundStruct &s)
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	if(TP_TestPulseHasCycled(device, 1))
@@ -1297,7 +1297,7 @@ Function CheckPSQChunkTimes(string dev, WAVE chunkTimes[, variable sweep])
 End
 
 Function StopTPWhenFinished(STRUCT WMBackgroundStruct &s)
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	string device = StringFromList(0, devices)
 
 	WAVE settings = GetTPSettings(device)

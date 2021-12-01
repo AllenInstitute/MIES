@@ -11,12 +11,10 @@
 
 /// @brief Stop DAQ and TP on all locked devices
 Function DQ_StopOngoingDAQAllLocked(variable stopReason)
-	string panelTitle
-
 	variable i, numDev, err
 	string device
 
-	SVAR devices = $GetDevicePanelTitleList()
+	SVAR devices = $GetLockedDevices()
 	numDev = ItemsInList(devices)
 	for(i = 0; i < numDev; i += 1)
 		device = StringFromList(i, devices)
@@ -30,87 +28,87 @@ End
 ///
 /// Works with single/multi device mode and on yoked devices simultaneously.
 ///
-/// @param panelTitle      device
+/// @param device      device
 /// @param stopReason      One of @ref DAQStoppingFlags
 /// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled
-Function DQ_StopOngoingDAQ(string panelTitle, variable stopReason, [variable startTPAfterDAQ])
+Function DQ_StopOngoingDAQ(string device, variable stopReason, [variable startTPAfterDAQ])
 	variable i, numEntries
-	string list, device
+	string list, leaderAndFollower
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
-	list = GetListofLeaderAndPossFollower(panelTitle)
+	list = GetListofLeaderAndPossFollower(device)
 	numEntries = ItemsInList(list)
 
 	for(i = 0; i < numEntries; i += 1)
-		device = StringFromList(i, list)
-		DQ_StopOngoingDAQHelper(device, stopReason, startTPAfterDAQ)
+		leaderAndFollower = StringFromList(i, list)
+		DQ_StopOngoingDAQHelper(leaderAndFollower, stopReason, startTPAfterDAQ)
 	endfor
 End
 
 /// @brief Stop the testpulse and data acquisition
-static Function DQ_StopOngoingDAQHelper(string panelTitle, variable stopReason, variable startTPAfterDAQ)
+static Function DQ_StopOngoingDAQHelper(string device, variable stopReason, variable startTPAfterDAQ)
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 	variable stopDeviceTimer  = 0
 
-	if(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TP))
-		TPS_StopTestPulseSingleDevice(panelTitle)
+	if(IsDeviceActiveWithBGTask(device, TASKNAME_TP))
+		TPS_StopTestPulseSingleDevice(device)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1
-	elseif(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TPMD))
-		TPM_StopTestPulseMultiDevice(panelTitle)
+	elseif(IsDeviceActiveWithBGTask(device, TASKNAME_TPMD))
+		TPM_StopTestPulseMultiDevice(device)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1
 	endif
 
-	if(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TIMER))
+	if(IsDeviceActiveWithBGTask(device, TASKNAME_TIMER))
 		DQS_StopBackgroundTimer()
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
-	elseif(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TIMERMD))
-		DQM_StopBackgroundTimer(panelTitle)
+	elseif(IsDeviceActiveWithBGTask(device, TASKNAME_TIMERMD))
+		DQM_StopBackgroundTimer(device)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
 	endif
 
-	if(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_FIFOMON))
+	if(IsDeviceActiveWithBGTask(device, TASKNAME_FIFOMON))
 		DQS_StopBackgroundFifoMonitor()
 
-		NVAR deviceID = $GetDAQDeviceID(panelTitle)
+		NVAR deviceID = $GetDAQDeviceID(device)
 		HW_StopAcq(HARDWARE_ITC_DAC, deviceID, zeroDAC = 1)
 
 		if(!discardData)
-			SWS_SaveAcquiredData(panelTitle, forcedStop = 1)
+			SWS_SaveAcquiredData(device, forcedStop = 1)
 		endif
 
 		stopDeviceTimer  = stopDeviceTimer | 1
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
-	elseif(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_FIFOMONMD))
-		DQM_TerminateOngoingDAQHelper(panelTitle)
+	elseif(IsDeviceActiveWithBGTask(device, TASKNAME_FIFOMONMD))
+		DQM_TerminateOngoingDAQHelper(device)
 
 		if(!discardData)
-			SWS_SaveAcquiredData(panelTitle, forcedStop = 1)
+			SWS_SaveAcquiredData(device, forcedStop = 1)
 		endif
 
 		stopDeviceTimer  = stopDeviceTimer | 1
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	else
 		// force a stop if invoked during a 'down' time, with nothing happening.
-		if(!RA_IsFirstSweep(panelTitle))
-			NVAR count = $GetCount(panelTitle)
-			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
+		if(!RA_IsFirstSweep(device))
+			NVAR count = $GetCount(device)
+			count = GetValDisplayAsNum(device, "valdisp_DataAcq_SweepsInSet")
 
 			stopDeviceTimer  = stopDeviceTimer | 1
 			needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		endif
 	endif
 
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 
 	if(dataAcqRunMode != DAQ_NOT_RUNNING)
 		stopDeviceTimer  = stopDeviceTimer | 1
@@ -118,11 +116,11 @@ static Function DQ_StopOngoingDAQHelper(string panelTitle, variable stopReason, 
 	endif
 
 	if(stopDeviceTimer)
-		DQ_StopDAQDeviceTimer(panelTitle)
+		DQ_StopDAQDeviceTimer(device)
 	endif
 
 	if(needsOTCAfterDAQ)
-		DAP_OneTimeCallAfterDAQ(panelTitle, stopReason, forcedStop = 1, startTPAfterDAQ = startTPAfterDAQ)
+		DAP_OneTimeCallAfterDAQ(device, stopReason, forcedStop = 1, startTPAfterDAQ = startTPAfterDAQ)
 	endif
 End
 
@@ -131,12 +129,12 @@ End
 /// This function and DQ_StopDAQDeviceTimer are used to correct the ITI for the
 /// time it took to collect data, and pre and post processing of data. It
 /// allows for a real time, start to start, ITI
-Function DQ_StartDAQDeviceTimer(panelTitle)
-	string panelTitle
+Function DQ_StartDAQDeviceTimer(device)
+	string device
 
 	string msg
 
-	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(device)
 	DFREF timer = GetActiveDAQDevicesTimerFolder()
 
 	WAVE/Z/SDFR=timer CycleTimeStorageWave
@@ -156,8 +154,8 @@ Function DQ_StartDAQDeviceTimer(panelTitle)
 End
 
 /// @brief Stop the per-device timer associated with a particular device
-Function DQ_StopDAQDeviceTimer(panelTitle)
-	string panelTitle
+Function DQ_StopDAQDeviceTimer(device)
+	string device
 
 	variable timerID
 	string msg
@@ -168,7 +166,7 @@ Function DQ_StopDAQDeviceTimer(panelTitle)
 		return NaN
 	endif
 
-	NVAR deviceID = $GetDAQDeviceID(panelTitle)
+	NVAR deviceID = $GetDAQDeviceID(device)
 
 	timerID = CycleTimeStorageWave[deviceID]
 
@@ -182,14 +180,14 @@ End
 ///
 /// Assumes that single device and multi device do not run at the same time.
 /// @return One of @ref DAQRunModes
-Function DQ_StopDAQ(string panelTitle, variable stopReason, [variable startTPAfterDAQ])
+Function DQ_StopDAQ(string device, variable stopReason, [variable startTPAfterDAQ])
 	variable runMode
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
 	// create readonly copy as the implicitly called DAP_OneTimeCallAfterDAQ()
 	// will change it
-	runMode = ROVar(GetDataAcqRunMode(panelTitle))
+	runMode = ROVar(GetDataAcqRunMode(device))
 
 	switch(runMode)
 		case DAQ_FG_SINGLE_DEVICE:
@@ -197,7 +195,7 @@ Function DQ_StopDAQ(string panelTitle, variable stopReason, [variable startTPAft
 			return runMode
 		case DAQ_BG_SINGLE_DEVICE:
 		case DAQ_BG_MULTI_DEVICE:
-			DQ_StopOngoingDAQ(panelTitle, stopReason, startTPAfterDAQ = startTPAfterDAQ)
+			DQ_StopOngoingDAQ(device, stopReason, startTPAfterDAQ = startTPAfterDAQ)
 			return runMode
 	endswitch
 
@@ -205,8 +203,8 @@ Function DQ_StopDAQ(string panelTitle, variable stopReason, [variable startTPAft
 End
 
 /// @todo how to handle yoked devices??
-Function DQ_RestartDAQ(panelTitle, dataAcqRunMode)
-	string panelTitle
+Function DQ_RestartDAQ(device, dataAcqRunMode)
+	string device
 	variable dataAcqRunMode
 
 	switch(dataAcqRunMode)
@@ -214,19 +212,19 @@ Function DQ_RestartDAQ(panelTitle, dataAcqRunMode)
 			// nothing to do
 			break
 		case DAQ_FG_SINGLE_DEVICE:
-			AS_HandlePossibleTransition(panelTitle, AS_EARLY_CHECK, call = 0)
-			AS_HandlePossibleTransition(panelTitle, AS_PRE_DAQ, call = 0)
-			DQS_StartDAQSingleDevice(panelTitle, useBackground=0)
+			AS_HandlePossibleTransition(device, AS_EARLY_CHECK, call = 0)
+			AS_HandlePossibleTransition(device, AS_PRE_DAQ, call = 0)
+			DQS_StartDAQSingleDevice(device, useBackground=0)
 			break
 		case DAQ_BG_SINGLE_DEVICE:
-			AS_HandlePossibleTransition(panelTitle, AS_EARLY_CHECK, call = 0)
-			AS_HandlePossibleTransition(panelTitle, AS_PRE_DAQ, call = 0)
-			DQS_StartDAQSingleDevice(panelTitle, useBackground=1)
+			AS_HandlePossibleTransition(device, AS_EARLY_CHECK, call = 0)
+			AS_HandlePossibleTransition(device, AS_PRE_DAQ, call = 0)
+			DQS_StartDAQSingleDevice(device, useBackground=1)
 			break
 		case DAQ_BG_MULTI_DEVICE:
-			AS_HandlePossibleTransition(panelTitle, AS_EARLY_CHECK, call = 0)
-			AS_HandlePossibleTransition(panelTitle, AS_PRE_DAQ, call = 0)
-			DQM_StartDAQMultiDevice(panelTitle)
+			AS_HandlePossibleTransition(device, AS_EARLY_CHECK, call = 0)
+			AS_HandlePossibleTransition(device, AS_PRE_DAQ, call = 0)
+			DQM_StartDAQMultiDevice(device)
 			break
 		default:
 			DEBUGPRINT("Ignoring unknown value:", var=dataAcqRunMode)
@@ -236,32 +234,32 @@ End
 
 /// @brief Handle automatic bias current injection
 ///
-/// @param panelTitle Locked panel with test pulse running occasionally
+/// @param device Locked panel with test pulse running occasionally
 /// @param TPResults  Data from TP_ROAnalysis()
-Function DQ_ApplyAutoBias(panelTitle, TPResults)
-	string panelTitle
+Function DQ_ApplyAutoBias(device, TPResults)
+	string device
 	Wave TPResults
 
 	variable headStage, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
 	variable resistance, maximumAutoBiasCurrent, lastInvocation, curTime
 
-	if(DAP_DeviceIsUnlocked(panelTitle))
+	if(DAP_DeviceIsUnlocked(device))
 		return NaN
 	endif
 
-	Wave TPStorage = GetTPStorage(panelTitle)
+	Wave TPStorage = GetTPStorage(device)
 	lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
 	curTime = ticks * TICKS_TO_SECONDS
 
-	if( (curTime - lastInvocation) < DAG_GetNumericalValue(panelTitle, "setvar_Settings_AutoBiasInt"))
+	if( (curTime - lastInvocation) < DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasInt"))
 		return NaN
 	endif
 
 	DEBUGPRINT("DQ_ApplyAutoBias's turn, curTime=", var=curTime)
 	SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, curTime, format="%.06f")
 
-	Wave ampSettings = GetAmplifierParamStorageWave(panelTitle)
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	Wave ampSettings = GetAmplifierParamStorageWave(device)
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	for(headStage=0; headStage < NUM_HEADSTAGES; headStage+=1)
 
@@ -269,7 +267,7 @@ Function DQ_ApplyAutoBias(panelTitle, TPResults)
 			continue
 		endif
 
-		if(DAG_GetHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
+		if(DAG_GetHeadstageMode(device, headstage) != I_CLAMP_MODE)
 			continue
 		endif
 
@@ -307,11 +305,11 @@ Function DQ_ApplyAutoBias(panelTitle, TPResults)
 		DEBUGPRINT("current[A]=", var=current)
 		// only use part of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
-		current *= DAG_GetNumericalValue(panelTitle, "setvar_Settings_AutoBiasPerc") / 100
+		current *= DAG_GetNumericalValue(device, "setvar_Settings_AutoBiasPerc") / 100
 
 		// check if holding is enabled. If it is not, ignore holding current value.
-		if(AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN))
-			actualCurrent = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN, usePrefixes=0)
+		if(AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN))
+			actualCurrent = AI_SendToAmp(device, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN, usePrefixes=0)
 		else
 			actualCurrent = 0
 		endif
@@ -332,8 +330,8 @@ Function DQ_ApplyAutoBias(panelTitle, TPResults)
 		endif
 
 		DEBUGPRINT("current[A] to send=", var=current)
-		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnable", headStage, value=1, sendToAll=0)
-		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_IC", headstage, value=current * 1e12,sendToAll=0)
+		AI_UpdateAmpModel(device, "check_DatAcq_HoldEnable", headStage, value=1, sendToAll=0)
+		AI_UpdateAmpModel(device, "setvar_DataAcq_Hold_IC", headstage, value=current * 1e12,sendToAll=0)
 	endfor
 End
 
@@ -341,13 +339,13 @@ End
 Function DQ_GetNumDevicesWithDAQRunning()
 
 	variable numEntries, i, count
-	string list, panelTitle
+	string list, device
 
 	list = GetListOfLockedDevices()
 	numEntries = ItemsInList(list)
 	for(i= 0; i < numEntries;i += 1)
-		panelTitle = StringFromList(i, list)
-		NVAR daqMode=$GetDataAcqRunMode(panelTitle)
+		device = StringFromList(i, list)
+		NVAR daqMode=$GetDataAcqRunMode(device)
 
 		count += (daqMode != DAQ_NOT_RUNNING)
 	endfor

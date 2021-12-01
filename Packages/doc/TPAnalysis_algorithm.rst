@@ -145,10 +145,10 @@ The test pulse response is saved if the GUI checkbox was enabled by :cpp:func:`T
 
 .. code-block:: igorpro
 
-   WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+   WAVE GUIState = GetDA_EphysGuiStateNum(device)
 
    if(GUIState[0][%check_Settings_TP_SaveTP])
-     TP_StoreFullWave(panelTitle)
+     TP_StoreFullWave(device)
    endif
 
 
@@ -162,7 +162,7 @@ devices test pulse data folder.
 
 .. code-block:: igorpro
 
-   DFREF dfr = GetDeviceTestPulse(panelTitle)
+   DFREF dfr = GetDeviceTestPulse(device)
 
 The actual test pulse data is retrieved from OscilloscopeData, where the data
 points are stored in rows and the columns count the DAC, ADC and TTL channels
@@ -170,7 +170,7 @@ points are stored in rows and the columns count the DAC, ADC and TTL channels
 
 .. code-block:: igorpro
 
-   WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+   WAVE OscilloscopeData = GetOscilloscopeWave(device)
 
 Retrieve device specific Current Clamp and Voltage Clamp amplitudes. The values
 are in ``pA`` and ``mV`` and can be set on the front panel in the tab
@@ -182,7 +182,7 @@ due to the DAC, ADC, TTL order it is 1 for one enabled head stage,
 
 .. code-block:: igorpro
 
-   NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
+   NVAR ADChannelToMonitor = $GetADChannelToMonitor(device)
 
 Retrieve head stage properties, where rows count the active head stages and
 columns enumerate the properties. It is used later to decide if a certain head
@@ -190,7 +190,7 @@ stage operates in current clamp or voltage clamp mode.
 
 .. code-block:: igorpro
 
-   WAVE activeHSProp = GetActiveHSProperties(panelTitle)
+   WAVE activeHSProp = GetActiveHSProperties(device)
 
 The test pulse is centered on a baseline, the baselineFrac is a number < 1, that
 defines the fraction in front and after the test pulse. Example: With a typical
@@ -529,7 +529,7 @@ Finally the elapsed time since function start is printed to the debug output.
 .. code-block:: igorpro
 
    variable numADCs = columns
-   TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
-   DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+   TP_RecordTP(device, BaselineSSAvg, InstResistance, SSResistance, numADCs)
+   DQ_ApplyAutoBias(device, BaselineSSAvg, SSResistance)
 
    DEBUGPRINT_ELAPSED(referenceTime)

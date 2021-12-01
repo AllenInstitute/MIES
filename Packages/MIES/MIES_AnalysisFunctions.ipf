@@ -109,7 +109,7 @@
 /// \rst
 /// .. code-block:: igorpro
 ///
-///    Function MyAnalysisFunction(string panelTitle, struct AnalysisFunction_V3& s)
+///    Function MyAnalysisFunction(string device, struct AnalysisFunction_V3& s)
 ///        // ...
 ///    End
 ///
@@ -157,7 +157,7 @@
 
 /// @name Initial parameters for stimulation
 ///@{
-static StrConstant DEFAULT_DEVICE = "ITC18USB_Dev_0"        ///< panelTitle device
+static StrConstant DEFAULT_DEVICE = "ITC18USB_Dev_0"        ///< device device
 static StrConstant STIM_SET_LOCAL = "PulseTrain_150Hz_DA_0" ///< Initial stimulus set
 static Constant VM1_LOCAL         = -55                     ///< Initial holding potential
 static Constant VM2_LOCAL         = -85                     ///< Second holding potential to switch to
@@ -171,29 +171,29 @@ static Constant ITI_LOCAL         = 15                      ///< Inter-trial-int
 static Constant POST_DELAY = 150									 ///< Delay after stimulation event in which no other event can occur in ms
 ///@}
 
-Function TestAnalysisFunction_V1(panelTitle, eventType, DAQDataWave, headStage)
-	string panelTitle
+Function TestAnalysisFunction_V1(device, eventType, DAQDataWave, headStage)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage
 
-	printf "Analysis function version 1 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(eventType, EVENT_NAME_LIST), headStage
-	printf "Next sweep: %d\r", DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
+	printf "Analysis function version 1 called: device %s, eventType \"%s\", headstage %d\r", device, StringFromList(eventType, EVENT_NAME_LIST), headStage
+	printf "Next sweep: %d\r", DAG_GetNumericalValue(device, "SetVar_Sweep")
 End
 
-Function TestAnalysisFunction_V2(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
-	string panelTitle
+Function TestAnalysisFunction_V2(device, eventType, DAQDataWave, headStage, realDataLength)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage, realDataLength
 
-	printf "Analysis function version 2 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(eventType, EVENT_NAME_LIST), headStage
+	printf "Analysis function version 2 called: device %s, eventType \"%s\", headstage %d\r", device, StringFromList(eventType, EVENT_NAME_LIST), headStage
 
 	return 0
 End
 
-Function TestAnalysisFunction_V3(panelTitle, s)
-	string panelTitle
+Function TestAnalysisFunction_V3(device, s)
+	string device
 	STRUCT AnalysisFunction_V3& s
 
 	string names, name, type
@@ -259,7 +259,7 @@ Function TestAnalysisFunction_V3(panelTitle, s)
 			break
 	endswitch
 
-	printf "Analysis function version 3 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(s.eventType, EVENT_NAME_LIST), s.headStage
+	printf "Analysis function version 3 called: device %s, eventType \"%s\", headstage %d\r", device, StringFromList(s.eventType, EVENT_NAME_LIST), s.headStage
 
 	return 0
 End
@@ -267,8 +267,8 @@ End
 /// @brief Measure the time between mid sweep calls
 ///
 /// Used mainly for debugging.
-Function MeasureMidSweepTiming_V3(panelTitle, s)
-	string panelTitle
+Function MeasureMidSweepTiming_V3(device, s)
+	string device
 	STRUCT AnalysisFunction_V3& s
 
 	NVAR lastCall = $GetTemporaryVar()
@@ -292,8 +292,8 @@ Function MeasureMidSweepTiming_V3(panelTitle, s)
 	return 0
 End
 
-Function Enforce_VC(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
-	string panelTitle
+Function Enforce_VC(device, eventType, DAQDataWave, headStage, realDataLength)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage, realDataLength
@@ -302,10 +302,10 @@ Function Enforce_VC(panelTitle, eventType, DAQDataWave, headStage, realDataLengt
 	   return 0
 	endif
 
-	if(DAG_GetHeadstageMode(panelTitle, headStage) != V_CLAMP_MODE)
-		variable DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+	if(DAG_GetHeadstageMode(device, headStage) != V_CLAMP_MODE)
+		variable DAC = AFH_GetDACFromHeadstage(device, headstage)
 
-		string stimSetName = AFH_GetStimSetName(paneltitle, DAC, CHANNEL_TYPE_DAC)
+		string stimSetName = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 		printf "%s on DAC %d of headstage %d requires voltage clamp mode. Change clamp mode to voltage clamp to allow data acquistion\r" stimSetName, DAC, headStage
 		return 1
 	endif
@@ -313,8 +313,8 @@ Function Enforce_VC(panelTitle, eventType, DAQDataWave, headStage, realDataLengt
 	return 0
 End
 
-Function Enforce_IC(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
-	string panelTitle
+Function Enforce_IC(device, eventType, DAQDataWave, headStage, realDataLength)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage, realDataLength
@@ -323,9 +323,9 @@ Function Enforce_IC(panelTitle, eventType, DAQDataWave, headStage, realDataLengt
 	   return 0
 	endif
 
-	if(DAG_GetHeadstageMode(panelTitle, headStage) != I_CLAMP_MODE)
-		variable DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
-		string stimSetName = AFH_GetStimSetName(paneltitle, DAC, CHANNEL_TYPE_DAC)
+	if(DAG_GetHeadstageMode(device, headStage) != I_CLAMP_MODE)
+		variable DAC = AFH_GetDACFromHeadstage(device, headstage)
+		string stimSetName = AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 		printf "Stimulus set: %s on DAC: %d of headstage: %d requires current clamp mode. Change clamp mode to current clamp to allow data acquistion\r" stimSetName, DAC, headStage
 		return 1
 	endif
@@ -338,8 +338,8 @@ End
 // Starts with a pop-up menu to set initial parameters and then switches holding potential midway through total number of sweeps
 
 /// @brief Force active headstages into voltage clamp
-Function SetStimConfig_Vclamp(panelTitle, eventType, DAQDataWave, headStage)
-	string panelTitle
+Function SetStimConfig_Vclamp(device, eventType, DAQDataWave, headStage)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage
@@ -351,8 +351,8 @@ Function SetStimConfig_Vclamp(panelTitle, eventType, DAQDataWave, headStage)
 End
 
 /// @brief Force active headstages into current clamp
-Function SetStimConfig_Iclamp(panelTitle, eventType, DAQDataWave, headStage)
-	string panelTitle
+Function SetStimConfig_Iclamp(device, eventType, DAQDataWave, headStage)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage
@@ -364,8 +364,8 @@ Function SetStimConfig_Iclamp(panelTitle, eventType, DAQDataWave, headStage)
 End
 
 /// @brief Change holding potential midway through stim set
-Function ChangeHoldingPotential(panelTitle, eventType, DAQDataWave, headStage)
-	string panelTitle
+Function ChangeHoldingPotential(device, eventType, DAQDataWave, headStage)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage
@@ -376,13 +376,13 @@ Function ChangeHoldingPotential(panelTitle, eventType, DAQDataWave, headStage)
 End
 
 /// @brief Print last Stim Set run and headstage mode and holding potential
-Function LastStimSet(panelTitle, eventType, DAQDataWave, headStage)
-	string panelTitle
+Function LastStimSet(device, eventType, DAQDataWave, headStage)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage
 
-	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
 
 	LastStimSetRun()
 
@@ -590,8 +590,8 @@ End
 ///        the left over time at the 20th call.
 ///
 /// This function needs to be set for Pre DAQ, Mid Sweep and Post Sweep Event.
-Function TestPrematureSweepStop(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
-	string panelTitle
+Function TestPrematureSweepStop(device, eventType, DAQDataWave, headStage, realDataLength)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage, realDataLength
@@ -616,49 +616,49 @@ Function TestPrematureSweepStop(panelTitle, eventType, DAQDataWave, headStage, r
 	return 0
 End
 
-Function preDAQ_MP_mainConfig(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
-	string panelTitle
+Function preDAQ_MP_mainConfig(device, eventType, DAQDataWave, headStage, realDataLength)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
 
-	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 0)
+	PGC_SetAndActivateControl(device,"Check_DataAcq1_DistribDaq", val = 0)
 
-	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 1)
+	PGC_SetAndActivateControl(device,"Check_DataAcq1_dDAQOptOv", val = 1)
 
-	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = 1)
 End
 
-Function preDAQ_MP_IfMixed(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
-	string panelTitle
+Function preDAQ_MP_IfMixed(device, eventType, DAQDataWave, headStage, realDataLength)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
 
-	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
+	PGC_SetAndActivateControl(device,"Check_DataAcq1_DistribDaq", val = 1)
 
-	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 0)
+	PGC_SetAndActivateControl(device,"Check_DataAcq1_dDAQOptOv", val = 0)
 
-	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = 1)
 End
 
-Function preDAQ_MP_ChirpBlowout(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
-	string panelTitle
+Function preDAQ_MP_ChirpBlowout(device, eventType, DAQDataWave, headStage, realDataLength)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage, realDataLength
 
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
 
-	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 0)
+	PGC_SetAndActivateControl(device,"Check_DataAcq1_DistribDaq", val = 0)
 
-	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 0)
+	PGC_SetAndActivateControl(device,"Check_DataAcq1_dDAQOptOv", val = 0)
 
-	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = 1)
 End
 
 /// @brief Analysis function to set different "DA Scale" values for a sweep
@@ -670,8 +670,8 @@ End
 /// - Does currently nothing for "Mid Sweep" Event
 /// - Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)
 /// - All active headstages must be in "Current Clamp"
-Function AdjustDAScale(panelTitle, eventType, DAQDataWave, headStage, realDataLength)
-	string panelTitle
+Function AdjustDAScale(device, eventType, DAQDataWave, headStage, realDataLength)
+	string device
 	variable eventType
 	Wave DAQDataWave
 	variable headstage, realDataLength
@@ -683,20 +683,20 @@ Function AdjustDAScale(panelTitle, eventType, DAQDataWave, headStage, realDataLe
 	MAKE/D/FREE DAScales = {-25, 25, -50, 50, -100, 100}
 	// END CHANGE ME
 
-	WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+	WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(device)
 
 	switch(eventType)
 		case PRE_DAQ_EVENT:
 
-			if(DAG_GetHeadstageMode(panelTitle, headStage) != I_CLAMP_MODE)
+			if(DAG_GetHeadstageMode(device, headStage) != I_CLAMP_MODE)
 				printf "The analysis function \"%s\" can only be used in Current Clamp mode.\r", GetRTStackInfo(1)
 				return 1
 			endif
 
 			DAScalesIndex[headstage] = 0
-			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(panelTitle))
-			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
-			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(device))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(device))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(device))
 			KillWindow/Z $RESISTANCE_GRAPH
 			break
 		case POST_SWEEP_EVENT:
@@ -707,25 +707,25 @@ Function AdjustDAScale(panelTitle, eventType, DAQDataWave, headStage, realDataLe
 			break
 	endswitch
 
-	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
 	ASSERT(IsFinite(DAC), "This analysis function does not work with unassociated DA channels")
 
-	ADC = AFH_GetADCFromHeadstage(panelTitle, headstage)
+	ADC = AFH_GetADCFromHeadstage(device, headstage)
 	ASSERT(IsFinite(ADC), "This analysis function does not work with unassociated AD channels")
 
 	index = DAScalesIndex[headstage]
 	if(index < DimSize(DAScales, ROWS))
 		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-		PGC_SetAndActivateControl(panelTitle, ctrl, val = DAScales[index])
+		PGC_SetAndActivateControl(device, ctrl, val = DAScales[index])
 	endif
 
-	sprintf msg, "(%s, %d): DAScale = %g", panelTitle, headstage, (index < DimSize(DAScales, ROWS) ? DAScales[index] : NaN)
+	sprintf msg, "(%s, %d): DAScale = %g", device, headstage, (index < DimSize(DAScales, ROWS) ? DAScales[index] : NaN)
 	DEBUGPRINT(msg)
 
 	// index equals the number of sweeps in the stimset on the last call (*post* sweep event)
 	if(index > DimSize(DAScales, ROWS))
-		printf "(%s): Skipping analysis function \"%s\".\r", panelTitle, GetRTStackInfo(1)
-		printf "The stimset \"%s\" of headstage %d has too many sweeps, increase the size of DAScales.\r", AFH_GetStimSetName(panelTitle, DAC,  CHANNEL_TYPE_DAC), headstage
+		printf "(%s): Skipping analysis function \"%s\".\r", device, GetRTStackInfo(1)
+		printf "The stimset \"%s\" of headstage %d has too many sweeps, increase the size of DAScales.\r", AFH_GetStimSetName(device, DAC,  CHANNEL_TYPE_DAC), headstage
 		return NaN
 	endif
 
@@ -734,15 +734,15 @@ Function AdjustDAScale(panelTitle, eventType, DAQDataWave, headStage, realDataLe
 	endif
 
 	// only do something if we are called for the very last headstage
-	if(!DAG_HeadstageIsHighestActive(panelTitle, headstage))
+	if(!DAG_HeadstageIsHighestActive(device, headstage))
 		return NaN
 	endif
 
-	WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
+	WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(device)
 	ASSERT(WaveExists(sweep), "Expected a sweep for evalulation")
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues   = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
@@ -750,16 +750,16 @@ Function AdjustDAScale(panelTitle, eventType, DAQDataWave, headStage, realDataLe
 
 	CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
-	ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "A")
-	ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
+	ED_AddEntryToLabnotebook(device, "Delta I", deltaI, unit = "A")
+	ED_AddEntryToLabnotebook(device, "Delta V", deltaV, unit = "V")
 
-	FitResistance(panelTitle)
+	FitResistance(device)
 End
 
 /// Plot the resistance of the sweeps of the same RA cycle
 ///
 /// Usually called by PSQ_AdjustDAScale().
-Function FitResistance(string panelTitle, [variable showPlot])
+Function FitResistance(string device, [variable showPlot])
 	variable deltaVCol, DAScaleCol, i, j, sweepNo, idx, numEntries
 	variable lastWrittenSweep
 	string graph, textBoxString, trace
@@ -770,13 +770,13 @@ Function FitResistance(string panelTitle, [variable showPlot])
 		showPlot = !!showPlot
 	endif
 
-	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
+	sweepNo = AFH_GetLastSweepAcquired(device)
 
 	if(!IsFinite(sweepNo))
 		return NaN
 	endif
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 
 	if(!WaveExists(sweeps))
@@ -785,11 +785,11 @@ Function FitResistance(string panelTitle, [variable showPlot])
 		return NaN
 	endif
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
-	WAVE storageDeltaI = GetAnalysisFuncDAScaleDeltaI(panelTitle)
-	WAVE storageDeltaV = GetAnalysisFuncDAScaleDeltaV(panelTitle)
-	WAVE storageResist = GetAnalysisFuncDAScaleRes(panelTitle)
+	WAVE storageDeltaI = GetAnalysisFuncDAScaleDeltaI(device)
+	WAVE storageDeltaV = GetAnalysisFuncDAScaleDeltaV(device)
+	WAVE storageResist = GetAnalysisFuncDAScaleRes(device)
 
 	lastWrittenSweep = GetNumberFromWaveNote(storageDeltaV, "Last Sweep")
 
@@ -850,22 +850,22 @@ Function FitResistance(string panelTitle, [variable showPlot])
 		WAVE fitWave = $("fit_" + NameOfWave(storageDeltaV))
 		RemoveFromGraph/Z $NameOfWave(fitWave)
 
-		WAVE curveFitWave = GetAnalysisFuncDAScaleResFit(panelTitle, i)
+		WAVE curveFitWave = GetAnalysisFuncDAScaleResFit(device, i)
 		Duplicate/O fitWave, curveFitWave
 	endfor
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) storage = NaN
 	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Value]
-	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromFit", storage, unit = "Ohm")
+	ED_AddEntryToLabnotebook(device, "ResistanceFromFit", storage, unit = "Ohm")
 
 	storage = NaN
 	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Error]
-	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromFit_Err", storage, unit = "Ohm")
+	ED_AddEntryToLabnotebook(device, "ResistanceFromFit_Err", storage, unit = "Ohm")
 
 	KillOrMoveToTrash(wv=W_sigma)
 	KillOrMoveToTrash(wv=fitWave)
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	if(!WindowExists(RESISTANCE_GRAPH) && showPlot)
 		Display/K=1/N=$RESISTANCE_GRAPH
@@ -883,7 +883,7 @@ Function FitResistance(string panelTitle, [variable showPlot])
 			ModifyGraph/W=$RESISTANCE_GRAPH rgb($trace)=(s.red, s.green, s.blue)
 			ModifyGraph/W=$RESISTANCE_GRAPH mode($trace)=3
 
-			WAVE curveFitWave = GetAnalysisFuncDAScaleResFit(panelTitle, i)
+			WAVE curveFitWave = GetAnalysisFuncDAScaleResFit(device, i)
 			trace = "fit_HS_" + num2str(i)
 			AppendToGraph/W=$RESISTANCE_GRAPH/L=VertCrossing/B=HorizCrossing curveFitWave/TN=$trace
 			ModifyGraph/W=$RESISTANCE_GRAPH rgb($trace)=(s.red, s.green, s.blue)
@@ -897,7 +897,7 @@ Function FitResistance(string panelTitle, [variable showPlot])
 End
 
 /// @brief Helper for setting the DAScale
-Function SetDAScaleModOp(string panelTitle, variable headstage, variable modifier, string operator, [variable invert, variable roundTopA])
+Function SetDAScaleModOp(string device, variable headstage, variable modifier, string operator, [variable invert, variable roundTopA])
 
 	if(ParamIsDefault(invert))
 		invert = 0
@@ -913,10 +913,10 @@ Function SetDAScaleModOp(string panelTitle, variable headstage, variable modifie
 
 	strswitch(operator)
 		case "+":
-			SetDAScale(panelTitle, headstage, offset = invert ? - modifier : modifier, roundTopA = roundTopA)
+			SetDAScale(device, headstage, offset = invert ? - modifier : modifier, roundTopA = roundTopA)
 			break
 		case "*":
-			SetDAScale(panelTitle, headstage, relative = invert ? 1 / modifier : modifier, roundTopA = roundTopA)
+			SetDAScale(device, headstage, relative = invert ? 1 / modifier : modifier, roundTopA = roundTopA)
 			break
 		default:
 			ASSERT(0, "Invalid operator")
@@ -926,14 +926,14 @@ End
 
 /// @brief Set the DAScale value of the given headstage
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param headstage  MIES headstage
 /// @param absolute   (optional) DAScale value in `A` (Amperes)
 /// @param relative   (optional) relative DAScale modifier
 /// @param offset     (optional) offset DAScale value
 /// @param roundTopA  (optional, defaults to false) round the set DAScale to integer pA values
-Function SetDAScale(panelTitle, headstage, [absolute, relative, offset, roundTopA])
-	string panelTitle
+Function SetDAScale(device, headstage, [absolute, relative, offset, roundTopA])
+	string device
 	variable headstage, absolute, relative, offset, roundTopA
 
 	variable amps, DAC
@@ -947,10 +947,10 @@ Function SetDAScale(panelTitle, headstage, [absolute, relative, offset, roundTop
 		roundTopA = !!roundTopA
 	endif
 
-	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+	DAC = AFH_GetDACFromHeadstage(device, headstage)
 	ASSERT(IsFinite(DAC), "This analysis function does not work with unassociated DA channels")
 
-	DAUnit = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), index = DAC)
+	DAUnit = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), index = DAC)
 
 	// check for correct units
 	ASSERT(!cmpstr(DAunit, "pA"), "Unexpected DA Unit")
@@ -961,15 +961,15 @@ Function SetDAScale(panelTitle, headstage, [absolute, relative, offset, roundTop
 		amps = absolute / 1e-12
 	elseif(!ParamIsDefault(relative))
 		lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-		amps = DAG_GetNumericalValue(paneltitle, lbl, index = DAC) * relative
+		amps = DAG_GetNumericalValue(device, lbl, index = DAC) * relative
 	elseif(!ParamIsDefault(offset))
 		lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-		amps = DAG_GetNumericalValue(paneltitle, lbl, index = DAC) + offset
+		amps = DAG_GetNumericalValue(device, lbl, index = DAC) + offset
 	endif
 
 	amps = roundTopA ? round(amps) : amps
 	ASSERT(IsFinite(amps), "Invalid non-finite value")
-	PGC_SetAndActivateControl(panelTitle, ctrl, val = amps)
+	PGC_SetAndActivateControl(device, ctrl, val = amps)
 End
 
 /// @brief Return a list of required parameters
@@ -1028,7 +1028,7 @@ End
 /// - All active headstages must be in "Current Clamp"
 /// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on
 /// the next sweep if the measured resistance is smaller than 20MOhm
-Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
+Function ReachTargetVoltage(string device, STRUCT AnalysisFunction_V3& s)
 	variable sweepNo, index, i, targetV, prevActiveHS, prevSendToAllAmp
 	variable amps, result
 	variable autoBiasCheck, holdingPotential, indexing
@@ -1036,29 +1036,29 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
-			WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+			WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(device)
 
 			targetVoltagesIndex[s.headstage] = -1
 
-			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
+			if(!DAG_HeadstageIsHighestActive(device, s.headstage))
 				return NaN
 			endif
 
-			WAVE ampParam = GetAmplifierParamStorageWave(panelTitle)
-			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			WAVE ampParam = GetAmplifierParamStorageWave(device)
+			WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 				if(!statusHS[i])
 					continue
 				endif
 
-				if(DAG_GetHeadstageMode(panelTitle, i) != I_CLAMP_MODE)
-					printf "(%s) The analysis function %s does only work in clamp mode.\r", panelTitle, GetRTStackInfo(1)
+				if(DAG_GetHeadstageMode(device, i) != I_CLAMP_MODE)
+					printf "(%s) The analysis function %s does only work in clamp mode.\r", device, GetRTStackInfo(1)
 					ControlWindowToFront()
 					return 1
 				endif
 
-				SetDAScale(panelTitle, i, absolute=-20e-12)
+				SetDAScale(device, i, absolute=-20e-12)
 
 				autoBiasCheck = ampParam[%AutoBiasEnable][0][i]
 				holdingPotential = ampParam[%AutoBiasVcom][0][i]
@@ -1080,18 +1080,18 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 				endif
 			endfor
 
-			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(panelTitle))
-			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
-			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(device))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(device))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(device))
 			KillWindow/Z $RESISTANCE_GRAPH
 
-			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
+			PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
 
-			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
+			PGC_SetAndActivateControl(device,"Check_DataAcq1_DistribDaq", val = 1)
 
-			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 0)
+			PGC_SetAndActivateControl(device,"Check_DataAcq1_dDAQOptOv", val = 0)
 
-			PGC_SetAndActivateControl(panelTitle,"Setvar_DataAcq_dDAQDelay", val = 500)
+			PGC_SetAndActivateControl(device,"Setvar_DataAcq_dDAQDelay", val = 500)
 
 			indexing = !!AFH_GetAnalysisParamNumerical("EnableIndexing", s.params, defValue = 0)
 
@@ -1105,11 +1105,11 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 					return 1
 				endif
 
-				PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 1)
-				PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 1)
+				PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = 1)
+				PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = 1)
 
 				control = GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-				PGC_SetAndActivateControl(panelTitle, control , str = name)
+				PGC_SetAndActivateControl(device, control , str = name)
 
 				DFREF dfr = GetUniqueTempPath()
 				Make/D/N=(LABNOTEBOOK_LAYER_COUNT) dfr:autobiasV/WAVE=autobiasV
@@ -1125,7 +1125,7 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 					return 1
 				endif
 
-				ED_AddEntryToLabnotebook(panelTitle, "Autobias target voltage from dialog", autobiasV, unit = "mV", overrideSweepNo = s.sweepNo)
+				ED_AddEntryToLabnotebook(device, "Autobias target voltage from dialog", autobiasV, unit = "mV", overrideSweepNo = s.sweepNo)
 			endif
 			break
 		case POST_SWEEP_EVENT:
@@ -1133,24 +1133,24 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 			Make/FREE targetVoltages = {0.002, -0.002, -0.005, -0.01, -0.015} // units are Volts, i.e. 70mV = 0.070V
 			// END CHANGE ME
 
-			WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+			WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(device)
 
-			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 			targetVoltagesIndex[s.headstage] += 1
 
 			// only do something if we are called for the very last headstage
-			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
+			if(!DAG_HeadstageIsHighestActive(device, s.headstage))
 				return NaN
 			endif
 
-			WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
+			WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(device)
 			ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
 
 			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
 
-			WAVE numericalValues = GetLBNumericalValues(panelTitle)
-			WAVE textualValues   = GetLBTextualValues(panelTitle)
+			WAVE numericalValues = GetLBNumericalValues(device)
+			WAVE textualValues   = GetLBTextualValues(device)
 
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
 			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
@@ -1158,10 +1158,10 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 
 			CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
-			ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "A")
-			ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
+			ED_AddEntryToLabnotebook(device, "Delta I", deltaI, unit = "A")
+			ED_AddEntryToLabnotebook(device, "Delta V", deltaV, unit = "V")
 
-			FitResistance(panelTitle, showPlot = 1)
+			FitResistance(device, showPlot = 1)
 
 			WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
 			ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
@@ -1181,7 +1181,7 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 
 				// index equals the number of sweeps in the stimset on the last call (*post* sweep event)
 				if(index > DimSize(targetVoltages, ROWS))
-					printf "(%s): Skipping analysis function \"%s\".\r", panelTitle, GetRTStackInfo(1)
+					printf "(%s): Skipping analysis function \"%s\".\r", device, GetRTStackInfo(1)
 					printf "The stimset has too many sweeps, increase the size of DAScales.\r"
 					continue
 				endif
@@ -1196,25 +1196,25 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 
 				index = targetVoltagesIndex[i]
 				targetV = (index >= 0 && index < DimSize(targetVoltages, ROWS)) ? targetVoltages[index] : NaN
-				sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", panelTitle, i, resistanceFitted[i], targetV, amps
+				sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", device, i, resistanceFitted[i], targetV, amps
 				DEBUGPRINT(msg)
 
-				SetDAScale(panelTitle, i, absolute=amps)
+				SetDAScale(device, i, absolute=amps)
 			endfor
 			break
 		case POST_SET_EVENT:
-			if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
+			if(!DAG_HeadstageIsHighestActive(device, s.headstage))
 				return NaN
 			endif
 
-			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+			WAVE numericalValues = GetLBNumericalValues(device)
 			WAVE/Z autobiasFromDialog = GetLastSettingSCI(numericalValues, s.sweepNo, LABNOTEBOOK_USER_PREFIX + "Autobias target voltage from dialog", s.headstage, UNKNOWN_MODE)
 			if(WaveExists(autobiasFromDialog))
-				WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+				WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
-				prevActiveHS = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
-				prevSendToAllAmp = GetCheckBoxState(panelTitle, "Check_DataAcq_SendToAllAmp")
-				PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
+				prevActiveHS = GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage")
+				prevSendToAllAmp = GetCheckBoxState(device, "Check_DataAcq_SendToAllAmp")
+				PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
 
 				for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1223,15 +1223,15 @@ Function ReachTargetVoltage(string panelTitle, STRUCT AnalysisFunction_V3& s)
 					endif
 
 					ASSERT(IsFinite(autoBiasFromDialog[i]), "Autobias target voltage can not be NaN")
-					PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = i, switchTab = 1)
-					PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_AutoBiasV", val = autoBiasFromDialog[i])
+					PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = i, switchTab = 1)
+					PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = autoBiasFromDialog[i])
 				endfor
 
-				if(prevActiveHS != GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage"))
-					PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = prevActiveHS)
+				if(prevActiveHS != GetSliderPositionIndex(device, "slider_DataAcq_ActiveHeadstage"))
+					PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = prevActiveHS)
 				endif
 
-				PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp", val = prevSendToAllAmp)
+				PGC_SetAndActivateControl(device, "Check_DataAcq_SendToAllAmp", val = prevSendToAllAmp)
 			endif
 			break
 		default:
@@ -1264,8 +1264,8 @@ End
 ///
 /// \endrst
 ///
-Function SetControlInEvent(panelTitle, s)
-	string panelTitle
+Function SetControlInEvent(device, s)
+	string device
 	STRUCT AnalysisFunction_V3 &s
 
 	string guiElements, guiElem, type, valueStr, event, msg, win, windowsWithGUIElement, databrowser, str
@@ -1275,7 +1275,7 @@ Function SetControlInEvent(panelTitle, s)
 		return NaN
 	endif
 
-	if(!DAG_HeadstageIsHighestActive(panelTitle, s.headstage))
+	if(!DAG_HeadstageIsHighestActive(device, s.headstage))
 		return NaN
 	endif
 
@@ -1285,8 +1285,8 @@ Function SetControlInEvent(panelTitle, s)
 	for(i = 0; i < numEntries; i += 1)
 		guiElem = StringFromList(i, guiElements)
 
-		if(ControlExists(panelTitle, guiElem))
-			windowsWithGUIElement = panelTitle
+		if(ControlExists(device, guiElem))
+			windowsWithGUIElement = device
 		else
 			windowsWithGUIElement = FindControl(guiElem)
 		endif
@@ -1296,7 +1296,7 @@ Function SetControlInEvent(panelTitle, s)
 		if(numMatches == 1)
 			win = StringFromList(0, windowsWithGUIElement)
 		elseif(numMatches > 1)
-			printf "(%s): The analysis parameter %s is a control which is present in multiple panels or graphs.\r", panelTitle, guiElem
+			printf "(%s): The analysis parameter %s is a control which is present in multiple panels or graphs.\r", device, guiElem
 			ControlWindowToFront()
 			continue
 		else
@@ -1308,20 +1308,20 @@ Function SetControlInEvent(panelTitle, s)
 			if(numMatches == 1)
 				win = StringFromList(0, windowsWithGUIElement)
 			elseif(numMatches > 1)
-				databrowser = DB_FindDataBrowser(panelTitle)
+				databrowser = DB_FindDataBrowser(device)
 				str = GrepList(windowsWithGUIElement, "^\\Q" + databrowser + "\\E")
 				if(!IsEmpty(str))
 					// the notebook belongs to the databrowser associated to the DAEphys panel
 					win = StringFromList(0, str)
 				else
-					printf "(%s): The analysis parameter %s is a notebook which is present in multiple panels or graphs.\r", panelTitle, guiElem
+					printf "(%s): The analysis parameter %s is a notebook which is present in multiple panels or graphs.\r", device, guiElem
 					ControlWindowToFront()
 					continue
 				endif
 			else
 				ASSERT(numMatches == 0, "invalid code")
 
-				printf "(%s): The analysis parameter %s does not exist as control or notebook in one of the open panels and graphs.\r", panelTitle, guiElem
+				printf "(%s): The analysis parameter %s does not exist as control or notebook in one of the open panels and graphs.\r", device, guiElem
 				ControlWindowToFront()
 				continue
 			endif
@@ -1331,7 +1331,7 @@ Function SetControlInEvent(panelTitle, s)
 		type = AFH_GetAnalysisParamType(guiElem, s.params)
 
 		if(cmpstr(type, "textwave"))
-			printf "(%s): The analysis parameter's %s type is not \"textwave\".\r", panelTitle, guiElem
+			printf "(%s): The analysis parameter's %s type is not \"textwave\".\r", device, guiElem
 			ControlWindowToFront()
 			return 1
 		endif
@@ -1339,11 +1339,11 @@ Function SetControlInEvent(panelTitle, s)
 		WAVE/T/Z data = AFH_GetAnalysisParamTextWave(guiElem, s.params)
 
 		if(!WaveExists(data))
-			printf "(%s): The analysis parameter's %s payload is empty.\r", panelTitle, guiElem
+			printf "(%s): The analysis parameter's %s payload is empty.\r", device, guiElem
 			ControlWindowToFront()
 			return 1
 		elseif(DimSize(data, ROWS) == 0 || !IsEven(DimSize(data, ROWS)) || DimSize(data, COLS) != 0)
-			printf "(%s): The analysis parameter's %s payload has not a multiple of two rows.\r", panelTitle, guiElem
+			printf "(%s): The analysis parameter's %s payload has not a multiple of two rows.\r", device, guiElem
 			ControlWindowToFront()
 			return 1
 		endif
@@ -1356,16 +1356,16 @@ Function SetControlInEvent(panelTitle, s)
 
 			// backwards compatibility
 			if(!cmpstr(event, "Pre Sweep"))
-				printf "(%s): The analysis parameter's %s event \"%s\" is deprecated. Please use the new name \"%s\" and see the documentation for it's slightly different properties.\r", panelTitle, guiElem, event, StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST)
+				printf "(%s): The analysis parameter's %s event \"%s\" is deprecated. Please use the new name \"%s\" and see the documentation for it's slightly different properties.\r", device, guiElem, event, StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST)
 				event = StringFromList(PRE_SWEEP_CONFIG_EVENT, EVENT_NAME_LIST)
 			endif
 
 			if(WhichListItem(event, EVENT_NAME_LIST, ";", 0, 0) == -1 || WhichListItem(event, "Mid Sweep;Generic", ";", 0, 0) != -1)
-				printf "(%s): The analysis parameter's %s event \"%s\" is invalid.\r", panelTitle, guiElem, event
+				printf "(%s): The analysis parameter's %s event \"%s\" is invalid.\r", device, guiElem, event
 				ControlWindowToFront()
 				return 1
 			elseif(WhichListItem(guiElem, CONTROLS_DISABLE_DURING_DAQ, ";", 0, 0) != -1 && WhichListItem(event, "Pre DAQ;Post DAQ", ";", 0, 0) == -1)
-				printf "(%s): The analysis parameter %s is a control which can only be changed in Pre/Post DAQ.\r", panelTitle, guiElem
+				printf "(%s): The analysis parameter %s is a control which can only be changed in Pre/Post DAQ.\r", device, guiElem
 				ControlWindowToFront()
 				return 1
 			endif
@@ -1385,7 +1385,7 @@ Function SetControlInEvent(panelTitle, s)
 				case WINTYPE_GRAPH:
 				case WINTYPE_PANEL:
 					if(IsControlDisabled(win, guiElem))
-						printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", panelTitle, guiElem
+						printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", device, guiElem
 						ControlWindowToFront()
 						return 1
 					endif
@@ -1400,7 +1400,7 @@ Function SetControlInEvent(panelTitle, s)
 						case CONTROL_TYPE_CHART:
 						case CONTROL_TYPE_GROUPBOX:
 						case CONTROL_TYPE_TITLEBOX:
-							printf "(%s): The analysis parameter %s is a control which can not be set. Please fix the stimulus set.\r", panelTitle, guiElem
+							printf "(%s): The analysis parameter %s is a control which can not be set. Please fix the stimulus set.\r", device, guiElem
 							ControlWindowToFront()
 							break
 						default:

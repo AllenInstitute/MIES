@@ -12,7 +12,7 @@
 /// @brief Add numerical/textual entries to the labnotebook
 ///
 /// @see ED_createTextNotes, ED_createWaveNote
-Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, string panelTitle, variable entrySourceType)
+Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, string device, variable entrySourceType)
 
 	ASSERT(DimSize(vals, ROWS)   == 1, "Mismatched row count")
 	ASSERT(DimSize(vals, COLS)   == DimSize(keys, COLS), "Mismatched column count")
@@ -22,9 +22,9 @@ Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, st
 	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
 
 	if(IsTextWave(vals))
-		ED_createTextNotes(vals, keys, sweepNo, panelTitle, entrySourceType)
+		ED_createTextNotes(vals, keys, sweepNo, device, entrySourceType)
 	else
-		ED_createWaveNotes(vals, keys, sweepNo, panelTitle, entrySourceType)
+		ED_createWaveNotes(vals, keys, sweepNo, device, entrySourceType)
 	endif
 End
 
@@ -39,26 +39,26 @@ End
 /// @param incomingTextualValues  incoming Text Documentation Wave sent by the each reporting subsystem
 /// @param incomingTextualKeys    incoming Text Documentation key wave that is used to reference the incoming settings wave
 /// @param sweepNo                sweep number
-/// @param panelTitle             device
+/// @param device             device
 /// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
-static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo, panelTitle, entrySourceType)
+static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo, device, entrySourceType)
 	wave/T incomingTextualValues
 	wave/T incomingTextualKeys
-	string panelTitle
+	string device
 	variable sweepNo, entrySourceType
 
 	variable rowIndex, numCols, i, lastValidIncomingLayer, state
 	string timestamp
 
-	WAVE/T textualValues = GetLBTextualValues(panelTitle)
-	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
+	WAVE/T textualValues = GetLBTextualValues(device)
+	WAVE/T textualKeys   = GetLBTextualKeys(device)
 
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
 
 	textualValues[rowIndex][0][] = num2istr(sweepNo)
 	textualValues[rowIndex][3][] = num2istr(entrySourceType)
 
-	state = ROVar(GetAcquisitionState(panelTitle))
+	state = ROVar(GetAcquisitionState(device))
 	textualValues[rowIndex][4][] = num2istr(state)
 
 	// store the current time in a variable first
@@ -98,26 +98,26 @@ End
 /// @param incomingNumericalValues settingsWave sent by the each reporting subsystem
 /// @param incomingNumericalKeys   key wave that is used to reference the incoming settings wave
 /// @param sweepNo                 sweep number
-/// @param panelTitle              device
+/// @param device              device
 /// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
-static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKeys, sweepNo, panelTitle, entrySourceType)
+static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKeys, sweepNo, device, entrySourceType)
 	wave incomingNumericalValues
 	wave/T incomingNumericalKeys
-	string panelTitle
+	string device
 	variable sweepNo
 	variable entrySourceType
 
 	variable rowIndex, numCols, lastValidIncomingLayer, i, timestamp, state
 
-	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE/T numericalKeys = GetLBNumericalKeys(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
 
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, numericalKeys, numericalValues, rowIndex)
 
 	numericalValues[rowIndex][0][] = sweepNo
 	numericalValues[rowIndex][3][] = entrySourceType
 
-	state = ROVar(GetAcquisitionState(panelTitle))
+	state = ROVar(GetAcquisitionState(device))
 	numericalValues[rowIndex][4][] = state
 
 	// store the current time in a variable first
@@ -167,7 +167,7 @@ End
 ///		WAVE/Z settings = GetLastSetting(numericalValues, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
 /// \endrst
 ///
-/// @param panelTitle      device
+/// @param device      device
 /// @param key             name under which to store the entry.
 /// @param values          entry to add, wave can be numeric (floating point) or text, must have
 ///                        #LABNOTEBOOK_LAYER_COUNT rows. It can be all NaN or empty (text), this is useful
@@ -179,8 +179,8 @@ End
 ///                        given sweep number. Mostly useful for adding
 ///                        labnotebook entries during #MID_SWEEP_EVENT for
 ///                        analysis functions.
-Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance, overrideSweepNo])
-	string panelTitle, key
+Function ED_AddEntryToLabnotebook(device, key, values, [unit, tolerance, overrideSweepNo])
+	string device, key
 	WAVE values
 	string unit
 	variable tolerance, overrideSweepNo
@@ -220,7 +220,7 @@ Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance, ove
 	endif
 
 	if(ParamIsDefault(overrideSweepNo))
-		sweepNo = AFH_GetLastSweepAcquired(panelTitle)
+		sweepNo = AFH_GetLastSweepAcquired(device)
 	else
 		ASSERT(isInteger(overrideSweepNo) && overrideSweepNo >= 0, "Invalid override sweep number")
 		sweepNo = overrideSweepNo
@@ -236,22 +236,22 @@ Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance, ove
 
 	ASSERT(strlen(keys[0]) < MAX_OBJECT_NAME_LENGTH_IN_BYTES, "key is too long: \"" + keys[0] + "\"")
 
-	ED_AddEntriesToLabnotebook(valuesReshaped, keys, sweepNo, panelTitle, UNKNOWN_MODE)
+	ED_AddEntriesToLabnotebook(valuesReshaped, keys, sweepNo, device, UNKNOWN_MODE)
 End
 
 /// @brief Record changed labnotebook entries compared to the last sweep to the sweep wave note
 ///
 /// Honours tolerances defined in the keywave and LABNOTEBOOK_BINARY_UNIT values
-static Function ED_WriteChangedValuesToNote(panelTitle, sweepNo)
-	string panelTitle
+static Function ED_WriteChangedValuesToNote(device, sweepNo)
+	string device
 	variable sweepNo
 
 	string key, factor, unit, text, frontLabel
 	string str = ""
 	variable tolerance, i, j, numRows, numCols, err
 
-	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE/T numericalKeys = GetLBNumericalKeys(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
 
 	// prefill the row cache for the labnotebook
 	WAVE/Z junk = GetLastSetting(numericalValues, sweepNo, "TimeStamp", UNKNOWN_MODE)
@@ -319,7 +319,7 @@ static Function ED_WriteChangedValuesToNote(panelTitle, sweepNo)
 	endfor
 
 	if(!isEmpty(str))
-		WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
+		WAVE sweepWave = GetSweepWave(device, sweepNo)
 		Note sweepWave, str
 	endif
 End
@@ -329,8 +329,8 @@ End
 /// Textual version.
 ///
 /// Honours tolerances defined in the keywave and LABNOTEBOOK_BINARY_UNIT values
-static Function ED_WriteChangedValuesToNoteText(panelTitle, sweepNo)
-	string panelTitle
+static Function ED_WriteChangedValuesToNoteText(device, sweepNo)
+	string device
 	variable sweepNo
 
 	string key, factor, text, frontLabel
@@ -343,8 +343,8 @@ static Function ED_WriteChangedValuesToNoteText(panelTitle, sweepNo)
 	variable firstPrevious = LABNOTEBOOK_GET_RANGE
 	variable lastPrevious  = LABNOTEBOOK_GET_RANGE
 
-	WAVE/T textualValues = GetLBTextualValues(panelTitle)
-	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
+	WAVE/T textualValues = GetLBTextualValues(device)
+	WAVE/T textualKeys   = GetLBTextualKeys(device)
 
 	// prefill the row cache for the labnotebook
 	WAVE/Z junk = GetLastSetting(textualValues, sweepNo, "TimeStamp", UNKNOWN_MODE)
@@ -401,7 +401,7 @@ static Function ED_WriteChangedValuesToNoteText(panelTitle, sweepNo)
 	endfor
 
 	if(!isEmpty(str))
-		WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
+		WAVE sweepWave = GetSweepWave(device, sweepNo)
 		Note sweepWave, str
 	endif
 End
@@ -484,61 +484,61 @@ End
 /// @brief Remember the "exact" start of the sweep
 ///
 /// Should be called immediately after HW_StartAcq().
-Function ED_MarkSweepStart(panelTitle)
-	string panelTitle
+Function ED_MarkSweepStart(device)
+	string device
 
-	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle)
+	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(device)
 
 	sweepSettingsTxtWave[0][%$HIGH_PREC_SWEEP_START_KEY][INDEP_HEADSTAGE] = GetISO8601TimeStamp(numFracSecondsDigits = 3)
 End
 
 /// @brief Add sweep specific information to the labnotebook
-Function ED_createWaveNoteTags(panelTitle, sweepCount)
-	string panelTitle
+Function ED_createWaveNoteTags(device, sweepCount)
+	string device
 	variable sweepCount
 
 	variable i, j, refITI, ITI
 
-	WAVE sweepSettingsWave = GetSweepSettingsWave(panelTitle)
-	WAVE/T sweepSettingsKey = GetSweepSettingsKeyWave(panelTitle)
-	ED_AddEntriesToLabnotebook(sweepSettingsWave, sweepSettingsKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
+	WAVE sweepSettingsWave = GetSweepSettingsWave(device)
+	WAVE/T sweepSettingsKey = GetSweepSettingsKeyWave(device)
+	ED_AddEntriesToLabnotebook(sweepSettingsWave, sweepSettingsKey, SweepCount, device, DATA_ACQUISITION_MODE)
 
-	ITI = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_ITI")
-	refITI = GetSweepSettingsWave(panelTitle)[0][%$"Inter-trial interval"][INDEP_HEADSTAGE]
+	ITI = DAG_GetNumericalValue(device, "SetVar_DataAcq_ITI")
+	refITI = GetSweepSettingsWave(device)[0][%$"Inter-trial interval"][INDEP_HEADSTAGE]
 	if(!CheckIfClose(ITI, refITI, tol = 1e-3))
 		Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
 		vals[0][0][INDEP_HEADSTAGE] = ITI
 
 		Make/T/FREE/N=(3, 1) keys
-		WAVE/T sweepSettingsKeyWave = GetSweepSettingsKeyWave(panelTitle)
+		WAVE/T sweepSettingsKeyWave = GetSweepSettingsKeyWave(device)
 		keys[0] = sweepSettingsKeyWave[0][%$"Inter-trial interval"]
 		keys[1] = sweepSettingsKeyWave[1][%$"Inter-trial interval"]
 		keys[2] = sweepSettingsKeyWave[2][%$"Inter-trial interval"]
-		ED_AddEntriesToLabnotebook(vals, keys, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
+		ED_AddEntriesToLabnotebook(vals, keys, sweepCount, device, DATA_ACQUISITION_MODE)
 	endif
 
-	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle)
-	WAVE/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle)
-	ED_AddEntriesToLabnotebook(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
+	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(device)
+	WAVE/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(device)
+	ED_AddEntriesToLabnotebook(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, device, DATA_ACQUISITION_MODE)
 
-	if(DAG_GetNumericalValue(panelTitle, "check_Settings_SaveAmpSettings"))
-		AI_FillAndSendAmpliferSettings(panelTitle, sweepCount)
+	if(DAG_GetNumericalValue(device, "check_Settings_SaveAmpSettings"))
+		AI_FillAndSendAmpliferSettings(device, sweepCount)
 		// function for debugging
-		// AI_createDummySettingsWave(panelTitle, SweepNo)
+		// AI_createDummySettingsWave(device, SweepNo)
 	endif
 
-	ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
+	ED_createAsyncWaveNoteTags(device, sweepCount)
 
 	// TP settings, especially useful if "global TP insertion" is active
-	ED_TPSettingsDocumentation(panelTitle, sweepCount, DATA_ACQUISITION_MODE)
+	ED_TPSettingsDocumentation(device, sweepCount, DATA_ACQUISITION_MODE)
 
-	ED_WriteChangedValuesToNote(panelTitle, sweepCount)
-	ED_WriteChangedValuesToNoteText(panelTitle, sweepCount)
+	ED_WriteChangedValuesToNote(device, sweepCount)
+	ED_WriteChangedValuesToNoteText(device, sweepCount)
 End
 
 /// @brief Write the user comment from the DA_Ephys panel to the labnotebook
-Function ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
-	string panelTitle
+Function ED_WriteUserCommentToLabNB(device, comment, sweepNo)
+	string device
 	string comment
 	variable sweepNo
 
@@ -551,19 +551,19 @@ Function ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
 	values[][][INDEP_HEADSTAGE] = comment
 
-	ED_AddEntriesToLabnotebook(values, keys, sweepNo, panelTitle, UNKNOWN_MODE)
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, UNKNOWN_MODE)
 End
 
 /// @brief This function is used to create wave notes for the informations found in the Asynchronous tab in the DA_Ephys panel
-static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
-	string panelTitle
+static Function ED_createAsyncWaveNoteTags(device, sweepCount)
+	string device
 	Variable sweepCount
 
 	string title, unit, str, ctrl
 	variable minSettingValue, maxSettingValue, i, scaledValue
 	variable redoLastSweep
 
-	WAVE statusAsync = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ASYNC)
+	WAVE statusAsync = DAG_GetChannelState(device, CHANNEL_TYPE_ASYNC)
 
 	if(IsConstant(statusAsync, 0))
 		return NaN
@@ -576,10 +576,10 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 		endif
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
-		title = DAG_GetTextualValue(panelTitle, ctrl, index = i)
+		title = DAG_GetTextualValue(device, ctrl, index = i)
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
-		unit = DAG_GetTextualValue(panelTitle, ctrl, index = i)
+		unit = DAG_GetTextualValue(device, ctrl, index = i)
 
 		WAVE asyncSettingsWave = GetAsyncSettingsWave()
 		WAVE/T asyncSettingsKey = GetAsyncSettingsKeyWave(asyncSettingsWave, i, title, unit)
@@ -590,17 +590,17 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 		asyncSettingsWave[0][%ADOnOff][INDEP_HEADSTAGE] = CHECKBOX_SELECTED
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
-		asyncSettingsWave[0][%ADGain][INDEP_HEADSTAGE] = DAG_GetNumericalValue(panelTitle, ctrl, index = i)
+		asyncSettingsWave[0][%ADGain][INDEP_HEADSTAGE] = DAG_GetNumericalValue(device, ctrl, index = i)
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-		asyncSettingsWave[0][%AlarmOnOff][INDEP_HEADSTAGE] = DAG_GetNumericalValue(panelTitle, ctrl, index = i)
+		asyncSettingsWave[0][%AlarmOnOff][INDEP_HEADSTAGE] = DAG_GetNumericalValue(device, ctrl, index = i)
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-		minSettingValue = DAG_GetNumericalValue(panelTitle, ctrl, index = i)
+		minSettingValue = DAG_GetNumericalValue(device, ctrl, index = i)
 		asyncSettingsWave[0][%AlarmMin] = minSettingValue
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-		maxSettingValue = DAG_GetNumericalValue(panelTitle, ctrl, index = i)
+		maxSettingValue = DAG_GetNumericalValue(device, ctrl, index = i)
 		asyncSettingsWave[0][%AlarmMax] = maxSettingValue
 
 		// Take the Min and Max values and use them for setting the tolerance value in the measurement key wave
@@ -610,12 +610,12 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 
 		asyncSettingsTxtWave[0][%Unit][INDEP_HEADSTAGE] = unit
 
-		scaledValue = ASD_ReadChannel(panelTitle, i)
+		scaledValue = ASD_ReadChannel(device, i)
 
 		// put the measurement value into the async settings wave for creation of wave notes
 		asyncSettingsWave[0][%MeasuredValue][INDEP_HEADSTAGE] = scaledValue
 
-		if(ASD_CheckAsynAlarmState(panelTitle, i, scaledValue))
+		if(ASD_CheckAsynAlarmState(device, i, scaledValue))
 			beep
 			print time() + " !!!!!!!!!!!!! " + title + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
 			ControlWindowToFront()
@@ -623,26 +623,26 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 			redoLastSweep = 1
 		endif
 
-		ED_AddEntriesToLabnotebook(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
-		ED_AddEntriesToLabnotebook(asyncSettingsWave, asyncSettingsKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
+		ED_AddEntriesToLabnotebook(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, device, DATA_ACQUISITION_MODE)
+		ED_AddEntriesToLabnotebook(asyncSettingsWave, asyncSettingsKey, sweepCount, device, DATA_ACQUISITION_MODE)
 	endfor
 
-	if(redoLastSweep && DAG_GetNumericalValue(panelTitle, "Check_Settings_AlarmAutoRepeat"))
-		RA_SkipSweeps(panelTitle, -1)
+	if(redoLastSweep && DAG_GetNumericalValue(device, "Check_Settings_AlarmAutoRepeat"))
+		RA_SkipSweeps(device, -1)
 	endif
 End
 
 /// @brief Stores test pulse related data in the labnotebook
-Function ED_TPDocumentation(panelTitle)
-	string panelTitle
+Function ED_TPDocumentation(device)
+	string device
 
 	variable sweepNo, RTolerance
 	variable i, j
 
-	WAVE hsProp = GetHSProperties(panelTitle)
-	WAVE TPSettings = GetTPsettings(panelTitle)
-	WAVE TPResults = GetTPResults(panelTitle)
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE hsProp = GetHSProperties(device)
+	WAVE TPSettings = GetTPsettings(device)
+	WAVE TPResults = GetTPResults(device)
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 
 	Make/FREE/T/N=(3, 12) TPKeyWave
 	Make/FREE/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
@@ -704,14 +704,14 @@ Function ED_TPDocumentation(panelTitle)
 			continue
 		endif
 
-		if(AI_SelectMultiClamp(panelTitle, i) != AMPLIFIER_CONNECTION_SUCCESS)
+		if(AI_SelectMultiClamp(device, i) != AMPLIFIER_CONNECTION_SUCCESS)
 			continue
 		endif
 
-		TPSettingsWave[0][4][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPCAP_FUNC, NaN, selectAmp = 0)
-		TPSettingsWave[0][5][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPCAP_FUNC, NaN, selectAmp = 0)
-		TPSettingsWave[0][6][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPTAU_FUNC, NaN, selectAmp = 0)
-		TPSettingsWave[0][7][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN, selectAmp = 0)
+		TPSettingsWave[0][4][i] = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETFASTCOMPCAP_FUNC, NaN, selectAmp = 0)
+		TPSettingsWave[0][5][i] = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETSLOWCOMPCAP_FUNC, NaN, selectAmp = 0)
+		TPSettingsWave[0][6][i] = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETFASTCOMPTAU_FUNC, NaN, selectAmp = 0)
+		TPSettingsWave[0][7][i] = AI_SendToAmp(device, i, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN, selectAmp = 0)
 	endfor
 
 	TPSettingsWave[0][1][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? TPResults[%BaselineSteadyState][r] : NaN
@@ -721,12 +721,12 @@ Function ED_TPDocumentation(panelTitle)
 	TPSettingsWave[0][10][0, NUM_HEADSTAGES - 1] = hsProp[r][%ADC]
 	TPSettingsWave[0][11][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode]
 
-	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, TEST_PULSE_MODE)
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, device, TEST_PULSE_MODE)
 
-	TP_UpdateTPLBNSettings(panelTitle)
+	TP_UpdateTPLBNSettings(device)
 
-	ED_TPSettingsDocumentation(panelTitle, sweepNo, TEST_PULSE_MODE)
+	ED_TPSettingsDocumentation(device, sweepNo, TEST_PULSE_MODE)
 End
 
 /// @brief Document the settings of the Testpulse
@@ -734,12 +734,12 @@ End
 /// The source type entry is not fixed. We want to document the testpulse
 /// settings during ITI and the testpulse settings for plain test pulses.
 ///
-/// @param panelTitle      device
+/// @param device      device
 /// @param sweepNo         sweep number
 /// @param entrySourceType type of reporting subsystem, one of @ref DataAcqModes
-static Function ED_TPSettingsDocumentation(string panelTitle, variable sweepNo, variable entrySourceType)
-	WAVE TPSettingsLBN        = GetTPSettingsLabnotebook(panelTitle)
-	WAVE TPSettingsLBNKeyWave = GetTPSettingsLabnotebookKeyWave(panelTitle)
+static Function ED_TPSettingsDocumentation(string device, variable sweepNo, variable entrySourceType)
+	WAVE TPSettingsLBN        = GetTPSettingsLabnotebook(device)
+	WAVE TPSettingsLBNKeyWave = GetTPSettingsLabnotebookKeyWave(device)
 
-	ED_AddEntriesToLabnotebook(TPSettingsLBN, TPSettingsLBNKeyWave, sweepNo, panelTitle, entrySourceType)
+	ED_AddEntriesToLabnotebook(TPSettingsLBN, TPSettingsLBNKeyWave, sweepNo, device, entrySourceType)
 End

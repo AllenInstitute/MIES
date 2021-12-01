@@ -300,7 +300,7 @@ Structure TPAnalysisInput
 	variable tpLengthPoints
 	variable readTimeStamp
 	variable hsIndex
-	string panelTitle
+	string device
 	variable measurementMarker
 	variable activeADCs
 EndStructure

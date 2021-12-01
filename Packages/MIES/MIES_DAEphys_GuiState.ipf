@@ -10,88 +10,88 @@
 /// @brief __DAG__ Routines dealing with the DA_Ephys GUI state waves
 
 /// @brief Records the state of the DA_ephys panel into the numerical GUI state wave
-Function DAG_RecordGuiStateNum(panelTitle, [GUIState])
-	string panelTitle
+Function DAG_RecordGuiStateNum(device, [GUIState])
+	string device
 	WAVE GUIState
 
 	variable i, numEntries
 	string ctrlName, lbl
 
 	if(ParamIsDefault(GuiState))
-		Wave GUIState = GetDA_EphysGuiStateNum(panelTitle)
+		Wave GUIState = GetDA_EphysGuiStateNum(device)
 	endif
 
-	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE state = DAG_ControlStatusWave(device, CHANNEL_TYPE_HEADSTAGE)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = DAG_GetAllHSMode(panelTitle)
+	WAVE state = DAG_GetAllHSMode(device)
 	GUIState[0, DimSize(state, ROWS) - 1][%HSMode] = state[p]
 
-	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE state = DAG_ControlStatusWave(device, CHANNEL_TYPE_DAC)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+	WAVE state = GetAllDAEphysSetVarNum(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	WAVE state = GetAllDAEphysSetVarNum(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	WAVE state = GetAllDAEphysPopMenuIndex(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+	WAVE state = GetAllDAEphysPopMenuIndex(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE state = DAG_ControlStatusWave(device, CHANNEL_TYPE_ADC)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+	WAVE state = GetAllDAEphysSetVarNum(device, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE state = DAG_ControlStatusWave(device, CHANNEL_TYPE_TTL)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+	WAVE state = GetAllDAEphysPopMenuIndex(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+	WAVE state = GetAllDAEphysPopMenuIndex(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)
+	WAVE state = DAG_ControlStatusWave(device, CHANNEL_TYPE_ASYNC)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+	WAVE state = GetAllDAEphysSetVarNum(device, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_ALARM)
+	WAVE state = DAG_ControlStatusWave(device, CHANNEL_TYPE_ALARM)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+	WAVE state = GetAllDAEphysSetVarNum(device, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+	WAVE state = GetAllDAEphysSetVarNum(device, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
 	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	numEntries = DimSize(GUIState, COLS)
 	for(i = COMMON_CONTROL_GROUP_COUNT_NUM; i < numEntries; i += 1)
 		ctrlName = GetDimLabel(GUIState, COLS, i)
-		controlInfo/w=$panelTitle $ctrlName
+		controlInfo/w=$device $ctrlName
 		ASSERT(V_flag != 0, "invalid or non existing control")
 
 		if(abs(V_Flag) == CONTROL_TYPE_POPUPMENU)
@@ -103,63 +103,63 @@ Function DAG_RecordGuiStateNum(panelTitle, [GUIState])
 End
 
 /// @brief Records the state of the DA_ephys panel into the textual GUI state wave
-Function DAG_RecordGuiStateTxT(panelTitle, [GUIState])
-	string panelTitle
+Function DAG_RecordGuiStateTxT(device, [GUIState])
+	string device
 	WAVE GUIState
 
 	variable i, numEntries
 	string ctrlName, lbl
 
 	if(ParamIsDefault(GuiState))
-		Wave/T GUIStateTxT = GetDA_EphysGuiStateTxT(panelTitle)
+		Wave/T GUIStateTxT = GetDA_EphysGuiStateTxT(device)
 	else
 		WAVE/T GUIStateTxT = GUIState
 	endif
 
-	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	WAVE/T state = GetAllDAEphysPopMenuString(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+	WAVE/T state = GetAllDAEphysPopMenuString(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	WAVE/T state = GetAllDAEphysSetVarTxT(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH)
+	WAVE/T state = GetAllDAEphysSetVarTxT(device, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH)
 	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+	WAVE/T state = GetAllDAEphysSetVarTxT(device, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+	WAVE/T state = GetAllDAEphysPopMenuString(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+	WAVE/T state = GetAllDAEphysPopMenuString(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH)
+	WAVE/T state = GetAllDAEphysSetVarTxT(device, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH)
 	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+	WAVE/T state = GetAllDAEphysSetVarTxT(device, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
 	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
-	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
+	WAVE/T state = GetAllDAEphysSetVarTxT(device, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
 	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	numEntries = DimSize(GUIStateTxT, COLS)
 	for(i = COMMON_CONTROL_GROUP_COUNT_TXT; i < numEntries; i += 1)
 		ctrlName = GetDimLabel(GUIStateTxT, COLS, i)
-		controlInfo/w=$panelTitle $ctrlName
+		controlInfo/w=$device $ctrlName
 		ASSERT(V_flag != 0, "invalid or non existing control")
 		GUIStateTxT[0][i] = S_Value
 	endfor
@@ -171,12 +171,12 @@ End
 ///
 /// Convienience wrapper to make the call sites nicer.
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param ctrl       control name
 /// @param index      [optional, default to NaN] Some control entries have multiple
 ///                   entries per headstage/channel/etc.
-Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
-	string panelTitle, ctrl
+Function DAG_GetNumericalValue(device, ctrl, [index])
+	string device, ctrl
 	variable index
 
 	variable refValue, waveIndex
@@ -195,18 +195,18 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForCaller())
 
 		if(!IsFinite(index))
-			ControlInfo/W=$panelTitle $ctrl
+			ControlInfo/W=$device $ctrl
 		else
 			string fullCtrl
 			sprintf fullCtrl, "%s_%02d", ctrl, index
-			ControlInfo/W=$panelTitle $fullCtrl
+			ControlInfo/W=$device $fullCtrl
 		endif
 
 		if(abs(V_Flag) == CONTROL_TYPE_POPUPMENU)
 			V_Value -= 1
 		endif
 
-		refValue = GetDA_EphysGuiStateNum(panelTitle)[waveIndex][%$ctrl]
+		refValue = GetDA_EphysGuiStateNum(device)[waveIndex][%$ctrl]
 
 		if(!CheckIfClose(V_Value, refValue) && !EqualValuesOrBothNaN(V_Value, refValue))
 			sprintf msg, "Numeric GUI state wave is inconsistent for %s: %g vs. %g\r", ctrl, V_Value, refValue
@@ -215,19 +215,19 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 	endif
 #endif
 
-	return GetDA_EphysGuiStateNum(panelTitle)[waveIndex][%$ctrl]
+	return GetDA_EphysGuiStateNum(device)[waveIndex][%$ctrl]
 End
 
 /// @brief Query a control value from the textual gui state wave
 ///
 /// Convienience wrapper to make the call sites nicer.
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param ctrl       control name
 /// @param index      [optional, default to NaN] Some control entries have multiple
 ///                   entries per headstage/channel/etc.
-Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
-	string panelTitle, ctrl
+Function/S DAG_GetTextualValue(device, ctrl, [index])
+	string device, ctrl
 	variable index
 
 	string str, msg
@@ -240,7 +240,7 @@ Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 		waveIndex = index
 	endif
 
-	WAVE/T GUIState = GetDA_EphysGuiStateTxT(panelTitle)
+	WAVE/T GUIState = GetDA_EphysGuiStateTxT(device)
 
 #if defined(AUTOMATED_TESTING) || defined(DEBUGGING_ENABLED)
 
@@ -248,11 +248,11 @@ Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForCaller())
 
 		if(!IsFinite(index))
-			ControlInfo/W=$panelTitle $ctrl
+			ControlInfo/W=$device $ctrl
 		else
 			string fullCtrl
 			sprintf fullCtrl, "%s_%02d", ctrl, index
-			ControlInfo/W=$panelTitle $fullCtrl
+			ControlInfo/W=$device $fullCtrl
 		endif
 
 		str = GUIState[waveIndex][%$ctrl]
@@ -271,14 +271,14 @@ End
 ///        channelType, uses GetDA_EphysGuiStateNum() instead of GUI queries.
 ///
 /// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
-/// @param panelTitle  panel title
-Function/Wave DAG_GetChannelState(panelTitle, type)
-	string panelTitle
+/// @param device  panel title
+Function/Wave DAG_GetChannelState(device, type)
+	string device
 	variable type
 
 	variable numEntries, col
 
-	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+	WAVE GUIState = GetDA_EphysGuiStateNum(device)
 
 	numEntries = GetNumberFromType(var=type)
 
@@ -313,11 +313,11 @@ End
 
 /// @brief Return a wave with `NUM_HEADSTAGES` rows with `1` where
 ///        the given headstages is active and in the given clamp mode.
-Function/WAVE DAG_GetActiveHeadstages(string panelTitle, variable clampMode)
+Function/WAVE DAG_GetActiveHeadstages(string device, variable clampMode)
 	AI_AssertOnInvalidClampMode(clampMode)
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+	WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+	WAVE GUIState = GetDA_EphysGuiStateNum(device)
 
 	Make/FREE/N=(NUM_HEADSTAGES) status = statusHS[p] && (GUIState[p][%HSMode] == clampMode)
 
@@ -326,15 +326,15 @@ End
 
 /// @brief Return true/false if the given headstage is the highest active
 ///
-/// @param panelTitle device
+/// @param device device
 /// @param headstage  headstage to check
 /// @param clampMode  [optional, defaults to all clamp modes] Restrict to the given clamp mode
-Function DAG_HeadstageIsHighestActive(string panelTitle, variable headstage, [variable clampMode])
+Function DAG_HeadstageIsHighestActive(string device, variable headstage, [variable clampMode])
 
 	if(ParamIsDefault(clampMode))
-		WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+		WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
 	else
-		WAVE statusHS = DAG_GetActiveHeadstages(panelTitle, clampMode)
+		WAVE statusHS = DAG_GetActiveHeadstages(device, clampMode)
 	endif
 
 	// no headstage active
@@ -350,16 +350,16 @@ End
 /// @brief Return a free wave of the popup menu strings specified by
 ///        channelType, uses GetDA_EphysGuiStateTxT() instead of GUI queries.
 ///
-/// @param panelTitle  panel title
+/// @param device  panel title
 /// @param channelType one of the channel type constants from @ref ChannelTypeAndControlConstants
 /// @param controlType one of the control type constants from @ref ChannelTypeAndControlConstants
-Function/Wave DAG_GetChannelTextual(panelTitle, channelType, controlType)
-	string panelTitle
+Function/Wave DAG_GetChannelTextual(device, channelType, controlType)
+	string device
 	variable channelType, controlType
 
 	variable numEntries
 
-	WAVE/T GUIState = GetDA_EphysGuiStateTxT(panelTitle)
+	WAVE/T GUIState = GetDA_EphysGuiStateTxT(device)
 
 	numEntries = GetNumberFromType(var=channelType)
 
@@ -369,33 +369,33 @@ Function/Wave DAG_GetChannelTextual(panelTitle, channelType, controlType)
 End
 
 /// @brief Returns the headstage State
-Function DAG_GetHeadstageState(panelTitle, headStage)
-	string panelTitle
+Function DAG_GetHeadstageState(device, headStage)
+	string device
 	variable headStage
 
-	WAVE wv = GetDA_EphysGuiStateNum(panelTitle)
+	WAVE wv = GetDA_EphysGuiStateNum(device)
 	return wv[headStage][%$GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)]
 End
 
 /// @returns the mode of the headstage defined in the locked DA_ephys panel,
 ///          can be V_CLAMP_MODE or I_CLAMP_MODE or NC
-Function DAG_GetHeadstageMode(panelTitle, headStage)
-	string panelTitle
+Function DAG_GetHeadstageMode(device, headStage)
+	string device
 	variable headStage  // range: [0, NUM_HEADSTAGES[
 
-	return GetDA_EphysGuiStateNum(panelTitle)[headStage][%HSMode]
+	return GetDA_EphysGuiStateNum(device)[headStage][%HSMode]
 End
 
 /// @brief Updates the state of a control in the GUIState numeric wave
 ///
 /// One or both parameters have to be passed.
 ///
-/// @param panelTitle  device
+/// @param device  device
 /// @param controlName control name
 /// @param val         [optional] numerical value, 0-based index for popup menues
 /// @param str         [optional] textual value
-Function DAG_Update(panelTitle, controlName, [val, str])
-	string panelTitle
+Function DAG_Update(device, controlName, [val, str])
+	string device
 	string controlName
 	variable val
 	string str
@@ -405,7 +405,7 @@ Function DAG_Update(panelTitle, controlName, [val, str])
 	ASSERT(ParamIsDefault(val) + ParamIsDefault(str) < 2, "One or both of `val` and `str` must be passed.")
 
 	if(!ParamIsDefault(val))
-		WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+		WAVE GUIState = GetDA_EphysGuiStateNum(device)
 		col = FindDimLabel(GUIState, COLS, controlName)
 		if(col != -2)
 			GUIState[0][col] = val
@@ -418,7 +418,7 @@ Function DAG_Update(panelTitle, controlName, [val, str])
 	endif
 
 	if(!ParamIsDefault(str))
-		WAVE/T GUIStateTxT = GetDA_EphysGuiStateTxT(panelTitle)
+		WAVE/T GUIStateTxT = GetDA_EphysGuiStateTxT(device)
 		col = FindDimLabel(GUIStateTxT, COLS, controlName)
 		if(col != -2)
 			GUIStateTxT[0][col] = str
@@ -433,21 +433,21 @@ End
 
 /// @brief Returns a list of unique and type specific controls
 ///
-Function/S DAG_GetUniqueSpecCtrlListNum(panelTitle)
-	string panelTitle
+Function/S DAG_GetUniqueSpecCtrlListNum(device)
+	string device
 
-	ASSERT(WindowExists(panelTitle), "Missing window")
+	ASSERT(WindowExists(device), "Missing window")
 
-	return DAG_GetSpecificCtrlNum(panelTitle, DAG_GetUniqueCtrlList(panelTitle))
+	return DAG_GetSpecificCtrlNum(device, DAG_GetUniqueCtrlList(device))
 End
 
 /// @brief Returns a list of unique and type specific controls with textual values
-Function/S DAG_GetUniqueSpecCtrlListTxT(panelTitle)
-	string panelTitle
+Function/S DAG_GetUniqueSpecCtrlListTxT(device)
+	string device
 
-	ASSERT(WindowExists(panelTitle), "Missing window")
+	ASSERT(WindowExists(device), "Missing window")
 
-	return DAG_GetSpecificCtrlTxT(panelTitle, DAG_GetUniqueCtrlList(panelTitle))
+	return DAG_GetSpecificCtrlTxT(device, DAG_GetUniqueCtrlList(device))
 End
 
 /// @brief Returns a free wave of the status of the checkboxes specified by channelType
@@ -455,9 +455,9 @@ End
 /// The only caller should be DAG_RecordGuiStateNum().
 ///
 /// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
-/// @param panelTitle  panel title
-static Function/Wave DAG_ControlStatusWave(panelTitle, type)
-	string panelTitle
+/// @param device  panel title
+static Function/Wave DAG_ControlStatusWave(device, type)
+	string device
 	variable type
 
 	string ctrl
@@ -469,7 +469,7 @@ static Function/Wave DAG_ControlStatusWave(panelTitle, type)
 
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = GetPanelControl(i, type, CHANNEL_CONTROL_CHECK)
-		wv[i] = GetCheckBoxState(panelTitle, ctrl)
+		wv[i] = GetCheckBoxState(device, ctrl)
 	endfor
 
 	return wv
@@ -479,8 +479,8 @@ End
 ///
 /// All callers, except the ones updating the GUIState wave,
 /// should prefer DAG_GetHeadstageMode() instead.
-static Function/Wave DAG_GetAllHSMode(panelTitle)
-	string panelTitle
+static Function/Wave DAG_GetAllHSMode(device)
+	string device
 
 	variable i, headStage, clampMode
 	string ctrl
@@ -488,7 +488,7 @@ static Function/Wave DAG_GetAllHSMode(panelTitle)
 	Make/FREE/N=(NUM_HEADSTAGES) Mode
 	for(i = 0; i < NUM_HEADSTAGES; i+=1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-		DAP_GetInfoFromControl(panelTitle, ctrl, clampMode, headStage)
+		DAP_GetInfoFromControl(device, ctrl, clampMode, headStage)
 		ASSERT(headStage == i, "Unexpected value")
 		Mode[i] = clampMode
 	endfor
@@ -496,15 +496,15 @@ static Function/Wave DAG_GetAllHSMode(panelTitle)
 	return Mode
 End
 
-/// @brief Parses a list of controls in the panelTitle and returns a list of unique controls
-static Function/S DAG_GetUniqueCtrlList(paneltitle)
-	string panelTitle
+/// @brief Parses a list of controls in the device and returns a list of unique controls
+static Function/S DAG_GetUniqueCtrlList(device)
+	string device
 
 	string prunedList = ""
 	string list, ctrlToRemove, ctrl
 	variable i, channelIndex, channelType, controlType, numEntries
 
-	list = ControlNameList(panelTitle)
+	list = ControlNameList(device)
 
 	// remove special controls (1)
 	ctrlToRemove = "Radio_ClampMode_*;ValDisp_DataAcq_P_*"
@@ -534,8 +534,8 @@ static Function/S DAG_GetUniqueCtrlList(paneltitle)
 End
 
 /// @brief Parses a list of controls and returns numeric checkBox, valDisplay, setVariable, popUpMenu, and slider controls
-static Function/S DAG_GetSpecificCtrlNum(panelTitle, list)
-	string panelTitle
+static Function/S DAG_GetSpecificCtrlNum(device, list)
+	string device
 	string list
 
 	string subtypeCtrlList = ""
@@ -546,7 +546,7 @@ static Function/S DAG_GetSpecificCtrlNum(panelTitle, list)
 	for(i = 0; i < numEntries; i += 1)
 		controlName = StringFromList(i, list)
 
-		[recMacro, controlType] = GetRecreationMacroAndType(panelTitle, controlName)
+		[recMacro, controlType] = GetRecreationMacroAndType(device, controlName)
 
 		switch(controlType)
 			case CONTROL_TYPE_CHECKBOX:
@@ -570,8 +570,8 @@ static Function/S DAG_GetSpecificCtrlNum(panelTitle, list)
 End
 
 /// @brief Parses a list of controls and returns textual valDisplay, setVariable and popUpMenu controls
-static Function/S DAG_GetSpecificCtrlTxT(panelTitle, list)
-	string panelTitle
+static Function/S DAG_GetSpecificCtrlTxT(device, list)
+	string device
 	string list
 
 	string subtypeCtrlList = ""
@@ -582,7 +582,7 @@ static Function/S DAG_GetSpecificCtrlTxT(panelTitle, list)
 	for(i = 0; i < numEntries; i += 1)
 		controlName = StringFromList(i, list)
 
-		[recMacro, controlType] = GetRecreationMacroAndType(panelTitle, controlName)
+		[recMacro, controlType] = GetRecreationMacroAndType(device, controlName)
 
 		switch(controlType)
 			case CONTROL_TYPE_POPUPMENU:

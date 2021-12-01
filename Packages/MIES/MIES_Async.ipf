@@ -736,7 +736,7 @@ End
 /// \rst
 /// .. code-block:: igorpro
 ///
-/// 	ControlInfo/W = $panelTitle popup_MoreSettings_DeviceType
+/// 	ControlInfo/W = $device popup_MoreSettings_DeviceType
 /// 	ASSERT(V_flag > 0, "Non-existing control or window")
 /// 	do something with S_value
 /// \endrst
