@@ -590,18 +590,12 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 
 		StimSetPath = CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_STIMSET_NAME)
 		if(!IsEmpty(StimSetPath))
-			if(FileExists(StimSetPath))
-				err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
-				if(!err)
-					print "Specified StimSet file at " + StimSetPath + " loaded successfully."
-					SetWindow $panelTitle, userData($EXPCONFIG_UDATA_STIMSET_NWB_PATH)=StimSetPath
-				else
-					print "Stim set failed to load, check file path"
-					ControlWindowToFront()
-				endif
-			else
-				print "Specified StimSet file at " + StimSetPath + " not found! No file was loaded."
-			endif
+			ASSERT(FileExists(StimSetPath), "Specified StimSet file at " + StimSetPath + " not found!", extendedOutput = 0)
+			err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
+			ASSERT(!err, "Specified StimSet file at " + StimSetPath + " could not be loaded!", extendedOutput = 0)
+
+			print "Specified StimSet file at " + StimSetPath + " loaded successfully."
+			SetWindow $panelTitle, userData($EXPCONFIG_UDATA_STIMSET_NWB_PATH)=StimSetPath
 		endif
 
 		restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY | EXPCONFIG_SAVE_DISABLED | EXPCONFIG_SAVE_ONLY_RELEVANT | EXPCONFIG_MINIMIZE_ON_RESTORE
