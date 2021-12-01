@@ -212,9 +212,7 @@ static Function P_AddSealedEntryToTPStorage(string device, variable headstage)
 End
 
 static Function P_PublishPressureMethodChange(string device, variable headstage, variable oldMethod, variable newMethod)
-
-	variable jsonID, err
-	string payload
+	variable jsonID
 
 	if(EqualValuesOrBothNaN(oldMethod, newMethod))
 		return NaN
@@ -225,35 +223,25 @@ static Function P_PublishPressureMethodChange(string device, variable headstage,
 	JSON_AddString(jsonID, "pressure method/old", P_PressureMethodToString(oldMethod))
 	JSON_AddString(jsonID, "pressure method/new", P_PressureMethodToString(newMethod))
 
-	payload = JSON_Dump(jsonID)
-	JSON_Release(jsonID)
-
-	AssertOnAndClearRTError()
-	try
-		zeromq_pub_send(PRESSURE_STATE_FILTER, payload); AbortOnRTE
-	catch
-		err = ClearRTError()
-		BUG("Could not publish pressure method change " + num2str(err))
-	endtry
+	FFI_Publish(jsonID, PRESSURE_STATE_FILTER)
 End
 
 static Function P_PublishSealedState(string device, variable headstage)
-	variable jsonID, err
-	string payload
+	variable jsonID
 
 	jsonID = FFI_GetJSONTemplate(device, headstage)
 	JSON_AddBoolean(jsonID, "/sealed", 1)
 
-	payload = JSON_Dump(jsonID)
-	JSON_Release(jsonID)
+	FFI_Publish(jsonID, PRESSURE_SEALED_FILTER)
+End
 
-	AssertOnAndClearRTError()
-	try
-		zeromq_pub_send(PRESSURE_SEALED_FILTER, payload); AbortOnRTE
-	catch
-		err = ClearRTError()
-		BUG("Could not publish pressure seal state " + num2str(err))
-	endtry
+static Function P_PublishBreakin(string device, variable headstage)
+	variable jsonID
+
+	jsonID = FFI_GetJSONTemplate(device, headstage)
+	JSON_AddBoolean(jsonID, "/break in", 1)
+
+	FFI_Publish(jsonID, PRESSURE_BREAKIN_FILTER)
 End
 
 /// @brief Sets the pressure to atmospheric
@@ -425,6 +413,7 @@ static Function P_MethodBreakIn(device, headStage)
 		PressureDataWv[headStage][%TimeOfLastRSlopeCheck] 		= 0 // reset the time of last slope R check
 		PressureDataWv[headStage][%LastPressureCommand]		= 0
 		print "Break in on head stage:", headstage,"of", device
+		P_PublishBreakin(device, headstage)
 	else // still need to break - in
 		PressureDataWv[headStage][%RealTimePressure] 		= 0
 

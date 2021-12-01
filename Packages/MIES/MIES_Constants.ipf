@@ -1579,6 +1579,7 @@ Constant LBN_TEXTUAL_VALUES   = 0x8
 
 StrConstant PRESSURE_STATE_FILTER  = "pressure:state"
 StrConstant PRESSURE_SEALED_FILTER = "pressure:sealed"
+StrConstant PRESSURE_BREAKIN_FILTER = "pressure:break in"
 
 StrConstant AUTO_TP_FILTER = "testpulse:autotune result"
 
@@ -1658,3 +1659,6 @@ Constant TP_BASELINE_FIT_RESULT_TOO_NOISY = 32
 Constant TP_GETVALUES_DEFAULT            = 0x0
 Constant TP_GETVALUES_LATEST_AUTOTPCYCLE = 0x1
 /// @}
+
+StrConstant AMPLIFIER_CLAMP_MODE_FILTER   = "amplifier:clamp mode"
+StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE = "amplifier:auto bridge balance"

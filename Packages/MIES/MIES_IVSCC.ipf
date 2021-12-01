@@ -385,8 +385,7 @@ End
 ///
 /// \endrst
 static Function IVS_PublishQCState(variable result, string description)
-	variable jsonID, err
-	string payload
+	variable jsonID
 
 	jsonID = JSON_New()
 	JSON_AddTreeObject(jsonID, "")
@@ -394,16 +393,7 @@ static Function IVS_PublishQCState(variable result, string description)
 	JSON_AddVariable(jsonID, "Value", result)
 	JSON_AddString(jsonID, "Description", description)
 
-	payload = JSON_Dump(jsonID)
-	JSON_Release(jsonID)
-
-	AssertOnAndClearRTError()
-	try
-		zeromq_pub_send(IVS_PUB_FILTER, payload); AbortOnRTE
-	catch
-		err = ClearRTError()
-		BUG("Could not publish QC results due to error " + num2str(err))
-	endtry
+	FFI_Publish(jsonID, IVS_PUB_FILTER)
 End
 
 /// @brief finish the Gig Ohm Seal QC in the background
@@ -471,7 +461,7 @@ Function IVS_ExportAllData(filePath)
 
 	printf "Saving experiment data in NWB format to %s\r", filePath
 
-	NWB_ExportAllData(IVS_DEFAULT_NWBVERSION, overrideFilePath = filePath, overwrite = 1)
+	return NWB_ExportAllData(IVS_DEFAULT_NWBVERSION, overrideFilePath = filePath, overwrite = 1)
 End
 
 Function/S IVS_ReturnNWBFileLocation()
