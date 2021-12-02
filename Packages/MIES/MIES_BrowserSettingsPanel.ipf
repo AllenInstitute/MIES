@@ -1281,6 +1281,7 @@ End
 /// @param type              One of @ref LabnotebookWaveTypes
 /// @param sweepNumber       [optional] sweep number
 /// @param selectedExpDevice [optional, defaults to off] return the labnotebook for the selected experiment/device combination
+/// @returns returns the specified labnotebook wave or a null wave
 Function/WAVE BSP_GetLBNWave(string win, variable type, [variable sweepNumber, variable selectedExpDevice])
 	string shPanel, device, dataFolder
 
@@ -1562,7 +1563,8 @@ Function BSP_AddTracesForEpochs(string win)
 		headstage   = str2num(traceInfos[j][%headstage])
 		sweepNumber = str2num(traceInfos[j][%sweepNumber])
 
-		WAVE/T textualValues = BSP_GetlBNWave(win, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
+		WAVE/Z/T textualValues = BSP_GetlBNWave(win, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
+		ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
 
 		WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNumber, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
 		WAVE/T epochs = EP_EpochStrToWave(epochLBEntries[headstage])

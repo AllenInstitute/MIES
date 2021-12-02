@@ -216,7 +216,8 @@ Function OVS_UpdatePanel(string win, [variable fullUpdate])
 		return NaN
 	endif
 
-	WAVE/WAVE allNumericalValues = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES)
+	WAVE/Z/WAVE allNumericalValues = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES)
+	ASSERT(WaveExists(allNumericalValues), "Numerical LabNotebook not found.")
 
 	numEntries = DimSize(sweeps, ROWS)
 	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave, headstageRemoval
@@ -288,8 +289,10 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 		return NaN
 	endif
 
-	WAVE/WAVE allNumericalValues = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES)
-	WAVE/WAVE allTextualValues   = BSP_GetLBNWave(win, LBN_TEXTUAL_VALUES)
+	WAVE/Z/WAVE allNumericalValues = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES)
+	ASSERT(WaveExists(allNumericalValues), "Numerical LabNotebook not found.")
+	WAVE/Z/WAVE allTextualValues   = BSP_GetLBNWave(win, LBN_TEXTUAL_VALUES)
+	ASSERT(WaveExists(allTextualValues), "Textual LabNotebook not found.")
 
 	numEntries = DimSize(sweeps, ROWS)
 	Redimension/N=(numEntries, -1, -1, -1) sweepSelectionChoices
