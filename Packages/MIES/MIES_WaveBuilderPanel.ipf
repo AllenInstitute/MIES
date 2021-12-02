@@ -385,6 +385,12 @@ static Function WBP_UpdatePanelIfAllowed()
 				DisableControls(panel, "SetVar_WaveBuilder_P45;SetVar_WaveBuilder_P47;SetVar_WB_DeltaMult_P69;popup_WaveBuilder_op_P85;setvar_explDeltaValues_T26")
 			endif
 
+			if(GetCheckBoxState(panel, "check_SPT_MixedFreq_P41"))
+				EnableControls(panel, "SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29;SetVar_WB_DeltaMult_P67;popup_WaveBuilder_op_P83;setvar_explDeltaValues_T24;SetVar_WaveBuilder_P30;SetVar_WaveBuilder_P31;SetVar_WB_DeltaMult_P68;popup_WaveBuilder_op_P84;setvar_explDeltaValues_T25")
+			else
+				DisableControls(panel, "SetVar_WaveBuilder_P28;SetVar_WaveBuilder_P29;SetVar_WB_DeltaMult_P67;popup_WaveBuilder_op_P83;setvar_explDeltaValues_T24;SetVar_WaveBuilder_P30;SetVar_WaveBuilder_P31;SetVar_WB_DeltaMult_P68;popup_WaveBuilder_op_P84;setvar_explDeltaValues_T25")
+			endif
+
 			if(GetCheckBoxState(panel,"check_SPT_Poisson_P44") || GetCheckBoxState(panel,"check_SPT_MixedFreqShuffle_P42"))
 				EnableControls(panel, "check_NewSeedForEachSweep_P49_0;button_NewSeed_P48_0;check_UseEpochSeed_P39_0")
 			else
