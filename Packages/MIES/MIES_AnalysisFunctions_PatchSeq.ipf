@@ -732,7 +732,7 @@ Function PSQ_NumPassesInSet(numericalValues, type, sweepNo, headstage)
 
 	Make/FREE/N=(DimSize(sweeps, ROWS)) passes
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-	passes[] = GetLastSettingIndep(numericalValues, sweeps[p], key, UNKNOWN_MODE)
+	passes[] = GetLastSettingIndep(numericalValues, sweeps[p], key, UNKNOWN_MODE, defValue = 0)
 
 	return sum(passes)
 End
