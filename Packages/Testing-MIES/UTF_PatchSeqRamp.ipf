@@ -81,7 +81,7 @@ static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLA
 	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	DB_OpenDatabrowser()
+	OpenDatabrowser()
 End
 
 static Function/WAVE GetSpikePosition_IGNORE(sweepNo, device)

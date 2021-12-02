@@ -82,7 +82,7 @@ static Function AcquireData(s, stimset, device, [postInitializeFunc, preAcquireF
 	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	DB_OpenDatabrowser()
+	OpenDatabrowser()
 End
 
 Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])

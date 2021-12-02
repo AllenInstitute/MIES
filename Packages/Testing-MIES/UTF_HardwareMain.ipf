@@ -993,17 +993,13 @@ End
 
 static Function CheckDashboard(string device, WAVE headstageQC)
 
-	string databrowser, bsPanel
+	string databrowser
 	variable numEntries, i, state
 
 	databrowser = DB_FindDataBrowser(device)
 	DFREF dfr = BSP_GetFolder(databrowser, MIES_BSP_PANEL_FOLDER)
 	WAVE/T/Z listWave = GetAnaFuncDashboardListWave(dfr)
 	CHECK_WAVE(listWave, TEXT_WAVE)
-
-	// enable the dashboard
-	bsPanel = BSP_GetPanel(databrowser)
-	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = 1)
 
 	// Check that we have acquired some sweeps
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -1315,4 +1311,12 @@ Function StopTPWhenFinished(STRUCT WMBackgroundStruct &s)
 	endif
 
 	return 0
+End
+
+Function OpenDatabrowser()
+	string win, bsPanel
+
+	win = DB_OpenDatabrowser()
+	bsPanel = BSP_GetPanel(win)
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = 1)
 End
