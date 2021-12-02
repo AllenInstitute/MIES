@@ -506,6 +506,13 @@ static Function [variable result, variable tau, variable baseline] TP_AutoFitBas
 	return [TP_BASELINE_FIT_RESULT_OK, coefWave[2], baseline]
 End
 
+/// @brief Automatically tune the Testpulse amplitude and baseline
+///
+/// Decision logic flowchart:
+///
+/// \rst
+/// .. image:: /dot/auto-testpulse.svg
+/// \endrst
 static Function TP_AutoAmplitudeAndBaseline(string device, WAVE TPResults, variable marker)
 	variable i, maximumCurrent, targetVoltage, targetVoltageTol, resistance, voltage, current
 	variable needsUpdate, lastInvocation, curTime, scalar, skipAutoBaseline
@@ -752,11 +759,6 @@ static Function TP_PublishAutoTPResult(string device, variable headstage, variab
 	JSON_AddTreeObject(jsonID, "results")
 	JSON_AddBoolean(jsonID, "results/QC", result)
 
-	path = "results/amplitude"
-	JSON_AddTreeObject(jsonID, path)
-	JSON_AddVariable(jsonID, path + "/value", TPSettings[%amplitudeIC][headstage])
-	JSON_AddString(jsonID, path + "/unit", "mV")
-
 	path = "results/baseline"
 	JSON_AddTreeObject(jsonID, path)
 	JSON_AddVariable(jsonID, path + "/value", TPSettings[%baselinePerc][INDEP_HEADSTAGE])
@@ -815,7 +817,7 @@ End
 /// @param numReqEntries Number of entries to return, supports integer values and inf
 /// @param options       [optional, default to nothing] One of @ref TPStorageQueryingOptions
 Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, string entry, variable numReqEntries, [variable options])
-	variable i, idx, value, entryLayer, lastValidEntry, currentAutoTPCycleID, latestAutoTPCycleID
+	variable i, idx, value, entryLayer, lastValidEntry, numValidEntries, currentAutoTPCycleID, latestAutoTPCycleID
 
 	if(ParamIsDefault(options))
 		options = TP_GETVALUES_DEFAULT
@@ -823,12 +825,14 @@ Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, stri
 		ASSERT(options == TP_GETVALUES_DEFAULT || options == TP_GETVALUES_LATEST_AUTOTPCYCLE, "Invalid option")
 	endif
 
-	lastValidEntry = GetNumberFromWaveNote(TPStorage, NOTE_INDEX) - 1
+	// NOTE_INDEX gives the next free index *and* therefore also the number of valid entries
+	numValidEntries = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 
-	// no valid entries available
-	if(lastValidEntry < 0)
+	if(numValidEntries <= 0)
 		return $""
 	endif
+
+	lastValidEntry = numValidEntries - 1
 
 	latestAutoTPCycleID = TPStorage[lastValidEntry][headstage][%autoTPCycleID]
 
@@ -848,18 +852,16 @@ Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, stri
 
 	ASSERT(IsInteger(numReqEntries) && numReqEntries > 0, "Number of required entries must be larger than zero")
 
-	if(numReqEntries > lastValidEntry)
+	if(numReqEntries > numValidEntries)
 		return $""
 	endif
 
 	Make/FREE/D/N=(numReqEntries) result = NaN
 
 	// take the last finite values
-	// count is an unused entry, therefore - 1
 	for(i = lastValidEntry; i >= 0; i -= 1)
 		if(idx == numReqEntries)
-			ASSERT(!IsNaN(Sum(result)), "Expected non-nan sum")
-			return result
+			break
 		endif
 
 		value = TPStorage[i][headstage][%$entry]
@@ -878,6 +880,11 @@ Function/WAVE TP_GetValuesFromTPStorage(WAVE TPStorage, variable headstage, stri
 
 		result[idx++] = value
 	endfor
+
+	if(idx == numReqEntries)
+		ASSERT(!IsNaN(Sum(result)), "Expected non-nan sum")
+		return result
+	endif
 
 	return $""
 End

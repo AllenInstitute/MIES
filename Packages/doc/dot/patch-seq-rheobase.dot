@@ -1,5 +1,6 @@
 digraph G {
 	graph [center=true,
+		color=white,
 		compound=true,
 		fontcolor=black,
 		fontname=Helvetica,
@@ -7,20 +8,17 @@ digraph G {
 		penwidth=0.1,
 		ratio="0,01"
 	];
-	node [color=2,
-		colorscheme=blues4,
-		fillcolor=1,
-		fontcolor=4,
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
 		fontname=Helvetica,
 		fontsize=13,
 		label="\N",
 		shape=ellipse,
 		style=filled
 	];
-	edge [color=2,
-		colorscheme=blues3,
-		comment="Wildcard edge",
-		fontcolor=3,
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
 		fontname=Helvetica,
 		fontsize=10,
 		style=solid
@@ -45,33 +43,36 @@ digraph G {
 	"Set \"Repeat Sets\" to 1" -> "Enable \"Autobias\"";
 	"Grab next completely acquired chunk\n (500ms) of stimset baseline" -> "Chunk already evaluated?"	 [label="Have one"];
 	"Grab next completely acquired chunk\n (500ms) of stimset baseline" -> "Last chunk?"	 [label="None left"];
-	"BL QC passed? [2]" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook"	 [label=Yes];
 	"Store final DAScale of last sweep\n from previous RAC as initial DAScale" -> "Store DAScale stepsize of 10pA in LBN";
+	n61	 [label="Check if the acquired data\n has that sampling interval"];
+	n60 -> n61;
 	"Check if only one headstage is active" -> "Valid Autobias voltage (finite and non-zero)";
 	"Enable \"Autobias\"" -> "Set \"TP during ITI\"";
 	"Chunk already evaluated?" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"	 [label=Yes];
 	"Chunk already evaluated?" -> "Baseline chunk type"	 [label=No];
 	"Last chunk?" -> "Mark BL QC as failed"	 [label=Yes];
-	n61	 [label="Check if the acquired data\n has that sampling interval"];
-	n60 -> n61;
 	"Store DAScale stepsize of 10pA in LBN" -> n60;
+	n61 -> "BL QC passed? [2]"	 [label=Yes];
+	n61 -> "Mark set as failed"	 [label=No];
 	"Valid Autobias voltage (finite and non-zero)" -> "Check if no TTL channels are active";
 	"Set \"TP during ITI\"" -> "Enable \"Multidevice DAQ\"";
 	"Baseline chunk type" -> "Check RMS short"	 [label="pre pulse"];
 	"Baseline chunk type" -> "Check target voltage [2]"	 [label="post pulse"];
 	"Mark BL QC as failed" -> "Early sweep stop";
-	n61 -> "BL QC passed? [2]"	 [label=Yes];
-	n61 -> "Mark set as failed"	 [label=No];
+	"BL QC passed? [2]" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook"	 [label=Yes];
+	"Mark set as failed" -> "Skip to end";
 	"Check if no TTL channels are active" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
 	"Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+	"Check RMS short" -> "Mark BL QC as failed"	 [label=Failed];
+	"Check RMS short" -> "Check RMS long"	 [label=Passed];
+	"Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
+	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Previous sweep has opposite spike result\nand same step size?";
 	"All required analysis parameters present?\nSamplingMultiplier: variable" -> "Search for final DAScale in one of the existing sweeps";
 	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Enable \"Repeated Acquisition\"";
-	"Enable \"Repeated Acquisition\"" -> "Set \"ITI\" to 4s";
-	n59	 [label="Use \"SamplingMultiplier\" analysis parameter\n (defaulting to 4 if not present) and set it."];
-	"Set \"ITI\" to 4s" -> n59;
-	"Search for final DAScale in one of the existing sweeps" -> "All checks passed";
-	"All checks passed" -> Abort	 [label=No];
-	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Previous sweep has opposite spike result\nand same step size?";
+	"Check RMS long" -> "Mark BL QC as failed"	 [label=Failed];
+	"Check RMS long" -> "Check target voltage [1]"	 [label=Passed];
+	"Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"	 [label=Failed];
+	"Mark chunk as passed/failed [2]" -> "Mark BL QC as passed"	 [label=Passed];
 	"Previous sweep has opposite spike result\nand same step size?" -> "DAScale larger than 50pA\nor stepsize is 2pA"	 [label=Yes];
 	"Previous sweep has opposite spike result\nand same step size?" -> "Spike detected? (queried from labnotebook)"	 [label=No];
 	"DAScale larger than 50pA\nor stepsize is 2pA" -> "Mark set as passed"	 [label=Yes];
@@ -82,15 +83,13 @@ digraph G {
 	"Store DAScale stepsize of 2pA in LBN" -> "Spike detected? (queried from labnotebook)";
 	"Offset DAScale by minus\nstepsize from LBN" -> "DAScale is zero?";
 	"Offset DAScale by plus\nstepsize from LBN" -> "DAScale is zero?";
-	"Check RMS short" -> "Mark BL QC as failed"	 [label=Failed];
-	"Check RMS short" -> "Check RMS long"	 [label=Passed];
-	"Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
-	"Check RMS long" -> "Mark BL QC as failed"	 [label=Failed];
-	"Check RMS long" -> "Check target voltage [1]"	 [label=Passed];
-	"Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"	 [label=Failed];
-	"Mark chunk as passed/failed [2]" -> "Mark BL QC as passed"	 [label=Passed];
+	"Search for final DAScale in one of the existing sweeps" -> "All checks passed";
+	"Enable \"Repeated Acquisition\"" -> "Set \"ITI\" to 4s";
 	"Check target voltage [1]" -> "Mark chunk as passed/failed [1]";
 	"Mark BL QC as passed" -> "Early sweep stop";
+	"All checks passed" -> Abort	 [label=No];
+	n59	 [label="Use \"SamplingMultiplier\" analysis parameter\n (defaulting to 4 if not present) and set it."];
+	"Set \"ITI\" to 4s" -> n59;
 	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"	 [label=Passed];
 	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	 [label=Failed];
 	"DAScale is zero?" -> "Stepsize?"	 [label=Yes];
@@ -100,5 +99,4 @@ digraph G {
 	"Difference to initial DAScale larger than 60pA?" -> "Set \"range exceeded\" labnotebook\nentry to true for sweep"	 [label=Yes];
 	"Add \"limited resolution\"\nlabnotebook entry" -> "Mark set as failed";
 	"Set \"range exceeded\" labnotebook\nentry to true for sweep" -> "Mark set as failed";
-	"Mark set as failed" -> "Skip to end";
 }

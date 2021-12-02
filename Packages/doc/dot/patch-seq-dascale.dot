@@ -1,5 +1,6 @@
 digraph G {
 	graph [center=true,
+		color=white,
 		compound=true,
 		fontcolor=black,
 		fontname=Helvetica,
@@ -7,20 +8,17 @@ digraph G {
 		penwidth=0.1,
 		ratio="0,01"
 	];
-	node [color=2,
-		colorscheme=blues4,
-		fillcolor=1,
-		fontcolor=4,
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
 		fontname=Helvetica,
 		fontsize=13,
 		label="\N",
 		shape=ellipse,
 		style=filled
 	];
-	edge [color=2,
-		colorscheme=blues3,
-		comment="Wildcard edge",
-		fontcolor=3,
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
 		fontname=Helvetica,
 		fontsize=10,
 		style=solid
@@ -73,43 +71,42 @@ digraph G {
 	n73 -> "Get OperationMode [3]";
 	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Enable \"Repeated Acquisition\"";
 	"Check if mode is IC" -> "Check if only one headstage is active";
-	"Enable \"Repeated Acquisition\"" -> "Enable \"Insert TP\"";
-	n68	 [label="Use \"SamplingMultiplier\" analysis parameter\n (defaulting to 4 if not present) and set it."];
-	"Enable \"Insert TP\"" -> n68;
-	"Check if only one headstage is active" -> "All checks passed";
-	"All checks passed" -> Abort	 [label=No];
-	"All checks passed" -> "Use first DAScale value"	 [label=Yes];
-	"Get OperationMode" -> "Look for a rheobase sweep with passing set QC,\n pulse duration longer than 500ms\n and having spiked"	 [label=Supra];
-	"Get OperationMode" -> "Use the DAScale values\nfrom the analysis parameters"	 [label=Sub];
-	"Look for a rheobase sweep with passing set QC,\n pulse duration longer than 500ms\n and having spiked" -> Abort	 [label="Not found"];
-	"Look for a rheobase sweep with passing set QC,\n pulse duration longer than 500ms\n and having spiked" -> "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters"	 [label=Found];
-	"Use first DAScale value" -> "Get OperationMode";
-	"Get OperationMode [3]" -> "Calculate TP-like properties\nand store them in the\nlabnotebook"	 [label=Sub];
-	"Get OperationMode [3]" -> "Search for spikes\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)"	 [label=Supra];
-	"Calculate TP-like properties\nand store them in the\nlabnotebook" -> "Check if $NUM_DA_SCALES\nsweeps passed from RA cycle";
-	"Calculate TP-like properties\nand store them in the\nlabnotebook" -> "Optional parameter ShowPlot\nis true or missing";
-	"Search for spikes\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "Write number of spikes\ninto labnotebook";
-	"Check if $NUM_DA_SCALES\nsweeps passed from RA cycle" -> "Skip to end of active set"	 [label=Yes];
-	"Check if $NUM_DA_SCALES\nsweeps passed from RA cycle" -> "Use next DAScale value"	 [label=No];
-	"Optional parameter ShowPlot\nis true or missing" -> "Plot the resistance (Sub)\nor fI (Supra)"	 [label=Yes];
-	"Write number of spikes\ninto labnotebook" -> "Analysis parameters MinimumSpikeCount,\n MaximumSpikeCount,\n DAScaleModifier\n present?";
-	"Write number of spikes\ninto labnotebook" -> "Determine pulse duration\nand write it into the labnotebook";
-	"Analysis parameters MinimumSpikeCount,\n MaximumSpikeCount,\n DAScaleModifier\n present?" -> "Use next DAScale value"	 [label=No];
-	"Analysis parameters MinimumSpikeCount,\n MaximumSpikeCount,\n DAScaleModifier\n present?" -> "Spike count relative to\nMin and Max?"	 [label=Yes];
-	"Determine pulse duration\nand write it into the labnotebook" -> "Create spike frequency vs DAScale (fI) data\nand peform linear regression";
 	"Check RMS short" -> "Check RMS long"	 [label=Passed];
 	"Check RMS short" -> "Add BL QC failed labnotebook entry"	 [label=Failed];
 	"Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
+	"Get OperationMode [3]" -> "Calculate TP-like properties\nand store them in the\nlabnotebook"	 [label=Sub];
+	"Get OperationMode [3]" -> "Search for spikes\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)"	 [label=Supra];
+	"Enable \"Repeated Acquisition\"" -> "Enable \"Insert TP\"";
+	"Check if only one headstage is active" -> "All checks passed";
 	"Check RMS long" -> "Add BL QC failed labnotebook entry"	 [label=Failed];
 	"Check RMS long" -> "Check target voltage [1]"	 [label=Passed];
 	"Add BL QC failed labnotebook entry" -> "Early Sweep stop";
 	"Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [label=Failed];
 	"Mark chunk as passed/failed [2]" -> "Add BL QC passed labnotebook entry"	 [label=Passed];
+	"Calculate TP-like properties\nand store them in the\nlabnotebook" -> "Check if $NUM_DA_SCALES\nsweeps passed from RA cycle";
+	"Calculate TP-like properties\nand store them in the\nlabnotebook" -> "Optional parameter ShowPlot\nis true or missing";
+	"Search for spikes\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "Write number of spikes\ninto labnotebook";
+	n68	 [label="Use \"SamplingMultiplier\" analysis parameter\n (defaulting to 4 if not present) and set it."];
+	"Enable \"Insert TP\"" -> n68;
+	"All checks passed" -> Abort	 [label=No];
+	"All checks passed" -> "Use first DAScale value"	 [label=Yes];
 	"Check target voltage [1]" -> "Mark chunk as passed/failed [1]";
 	"Add BL QC passed labnotebook entry" -> "Early Sweep stop";
+	"Check if $NUM_DA_SCALES\nsweeps passed from RA cycle" -> "Skip to end of active set"	 [label=Yes];
+	"Check if $NUM_DA_SCALES\nsweeps passed from RA cycle" -> "Use next DAScale value"	 [label=No];
+	"Optional parameter ShowPlot\nis true or missing" -> "Plot the resistance (Sub)\nor fI (Supra)"	 [label=Yes];
+	"Write number of spikes\ninto labnotebook" -> "Analysis parameters MinimumSpikeCount,\n MaximumSpikeCount,\n DAScaleModifier\n present?";
+	"Write number of spikes\ninto labnotebook" -> "Determine pulse duration\nand write it into the labnotebook";
+	"Use first DAScale value" -> "Get OperationMode";
 	"Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [label=Passed];
 	"Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"	 [label=Failed];
-	"Optional FinalSlopePercent\nparameter present?" -> "Add labnotebook entry if the\ndesired fI-Slope was reached or not"	 [label=Yes];
+	"Analysis parameters MinimumSpikeCount,\n MaximumSpikeCount,\n DAScaleModifier\n present?" -> "Use next DAScale value"	 [label=No];
+	"Analysis parameters MinimumSpikeCount,\n MaximumSpikeCount,\n DAScaleModifier\n present?" -> "Spike count relative to\nMin and Max?"	 [label=Yes];
+	"Determine pulse duration\nand write it into the labnotebook" -> "Create spike frequency vs DAScale (fI) data\nand peform linear regression";
+	"Get OperationMode" -> "Look for a rheobase sweep with passing set QC,\n pulse duration longer than 500ms\n and having spiked"	 [label=Supra];
+	"Get OperationMode" -> "Use the DAScale values\nfrom the analysis parameters"	 [label=Sub];
+	"Look for a rheobase sweep with passing set QC,\n pulse duration longer than 500ms\n and having spiked" -> Abort	 [label="Not found"];
+	"Look for a rheobase sweep with passing set QC,\n pulse duration longer than 500ms\n and having spiked" -> "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters"	 [label=Found];
 	"Spike count relative to\nMin and Max?" -> "Use next DAScale value"	 [label="In-between"];
 	"Spike count relative to\nMin and Max?" -> "Adapt DAScale\n by a factor of 1 - Modifier"	 [label=Above];
 	"Spike count relative to\nMin and Max?" -> "Adapt DAScale\n by a factor of 1 + Modifier"	 [label=Below];
@@ -118,4 +115,5 @@ digraph G {
 	"Adapt DAScale\n by a factor of 1 - Modifier" -> "Use next DAScale value";
 	"Adapt DAScale\n by a factor of 1 + Modifier" -> "Use next DAScale value";
 	"Write fI-Slope into labnotebook" -> "Optional FinalSlopePercent\nparameter present?";
+	"Optional FinalSlopePercent\nparameter present?" -> "Add labnotebook entry if the\ndesired fI-Slope was reached or not"	 [label=Yes];
 }

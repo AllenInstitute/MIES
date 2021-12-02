@@ -1,0 +1,30 @@
+/* template dot diagram using our default colors and settings */
+digraph G {
+graph [center=true,
+  color=white,
+  compound=true,
+  fontcolor=black,
+  fontname=Helvetica,
+  fontsize=14,
+  penwidth=0.1,
+  ratio="0,01"
+]
+node [
+  color="#bdd7e7", /* /blues4/2 */
+  fillcolor="#eff3ff", /* /blues4/1 */
+  fontcolor="#2171b5", /* /blues4/4 */
+  fontname=Helvetica,
+  fontsize = 13,
+  shape = ellipse,
+  style = filled
+]
+edge [
+  color="#9ecae1", /* /blues3/2 */
+  fontcolor="#3182bd", /* /blues3/3 */
+  fontname=Helvetica,
+  fontsize = 10,
+  style = solid
+]
+
+n0 -> n1;
+}

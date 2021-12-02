@@ -17,7 +17,7 @@ fi
 
 cd $top_level/Packages/doc/dot
 
-for i in $(ls *patch-seq*.dot)
+for i in $(ls *patch-seq*.dot auto-testpulse.dot)
 do
   dot -T canon $i -o $i.opt
   dos2unix -q $i.opt

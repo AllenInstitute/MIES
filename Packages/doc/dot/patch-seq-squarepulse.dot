@@ -1,26 +1,24 @@
 digraph G {
 	graph [center=true,
+		color=white,
 		compound=true,
 		fontcolor=black,
 		fontname=Helvetica,
 		fontsize=14,
 		penwidth=0.1,
-		ratio=compress
+		ratio="0,01"
 	];
-	node [color=2,
-		colorscheme=blues4,
-		fillcolor=1,
-		fontcolor=4,
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
 		fontname=Helvetica,
 		fontsize=13,
 		label="\N",
 		shape=ellipse,
 		style=filled
 	];
-	edge [color=2,
-		colorscheme=blues3,
-		comment="Wildcard edge",
-		fontcolor=3,
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
 		fontname=Helvetica,
 		fontsize=10,
 		style=solid
@@ -40,6 +38,9 @@ digraph G {
 	"Check if mode is IC" -> "Check if no TTL channels are active";
 	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "DAScale is zero"	 [label=Yes];
 	"Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step Size from labnotebook?"	 [label=No];
+	n37 -> n37;
+	n38	 [label="Check if the acquired data\n has that sampling interval"];
+	n37 -> n38;
 	"Mark set as passed if 1 sweep passed,\nas failure otherwise" -> "Skip to end"	 [label=Failure];
 	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Set \"TP inserting\" to disabled";
 	"Check if no TTL channels are active" -> "Check if only one headstage is active";
@@ -48,6 +49,8 @@ digraph G {
 	"Step Size from labnotebook?" -> "Write step size of\n+10pA to labnotebook"	 [label="-50pA"];
 	"Step Size from labnotebook?" -> "Offset DAScale\nby +10pA"	 [label="+10pA"];
 	"Step Size from labnotebook?" -> "Offset DAScale\nby +100pA"	 [label="+100pA"];
+	n39	 [label="Mark Sweep as failure"];
+	n38 -> n39	 [label=No];
 	"Set \"TP inserting\" to disabled" -> "Set \"TP during ITI\" to disabled";
 	"Check if only one headstage is active" -> "All checks passed";
 	"Step size from labnotebook?" -> "Store DAScale\nin labnotebook"	 [label="+10pA"];
@@ -57,6 +60,7 @@ digraph G {
 	"Write step size of\n+10pA to labnotebook" -> "Offset DAScale\nby +10pA";
 	"Offset DAScale\nby +10pA" -> "Mark sweep as failed [1]";
 	"Offset DAScale\nby +100pA" -> "Mark sweep as failed [1]";
+	n39 -> "Skip to end of active set";
 	"Set \"TP during ITI\" to disabled" -> "Set \"ITI\" to 100ms";
 	"All checks passed" -> "Set DAScale to 100pA"	 [label=Yes];
 	"All checks passed" -> Abort	 [label=No];
@@ -68,10 +72,4 @@ digraph G {
 	"Set DAScale to 100pA" -> "Write initial stepsize of 100pA into labnotebook";
 	"Mark sweep as passed" -> "Skip to end of active set";
 	"Three sweeps exist with\nthis labnotebook entry?" -> "Skip to end of active set"	 [label=Yes];
-	n37 -> n37;
-	n38	 [label="Check if the acquired data\n has that sampling interval"];
-	n37 -> n38;
-	n39	 [label="Mark Sweep as failure"];
-	n38 -> n39	 [label=No];
-	n39 -> "Skip to end of active set";
 }

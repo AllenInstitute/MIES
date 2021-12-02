@@ -1,26 +1,24 @@
 digraph G {
 	graph [center=true,
+		color=white,
 		compound=true,
 		fontcolor=black,
 		fontname=Helvetica,
 		fontsize=14,
 		penwidth=0.1,
-		ratio=compress
+		ratio="0,01"
 	];
-	node [color=2,
-		colorscheme=blues4,
-		fillcolor=1,
-		fontcolor=4,
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
 		fontname=Helvetica,
 		fontsize=13,
 		label="\N",
 		shape=ellipse,
 		style=filled
 	];
-	edge [color=2,
-		colorscheme=blues3,
-		comment="Wildcard edge",
-		fontcolor=3,
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
 		fontname=Helvetica,
 		fontsize=10,
 		style=solid
@@ -54,9 +52,9 @@ digraph G {
 	"Valid Autobias voltage (finite and non-zero)" -> "Enable \"dDAQ\"";
 	"Check if no TTL channels are active" -> "Store active headstages in labnotebook";
 	"Enable \"dDAQ\"" -> "Look for an existing and passing FastRheoEstimate sweep\n within a passing set and\n a pulse duration of more than 500ms";
+	"Store active headstages in labnotebook" -> "Turn off active non-IC headstages\nor headstages which have not passed FastRheoEstimate";
 	"Look for an existing and passing FastRheoEstimate sweep\n within a passing set and\n a pulse duration of more than 500ms" -> Abort	 [label="Not found"];
 	"Look for an existing and passing FastRheoEstimate sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters"	 [label=Found];
-	"Store active headstages in labnotebook" -> "Turn off active non-IC headstages\nor headstages which have not passed FastRheoEstimate";
 	"Turn off active non-IC headstages\nor headstages which have not passed FastRheoEstimate" -> "Check if there is at least\none active IC headstage";
 	"Check if there is at least\none active IC headstage" -> "All checks passed";
 	"All checks passed" -> Abort	 [label=No];
