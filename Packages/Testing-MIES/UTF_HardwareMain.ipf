@@ -1400,7 +1400,7 @@ Function AddLabnotebookEntries_IGNORE(s)
 	return 0
 End
 
-static Function TestSweepReconstruction_IGNORE(string device)
+Function TestSweepReconstruction_IGNORE(string device)
 	variable i, numEntries, sweepNo
 	string list, nameRecon, nameOrig
 

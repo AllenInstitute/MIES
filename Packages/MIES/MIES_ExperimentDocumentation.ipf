@@ -697,7 +697,7 @@ Function ED_WriteAnalysisFunctionCallCount(string device)
 			str += entry
 		endfor
 
-		values[i] = str
+		values[0][0][i] = str
 	endfor
 
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
