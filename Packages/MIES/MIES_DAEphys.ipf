@@ -5155,7 +5155,7 @@ static Function DAP_UnlockDevice(device)
 	// shutdown the FIFO thread now in case it is still running (which should never be the case)
 	TFH_StopFIFODaemon(hardwareType, deviceID)
 
-	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE
+	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_ABORT_ON_ERROR
 	HW_CloseDevice(hardwareType, deviceID, flags=flags)
 	HW_ResetDevice(hardwareType, deviceID, flags=flags)
 	HW_DeRegisterDevice(hardwareType, deviceID, flags=flags)

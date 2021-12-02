@@ -605,7 +605,7 @@ static Function P_CloseDeviceLowLevel(device, deviceToClose, refHeadstage)
 	string device, deviceToClose
 	variable refHeadstage
 
-	variable headStage, deviceID, hwType
+	variable headStage, deviceID, hwType, flags
 	variable i, j, doDeRegister
 	string ListOfHeadstageUsingDevice = ""
 	string ListOfLockedDA_Ephys = GetListOfLockedDevices()
@@ -614,7 +614,9 @@ static Function P_CloseDeviceLowLevel(device, deviceToClose, refHeadstage)
 	deviceID = PressureDataWv[refHeadstage][%DAC_DevID]
 	hwType   = pressureDataWv[refHeadstage][%HW_DAC_Type]
 
-	if(IsFinite(deviceID) && IsFinite(hwType) && !HW_SelectDevice(hwType, deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
+	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE
+
+	if(IsFinite(deviceID) && IsFinite(hwType) && !HW_SelectDevice(hwType, deviceID, flags = flags))
 		HW_ResetDevice(hwType, deviceID)
 		doDeRegister = 1
 	endif
@@ -628,7 +630,7 @@ static Function P_CloseDeviceLowLevel(device, deviceToClose, refHeadstage)
 				deviceID = PressureDataWv[headstage][%DAC_DevID]
 				hwType   = pressureDataWv[headstage][%HW_DAC_Type]
 
-				if(IsFinite(deviceID) && IsFinite(hwType) && !HW_SelectDevice(hwType, deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
+				if(IsFinite(deviceID) && IsFinite(hwType) && !HW_SelectDevice(hwType, deviceID, flags = flags))
 					P_SetAndGetPressure(device, headstage, 0)
 				endif
 
@@ -640,7 +642,7 @@ static Function P_CloseDeviceLowLevel(device, deviceToClose, refHeadstage)
 	endfor
 
 	if(doDeRegister)
-		HW_CloseDevice(hwType, deviceID)
+		HW_CloseDevice(hwType, deviceID, flags = flags)
 		HW_DeRegisterDevice(hwType, deviceID)
 	endif
 End

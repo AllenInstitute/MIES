@@ -147,7 +147,7 @@ End
 /// reload anyway (amplifier connection details) and removes temporary waves.
 static Function IH_Cleanup()
 
-	variable debuggerState
+	variable debuggerState, err
 
 	// don't try cleaning up if the user never used MIES
 	if(!DataFolderExists(GetMiesPathAsString()))
@@ -159,7 +159,7 @@ static Function IH_Cleanup()
 	debuggerState = DisableDebugger()
 
 	// catch all error conditions, asserts and aborts
-	// and silently ignore them
+	// and ignore them
 	AssertOnAndClearRTError()
 	try
 		DAP_UnlockAllDevices(); AbortOnRTE
@@ -173,7 +173,7 @@ static Function IH_Cleanup()
 		KilLVariables/Z dfrNWB:histRefNumber
 	catch
 		ClearRTError()
-		DEBUGPRINT("Caught runtime error or assertion")
+		BUG("Caught runtime error or assertion: " + num2istr(err))
 	endtry
 
 	ResetDebuggerState(debuggerState)
