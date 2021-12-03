@@ -177,7 +177,7 @@ New numerical keys
 
 - ``TP after DAQ``: If the testpulse is run after data acquisition or not
 - ``DAQ stop reason``: Enumeration value explaining why data acquisition was stopped, see `DQ_STOP_REASON
-  <https://alleninstitute.github.io/MIES/file/_m_i_e_s___constants_8ipf.html#_CPPv425DQ_STOP_REASON_DAQ_BUTTON>`_ for
+  <https://alleninstitute.github.io/MIES/file/_m_i_e_s___constants_8ipf.html#_CPPv425DQ_STOP_REASON_DAQ_BUTTON>`__ for
   all possible values.
 - ``Epochs Version``: Version of the epoch information
 - Add the version of the major builtin analysis functions to the labnotebook:
@@ -744,7 +744,7 @@ DA\_Ephys
 ExperimentConfig
 ----------------
 
-- Introduce `new configuration management <https://alleninstitute.github.io/MIES/file/_m_i_e_s___configuration_8ipf.html?highlight=json#file-mies-configuration-ipf>`_:
+- Introduce `new configuration management <https://alleninstitute.github.io/MIES/file/_m_i_e_s___configuration_8ipf.html?highlight=json#file-mies-configuration-ipf>`__:
 
   - Support all panels and controls
   - Support setting all amplifier entries per headstage
@@ -855,7 +855,7 @@ New textual keys
 
 - ``JSON config file: path``: List of absolute paths to the JSON configuration files
 - ``JSON config file: SHA-256 hash``: List of hash values
-- ``Epochs``: , `Add epoch information from the stimulus set into the labnotebook <https://alleninstitute.github.io/MIES/epoch_information.html#epoch-information>`_.
+- ``Epochs``: , `Add epoch information from the stimulus set into the labnotebook <https://alleninstitute.github.io/MIES/epoch_information.html#epoch-information>`__.
 
 Changed numerical entries
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -866,14 +866,14 @@ Changed textual entries
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 - ``Function params`` -> ``Function params (encoded)``: This entry now holds the serialized analysis function
-  parameter strings where the values are `percent encoded <https://en.wikipedia.org/wiki/Percent-encoding>`_.
+  parameter strings where the values are `percent encoded <https://en.wikipedia.org/wiki/Percent-encoding>`__.
 
 NWB/IPNWB
 ---------
 
 - Write the Igor Pro history by default
 - Add support for exporting into NWBv2 (2.2.4 to be exact). Additional MIES
-  data and metadata is tagged using `ndx-MIES <https://github.com/t-b/ndx-MIES>`_.
+  data and metadata is tagged using `ndx-MIES <https://github.com/t-b/ndx-MIES>`__.
   Export support into NWBv1 is unchanged.
 - Various bugfixes for exporting really old or buggy MIES data into NWB.
 - Support export of I=0 data better
@@ -1237,7 +1237,7 @@ Tests
 
   - Make the test suite pass with NI hardware and ITC-1600
   - Use multi data test case feature to run the tests for each device
-    see also `here <https://docs.byte-physics.de/igor-unit-testing-framework/advanced.html#multi-data-test-cases>`_
+    see also `here <https://docs.byte-physics.de/igor-unit-testing-framework/advanced.html#multi-data-test-cases>`__
   - Check the created NWB file thoroughly
   - Use the new UTF reentry functionality, thus making the tests much easier
     to understand, adapt and run for debugging.
