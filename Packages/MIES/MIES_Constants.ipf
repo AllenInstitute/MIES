@@ -1516,8 +1516,6 @@ StrConstant PACKAGE_SETTINGS_JSON = "Settings.json"
 
 StrConstant LOGFILE_NAME = "Log.jsonl"
 
-StrConstant IVS_PUB_FILTER = "ivscc"
-
 Constant PSQ_CR_SPIKE_CHECK_DEFAULT = 1
 
 StrConstant NOT_AVAILABLE = "n/a"
@@ -1577,11 +1575,17 @@ Constant LBN_TEXTUAL_KEYS     = 0x4
 Constant LBN_TEXTUAL_VALUES   = 0x8
 /// @}
 
-StrConstant PRESSURE_STATE_FILTER  = "pressure:state"
-StrConstant PRESSURE_SEALED_FILTER = "pressure:sealed"
-StrConstant PRESSURE_BREAKIN_FILTER = "pressure:break in"
-
-StrConstant AUTO_TP_FILTER = "testpulse:autotune result"
+/// @name All available ZeroMQ message filters
+/// @anchor ZeroMQMessageFilters
+/// @{
+StrConstant IVS_PUB_FILTER                = "ivscc"
+StrConstant PRESSURE_STATE_FILTER         = "pressure:state"
+StrConstant PRESSURE_SEALED_FILTER        = "pressure:sealed"
+StrConstant PRESSURE_BREAKIN_FILTER       = "pressure:break in"
+StrConstant AUTO_TP_FILTER                = "testpulse:autotune result"
+StrConstant AMPLIFIER_CLAMP_MODE_FILTER   = "amplifier:clamp mode"
+StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE = "amplifier:auto bridge balance"
+/// @}
 
 /// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.
 Constant EPOCHTIME_PRECISION = 7
@@ -1659,6 +1663,3 @@ Constant TP_BASELINE_FIT_RESULT_TOO_NOISY = 32
 Constant TP_GETVALUES_DEFAULT            = 0x0
 Constant TP_GETVALUES_LATEST_AUTOTPCYCLE = 0x1
 /// @}
-
-StrConstant AMPLIFIER_CLAMP_MODE_FILTER   = "amplifier:clamp mode"
-StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE = "amplifier:auto bridge balance"
