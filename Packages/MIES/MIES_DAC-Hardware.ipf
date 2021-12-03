@@ -181,6 +181,8 @@ End
 Function HW_CloseDevice(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
 
+	HW_AssertOnInvalid(hardwareType, deviceID)
+
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			HW_ITC_CloseDevice(deviceID, flags=flags)
