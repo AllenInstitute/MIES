@@ -10,6 +10,7 @@ User documentation
   databrowser
   wavebuilder
   daephys
+  auto_testpulse_tuning
 
 MIES is a sweep based data acquisition tool written in Igor Pro.
 
