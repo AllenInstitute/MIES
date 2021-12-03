@@ -40,7 +40,7 @@ Function AVE_ReturnsWaveRefWave()
 	Make/FREE/N=0/WAVE input
 	WAVE/WAVE result = MIES_fWaveAverage(input, NaN, NaN)
 	CHECK_WAVE(result, WAVE_WAVE)
-	CHECK(DimSize(result, ROWS) == 3)
+	CHECK_EQUAL_VAR(DimSize(result, ROWS), 3)
 End
 
 Function DoesNothingWithEmptyWave()

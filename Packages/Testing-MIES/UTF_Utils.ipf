@@ -608,7 +608,7 @@ Function ELE_HasMinimumSize()
 	Make/FREE/N=0 wv
 	EnsureLargeEnoughWave(wv)
 	CHECK_GT_VAR(DimSize(wv, ROWS), 0)
-	CHECK(DimSize(wv, COLS) == 0)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 0)
 End
 
 Function ELE_InitsToZero()

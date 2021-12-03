@@ -916,8 +916,7 @@ static Function PAT_CheckPulseWaveNote(string win, WAVE pulse)
 	CHECK_LT_VAR(first, last)
 
 	setting = PAT_GetNumberFromPulseWaveNote(pulse, NOTE_KEY_CLAMP_MODE)
-	CHECK(IsFinite(setting))
-	CHECK((setting == V_CLAMP_MODE || setting == I_CLAMP_MODE || setting == I_EQUAL_ZERO_MODE))
+	CHECK(AI_IsValidClampMode(setting))
 
 	// no zeros inside the pulse
 	// this requires that the DA and AD channels on the hardware are connected directly when acquiring this data
