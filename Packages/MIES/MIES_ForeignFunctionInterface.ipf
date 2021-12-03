@@ -71,12 +71,17 @@ Function FFI_GetJSONTemplate(string device, variable headstage)
 	return jsonID
 End
 
-/// @brief Return a text wave with all available message filters for Publisher/Subscriber ZeroMQ sockets
+/// @brief Return a text wave with all available message filters for
+/// Publisher/Subscriber ZeroMQ sockets
+///
+/// See also @ref ZeroMQMessageFilters.
 ///
 /// @sa FFI_GetJSONTemplate
 Function/WAVE FFI_GetAvailableMessageFilters()
 
-	Make/FREE/T wv = {ZeroMQ_HEARTBEAT, IVS_PUB_FILTER, PRESSURE_STATE_FILTER, PRESSURE_SEALED_FILTER, AUTO_TP_FILTER}
+	Make/FREE/T wv = {ZeroMQ_HEARTBEAT, IVS_PUB_FILTER, PRESSURE_STATE_FILTER, PRESSURE_SEALED_FILTER, \
+					  PRESSURE_BREAKIN_FILTER, AUTO_TP_FILTER, AMPLIFIER_CLAMP_MODE_FILTER,            \
+					  AMPLIFIER_AUTO_BRIDGE_BALANCE}
 
 	Note/K wv "Heartbeat is sent every 5 seconds."
 
