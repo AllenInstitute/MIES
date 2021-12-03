@@ -12,4 +12,13 @@ then
   ret=1
 fi
 
+matches=$(git grep $opts "\b(CHECK|REQUIRE|WARN)\b\(.*(==|<=|>=|<|>|&&|\|\|).*\)" -- '*.ipf')
+
+if [[ -n "$matches" ]]
+then
+  echo "The test assertion check failed and found the following occurences:"
+  echo "$matches"
+  ret=1
+fi
+
 exit $ret
