@@ -79,7 +79,7 @@ static Function TASYNC_StartWOTask()
 
 	ASYNC_Start(ThreadProcessorCount, disableTask=1)
 	CtrlNamedBackground _all_, status
-	CHECK(strsearch(S_Info,"NAME:AsyncFramework;PROC:ASYNC_BackgroundReadOut;RUN:1;",0) == -1)
+	CHECK_EQUAL_VAR(strsearch(S_Info,"NAME:AsyncFramework;PROC:ASYNC_BackgroundReadOut;RUN:1;",0), -1)
 
 	ASYNC_Stop(timeout=1)
 End
@@ -1416,7 +1416,7 @@ Function RunReadOutOfDOOM(dfr, err, errmsg)
 	variable err
 	string errmsg
 
-	CHECK(err == 330)
+	CHECK_EQUAL_VAR(err, 330)
 
 	SVAR/SDFR=dfr testDF=myDF
 	NVAR/SDFR=dfr oID=outV

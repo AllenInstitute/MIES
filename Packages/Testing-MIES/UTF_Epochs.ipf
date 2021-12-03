@@ -230,7 +230,8 @@ static Function TestEpochOverlap(WAVE startT_all, WAVE endT_all, WAVE isOodDAQ_a
 		// without gaps and without overlap or only touch it at the borders
 		ret = CheckFaithfullCoverage(startT, endT, matches, i)
 
-		CHECK(ret == 1 || ret == 2)
+		CHECK_GE_VAR(ret, 1)
+		CHECK_LE_VAR(ret, 2)
 		if(!ret)
 			printf "Could not find coverage epochs for %g (desc: %s, level %d)\r", i, description[i], level
 			print matches

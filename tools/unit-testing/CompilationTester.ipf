@@ -47,7 +47,7 @@ Function TestCompilation()
 	WAVE/T defineList = ListToTextWave(define, "\n")
 
 	numFiles = DimSize(includeFileList, 0)
-	REQUIRE(numFiles > 0)
+	REQUIRE_GT_VAR(numFiles, 0)
 	numDefines = DimSize(defineList, 0)
 	for(i = 0; i < numFiles; i += 1)
 		includeFile = trimstring(includeFileList[i])
