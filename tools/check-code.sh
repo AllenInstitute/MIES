@@ -1,8 +1,9 @@
 #!/bin/bash
 
 ret=0
+opts="--perl-regexp --ignore-case -I -H --full-name --line-number --show-function"
 
-matches=$(git grep -hiI "panelTitle" -- :/ :^/tools)
+matches=$(git grep $opts "panelTitle" -- '*.ipf')
 
 if [[ -n "$matches" ]]
 then
