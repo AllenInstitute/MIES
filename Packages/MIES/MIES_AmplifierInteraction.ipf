@@ -707,7 +707,7 @@ End
 ///
 /// @param device device
 /// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
-Function AI_MIESAutoPipetteOffset(device, headStage)
+static Function AI_MIESAutoPipetteOffset(device, headStage)
 	string device
 	variable headStage
 
