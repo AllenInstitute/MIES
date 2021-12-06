@@ -19,6 +19,14 @@ static Function TEST_CASE_END_OVERRIDE(string testname)
 	zeromq_sub_add_filter("")
 End
 
+Function CheckMessageFilters_IGNORE(string filter)
+	WAVE/T/Z allFilters = FFI_GetAvailableMessageFilters()
+	CHECK_WAVE(allFilters, TEXT_WAVE)
+
+	FindValue/TXOP=4/TEXT=(filter) allFilters
+	CHECK_GE_VAR(V_Value, 0)
+End
+
 static Function CheckPressureStatePublishing()
 	string device, msg, filter, expected, actual
 	variable headstage, i, jsonID
@@ -43,6 +51,7 @@ static Function CheckPressureStatePublishing()
 	expected = PRESSURE_STATE_FILTER
 	actual   = filter
 	CHECK_EQUAL_STR(actual, expected)
+	CheckMessageFilters_IGNORE(expected)
 
 	jsonID = JSON_Parse(msg)
 
@@ -81,6 +90,7 @@ static Function CheckPressureSealPublishing()
 	expected = PRESSURE_SEALED_FILTER
 	actual   = filter
 	CHECK_EQUAL_STR(actual, expected)
+	CheckMessageFilters_IGNORE(expected)
 
 	jsonID = JSON_Parse(msg)
 
@@ -114,6 +124,7 @@ static Function CheckClampModePublishing()
 	expected = AMPLIFIER_CLAMP_MODE_FILTER
 	actual   = filter
 	CHECK_EQUAL_STR(actual, expected)
+	CheckMessageFilters_IGNORE(expected)
 
 	jsonID = JSON_Parse(msg)
 
@@ -152,6 +163,7 @@ static Function CheckAutoBridgeBalancePublishing()
 	expected = AMPLIFIER_AUTO_BRIDGE_BALANCE
 	actual   = filter
 	CHECK_EQUAL_STR(actual, expected)
+	CheckMessageFilters_IGNORE(expected)
 
 	jsonID = JSON_Parse(msg)
 
@@ -189,6 +201,7 @@ static Function CheckPressureBreakinPublishing()
 	expected = PRESSURE_BREAKIN_FILTER
 	actual   = filter
 	CHECK_EQUAL_STR(actual, expected)
+	CheckMessageFilters_IGNORE(expected)
 
 	jsonID = JSON_Parse(msg)
 
@@ -240,6 +253,7 @@ static Function CheckAutoTPPublishing()
 	expected = AUTO_TP_FILTER
 	actual   = filter
 	CHECK_EQUAL_STR(actual, expected)
+	CheckMessageFilters_IGNORE(expected)
 
 	jsonID = JSON_Parse(msg)
 
