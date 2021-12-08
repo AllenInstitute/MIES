@@ -531,7 +531,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
 			DEBUGPRINT(msg)
 		else
-			sprintf msg, "Average voltage of %gms: (%s)\r", evalRangeTime, "skipped"
+			sprintf msg, "Average voltage: (%s)\r", "skipped"
 			DEBUGPRINT(msg)
 			targetVPassed[i] = -1
 		endif
