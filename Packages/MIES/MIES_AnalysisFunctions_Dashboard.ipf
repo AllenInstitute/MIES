@@ -114,6 +114,10 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// - needs at least $NUM_DA_SCALES passing sweeps
 	//   and for supra mode if the FinalSlopePercent parameter is present this has to be reached as well
 
+	// PSQ_PB
+	// - baseline QC
+	// - pipette resistance QC
+
 	// PSQ_RA
 	// - baseline QC
 	// - needs at least PSQ_RA_NUM_SWEEPS_PASS passing sweeps
@@ -138,6 +142,8 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 			return AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case PSQ_RAMP:
 			return AD_GetRampFailMsg(numericalValues, textualValues, sweepNo, headstage)
+		case PSQ_PIPETTE_BATH:
+			return AD_GetPipetteInBathFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case PSQ_RHEOBASE:
 			return AD_GetRheobaseFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case PSQ_SQUARE_PULSE:
@@ -273,6 +279,7 @@ static Function AD_FillWaves(win, list, info)
 			switch(anaFuncType)
 				case PSQ_CHIRP:
 				case PSQ_DA_SCALE:
+				case PSQ_PIPETTE_BATH:
 				case PSQ_RAMP:
 				case PSQ_SQUARE_PULSE:
 				case MSQ_DA_SCALE:
@@ -476,6 +483,10 @@ static Function/S AD_GetRheobaseFailMsg(WAVE numericalValues, WAVE/T textualValu
 	return msg
 End
 
+static Function/S AD_GetPipetteInBathFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
+	return AD_GetPerSweepFailMessage(PSQ_PIPETTE_BATH, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_PB_NUM_SWEEPS_PASS)
+End
+
 static Function/S AD_GetFastRheoEstFailMsg(WAVE numericalValues, variable sweepNo, variable headstage)
 
 	string key
@@ -565,6 +576,7 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 
 	switch(anaFuncType)
 		case PSQ_DA_SCALE:
+		case PSQ_PIPETTE_BATH:
 		case PSQ_RHEOBASE:
 		case PSQ_RAMP:
 		case PSQ_CHIRP:
@@ -675,7 +687,7 @@ End
 static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numericalValues, WAVE/T textualValues, variable refSweepNo, variable headstage, [variable numRequiredPasses])
 	string key, msg, str
 	string text = ""
-	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck
+	variable numPasses, i, numSweeps, sweepNo, boundsAction, spikeCheck, resistancePass
 	string perSweepFailedMessage = ""
 
 	if(!ParamIsDefault(numRequiredPasses))
@@ -754,6 +766,22 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 
 				if(WaveExists(limitedResolution) && limitedResolution[headstage])
 					sprintf text, "Sweep %d failed: Limited resolution", sweepNo
+					break
+				endif
+				break
+			case PSQ_PIPETTE_BATH:
+				msg = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
+
+				if(!IsEmpty(msg))
+					sprintf text, "Sweep %d failed: %s", sweepNo, msg
+					break
+				endif
+
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_PB_RESISTANCE_PASS, query = 1)
+				resistancePass = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+				if(IsFinite(resistancePass) && !resistancePass)
+					sprintf text, "Sweep %d failed: Pipette resistance is out of range", sweepNo
 					break
 				endif
 				break

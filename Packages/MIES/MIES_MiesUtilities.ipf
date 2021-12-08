@@ -21,6 +21,7 @@ static Constant GET_LB_MODE_READ  = 1
 
 static Constant GET_LB_MODE_WRITE = 2
 
+static StrConstant PSQ_PB_LBN_PREFIX = "Pipette in Bath"
 static StrConstant PSQ_CR_LBN_PREFIX = "Chirp"
 static StrConstant PSQ_SP_LBN_PREFIX = "Squ. Pul."
 static StrConstant PSQ_DS_LBN_PREFIX = "DA Scale"
@@ -6995,6 +6996,8 @@ Function MapAnaFuncToConstant(anaFunc)
 			return PSQ_CHIRP
 		case "PSQ_DaScale":
 			return PSQ_DA_SCALE
+		case "PSQ_PipetteInBath":
+			return PSQ_PIPETTE_BATH
 		case "PSQ_Rheobase":
 			return PSQ_RHEOBASE
 		case "PSQ_SquarePulse":
@@ -7047,6 +7050,9 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 		case PSQ_SQUARE_PULSE:
 			prefix = PSQ_SP_LBN_PREFIX
 			break
+		case PSQ_PIPETTE_BATH:
+			prefix = PSQ_PB_LBN_PREFIX
+			break
 		default:
 			return ""
 			break
@@ -7084,6 +7090,8 @@ Function GetAnalysisFunctionVersion(variable type)
 			return PSQ_CHIRP_VERSION
 		case PSQ_DA_SCALE:
 			return PSQ_DA_SCALE_VERSION
+		case PSQ_PIPETTE_BATH:
+			return PSQ_PIPETTE_BATH_VERSION
 		case PSQ_RAMP:
 			return PSQ_RAMP_VERSION
 		case PSQ_RHEOBASE:

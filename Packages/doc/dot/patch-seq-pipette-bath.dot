@@ -1,0 +1,122 @@
+digraph G {
+	graph [center=true,
+		color=white,
+		compound=true,
+		fontcolor=black,
+		fontname=Helvetica,
+		fontsize=14,
+		penwidth=0.1,
+		ratio="0,01"
+	];
+	node [color="#bdd7e7",
+		fillcolor="#eff3ff",
+		fontcolor="#2171b5",
+		fontname=Helvetica,
+		fontsize=13,
+		label="\N",
+		shape=ellipse,
+		style=filled
+	];
+	edge [color="#9ecae1",
+		fontcolor="#3182bd",
+		fontname=Helvetica,
+		fontsize=10,
+		style=solid
+	];
+	"Start DAQ/RA" -> "Mid Sweep Event";
+	"Start DAQ/RA" -> "Post DAQ Event";
+	"Start DAQ/RA" -> "Post Set Event";
+	"Start DAQ/RA" -> "Post Sweep Event";
+	"Prepare DAQ/Pre Set Event"	 [label="Pre DAQ Event"];
+	"Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
+	n83	 [label="Pre Sweep Config Event"];
+	"Start DAQ/RA" -> n83;
+	n85	 [label="Pre Set Event"];
+	"Start DAQ/RA" -> n85;
+	"Mid Sweep Event" -> "BL QC passed?";
+	"Post DAQ Event" -> "Update Dashboard";
+	n81	 [label="Has passing set QC\n labnotebook entry"];
+	"Post DAQ Event" -> n81;
+	"Post Set Event" -> "Update Dashboard";
+	"Has three passing sweeps in set\n with the same DAScale value? [1]"	 [label="Has one passing sweep?"];
+	"Post Set Event" -> "Has three passing sweeps in set\n with the same DAScale value? [1]";
+	n55	 [label="Publish results via ZeroMQ message"];
+	"Post Set Event" -> n55;
+	n87	 [label="Check sampling frequency\n and store the QC state in the labnotebook"];
+	"Post Sweep Event" -> n87;
+	"Enable \"TP during ITI\""	 [label="Disable \"Indexing\""];
+	"Prepare DAQ/Pre Set Event" -> "Enable \"TP during ITI\"";
+	"Prepare DAQ/Pre Set Event" -> "Check if no TTL channels are active";
+	n84	 [label="Check that the number of testpulses\n from the analysis parameter \"NumberOfTestpulses\"\n matches the number of actually present \
+test pulses"];
+	n83 -> n84;
+	n86	 [label="Set analysis function version\n in labnotebook"];
+	n85 -> n86;
+	"BL QC passed?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [label=No];
+	n82	 [label="Set stimset from analysis parameter\n \"NextStimSetName\""];
+	n81 -> n82	 [label=Yes];
+	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as failed\n in labnotebook"	 [label=No];
+	"Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as passed\n in labnotebook"	 [label=Yes];
+	n93	 [label="Read the \"Steady State Resistance\"\n from the SweepFormula results\n labnotebook entry"];
+	n87 -> n93;
+	"Enable \"TP during ITI\"" -> "Enable \"Multidevice DAQ\"";
+	"Check if mode is IC"	 [label="Check if mode is VC"];
+	"Check if no TTL channels are active" -> "Check if mode is IC";
+	"Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Chunk already evaluated?"	 [label="Have one"];
+	"Chunk already evaluated?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"	 [label=Yes];
+	"Chunk already evaluated?" -> "Baseline chunk type"	 [label=No];
+	"Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+	"Check if mode is IC" -> "Check if only one headstage is active";
+	"Baseline chunk type" -> "Check RMS short"	 [label="pre pulse"];
+	"Disable \"dDAQ\"/\"oodDAQ\"" -> "Enable \"Repeated Acquisition\"";
+	"Check RMS short" -> "Check RMS long"	 [label=Passed];
+	"Add BL QC failed labnotebook entry"	 [label="Add BL chunk QC failed\n labnotebook entry"];
+	"Check RMS short" -> "Add BL QC failed labnotebook entry"	 [label=Failed];
+	n88	 [label="Open Databrowser\n and attach to the current device"];
+	"Enable \"Repeated Acquisition\"" -> n88;
+	n91	 [label="Apply auto pipette offset"];
+	"Enable \"Repeated Acquisition\"" -> n91;
+	"Check if only one headstage is active" -> "All checks passed";
+	"Check RMS long" -> "Add BL QC failed labnotebook entry"	 [label=Failed];
+	"Check target voltage [1]"	 [label="Check leak current"];
+	"Check RMS long" -> "Check target voltage [1]"	 [label=Passed];
+	n79	 [label="Add BL QC failed\n labnotebook entry"];
+	"Add BL QC failed labnotebook entry" -> n79;
+	n90	 [label="Enable \"Sweep Formula\" in the databrowser"];
+	n88 -> n90;
+	"All checks passed" -> Abort	 [label=No];
+	"Mark chunk as passed/failed [1]"	 [label="Add BL chunk QC passed\n labnotebook entry"];
+	"Check target voltage [1]" -> "Mark chunk as passed/failed [1]"	 [label=Passed];
+	n78	 [label="Apply auto pipette offset"];
+	"Check target voltage [1]" -> n78	 [label=Failed];
+	n79 -> "Early Sweep stop";
+	n80	 [label="Add BL QC passed\n labnotebook entry"];
+	"Mark chunk as passed/failed [1]" -> n80;
+	n78 -> "Add BL QC failed labnotebook entry";
+	n89	 [label="Read \"SamplingMultiplier\" analysis parameter and apply it"];
+	n84 -> Abort	 [label=Yes];
+	n86 -> n89;
+	n94	 [label="Is the value between the\n \"MinPipetteResistance\" and \"MaxPipetteResitance\"\n analysis parameters?"];
+	n93 -> n94;
+	n95	 [label="Store it in the labnotebook"];
+	n93 -> n95;
+	n92	 [label="Set SweepFormula code for calculating\n testpulse properties from testpulse like epochs in the sweep"];
+	n90 -> n92;
+	n96	 [label="Store it in the labnotebook"];
+	n94 -> n96;
+	n98	 [label="Does the labnotebook has passing\n baseline QC\npipette resistance QC\n and sampling frequency QC entries?"];
+	n96 -> n98;
+	n99	 [label="Mark sweep as passed"];
+	n98 -> n99	 [label=Yes];
+	n100	 [label="Mark sweep as failed"];
+	n98 -> n100;
+	n101	 [label="Skip to end of Set"];
+	n99 -> n101;
+	n102	 [label="Is the number of failed sweeps\n larger than the \"NumberofFailedSweeps\" analysis parameter?"];
+	n100 -> n102;
+	n104	 [label="Has the sampling frequency QC check failed?"];
+	n100 -> n104;
+	n103	 [label="Skip to end of DAQ"];
+	n102 -> n103;
+	n104 -> n103	 [label=Yes];
+}
