@@ -361,13 +361,13 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		chunkLengthTime    = ps.prePulseChunkLength
 		baselineType       = PSQ_BL_PRE_PULSE
 	else // post pulse baseline
-		 if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
-			 WAVE durations = PSQ_GetPulseDurations(device, type, s.sweepNo, totalOnsetDelay)
-		 else
-			 Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = ps.pulseDuration
-		 endif
+		if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
+			WAVE durations = PSQ_GetPulseDurations(device, type, s.sweepNo, totalOnsetDelay)
+		else
+			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = ps.pulseDuration
+		endif
 
-		 // skip: onset delay, the pulse itself and one chunk of post pulse baseline
+		// skip: onset delay, the pulse itself and one chunk of post pulse baseline
 		chunkStartTimeMax = (totalOnsetDelay + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength
 		chunkLengthTime   = ps.postPulseChunkLength
 		baselineType      = PSQ_BL_POST_PULSE
