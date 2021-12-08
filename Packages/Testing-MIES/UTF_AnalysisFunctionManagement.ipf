@@ -311,6 +311,29 @@ static Function EnsureCorrectUserAnalysis()
 	REQUIRE_EQUAL_VAR(ItemsInList(FunctionList("InvalidSignature", ";", "WIN:UserAnalysisFunctions.ipf")), 1)
 End
 
+Function CheckHelpStringsOfAllAnalysisFunctions()
+	string funcs, genericFunc, params, names, name, help
+	variable i, j, numFuncs, numParams
+
+	funcs = WBP_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3)
+	// remove our test help functions which do nasty things
+	funcs = GrepList(funcs, "Params[[:digit:]]*_V3", 1)
+
+	numFuncs = ItemsInList(funcs)
+	for(i = 0; i < numFuncs; i += 1)
+		genericFunc = StringFromList(i, funcs)
+		params = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS | OPTIONAL_PARAMS)
+
+		names = AFH_GetListOfAnalysisParamNames(params)
+		numParams = ItemsInList(names)
+		for(j = 0; j < numParams; j += 1)
+			name = StringFromList(j, names)
+			help = AFH_GetHelpForAnalysisParameter(genericFunc, name)
+			CHECK_PROPER_STR(help)
+		endfor
+	endfor
+End
+
 // invalid analysis functions
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function AFT1([str])
