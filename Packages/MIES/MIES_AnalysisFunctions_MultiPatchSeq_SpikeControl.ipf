@@ -995,6 +995,7 @@ Function SC_SpikeControl(device, s)
 				PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 				databrowser = DB_FindDataBrowser(device)
 				bsPanel = BSP_GetPanel(databrowser)
+				scPanel = BSP_GetSweepControlsPanel(databrowser)
 			endif
 
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_OVS", val = 1)
