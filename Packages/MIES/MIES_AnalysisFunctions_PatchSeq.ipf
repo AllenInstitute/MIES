@@ -1230,12 +1230,27 @@ Function PSQ_FoundAtLeastOneSpike(device, sweepNo)
 	return Sum(settings) > 0
 End
 
+static Function PSQ_GetDefaultSamplingFrequency(variable type)
+
+	switch(type)
+		case PSQ_CHIRP:
+		case PSQ_DA_SCALE:
+		case PSQ_RAMP:
+		case PSQ_RHEOBASE:
+		case PSQ_SQUARE_PULSE:
+			return 50
+		default:
+			ASSERT(0,"Unknown analysis function")
+	endswitch
+End
+
 /// @brief Return the QC state of the sampling interval/frequency check and store it also in the labnotebook
 static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, variable type, struct AnalysisFunction_V3& s)
-	variable samplingFrequency, expected, actual, samplingFrequencyPassed
+	variable samplingFrequency, expected, actual, samplingFrequencyPassed, defaultFreq
 	string key
 
-	samplingFrequency = AFH_GetAnalysisParamNumerical("SamplingFrequency", s.params, defValue = 50)
+	defaultFreq = PSQ_GetDefaultSamplingFrequency(type)
+	samplingFrequency = AFH_GetAnalysisParamNumerical("SamplingFrequency", s.params, defValue = defaultFreq)
 
 	ASSERT(!cmpstr(StringByKey("XUNITS", WaveInfo(s.scaledDACWave, 0)), "ms"), "Unexpected wave x unit")
 
