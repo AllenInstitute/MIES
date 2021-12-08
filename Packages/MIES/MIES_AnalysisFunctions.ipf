@@ -131,6 +131,7 @@
 ///                WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 ///                if(!WaveExists(wv) || !IsFloatingPointWave(wv))
 ///                    return "Needs to be an existing floating point wave."
+///                endif
 ///                break
 ///        endswitch
 ///
