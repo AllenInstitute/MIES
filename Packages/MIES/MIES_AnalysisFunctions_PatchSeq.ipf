@@ -576,11 +576,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		targetVPassedAll = -1
 	endif
 
-	if(rmsShortPassedAll == -1 && rmsLongPassedAll == - 1 && targetVPassedAll == -1)
-		print "All tests were skipped??"
-		ControlWindowToFront()
-		return NaN
-	endif
+	ASSERT(rmsShortPassedAll != -1 || rmsLongPassedAll != - 1 || targetVPassedAll != -1, "Skipping all tests is not supported.")
 
 	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll
 
