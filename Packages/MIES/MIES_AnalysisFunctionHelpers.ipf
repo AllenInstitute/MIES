@@ -502,6 +502,29 @@ Function/S AFH_GetListOfAnalysisParams(func, mode)
 	endif
 End
 
+/// @brief Get help string from optional `$func_GetHelp`
+///
+/// @param func Analysis function `V3`
+/// @param name Parameter name
+Function/S AFH_GetHelpForAnalysisParameter(string func, string name)
+
+	FUNCREF AF_PROTO_PARAM_HELP_GETTER_V3 f = $(func + "_GetHelp")
+
+	if(!FuncRefIsAssigned(FuncRefInfo(f)))
+		return ""
+	endif
+
+	AssertOnAndClearRTError()
+	try
+		return f(name); AbortOnRTE
+	catch
+		ClearRTError()
+		// ignoring errors here
+	endtry
+
+	return ""
+End
+
 /// @defgroup AnalysisFunctionParameterHelpers Analysis Helper functions for dealing with user parameters
 
 /// @brief Return a semicolon separated list of user parameters

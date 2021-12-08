@@ -1804,27 +1804,16 @@ static Function WBP_UpdateParameterWave()
 	listWave[][%Help] = ""
 	helpWave[][] = ""
 
-	FUNCREF AF_PROTO_PARAM_HELP_GETTER_V3 f = $(genericFunc + "_GetHelp")
+	numEntries = DimSize(listWave, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		name = listWave[i][%Name]
 
-	if(FuncRefIsAssigned(FuncRefInfo(f)))
-
-		numEntries = DimSize(listWave, ROWS)
-		for(i = 0; i < numEntries; i += 1)
-			name = listWave[i][%Name]
-
-			if(WhichListItem(name, suggNames) != -1)
-				AssertOnAndClearRTError()
-				try
-					help = f(name); AbortOnRTE
-					listWave[i][%Help] = help
-					helpWave[i][%Help] = LineBreakingIntoPar(help, minimumWidth = 40)
-				catch
-					ClearRTError()
-					// ignoring errors here
-				endtry
-			endif
-		endfor
-	endif
+		if(WhichListItem(name, suggNames) != -1)
+			help = AFH_GetHelpForAnalysisParameter(genericFunc, name)
+			listWave[i][%Help] = help
+			helpWave[i][%Help] = LineBreakingIntoPar(help, minimumWidth = 40)
+		endif
+	endfor
 End
 
 /// @brief Toggle the analysis parameter GUI
