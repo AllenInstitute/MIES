@@ -949,16 +949,10 @@ Constant PSQ_SP_INIT_AMP_p100     = +100e-12
 Constant PSQ_SP_INIT_AMP_p10      = +10e-12
 Constant PSQ_NUM_MAX_DASCALE_ZERO = 3
 
-Constant PSQ_RB_PRE_BL_EVAL_RANGE  = 500
-Constant PSQ_RB_POST_BL_EVAL_RANGE = 500
+Constant PSQ_BL_EVAL_RANGE = 500
 
-Constant PSQ_DS_BL_EVAL_RANGE_MS = 500
 Constant PSQ_DS_PULSE_DUR        = 1000
 Constant PSQ_DS_SPIKE_LEVEL      = -20 // mV
-
-Constant PSQ_RA_BL_EVAL_RANGE = 500
-
-Constant PSQ_CR_BL_EVAL_RANGE = 500
 
 StrConstant PSQ_CR_BEM = "Symmetric;Depolarized;Hyperpolarized"
 
@@ -1113,13 +1107,7 @@ Constant MSQ_FRE_INIT_AMP_m50    = -50e-12
 Constant MSQ_FRE_INIT_AMP_p100   = +100e-12
 Constant MSQ_FRE_INIT_AMP_p10    = +10e-12
 
-Constant MSQ_RB_PRE_BL_EVAL_RANGE  = 500
-Constant MSQ_RB_POST_BL_EVAL_RANGE = 500
-
-Constant MSQ_DS_BL_EVAL_RANGE_MS = 500
-Constant MSQ_DS_PULSE_DUR        = 1000
-
-Constant MSQ_RA_BL_EVAL_RANGE = 500
+Constant MSQ_DS_PULSE_DUR = 1000
 
 Constant MSQ_DS_OFFSETSCALE_FAKE = 23 // pA
 Constant MSQ_DS_SWEEP_FAKE       = 42

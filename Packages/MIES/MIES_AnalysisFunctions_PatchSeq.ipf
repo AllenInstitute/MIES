@@ -102,23 +102,23 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 
 	switch(type)
 		case PSQ_DA_SCALE:
-			s.prePulseChunkLength  = PSQ_DS_BL_EVAL_RANGE_MS
-			s.postPulseChunkLength = PSQ_DS_BL_EVAL_RANGE_MS
+			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
+			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = PSQ_DS_PULSE_DUR
 			break
 		case PSQ_RHEOBASE:
-			s.prePulseChunkLength  = PSQ_RB_PRE_BL_EVAL_RANGE
-			s.postPulseChunkLength = PSQ_RB_POST_BL_EVAL_RANGE
+			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
+			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
 			break
 		case PSQ_RAMP:
-			s.prePulseChunkLength  = PSQ_RA_BL_EVAL_RANGE
-			s.postPulseChunkLength = PSQ_RA_BL_EVAL_RANGE
+			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
+			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
 			break
 		case PSQ_CHIRP:
-			s.prePulseChunkLength  = PSQ_CR_BL_EVAL_RANGE
-			s.postPulseChunkLength = PSQ_CR_BL_EVAL_RANGE
+			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
+			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
 			break
 		default:
@@ -618,8 +618,7 @@ End
 
 /// @brief Return the number of chunks
 ///
-/// A chunk is #PSQ_DS_BL_EVAL_RANGE_MS/#PSQ_RB_POST_BL_EVAL_RANGE/#PSQ_RB_PRE_BL_EVAL_RANGE/#PSQ_RA_BL_EVAL_RANGE
-/// #PSQ_CR_BL_EVAL_RANGE [ms] of baseline
+/// A chunk is #PSQ_BL_EVAL_RANGE [ms] of baseline.
 ///
 /// For calculating the number of chunks we ignore the one chunk after the pulse which we don't evaluate!
 static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
@@ -637,26 +636,26 @@ static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
 
 	switch(type)
 		case PSQ_DA_SCALE:
-			nonBL = totalOnsetDelay + PSQ_DS_PULSE_DUR + PSQ_DS_BL_EVAL_RANGE_MS
-			return DEBUGPRINTv(floor((length - nonBL) / PSQ_DS_BL_EVAL_RANGE_MS))
+			nonBL = totalOnsetDelay + PSQ_DS_PULSE_DUR + PSQ_BL_EVAL_RANGE
+			return DEBUGPRINTv(floor((length - nonBL) / PSQ_BL_EVAL_RANGE))
 			break
 		case PSQ_RHEOBASE:
 			WAVE durations = PSQ_GetPulseDurations(device, PSQ_RHEOBASE, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
-			nonBL = totalOnsetDelay + durations[headstage] + PSQ_RB_POST_BL_EVAL_RANGE
-			return DEBUGPRINTv(floor((length - nonBL - PSQ_RB_PRE_BL_EVAL_RANGE) / PSQ_RB_POST_BL_EVAL_RANGE) + 1)
+			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
+			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
 			break
 		case PSQ_RAMP:
 			WAVE durations = PSQ_GetPulseDurations(device, PSQ_RAMP, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
-			nonBL = totalOnsetDelay + durations[headstage] + PSQ_RA_BL_EVAL_RANGE
-			return DEBUGPRINTv(floor((length - nonBL - PSQ_RA_BL_EVAL_RANGE) / PSQ_RA_BL_EVAL_RANGE) + 1)
+			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
+			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
 			break
 		case PSQ_CHIRP:
 			WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
-			nonBL = totalOnsetDelay + durations[headstage] + PSQ_CR_BL_EVAL_RANGE
-			return DEBUGPRINTv(floor((length - nonBL - PSQ_CR_BL_EVAL_RANGE) / PSQ_CR_BL_EVAL_RANGE) + 1)
+			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
+			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
 			break
 		default:
 			ASSERT(0, "unsupported type")
@@ -1426,7 +1425,7 @@ End
 /// Prerequisites:
 /// - Does only work for one headstage
 /// - Assumes that the stimset has 500ms of pre pulse baseline, a 1000ms (#PSQ_DS_PULSE_DUR) pulse and at least 1000ms post pulse baseline.
-/// - Each 500ms (#PSQ_DS_BL_EVAL_RANGE_MS) of the baseline is a chunk
+/// - Each 500ms (#PSQ_BL_EVAL_RANGE) of the baseline is a chunk
 ///
 /// Testing:
 /// For testing the spike detection logic, the results can be defined in the override wave,
@@ -1560,7 +1559,7 @@ Function PSQ_DAScale(device, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(device, s.headstage)
-			minLength = PSQ_DS_PULSE_DUR + 3 * PSQ_DS_BL_EVAL_RANGE_MS
+			minLength = PSQ_DS_PULSE_DUR + 3 * PSQ_BL_EVAL_RANGE
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", device, s.headstage, minLength
 				ControlWindowToFront()
@@ -2226,8 +2225,8 @@ End
 /// Prerequisites:
 /// - Does only work for one headstage
 /// - Assumes that the stimset has a pulse of non-zero and arbitrary length
-/// - Pre pulse baseline length is #PSQ_RB_PRE_BL_EVAL_RANGE
-/// - Post pulse baseline length a multiple of #PSQ_RB_POST_BL_EVAL_RANGE
+/// - Pre pulse baseline length is #PSQ_BL_EVAL_RANGE
+/// - Post pulse baseline length a multiple of #PSQ_BL_EVAL_RANGE
 ///
 /// Testing:
 /// For testing the spike detection logic, the results can be defined in the override wave,
@@ -2301,7 +2300,7 @@ Function PSQ_Rheobase(device, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(device, s.headstage)
-			minLength = PSQ_RB_PRE_BL_EVAL_RANGE + 2 * PSQ_RB_POST_BL_EVAL_RANGE
+			minLength = PSQ_BL_EVAL_RANGE + 2 * PSQ_BL_EVAL_RANGE
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", device, s.headstage, minLength
 				ControlWindowToFront()
@@ -2670,8 +2669,8 @@ End
 /// Prerequisites:
 /// - Does only work for one headstage
 /// - Assumes that the stimset has a ramp of non-zero and arbitrary length
-/// - Pre pulse baseline length is #PSQ_RA_BL_EVAL_RANGE
-/// - Post pulse baseline length is at least two times #PSQ_RA_BL_EVAL_RANGE
+/// - Pre pulse baseline length is #PSQ_BL_EVAL_RANGE
+/// - Post pulse baseline length is at least two times #PSQ_BL_EVAL_RANGE
 ///
 /// Testing:
 /// For testing the spike detection logic, the results can be defined in the override wave,
@@ -2749,7 +2748,7 @@ Function PSQ_Ramp(device, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(device, s.headstage)
-			minLength = 3 * PSQ_RA_BL_EVAL_RANGE
+			minLength = 3 * PSQ_BL_EVAL_RANGE
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", device, s.headstage, minLength
 				ControlWindowToFront()
@@ -2879,7 +2878,7 @@ Function PSQ_Ramp(device, s)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
 
 	WAVE durations = PSQ_GetPulseDurations(device, PSQ_RAMP, s.sweepNo, totalOnsetDelay)
-	pulseStart     = PSQ_RA_BL_EVAL_RANGE
+	pulseStart     = PSQ_BL_EVAL_RANGE
 	pulseDuration  = durations[s.headstage]
 
 	if(IsNaN(enoughSpikesFound) && fifoInStimsetTime >= pulseStart) // spike search was inconclusive up to now
@@ -3588,8 +3587,8 @@ End
 /// Prerequisites:
 /// - Does only work for one headstage
 /// - Assumes that the stimset has a chirp of non-zero and arbitrary length
-/// - Pre pulse baseline length is #PSQ_CR_BL_EVAL_RANGE
-/// - Post pulse baseline length is at least two times #PSQ_CR_BL_EVAL_RANGE
+/// - Pre pulse baseline length is #PSQ_BL_EVAL_RANGE
+/// - Post pulse baseline length is at least two times #PSQ_BL_EVAL_RANGE
 ///
 /// Testing:
 /// For testing the range detection logic, the results can be defined in the wave
@@ -3691,7 +3690,7 @@ Function PSQ_Chirp(device, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(device, s.headstage)
-			minLength = 3 * PSQ_CR_BL_EVAL_RANGE
+			minLength = 3 * PSQ_BL_EVAL_RANGE
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", device, s.headstage, minLength
 				ControlWindowToFront()
@@ -3915,7 +3914,7 @@ Function PSQ_Chirp(device, s)
 	if(spikeCheck && IsNaN(spikeCheckPassed))
 		WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, s.sweepNo, totalOnsetDelay)
 
-		chirpStart = totalOnsetDelay + PSQ_CR_BL_EVAL_RANGE
+		chirpStart = totalOnsetDelay + PSQ_BL_EVAL_RANGE
 		chirpEnd   = chirpStart + durations[s.headstage]
 
 		sprintf msg, "Spike check: chirpStart (relative to zero) %g, chirpEnd %g, fifoInStimsetTime %g", chirpStart, chirpEnd, fifoInStimsetTime
@@ -3967,10 +3966,10 @@ Function PSQ_Chirp(device, s)
 		return ANALYSIS_FUNC_RET_EARLY_STOP
 	endif
 
-	WAVE/T cycleXValuesLBN = PSQ_CR_GetCycles(device, s.sweepNo, s.rawDACWave, totalonsetDelay + PSQ_CR_BL_EVAL_RANGE)
+	WAVE/T cycleXValuesLBN = PSQ_CR_GetCycles(device, s.sweepNo, s.rawDACWave, totalonsetDelay + PSQ_BL_EVAL_RANGE)
 	WAVE cycleXValues = ListToNumericWave(cycleXValuesLBN[s.headstage], ";")
 
-	chirpStart = PSQ_CR_BL_EVAL_RANGE
+	chirpStart = PSQ_BL_EVAL_RANGE
 	cycleEnd = PSQ_CR_GetXPosFromCycles(numberOfChirpCycles, cycleXValues, totalOnsetDelay)
 
 	sprintf msg, "chirpStart (relative to stimset start) %g, fifoInStimsetTime %g, cycleEnd %g", chirpStart, fifoInStimsetTime, cycleEnd
