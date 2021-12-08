@@ -1270,6 +1270,50 @@ static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, v
 	return samplingFrequencyPassed
 End
 
+static Function/S PSQ_GetHelpCommon(variable type, string name)
+
+	strswitch(name)
+		case "BaselineRMSLongThreshold":
+			return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
+		case "BaselineRMSShortThreshold":
+			return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		case "SamplingFrequency":
+			return "Required sampling frequency for the acquired data [kHz]. Defaults to " + num2str(PSQ_GetDefaultSamplingFrequency(type)) + "."
+		case "SamplingMultiplier":
+			return "Sampling multiplier, use 1 for no multiplier"
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+	endswitch
+End
+
+static Function/S PSQ_CheckParamCommon(string name, string params)
+	variable val
+
+	strswitch(name)
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val > 0 && val <= 20))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "SamplingFrequency":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0 && val <= 1000))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "SamplingMultiplier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		default:
+			 ASSERT(0, "Unimplemented for parameter " + name)
+	endswitch
+End
+
 /// @brief Require parameters from stimset
 Function/S PSQ_DAScale_GetParams()
 	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable,[ShowPlot:variable],[OffsetOperator:string]," +        \
@@ -1287,14 +1331,10 @@ Function/S PSQ_DAScale_GetHelp(string name)
 			 return "Operation mode of the analysis function. Can be either \"Sub\" or \"Supra\"."
 			 break
 		case "SamplingFrequency":
-			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
 		case "SamplingMultiplier":
-			 return "Sampling multiplier, use 1 for no multiplier"
-			 break
-		case "BaselineRMSShortThreshold":
-			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
 		case "BaselineRMSLongThreshold":
-			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
+		case "BaselineRMSShortThreshold":
+			 return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
 		case "OffsetOperator":
 			 return "[Optional, defaults to \"+\"] Set the math operator to use for "      \
 					+ "combining the rheobase DAScale value from the previous run and "    \
@@ -1327,13 +1367,11 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 	string str
 
 	strswitch(name)
-		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			return PSQ_CheckParamCommon(name, s.params)
 		case "DAScales":
 			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 			if(!WaveExists(wv))
@@ -1349,18 +1387,6 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, PSQ_DS_SUB) && cmpstr(str, PSQ_DS_SUPRA))
 				return "Invalid string " + str
-			endif
-			break
-		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsValidSamplingMultiplier(val))
-				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "OffsetOperator":
@@ -1922,18 +1948,13 @@ End
 Function/S PSQ_SquarePulse_GetHelp(string name)
 
 	strswitch(name)
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			 return "Use 1 for no multiplier"
-			 break
-		 case "SamplingFrequency":
-			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
-		 case "BaselineRMSShortThreshold":
-			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
-		 case "BaselineRMSLongThreshold":
-			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
+			return PSQ_GetHelpCommon(PSQ_SQUARE_PULSE, name)
 		default:
 			 ASSERT(0, "Unimplemented for parameter " + name)
-			 break
 	endswitch
 End
 
@@ -1942,28 +1963,13 @@ Function/S PSQ_SquarePulse_CheckParam(string name, struct CheckParametersStruct 
 	variable val
 
 	strswitch(name)
-		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsValidSamplingMultiplier(val))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "SamplingMultiplier":
+			return PSQ_CheckParamCommon(name, s.params)
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
-			break
 	endswitch
 End
 
@@ -2186,48 +2192,26 @@ End
 Function/S PSQ_Rheobase_GetHelp(string name)
 
 	strswitch(name)
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			 return "Use 1 for no multiplier"
-			 break
-		 case "SamplingFrequency":
-			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
-		 case "BaselineRMSShortThreshold":
-			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
-		 case "BaselineRMSLongThreshold":
-			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
+			 return PSQ_GetHelpCommon(PSQ_RHEOBASE, name)
 		default:
 			 ASSERT(0, "Unimplemented for parameter " + name)
-			 break
 	endswitch
 End
 
 Function/S PSQ_Rheobase_CheckParam(string name, struct CheckParametersStruct &s)
 
-	variable val
-
 	strswitch(name)
-		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsValidSamplingMultiplier(val))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "SamplingMultiplier":
+			return PSQ_CheckParamCommon(name, s.params)
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
-			break
 	endswitch
 End
 
@@ -2621,21 +2605,16 @@ End
 Function/S PSQ_Ramp_GetHelp(string name)
 
 	strswitch(name)
-		 case "SamplingFrequency":
-			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			 return "Use 1 for no multiplier"
-			 break
-		 case "BaselineRMSShortThreshold":
-			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
-		 case "BaselineRMSLongThreshold":
-			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
-		 case "NumberOfSpikes":
+			return PSQ_GetHelpCommon(PSQ_RAMP, name)
+		case "NumberOfSpikes":
 			return "Number of spikes required to be found after the pulse onset " \
-			 + "in order to label the cell as having \"spiked\"."
-		 default:
+			       + "in order to label the cell as having \"spiked\"."
+		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
-			break
 	endswitch
 End
 
@@ -2644,28 +2623,14 @@ Function/S PSQ_Ramp_CheckParam(string name, struct CheckParametersStruct &s)
 	variable val
 
 	strswitch(name)
-		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsValidSamplingMultiplier(val))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+			return PSQ_CheckParamCommon(name, s.params)
 		case "NumberOfSpikes":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
 			break
@@ -3468,10 +3433,11 @@ End
 Function/S PSQ_Chirp_GetHelp(string name)
 
 	strswitch(name)
-		 case "BaselineRMSShortThreshold":
-			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
-		 case "BaselineRMSLongThreshold":
-			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			 return PSQ_GetHelpCommon(PSQ_CHIRP, name)
 		 case "BoundsEvaluationMode":
 			 return "Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
 		case "InnerRelativeBound":
@@ -3482,10 +3448,6 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
 		case "NumberOfFailedSweeps":
 			return "Number of failed sweeps which marks the set as failed."
-		 case "SamplingFrequency":
-			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
-		case "SamplingMultiplier":
-			 return "Use 1 for no multiplier"
 		case "SpikeCheck":
 			return "Toggle spike check during the chirp. Defaults to off."
 		case "FailedLevel":
@@ -3506,17 +3468,15 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 	string str
 
 	strswitch(name)
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			return PSQ_CheckParamCommon(name, s.params)
 		case "BoundsEvaluationMode":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(WhichListItem(str, PSQ_CR_BEM) == -1)
 				return "Invalid value " + str
-			endif
-			break
-		case "BaselineRMSShortThreshold":
-		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "InnerRelativeBound":
@@ -3545,18 +3505,6 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
-			endif
-			break
-		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsValidSamplingMultiplier(val))
-				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SpikeCheck":
