@@ -88,6 +88,7 @@ static Constant PSQ_BL_POST_PULSE  = 0x1
 static Constant PSQ_RMS_SHORT_TEST = 0x0
 static Constant PSQ_RMS_LONG_TEST  = 0x1
 static Constant PSQ_TARGETV_TEST   = 0x2
+static Constant PSQ_LEAKCUR_TEST   = 0x3
 
 static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
@@ -350,6 +351,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	variable targetV, index
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
 	variable targetVPassedAll, baselineType, chunkLengthTime
+	variable leakCurPassedAll, maxLeakCurrent
 	variable rmsShortThreshold, rmsLongThreshold, chunkPassedTestOverride
 	string msg, adUnit, ctrl, key, epName, epShortName
 
@@ -398,14 +400,20 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	// - 0: short RMS
 	// - 1: long RMS
 	// - 2: average voltage
+	// - 3: leak current
 	//
 	// Contents:
 	//  0: skip test
 	//  1: perform test
-	Make/FREE/N=(2, 3) testMatrix
+	Make/FREE/N=(2, 4) testMatrix
 
-	testMatrix[PSQ_BL_PRE_PULSE][] = 1 // all tests
-	testMatrix[PSQ_BL_POST_PULSE][PSQ_TARGETV_TEST] = 1
+	// pre pulse: all except leak current
+	testMatrix[PSQ_BL_PRE_PULSE][PSQ_RMS_SHORT_TEST] = 1
+	testMatrix[PSQ_BL_PRE_PULSE][PSQ_RMS_LONG_TEST]  = 1
+	testMatrix[PSQ_BL_PRE_PULSE][PSQ_TARGETV_TEST]   = 1
+
+	// post pulse: only targetV
+	testMatrix[PSQ_BL_POST_PULSE][PSQ_TARGETV_TEST]  = 1
 
 	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTimeMax, chunkStartTimeMax + chunkLengthTime, fifoInStimsetTime + totalOnsetDelay
 	DEBUGPRINT(msg)
@@ -418,6 +426,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLongPassed  = NaN
 	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgVoltage     = NaN
 	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) targetVPassed  = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgCurrent     = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) leakCurPassed  = NaN
 
 	targetV = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
@@ -540,6 +550,33 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			continue
 		endif
 
+		if(testMatrix[baselineType][PSQ_LEAKCUR_TEST])
+			ASSERT(!cmpstr(ADunit, "pA"), "Unexpected AD Unit")
+
+			evalStartTime = chunkStartTime
+			evalRangeTime = chunkLengthTime
+
+			// check 3: leak current is smaller than MaxLeakCurrent
+			avgCurrent[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
+
+			if(TestOverrideActive())
+				leakCurPassed[i] = chunkPassedTestOverride
+			else
+				leakCurPassed[i] = abs(avgCurrent[i]) <= maxLeakCurrent
+			endif
+
+			sprintf msg, "Average leak current of %gms: %g (%s)", evalRangeTime, avgCurrent[i], ToPassFail(leakCurPassed[i])
+			DEBUGPRINT(msg)
+		else
+			sprintf msg, "Average leak current: (%s)\r", "skipped"
+			DEBUGPRINT(msg)
+			leakCurPassed[i] = -1
+		endif
+
+		if(!leakCurPassed[i])
+			continue
+		endif
+
 		// more tests can be added here
 	endfor
 
@@ -550,6 +587,13 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		ED_AddEntryToLabnotebook(device, key, avgVoltage, unit = "Volt", overrideSweepNo = s.sweepNo)
 	endif
 
+	if(HasOneValidEntry(avgCurrent))
+		// pA -> A
+		avgCurrent[] *= 1e-12
+		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_LEAKCUR, chunk = chunk)
+		ED_AddEntryToLabnotebook(device, key, avgCurrent, unit = "Amperes", overrideSweepNo = s.sweepNo)
+	endif
+
 	// document results per headstage and chunk
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = chunk)
 	ED_AddEntryToLabnotebook(device, key, rmsShortPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -557,6 +601,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	ED_AddEntryToLabnotebook(device, key, rmsLongPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_TARGETV_PASS, chunk = chunk)
 	ED_AddEntryToLabnotebook(device, key, targetVPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = chunk)
+	ED_AddEntryToLabnotebook(device, key, leakCurPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 	if(testMatrix[baselineType][PSQ_RMS_SHORT_TEST])
 		rmsShortPassedAll = WaveMin(rmsShortPassed) == 1
@@ -576,9 +622,15 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		targetVPassedAll = -1
 	endif
 
-	ASSERT(rmsShortPassedAll != -1 || rmsLongPassedAll != - 1 || targetVPassedAll != -1, "Skipping all tests is not supported.")
+	if(testMatrix[baselineType][PSQ_LEAKCUR_TEST])
+		leakCurPassedAll = WaveMin(leakCurPassed) == 1
+	else
+		leakCurPassedAll = -1
+	endif
 
-	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll
+	ASSERT(rmsShortPassedAll != -1 || rmsLongPassedAll != - 1 || targetVPassedAll != -1 || leakCurPassedAll != -1, "Skipping all tests is not supported.")
+
+	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll && leakCurPassedAll
 
 	sprintf msg, "Chunk %d %s", chunk, ToPassFail(chunkPassed)
 	DEBUGPRINT(msg)
@@ -598,6 +650,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			NVAR repurposedTime = $GetRepurposedSweepTime(device)
 			repurposedTime = 10
 			return ANALYSIS_FUNC_RET_REPURP_TIME
+		elseif(!leakCurPassedAll)
+			return ANALYSIS_FUNC_RET_EARLY_STOP
 		else
 			ASSERT(chunkPassed, "logic error")
 		endif

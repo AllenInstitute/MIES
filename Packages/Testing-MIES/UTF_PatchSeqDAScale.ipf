@@ -123,6 +123,8 @@ Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name, [chunk])
 		case PSQ_FMT_LBN_SPIKE_COUNT:
 		case PSQ_FMT_LBN_TARGETV_PASS:
 		case PSQ_FMT_LBN_TARGETV:
+		case PSQ_FMT_LBN_LEAKCUR:
+		case PSQ_FMT_LBN_LEAKCUR_PASS:
 			return GetLastSettingEachSCI(numericalValues, sweepNo, key, PSQ_TEST_HEADSTAGE, UNKNOWN_MODE)
 			break
 		case PSQ_FMT_LBN_RMS_SHORT_THRESHOLD:
@@ -207,6 +209,12 @@ Function PS_DS_Sub1_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NULL_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 0)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 1 does not exist
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
 	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
@@ -222,6 +230,12 @@ Function PS_DS_Sub1_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NULL_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 1)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 1)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// END baseline QC
 
@@ -349,6 +363,12 @@ Function PS_DS_Sub2_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 1)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 1)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 2
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 2)
 	CHECK_EQUAL_WAVES(baselineChunkPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -364,6 +384,12 @@ Function PS_DS_Sub2_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 2)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 2)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// chunk 3
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 3)
@@ -381,6 +407,12 @@ Function PS_DS_Sub2_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 3)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 3)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 3)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 4 does not exist
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 4)
 	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
@@ -396,6 +428,12 @@ Function PS_DS_Sub2_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 4)
 	CHECK_WAVE(targetV, NULL_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 4)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 4)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// END baseline QC
 
@@ -496,6 +534,12 @@ Function PS_DS_Sub3_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {-1, -1, -1, -1, -1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 0)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 1
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
 	CHECK_EQUAL_WAVES(baselineChunkPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -512,6 +556,12 @@ Function PS_DS_Sub3_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 1)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {-1, -1, -1, -1, -1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 1)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 2 does not exist
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 2)
 	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
@@ -527,6 +577,12 @@ Function PS_DS_Sub3_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NULL_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 2)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 2)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// END baseline QC
 
@@ -640,6 +696,12 @@ Function PS_DS_Sub4_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {-1, -1, -1, -1, -1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 0)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 1
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
 	CHECK_EQUAL_WAVES(baselineChunkPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -655,6 +717,12 @@ Function PS_DS_Sub4_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 1)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 1)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// chunk 2
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 2)
@@ -672,6 +740,12 @@ Function PS_DS_Sub4_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 2)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 2)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 3
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 3)
 	CHECK_EQUAL_WAVES(baselineChunkPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -688,6 +762,12 @@ Function PS_DS_Sub4_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 3)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 3)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {-1, -1, -1, -1, -1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 3)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 4 does not exist
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 4)
 	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
@@ -703,6 +783,12 @@ Function PS_DS_Sub4_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 4)
 	CHECK_WAVE(targetV, NULL_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 4)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 4)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// END baseline QC
 
@@ -815,6 +901,12 @@ Function PS_DS_Sub5_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NULL_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 0)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 1 does not exist due to early abort
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
 	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
@@ -830,6 +922,12 @@ Function PS_DS_Sub5_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NULL_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 1)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 1)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// END baseline QC
 
@@ -944,6 +1042,12 @@ Function PS_DS_Sub6_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {-1, -1, -1, -1, -1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 0)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 1
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
 	CHECK_EQUAL_WAVES(baselineChunkPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -959,6 +1063,12 @@ Function PS_DS_Sub6_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 1)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 1)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// chunk 2
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 2)
@@ -976,6 +1086,12 @@ Function PS_DS_Sub6_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 2)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {-1, -1, -1, -1, -1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 2)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 3
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 3)
 	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
@@ -992,6 +1108,12 @@ Function PS_DS_Sub6_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 3)
 	CHECK_WAVE(targetV, NULL_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 3)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 3)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 4 does not exist
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 4)
 	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
@@ -1007,6 +1129,12 @@ Function PS_DS_Sub6_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 4)
 	CHECK_WAVE(targetV, NULL_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 4)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 4)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// END baseline QC
 
@@ -1121,6 +1249,12 @@ Function PS_DS_Sub7_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {NaN, NaN, -1, -1, -1, -1, -1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 0)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 1
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
 	CHECK_EQUAL_WAVES(baselineChunkPassed, {NaN, NaN, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
@@ -1137,6 +1271,12 @@ Function PS_DS_Sub7_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 1)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {NaN, NaN, -1, -1, -1, -1, -1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 1)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 2 does not exist
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 2)
 	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
@@ -1152,6 +1292,12 @@ Function PS_DS_Sub7_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NULL_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 2)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 2)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// END baseline QC
 
@@ -1279,6 +1425,12 @@ Function PS_DS_Sub8_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {-1, NaN, NaN, -1, NaN, NaN, -1, -1, -1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 0)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 1
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
 	CHECK_EQUAL_WAVES(baselineChunkPassed, {1, NaN, NaN, 1, NaN, NaN, 1, 1, 1}, mode = WAVE_DATA)
@@ -1295,6 +1447,12 @@ Function PS_DS_Sub8_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 1)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {-1, NaN, NaN, -1, NaN, NaN, -1, -1, -1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 1)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 2 does not exist
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 2)
 	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
@@ -1310,6 +1468,12 @@ Function PS_DS_Sub8_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NULL_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 2)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 2)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// END baseline QC
 
@@ -1436,6 +1600,12 @@ Function PS_DS_Sub9_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NULL_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 0)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 1 does not exist
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
 	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
@@ -1451,6 +1621,12 @@ Function PS_DS_Sub9_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NULL_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 1)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 1)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// END baseline QC
 
@@ -1569,6 +1745,12 @@ Function PS_DS_Sub10_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 0)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {-1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 0)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 1
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 1)
 	CHECK_EQUAL_WAVES(baselineChunkPassed, {1}, mode = WAVE_DATA)
@@ -1585,6 +1767,12 @@ Function PS_DS_Sub10_REENTRY([str])
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 1)
 	CHECK_WAVE(targetV, NUMERIC_WAVE)
 
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 1)
+	CHECK_EQUAL_WAVES(baselineLeakCurPassed, {-1}, mode = WAVE_DATA)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 1)
+	CHECK_WAVE(leakCur, NULL_WAVE)
+
 	// chunk 2 does not exist
 	WAVE/Z baselineChunkPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CHUNK_PASS, chunk = 2)
 	CHECK_WAVE(baselineChunkPassed, NULL_WAVE)
@@ -1600,6 +1788,12 @@ Function PS_DS_Sub10_REENTRY([str])
 
 	WAVE/Z targetV = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_TARGETV, chunk = 2)
 	CHECK_WAVE(targetV, NULL_WAVE)
+
+	WAVE/Z baselineLeakCurPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 2)
+	CHECK_WAVE(baselineLeakCurPassed, NULL_WAVE)
+
+	WAVE/Z leakCur = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_LEAKCUR, chunk = 2)
+	CHECK_WAVE(leakCur, NULL_WAVE)
 
 	// END baseline QC
 
