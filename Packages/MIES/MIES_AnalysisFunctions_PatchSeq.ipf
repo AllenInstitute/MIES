@@ -732,7 +732,7 @@ Function PSQ_NumPassesInSet(numericalValues, type, sweepNo, headstage)
 
 	Make/FREE/N=(DimSize(sweeps, ROWS)) passes
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-	passes[] = GetLastSettingIndep(numericalValues, sweeps[p], key, UNKNOWN_MODE)
+	passes[] = GetLastSettingIndep(numericalValues, sweeps[p], key, UNKNOWN_MODE, defValue = 0)
 
 	return sum(passes)
 End
@@ -3071,7 +3071,7 @@ Function [variable result, variable maxOccurences] PSQ_CR_SetHasPassed(WAVE nume
 	return [0, maxValue]
 End
 
-/// @brief Returns the two letter states "AA", "AB" and "BA" for the value and
+/// @brief Returns the two letter states "AA", "BB" and "BA" for the value and
 /// the scaling factors to reach min/center/max
 ///
 /// We need the real baseline value (measured), whereas

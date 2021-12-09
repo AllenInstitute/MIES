@@ -77,7 +77,7 @@ static Function AcquireData(STRUCT DAQSettings& s, variable finalDAScaleFake, st
 	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	DB_OpenDatabrowser()
+	OpenDatabrowser()
 End
 
 static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)

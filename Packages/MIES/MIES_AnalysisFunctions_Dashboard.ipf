@@ -68,20 +68,19 @@ Function AD_Update(win)
 		selWave[][][%foreColors] = AD_GetColorForResultMessage(listWave[p][%Result])
 
 		helpWave[] = "Result:\r" + listWave[p][%Result]
-
-		EnableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	else
 		SetNumberInWaveNote(listWave, NOTE_INDEX, 0)
-		DisableControls(mainPanel, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	endif
 
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
-static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
+static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage, variable ongoingDAQ)
 
 	if(passed)
 		return "Pass"
+	elseif(ongoingDAQ)
+		return "Sweep not yet finished"
 	endif
 
 	// MSQ_DA
@@ -149,7 +148,7 @@ static Function AD_FillWaves(win, list, info)
 	string win
 	WAVE/T list, info
 
-	variable i, j, headstage, passed, sweepNo, numEntries
+	variable i, j, headstage, passed, sweepNo, numEntries, ongoingDAQ
 	variable index, anaFuncType, stimsetCycleID, firstValid, lastValid
 	string key, anaFunc, stimset, msg
 
@@ -209,8 +208,15 @@ static Function AD_FillWaves(win, list, info)
 			stimsetCycleID = stimsetCycleIDs[headstage]
 
 			FindValue/RMD=[][0]/TXOP=4/TEXT=AD_FormatListKey(stimsetCycleID, headstage) info
-			if(V_Value >= 0) // already included
-				continue
+			if(V_Value >= 0)
+				if(!cmpstr(info[V_Value][%$"Ongoing DAQ"], "1"))
+					// if DAQ was ongoing we want to overwrite this entry and all later entries
+					index = V_Value
+					info[index, inf][] = ""
+				else
+					// otherwise we want to keep it
+					continue
+				endif
 			endif
 
 			WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
@@ -218,17 +224,16 @@ static Function AD_FillWaves(win, list, info)
 
 			stimset = stimsets[headstage]
 
-			if(anaFuncType != INVALID_ANALYSIS_FUNCTION)
+			if(anaFuncType == INVALID_ANALYSIS_FUNCTION)
+				passed = NaN
+				ongoingDAQ = 0
+			else
 				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
 				passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-
-				if(isNaN(passed))
-					// the set is not yet finished
-					continue
-				endif
+				ongoingDAQ = IsNaN(passed)
 			endif
 
-			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, headstage)
+			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, headstage, ongoingDAQ)
 
 			EnsureLargeEnoughWave(list, dimension = ROWS, minimumSize = index)
 			EnsureLargeEnoughWave(info, dimension = ROWS, minimumSize = index)
@@ -254,8 +259,14 @@ static Function AD_FillWaves(win, list, info)
 				case MSQ_FAST_RHEO_EST:
 				case SC_SPIKE_CONTROL:
 					key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-					WAVE sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-					ASSERT(DimSize(sweeps, ROWS) == DimSize(sweepPass, ROWS), "Unexpected wave sizes")
+					WAVE/Z sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE, defValue = 0)
+
+					if(!WaveExists(sweepPass))
+						Duplicate/FREE sweeps, sweepPass
+						sweepPass = 0
+					else
+						ASSERT(DimSize(sweeps, ROWS) == DimSize(sweepPass, ROWS), "Unexpected wave sizes")
+					endif
 
 					Duplicate/FREE sweeps, passingSweepsAll, failingSweepsAll
 					passingSweepsAll[] = sweepPass[p]  ? sweeps[p] : NaN
@@ -294,6 +305,7 @@ static Function AD_FillWaves(win, list, info)
 			info[index][%$STIMSET_ACQ_CYCLE_ID_KEY] = AD_FormatListKey(stimsetCycleID, headstage)
 			info[index][%$"Passing Sweeps"] = NumericWaveToList(passingSweeps, ";")
 			info[index][%$"Failing Sweeps"] = NumericWaveToList(failingSweeps, ";")
+			info[index][%$"Ongoing DAQ"] = num2str(ongoingDAQ)
 
 			SetNumberInWaveNote(list, NOTE_INDEX, ++index)
 		endfor
@@ -543,7 +555,10 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 				return ""
 			endif
 
-			ASSERT(WaveExists(baselineQC), "Missing baseline QC LBN entry")
+			if(!WaveExists(baselineQC))
+				BUG("Missing baseline QC LBN entry")
+				return ""
+			endif
 
 			if(!baselineQC[headstage])
 				for(i = 0; ;i += 1)
@@ -839,9 +854,19 @@ End
 Function AD_CheckProc_Toggle(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
+	string win
+
 	switch(cba.eventCode)
 		case 2: // mouse up
-			AD_Update(cba.win)
+			win = cba.win
+			AD_Update(win)
+
+			if(cba.checked)
+				EnableControls(win, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
+			else
+				DisableControls(win, "check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
+			endif
+
 			break
 	endswitch
 

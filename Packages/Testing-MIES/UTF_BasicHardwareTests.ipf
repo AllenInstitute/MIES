@@ -4072,7 +4072,7 @@ Function DataBrowserCreatesBackupsByDefault_REENTRY([str])
 	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
-	DB_OpenDataBrowser()
+	OpenDatabrowser()
 
 	WAVE sweepWave = GetSweepWave(str, 0)
 	DFREF sweepFolder = GetWavesDataFolderDFR(sweepWave)

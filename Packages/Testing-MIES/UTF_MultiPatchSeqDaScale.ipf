@@ -65,7 +65,7 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 	MSQ_CreateOverrideResults(device, 0, MSQ_DA_SCALE)
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
-	DB_OpenDatabrowser()
+	OpenDatabrowser()
 End
 
 static Constant INDEP_EACH_SCI = 0x01
