@@ -102,23 +102,23 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 
 	switch(type)
 		case PSQ_DA_SCALE:
-			s.prePulseChunkLength  = PSQ_DS_BL_EVAL_RANGE_MS
-			s.postPulseChunkLength = PSQ_DS_BL_EVAL_RANGE_MS
+			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
+			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = PSQ_DS_PULSE_DUR
 			break
 		case PSQ_RHEOBASE:
-			s.prePulseChunkLength  = PSQ_RB_PRE_BL_EVAL_RANGE
-			s.postPulseChunkLength = PSQ_RB_POST_BL_EVAL_RANGE
+			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
+			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
 			break
 		case PSQ_RAMP:
-			s.prePulseChunkLength  = PSQ_RA_BL_EVAL_RANGE
-			s.postPulseChunkLength = PSQ_RA_BL_EVAL_RANGE
+			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
+			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
 			break
 		case PSQ_CHIRP:
-			s.prePulseChunkLength  = PSQ_CR_BL_EVAL_RANGE
-			s.postPulseChunkLength = PSQ_CR_BL_EVAL_RANGE
+			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
+			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
 			break
 		default:
@@ -361,13 +361,13 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		chunkLengthTime    = ps.prePulseChunkLength
 		baselineType       = PSQ_BL_PRE_PULSE
 	else // post pulse baseline
-		 if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
-			 WAVE durations = PSQ_GetPulseDurations(device, type, s.sweepNo, totalOnsetDelay)
-		 else
-			 Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = ps.pulseDuration
-		 endif
+		if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
+			WAVE durations = PSQ_GetPulseDurations(device, type, s.sweepNo, totalOnsetDelay)
+		else
+			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = ps.pulseDuration
+		endif
 
-		 // skip: onset delay, the pulse itself and one chunk of post pulse baseline
+		// skip: onset delay, the pulse itself and one chunk of post pulse baseline
 		chunkStartTimeMax = (totalOnsetDelay + ps.prePulseChunkLength + WaveMax(durations)) + chunk * ps.postPulseChunkLength
 		chunkLengthTime   = ps.postPulseChunkLength
 		baselineType      = PSQ_BL_POST_PULSE
@@ -531,7 +531,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], ToPassFail(targetVPassed[i])
 			DEBUGPRINT(msg)
 		else
-			sprintf msg, "Average voltage of %gms: (%s)\r", evalRangeTime, "skipped"
+			sprintf msg, "Average voltage: (%s)\r", "skipped"
 			DEBUGPRINT(msg)
 			targetVPassed[i] = -1
 		endif
@@ -576,11 +576,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		targetVPassedAll = -1
 	endif
 
-	if(rmsShortPassedAll == -1 && rmsLongPassedAll == - 1 && targetVPassedAll == -1)
-		print "All tests were skipped??"
-		ControlWindowToFront()
-		return NaN
-	endif
+	ASSERT(rmsShortPassedAll != -1 || rmsLongPassedAll != - 1 || targetVPassedAll != -1, "Skipping all tests is not supported.")
 
 	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll
 
@@ -618,8 +614,7 @@ End
 
 /// @brief Return the number of chunks
 ///
-/// A chunk is #PSQ_DS_BL_EVAL_RANGE_MS/#PSQ_RB_POST_BL_EVAL_RANGE/#PSQ_RB_PRE_BL_EVAL_RANGE/#PSQ_RA_BL_EVAL_RANGE
-/// #PSQ_CR_BL_EVAL_RANGE [ms] of baseline
+/// A chunk is #PSQ_BL_EVAL_RANGE [ms] of baseline.
 ///
 /// For calculating the number of chunks we ignore the one chunk after the pulse which we don't evaluate!
 static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
@@ -637,26 +632,26 @@ static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
 
 	switch(type)
 		case PSQ_DA_SCALE:
-			nonBL = totalOnsetDelay + PSQ_DS_PULSE_DUR + PSQ_DS_BL_EVAL_RANGE_MS
-			return DEBUGPRINTv(floor((length - nonBL) / PSQ_DS_BL_EVAL_RANGE_MS))
+			nonBL = totalOnsetDelay + PSQ_DS_PULSE_DUR + PSQ_BL_EVAL_RANGE
+			return DEBUGPRINTv(floor((length - nonBL) / PSQ_BL_EVAL_RANGE))
 			break
 		case PSQ_RHEOBASE:
 			WAVE durations = PSQ_GetPulseDurations(device, PSQ_RHEOBASE, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
-			nonBL = totalOnsetDelay + durations[headstage] + PSQ_RB_POST_BL_EVAL_RANGE
-			return DEBUGPRINTv(floor((length - nonBL - PSQ_RB_PRE_BL_EVAL_RANGE) / PSQ_RB_POST_BL_EVAL_RANGE) + 1)
+			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
+			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
 			break
 		case PSQ_RAMP:
 			WAVE durations = PSQ_GetPulseDurations(device, PSQ_RAMP, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
-			nonBL = totalOnsetDelay + durations[headstage] + PSQ_RA_BL_EVAL_RANGE
-			return DEBUGPRINTv(floor((length - nonBL - PSQ_RA_BL_EVAL_RANGE) / PSQ_RA_BL_EVAL_RANGE) + 1)
+			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
+			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
 			break
 		case PSQ_CHIRP:
 			WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
-			nonBL = totalOnsetDelay + durations[headstage] + PSQ_CR_BL_EVAL_RANGE
-			return DEBUGPRINTv(floor((length - nonBL - PSQ_CR_BL_EVAL_RANGE) / PSQ_CR_BL_EVAL_RANGE) + 1)
+			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
+			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
 			break
 		default:
 			ASSERT(0, "unsupported type")
@@ -1235,12 +1230,27 @@ Function PSQ_FoundAtLeastOneSpike(device, sweepNo)
 	return Sum(settings) > 0
 End
 
+static Function PSQ_GetDefaultSamplingFrequency(variable type)
+
+	switch(type)
+		case PSQ_CHIRP:
+		case PSQ_DA_SCALE:
+		case PSQ_RAMP:
+		case PSQ_RHEOBASE:
+		case PSQ_SQUARE_PULSE:
+			return 50
+		default:
+			ASSERT(0,"Unknown analysis function")
+	endswitch
+End
+
 /// @brief Return the QC state of the sampling interval/frequency check and store it also in the labnotebook
 static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, variable type, struct AnalysisFunction_V3& s)
-	variable samplingFrequency, expected, actual, samplingFrequencyPassed
+	variable samplingFrequency, expected, actual, samplingFrequencyPassed, defaultFreq
 	string key
 
-	samplingFrequency = AFH_GetAnalysisParamNumerical("SamplingFrequency", s.params, defValue = 50)
+	defaultFreq = PSQ_GetDefaultSamplingFrequency(type)
+	samplingFrequency = AFH_GetAnalysisParamNumerical("SamplingFrequency", s.params, defValue = defaultFreq)
 
 	ASSERT(!cmpstr(StringByKey("XUNITS", WaveInfo(s.scaledDACWave, 0)), "ms"), "Unexpected wave x unit")
 
@@ -1260,6 +1270,50 @@ static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, v
 	return samplingFrequencyPassed
 End
 
+static Function/S PSQ_GetHelpCommon(variable type, string name)
+
+	strswitch(name)
+		case "BaselineRMSLongThreshold":
+			return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
+		case "BaselineRMSShortThreshold":
+			return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
+		case "SamplingFrequency":
+			return "Required sampling frequency for the acquired data [kHz]. Defaults to " + num2str(PSQ_GetDefaultSamplingFrequency(type)) + "."
+		case "SamplingMultiplier":
+			return "Sampling multiplier, use 1 for no multiplier"
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+	endswitch
+End
+
+static Function/S PSQ_CheckParamCommon(string name, string params)
+	variable val
+
+	strswitch(name)
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val > 0 && val <= 20))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "SamplingFrequency":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0 && val <= 1000))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "SamplingMultiplier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		default:
+			 ASSERT(0, "Unimplemented for parameter " + name)
+	endswitch
+End
+
 /// @brief Require parameters from stimset
 Function/S PSQ_DAScale_GetParams()
 	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable,[ShowPlot:variable],[OffsetOperator:string]," +        \
@@ -1277,14 +1331,10 @@ Function/S PSQ_DAScale_GetHelp(string name)
 			 return "Operation mode of the analysis function. Can be either \"Sub\" or \"Supra\"."
 			 break
 		case "SamplingFrequency":
-			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
 		case "SamplingMultiplier":
-			 return "Sampling multiplier, use 1 for no multiplier"
-			 break
-		case "BaselineRMSShortThreshold":
-			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
 		case "BaselineRMSLongThreshold":
-			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
+		case "BaselineRMSShortThreshold":
+			 return PSQ_GetHelpCommon(PSQ_DA_SCALE, name)
 		case "OffsetOperator":
 			 return "[Optional, defaults to \"+\"] Set the math operator to use for "      \
 					+ "combining the rheobase DAScale value from the previous run and "    \
@@ -1317,13 +1367,11 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 	string str
 
 	strswitch(name)
-		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			return PSQ_CheckParamCommon(name, s.params)
 		case "DAScales":
 			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, s.params)
 			if(!WaveExists(wv))
@@ -1339,18 +1387,6 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(cmpstr(str, PSQ_DS_SUB) && cmpstr(str, PSQ_DS_SUPRA))
 				return "Invalid string " + str
-			endif
-			break
-		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsValidSamplingMultiplier(val))
-				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "OffsetOperator":
@@ -1426,7 +1462,7 @@ End
 /// Prerequisites:
 /// - Does only work for one headstage
 /// - Assumes that the stimset has 500ms of pre pulse baseline, a 1000ms (#PSQ_DS_PULSE_DUR) pulse and at least 1000ms post pulse baseline.
-/// - Each 500ms (#PSQ_DS_BL_EVAL_RANGE_MS) of the baseline is a chunk
+/// - Each 500ms (#PSQ_BL_EVAL_RANGE) of the baseline is a chunk
 ///
 /// Testing:
 /// For testing the spike detection logic, the results can be defined in the override wave,
@@ -1560,7 +1596,7 @@ Function PSQ_DAScale(device, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(device, s.headstage)
-			minLength = PSQ_DS_PULSE_DUR + 3 * PSQ_DS_BL_EVAL_RANGE_MS
+			minLength = PSQ_DS_PULSE_DUR + 3 * PSQ_BL_EVAL_RANGE
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", device, s.headstage, minLength
 				ControlWindowToFront()
@@ -1912,18 +1948,13 @@ End
 Function/S PSQ_SquarePulse_GetHelp(string name)
 
 	strswitch(name)
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			 return "Use 1 for no multiplier"
-			 break
-		 case "SamplingFrequency":
-			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
-		 case "BaselineRMSShortThreshold":
-			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
-		 case "BaselineRMSLongThreshold":
-			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
+			return PSQ_GetHelpCommon(PSQ_SQUARE_PULSE, name)
 		default:
 			 ASSERT(0, "Unimplemented for parameter " + name)
-			 break
 	endswitch
 End
 
@@ -1932,28 +1963,13 @@ Function/S PSQ_SquarePulse_CheckParam(string name, struct CheckParametersStruct 
 	variable val
 
 	strswitch(name)
-		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsValidSamplingMultiplier(val))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "SamplingMultiplier":
+			return PSQ_CheckParamCommon(name, s.params)
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
-			break
 	endswitch
 End
 
@@ -2176,48 +2192,26 @@ End
 Function/S PSQ_Rheobase_GetHelp(string name)
 
 	strswitch(name)
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			 return "Use 1 for no multiplier"
-			 break
-		 case "SamplingFrequency":
-			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
-		 case "BaselineRMSShortThreshold":
-			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
-		 case "BaselineRMSLongThreshold":
-			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
+			 return PSQ_GetHelpCommon(PSQ_RHEOBASE, name)
 		default:
 			 ASSERT(0, "Unimplemented for parameter " + name)
-			 break
 	endswitch
 End
 
 Function/S PSQ_Rheobase_CheckParam(string name, struct CheckParametersStruct &s)
 
-	variable val
-
 	strswitch(name)
-		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsValidSamplingMultiplier(val))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "BaselineRMSShortThreshold":
 		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "SamplingMultiplier":
+			return PSQ_CheckParamCommon(name, s.params)
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
-			break
 	endswitch
 End
 
@@ -2226,8 +2220,8 @@ End
 /// Prerequisites:
 /// - Does only work for one headstage
 /// - Assumes that the stimset has a pulse of non-zero and arbitrary length
-/// - Pre pulse baseline length is #PSQ_RB_PRE_BL_EVAL_RANGE
-/// - Post pulse baseline length a multiple of #PSQ_RB_POST_BL_EVAL_RANGE
+/// - Pre pulse baseline length is #PSQ_BL_EVAL_RANGE
+/// - Post pulse baseline length a multiple of #PSQ_BL_EVAL_RANGE
 ///
 /// Testing:
 /// For testing the spike detection logic, the results can be defined in the override wave,
@@ -2301,7 +2295,7 @@ Function PSQ_Rheobase(device, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(device, s.headstage)
-			minLength = PSQ_RB_PRE_BL_EVAL_RANGE + 2 * PSQ_RB_POST_BL_EVAL_RANGE
+			minLength = PSQ_BL_EVAL_RANGE + 2 * PSQ_BL_EVAL_RANGE
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", device, s.headstage, minLength
 				ControlWindowToFront()
@@ -2611,21 +2605,16 @@ End
 Function/S PSQ_Ramp_GetHelp(string name)
 
 	strswitch(name)
-		 case "SamplingFrequency":
-			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			 return "Use 1 for no multiplier"
-			 break
-		 case "BaselineRMSShortThreshold":
-			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
-		 case "BaselineRMSLongThreshold":
-			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
-		 case "NumberOfSpikes":
+			return PSQ_GetHelpCommon(PSQ_RAMP, name)
+		case "NumberOfSpikes":
 			return "Number of spikes required to be found after the pulse onset " \
-			 + "in order to label the cell as having \"spiked\"."
-		 default:
+			       + "in order to label the cell as having \"spiked\"."
+		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
-			break
 	endswitch
 End
 
@@ -2634,28 +2623,14 @@ Function/S PSQ_Ramp_CheckParam(string name, struct CheckParametersStruct &s)
 	variable val
 
 	strswitch(name)
-		case "BaselineRMSShortThreshold":
 		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
 		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsValidSamplingMultiplier(val))
-				return "Invalid value " + num2str(val)
-			endif
-			break
+			return PSQ_CheckParamCommon(name, s.params)
 		case "NumberOfSpikes":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!(val > 0))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
 				return "Invalid value " + num2str(val)
 			endif
 			break
@@ -2670,8 +2645,8 @@ End
 /// Prerequisites:
 /// - Does only work for one headstage
 /// - Assumes that the stimset has a ramp of non-zero and arbitrary length
-/// - Pre pulse baseline length is #PSQ_RA_BL_EVAL_RANGE
-/// - Post pulse baseline length is at least two times #PSQ_RA_BL_EVAL_RANGE
+/// - Pre pulse baseline length is #PSQ_BL_EVAL_RANGE
+/// - Post pulse baseline length is at least two times #PSQ_BL_EVAL_RANGE
 ///
 /// Testing:
 /// For testing the spike detection logic, the results can be defined in the override wave,
@@ -2749,7 +2724,7 @@ Function PSQ_Ramp(device, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(device, s.headstage)
-			minLength = 3 * PSQ_RA_BL_EVAL_RANGE
+			minLength = 3 * PSQ_BL_EVAL_RANGE
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", device, s.headstage, minLength
 				ControlWindowToFront()
@@ -2879,7 +2854,7 @@ Function PSQ_Ramp(device, s)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
 
 	WAVE durations = PSQ_GetPulseDurations(device, PSQ_RAMP, s.sweepNo, totalOnsetDelay)
-	pulseStart     = PSQ_RA_BL_EVAL_RANGE
+	pulseStart     = PSQ_BL_EVAL_RANGE
 	pulseDuration  = durations[s.headstage]
 
 	if(IsNaN(enoughSpikesFound) && fifoInStimsetTime >= pulseStart) // spike search was inconclusive up to now
@@ -3458,10 +3433,11 @@ End
 Function/S PSQ_Chirp_GetHelp(string name)
 
 	strswitch(name)
-		 case "BaselineRMSShortThreshold":
-			 return "Threshold value in mV for the short RMS baseline QC check (defaults to " + num2str(PSQ_RMS_SHORT_THRESHOLD) + ")"
-		 case "BaselineRMSLongThreshold":
-			 return "Threshold value in mV for the long RMS baseline QC check (defaults to " + num2str(PSQ_RMS_LONG_THRESHOLD) + ")"
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			 return PSQ_GetHelpCommon(PSQ_CHIRP, name)
 		 case "BoundsEvaluationMode":
 			 return "Select the bounds evaluation mode: Symmetric (Lower and Upper), Depolarized (Upper) or Hyperpolarized (Lower)"
 		case "InnerRelativeBound":
@@ -3472,10 +3448,6 @@ Function/S PSQ_Chirp_GetHelp(string name)
 			return "Number of acquired chirp cycles before the bounds evaluation starts. Defaults to 1."
 		case "NumberOfFailedSweeps":
 			return "Number of failed sweeps which marks the set as failed."
-		 case "SamplingFrequency":
-			 return "Required sampling frequency for the acquired data [kHz]. Defaults to 50."
-		case "SamplingMultiplier":
-			 return "Use 1 for no multiplier"
 		case "SpikeCheck":
 			return "Toggle spike check during the chirp. Defaults to off."
 		case "FailedLevel":
@@ -3496,17 +3468,15 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 	string str
 
 	strswitch(name)
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			return PSQ_CheckParamCommon(name, s.params)
 		case "BoundsEvaluationMode":
 			str = AFH_GetAnalysisParamTextual(name, s.params)
 			if(WhichListItem(str, PSQ_CR_BEM) == -1)
 				return "Invalid value " + str
-			endif
-			break
-		case "BaselineRMSShortThreshold":
-		case "BaselineRMSLongThreshold":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 20))
-				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "InnerRelativeBound":
@@ -3535,18 +3505,6 @@ Function/S PSQ_Chirp_CheckParam(string name, struct CheckParametersStruct &s)
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
 			if(!IsFinite(val))
 				return "Must be a finite value"
-			endif
-			break
-		case "SamplingFrequency":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val >= 0 && val <= 1000))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "SamplingMultiplier":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!IsValidSamplingMultiplier(val))
-				return "Invalid value " + num2str(val)
 			endif
 			break
 		case "SpikeCheck":
@@ -3588,8 +3546,8 @@ End
 /// Prerequisites:
 /// - Does only work for one headstage
 /// - Assumes that the stimset has a chirp of non-zero and arbitrary length
-/// - Pre pulse baseline length is #PSQ_CR_BL_EVAL_RANGE
-/// - Post pulse baseline length is at least two times #PSQ_CR_BL_EVAL_RANGE
+/// - Pre pulse baseline length is #PSQ_BL_EVAL_RANGE
+/// - Post pulse baseline length is at least two times #PSQ_BL_EVAL_RANGE
 ///
 /// Testing:
 /// For testing the range detection logic, the results can be defined in the wave
@@ -3691,7 +3649,7 @@ Function PSQ_Chirp(device, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(device, s.headstage)
-			minLength = 3 * PSQ_CR_BL_EVAL_RANGE
+			minLength = 3 * PSQ_BL_EVAL_RANGE
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", device, s.headstage, minLength
 				ControlWindowToFront()
@@ -3915,7 +3873,7 @@ Function PSQ_Chirp(device, s)
 	if(spikeCheck && IsNaN(spikeCheckPassed))
 		WAVE durations = PSQ_GetPulseDurations(device, PSQ_CHIRP, s.sweepNo, totalOnsetDelay)
 
-		chirpStart = totalOnsetDelay + PSQ_CR_BL_EVAL_RANGE
+		chirpStart = totalOnsetDelay + PSQ_BL_EVAL_RANGE
 		chirpEnd   = chirpStart + durations[s.headstage]
 
 		sprintf msg, "Spike check: chirpStart (relative to zero) %g, chirpEnd %g, fifoInStimsetTime %g", chirpStart, chirpEnd, fifoInStimsetTime
@@ -3967,10 +3925,10 @@ Function PSQ_Chirp(device, s)
 		return ANALYSIS_FUNC_RET_EARLY_STOP
 	endif
 
-	WAVE/T cycleXValuesLBN = PSQ_CR_GetCycles(device, s.sweepNo, s.rawDACWave, totalonsetDelay + PSQ_CR_BL_EVAL_RANGE)
+	WAVE/T cycleXValuesLBN = PSQ_CR_GetCycles(device, s.sweepNo, s.rawDACWave, totalonsetDelay + PSQ_BL_EVAL_RANGE)
 	WAVE cycleXValues = ListToNumericWave(cycleXValuesLBN[s.headstage], ";")
 
-	chirpStart = PSQ_CR_BL_EVAL_RANGE
+	chirpStart = PSQ_BL_EVAL_RANGE
 	cycleEnd = PSQ_CR_GetXPosFromCycles(numberOfChirpCycles, cycleXValues, totalOnsetDelay)
 
 	sprintf msg, "chirpStart (relative to stimset start) %g, fifoInStimsetTime %g, cycleEnd %g", chirpStart, fifoInStimsetTime, cycleEnd

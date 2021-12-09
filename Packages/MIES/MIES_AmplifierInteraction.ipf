@@ -707,18 +707,17 @@ End
 ///
 /// @param device device
 /// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
-Function AI_MIESAutoPipetteOffset(device, headStage)
+static Function AI_MIESAutoPipetteOffset(device, headStage)
 	string device
 	variable headStage
 
-	variable clampMode, column, vDelta, offset, value
+	variable clampMode, vDelta, offset, value
 
 	WAVE TPResults = GetTPResults(device)
 
 	clampMode = DAG_GetHeadstageMode(device, headStage)
 
 	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE, "Headstage must be in VC/IC mode to use this function")
-	ASSERT(column >= 0, "Invalid column number")
 	//calculate delta current to reach zero
 	vdelta = (TPResults[%BaselineSteadyState][headstage] * TPResults[%ResistanceSteadyState][headstage]) / 1000 // set to mV
 	// get current DC V offset
