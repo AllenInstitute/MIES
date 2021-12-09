@@ -38,7 +38,7 @@ Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 End
 
 /// @brief Inverse function of TP_CalculateTestPulseLength
-static Function TP_CalculateBaselineFraction(variable pulseDuration, variable totalLength)
+Function TP_CalculateBaselineFraction(variable pulseDuration, variable totalLength)
 	return (pulseDuration / totalLength - 1) / -2
 End
 
