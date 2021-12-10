@@ -352,7 +352,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
 	variable targetVPassedAll, baselineType, chunkLengthTime
 	variable leakCurPassedAll, maxLeakCurrent
-	variable rmsShortThreshold, rmsLongThreshold, chunkPassedTestOverride
+	variable rmsShortThreshold, rmsLongThreshold
+	variable chunkPassedRMSShortOverride, chunkPassedRMSLongOverride, chunkPassedTargetVOverride, chunkPassedLeakCurOverride
 	string msg, adUnit, ctrl, key, epName, epShortName
 
 	struct PSQ_PulseSettings ps
@@ -435,7 +436,10 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	if(TestOverrideActive())
 		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(device)
-		chunkPassedTestOverride = overrideResults[chunk][count][0]
+		chunkPassedRMSShortOverride = overrideResults[chunk][count][0][PSQ_RMS_SHORT_TEST]
+		chunkPassedRMSLongOverride  = overrideResults[chunk][count][0][PSQ_RMS_LONG_TEST]
+		chunkPassedTargetVOverride  = overrideResults[chunk][count][0][PSQ_TARGETV_TEST]
+		chunkPassedLeakCurOverride  = overrideResults[chunk][count][0][PSQ_LEAKCUR_TEST]
 	endif
 	// END TEST
 
@@ -481,7 +485,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			rmsShort[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
 
 			if(TestOverrideActive())
-				rmsShortPassed[i] = chunkPassedTestOverride
+				rmsShortPassed[i] = chunkPassedRMSShortOverride
 			else
 				rmsShortPassed[i] = rmsShort[i] < rmsShortThreshold
 			endif
@@ -507,7 +511,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			rmsLong[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
 
 			if(TestOverrideActive())
-				rmsLongPassed[i] = chunkPassedTestOverride
+				rmsLongPassed[i] = chunkPassedRMSLongOverride
 			else
 				rmsLongPassed[i] = rmsLong[i] < rmsLongThreshold
 			endif
@@ -533,7 +537,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			avgVoltage[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
 
 			if(TestOverrideActive())
-				targetVPassed[i] = chunkPassedTestOverride
+				targetVPassed[i] = chunkPassedTargetVOverride
 			else
 				targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
 			endif
@@ -560,7 +564,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			avgCurrent[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
 
 			if(TestOverrideActive())
-				leakCurPassed[i] = chunkPassedTestOverride
+				leakCurPassed[i] = chunkPassedLeakCurOverride
 			else
 				leakCurPassed[i] = abs(avgCurrent[i]) <= maxLeakCurrent
 			endif
@@ -828,6 +832,12 @@ End
 /// - 1: x position in ms where the spike is in each sweep/step
 ///      For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
 ///
+/// Chunks (only for layer 0):
+/// - 0: RMS short baseline QC
+/// - 1: RMS long baseline QC
+/// - 2: target voltage baseline QC
+/// - 3: leak current baseline QC
+///
 /// #PSQ_DA_SCALE:
 ///
 /// Rows:
@@ -841,6 +851,12 @@ End
 /// - 1: x position in ms where the spike is in each sweep/step
 ///      For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
 /// - 2: Number of spikes
+///
+/// Chunks (only for layer 0):
+/// - 0: RMS short baseline QC
+/// - 1: RMS long baseline QC
+/// - 2: target voltage baseline QC
+/// - 3: leak current baseline QC
 ///
 /// #PSQ_CHIRP:
 ///
@@ -858,11 +874,18 @@ End
 ///      others are ignored], use NaN to use the real values
 /// - 3: passing spike check in chirp region or not [first row only,
 ///      others are ignored]
+///
+/// Chunks (only for layer 0):
+/// - 0: RMS short baseline QC
+/// - 1: RMS long baseline QC
+/// - 2: target voltage baseline QC
+/// - 3: leak current baseline QC
+
 Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	string device
 	variable headstage, type
 
-	variable DAC, numCols, numRows, numLayers
+	variable DAC, numCols, numRows, numLayers, numChunks
 	string stimset
 
 	DAC = AFH_GetDACFromHeadstage(device, headstage)
@@ -873,11 +896,13 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	switch(type)
 		case PSQ_RAMP:
 		case PSQ_RHEOBASE:
+			numChunks = 4
 			numLayers = 2
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
 		case PSQ_DA_SCALE:
+			numChunks = 4
 			numLayers = 3
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
@@ -887,6 +912,7 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			numCols = 0
 			break
 		case PSQ_CHIRP:
+			numChunks = 4
 			numLayers = 4
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
@@ -898,7 +924,7 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	WAVE/D/Z/SDFR=root: wv = overrideResults
 
 	if(WaveExists(wv))
-		Redimension/D/N=(numRows, numCols, numLayers) wv
+		Redimension/D/N=(numRows, numCols, numLayers, numChunks) wv
 	else
 		Make/D/N=(numRows, numCols, numLayers) root:overrideResults/Wave=wv
 	endif
