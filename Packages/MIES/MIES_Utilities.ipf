@@ -878,7 +878,12 @@ Function/Wave GetUniqueEntries(wv, [caseSensitive])
 	Wave wv
 	variable caseSensitive
 
-	variable numRows, i
+	variable numRows
+
+	ASSERT(WaveExists(wv), "Wave must exist")
+
+	numRows = DimSize(wv, ROWS)
+	ASSERT(numRows == numpnts(wv), "Wave must be 1D")
 
 	if(IsTextWave(wv))
 		if(ParamIsDefault(caseSensitive))
@@ -889,9 +894,6 @@ Function/Wave GetUniqueEntries(wv, [caseSensitive])
 
 		return GetUniqueTextEntries(wv, caseSensitive=caseSensitive)
 	endif
-
-	numRows = DimSize(wv, ROWS)
-	ASSERT(numRows == numpnts(wv), "Wave must be 1D")
 
 	if(numRows <= 1)
 		Duplicate/FREE wv, result
