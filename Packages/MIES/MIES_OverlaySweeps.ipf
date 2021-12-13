@@ -306,7 +306,7 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 			sweepSelectionChoices[i][][%TTLStimSet] = TTLStimSets[q]
 		endif
 
-		WAVE/Z clampMode = GetLastSetting(allNumericalValues[i], sweeps[i], "Clamp Mode", DATA_ACQUISITION_MODE)
+		WAVE/Z clampMode = GetLastSetting(allNumericalValues[i], sweeps[i], CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 
 		if(!WaveExists(clampMode))
 			WAVE/Z clampMode = GetLastSetting(allNumericalValues[i], sweeps[i], "Operating Mode", DATA_ACQUISITION_MODE)

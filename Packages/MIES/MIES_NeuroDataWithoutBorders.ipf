@@ -1015,7 +1015,7 @@ threadsafe static Function NWB_AppendSweepLowLevel(STRUCT NWBAsyncParameters &s)
 
 	// comment denotes the introducing comment of the labnotebook entry
 	// a2220e9f (Add the clamp mode to the labnotebook for acquired data, 2015-04-26)
-	WAVE/Z clampMode = GetLastSetting(s.numericalValues, s.sweep, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE/Z clampMode = GetLastSetting(s.numericalValues, s.sweep, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 
 	if(!WaveExists(clampMode))
 		WAVE/Z clampMode = GetLastSetting(s.numericalValues, s.sweep, "Operating Mode", DATA_ACQUISITION_MODE)

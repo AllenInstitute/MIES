@@ -2109,7 +2109,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Units][45]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][45] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][46] = "Clamp Mode"
+	wv[%Parameter][46] = CLAMPMODE_ENTRY_KEY
 	wv[%Units][46]     = "a. u."
 	wv[%Tolerance][46] = LABNOTEBOOK_NO_TOLERANCE
 
