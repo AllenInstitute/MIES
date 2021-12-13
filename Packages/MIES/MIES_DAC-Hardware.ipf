@@ -181,6 +181,8 @@ End
 Function HW_CloseDevice(hardwareType, deviceID, [flags])
 	variable hardwareType, deviceID, flags
 
+	HW_AssertOnInvalid(hardwareType, deviceID)
+
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			HW_ITC_CloseDevice(deviceID, flags=flags)
@@ -1012,6 +1014,11 @@ Function HW_ITC_CloseDevice(deviceID, [flags])
 	variable deviceID, flags
 
 	DEBUGPRINTSTACKINFO()
+
+	if(HW_ITC_SelectDevice(deviceID, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP))
+		// if the device can't be selected it is already closed
+		return NaN
+	endif
 
 	if(HW_ITC_IsRunning(deviceID, flags=flags))
 		HW_ITC_StopAcq(deviceID, flags=flags)
