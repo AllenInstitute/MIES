@@ -853,6 +853,8 @@ StrConstant STIMSET_SCALE_FACTOR_KEY  = "Stim Scale Factor"
 StrConstant STIMSET_WAVE_NOTE_KEY     = "Stim Wave Note"
 StrConstant EPOCHS_ENTRY_KEY          = "Epochs"
 StrConstant CLAMPMODE_ENTRY_KEY       = "Clamp Mode"
+StrConstant TP_AMPLITUDE_VC_ENTRY_KEY = "TP Amplitude VC"
+StrConstant TP_AMPLITUDE_IC_ENTRY_KEY = "TP Amplitude IC"
 
 /// DA_Ephys controls which should be disabled during DAQ
 StrConstant CONTROLS_DISABLE_DURING_DAQ = "Check_DataAcqHS_All;Radio_ClampMode_AllIClamp;Radio_ClampMode_AllVClamp;Radio_ClampMode_AllIZero;SetVar_Sweep;Check_DataAcq_Indexing;check_DataAcq_IndexRandom;Check_DataAcq1_IndexingLocked;check_DataAcq_RepAcqRandom;Check_DataAcq1_RepeatAcq;Check_Settings_SkipAnalysFuncs"

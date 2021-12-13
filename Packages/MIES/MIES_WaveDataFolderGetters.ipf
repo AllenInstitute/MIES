@@ -6932,11 +6932,11 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 	wv[%Units][0]      = ""
 	wv[%Tolerance][0]  = ""
 
-	wv[%Parameter][1]  = "TP Amplitude VC"
+	wv[%Parameter][1]  = TP_AMPLITUDE_VC_ENTRY_KEY
 	wv[%Units][1]      = "pA"
 	wv[%Tolerance][1]  = ""
 
-	wv[%Parameter][2]  = "TP Amplitude IC"
+	wv[%Parameter][2]  = TP_AMPLITUDE_IC_ENTRY_KEY
 	wv[%Units][2]      = "mV"
 	wv[%Tolerance][2]  = ""
 

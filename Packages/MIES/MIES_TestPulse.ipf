@@ -1605,8 +1605,8 @@ Function TP_UpdateTPLBNSettings(string device)
 			continue
 		endif
 
-		TPSettingsLBN[0][%$"TP Amplitude VC"][i] = TPSettings[%amplitudeVC][i]
-		TPSettingsLBN[0][%$"TP Amplitude IC"][i] = TPSettings[%amplitudeIC][i]
+		TPSettingsLBN[0][%$TP_AMPLITUDE_VC_ENTRY_KEY][i] = TPSettings[%amplitudeVC][i]
+		TPSettingsLBN[0][%$TP_AMPLITUDE_IC_ENTRY_KEY][i] = TPSettings[%amplitudeIC][i]
 
 		lbl = "autoTPEnable"
 		entry = TP_AutoTPLabelToLabnotebookName(lbl)
