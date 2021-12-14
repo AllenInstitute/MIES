@@ -592,8 +592,37 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 					endif
 
 					if(!chunkQC)
-						sprintf msg, "Baseline QC failure in chunk %d", i
-						return msg
+						// baseline chunks fail due to one of the four QC tests failing:
+						//
+						// RMS short
+						// RMS long
+						// target voltage
+						// leak current
+						//
+						// These are executed in order and failure of one of them results
+						// the others ones not being executed.
+						msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_RMS_SHORT_PASS, "RMS short")
+						if(!IsEmpty(msg))
+							return msg
+						endif
+
+						msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_RMS_LONG_PASS, "RMS long")
+						if(!IsEmpty(msg))
+							return msg
+						endif
+
+						msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_TARGETV_PASS, "target voltage")
+						if(!IsEmpty(msg))
+							return msg
+						endif
+
+						msg = AD_GetBaselineChunkFailMsg(anaFuncType, numericalValues, sweepNo, headstage, i, PSQ_FMT_LBN_LEAKCUR_PASS, "leak current")
+						if(!IsEmpty(msg))
+							return msg
+						endif
+
+						BUG("Unknown chunk test failed")
+						return ""
 					endif
 				endfor
 
@@ -605,6 +634,32 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 	endswitch
 
 	return ""
+End
+
+static Function/S AD_GetBaselineChunkFailMsg(variable anaFuncType, WAVE numericalValues, variable sweepNo, variable headstage, variable chunk, string subkey, string testname)
+	string key, msg
+	variable check
+
+	key = CreateAnaFuncLBNKey(anaFuncType, subkey, query = 1, chunk = chunk)
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	if(!WaveExists(settings))
+		// check was not performed
+		return ""
+	endif
+
+	check = settings[headstage]
+
+	ASSERT(IsFinite(check), "Invalid QC value")
+
+	if(check)
+		// check passed
+		return ""
+	endif
+
+	// check failed
+	sprintf msg, "Baseline QC failure in chunk %d due to %s %s test.", chunk, ToPassFail(check), testname
+	return msg
 End
 
 /// @brief Gather per sweep failure information for some analysis function types
