@@ -29,6 +29,7 @@
 #include "UTF_PatchSeqSquarePulse"
 #include "UTF_ReachTargetVoltage"
 #include "UTF_SetControls"
+#include "UTF_SweepFormulaHardware"
 #include "UTF_TestNWBExportV1"
 #include "UTF_TestNWBExportV2"
 #include "UTF_VeryBasicHardwareTests"
@@ -72,6 +73,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", inf)
 	list = AddListItem("UTF_DAEphys.ipf", list, ";", inf)
 	list = AddListItem("UTF_Epochs.ipf", list, ";", inf)
+	list = AddListItem("UTF_SweepFormulaHardware.ipf", list, ";", inf)
 	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", inf)
 	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list, ";", inf)
 	// analysis functions
