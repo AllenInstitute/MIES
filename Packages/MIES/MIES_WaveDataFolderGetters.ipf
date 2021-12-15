@@ -1754,7 +1754,7 @@ threadsafe Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 32
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 33
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -2300,7 +2300,7 @@ Function/Wave GetSweepSettingsTextKeyWave(device)
 	wv[0][16] = HIGH_PREC_SWEEP_START_KEY
 	wv[0][17] = STIMSET_WAVE_NOTE_KEY
 	wv[0][18] = "TTL rack zero " + LABNOTEBOOK_TTL_SETSWEEPCOUNTS
-	wv[0][19] = "TTL rack one  " + LABNOTEBOOK_TTL_SETSWEEPCOUNTS
+	wv[0][19] = "TTL rack one " + LABNOTEBOOK_TTL_SETSWEEPCOUNTS
 	wv[0][20] = "TTL " + LABNOTEBOOK_TTL_SETSWEEPCOUNTS
 	wv[0][21] = "TTL " + LABNOTEBOOK_TTL_STIMSETS
 	wv[0][22] = "TTL channels"
