@@ -400,6 +400,92 @@ The programmer might consider evaluating ``V_AbortCode`` after catch.
 It is recommended to comment in the code before the try what the construct is
 intended to handle (RTE, Abort or both).
 
+Retrieving Headstage / Channel Information from the LBN
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you would like to retrieve the settings from the last acquisition then look up function like ``AFH_GetHeadstageFromDAC``.
+It retrieves the correct information under the following conditions:
+
+- Data Acquisition is ongoing or
+- Data Acquisition has finished and DAEphys panel was not changed.
+
+This function returns NaN if the active DAC had no associated headstage.
+The same applies for ``AFH_GetHeadstageFromADC``.
+
+In contrast the functions AFH_GetDACFromHeadstage and AFH_GetADCFromHeadstage return DAC/ADC numbers only for active headstages.
+
+One of the most used functions to retrieve specific information from the LBN is
+``GetLastSettingChannel``. The returned wave has NUM_HEADSTAGES + 1 entries.
+The first NUM_HEADSTAGES entries refer to the headstages whereas the last entry contains
+all headstage independent data.
+This is related to the general layout of the LBN, where the headstage is an index of the wave.
+In the numerical LBN (``GetLBNumericalValues``) there are columns with DAC/ADC channel information identified by their respective dimension label.
+For associated DAC <-> ADC channels the number of the DAC and ADC is present in the layers. The first NUM_HEADSTAGES layers refer to the headstages.
+
+Thus, if headstage 3 uses DAC channel 5 and ADC channel 1 for a sweep then in the LBN
+at index 3 in the DAC column a 3 is present and in the ADC column a 1.
+Details of the internal data format of the LBN are not required for correct retrieval
+of that information as MIES provides functions for that:
+
+.. code-block:: igorpro
+
+   WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
+   if(!WaveExists(numericalValues))
+      // fitting handling code
+   endif
+   WAVE/Z settings
+   [settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "Indexing", channelNumber, channelType, entrySourceType)
+
+This call specifies a sweep number, a channel type and a channel number and asks for information from the "Indexing" field.
+It returns a 1D wave settings and an index, where settings[index] is a Boolean entry telling if indexing was off or on.
+The value index itself is the headstage number. The index value can also equal NUM_HEADSTAGES when it refers to a headstage independent value.
+
+To find the ``ADC`` channel from a ``DAC`` channel, the example above can also be setup with channelType = XOP_CHANNEL_TYPE_DAC and LBN entry name "ADC".
+This works the same for finding the ``DAC`` channel from a ``ADC`` channel.
+
+If one just wants the headstage number there is an utility function ``GetHeadstageForChannel`` that returns the active headstage for a channel.
+
+The LBN entry ``Headstage Active`` is a Boolean entry and marks which headstage was active in a sweep.
+The ``Headstage Active`` can only be set (1) for a headstage that has an associated ``DAC`` and ``ADC`` channel.
+
+Creating LBN entries for tests
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: igorpro
+
+   Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesHSA, valuesDAC, valuesADC
+   Make/T/FREE/N=(1, 1, 1) keys
+
+   sweepNo = 0
+
+   // HS 0: DAC 2 and ADC 6
+   // HS 1: DAC 3 and ADC 7
+   // HS 2+: No DAC/ADC set
+   valuesDAC[]  = NaN
+   valuesDAC[0][0][0] = 2 // The layer refers to the headstage number
+   valuesDAC[0][0][1] = 3
+   keys[] = "DAC"
+   ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+   valuesADC[]  = NaN
+   valuesADC[0][0][0] = 6
+   valuesADC[0][0][1] = 7
+   keys[] = "ADC"
+   ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+   valuesHSA[]  = 0
+   valuesHSA[0][0][0] = 1 // the only valid option here is to set HS 0 and 1 active
+   valuesHSA[0][0][1] = 1 // because we did not set ADC/DAC channels for the other HS.
+   keys[] = "Headstage Active"
+   ED_AddEntriesToLabnotebook(valuesHSA, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+The key function here is ``ED_AddEntriesToLabnotebook``. There are no checks applied for this
+way of creating LBN entries for tests that guarantee a consistent LBN. e.g. setting headstage 2 to active
+in the upper code would violate LBN format schema.
+Note that in contrast ``ED_AddEntryToLabnotebook`` is used to add specific user entries to the LBN
+and **is not suited** for setting up generic test LBN entries.
+More example code can be found in ``PrepareLBN_IGNORE`` in UTF_Labnotebook.ipf.
+
 Original Developer Docu on SweepFormula
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
