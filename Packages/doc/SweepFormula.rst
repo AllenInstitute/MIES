@@ -583,7 +583,7 @@ The epochs function returns information from epochs.
 
 .. code-block:: bash
 
-   epochs(array sweeps, array channels, string name[, string type])
+   epochs(string name, array channels, array sweeps[, string type])
 
 type sets what information is returned. Valid types are: `range`, `name`, `treelevel`.
 If type is not specified then `range` is used as default.
@@ -608,7 +608,7 @@ If no matching epoch was found a zero sized wave is returned.
 .. code-block:: bash
 
    // two sweeps acquired with two headstages set with PulseTrain_100Hz_DA_0 and PulseTrain_150Hz_DA_0 from _2017_09_01_192934-compressed.nwb
-   epochs(sweeps(), channels(AD), ST, range) == [[20, 1376.01], [20, 1342.67], [20, 1376.01], [20, 1342.67]]
+   epochs(ST, channels(AD), sweeps(), range) == [[20, 1376.01], [20, 1342.67], [20, 1376.01], [20, 1342.67]]
 
 merge
 """""
