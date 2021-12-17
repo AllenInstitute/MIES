@@ -873,6 +873,8 @@ Function AcquisitionStateTrackingFunc(device, s)
 
 	name = "AcqStateTrackingValue_" + AS_StateToString(acqState)
 
+	CHECK_EQUAL_VAR(s.sweepNo, AS_GetSweepNumber(device))
+
 	CHECK_EQUAL_VAR(acqState, expectedAcqState)
 	values[s.headstage] = expectedAcqState
 	ED_AddEntryToLabnotebook(device, name, values, overrideSweepNo = s.sweepNo)
