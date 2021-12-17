@@ -1274,7 +1274,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 End
 
 static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string device, variable numActiveChannels, variable dataAcqOrTP, variable multiDevice)
-	variable TPAmpVClamp, TPAmpIClamp, powerSpectrum, channel, headstage, channelMode
+	variable powerSpectrum, channel, headstage, channelMode
 	variable onsetDelayUserLocal, onsetDelayAutoLocal, terminationDelayLocal, distributedDAQDelayLocal
 	variable scalingZero, indexingLocked, indexing
 	variable i, j, ret, setCycleCountLocal
@@ -1293,8 +1293,6 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	s.distributedDAQOptOv   = DAG_GetNumericalValue(device, "Check_DataAcq1_dDAQOptOv")
 	s.distributedDAQOptPre  = DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPre")
 	s.distributedDAQOptPost = DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPost")
-	TPAmpVClamp             = DAG_GetNumericalValue(device, "SetVar_DataAcq_TPAmplitude")
-	TPAmpIClamp             = DAG_GetNumericalValue(device, "SetVar_DataAcq_TPAmplitudeIC")
 	powerSpectrum           = DAG_GetNumericalValue(device, "check_settings_show_power")
 
 	// MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
