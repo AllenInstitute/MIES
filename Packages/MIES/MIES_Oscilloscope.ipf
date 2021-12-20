@@ -639,7 +639,7 @@ static Function SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceiD, fifoP
 	variable dataAcqOrTP, deviceID, fifoPos
 
 	variable i, channel, decMethod, decFactor, gain, numCols
-	string fifoName
+	string fifoName, msg
 
 	WAVE scaledDataWave    = GetScaledDataWave(device)
 	WAVE OscilloscopeData = GetOscilloscopeWave(device)
@@ -667,7 +667,14 @@ static Function SCOPE_NI_UpdateOscilloscope(device, dataAcqOrTP, deviceiD, fifoP
 			WAVE NIChannel = NIDataWave[i]
 
 			gain = allGain[i]
-			Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][i] = NIChannel[p] / gain
+
+			AssertOnAndClearRTError()
+			try
+				Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][i] = NIChannel[p] / gain; AbortOnRTE
+			catch
+				sprintf msg, "Writing scaledDataWave failed, please save the experiment and file a bug report: fifoPosGlobal %g, fifoPos %g, scaledDataWave rows %g, stopCollectionPoint %g\r", fifoPosGlobal, fifoPos, DimSize(scaledDataWave, ROWS), ROVAR(GetStopCollectionPoint(device))
+				ASSERT(0, msg)
+			endtry
 		endfor
 
 		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
@@ -696,6 +703,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(device, dataAcqOrTP, chunk, fifoPos
 	WAVE OscilloscopeData = GetOscilloscopeWave(device)
 	variable length, first, last
 	variable startOfADColumns, numEntries, decMethod, decFactor
+	string msg
 	WAVE scaledDataWave    = GetScaledDataWave(device)
 	WAVE DAQDataWave       = GetDAQDataWave(device, dataAcqOrTP)
 	WAVE DAQConfigWave = GetDAQConfigWave(device)
@@ -742,7 +750,13 @@ static Function SCOPE_ITC_UpdateOscilloscope(device, dataAcqOrTP, chunk, fifoPos
 			return NaN
 		endif
 
-		Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][] = DAQDataWave[p][q] / allGain[q]
+		AssertOnAndClearRTError()
+		try
+			Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][] = DAQDataWave[p][q] / allGain[q]; AbortOnRTE
+		catch
+			sprintf msg, "Writing scaledDataWave failed, please save the experiment and file a bug report: fifoPosGlobal %g, fifoPos %g, scaledDataWave rows %g, stopCollectionPoint %g\r", fifoPosGlobal, fifoPos, DimSize(scaledDataWave, ROWS), ROVAR(GetStopCollectionPoint(device))
+			ASSERT(0, msg)
+		endtry
 
 		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
 		decFactor = GetNumberFromWaveNote(OscilloscopeData, "DecimationFactor")
