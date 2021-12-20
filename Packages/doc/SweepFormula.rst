@@ -579,6 +579,7 @@ used with two arguments.
 
 epochs
 """"""
+
 The epochs function returns information from epochs.
 
 .. code-block:: bash
@@ -609,6 +610,41 @@ If no matching epoch was found a zero sized wave is returned.
 
    // two sweeps acquired with two headstages set with PulseTrain_100Hz_DA_0 and PulseTrain_150Hz_DA_0 from _2017_09_01_192934-compressed.nwb
    epochs(ST, channels(AD), sweeps(), range) == [[20, 1376.01], [20, 1342.67], [20, 1376.01], [20, 1342.67]]
+
+tp
+""
+
+The tp function returns analysis values for test pulses that are part of sweeps.
+
+.. code-block:: bash
+
+   tp(variant type, array channels, array sweeps)
+
+type sets what test pulse analysis value is returned.
+The following types are supported:
+
+base or 0: Returns the baseline level in pA or mV depending on the clamp mode.
+
+inst or 1: Returns the instantaneous resistance values in MΩ.
+
+ss or 2: Returns the steady state resistance values in MΩ.
+
+The returned array is 1 x M x N, where M indexes the sweeps and N indexes the channels. Thus,
+sweep and channel information gets transferred as well.
+Values for non-existing sweeps and/or channels are set NaN.
+If a single sweep contains multiple test pulses then the data from the test pulse ranges is averaged.
+The test pulses in the sweep must have the same duration.
+Test pulses that are part of sweeps are identified through their respective epoch short name, that
+starts with "TP" or "U_TP". If sweeps and channels can resolve existing single sweeps but none contain
+epochs for test pulses then a numeric single element wave is returned with the value NaN.
+
+.. code-block:: bash
+
+   // Get steady state resistance from all sweeps and all AD channels
+   tp(ss, channels(AD), sweeps())
+
+   // Get base line level from all sweeps and DA1 channel
+   tp(static, channels(DA1), sweeps())
 
 merge
 """""

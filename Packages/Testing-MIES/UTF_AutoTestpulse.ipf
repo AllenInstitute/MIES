@@ -96,7 +96,7 @@ static Function/WAVE GetResults_IGNORE(string device)
 
 	wv[%autoTPEnable]  = GetLastSetting(numericalValues, NaN, "TP Auto", TEST_PULSE_MODE)
 	wv[%autoTPQC]      = GetLastSetting(numericalValues, NaN, "TP Auto QC", TEST_PULSE_MODE)
-	wv[%amplitudeIC]   = GetLastSetting(numericalValues, NaN, "TP Amplitude IC", TEST_PULSE_MODE)
+	wv[%amplitudeIC]   = GetLastSetting(numericalValues, NaN, TP_AMPLITUDE_IC_ENTRY_KEY, TEST_PULSE_MODE)
 	wv[%baselineFrac]  = GetLastSetting(numericalValues, NaN, "TP Baseline Fraction", TEST_PULSE_MODE)
 
 	return wv

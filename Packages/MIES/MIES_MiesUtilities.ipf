@@ -2675,7 +2675,7 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	endif
 
 	// Added in a2220e9f (Add the clamp mode to the labnotebook for acquired data, 2015-04-26)
-	WAVE/Z clampModes = GetLastSetting(numericalValues, sweepNo, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE/Z clampModes = GetLastSetting(numericalValues, sweepNo, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 
 	if(!WaveExists(clampModes))
 		WAVE/Z clampModes = GetLastSetting(numericalValues, sweepNo, "Operating Mode", DATA_ACQUISITION_MODE)

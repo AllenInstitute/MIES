@@ -2914,13 +2914,13 @@ Function ChangeCMDuringSweep_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 0, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 1, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 2, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
@@ -2982,13 +2982,13 @@ Function ChangeCMDuringSweepWMS_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 0, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode= WAVE_DATA)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 1, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 2, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/T textualValues   = GetLBTextualValues(str)
@@ -3042,7 +3042,7 @@ Function ChangeCMDuringSweepNoRA_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 0, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
@@ -3092,13 +3092,13 @@ Function ChangeCMDuringITI_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 0, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 1, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 2, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
@@ -3151,13 +3151,13 @@ Function ChangeCMDuringITIWithTP_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 0, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 1, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 2, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 End
 
@@ -3255,7 +3255,7 @@ Function TPDuringDAQOnlyTP_REENTRY([str])
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, TP_AMPLITUDE_VC_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
@@ -3372,7 +3372,7 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_DAQ)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, TP_AMPLITUDE_VC_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude[0], NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
@@ -3447,7 +3447,7 @@ Function TPDuringDAQ_REENTRY([str])
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, TP_AMPLITUDE_VC_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
 	daGain = DAG_GetNumericalValue(str, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = 0)
 
@@ -3515,7 +3515,7 @@ Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	WAVE/Z tpAmplitude = GetLastSetting(numericalValues, sweepNo, TP_AMPLITUDE_VC_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(tpAmplitude, NUMERIC_WAVE)
 
 	daGain = DAG_GetNumericalValue(str, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = 0)
@@ -3798,7 +3798,7 @@ Function CheckIZeroClampMode_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE clampMode = GetLastSetting(numericalValues, 0, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {I_EQUAL_ZERO_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=WAVE_DATA)
 End
 
@@ -5114,8 +5114,8 @@ static Function/WAVE GetTPLBNEntries_IGNORE(string device, variable sweepNo, var
 
 	wv[%baselineFrac] = GetLastSetting(numericalValues, sweepNo, "TP Baseline Fraction", entrySourceType)
 	wv[%durationMS]   = GetLastSetting(numericalValues, sweepNo, "TP Pulse Duration", entrySourceType)
-	wv[%amplitudeIC]  = GetLastSetting(numericalValues, sweepNo, "TP Amplitude IC", entrySourceType)
-	wv[%amplitudeVC]  = GetLastSetting(numericalValues, sweepNo, "TP Amplitude VC", entrySourceType)
+	wv[%amplitudeIC]  = GetLastSetting(numericalValues, sweepNo, TP_AMPLITUDE_IC_ENTRY_KEY, entrySourceType)
+	wv[%amplitudeVC]  = GetLastSetting(numericalValues, sweepNo, TP_AMPLITUDE_VC_ENTRY_KEY, entrySourceType)
 	wv[%autoTPEnable] = GetLastSetting(numericalValues, sweepNo, "TP Auto", entrySourceType)
 	wv[%autoTPQC]     = GetLastSetting(numericalValues, sweepNo, "TP Auto QC", entrySourceType)
 

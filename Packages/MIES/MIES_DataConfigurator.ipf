@@ -1022,7 +1022,7 @@ static Function DC_PrepareLBNEntries(string device, STRUCT DataConfigurationResu
 			continue
 		endif
 
-		DC_DocumentChannelProperty(device, "Clamp Mode", i, NaN, NaN, var=DAG_GetHeadstageMode(device, i))
+		DC_DocumentChannelProperty(device, CLAMPMODE_ENTRY_KEY, i, NaN, NaN, var=DAG_GetHeadstageMode(device, i))
 	endfor
 
 	if(s.distributedDAQ)

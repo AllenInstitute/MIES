@@ -436,7 +436,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	// monkey patch the labnotebook to claim it holds IC data instead of VC
 	WAVE numericalValues = root:MIES:LabNoteBook:Dev1:numericalValues
-	MultiThread numericalValues[][%$"Clamp Mode"][] = (numericalValues[p][%$"Clamp Mode"][r] == V_CLAMP_MODE ? I_CLAMP_MODE : numericalValues[p][%$"Clamp Mode"][r])
+	MultiThread numericalValues[][%$CLAMPMODE_ENTRY_KEY][] = (numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r] == V_CLAMP_MODE ? I_CLAMP_MODE : numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r])
 End
 
 static Function [string bspName, string graph] PAT_StartDataBrowser_IGNORE()
@@ -1837,7 +1837,7 @@ Function PAT_FailedPulseCheckVC()
 
 	// now with VC data again
 	WAVE numericalValues = root:MIES:LabNoteBook:Dev1:numericalValues
-	MultiThread numericalValues[][%$"Clamp Mode"][] = (numericalValues[p][%$"Clamp Mode"][r] == I_CLAMP_MODE ? V_CLAMP_MODE : numericalValues[p][%$"Clamp Mode"][r])
+	MultiThread numericalValues[][%$CLAMPMODE_ENTRY_KEY][] = (numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r] == I_CLAMP_MODE ? V_CLAMP_MODE : numericalValues[p][%$CLAMPMODE_ENTRY_KEY][r])
 
 	[bspName, graph] = PAT_StartDataBrowser_IGNORE()
 	PGC_SetAndActivateControl(bspName, "check_BrowserSettings_OVS", val = 1)

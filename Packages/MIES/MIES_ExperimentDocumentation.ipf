@@ -660,7 +660,7 @@ Function ED_TPDocumentation(device)
 	TPKeyWave[0][8]  = "Headstage Active"
 	TPKeyWave[0][9]  = "DAC"
 	TPKeyWave[0][10] = "ADC"
-	TPKeyWave[0][11] = "Clamp Mode"
+	TPKeyWave[0][11] = CLAMPMODE_ENTRY_KEY
 
 	TPKeyWave[1][0]  = "mV"
 	TPKeyWave[1][1]  = "pA"

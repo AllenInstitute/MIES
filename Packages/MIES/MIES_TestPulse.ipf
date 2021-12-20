@@ -38,7 +38,7 @@ Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 End
 
 /// @brief Inverse function of TP_CalculateTestPulseLength
-static Function TP_CalculateBaselineFraction(variable pulseDuration, variable totalLength)
+Function TP_CalculateBaselineFraction(variable pulseDuration, variable totalLength)
 	return (pulseDuration / totalLength - 1) / -2
 End
 
@@ -1514,11 +1514,12 @@ Function TP_CreateTestPulseWave(device, dataAcqOrTP)
 	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
 End
 
-/// @brief Send a TP data set to the asynchroneous analysis function TP_TSAnalysis
+/// @brief Prepares a TP data set data folder to the asynchroneous analysis function TP_TSAnalysis
 ///
 /// @param[in] device title of panel that ran this test pulse
 /// @param tpInput holds the parameters send to analysis
-Function TP_SendToAnalysis(string device, STRUCT TPAnalysisInput &tpInput)
+/// @returns data folder that can be pushed for execution by the async frame work
+Function/DF TP_PrepareAnalysisDF(string device, STRUCT TPAnalysisInput &tpInput)
 
 	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", WORKLOADCLASS_TP + device, inOrder=0)
 	ASYNC_AddParam(threadDF, w=tpInput.data)
@@ -1532,6 +1533,17 @@ Function TP_SendToAnalysis(string device, STRUCT TPAnalysisInput &tpInput)
 	ASYNC_AddParam(threadDF, str=tpInput.device)
 	ASYNC_AddParam(threadDF, var=tpInput.measurementMarker)
 	ASYNC_AddParam(threadDF, var=tpInput.activeADCs)
+
+	return threadDF
+End
+
+/// @brief Send a TP data set to the asynchroneous analysis function TP_TSAnalysis
+///
+/// @param[in] device title of panel that ran this test pulse
+/// @param tpInput holds the parameters send to analysis
+Function TP_SendToAnalysis(string device, STRUCT TPAnalysisInput &tpInput)
+
+	DFREF threadDF = TP_PrepareAnalysisDF(device, tpInput)
 	ASYNC_Execute(threadDF)
 End
 
@@ -1605,8 +1617,8 @@ Function TP_UpdateTPLBNSettings(string device)
 			continue
 		endif
 
-		TPSettingsLBN[0][%$"TP Amplitude VC"][i] = TPSettings[%amplitudeVC][i]
-		TPSettingsLBN[0][%$"TP Amplitude IC"][i] = TPSettings[%amplitudeIC][i]
+		TPSettingsLBN[0][%$TP_AMPLITUDE_VC_ENTRY_KEY][i] = TPSettings[%amplitudeVC][i]
+		TPSettingsLBN[0][%$TP_AMPLITUDE_IC_ENTRY_KEY][i] = TPSettings[%amplitudeIC][i]
 
 		lbl = "autoTPEnable"
 		entry = TP_AutoTPLabelToLabnotebookName(lbl)

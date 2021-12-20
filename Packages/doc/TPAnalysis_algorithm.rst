@@ -466,6 +466,8 @@ For V-clamp mode of the current channel:
 
 ``AvgDeltaSS`` contains the absolute difference of the steady state level and the base line level.
 ``InstAvg`` contains the absolute difference of the instantaneous level and the base line level.
+By default the current values are in pA and the voltage values in mV, thus the resulting resistance values are
+in MΩ.
 
 .. code-block:: igorpro
 

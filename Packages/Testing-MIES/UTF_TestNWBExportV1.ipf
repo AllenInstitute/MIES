@@ -390,7 +390,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 	endif
 
 	// ancestry
-	WAVE/Z wv = GetLastSetting(numericalValues, sweep, "Clamp Mode", DATA_ACQUISITION_MODE)
+	WAVE/Z wv = GetLastSetting(numericalValues, sweep, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(wv, NUMERIC_WAVE)
 
 	clampMode = IsFinite(params.electrodeNumber) ? wv[params.electrodeNumber] : NaN
@@ -539,7 +539,7 @@ static Function/DF TestSweepData(entry, device, sweep)
 		WAVE DAC = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
 		headstage = GetRowIndex(DAC, val=str2num(channelNumberStr))
 		if(IsFinite(headstage))
-			WAVE clampMode = GetLastSetting(numericalValues, sweep, "Clamp Mode", DATA_ACQUISITION_MODE)
+			WAVE clampMode = GetLastSetting(numericalValues, sweep, CLAMPMODE_ENTRY_KEY, DATA_ACQUISITION_MODE)
 
 			if(clampMode[headstage] == I_EQUAL_ZERO_MODE \
 			   && !cmpstr(channelTypeStr, StringFromList(XOP_CHANNEL_TYPE_DAC, XOP_CHANNEL_NAMES)))

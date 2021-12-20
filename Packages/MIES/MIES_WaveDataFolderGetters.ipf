@@ -2109,7 +2109,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Units][45]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][45] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][46] = "Clamp Mode"
+	wv[%Parameter][46] = CLAMPMODE_ENTRY_KEY
 	wv[%Units][46]     = "a. u."
 	wv[%Tolerance][46] = LABNOTEBOOK_NO_TOLERANCE
 
@@ -6932,11 +6932,11 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 	wv[%Units][0]      = ""
 	wv[%Tolerance][0]  = ""
 
-	wv[%Parameter][1]  = "TP Amplitude VC"
+	wv[%Parameter][1]  = TP_AMPLITUDE_VC_ENTRY_KEY
 	wv[%Units][1]      = "pA"
 	wv[%Tolerance][1]  = ""
 
-	wv[%Parameter][2]  = "TP Amplitude IC"
+	wv[%Parameter][2]  = TP_AMPLITUDE_IC_ENTRY_KEY
 	wv[%Units][2]      = "mV"
 	wv[%Tolerance][2]  = ""
 
