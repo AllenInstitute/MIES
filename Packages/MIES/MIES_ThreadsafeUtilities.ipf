@@ -213,7 +213,7 @@ Function TS_StopThreadGroup(tgID)
 	variable numThreadsRunning
 	string msg
 
-	if(!IsFinite(tgID))
+	if(!IsFinite(tgID) || TS_ThreadGroupFinished(tgID))
 		// nothing to do
 		return NaN
 	endif
