@@ -1322,7 +1322,6 @@ Function DAP_OneTimeCallBeforeDAQ(device, runMode)
 
 		HW_NI_ResetTaskIDs(device)
 	endif
-	DisableControls(device, "check_Settings_MD")
 
 	DAP_ToggleAcquisitionButton(device, DATA_ACQ_BUTTON_TO_STOP)
 	DisableControls(device, CONTROLS_DISABLE_DURING_DAQ_TP)
@@ -1416,9 +1415,6 @@ Function DAP_OneTimeCallAfterDAQ(string device, variable stopReason, [variable f
 				DisableControl(device, "check_Settings_MD")
 			endif
 			HW_NI_ResetTaskIDs(device)
-			break
-		default:
-			EnableControl(device, "check_Settings_MD")
 			break
 	endswitch
 
