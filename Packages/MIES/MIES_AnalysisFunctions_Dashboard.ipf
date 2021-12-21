@@ -76,11 +76,19 @@ Function AD_Update(win)
 End
 
 static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage, variable ongoingDAQ)
+	variable stopReason
 
 	if(passed)
 		return "Pass"
-	elseif(ongoingDAQ)
-		return "Sweep not yet finished"
+	endif
+
+	if(ongoingDAQ)
+		// introduced in 87f9cbfa (DAQ: Add stopping reason to the labnotebook, 2021-05-13)
+		stopReason = GetLastSettingIndepSCI(numericalValues, sweepNo, "DAQ stop reason", headstage, UNKNOWN_MODE, defValue = NaN)
+
+		if(IsNaN(stopReason))
+			return "Sweep not yet finished"
+		endif
 	endif
 
 	// MSQ_DA
