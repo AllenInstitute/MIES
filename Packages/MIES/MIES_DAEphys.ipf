@@ -2596,7 +2596,7 @@ Function DAP_CheckSettings(device, mode)
 
 		// unlock DAQDataWave, this happens if user functions error out and we don't catch it
 		WAVE DAQDataWave = GetDAQDataWave(device, mode)
-		if(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)))
+		if(GetLockState(DAQDataWave))
 			printf "(%s) Removing leftover lock on DAQDataWave\r", device
 			ControlWindowToFront()
 			ChangeWaveLock(DAQDataWave, 0)
