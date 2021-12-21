@@ -175,7 +175,12 @@ static Function AD_FillWaves(win, list, info)
 		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
 		if(WaveExists(anaFuncs))
-			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
+			if(GetLastSettingIndep(numericalValues, sweepNo, "Skip analysis functions", DATA_ACQUISITION_MODE, defValue = 0))
+				anaFuncs[] = anaFuncs[p] + " (Skipped)"
+				Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = INVALID_ANALYSIS_FUNCTION
+			else
+				Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
+			endif
 		else
 			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE/T anaFuncs = NOT_AVAILABLE
 			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = INVALID_ANALYSIS_FUNCTION
