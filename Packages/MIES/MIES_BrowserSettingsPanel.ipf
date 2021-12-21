@@ -1654,7 +1654,7 @@ Function BSP_AddTracesForEpochs(string win)
 		SetWindow $win tooltipHook(hook) = BSP_EpochGraphToolTip
 
 		DoWindow/F $win
-		ShowTraceInfoTags()
+		Execute/P/Q/Z "ShowTraceInfoTags()"
 
 		SetAxis/W=$win/A
 	endfor
