@@ -194,10 +194,13 @@ threadsafe Function TS_ThreadGroupPutDFR(tgID, dfr)
 End
 
 /// @brief Returns 1 if all worker threads have finished
-Function TS_ThreadGroupFinished(tgID)
-	variable tgID
+Function TS_ThreadGroupFinished(variable tgID)
+	variable err, ret
 
-	return !ThreadGroupWait(tgID, 0)
+	AssertOnAndClearRTError()
+	ret = !ThreadGroupWait(tgID, 0); err = GetRTError(1)
+
+	return ret
 End
 
 /// @brief Stop the given thread group
