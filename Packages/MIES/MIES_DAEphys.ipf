@@ -2164,7 +2164,7 @@ Function DAP_CheckSettings(device, mode)
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
 	variable DACchannel, ret
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
-	string list, lastStart
+	string list, lastStart, msg
 
 	ASSERT(mode == DATA_ACQUISITION_MODE || mode == TEST_PULSE_MODE, "Invalid mode")
 
@@ -2597,8 +2597,8 @@ Function DAP_CheckSettings(device, mode)
 		// unlock DAQDataWave, this happens if user functions error out and we don't catch it
 		WAVE DAQDataWave = GetDAQDataWave(device, mode)
 		if(GetLockState(DAQDataWave))
-			printf "(%s) Removing leftover lock on DAQDataWave\r", device
-			ControlWindowToFront()
+			sprintf msg, "(%s) Removing leftover lock on %s.\r", device, GetWavesDataFolder(DAQDataWave, 2)
+			BUG(msg)
 			ChangeWaveLock(DAQDataWave, 0)
 		endif
 	endfor
