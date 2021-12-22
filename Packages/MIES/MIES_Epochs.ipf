@@ -692,7 +692,7 @@ End
 /// @param sweepNo         Number of sweep
 /// @param channelType     type of channel @sa XopChannelConstants
 /// @param channelNumber   number of channel
-/// @param shortname       short name filter as regular expression
+/// @param shortname       short name filter, can be a regular expression which is matched caseless
 /// @param treelevel       [optional: default = not set] tree level of epochs, if not set then treelevel is ignored
 ///
 /// @returns Text wave with epoch information, only rows fitting the input parameters are returned. Can also be a null wave.
@@ -724,7 +724,7 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 	endif
 
 	// @todo add support for grepping in FindIndizes later
-	Make/FREE/N=(epochCnt) indizesName = GrepString(EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS]), shortName) ? p : NaN
+	Make/FREE/N=(epochCnt) indizesName = GrepString(EP_GetShortName(epochInfo[p][EPOCH_COL_TAGS]), "(?i)" + shortName) ? p : NaN
 
 	WAVE/Z indizes = GetSetIntersection(indizesLevel, indizesName)
 	if(!WaveExists(indizes))
