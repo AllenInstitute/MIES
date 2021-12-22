@@ -521,9 +521,7 @@ Function DB_UpdateToLastSweep(win)
 		UpdateSweepPlot(win)
 	endif
 
-	if(SF_IsActive(win))
-		PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
-	endif
+	SF_Update(win)
 
 	LBV_UpdateTagsForTextualLBNEntries(win, last)
 End

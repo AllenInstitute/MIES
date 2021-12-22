@@ -1465,6 +1465,16 @@ static Function SF_CheckInputCode(string code, DFREF dfr)
 	endfor
 End
 
+Function SF_Update(string graph)
+	string bsPanel = BSP_GetPanel(graph)
+
+	if(!SF_IsActive(bsPanel))
+		return NaN
+	endif
+
+	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
+End
+
 /// @brief checks if SweepFormula (SF) is active.
 Function SF_IsActive(win)
 	string win
