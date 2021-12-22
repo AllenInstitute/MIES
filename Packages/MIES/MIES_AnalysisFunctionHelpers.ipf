@@ -574,7 +574,9 @@ Function/S AFH_GetAnalysisParamType(name, params, [typeCheck, expectedType])
 	string type = ""
 	variable pos
 
-	if(!ParamIsDefault(expectedType))
+	if(ParamIsDefault(expectedType))
+		expectedType = ""
+	else
 		typeCheck = 1
 		ASSERT(AFH_IsValidAnalysisParamType(expectedType), "Invalid expectedType")
 	endif
