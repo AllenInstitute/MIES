@@ -1314,7 +1314,7 @@ threadsafe static Function NWB_ClearWriteChannelParams(s)
 	string device
 	variable sweep, startingTime, samplingRate, groupIndex
 
-	if(strlen(s.device) > 0)
+	if(!IsEmpty(s.device))
 		device = s.device
 	endif
 
@@ -1327,7 +1327,7 @@ threadsafe static Function NWB_ClearWriteChannelParams(s)
 
 	s = defaultValues
 
-	if(strlen(device) > 0)
+	if(!IsEmpty(device))
 		s.device = device
 	endif
 
@@ -1752,7 +1752,7 @@ threadsafe static Function NWB_GetTimeSeriesProperties(variable nwbVersion, WAVE
 		return NaN
 	endif
 
-	if(strlen(tsp.missing_fields) > 0)
+	if(!IsEmpty(tsp.missing_fields))
 		ASSERT_TS(IsFinite(p.electrodeNumber), "Expected finite electrode number with non empty \"missing_fields\"")
 	endif
 

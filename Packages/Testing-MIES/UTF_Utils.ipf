@@ -2193,7 +2193,7 @@ Function/S TrimVolatileFolderName_IGNORE(list)
 	string str
 	string result = ""
 
-	if(strlen(list) == 0)
+	if(isEmpty(list))
 		return list
 	endif
 

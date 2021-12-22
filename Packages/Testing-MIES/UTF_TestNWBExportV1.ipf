@@ -176,7 +176,7 @@ static Function TestTimeSeriesProperties(groupID, channel)
 	STRUCT TimeSeriesProperties tsp
 	ReadTimeSeriesProperties(groupID, channel, tsp)
 
-	if(strlen(tsp.missing_fields) == 0)
+	if(IsEmpty(tsp.missing_fields))
 		missing_fields = "PLACEHOLDER;"
 	else
 		missing_fields = tsp.missing_fields

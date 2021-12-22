@@ -131,7 +131,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			Make/FREE/T tpStates = { NONE }
 			Make/FREE/T daqStates = { NONE }
 
-			if(!SVAR_Exists(lockedDevices) || strlen(lockedDevices) == 0)
+			if(!SVAR_Exists(lockedDevices) || IsEmpty(lockedDevices))
 				lockedDevicesStr = NONE
 			else
 				lockedDevicesStr = lockedDevices
@@ -2157,7 +2157,7 @@ End
 /// 	Function SearchString(str, substring)
 /// 		string str, substring
 ///
-/// 		ASSERT(strlen(substring) > 0, "supplied substring has zero length")
+/// 		ASSERT(!IsEmpty(substring), "supplied substring is empty")
 /// 		WAVE/Z/T wv = SearchStringBase(str, "(.*)\\Q" + substring + "\\E(.*)")
 ///
 /// 		return WaveExists(wv)
