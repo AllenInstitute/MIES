@@ -1603,7 +1603,7 @@ End
 ///
 /// @param str    string to potentially remove something from its beginning
 /// @param start  [optional, defaults to the first character] Remove this from
-///               the begin pf str
+///               the begin of str
 /// @param regExp [optional, defaults to false] If start is a simple string (false)
 ///               or a regular expression (true)
 threadsafe Function/S RemovePrefix(string str, [string start, variable regExp])
