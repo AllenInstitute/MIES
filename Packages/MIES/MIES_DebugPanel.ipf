@@ -99,7 +99,7 @@ Window DP_DebugPanel() : Panel
 	SetWindow kwTopWin,hook(MainHook)=DP_WindowHook
 EndMacro
 
-Function DP_FillDebugPanelWaves()
+static Function DP_FillDebugPanelWaves()
 	string symbPath, path, allProcFiles
 
 	WAVE/T listWave  = GetDebugPanelListWave()
