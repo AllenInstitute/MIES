@@ -284,11 +284,22 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	DeleteFile/Z GetExperimentNWBFileForExport()
 End
 
+Function DoExpensiveChecks()
+
+#ifdef AUTOMATED_TESTING_EXPENSIVE
+	return 1
+#endif
+
+	return str2numSafe(GetEnvironmentVariable("BAMBOO_EXPENSIVE_CHECKS")) == 1
+End
+
 Function TEST_CASE_END_OVERRIDE(name)
 	string name
 
 	string dev, experimentNWBFile, baseFolder, nwbFile
-	variable numEntries, i, fileID, nwbVersion
+	variable numEntries, i, fileID, nwbVersion, expensiveChecks
+
+	expensiveChecks = DoExpensiveChecks()
 
 	// cut off multi data suffix
 	name = StringFromList(0, name, ":")
@@ -306,6 +317,10 @@ Function TEST_CASE_END_OVERRIDE(name)
 		// correct acquisition state
 		NVAR acqState = $GetAcquisitionState(dev)
 		CHECK_EQUAL_VAR(acqState, AS_INACTIVE)
+
+		if(!expensiveChecks)
+			continue
+		endif
 
 		CheckEpochs(dev)
 
@@ -347,17 +362,19 @@ Function TEST_CASE_END_OVERRIDE(name)
 	NVAR bugCount = $GetBugCount()
 	CHECK_EQUAL_VAR(bugCount, 0)
 
-	// store experiment NWB file for later validation
-	HDF5CloseFile/A/Z 0
-	experimentNWBFile = GetExperimentNWBFileForExport()
+	if(expensiveChecks)
+		// store experiment NWB file for later validation
+		HDF5CloseFile/A/Z 0
+		experimentNWBFile = GetExperimentNWBFileForExport()
 
-	if(FileExists(experimentNWBFile))
-		fileID = H5_OpenFile(experimentNWBFile)
-		nwbVersion = GetNWBMajorVersion(ReadNWBVersion(fileID))
-		HDF5CloseFile fileID
+		if(FileExists(experimentNWBFile))
+			fileID = H5_OpenFile(experimentNWBFile)
+			nwbVersion = GetNWBMajorVersion(ReadNWBVersion(fileID))
+			HDF5CloseFile fileID
 
-		[baseFolder, nwbFile] = GetUniqueNWBFileForExport(nwbVersion)
-		MoveFile experimentNWBFile as (baseFolder + nwbFile)
+			[baseFolder, nwbFile] = GetUniqueNWBFileForExport(nwbVersion)
+			MoveFile experimentNWBFile as (baseFolder + nwbFile)
+		endif
 	endif
 
 #ifdef AUTOMATED_TESTING_DEBUGGING
