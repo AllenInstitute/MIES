@@ -286,6 +286,8 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 		epSubTags = ReplaceNumberByKey("Epoch", epSubTags, epochNr, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		epSubTags = ReplaceNumberByKey(EPOCH_AMPLITUDE_KEY, epSubTags, amplitude, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 
+		epSpecifier = ""
+
 		if(epochType == EPOCH_TYPE_PULSE_TRAIN)
 			if(!CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epochNr, key = "Mixed frequency"), "True"))
 				epSpecifier = "Mixed frequency"
@@ -295,9 +297,8 @@ static Function EP_AddEpochsFromStimSetNote(device, channel, stimset, stimsetBeg
 			if(!CmpStr(WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, key="Mixed frequency shuffle", sweep=sweep, epoch=epochNr), "True"))
 				epSpecifier += " shuffled"
 			endif
-		else
-			epSpecifier = ""
 		endif
+
 		if(!isEmpty(epSpecifier))
 			epSubTags = ReplaceStringByKey("Details", epSubTags, epSpecifier, STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		endif
