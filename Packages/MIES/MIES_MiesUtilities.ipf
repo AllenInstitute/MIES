@@ -3661,6 +3661,8 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 		BSP_AddTracesForEpochs(graph)
 	endif
 
+	SF_Update(graph)
+
 	BSP_ScaleAxes(graph)
 
 	[tgs] = BSP_GatherTiledGraphSettings(graph)

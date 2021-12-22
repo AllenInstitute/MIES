@@ -521,8 +521,6 @@ Function DB_UpdateToLastSweep(win)
 		UpdateSweepPlot(win)
 	endif
 
-	SF_Update(win)
-
 	LBV_UpdateTagsForTextualLBNEntries(win, last)
 End
 
