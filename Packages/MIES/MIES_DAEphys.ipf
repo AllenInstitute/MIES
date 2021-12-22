@@ -2369,6 +2369,7 @@ Function DAP_CheckSettings(device, mode)
 
 			// classic distributed acquisition requires that all stim sets are the same
 			// oodDAQ allows different stim sets
+			refDacWave = ""
 			if(DAG_GetNumericalValue(device, "Check_DataAcq1_DistribDaq") || DAG_GetNumericalValue(device, "Check_DataAcq1_dDAQOptOv"))
 				WAVE statusDAFiltered = DC_GetFilteredChannelState(device, mode, CHANNEL_TYPE_DAC)
 				numEntries = DimSize(statusDAFiltered, ROWS)
