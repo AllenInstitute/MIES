@@ -326,12 +326,6 @@ static Function ED_WriteChangedValuesToNoteText(device, sweepNo)
 	string str = ""
 	variable tolerance, i, j, numRows, numCols
 
-	// GetLastSetting will overwrite that on the first call
-	variable firstCurrent  = LABNOTEBOOK_GET_RANGE
-	variable lastCurrent   = LABNOTEBOOK_GET_RANGE
-	variable firstPrevious = LABNOTEBOOK_GET_RANGE
-	variable lastPrevious  = LABNOTEBOOK_GET_RANGE
-
 	WAVE/T textualValues = GetLBTextualValues(device)
 	WAVE/T textualKeys   = GetLBTextualKeys(device)
 
