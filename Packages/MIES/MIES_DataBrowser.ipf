@@ -466,26 +466,9 @@ End
 Function/WAVE DB_GetLBNWave(string win, variable type)
 	string device
 
-	switch(type)
-		case LBN_NUMERICAL_KEYS:
-			FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBNumericalKeys
-			break
-		case LBN_NUMERICAL_VALUES:
-			FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBNumericalValues
-			break
-		case LBN_TEXTUAL_KEYS:
-			FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBTextualKeys
-			break
-		case LBN_TEXTUAL_VALUES:
-			FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBTextualValues
-			break
-		default:
-			ASSERT(0, "Invalid type")
-	endswitch
-
 	device = BSP_GetDevice(win)
 
-	return func(device)
+	return GetLogbookWaves(LBT_LABNOTEBOOK, type, device = device)
 End
 
 Function DB_UpdateToLastSweep(win)

@@ -103,6 +103,61 @@ Function GetLogbookType(WAVE wv)
 	ASSERT(0, "Unrecognized wave: " + name)
 End
 
+/// @brief Return the logbook waves
+///
+/// @param device          [optional only for LBT_RESULTS] device
+/// @param logbookType     one of @ref LogbookTypes
+/// @param logbookWaveType one of @ref LabnotebookWaveTypes
+Function/WAVE GetLogbookWaves(variable logbookType, variable logbookWaveType, [string device])
+
+	switch(logbookType)
+		case LBT_TPSTORAGE:
+			ASSERT(logbookWaveType == LBN_NUMERICAL_VALUES, "Invalid logbookDataType")
+			ASSERT(!ParamIsDefault(device), "Invalid device parameter")
+
+			return GetTPStorage(device)
+		case LBT_LABNOTEBOOK:
+			ASSERT(!ParamIsDefault(device), "Invalid device parameter")
+
+			switch(logbookWaveType)
+				case LBN_NUMERICAL_KEYS:
+					FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBNumericalKeys
+					break
+				case LBN_NUMERICAL_VALUES:
+					FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBNumericalValues
+					break
+				case LBN_TEXTUAL_KEYS:
+					FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBTextualKeys
+					break
+				case LBN_TEXTUAL_VALUES:
+					FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBTextualValues
+					break
+				default:
+					ASSERT(0, "Invalid type")
+			endswitch
+
+			return func(device)
+		case LBT_RESULTS:
+			// ignore device parameter to ease call sites
+
+			switch(logbookWaveType)
+				case LBN_NUMERICAL_KEYS:
+					return GetNumericalResultsKeys()
+				case LBN_NUMERICAL_VALUES:
+					return GetNumericalResultsValues()
+				case LBN_TEXTUAL_KEYS:
+					return GetTextualResultsKeys()
+				case LBN_TEXTUAL_VALUES:
+					return GetTextualResultsValues()
+				default:
+					ASSERT(0, "Invalid type")
+			endswitch
+			break
+		default:
+			ASSERT(0, "Invalid logbook type")
+	endswitch
+End
+
 /// @brief Extract a date/time slice of the logbook wave
 Function/WAVE ExtractLogbookSliceTimeStamp(WAVE logbook)
 
