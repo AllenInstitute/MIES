@@ -2141,7 +2141,7 @@ End
 /// In case the regular expression does not match, the string is returned unaltered.
 ///
 /// See also `DisplayHelpTopic "Regular Expressions"`.
-Function/S RemoveEndingRegExp(str, endingRegExp)
+threadsafe Function/S RemoveEndingRegExp(str, endingRegExp)
 	string str, endingRegExp
 
 	string endStr
@@ -2151,7 +2151,7 @@ Function/S RemoveEndingRegExp(str, endingRegExp)
 	endif
 
 	SplitString/E="(" + endingRegExp + ")$" str, endStr
-	ASSERT(V_flag == 0 || V_flag == 1, "Unexpected number of matches")
+	ASSERT_TS(V_flag == 0 || V_flag == 1, "Unexpected number of matches")
 
 	return RemoveEnding(str, endStr)
 End
