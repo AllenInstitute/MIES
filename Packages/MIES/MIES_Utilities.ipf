@@ -2939,62 +2939,141 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 End
 
 /// @brief Convert a text wave to string list
-/// @param[in] txtWave     1D or 2D input text wave
-/// @param[in] sep         separator for row entries
-/// @param[in] colSep      [optional, default = ","] separator for column entries
-/// @param[in] stopOnEmpty [optional, default = 0] when 1 stops generating the list when an empty string entry in txtWave is encountered
+///
+/// @param txtWave     input text wave
+/// @param rowSep      separator for row entries
+/// @param colSep      [optional, default = ","] separator for column entries
+/// @param layerSep    [optional, default = ":"] separator for layer entries
+/// @param chunkSep    [optional, default = "/"] separator for chunk entries
+/// @param stopOnEmpty [optional, default = 0] when 1 stops generating the list when an empty string entry in txtWave is encountered
+/// @param maxElements [optional, defaults to inf] output only the first `maxElements` entries
+///
 /// @return string with wave entries separated as list using given separators
 ///
 /// Counterpart @see ConvertListToTextWave
 /// @see NumericWaveToList
-threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string sep, [string colSep, variable stopOnEmpty])
-	string entry, colList
+threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string colSep, string layerSep, string chunkSep, variable stopOnEmpty, variable maxElements])
+	string entry, seps
 	string list = ""
-	variable i, j, numRows, numCols
+	variable i, j, k, l, lasti, lastj, lastk, lastl, numRows, numCols, numLayers, numChunks, count, done
 
 	if(!WaveExists(txtWave))
 		return ""
 	endif
 
 	ASSERT_TS(IsTextWave(txtWave), "Expected a text wave")
-	ASSERT_TS(DimSize(txtWave, LAYERS) == 0, "Expected a 1D or 2D wave")
-	ASSERT_TS(!IsEmpty(sep), "Expected a non-empty row list separator")
+	ASSERT_TS(!IsEmpty(rowSep), "Expected a non-empty row list separator")
 
 	if(ParamIsDefault(colSep))
 		colSep = ","
 	else
 		ASSERT_TS(!IsEmpty(colSep), "Expected a non-empty column list separator")
 	endif
+
+	if(ParamIsDefault(layerSep))
+		layerSep = ":"
+	else
+		ASSERT_TS(!IsEmpty(layerSep), "Expected a non-empty layer list separator")
+	endif
+
+	if(ParamIsDefault(chunkSep))
+		chunkSep = "/"
+	else
+		ASSERT_TS(!IsEmpty(chunkSep), "Expected a non-empty chunk list separator")
+	endif
+
+	if(ParamIsDefault(maxElements))
+		maxElements = inf
+	else
+		ASSERT_TS((IsInteger(maxElements) && maxElements >= 0) || maxElements == inf, "maxElements must be >=0 and an integer")
+	endif
+
 	stopOnEmpty = ParamIsDefault(stopOnEmpty) ? 0 : !!stopOnEmpty
 
 	numRows = DimSize(txtWave, ROWS)
-	numCols = DimSize(txtWave, COLS)
-	if(!numCols)
-		for(i = 0; i < numRows; i += 1)
-			entry = txtWave[i]
-			if(stopOnEmpty && isEmpty(entry))
-				return list
-			endif
-			list = AddListItem(entry, list, sep, Inf)
-		endfor
-	else
-		for(i = 0; i < numRows; i += 1)
-			colList = ""
-			for(j = 0; j < numCols; j += 1)
-				entry = txtWave[i][j]
-				if(stopOnEmpty && isEmpty(entry))
+
+	if(numRows == 0)
+		return list
+	endif
+
+	numCols = max(1, DimSize(txtWave, COLS))
+	numLayers = max(1, DimSize(txtWave, LAYERS))
+	numChunks = max(1, DimSize(txtWave, CHUNKS))
+
+	for(i = 0; i < numRows; i += 1)
+		for(j = 0; j < numCols; j += 1)
+			for(k = 0; k < numLayers; k += 1)
+				for(l = 0; l < numChunks; l += 1)
+					entry = txtWave[i][j][k][l]
+
+					if(stopOnEmpty && IsEmpty(entry))
+						done = 1
+					elseif(count >= maxElements)
+						done = 1
+					endif
+
+					if(done)
+						break
+					endif
+
+					seps = ""
+
+					if(lastl != l)
+						lastl = l
+						seps += chunkSep
+					endif
+
+					if(lastk != k)
+						lastk = k
+						seps += layerSep
+					endif
+
+					if(lastj != j)
+						lastj = j
+						seps += colSep
+					endif
+
+					if(lasti != i)
+						lasti = i
+						seps += rowSep
+					endif
+
+					list += seps + entry
+					count += 1
+				endfor
+
+				if(done)
 					break
 				endif
-				colList = AddListItem(entry, colList, colSep, Inf)
 			endfor
-			if(!(stopOnEmpty && isEmpty(colList)))
-				list = AddListItem(colList, list, sep, Inf)
-			endif
-			if(stopOnEmpty && isEmpty(entry))
-				return list
+
+			if(done)
+				break
 			endif
 		endfor
+
+		if(done)
+			break
+		endif
+	endfor
+
+	if(IsEmpty(list))
+		return list
 	endif
+
+	if(numChunks > 1)
+		list += chunkSep
+	endif
+
+	if(numLayers > 1)
+		list += layerSep
+	endif
+
+	if(numCols > 1)
+		list += colSep
+	endif
+
+	list += rowSep
 
 	return list
 End

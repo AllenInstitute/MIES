@@ -2584,53 +2584,26 @@ End
 /// TextWaveToList
 /// @{
 
-/// @brief Fail due to numeric wave
-Function TextWaveToListFail1()
-
-	Make/FREE/N=1 w
-	string list
-
-	try
-		list = TextWaveToList(w, ";")
-		FAIL()
-	catch
-		PASS()
-	endtry
-End
-
-/// @brief Fail due to 3D+ wave
-Function TextWaveToListFail2()
-
-	Make/FREE/T/N=(1,1,1) w
-	string list
-
-	try
-		list = TextWaveToList(w, ";")
-		FAIL()
-	catch
-		PASS()
-	endtry
-End
-
-/// @brief Fail due to empty row separator
-Function TextWaveToListFail3()
+Function TWTLChecksParams()
 
 	Make/FREE/T/N=1 w
 	string list
 
+	try
+		Make/FREE invalidWaveType
+		list = TextWaveToList(invalidWaveType, ";")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// empty separators
 	try
 		list = TextWaveToList(w, "")
 		FAIL()
 	catch
 		PASS()
 	endtry
-End
-
-/// @brief Fail due to empty column separator
-Function TextWaveToListFail4()
-
-	Make/FREE/T/N=1 w
-	string list
 
 	try
 		list = TextWaveToList(w, ";", colSep = "")
@@ -2638,21 +2611,57 @@ Function TextWaveToListFail4()
 	catch
 		PASS()
 	endtry
+
+	try
+		list = TextWaveToList(w, ";", layerSep = "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		list = TextWaveToList(w, ";", chunkSep = "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// invalid max elements
+	try
+		list = TextWaveToList(w, ";", maxElements = -1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		list = TextWaveToList(w, ";", maxElements = NaN)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		list = TextWaveToList(w, ";", maxElements = 1.5)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
-/// @brief 1D wave zero elements
-Function TextWaveToListWorks0()
+Function TWTLOddCases()
 
 	Make/FREE/T/N=0 w
 	string list
-	string refList = ""
 
 	list = TextWaveToList(w, ";")
-	CHECK_EQUAL_STR(list, refList)
+	CHECK_EMPTY_STR(list)
+
+	list = TextWaveToList($"", ";")
+	CHECK_EMPTY_STR(list)
 End
 
-/// @brief 1D wave 3 elements
-Function TextWaveToListWorks1()
+Function TWTL1D()
 
 	Make/FREE/T/N=3 w = {"1", "2", "3"}
 
@@ -2664,21 +2673,7 @@ Function TextWaveToListWorks1()
 	CHECK_EQUAL_STR(list, refList)
 End
 
-/// @brief 1D wave 3 elements, stopOnEmpty
-Function TextWaveToListWorks2()
-
-	Make/FREE/T/N=3 w = {"1", "", "3"}
-
-	string list
-	string refList
-
-	refList = "1;"
-	list = TextWaveToList(w, ";", stopOnEmpty = 1)
-	CHECK_EQUAL_STR(list, refList)
-End
-
-/// @brief 2D wave 3x3 elements
-Function TextWaveToListWorks3()
+Function TWTL2D()
 
 	Make/FREE/T/N=(3,3) w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
 
@@ -2690,21 +2685,43 @@ Function TextWaveToListWorks3()
 	CHECK_EQUAL_STR(list, refList)
 End
 
-/// @brief 2D wave 3x3 elements, own column separator
-Function TextWaveToListWorks4()
+Function TWTL3D()
 
-	Make/FREE/T/N=(3,3) w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+	Make/FREE/T/N=(2, 2, 2) w = {{{"1", "2"}, {"3" , "4"}}, {{"5", "6"}, {"7", "8"}}}
 
 	string list
 	string refList
 
-	refList = "1:4:7:;2:5:8:;3:6:9:;"
-	list = TextWaveToList(w, ";", colSep = ":")
+	refList = "1:5:,3:7:,;2:6:,4:8:,;"
+	list = TextWaveToList(w, ";")
 	CHECK_EQUAL_STR(list, refList)
 End
 
-/// @brief 2D wave 3x3 elements, stopOnEmpty
-Function TextWaveToListWorks5()
+Function TWTL4D()
+
+	Make/FREE/T/N=(2, 2, 2, 2) w = {{{{"1", "2"}, {"3" , "4"}}, {{"5", "6"} , {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
+
+	string list
+	string refList
+
+	refList = "1/9/:5/13/:,3/11/:7/15/:,;2/10/:6/14/:,4/12/:8/16/:,;"
+	list = TextWaveToList(w, ";")
+	CHECK_EQUAL_STR(list, refList)
+End
+
+Function TWTLCustomSepators()
+
+	Make/FREE/T/N=(2, 2, 2, 2) w = {{{{"1", "2"}, {"3" , "4"}}, {{"5", "6"} , {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
+
+	string list
+	string refList
+
+	refList = "1d9dc5d13dcb3d11dc7d15dcba2d10dc6d14dcb4d12dc8d16dcba"
+	list = TextWaveToList(w, "a", colSep = "b", layerSep = "c", chunkSep = "d")
+	CHECK_EQUAL_STR(list, refList)
+End
+
+Function TWTLStopOnEmpty()
 
 	Make/FREE/T/N=(3,3) w = {{"", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
 
@@ -2715,11 +2732,19 @@ Function TextWaveToListWorks5()
 	refList = ""
 	list = TextWaveToList(w, ";", stopOnEmpty = 1)
 	CHECK_EQUAL_STR(list, refList)
+
+	// stop in the middle
+	w = {"1", "", "3"}
+	refList = "1;"
+	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	CHECK_EQUAL_STR(list, refList)
+
 	// stop at last element with partial filling
 	w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", ""}}
 	refList = "1,4,7,;2,5,8,;3,6,;"
 	list = TextWaveToList(w, ";", stopOnEmpty = 1)
 	CHECK_EQUAL_STR(list, refList)
+
    // stop at new row
 	w = {{"1", "", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
 	refList = "1,4,7,;"
@@ -2727,14 +2752,68 @@ Function TextWaveToListWorks5()
 	CHECK_EQUAL_STR(list, refList)
 End
 
-/// @brief null wave
-Function TextWaveToListWorks6()
+Function TWTLMaxElements()
+
+	Make/FREE/T/N=(3,3) w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
 
 	string list
-	string refList = ""
+	string refList
 
-	list = TextWaveToList($"", ";")
+	// empty result
+	list = TextWaveToList(w, ";", maxElements = 0)
+	CHECK_EMPTY_STR(list)
+
+	// Only first row
+	refList = "1,4,7,;"
+	list = TextWaveToList(w, ";", maxElements = 3)
 	CHECK_EQUAL_STR(list, refList)
+
+	// stops in the middle of column
+	refList = "1,4,7,;2,;"
+	list = TextWaveToList(w, ";", maxElements = 4)
+	CHECK_EQUAL_STR(list, refList)
+
+	// inf is the same as not giving it
+	refList = "1,4,7,;2,5,8,;3,6,9,;"
+	list = TextWaveToList(w, ";", maxElements = inf)
+	CHECK_EQUAL_STR(list, refList)
+End
+
+Function/WAVE SomeTextWaves()
+	Make/WAVE/FREE/N=5 all
+
+	Make/FREE/T/N=0 wv1
+
+	// both empty and null roundtrip to an empty wave
+	all[0] = wv1
+	all[1] =$""
+
+	Make/FREE/T/N=(3,3) wv2 = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+	all[2] = wv2
+
+	Make/FREE/T/N=(2, 2, 2) wv3 = {{{"1", "2"}, {"3" , "4"}}, {{"5", "6"}, {"7", "8"}}}
+	all[3] = wv3
+
+	Make/FREE/T/N=(2, 2, 2, 2) wv4 = {{{{"1", "2"}, {"3" , "4"}}, {{"5", "6"} , {"7", "8"}}}, {{{"9", "10"}, {"11", "12"}}, {{"13", "14"}, {"15", "16"}}}}
+	all[4] = wv4
+
+	return all
+End
+
+// UTF_TD_GENERATOR SomeTextWaves
+Function TWTLRoundTrips([WAVE/Z wv])
+	string list
+	variable dims
+
+	dims = WaveExists(wv) ? max(1, WaveDims(wv)) : 1
+	list = TextWaveToList(wv, ";")
+	WAVE/T result = ListToTextWaveMD(list, dims)
+
+	if(WaveExists(wv))
+		CHECK_EQUAL_TEXTWAVES(result, wv)
+	else
+		CHECK_EQUAL_VAR(DimSize(result, ROWS), 0)
+	endif
 End
 /// @}
 
