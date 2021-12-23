@@ -41,12 +41,7 @@ End
 /// @param sweepNo                sweep number
 /// @param device             device
 /// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
-static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo, device, entrySourceType)
-	wave/T incomingTextualValues
-	wave/T incomingTextualKeys
-	string device
-	variable sweepNo, entrySourceType
-
+static Function ED_createTextNotes(wave/T incomingTextualValues, wave/T incomingTextualKeys, variable sweepNo, string device, variable entrySourceType)
 	variable rowIndex, numCols, i, lastValidIncomingLayer, state
 	string timestamp
 
