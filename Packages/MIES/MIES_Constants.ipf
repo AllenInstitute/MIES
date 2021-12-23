@@ -631,14 +631,18 @@ Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 34
 Constant WAVEBUILDER_PANEL_VERSION        = 11
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 
-/// Version of the labnotebooks (numerical and textual)
+/// Version of the labnotebooks and results (numerical and textual) waves
 ///
 /// Has to be increased on the following occasions:
 /// - New/Removed entries
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
+///
+/// @{
 Constant LABNOTEBOOK_VERSION = 54
+Constant RESULTS_VERSION     = 1
+/// @}
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7

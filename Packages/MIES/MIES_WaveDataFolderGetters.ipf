@@ -1539,6 +1539,170 @@ Function/Wave GetLBNumericalValues(device)
 	return wv
 End
 
+/// @brief Return a wave reference to the numerical results keys
+///
+/// Rows:
+/// - 0: Parameter Name
+/// - 1: Parameter Unit
+/// - 2: Parameter Tolerance
+///
+/// Columns:
+/// - 0: Sweep Number (always NaN)
+/// - 1: Time Stamp in local time zone
+/// - 2: Time Stamp in UTC
+/// - 3: Source entry type, one of @ref DataAcqModes
+/// - 4: Acquisition state, one of @ref AcquisitionStates
+/// - other columns are filled at runtime
+Function/Wave GetNumericalResultsKeys()
+	string name
+	variable versionOfNewWave
+
+	DFREF dfr = GetResultsFolder()
+	name = "numericalResultsKeys"
+	WAVE/T/Z/SDFR=dfr wv = $name
+	versionOfNewWave = RESULTS_VERSION
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+		SetWaveVersion(wv, versionOfNewWave)
+		return wv
+	else
+		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:$name/Wave=wv
+	endif
+
+	wv = ""
+
+	ASSERT(INITIAL_KEY_WAVE_COL_COUNT == ItemsInList(LABNOTEBOOK_KEYS_INITIAL), "Mismatched default keys")
+	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
+
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units,     wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return a wave reference to the numerical results values
+///
+/// Rows:
+/// - Filled at runtime
+///
+/// Columns:
+/// - Filled at runtime
+///
+/// Layers:
+/// - 0-7: data for a particular headstage using the layer index
+/// - 8: headstage independent data
+Function/Wave GetNumericalResultsValues()
+	string name
+
+	DFREF dfr = GetResultsFolder()
+	name = "numericalResultsValues"
+	WAVE/D/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		// upgrade will be handled in GetNumericalResultsKeys()
+		return wv
+	endif
+
+	Make/D/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) dfr:$name/Wave=wv = NaN
+
+	SetDimLabel COLS, 0, SweepNum                  , wv
+	SetDimLabel COLS, 1, TimeStamp                 , wv
+	SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
+	SetDimLabel COLS, 3, EntrySourceType           , wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return a wave reference to the textual results keys
+///
+/// Rows:
+/// - 0: Parameter Name
+/// - 1: Parameter Unit
+/// - 2: Parameter Tolerance
+///
+/// Columns:
+/// - 0: Sweep Number (always NaN)
+/// - 1: Time Stamp in local time zone
+/// - 2: Time Stamp in UTC
+/// - 3: Source entry type, one of @ref DataAcqModes
+/// - 4: Acquisition state, one of @ref AcquisitionStates
+/// - other columns are filled at runtime
+Function/Wave GetTextualResultsKeys()
+	string name
+	variable versionOfNewWave
+
+	DFREF dfr = GetResultsFolder()
+	name = "textualResultsKeys"
+	WAVE/T/Z/SDFR=dfr wv = $name
+	versionOfNewWave = RESULTS_VERSION
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+		SetWaveVersion(wv, versionOfNewWave)
+		return wv
+	else
+		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) dfr:$name/Wave=wv
+	endif
+
+	wv = ""
+
+	ASSERT(INITIAL_KEY_WAVE_COL_COUNT == ItemsInList(LABNOTEBOOK_KEYS_INITIAL), "Mismatched default keys")
+	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
+
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units,     wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return a wave reference to the numerical results values
+///
+/// Rows:
+/// - Filled at runtime
+///
+/// Columns:
+/// - Filled at runtime
+///
+/// Layers:
+/// - 0-7: data for a particular headstage using the layer index
+/// - 8: headstage independent data
+Function/Wave GetTextualResultsValues()
+	string name
+
+	DFREF dfr = GetResultsFolder()
+	name = "textualResultsValues"
+	WAVE/T/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		// upgrade will be handled in GetTextualResultsKeys()
+		return wv
+	endif
+
+	Make/T/N=(MINIMUM_WAVE_SIZE, INITIAL_KEY_WAVE_COL_COUNT, LABNOTEBOOK_LAYER_COUNT) dfr:$name/Wave=wv
+
+	SetDimLabel COLS, 0, SweepNum                  , wv
+	SetDimLabel COLS, 1, TimeStamp                 , wv
+	SetDimLabel COLS, 2, TimeStampSinceIgorEpochUTC, wv
+	SetDimLabel COLS, 3, EntrySourceType           , wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
 /// @brief Return the labnotebook cache wave holding the first and last rows
 ///		into `values` of each sweep number.
 ///
@@ -4360,6 +4524,18 @@ Function/S GetDevSpecLabNBTempFolderAS(device)
 	string device
 
 	return GetDevSpecLabNBFolderAsString(device) + ":Temp"
+End
+
+/// @brief Return the full path to the results folder, e.g. root:MIES:Results
+Function/S GetResultsFolderAsString()
+
+	return GetMiesPathAsString() + ":Results"
+End
+
+/// @brief Return the data folder reference to the results folder
+Function/DF GetResultsFolder()
+
+	return createDFWithAllParents(GetResultsFolderAsString())
 End
 
 /// @name Analysis Browser
