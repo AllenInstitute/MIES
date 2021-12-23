@@ -16,11 +16,16 @@ static Constant SF_TEST_VC_HEADSTAGE = 2
 static Constant SF_TEST_IC_HEADSTAGE = 3
 
 /// @brief Acquire data with the given DAQSettings on two headstages
-static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ, onsetDelayUser, terminationDelay, analysisFunction])
+static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ, onsetDelayUser, terminationDelay, analysisFunction, postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
 	string devices
 	string stimSetName1, stimSetName2, analysisFunction
 	variable dDAQ, oodDAQ, onsetDelayUser, terminationDelay
+	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
+
+	if(!ParamIsDefault(postInitializeFunc))
+		postInitializeFunc(devices)
+	endif
 
 	string unlockedDevice, device
 	variable i, numEntries
@@ -119,6 +124,10 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 	ARDLaunchSeqPanel()
 	PGC_SetAndActivateControl("ArduinoSeq_Panel", "SendSequenceButton")
 #endif
+
+	if(!ParamIsDefault(preAcquireFunc))
+		preAcquireFunc(device)
+	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
