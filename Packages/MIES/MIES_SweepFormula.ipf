@@ -1472,21 +1472,29 @@ Function SF_IsActive(win)
 	return BSP_IsActive(win, MIES_BSP_SF)
 End
 
+/// @brief Return the sweep formula code in raw and with all necessary preprocesssing
+Function [string raw, string preProc] SF_GetCode(string win)
+	string formula_nb, code
+
+	formula_nb = BSP_GetSFFormula(win)
+	code = GetNotebookText(formula_nb)
+
+	return [code, SF_PreprocessInput(code)]
+End
+
 Function SF_button_sweepFormula_display(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	String mainPanel, code, formula_nb, bsPanel
+	String mainPanel, rawCode, bsPanel, preProcCode
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			formula_nb = BSP_GetSFFormula(ba.win)
 			mainPanel = GetMainWindow(ba.win)
 			bsPanel = BSP_GetPanel(mainPanel)
 
-			code = GetNotebookText(formula_nb)
-			code = SF_PreprocessInput(code)
+			[rawCode, preProcCode] = SF_GetCode(mainPanel)
 
-			if(IsEmpty(code))
+			if(IsEmpty(preProcCode))
 				break
 			endif
 
@@ -1505,7 +1513,7 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 
 			// catch Abort from SF_ASSERT
 			try
-				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortOnRTE
+				SF_FormulaPlotter(mainPanel, preProcCode, dfr = dfr); AbortOnRTE
 			catch
 				SetValDisplay(bsPanel, "status_sweepFormula_parser", var=0)
 				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result, setHelp = 1)
