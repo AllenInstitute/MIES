@@ -1613,7 +1613,7 @@ threadsafe Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValue
 End
 
 /// @brief Return a wave with all labnotebook rows which have a non-empty entry for setting
-threadsafe static Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
+threadsafe Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
    WAVE labnotebookValues
    string setting
 
