@@ -88,8 +88,19 @@ End
 
 /// @brief Return the logbook type, one of @ref LogbookTypes
 Function GetLogbookType(WAVE wv)
+	string name
 
-	return GrepString(NameOfWave(wv), TP_STORAGE_REGEXP) == 1 ? LBT_TPSTORAGE : LBT_LABNOTEBOOK
+	name = NameOfWave(wv)
+
+	if(GrepString(name, TP_STORAGE_REGEXP))
+		return LBT_TPSTORAGE
+	elseif(GrepString(name, "(?i)(numerical|textual)(Keys|Values)"))
+		return LBT_LABNOTEBOOK
+	elseif(GrepString(name, "(?i)(numerical|textual)Results(Keys|Values)"))
+		return LBT_RESULTS
+	endif
+
+	ASSERT(0, "Unrecognized wave: " + name)
 End
 
 /// @brief Extract a date/time slice of the logbook wave
