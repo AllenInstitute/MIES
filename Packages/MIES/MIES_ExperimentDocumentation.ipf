@@ -95,13 +95,7 @@ End
 /// @param sweepNo                 sweep number
 /// @param device              device
 /// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
-static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKeys, sweepNo, device, entrySourceType)
-	wave incomingNumericalValues
-	wave/T incomingNumericalKeys
-	string device
-	variable sweepNo
-	variable entrySourceType
-
+static Function ED_createWaveNotes(WAVE incomingNumericalValues,WAVE/T incomingNumericalKeys, variable sweepNo, string device, variable entrySourceType)
 	variable rowIndex, numCols, lastValidIncomingLayer, i, timestamp, state
 
 	WAVE/T numericalKeys = GetLBNumericalKeys(device)
