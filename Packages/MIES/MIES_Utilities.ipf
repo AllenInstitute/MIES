@@ -44,16 +44,14 @@ threadsafe Function IsNull(str)
 	return numtype(len) == 2
 End
 
-/// @brief Returns one if str is empty or null, zero otherwise.
-/// @param str must not be a SVAR
+/// @brief Returns one if str is empty, zero otherwise.
+/// @param str any non-null string variable or text wave element
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-threadsafe Function IsEmpty(str)
-	string& str
+threadsafe Function IsEmpty(string str)
 
-	variable len = strlen(str)
-	return numtype(len) == 2 || len <= 0
+	return !(strlen(str) > 0)
 End
 
 /// @brief Low overhead function to check assertions
@@ -133,7 +131,7 @@ Function ASSERT(variable var, string errorMsg, [variable extendedOutput])
 			Make/FREE/T tpStates = { NONE }
 			Make/FREE/T daqStates = { NONE }
 
-			if(!SVAR_Exists(lockedDevices) || strlen(lockedDevices) == 0)
+			if(!SVAR_Exists(lockedDevices) || IsEmpty(lockedDevices))
 				lockedDevicesStr = NONE
 			else
 				lockedDevicesStr = lockedDevices
@@ -2159,7 +2157,7 @@ End
 /// 	Function SearchString(str, substring)
 /// 		string str, substring
 ///
-/// 		ASSERT(strlen(substring) > 0, "supplied substring has zero length")
+/// 		ASSERT(!IsEmpty(substring), "supplied substring is empty")
 /// 		WAVE/Z/T wv = SearchStringBase(str, "(.*)\\Q" + substring + "\\E(.*)")
 ///
 /// 		return WaveExists(wv)

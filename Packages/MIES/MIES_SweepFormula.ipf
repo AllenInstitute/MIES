@@ -491,7 +491,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 				lastCalculation = state
 			case SF_ACTION_SAMECALCULATION:
 			default:
-				if(strlen(buffer) > 0)
+				if(!IsEmpty(buffer))
 					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))
 				endif
 		endswitch
@@ -511,7 +511,7 @@ static Function SF_FormulaParser(string formula, [variable &createdArray, variab
 		else
 			JSON_AddString(jsonID, jsonPath, buffer)
 		endif
-	elseif(strlen(buffer) > 0)
+	elseif(!IsEmpty(buffer))
 		JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
 	endif
 

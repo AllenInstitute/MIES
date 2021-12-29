@@ -574,7 +574,9 @@ Function/S AFH_GetAnalysisParamType(name, params, [typeCheck, expectedType])
 	string type = ""
 	variable pos
 
-	if(!ParamIsDefault(expectedType))
+	if(ParamIsDefault(expectedType))
+		expectedType = ""
+	else
 		typeCheck = 1
 		ASSERT(AFH_IsValidAnalysisParamType(expectedType), "Invalid expectedType")
 	endif
@@ -866,7 +868,8 @@ Function/S AFH_CheckAnalysisParameter(string genericFunc, STRUCT CheckParameters
 				ASSERT(0, "impossible case")
 			endif
 
-			if(!IsEmpty(message))
+			// allow null return string meaning no error
+			if(!IsNull(message) && !IsEmpty(message))
 				errorMessages[index++] = name + ": " + trimstring(message)
 			endif
 		catch

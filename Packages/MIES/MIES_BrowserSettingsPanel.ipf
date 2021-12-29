@@ -1665,7 +1665,7 @@ Function BSP_EpochGraphToolTip(s)
 	Variable hookResult = 0 // 0 tells Igor to use the standard tooltip
 
 	// traceName is set only for graphs and only if the mouse hovered near a trace
-	if (strlen(s.traceName) > 0)
+	if(!IsEmpty(s.traceName))
 		s.tooltip = "a <-> b"
 		s.isHtml = 1
 		WAVE w = s.yWave // The trace's Y wave
