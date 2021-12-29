@@ -42,16 +42,18 @@ Constant PSQ_TEST_HEADSTAGE = 2
 
 // Entry point for UTF
 Function run()
-	return RunWithOpts()
+	return RunWithOpts(instru = DoInstrumentation())
 End
 
 // Examples:
 // - RunWithOpts()
 // - RunWithOpts(testsuite = "UTF_Epochs.ipf")
 // - RunWithOpts(testcase = "EP_EpochTest7")
-Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
+// - RunWithOpts(testcase = "EP_EpochTest7", instru = 1, traceWinList = "MIES_Epochs.ipf")
+Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList])
 
 	variable debugMode
+	string traceOptions = ""
 	string list = ""
 	string name = "MIES with Hardware"
 
@@ -68,6 +70,22 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	if(ParamIsDefault(testcase))
 		testcase = ""
 	endif
+
+	if(ParamIsDefault(instru))
+		instru = 0
+	else
+		instru = !!instru
+	endif
+
+	if(ParamIsDefault(traceWinList))
+		traceWinList = "MIES_.*\.ipf"
+	endif
+
+	if(!instru)
+		traceWinList = ""
+	endif
+
+	traceOptions = ReplaceNumberByKey(UTF_KEY_REGEXP, traceOptions, 1)
 
 	list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list, ";", inf)
 	list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", inf)
@@ -98,9 +116,9 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode)
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList)
 	else
-		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase)
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList)
 	endif
 End
 

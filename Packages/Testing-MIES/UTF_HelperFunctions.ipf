@@ -93,3 +93,15 @@ Function AdjustAnalysisParamsForPSQ(string device, string stimset)
 	AFH_AddAnalysisParameter(stimset, "SamplingMultiplier", var = 4)
 	AFH_AddAnalysisParameter(stimset, "SamplingFrequency", var = samplingFrequency)
 End
+
+Function DoInstrumentation()
+#if IgorVersion() >= 9.0
+	variable instru = str2numSafe(GetEnvironmentVariable("BAMBOO_INSTRUMENT_TESTS")) == 1           \
+	                  || !cmpstr(GetEnvironmentVariable("bamboo.planRepository.branchName"), "main")
+
+	return instru
+#else
+	// no support in IP8
+	return 0
+#endif
+End

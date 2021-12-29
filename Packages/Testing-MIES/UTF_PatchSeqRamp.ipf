@@ -412,12 +412,16 @@ static Function PS_RA3_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 3)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	CHECK_GT_VAR(durations[0], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
-	CHECK_LT_VAR(durations[0], SPIKE_POSITION_TEST_DELAY_MS)
-	CHECK_GT_VAR(durations[1], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
-	CHECK_LT_VAR(durations[1], SPIKE_POSITION_TEST_DELAY_MS)
-	CHECK_GT_VAR(durations[2], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
-	CHECK_LT_VAR(durations[2], SPIKE_POSITION_TEST_DELAY_MS)
+	if(TestHelperFunctions#DoInstrumentation())
+		CHECK_WAVE(durations, NUMERIC_WAVE)
+	else
+		CHECK_GT_VAR(durations[0], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
+		CHECK_LT_VAR(durations[0], SPIKE_POSITION_TEST_DELAY_MS)
+		CHECK_GT_VAR(durations[1], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
+		CHECK_LT_VAR(durations[1], SPIKE_POSITION_TEST_DELAY_MS)
+		CHECK_GT_VAR(durations[2], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
+		CHECK_LT_VAR(durations[2], SPIKE_POSITION_TEST_DELAY_MS)
+	endif
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 0, 1)
@@ -484,10 +488,14 @@ static Function PS_RA4_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 3)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	CHECK_GT_VAR(durations[0], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
-	CHECK_LT_VAR(durations[0], SPIKE_POSITION_TEST_DELAY_MS)
-	CHECK_CLOSE_VAR(durations[1], 15000, tol = 1)
-	CHECK_CLOSE_VAR(durations[2], 15000, tol = 1)
+	if(TestHelperFunctions#DoInstrumentation())
+		CHECK_WAVE(durations, NUMERIC_WAVE)
+	else
+		CHECK_GT_VAR(durations[0], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
+		CHECK_LT_VAR(durations[0], SPIKE_POSITION_TEST_DELAY_MS)
+		CHECK_CLOSE_VAR(durations[1], 15000, tol = 1)
+		CHECK_CLOSE_VAR(durations[2], 15000, tol = 1)
+	endif
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 	[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 0, 1)
@@ -552,10 +560,14 @@ static Function PS_RA5_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 3)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	CHECK_GT_VAR(durations[0], 15000 - PSQ_BL_EVAL_RANGE)
-	CHECK_GT_VAR(durations[1], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
-	CHECK_GT_VAR(durations[2], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
-	CHECK_LT_VAR(durations[2], SPIKE_POSITION_TEST_DELAY_MS)
+	if(TestHelperFunctions#DoInstrumentation())
+		CHECK_WAVE(durations, NUMERIC_WAVE)
+	else
+		CHECK_GT_VAR(durations[0], 15000 - PSQ_BL_EVAL_RANGE)
+		CHECK_GT_VAR(durations[1], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
+		CHECK_GT_VAR(durations[2], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
+		CHECK_LT_VAR(durations[2], SPIKE_POSITION_TEST_DELAY_MS)
+	endif
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 	CheckPSQChunkTimes(str, {20, 520, 16020, 16520}, sweep = 0)
@@ -621,10 +633,14 @@ static Function PS_RA6_REENTRY([str])
 	CHECK_EQUAL_VAR(numEntries, 3)
 
 	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
-	CHECK_GT_VAR(durations[0], 15000 - PSQ_BL_EVAL_RANGE)
-	CHECK_GT_VAR(durations[1], 15000 - PSQ_BL_EVAL_RANGE)
-	CHECK_GT_VAR(durations[2], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
-	CHECK_LT_VAR(durations[2], SPIKE_POSITION_TEST_DELAY_MS)
+	if(TestHelperFunctions#DoInstrumentation())
+		CHECK_WAVE(durations, NUMERIC_WAVE)
+	else
+		CHECK_GT_VAR(durations[0], 15000 - PSQ_BL_EVAL_RANGE)
+		CHECK_GT_VAR(durations[1], 15000 - PSQ_BL_EVAL_RANGE)
+		CHECK_GT_VAR(durations[2], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
+		CHECK_LT_VAR(durations[2], SPIKE_POSITION_TEST_DELAY_MS)
+	endif
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
 	CheckPSQChunkTimes(str, {20, 520, 16020, 16520}, sweep = 0)

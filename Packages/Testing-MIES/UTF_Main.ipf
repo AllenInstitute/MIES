@@ -31,15 +31,17 @@
 
 // Entry point for UTF
 Function run()
-	return RunWithOpts()
+	return RunWithOpts(instru = DoInstrumentation())
 End
 
 // Examples:
 // - RunWithOpts()
 // - RunWithOpts(testsuite = "UTF_Configuration.ipf")
 // - RunWithOpts(testcase = "TestFindLevel")
-Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
+Function RunWithOpts([string testcase, string testsuite, variable allowdebug, variable instru, string traceWinList])
+
 	variable debugMode
+	string traceOptions = ""
 	string list = ""
 	string name = "MIES"
 
@@ -56,6 +58,22 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	if(ParamIsDefault(testcase))
 		testcase = ""
 	endif
+
+	if(ParamIsDefault(instru))
+		instru = 0
+	else
+		instru = !!instru
+	endif
+
+	if(ParamIsDefault(traceWinList))
+		traceWinList = "MIES_.*\.ipf"
+	endif
+
+	if(!instru)
+		traceWinList = ""
+	endif
+
+	traceOptions = ReplaceNumberByKey(UTF_KEY_REGEXP, traceOptions, 1)
 
 	// sorted list
 	list = AddListItem("UTF_AnalysisFunctionHelpers.ipf", list, ";", inf)
@@ -84,9 +102,9 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug])
 	endif
 
 	if(IsEmpty(testcase))
-		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode)
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, traceOptions=traceOptions, traceWinList=traceWinList)
 	else
-		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase)
+		RunTest(testsuite, name = name, enableJU = 1, debugMode= debugMode, testcase = testcase, traceOptions=traceOptions, traceWinList=traceWinList)
 	endif
 End
 

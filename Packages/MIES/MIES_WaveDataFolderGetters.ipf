@@ -196,6 +196,7 @@ End
 /// @{
 
 /// @brief Check if wv exists and has the correct version
+/// UTF_NOINSTRUMENTATION
 threadsafe static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
 	Wave/Z wv
 	variable versionOfNewWave
@@ -233,6 +234,7 @@ threadsafe static Function WaveVersionIsSmaller(wv, existingVersion)
 End
 
 /// @brief return the Version of the Wave, returns NaN if no version was set
+/// UTF_NOINSTRUMENTATION
 threadsafe Function GetWaveVersion(wv)
 	Wave/Z wv
 
@@ -671,6 +673,7 @@ threadsafe Function/DF GetMiesPath()
 End
 
 /// @brief Returns the base folder for all MIES functionality, e.g. root:MIES
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S GetMiesPathAsString()
 	return "root:MIES"
 End
@@ -5110,11 +5113,13 @@ End
 /// @name Getters relating to caching
 /// @{
 /// @brief Return the datafolder reference to the wave cache
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/DF GetCacheFolder()
 	return createDFWithAllParents(GetCacheFolderAS())
 End
 
 /// @brief Return the full path to the wave cache datafolder, e.g. root:MIES:Cache
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/S GetCacheFolderAS()
 	return GetMiesPathAsString() + ":Cache"
 End
@@ -5122,6 +5127,7 @@ End
 /// @brief Return the wave reference wave holding the cached data
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/Wave GetCacheValueWave()
 
 	DFREF dfr = GetCacheFolder()
@@ -5142,6 +5148,7 @@ End
 /// @brief Return the wave reference wave holding the cache keys
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/Wave GetCacheKeyWave()
 
 	DFREF dfr = GetCacheFolder()
@@ -5171,6 +5178,7 @@ End
 /// - 3: Size in bytes (Updated on write)
 ///
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
+/// UTF_NOINSTRUMENTATION
 threadsafe Function/Wave GetCacheStatsWave()
 
 	variable versionOfNewWave = 3
