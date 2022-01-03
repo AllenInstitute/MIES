@@ -45,41 +45,41 @@ static Function ED_createTextNotes(wave/T incomingTextualValues, wave/T incoming
 	variable rowIndex, numCols, i, lastValidIncomingLayer, state
 	string timestamp
 
-	WAVE/T textualValues = GetLBTextualValues(device)
-	WAVE/T textualKeys   = GetLBTextualKeys(device)
+	WAVE/T values = GetLBTextualValues(device)
+	WAVE/T keys   = GetLBTextualKeys(device)
 
-	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
+	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, keys, values, rowIndex)
 
-	textualValues[rowIndex][0][] = num2istr(sweepNo)
-	textualValues[rowIndex][3][] = num2istr(entrySourceType)
+	values[rowIndex][0][] = num2istr(sweepNo)
+	values[rowIndex][3][] = num2istr(entrySourceType)
 
 	state = ROVar(GetAcquisitionState(device))
-	textualValues[rowIndex][4][] = num2istr(state)
+	values[rowIndex][4][] = num2istr(state)
 
 	// store the current time in a variable first
 	// so that all layers have the same timestamp
 	timestamp = num2strHighPrec(DateTime, precision = 3)
-	textualValues[rowIndex][1][] = timestamp
+	values[rowIndex][1][] = timestamp
 	timestamp = num2strHighPrec(DateTimeInUTC(), precision = 3)
-	textualValues[rowIndex][2][] = timestamp
+	values[rowIndex][2][] = timestamp
 
-	WAVE textualValuesDat = ExtractLogbookSliceTimeStamp(textualValues)
-	EnsureLargeEnoughWave(textualValuesDat, minimumSize=rowIndex, dimension=ROWS)
-	textualValuesDat[rowIndex] = str2num(textualValues[rowIndex][1])
+	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
+	EnsureLargeEnoughWave(valuesDat, minimumSize=rowIndex, dimension=ROWS)
+	valuesDat[rowIndex] = str2num(values[rowIndex][1])
 
-	WAVE textualValuesSweep = ExtractLogbookSliceSweep(textualValues)
-	EnsureLargeEnoughWave(textualValuesSweep, minimumSize=rowIndex, dimension=ROWS)
-	textualValuesSweep[rowIndex] = str2num(textualValues[rowIndex][0])
+	WAVE valuesSweep = ExtractLogbookSliceSweep(values)
+	EnsureLargeEnoughWave(valuesSweep, minimumSize=rowIndex, dimension=ROWS)
+	valuesSweep[rowIndex] = str2num(values[rowIndex][0])
 
 	numCols = DimSize(incomingTextualValues, COLS)
 	lastValidIncomingLayer = DimSize(incomingTextualValues, LAYERS) == 0 ? 0 : DimSize(incomingTextualValues, LAYERS) - 1
 	for(i = 0; i < numCols; i += 1)
-		textualValues[rowIndex][indizes[i]][0, lastValidIncomingLayer] = NormalizeToEOL(incomingTextualValues[0][i][r], "\n")
+		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = NormalizeToEOL(incomingTextualValues[0][i][r], "\n")
 	endfor
 
-	SetNumberInWaveNote(textualValues, NOTE_INDEX, rowIndex + 1)
+	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
 
-	LBN_SetDimensionLabels(textualKeys, textualValues)
+	LBN_SetDimensionLabels(keys, values)
 End
 
 /// @brief Add numerical entries to the labnotebook
@@ -98,37 +98,37 @@ End
 static Function ED_createWaveNotes(WAVE incomingNumericalValues,WAVE/T incomingNumericalKeys, variable sweepNo, string device, variable entrySourceType)
 	variable rowIndex, numCols, lastValidIncomingLayer, i, timestamp, state
 
-	WAVE/T numericalKeys = GetLBNumericalKeys(device)
-	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE/T keys = GetLBNumericalKeys(device)
+	WAVE values = GetLBNumericalValues(device)
 
-	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, numericalKeys, numericalValues, rowIndex)
+	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, keys, values, rowIndex)
 
-	numericalValues[rowIndex][0][] = sweepNo
-	numericalValues[rowIndex][3][] = entrySourceType
+	values[rowIndex][0][] = sweepNo
+	values[rowIndex][3][] = entrySourceType
 
 	state = ROVar(GetAcquisitionState(device))
-	numericalValues[rowIndex][4][] = state
+	values[rowIndex][4][] = state
 
 	// store the current time in a variable first
 	// so that all layers have the same timestamp
 	timestamp = DateTime
-	numericalValues[rowIndex][1][] = timestamp
+	values[rowIndex][1][] = timestamp
 	timestamp = DateTimeInUTC()
-	numericalValues[rowIndex][2][] = timestamp
+	values[rowIndex][2][] = timestamp
 
-	WAVE numericalValuesDat = ExtractLogbookSliceTimeStamp(numericalValues)
-	EnsureLargeEnoughWave(numericalValuesDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
-	numericalValuesDat[rowIndex] = numericalValues[rowIndex][1]
+	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
+	EnsureLargeEnoughWave(valuesDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
+	valuesDat[rowIndex] = values[rowIndex][1]
 
 	numCols = DimSize(incomingNumericalValues, COLS)
 	lastValidIncomingLayer = DimSize(incomingNumericalValues, LAYERS) == 0 ? 0 : DimSize(incomingNumericalValues, LAYERS) - 1
 	for(i = 0; i < numCols; i += 1)
-		numericalValues[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingNumericalValues[0][i][r]
+		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingNumericalValues[0][i][r]
 	endfor
 
-	SetNumberInWaveNote(numericalValues, NOTE_INDEX, rowIndex + 1)
+	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
 
-	LBN_SetDimensionLabels(numericalKeys, numericalValues)
+	LBN_SetDimensionLabels(keys, values)
 End
 
 /// @brief Add custom entries to the numerical/textual labnotebook for the very last sweep acquired.
@@ -153,7 +153,7 @@ End
 /// \rst
 /// .. code-block:: igorpro
 ///
-///		WAVE/Z settings = GetLastSetting(numericalValues, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
+///		WAVE/Z settings = GetLastSetting(values, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
 /// \endrst
 ///
 /// @param device      device
