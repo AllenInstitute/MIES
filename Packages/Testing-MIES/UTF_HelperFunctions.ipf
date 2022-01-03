@@ -97,7 +97,7 @@ End
 Function DoInstrumentation()
 #if IgorVersion() >= 9.0
 	variable instru = str2numSafe(GetEnvironmentVariable("BAMBOO_INSTRUMENT_TESTS")) == 1           \
-	                  || !cmpstr(GetEnvironmentVariable("bamboo.planRepository.branchName"), "main")
+	                  || !cmpstr(GetEnvironmentVariable("bamboo_repository_git_branch"), "main")
 
 	return instru
 #else
