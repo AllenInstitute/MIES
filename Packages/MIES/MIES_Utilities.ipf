@@ -4485,19 +4485,27 @@ End
 /// Input numbers are rounded using the "round-half-to-even" rule to the given precision.
 /// The default precision is 5.
 /// If val is complex only the real part is converted to a string.
+///
 /// @param[in] val       number that should be converted to a string
 /// @param[in] precision [optional, default 5] number of precision digits after the decimal dot using "round-half-to-even" rounding rule.
 ///                      Precision must be in the range 0 to #MAX_DOUBLE_PRECISION.
+/// @param[in] shorten   [optional, defaults to false] Remove trailing zeros and optionally the decimal dot to get a minimum length string
+///
 /// @return string with textual number representation
-threadsafe Function/S num2strHighPrec(variable val, [variable precision])
+threadsafe Function/S num2strHighPrec(variable val, [variable precision, variable shorten])
 	string str
 
 	precision = ParamIsDefault(precision) ? 5 : precision
+	shorten   = ParamIsDefault(shorten) ? 0 : !!shorten
 	ASSERT_TS(precision >= 0 && precision <= MAX_DOUBLE_PRECISION, "Invalid precision, must be >= 0 and <= MAX_DOUBLE_PRECISION")
 
 	sprintf str, "%.*f", precision, val
 
-	return str
+	if(!shorten)
+		return str
+	endif
+
+	return RemoveEndingRegExp(str, "\.?0+")
 End
 
 /// @brief Round the given number to the given number of decimal digits

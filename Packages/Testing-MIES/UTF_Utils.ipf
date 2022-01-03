@@ -2836,6 +2836,24 @@ Function num2strHighPrecWorks5()
 	string s = num2strHighPrec(c)
 	CHECK_EQUAL_STR(s, sref)
 End
+
+Function num2strHighPrecShortenWorks1()
+	string sref = "1.234"
+	string s = num2strHighPrec(1.2340, precision = MAX_DOUBLE_PRECISION, shorten = 1)
+	CHECK_EQUAL_STR(s, sref)
+End
+
+Function num2strHighPrecShortenWorks2()
+	string sref = "1"
+	string s = num2strHighPrec(1.0, precision = MAX_DOUBLE_PRECISION, shorten = 1)
+	CHECK_EQUAL_STR(s, sref)
+End
+
+Function num2strHighPrecShortenDoesNotEatAllZeroes()
+	string sref = "10"
+	string s = num2strHighPrec(10.00, precision = MAX_DOUBLE_PRECISION, shorten = 1)
+	CHECK_EQUAL_STR(s, sref)
+End
 /// @}
 
 /// RoundNumber
