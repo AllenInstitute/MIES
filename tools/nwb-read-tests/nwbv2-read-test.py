@@ -26,7 +26,7 @@ def checkFile(path):
 
     # 1.) Validation
     comp = run(["python", "-m", "pynwb.validate", "--cached-namespace", path],
-               stdout=PIPE, stderr=STDOUT, universal_newlines=True, timeout=20)
+               stdout=PIPE, stderr=STDOUT, universal_newlines=True, timeout=120)
 
     if comp.returncode != 0:
         print(f"Validation output: {comp.stdout}", file=sys.stderr)
