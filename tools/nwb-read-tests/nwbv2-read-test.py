@@ -12,6 +12,12 @@ if vers < (3, 7):
     print("Unsupported python version: {}".format(vers), file=sys.stderr)
     sys.exit(1)
 
+def to_str(s):
+    if isinstance(s, bytes):
+        return s.decode('utf-8')
+    else:
+        return s
+
 def checkFile(path):
 
     if not os.path.isfile(path):
@@ -52,7 +58,7 @@ def checkFile(path):
 
     # check that pynwb/hdmf can read our object IDs
     with h5py.File(path, 'r') as f:
-        root_object_id_hdf5 = f["/"].attrs["object_id"]
+        root_object_id_hdf5 = to_str(f["/"].attrs["object_id"])
 
     if root_object_id_hdf5 not in object_ids:
         print(f"object IDs don't match as {root_object_id_hdf5} could not be found.", file=sys.stderr)
