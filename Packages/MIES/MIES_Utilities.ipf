@@ -4489,9 +4489,7 @@ End
 /// @param[in] precision [optional, default 5] number of precision digits after the decimal dot using "round-half-to-even" rounding rule.
 ///                      Precision must be in the range 0 to #MAX_DOUBLE_PRECISION.
 /// @return string with textual number representation
-threadsafe Function/S num2strHighPrec(val, [precision])
-	variable val, precision
-
+threadsafe Function/S num2strHighPrec(variable val, [variable precision])
 	string str
 
 	precision = ParamIsDefault(precision) ? 5 : precision
