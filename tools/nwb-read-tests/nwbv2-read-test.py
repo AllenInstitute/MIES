@@ -12,6 +12,12 @@ if vers < (3, 7):
     print("Unsupported python version: {}".format(vers), file=sys.stderr)
     sys.exit(1)
 
+def to_str(s):
+    if isinstance(s, bytes):
+        return s.decode('utf-8')
+    else:
+        return s
+
 def checkFile(path):
 
     if not os.path.isfile(path):
@@ -20,7 +26,7 @@ def checkFile(path):
 
     # 1.) Validation
     comp = run(["python", "-m", "pynwb.validate", "--cached-namespace", path],
-               stdout=PIPE, stderr=STDOUT, universal_newlines=True, timeout=20)
+               stdout=PIPE, stderr=STDOUT, universal_newlines=True, timeout=120)
 
     if comp.returncode != 0:
         print(f"Validation output: {comp.stdout}", file=sys.stderr)
@@ -32,31 +38,30 @@ def checkFile(path):
     with NWBHDF5IO(path, mode='r', load_namespaces=True) as io:
         nwbfile = io.read()
 
-        print(nwbfile)
-        print(nwbfile.ic_electrodes)
-        print(nwbfile.sweep_table)
-        print(nwbfile.lab_meta_data)
-        print(nwbfile.devices)
-        print(nwbfile.acquisition)
-        print(nwbfile.stimulus)
-        print(nwbfile.epochs)
+        print(f"nwbfile: {nwbfile}")
+        print(f"ic_electrodes: {nwbfile.ic_electrodes}")
+        print(f"sweep_table: {nwbfile.sweep_table}")
+        print(f"lab_meta_data: {nwbfile.lab_meta_data}")
+        print(f"acquisition: {nwbfile.acquisition}")
+        print(f"stimulus: {nwbfile.stimulus}")
+        print(f"epochs: {nwbfile.epochs}")
 
         object_ids = nwbfile.objects.keys()
-        print(object_ids)
+        print(f"object_ids: {object_ids}")
 
         if nwbfile.epochs and len(nwbfile.epochs) > 0:
-            print(nwbfile.epochs[:, 'start_time'])
-            print(nwbfile.epochs[:, 'stop_time'])
-            print(nwbfile.epochs[:, 'tags'])
-            print(nwbfile.epochs[:, 'treelevel'])
-            print(nwbfile.epochs[:, 'timeseries'])
+            print(f"epochs.start_time: {nwbfile.epochs[:, 'start_time']}")
+            print(f"epochs.stop_time: {nwbfile.epochs[:, 'stop_time']}")
+            print(f"epochs.tags: {nwbfile.epochs[:, 'tags']}")
+            print(f"epochs.treelevel: {nwbfile.epochs[:, 'treelevel']}")
+            print(f"epochs.timeseries: {nwbfile.epochs[:, 'timeseries']}")
 
     # check that pynwb/hdmf can read our object IDs
     with h5py.File(path, 'r') as f:
-        root_object_id_hdf5 = f["/"].attrs["object_id"]
+        root_object_id_hdf5 = to_str(f["/"].attrs["object_id"])
 
     if root_object_id_hdf5 not in object_ids:
-        print(f"object IDs don't match", file=sys.stderr)
+        print(f"object IDs don't match as {root_object_id_hdf5} could not be found.", file=sys.stderr)
         return 1
 
     return 0
