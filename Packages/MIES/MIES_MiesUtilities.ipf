@@ -167,6 +167,7 @@ Function/WAVE ExtractLogbookSliceTimeStamp(WAVE logbook)
 
 	switch(logbookType)
 		case LBT_LABNOTEBOOK:
+		case LBT_RESULTS:
 			colOrLayer = 1
 			break
 		case LBT_TPSTORAGE:
@@ -188,6 +189,7 @@ Function/WAVE ExtractLogbookSliceDeltaTime(WAVE logbook)
 
 	switch(logbookType)
 		case LBT_LABNOTEBOOK:
+		case LBT_RESULTS:
 			ASSERT(0, "Unsupported")
 			break
 		case LBT_TPSTORAGE:
@@ -230,6 +232,7 @@ static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, var
 
 	switch(logbookType)
 		case LBT_LABNOTEBOOK:
+		case LBT_RESULTS:
 			entryName = GetDimLabel(logbook, COLS, colOrLayer)
 			col   = colOrLayer
 			layer = -1
