@@ -425,7 +425,7 @@ static Function DC_MakeHelperWaves(device, dataAcqOrTP)
 		decMethod = DECIMATION_NONE
 		decFactor = NaN
 
-		decimatedNumRows        = tpLength
+		decimatedNumRows        = numRows
 		decimatedSampleInterval = sampleInterval
 
 		if(DAG_GetNumericalValue(device, "check_settings_show_power"))
