@@ -390,7 +390,7 @@ End
 static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 	variable numRows, sampleInterval, col, hardwareType, decimatedNumRows, numPixels, dataPointsPerPixel
 	variable decMethod, decFactor, tpLength, numADCs, numDACs, numTTLs, decimatedSampleInterval
-	variable tpOrPowerSpectrumLength
+	variable tpOrPowerSpectrumLength, powerSpectrum
 
 	WAVE config = GetDAQConfigWave(device)
 	WAVE OscilloscopeData = GetOscilloscopeWave(device)
@@ -416,7 +416,9 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 	endswitch
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		tpLength = TPSettingsCalc[%totalLengthPointsTP]
+		tpLength      = TPSettingsCalc[%totalLengthPointsTP]
+		powerSpectrum = DAG_GetNumericalValue(device, "check_settings_show_power")
+
 		numRows = tpLength
 
 		decMethod = DECIMATION_NONE
@@ -425,7 +427,7 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 		decimatedNumRows        = numRows
 		decimatedSampleInterval = sampleInterval
 
-		if(DAG_GetNumericalValue(device, "check_settings_show_power"))
+		if(powerSpectrum)
 			tpOrPowerSpectrumLength  = floor(tpLength / 2) + 1
 		else
 			tpOrPowerSpectrumLength = tpLength
@@ -482,7 +484,7 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 	SetNumberInWaveNote(OscilloscopeData, "DecimationMethod", decMethod)
 	SetNumberInWaveNote(OscilloscopeData, "DecimationFactor", decFactor)
 
-	DC_InitDataHoldingWave(TPOscilloscopeData, tpOrPowerSpectrumLength, sampleInterval, numDACs, numADCs, numTTLs, isFourierTransform=DAG_GetNumericalValue(device, "check_settings_show_power") && dataAcqOrTP == TEST_PULSE_MODE)
+	DC_InitDataHoldingWave(TPOscilloscopeData, tpOrPowerSpectrumLength, sampleInterval, numDACs, numADCs, numTTLs, isFourierTransform=(powerSpectrum && dataAcqOrTP == TEST_PULSE_MODE))
 	DC_InitDataHoldingWave(OscilloscopeData, decimatedNumRows, decimatedSampleInterval, numDACs, numADCs, numTTLs)
 
 	DC_InitDataHoldingWave(scaledDataWave, dataAcqOrTP == DATA_ACQUISITION_MODE ? stopCollectionPoint : tpLength, sampleInterval, numDACs, numADCs, numTTLs, type = SWS_GetRawDataFPType(device))
