@@ -2032,12 +2032,9 @@ static Function DC_ReturnTotalLengthIncrease(device, [onsetDelayUser, onsetDelay
 End
 
 /// @brief Calculate the stop collection point, includes all required global adjustments
-static Function DC_GetStopCollectionPoint(device, dataAcqOrTP, setLengths)
-	string device
-	variable dataAcqOrTP
-	WAVE setLengths
-
+static Function DC_GetStopCollectionPoint(string device, variable dataAcqOrTP, WAVE setLengths)
 	variable DAClength, TTLlength, totalIncrease
+
 	DAClength = DC_CalculateLongestSweep(device, dataAcqOrTP, CHANNEL_TYPE_DAC)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
