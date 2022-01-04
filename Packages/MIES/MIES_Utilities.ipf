@@ -3143,10 +3143,12 @@ End
 ///
 /// @param wv     numeric wave
 /// @param sep    separator
+/// @param colSep [optional, default = `,`] separator for column entries
 /// @param format [optional, defaults to `%g`] sprintf conversion specifier
-threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format])
-
+threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, string colSep])
 	string list = ""
+	string fullFormat
+	variable numCols
 
 	if(!WaveExists(wv))
 		return ""
@@ -3156,14 +3158,28 @@ threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format])
 		format = "%g"
 	endif
 
+	if(ParamIsDefault(colSep))
+		colSep = ","
+	else
+		ASSERT_TS(!IsEmpty(colSep), "Expected a non-empty column list separator")
+	endif
+
 	ASSERT_TS(IsNumericWave(wv), "Expected a numeric wave")
-	ASSERT_TS(DimSize(wv, COLS) == 0, "Expected a 1D wave")
+	ASSERT_TS(DimSize(wv, LAYERS) <= 1, "Unexpected layer count")
+
+	numCols = DimSize(wv, COLS)
 
 	if(IsFloatingPointWave(wv))
 		ASSERT_TS(!GrepString(format, "%.*d"), "%d triggers an Igor bug")
 	endif
 
-	wfprintf list, format + sep, wv
+	if(numCols > 1)
+		fullFormat = ReplicateString(format + sep, numCols) + colSep
+	else
+		fullFormat = format + sep
+	endif
+
+	wfprintf list, fullFormat, wv
 
 	return list
 End

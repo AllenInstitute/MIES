@@ -4048,6 +4048,11 @@ Function NWLWorks()
 	expected = "1;1000000;-100;"
 	CHECK_EQUAL_STR(result, expected)
 
+	Make/FREE dataFP = {{1, 2, 3}, {4, 5, 6}}
+	result = NumericWaveToList(dataFP, ";")
+	expected = "1;4;,2;5;,3;6;,"
+	CHECK_EQUAL_STR(result, expected)
+
 	Make/FREE/N=0 dataEmpty
 	result = NumericWaveToList(dataEmpty, ";")
 	CHECK_EMPTY_STR(result)
@@ -4067,8 +4072,16 @@ Function NWLChecksInput()
 	endtry
 
 	try
+		Make/FREE/D/N=(2, 2, 3) ThreeDWave
+		NumericWaveToList(ThreeDWave, ";"); AbortONRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
 		Make/FREE/D/N=(2, 2) TwoDWave
-		NumericWaveToList(TwoDWave, ";"); AbortONRTE
+		NumericWaveToList(TwoDWave, ";", colSep = ""); AbortONRTE
 		FAIL()
 	catch
 		PASS()
