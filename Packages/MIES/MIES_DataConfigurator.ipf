@@ -280,10 +280,7 @@ End
 ///
 /// @param device  panel title
 /// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_CalculateDAQDataWaveLength(device, dataAcqOrTP)
-	string device
-	variable dataAcqOrTP
-
+static Function DC_CalculateDAQDataWaveLength(string device, variable dataAcqOrTP)
 	variable hardwareType = GetHardwareType(device)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 
