@@ -3116,6 +3116,26 @@ threadsafe Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, c
 	return output
 End
 
+#if IgorVersion() < 9.0
+
+threadsafe Function/S ReplicateString(string str, variable numTotalCopies)
+
+	variable i
+	string list = ""
+
+	if(!IsFinite(numTotalCopies) || numTotalCopies <= 0)
+		return str
+	endif
+
+	for(i = 0; i < numTotalCopies; i += 1)
+		list += str
+	endfor
+
+	return list
+End
+
+#endif
+
 /// @brief Convert a numeric wave to string list
 ///
 /// Counterpart @see ListToNumericWave
