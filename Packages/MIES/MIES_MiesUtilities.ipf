@@ -513,7 +513,7 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 
 	// still correct without startLayer/endLayer coordinates
 	// as we always have sweepNumber/etc. in the first layer
-	if(IsNaN(val))
+	if(IsNaN(val) && IsNumericWave(wv))
 		WAVE/Z indizesSetting = FindIndizes(wv, col=col, prop=PROP_EMPTY)
 	else
 		WAVE/Z indizesSetting = FindIndizes(wv, col=col, var=val)
