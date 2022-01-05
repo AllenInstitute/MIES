@@ -1514,6 +1514,11 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 			// catch Abort from SF_ASSERT
 			try
 				SF_FormulaPlotter(mainPanel, preProcCode, dfr = dfr); AbortOnRTE
+
+				WAVE/T/Z keys, values
+				[keys, values] = SF_CreateResultsWaveWithCode(mainPanel, rawCode)
+
+				ED_AddEntriesToResults(values, keys, UNKNOWN_MODE)
 			catch
 				SetValDisplay(bsPanel, "status_sweepFormula_parser", var=0)
 				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result, setHelp = 1)
@@ -1523,6 +1528,72 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string graph, string code)
+	variable numEntries, hasStoreEntry, numCursors, numBasicEntries
+	string shPanel, dataFolder, device
+
+	ASSERT(!IsEmpty(code), "Unexpected empty code")
+	numCursors = ItemsInList(CURSOR_NAMES)
+	numBasicEntries = 5
+	numEntries = numBasicEntries + numCursors
+
+	Make/T/FREE/N=(1, numEntries) keys
+	Make/T/FREE/N=(1, numEntries, LABNOTEBOOK_LAYER_COUNT) values
+
+	keys[0][0]                                                 = "Sweep Formula code"
+	keys[0][1]                                                 = "Sweep Formula displayed sweeps"
+	keys[0][2]                                                 = "Sweep Formula active channels"
+	keys[0][3]                                                 = "Sweep Formula experiment"
+	keys[0][4]                                                 = "Sweep Formula device"
+	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
+
+	LBN_SetDimensionLabels(keys, values)
+
+	values[0][%$"Sweep Formula code"][INDEP_HEADSTAGE] = NormalizeToEOL(TrimString(code), "\n")
+
+	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
+
+	WAVE/Z sweeps = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser("sweeps(displayed)")), graph = graph)
+	values[0][%$"Sweep Formula displayed sweeps"][INDEP_HEADSTAGE] = NumericWaveToList(sweeps, ";")
+
+	// todo: use plain `channels()` once https://github.com/AllenInstitute/MIES/issues/1135 is resolved
+	WAVE/Z channels_AD = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser("channels(AD)")), graph = graph)
+	WAVE/Z channels_DA = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser("channels(DA)")), graph = graph)
+
+	if(WaveExists(sweeps) && WaveExists(channels_DA) && WaveExists(channels_AD))
+		WAVE/Z activeChannels_DA = SF_GetActiveChannelNumbers(graph, channels_DA, sweeps, DATA_ACQUISITION_MODE)
+		WAVE/Z activeChannels_AD = SF_GetActiveChannelNumbers(graph, channels_AD, sweeps, DATA_ACQUISITION_MODE)
+
+		if(!WaveExists(activeChannels_DA) && !WaveExists(activeChannels_AD))
+			WAVE/Z activeChannels
+		elseif(WaveExists(activeChannels_DA) && WaveExists(activeChannels_AD))
+			Concatenate/FREE/NP=(ROWS) {activeChannels_DA, activeChannels_AD}, activeChannels
+		elseif(WaveExists(activeChannels_DA) && !WaveExists(activeChannels_AD))
+			WAVE activeChannels = activeChannels_DA
+		elseif(!WaveExists(activeChannels_DA) && WaveExists(activeChannels_AD))
+			WAVE activeChannels = activeChannels_AD
+		else
+			ASSERT(0, "Unexpected case")
+		endif
+
+		values[0][%$"Sweep Formula active channels"][INDEP_HEADSTAGE] = NumericWaveToList(activeChannels, ";")
+	endif
+
+	shPanel = LBV_GetSettingsHistoryPanel(graph)
+
+	dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
+	values[0][%$"Sweep Formula experiment"][INDEP_HEADSTAGE] = dataFolder
+
+	device = GetPopupMenuString(shPanel, "popup_Device")
+	values[0][%$"Sweep Formula device"][INDEP_HEADSTAGE] = device
+
+	if(WaveExists(cursorInfos))
+		values[0][numBasicEntries, numBasicEntries + numCursors - 1][INDEP_HEADSTAGE] = cursorInfos[q - numBasicEntries]
+	endif
+
+	return [keys, values]
 End
 
 Function SF_TabProc_Formula(tca) : TabControl
@@ -2663,4 +2734,67 @@ End
 static Function SF_AverageTPFromSweepImpl(WAVE tpData, WAVE tpStart, WAVE sweepData, variable i)
 
 	MultiThread tpData += sweepData[tpStart[i] + p]
+End
+
+Function/WAVE SF_GetAllOldCodeForGUI(string win) // parameter required for popup menu ext
+	WAVE/T/Z entries = SF_GetAllOldCode()
+
+	if(!WaveExists(entries))
+		return $""
+	endif
+
+	entries[] = num2str(p) + ": " + ElideText(ReplaceString("\n", entries[p], " "), 60)
+
+	WAVE/T/Z splittedMenu = PEXT_SplitToSubMenus(entries, method = PEXT_SUBSPLIT_ALPHA)
+
+	PEXT_GenerateSubMenuNames(splittedMenu)
+
+	return splittedMenu
+End
+
+static Function/WAVE SF_GetAllOldCode()
+	string entry
+
+	WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
+
+	entry = "Sweep Formula code"
+	WAVE/Z indizes = GetNonEmptyLBNRows(textualResultsValues, entry)
+
+	if(!WaveExists(indizes))
+		return $""
+	endif
+
+	Make/FREE/T/N=(DimSize(indizes, ROWS)) entries = textualResultsValues[indizes[p]][%$entry][INDEP_HEADSTAGE]
+
+	return GetUniqueEntries(entries)
+End
+
+Function SF_PopMenuProc_OldCode(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	string sweepFormulaNB, bsPanel, code
+	variable index
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			if(!cmpstr(pa.popStr, NONE))
+				break
+			endif
+
+			bsPanel = BSP_GetPanel(pa.win)
+			sweepFormulaNB = BSP_GetSFFormula(bsPanel)
+			WAVE/T/Z entries = SF_GetAllOldCode()
+			// -2 as we have NONE
+			index = str2num(pa.popStr)
+			code = entries[index]
+
+			// translate back from \n to \r
+			code = ReplaceString("\n", code, "\r")
+
+			ReplaceNotebookText(sweepFormulaNB, code)
+			PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display", val = CHECKBOX_SELECTED)
+			break
+	endswitch
+
+	return 0
 End

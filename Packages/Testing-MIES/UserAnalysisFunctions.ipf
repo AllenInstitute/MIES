@@ -950,3 +950,23 @@ Function ChangeTPSettings(device, s)
 			// do nothing
 	endswitch
 End
+
+Function SetSweepFormula(string device, STRUCT AnalysisFunction_V3& s)
+	string win, bsPanel, sweepFormulaNB, code
+
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			win = DB_OpenDataBrowser()
+			bsPanel = BSP_GetPanel(win)
+			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
+			break
+		case PRE_SWEEP_CONFIG_EVENT:
+			win = DB_FindDataBrowser(device)
+			sweepFormulaNB = BSP_GetSFFormula(win)
+			sprintf code, "data(TP, channels(AD), [%d])\r", s.sweepNo
+			ReplaceNotebookText(sweepFormulaNB, code)
+			break
+		default:
+			// do nothing
+	endswitch
+End

@@ -540,7 +540,7 @@ Function BSP_SetSFControlStatus(win)
 
 	string controlList
 
-	controlList = "group_properties_sweepFormula;SF_InfoTab;button_sweepFormula_display;button_sweepFormula_check;setvar_sweepFormula_parseResult;status_sweepFormula_parser;button_sweepFormula_tofront;"
+	controlList = "group_properties_sweepFormula;SF_InfoTab;button_sweepFormula_display;button_sweepFormula_check;setvar_sweepFormula_parseResult;status_sweepFormula_parser;button_sweepFormula_tofront;button_sweepformula_all_code"
 	BSP_SetControlStatus(win, controlList, SF_IsActive(win))
 End
 
