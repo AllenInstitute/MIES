@@ -295,3 +295,50 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 
 	return [key, keyTxt]
 End
+
+Function CreateFakeSweepData(string device)
+	string list, key, keyTxt
+	variable sweepNo
+
+	GetDAQDeviceID(device)
+
+	WAVE sweep = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+	WAVE config = GetDAQConfigWave(device)
+
+	Redimension/N=(10, 2) sweep
+	sweep = p
+
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+
+	// creates HS 0 with DAC 2 and ADC 6
+	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
+	Make/FREE/N=(1, 1)/T keys = CLAMPMODE_ENTRY_KEY
+
+	Redimension/N=(2, -1) config
+	config[0][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
+	config[0][%ChannelNumber] = 2
+
+	config[1][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
+	config[1][%ChannelNumber] = 6
+
+	DFREF dfr = GetDeviceDataPath(device)
+	MoveWave sweep, dfr:$GetSweepWaveName(sweepNo)
+	MoveWave config, dfr:$GetConfigWaveName(sweepNo)
+
+	list = GetAllDevicesWithContent()
+	list = RemoveEnding(list, ";")
+	CHECK_EQUAL_VAR(ItemsInList(list), 1)
+	CHECK_EQUAL_STR(list, device)
+End
+
+Function/S GetDataBrowserWithData()
+	string win, device, result
+
+	device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+	CreateFakeSweepData(device)
+	win = DB_OpenDataBrowser()
+	result = BSP_GetDevice(win)
+	CHECK_EQUAL_STR(device, result)
+
+	return win
+End

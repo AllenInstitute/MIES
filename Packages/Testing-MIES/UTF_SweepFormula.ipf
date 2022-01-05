@@ -1421,3 +1421,104 @@ static Function AvoidAssertingOutWithNoSweeps([string str])
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	CHECK_EQUAL_WAVES(data, {NaN}, mode = WAVE_DATA)
 End
+
+static Function ExecuteSweepFormulaInDB(string code, string win)
+	string sfFormula, bsPanel
+
+	bsPanel = BSP_GetPanel(win)
+
+	sfFormula = BSP_GetSFFormula(win)
+	ReplaceNotebookText(sfFormula, code)
+
+	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
+
+	return GetValDisplayAsNum(bsPanel, "status_sweepFormula_parser")
+End
+
+static Function/WAVE InvalidStoreFormulas()
+
+	Make/T/N=3/FREE wv
+
+	// invalid name
+	wv[0] = "store(\"\", [0])"
+
+	// array as name
+	wv[1] = "store([\"a\", \"b\"], [0])"
+
+	// numeric value as name
+	wv[2] = "store([1], [0])"
+
+	return wv
+End
+
+// UTF_TD_GENERATOR InvalidStoreFormulas
+static Function StoreChecksParameters([string str])
+	string win
+
+	win = GetDataBrowserWithData()
+
+	CHECK(!ExecuteSweepFormulaInDB(str, win))
+
+	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 0)
+End
+
+static Function/WAVE GetStoreWaves()
+
+	Make/WAVE/N=3/FREE wv
+
+	Make/FREE/D wv0 = {1234.5678}
+	wv[0]= wv0
+
+	Make/FREE wv1 = {1, 2}
+	wv[1]= wv1
+
+	Make/FREE/T wv2 = {"a", "b"}
+	wv[2]= wv2
+
+	return wv
+End
+
+// UTF_TD_GENERATOR GetStoreWaves
+static Function StoreWorks([WAVE wv])
+	string win, results, ref
+	variable array
+
+	win = GetDataBrowserWithData()
+
+	array = JSON_New()
+	JSON_AddWave(array, "", wv)
+	ref = "store(\"ABCD\", " + JSON_Dump(array) + " ) vs 0"
+	JSON_Release(array)
+
+	CHECK(ExecuteSweepFormulaInDB(ref, win))
+
+	WAVE textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
+
+	// one for store and one for code execution
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(textualResultsValues, NOTE_INDEX), 2)
+
+	// only check SWEEP_FORMULA_RESULT entry source type, other entries are checked in TestSweepFormulaCodeResults
+	results = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula code", SWEEP_FORMULA_RESULT)
+	CHECK_EQUAL_STR(results, ref)
+
+	// check serialized wave
+	results = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [ABCD]", SWEEP_FORMULA_RESULT)
+	CHECK_PROPER_STR(results)
+
+	if(IsTextWave(wv))
+		WAVE/T/Z resultsTextWave = ListToTextWaveMD(results, 1)
+		CHECK_EQUAL_TEXTWAVES(wv, resultsTextWave, mode = WAVE_DATA)
+	else
+		WAVE/Z resultsWave = ListToNumericWave(results, ";")
+		CHECK_EQUAL_WAVES(wv, resultsWave, mode = WAVE_DATA)
+	endif
+
+	// check sweep formula y wave
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	WAVE/Z sweepFormulaY = GetSweepFormulaY(dfr, 0)
+	CHECK_EQUAL_VAR(DimSize(sweepFormulaY, COLS), 1)
+	Redimension/N=(-1, 0) sweepFormulaY
+	CHECK_EQUAL_WAVES(wv, sweepFormulaY, mode = WAVE_DATA)
+End

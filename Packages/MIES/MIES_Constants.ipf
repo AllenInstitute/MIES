@@ -272,8 +272,10 @@ Constant SAVE_AND_SPLIT            = 0x02
 Constant UNKNOWN_MODE            = NaN
 Constant DATA_ACQUISITION_MODE   = 0
 Constant TEST_PULSE_MODE         = 1
-Constant NUMBER_OF_LBN_DAQ_MODES = 3
+Constant SWEEP_FORMULA_RESULT    = 2
 /// @}
+
+Constant NUMBER_OF_LBN_DAQ_MODES = 4
 
 /// @name Constants for three Amplifier modes
 /// @anchor AmplifierClampModes

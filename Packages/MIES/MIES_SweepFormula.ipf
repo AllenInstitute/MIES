@@ -84,6 +84,7 @@ static StrConstant SF_OP_WAVE = "wave"
 static StrConstant SF_OP_FINDLEVEL = "findlevel"
 static StrConstant SF_OP_EPOCHS = "epochs"
 static StrConstant SF_OP_TP = "tp"
+static StrConstant SF_OP_STORE = "store"
 
 static StrConstant SF_OP_EPOCHS_TYPE_RANGE = "range"
 static StrConstant SF_OP_EPOCHS_TYPE_NAME = "name"
@@ -759,6 +760,9 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			break
 		case SF_OP_TP:
 			WAVE out = SF_OperationTP(jsonId, jsonPath, graph)
+			break
+		case SF_OP_STORE:
+			WAVE out = SF_OperationStore(jsonId, jsonPath, graph)
 			break
 		default:
 			SF_ASSERT(0, "Undefined Operation", jsonId=jsonId)
@@ -1531,14 +1535,41 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 	return 0
 End
 
-static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string graph, string code)
-	variable numEntries, hasStoreEntry, numCursors, numBasicEntries
+static Function/S SF_PrepareDataForResultsWave(WAVE data)
+	variable numEntries, maxEntries
+
+	if(IsNumericWave(data))
+		Make/T/FREE/N=(DimSize(data, ROWS), DimSize(data, COLS), DimSize(data, LAYERS), DimSize(data, CHUNKS)) dataTxT
+		MultiThread dataTxT[][][][] = num2strHighPrec(data[p][q][r][s], precision = MAX_DOUBLE_PRECISION, shorten = 1)
+	else
+		WAVE/T dataTxT = data
+	endif
+
+	// assuming 100 sweeps on average
+	maxEntries = 100 * NUM_HEADSTAGES * 10
+	numEntries = numpnts(dataTxT)
+
+	if(numpnts(dataTxT) > maxEntries)
+		printf "The store operation received too much data to store, it will only store the first %d entries\r.", maxEntries
+		ControlWindowToFront()
+		numEntries = maxEntries
+	endif
+
+	return TextWaveToList(dataTxT, ";", maxElements = numEntries)
+End
+
+static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string graph, string code, [WAVE data, string name])
+	variable numEntries, numOptParams, hasStoreEntry, numCursors, numBasicEntries
 	string shPanel, dataFolder, device
+
+	numOptParams = ParamIsDefault(data) + ParamIsDefault(name)
+	ASSERT(numOptParams == 0 || numOptParams == 2, "Invalid optional parameters")
+	hasStoreEntry = (numOptParams == 0)
 
 	ASSERT(!IsEmpty(code), "Unexpected empty code")
 	numCursors = ItemsInList(CURSOR_NAMES)
 	numBasicEntries = 5
-	numEntries = numBasicEntries + numCursors
+	numEntries = numBasicEntries + numCursors + hasStoreEntry
 
 	Make/T/FREE/N=(1, numEntries) keys
 	Make/T/FREE/N=(1, numEntries, LABNOTEBOOK_LAYER_COUNT) values
@@ -1549,6 +1580,10 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 	keys[0][3]                                                 = "Sweep Formula experiment"
 	keys[0][4]                                                 = "Sweep Formula device"
 	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
+
+	if(hasStoreEntry)
+		keys[0][numEntries - 1] = "Sweep Formula store [" + name + "]"
+	endif
 
 	LBN_SetDimensionLabels(keys, values)
 
@@ -1592,6 +1627,10 @@ static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string
 
 	if(WaveExists(cursorInfos))
 		values[0][numBasicEntries, numBasicEntries + numCursors - 1][INDEP_HEADSTAGE] = cursorInfos[q - numBasicEntries]
+	endif
+
+	if(hasStoreEntry)
+		values[0][numEntries - 1][INDEP_HEADSTAGE] = SF_PrepareDataForResultsWave(data)
 	endif
 
 	return [keys, values]
@@ -2593,6 +2632,31 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 	endswitch
 
 	return outD
+End
+
+// `store(name, ...)`
+static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string graph)
+	string rawCode, preProcCode
+	variable maxEntries, numEntries
+
+	SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 2, "Function accepts only two arguments")
+
+	WAVE/T name = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	SF_ASSERT(IsTextWave(name), "name parameter must be textual")
+	SF_ASSERT(DimSize(name, ROWS) == 1, "name parameter must be a plain string")
+	SF_ASSERT(IsValidLiberalObjectName(name[0]), "Can not use the given name for the labnotebook key")
+
+	WAVE out = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+
+	[rawCode, preProcCode] = SF_GetCode(graph)
+
+	WAVE/T/Z keys, values
+	[keys, values] = SF_CreateResultsWaveWithCode(graph, rawCode, data = out, name = name[0])
+
+	ED_AddEntriesToResults(values, keys, SWEEP_FORMULA_RESULT)
+
+	// return second argument unmodified
+	return out
 End
 
 static Function/WAVE SF_SplitCodeToGraphs(string code)
