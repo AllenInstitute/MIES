@@ -60,12 +60,23 @@ Function/WAVE LBV_PopupExtGetLBKeys(string win)
 	return LBV_PopupExtFormatEntries(entries)
 End
 
+/// @brief Returns the list of results keys for the settings history window menu
+Function/WAVE LBV_PopupExtGetResultsKeys(string win)
+
+	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+
+	WAVE/Z entries = LBV_GetAllLogbookKeys(win, textualKeys, numericalKeys)
+
+	return LBV_PopupExtFormatEntries(entries)
+End
+
 /// @brief Returns the combined keys from the numerical and textual MD key loogbook waves as 1D text wave
 static Function/WAVE LBV_GetAllLogbookKeys(string win, WAVE/T textualKeys, WAVE/T numericalKeys)
 	variable existText, existNum
 
-	WAVE/Z/T textualKeys1D = LBV_GetLabNotebookKeys(textualKeys)
-	WAVE/Z/T numericalKeys1D = LBV_GetLabNotebookKeys(numericalKeys)
+	WAVE/Z/T textualKeys1D = LBV_GetLogbookKeys(textualKeys)
+	WAVE/Z/T numericalKeys1D = LBV_GetLogbookKeys(numericalKeys)
 
 	existText = WaveExists(textualKeys1D)
 	existNum = WaveExists(numericalKeys1D)
@@ -80,8 +91,8 @@ static Function/WAVE LBV_GetAllLogbookKeys(string win, WAVE/T textualKeys, WAVE/
 	return $""
 End
 
-/// @brief Return a wave with all keys in the labnotebook key wave
-static Function/WAVE LBV_GetLabNotebookKeys(WAVE/Z/T keyWave)
+/// @brief Return a wave with all keys in the logbook key wave
+static Function/WAVE LBV_GetLogbookKeys(WAVE/Z/T keyWave)
 	variable row
 
 	if(!WaveExists(keyWave))
@@ -216,7 +227,7 @@ Function LBV_ButtonProc_SwitchXAxis(STRUCT WMButtonAction &ba) : ButtonControl
 	return 0
 End
 
-Function LBV_PopMenuProc_LabNotebook(STRUCT WMPopupAction &pa) : PopupMenuControl
+Function LBV_PopMenuProc_LabNotebookAndResults(STRUCT WMPopupAction &pa) : PopupMenuControl
 	string key, win, lbGraph
 
 	switch(pa.eventCode)
@@ -229,7 +240,7 @@ Function LBV_PopMenuProc_LabNotebook(STRUCT WMPopupAction &pa) : PopupMenuContro
 			endif
 
 			WAVE/Z keys, values
-			[keys, values] = LBV_GetLNBWavesForEntry(win, key)
+			[keys, values] = LBV_GetLogbookWavesForEntry(win, key)
 
 			lbGraph = LBV_GetLabNoteBookGraph(win)
 			LBV_AddTraceToLBGraph(lbGraph, keys, values, key)
@@ -239,10 +250,10 @@ Function LBV_PopMenuProc_LabNotebook(STRUCT WMPopupAction &pa) : PopupMenuContro
 	return 0
 End
 
-/// @brief Return the keys/values labnotebook pair for the given key
+/// @brief Return the keys/values logbook pair for the given key
 ///
 /// @return valid waves or null if it can not be found.
-Function [WAVE keys, WAVE values] LBV_GetLNBWavesForEntry(string win, string key)
+Function [WAVE keys, WAVE values] LBV_GetLogbookWavesForEntry(string win, string key)
 
 	variable col
 
@@ -264,6 +275,24 @@ Function [WAVE keys, WAVE values] LBV_GetLNBWavesForEntry(string win, string key
 	col = FindDimLabel(textualValues, COLS, key)
 	if(col >= 0)
 		return [textualKeys, textualValues]
+	endif
+
+	WAVE/Z numericalResultsKeys   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z numericalResultsValues = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
+
+	col = WaveExists(numericalResultsKeys) ? FindDimLabel(numericalResultsKeys, COLS, key) : -1
+	if(col >= 0)
+		ASSERT(WaveExists(numericalResultsValues), "Missing wave")
+		return [numericalResultsKeys, numericalResultsValues]
+	endif
+
+	WAVE/Z textualResultsKeys   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z textualResultsValues = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
+
+	col = WaveExists(textualResultsKeys) ? FindDimLabel(textualResultsKeys, COLS, key) : -1
+	if(col >= 0)
+		ASSERT(WaveExists(textualResultsValues), "Missing wave")
+		return [textualResultsKeys, textualResultsValues]
 	endif
 
 	return [$"", $""]
@@ -440,7 +469,7 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 	string unit, lbl, axis, trace, text, tagString, tmp, axisBaseName
 	string traceList = ""
 	variable i, j, row, col, numRows, sweepCol, marker
-	variable isTimeAxis, isTextData, xPos
+	variable isTimeAxis, isTextData, xPos, logbookType
 	STRUCT RGBColor s
 
 	WAVE/T/Z traces
@@ -450,13 +479,24 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 		return NaN
 	endif
 
+	logbookType = GetLogbookType(keys)
+
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
 
 	isTimeAxis = LBV_CheckIfXAxisIsTime(graph)
 	isTextData = IsTextWave(values)
 	sweepCol   = GetSweepColumn(values)
 
-	axisBaseName = "lbn_" + VERT_AXIS_BASE_NAME
+	switch(logbookType)
+		case LBT_LABNOTEBOOK:
+			axisBaseName = "lbn_" + VERT_AXIS_BASE_NAME
+			break
+		case LBT_RESULTS:
+			axisBaseName = "results_" + VERT_AXIS_BASE_NAME
+			break
+		default:
+			ASSERT(0, "Unexpected logbook type")
+	endswitch
 
 	axis = GetNextFreeAxisName(graph, axisBaseName)
 
@@ -800,6 +840,7 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 
 		switch(logbookType)
 			case LBT_LABNOTEBOOK:
+			case LBT_RESULTS:
 				if(isTimeAxis)
 					if(isTextData)
 						WAVE valuesSweep = ExtractLogbookSliceSweep(sourceWave)

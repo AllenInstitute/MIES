@@ -104,17 +104,17 @@ Function TuneBrowser_IGNORE()
 	numEntries = DimSize(keys, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		pa.popStr = CreateAnaFuncLBNKey(SC_SPIKE_CONTROL, keys[i], query = 1)
-		LBV_PopMenuProc_LabNotebook(pa)
+		LBV_PopMenuProc_LabNotebookAndResults(pa)
 	endfor
 
 	pa.popStr = STIMSET_SCALE_FACTOR_KEY
-	LBV_PopMenuProc_LabNotebook(pa)
+	LBV_PopMenuProc_LabNotebookAndResults(pa)
 
 	pa.popStr = "Set sweep count"
-	LBV_PopMenuProc_LabNotebook(pa)
+	LBV_PopMenuProc_LabNotebookAndResults(pa)
 
 	pa.popStr = "Autobias Vcom"
-	LBV_PopMenuProc_LabNotebook(pa)
+	LBV_PopMenuProc_LabNotebookAndResults(pa)
 End
 
 static Constant INDEP_EACH_SCI   = 0x01
