@@ -371,7 +371,6 @@
 //  - pulse data fits to expected data
 //  - pulse wave note fits to setting of PA panel
 
-
 // Test: PAT_IncrementalSweepAdd
 // With most analysis functions sweeps are added incremental in various orders.
 // The sum number of traces plotted is checked as well as if any pulse was plotted twice,
@@ -930,7 +929,6 @@ static Function PAT_CheckImageWaveNote(string win, WAVE iData, STRUCT PA_Test &p
 	variable ySize, setting
 	// This assumption is true for a small number of pulses shown
 	variable specialEntryHeight = 1
-
 
 	ySize = 2 * specialEntryHeight + patest.pulseCnt
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(iData, NOTE_INDEX), ySize)
@@ -2275,7 +2273,6 @@ static Function PAT_HSRemoval1()
 	endfor
 End
 
-
 static Function PAT_BasicImagePlot()
 
 	string bspName, imageWin
@@ -2509,7 +2506,6 @@ static Function PAT_ImagePlotMultiSweep1()
 				Duplicate/FREE/RMD=[][0] iData, profileLine
 				Redimension/N=(-1) profileLine
 				CHECK_EQUAL_WAVES(patest0.refData, profileLine, mode = WAVE_DATA, tol = patest0.eqWaveTol)
-
 
 				Make/FREE/D/N=(patest5.dataLength) refData
 				refData[1, patest5.dataLength / 2 + 1] = 100

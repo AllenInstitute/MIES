@@ -171,7 +171,6 @@ Function/WAVE TUD_GetUserDataAsWave(string graph, string key, [WAVE/T keys, WAVE
 	return result
 End
 
-
 /// @brief Set the given user data for the trace of the graph
 Function TUD_SetUserData(string graph, string trace, string key, string value)
 	variable keyCol, row

@@ -134,7 +134,6 @@ Function ACL_SetControlDisableStatus(panel, currentControl, tabControlName, newT
 	return 0	// input parameters are passed by reference so there is no need to return the values themselves
 End
 
-
 // ********************
 //  FUNCREFs
 // ********************
@@ -275,5 +274,4 @@ Function ACL_DisplayTab(tca): TabControl
 	EndIf
 	return 0
 End
-
 

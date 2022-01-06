@@ -3154,7 +3154,6 @@ static Function TiledGraphAccelerateAppendTracesImpl(string w, string v, string 
 
 End
 
-
 /// @brief Return the color of the given headstage
 ///
 /// @param headstage          Headstage, can be NaN for non-associated channels

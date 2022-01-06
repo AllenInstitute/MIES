@@ -2028,7 +2028,6 @@ static Function/WAVE SF_OperationVariance(variable jsonId, string jsonPath, stri
 	return out
 End
 
-
 static Function/WAVE SF_OperationStdev(variable jsonId, string jsonPath, string graph)
 
 	WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
@@ -2196,7 +2195,6 @@ static Function/WAVE SF_OperationMerge(variable jsonId, string jsonPath, string 
 	SetScale/P x, 0, 1, "", out
 	return out
 End
-
 
 /// `channels([str name]+)` converts a named channel from string to numbers.
 ///

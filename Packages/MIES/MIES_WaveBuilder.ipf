@@ -9,7 +9,6 @@
 /// @file MIES_WaveBuilder.ipf
 /// @brief __WB__ Stimulus set creation
 
-
 static Constant PULSE_TRAIN_MODE_DUR   = 0x01
 static Constant PULSE_TRAIN_MODE_PULSE = 0x02
 

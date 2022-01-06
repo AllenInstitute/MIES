@@ -175,7 +175,6 @@ Function WV_IsSmallerInteger()
 	endtry
 End
 
-
 Function WV_IsSmaller()
 	Make/FREE wv
 	CHECK(MIES_WAVEGETTERS#WaveVersionIsSmaller(wv, 1))

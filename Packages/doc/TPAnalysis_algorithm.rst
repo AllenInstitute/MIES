@@ -151,7 +151,6 @@ The test pulse response is saved if the GUI checkbox was enabled by :cpp:func:`T
      TP_StoreFullWave(device)
    endif
 
-
 Retrieving input data
 =====================
 
@@ -209,7 +208,6 @@ positive, the sign of the local clamp current/voltage variables is removed.
 
    amplitudeIC = abs(amplitudeICGlobal)
    amplitudeVC = abs(amplitudeVCGlobal)
-
 
 Extraction of ranges
 ====================
@@ -312,7 +310,6 @@ The calculated ranges are used to create free waves ``BaselineSS``, ``TPSS`` and
 
 .. figure:: svg/testPulse-visualization_new.svg
    :align: center
-
 
 Calculation
 ===========
@@ -496,7 +493,6 @@ It is later used to set the number of ADCs for calling :cpp:func:`TP_RecordTP`.
 
 .. figure:: svg/testPulse-averaging.svg
    :align: center
-
 
 Running Average of results
 ==========================

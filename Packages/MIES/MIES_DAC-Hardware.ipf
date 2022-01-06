@@ -82,7 +82,6 @@ static Constant HW_ITC_RUNNING_STATE = 0x10
 /// @name Wrapper functions redirecting to the correct internal implementations depending on #HARDWARE_DAC_TYPES
 /// @{
 
-
 /// @brief Prepare for data acquisition
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
@@ -752,7 +751,6 @@ Function/S HW_ITC_ListDevices()
 			ITCGetDevices2/Z=1/DTS=type
 		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-
 		if(V_Value > 0)
 			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
 				number = StringFromList(j, DEVICE_NUMBERS)
@@ -1330,7 +1328,6 @@ Function/WAVE HW_ITC_GetState(deviceID, [flags])
 	do
 		ITCGetState2/DEV=(deviceID)/ALL/FREE/Z=(HW_ITC_GetZValue(flags)) state
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 

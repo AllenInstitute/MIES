@@ -216,7 +216,6 @@ static Function TCONF_Load()
 	TCONF_CompareTextFiles(fName1, REF_CONFIG_FILE)
 End
 
-
 /// @brief Save Window with all relevant mask bits - Change Window - Restore it, compare to initial state
 static Function TCONF_AllStates()
 

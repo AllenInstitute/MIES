@@ -1409,7 +1409,6 @@ Constant POST_PLOT_FULL_UPDATE = 0x8     ///< Forces a complete update from scra
 StrConstant WORKLOADCLASS_TP = "TestPulse"
 /// @}
 
-
 /// @name Column numbers of epoch information
 /// @anchor epochColumnNumber
 ///

@@ -177,7 +177,6 @@ static Function BWO_CheckAndClearPipettes(device)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-
 		if(!P_ValidatePressureSetHeadstage(device, i) || TPResults[%ResistanceSteadyState][i] < BWO_MAX_RESISTANCE)
 			continue
 		endif

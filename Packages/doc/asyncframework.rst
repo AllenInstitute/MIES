@@ -56,7 +56,6 @@ are released.
 
     ASYNC_Stop(timeout)
 
-
 Creating of a job
 ~~~~~~~~~~~~~~~~~
 
@@ -97,7 +96,6 @@ code and *errmsg* the corresponding error message.
 
 By default :cpp:func:`ASYNC_Start` creates a background task that automatically
 calls the users readout function when output data is received from workers.
-
 
 Preparing and executing a job
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -205,7 +203,6 @@ Afterwards the order is fixed for all subsequent work loads of this class.
 The order can be changed by finishing and removing the work load class with :cpp:func:`ASYNC_WaitForWLCToFinishAndRemove`.
 Afterwards the work load class is unknown to Async frame work. Thus, :cpp:func:`ASYNC_Execute` will accept a ``threadDF``
 with the same work load class name but a different ``inOrder`` setting.
-
 
 Details on Stopping Threads
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

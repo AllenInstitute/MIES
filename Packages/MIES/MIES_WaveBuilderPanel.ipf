@@ -928,7 +928,6 @@ Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
 	endswitch
 End
 
-
 Function/S WBP_ReturnListSavedSets()
 
 	string stimsetList, searchString
@@ -1374,7 +1373,6 @@ Function/S WBP_GetAnalysisFunctions(versionBitMask)
 
 	return AddListItem(NONE, AFH_GetAnalysisFunctions(versionBitMask))
 End
-
 
 /// @brief Return a list of noise types, usable for popup menues
 Function/S WBP_GetNoiseTypes()

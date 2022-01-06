@@ -267,7 +267,6 @@ Function ARDLoadSeqWave()
 	SetDataFolder $cdf
 End
 
-
 Function/T ARDCOMListForPop()
 	VDTGetPortList2	// this now puts the list into S_VDT
 	
@@ -397,7 +396,6 @@ Function ARDLaunchSeqPanel()
 	SetVariable SeqRepetitionsSetVar,format="%g"
 	SetVariable SeqRepetitionsSetVar,value= root:ImageHardware:Arduino:gSeqRepeats
 
-
 	SetVariable SeqIntervalSetVar,pos={78,469},size={152,15},bodyWidth=50,proc=ARDStorePinValuesSetVarProc,title="Start-Start Interval (s)"
 	SetVariable SeqIntervalSetVar,format="%2.2f"
 	SetVariable SeqIntervalSetVar,value= root:ImageHardware:Arduino:gSeqInterval
@@ -498,7 +496,6 @@ Function ARDLaunchSeqPanel()
 	ARDWhichComPopMenuProc("WhichCOMPop",ards.gWhichCom,ards.gWhichComStr)
 
 End
-
 
 Function ARDWhichComPopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
@@ -614,8 +611,6 @@ Function ARDStoreEpochValues()		// this needs to be called to save any updates t
 	ARDToggleButtons(ShowHide)	
 End
 
-
-
 Function ARDCalculateMinimumTimes()
 	STRUCT ArduinoSeqSettings ards
 	ARDSetSeqSettings(ards)
@@ -641,7 +636,6 @@ Function ARDCalculateMinimumTimes()
 	// put in a bit to calculate the minimum start to start interval. This will be the duration
 
 End
-
 
 Function ARDMinIntervalCheckProc(ctrlName,checked) : CheckBoxControl
 	String ctrlName
@@ -925,7 +919,6 @@ Function ARDBitty(WhichPort, BitValue)	// function that will tell if various bit
 	Killvariables/Z tmpBitValue, Bit0, Bit1, Bit2, Bit3, Bit4, Bit5
 End
 
-
 Function ARDCalculateWavesPnts()
 	STRUCT ArduinoSeqSettings ards
 	ARDSetSeqSettings(ards)
@@ -1163,10 +1156,6 @@ Function ARDCalculateWavesPnts()
 		ards.gEndToStartInterval = ards.gSeqInterval - ards.gSeqDuration
 End
 
-
-
-
-
 // Try a different approach whereby all data is sent regardless.
 // Now the arduino stores the type of pulse and will use that to decide what to do
 Function ARDSendEpochs()
@@ -1307,7 +1296,6 @@ Function ARDSendEpoch(WhichEpoch)
 	
 End
 
-
 // This calls fuction 5 and resets all of the values held in the arduino to zero
 Function ARDResetEpochs()
 	Variable Command
@@ -1370,8 +1358,6 @@ Function ARDCloseCOMPort()
 	VDTClosePort2 $ards.gWhichCOMStr
 End
 
-
-
 Function ARDStartSequence()
 	STRUCT ArduinoSeqSettings ards
 	ARDSetSeqSettings(ards)
@@ -1410,9 +1396,7 @@ End
 
 Function ARDEndSequence()
 
-
 End
-
 
 //Function SelectCOMPort()
 //	if (exists("root:ImageHardware:Arduino:gWhichCom") == 2)	// then it exists

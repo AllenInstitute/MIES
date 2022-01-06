@@ -782,7 +782,6 @@ static Function TP_PublishAutoTPResult(string device, variable headstage, variab
 	FFI_Publish(jsonID, AUTO_TP_FILTER)
 End
 
-
 /// @brief Generate new auto TP cycle IDs
 ///
 /// This is required everytime we lock a device or toggle Auto TP for a headstage

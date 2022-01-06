@@ -896,7 +896,6 @@ static Function AFT6b_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V3", "", "", "", "", "", "", "", ""})
 End
 
-
 // ana func called for each headstage
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function AFT7([str])
