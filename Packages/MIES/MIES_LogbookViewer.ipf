@@ -246,7 +246,7 @@ Function [WAVE keys, WAVE values] LBV_GetLNBWavesForEntry(string win, string key
 
 	variable col
 
-	WAVE/Z numericalKeys   = BSP_GetLBNWave(win, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z numericalKeys = BSP_GetLBNWave(win, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 	ASSERT(WaveExists(numericalKeys), "Numerical LabNotebook Keys not found.")
 	WAVE/Z numericalValues = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
 	ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")
@@ -256,7 +256,7 @@ Function [WAVE keys, WAVE values] LBV_GetLNBWavesForEntry(string win, string key
 		return [numericalKeys, numericalValues]
 	endif
 
-	WAVE/Z textualKeys   = BSP_GetLBNWave(win, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z textualKeys = BSP_GetLBNWave(win, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	ASSERT(WaveExists(textualKeys), "Textual LabNotebook keys not found.")
 	WAVE/Z textualValues = BSP_GetLBNWave(win, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 	ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
