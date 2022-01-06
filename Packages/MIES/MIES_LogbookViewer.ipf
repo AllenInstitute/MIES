@@ -51,18 +51,19 @@ End
 
 /// @brief Returns the list of LNB keys for the settings history window menu
 Function/WAVE LBV_PopupExtGetLBKeys(string win)
-	WAVE/Z entries = LBV_GetLBKeys(win)
+
+	WAVE/T/Z textualKeys   = BSP_GetLBNWave(win, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/T/Z numericalKeys = BSP_GetLBNWave(win, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+
+	WAVE/Z entries = LBV_GetAllLogbookKeys(win, textualKeys, numericalKeys)
 
 	return LBV_PopupExtFormatEntries(entries)
 End
 
-/// @brief Returns the combined keys from the numerical and textual MD key labnotebook waves as 1D text wave
-static Function/WAVE LBV_GetLBKeys(string win)
+/// @brief Returns the combined keys from the numerical and textual MD key loogbook waves as 1D text wave
+static Function/WAVE LBV_GetAllLogbookKeys(string win, WAVE/T textualKeys, WAVE/T numericalKeys)
 	variable s
 	variable existText, existNum
-
-	WAVE/T/Z textualKeys   = BSP_GetLBNWave(win, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
-	WAVE/T/Z numericalKeys = BSP_GetLBNWave(win, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 
 	WAVE/Z/T textualKeys1D = LBV_GetLabNotebookKeys(textualKeys)
 	WAVE/Z/T numericalKeys1D = LBV_GetLabNotebookKeys(numericalKeys)
