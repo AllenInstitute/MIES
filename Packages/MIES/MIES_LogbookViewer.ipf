@@ -68,14 +68,14 @@ static Function/WAVE LBV_GetAllLogbookKeys(string win, WAVE/T textualKeys, WAVE/
 	WAVE/Z/T textualKeys1D = LBV_GetLabNotebookKeys(textualKeys)
 	WAVE/Z/T numericalKeys1D = LBV_GetLabNotebookKeys(numericalKeys)
 
-	existText = WaveExists(textualKeys)
-	existNum = WaveExists(numericalKeys)
+	existText = WaveExists(textualKeys1D)
+	existNum = WaveExists(numericalKeys1D)
 	if(existText && existNum)
 		return GetSetUnion(textualKeys1D, numericalKeys1D)
 	elseif(existText && !existNum)
-		return textualKeys
+		return textualKeys1D
 	elseif(!existText && existNum)
-		return numericalKeys
+		return numericalKeys1D
 	endif
 
 	return $""
