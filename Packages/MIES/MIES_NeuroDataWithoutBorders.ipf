@@ -914,7 +914,7 @@ Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfi
 	WAVE s.numericalValues = GetLBNumericalValues(device)
 	WAVE/T s.numericalKeys = GetLBNumericalKeys(device)
 	WAVE/T s.textualValues = GetLBTextualValues(device)
-	WAVE/T s.textualKeys = GetLBTextualKeys(device)
+	WAVE/T s.textualKeys   = GetLBTextualKeys(device)
 
 	workload = NWB_ASYNC_WorkLoadName(s.device)
 
