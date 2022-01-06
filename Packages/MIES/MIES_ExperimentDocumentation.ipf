@@ -22,6 +22,17 @@ Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, st
 	endif
 End
 
+/// @brief Add numerical/textual entries to results
+Function ED_AddEntriesToResults(WAVE vals, WAVE/T keys, variable entrySourceType)
+	ED_CheckValuesAndKeys(vals, keys)
+
+	if(IsTextWave(vals))
+		ED_createTextNotes(vals, keys, NaN, entrySourceType, LBT_RESULTS)
+	else
+		ED_createWaveNotes(vals, keys, NaN, entrySourceType, LBT_RESULTS)
+	endif
+End
+
 static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
 	ASSERT(DimSize(vals, ROWS)   == 1, "Mismatched row count")
 	ASSERT(DimSize(vals, COLS)   == DimSize(keys, COLS), "Mismatched column count")
@@ -31,7 +42,7 @@ static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
 	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
 End
 
-/// @brief Add textual entries to the labnotebook
+/// @brief Add textual entries to the logbook
 ///
 /// The text documentation wave will use layers to report the different headstages.
 ///
@@ -39,24 +50,34 @@ End
 /// first eight layers are for headstage dependent data, the last layer for
 /// headstage independent data.
 ///
-/// @param incomingTextualValues  incoming Text Documentation Wave sent by the each reporting subsystem
-/// @param incomingTextualKeys    incoming Text Documentation key wave that is used to reference the incoming settings wave
-/// @param sweepNo                sweep number
-/// @param device             device
-/// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
-static Function ED_createTextNotes(wave/T incomingTextualValues, wave/T incomingTextualKeys, variable sweepNo, string device, variable entrySourceType)
+/// @param incomingTextualValues incoming Text Documentation Wave sent by the each reporting subsystem
+/// @param incomingTextualKeys   incoming Text Documentation key wave that is used to reference the incoming settings wave
+/// @param sweepNo               sweep number
+/// @param device                [optional for logbookType LBT_RESULTS only] device
+/// @param entrySourceType       type of reporting subsystem, one of @ref DataAcqModes
+/// @param logbookType           type of the logbook, one of @ref LogbookTypes
+static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incomingTextualKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
 	variable rowIndex, numCols, i, lastValidIncomingLayer, state
 	string timestamp
 
-	WAVE/T values = GetLBTextualValues(device)
-	WAVE/T keys   = GetLBTextualKeys(device)
+	if(ParamIsDefault(device))
+		ASSERT(logbookType == LBT_RESULTS, "Invalid logbook type")
+		state = AS_INACTIVE
+
+		WAVE/T values = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES)
+		WAVE/T keys = GetLogbookWaves(logbookType, LBN_TEXTUAL_KEYS)
+	else
+		WAVE/T values = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES, device = device)
+		WAVE/T keys = GetLogbookWaves(logbookType, LBN_TEXTUAL_KEYS, device = device)
+
+		state = ROVar(GetAcquisitionState(device))
+	endif
 
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, keys, values, rowIndex)
 
 	values[rowIndex][0][] = num2istr(sweepNo)
 	values[rowIndex][3][] = num2istr(entrySourceType)
 
-	state = ROVar(GetAcquisitionState(device))
 	values[rowIndex][4][] = num2istr(state)
 
 	// store the current time in a variable first
@@ -96,20 +117,31 @@ End
 /// @param incomingNumericalValues settingsWave sent by the each reporting subsystem
 /// @param incomingNumericalKeys   key wave that is used to reference the incoming settings wave
 /// @param sweepNo                 sweep number
-/// @param device              device
+/// @param device                  [optional for logbooktype LBT_RESULTS only] device
 /// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
-static Function ED_createWaveNotes(WAVE incomingNumericalValues,WAVE/T incomingNumericalKeys, variable sweepNo, string device, variable entrySourceType)
+/// @param logbookType             one of @ref LogbookTypes
+static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incomingNumericalKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
 	variable rowIndex, numCols, lastValidIncomingLayer, i, timestamp, state
 
-	WAVE/T keys = GetLBNumericalKeys(device)
-	WAVE values = GetLBNumericalValues(device)
+	if(ParamIsDefault(device))
+		ASSERT(logbookType == LBT_RESULTS, "Invalid logbook type")
+
+		WAVE values = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES)
+		WAVE/T keys = GetLogbookWaves(logbookType, LBN_NUMERICAL_KEYS)
+
+		state = AS_INACTIVE
+	else
+		WAVE values = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES, device = device)
+		WAVE/T keys = GetLogbookWaves(logbookType, LBN_NUMERICAL_KEYS, device = device)
+
+		state = ROVar(GetAcquisitionState(device))
+	endif
 
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, keys, values, rowIndex)
 
 	values[rowIndex][0][] = sweepNo
 	values[rowIndex][3][] = entrySourceType
 
-	state = ROVar(GetAcquisitionState(device))
 	values[rowIndex][4][] = state
 
 	// store the current time in a variable first
