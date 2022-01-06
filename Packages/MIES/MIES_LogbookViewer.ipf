@@ -798,27 +798,32 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 
 		logbookType = GetLogbookType(sourceWave)
 
-		if(logbookType == LBT_LABNOTEBOOK)
-			if(isTimeAxis)
-				if(isTextData)
-					WAVE valuesSweep = ExtractLogbookSliceSweep(sourceWave)
-					ReplaceWave/W=$graph/X trace=$trace, valuesSweep
-				else
-					sweepCol = GetSweepColumn(sourceWave)
-					ReplaceWave/W=$graph/X trace=$trace, sourceWave[][sweepCol][0]
+		switch(logbookType)
+			case LBT_LABNOTEBOOK:
+				if(isTimeAxis)
+					if(isTextData)
+						WAVE valuesSweep = ExtractLogbookSliceSweep(sourceWave)
+						ReplaceWave/W=$graph/X trace=$trace, valuesSweep
+					else
+						sweepCol = GetSweepColumn(sourceWave)
+						ReplaceWave/W=$graph/X trace=$trace, sourceWave[][sweepCol][0]
+					endif
+				else // other direction
+					WAVE dat = ExtractLogbookSliceTimeStamp(sourceWave)
+
+					ReplaceWave/W=$graph/X trace=$trace, dat
 				endif
-			else // other direction
-				WAVE dat = ExtractLogbookSliceTimeStamp(sourceWave)
+				break
+			case LBT_TPSTORAGE:
+				key = TUD_GetUserData(graph, trace, "key")
+				RemoveTracesFromGraph(graph, trace = trace)
+				TUD_RemoveUserData(graph, trace)
 
-				ReplaceWave/W=$graph/X trace=$trace, dat
-			endif
-		elseif(logbookType == LBT_TPSTORAGE)
-			key = TUD_GetUserData(graph, trace, "key")
-			RemoveTracesFromGraph(graph, trace = trace)
-			TUD_RemoveUserData(graph, trace)
-
-			keysToReadd = AddListItem(key, keysToReadd, ";", inf)
-		endif
+				keysToReadd = AddListItem(key, keysToReadd, ";", inf)
+				break
+		default:
+			ASSERT(0, "Invalid logbook type")
+		endswitch
 	endfor
 
 	keysToReadd = GetUniqueTextEntriesFromList(keysToReadd)
