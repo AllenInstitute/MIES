@@ -1277,11 +1277,13 @@ End
 /// Works with Databrowser/Sweepbrowser
 ///
 /// @param win               panel
-/// @param type              One of @ref LabnotebookWaveTypes
+/// @param logbookType       one of @ref LogbookTypes
+/// @param logbookWaveType   one of @ref LabnotebookWaveTypes
 /// @param sweepNumber       [optional] sweep number
 /// @param selectedExpDevice [optional, defaults to off] return the labnotebook for the selected experiment/device combination
-/// @returns returns the specified labnotebook wave or a null wave
-Function/WAVE BSP_GetLBNWave(string win, variable type, [variable sweepNumber, variable selectedExpDevice])
+///
+/// @returns returns the specified logbook wave or a null wave
+Function/WAVE BSP_GetLogbookWave(string win, variable logbookType, variable logbookWaveType, [variable sweepNumber, variable selectedExpDevice])
 	string shPanel, device, dataFolder
 
 	if(ParamIsDefault(selectedExpDevice))
@@ -1291,6 +1293,8 @@ Function/WAVE BSP_GetLBNWave(string win, variable type, [variable sweepNumber, v
 	endif
 
 	if(BSP_IsDataBrowser(win))
+		device = BSP_GetDevice(win)
+
 		// for all sweep numbers the same LBN
 		if(ParamIsDefault(sweepNumber) && !selectedExpDevice)
 			WAVE/Z sweeps = GetPlainSweepList(win)
@@ -1299,19 +1303,19 @@ Function/WAVE BSP_GetLBNWave(string win, variable type, [variable sweepNumber, v
 				return $""
 			endif
 
-			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) waves = DB_GetLBNWave(win, type)
+			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) waves = GetLogbookWaves(logbookType, logbookWaveType, device = device)
 			return waves
 		elseif(selectedExpDevice)
-			return DB_GetLBNWave(win, type)
+			return GetLogbookWaves(logbookType, logbookWaveType, device = device)
 		elseif(!ParamIsDefault(sweepNumber))
 			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number")
-			return DB_GetLBNWave(win, type)
+			return GetLogbookWaves(logbookType, logbookWaveType, device = device)
 		else
 			ASSERT(0, "Invalid parameter combination")
 		endif
 	else
 		if(ParamIsDefault(sweepNumber) && !selectedExpDevice)
-			return SB_GetLBNWave(win, type)
+			return SB_GetLogbookWave(win, logbookType, logbookWaveType)
 		elseif(selectedExpDevice)
 			shPanel = LBV_GetSettingsHistoryPanel(win)
 
@@ -1322,10 +1326,10 @@ Function/WAVE BSP_GetLBNWave(string win, variable type, [variable sweepNumber, v
 				return $""
 			endif
 
-			return SB_GetLBNWave(win, type, dataFolder = dataFolder, device = device)
+			return SB_GetLogbookWave(win, logbookType, logbookWaveType, dataFolder = dataFolder, device = device)
 		elseif(!ParamIsDefault(sweepNumber))
 			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number")
-			return SB_GetLBNWave(win, type, sweepNumber = sweepNumber)
+			return SB_GetLogbookWave(win, logbookType, logbookWaveType, sweepNumber = sweepNumber)
 		else
 			ASSERT(0, "Invalid parameter combination")
 		endif
@@ -1562,7 +1566,7 @@ Function BSP_AddTracesForEpochs(string win)
 		headstage   = str2num(traceInfos[j][%headstage])
 		sweepNumber = str2num(traceInfos[j][%sweepNumber])
 
-		WAVE/Z/T textualValues = BSP_GetlBNWave(win, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
+		WAVE/Z/T textualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNumber)
 		ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
 
 		WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNumber, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)

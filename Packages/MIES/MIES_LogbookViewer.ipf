@@ -52,8 +52,8 @@ End
 /// @brief Returns the list of LNB keys for the settings history window menu
 Function/WAVE LBV_PopupExtGetLBKeys(string win)
 
-	WAVE/T/Z textualKeys   = BSP_GetLBNWave(win, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
-	WAVE/T/Z numericalKeys = BSP_GetLBNWave(win, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 
 	WAVE/Z entries = LBV_GetAllLogbookKeys(win, textualKeys, numericalKeys)
 
@@ -246,9 +246,9 @@ Function [WAVE keys, WAVE values] LBV_GetLNBWavesForEntry(string win, string key
 
 	variable col
 
-	WAVE/Z numericalKeys = BSP_GetLBNWave(win, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z numericalKeys = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 	ASSERT(WaveExists(numericalKeys), "Numerical LabNotebook Keys not found.")
-	WAVE/Z numericalValues = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
+	WAVE/Z numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
 	ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")
 
 	col = FindDimLabel(numericalValues, COLS, key)
@@ -256,9 +256,9 @@ Function [WAVE keys, WAVE values] LBV_GetLNBWavesForEntry(string win, string key
 		return [numericalKeys, numericalValues]
 	endif
 
-	WAVE/Z textualKeys = BSP_GetLBNWave(win, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z textualKeys = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	ASSERT(WaveExists(textualKeys), "Textual LabNotebook keys not found.")
-	WAVE/Z textualValues = BSP_GetLBNWave(win, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
+	WAVE/Z textualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 	ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
 
 	col = FindDimLabel(textualValues, COLS, key)
@@ -574,7 +574,7 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 
 	axisBaseName = "tpstorage_" + VERT_AXIS_BASE_NAME
 
-	WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
+	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
 	ASSERT(WaveExists(numericalValues), "LabNotebook not found.")
 
 	// 5872e556 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
