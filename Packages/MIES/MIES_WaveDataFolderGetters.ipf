@@ -4670,6 +4670,48 @@ Function/S GetAnalysisStimSetPathAS(expFolder, device)
 	return GetAnalysisDeviceFolderAS(expFolder, device) + ":stimset"
 End
 
+/// @brief Return the datafolder reference to results folder of an experiment
+Function/DF GetAnalysisResultsFolder(string expFolder)
+	return createDFWithAllParents(GetAnalysisResultsFolderAsString(expFolder))
+End
+
+/// @brief Return the datafolder reference to results folder of an experiment, e.g. root:MIES:Analysis:my_experiment:results
+Function/S GetAnalysisResultsFolderAsString(string expFolder)
+
+	return GetAnalysisExpFolderAS(expFolder) + ":results"
+End
+
+/// @brief Return one of the four results waves
+///
+/// @param expFolder experiment datafolder name
+/// @param type      One of @ref LabnotebookWaveTypes
+Function/WAVE GetAnalysisResultsWave(string expFolder, variable type)
+	string name
+
+	DFREF ref = GetAnalysisResultsFolder(expFolder)
+
+	switch(type)
+		case LBN_NUMERICAL_VALUES:
+			name = "numericalResultsValues"
+			break
+		case LBN_NUMERICAL_KEYS:
+			name = "numericalResultsKeys"
+			break
+		case LBN_TEXTUAL_VALUES:
+			name = "textualResultsValues"
+			break
+		case LBN_TEXTUAL_KEYS:
+			name = "textualResultsKeys"
+			break
+		default:
+			ASSERT(0, "Invalid type")
+	endswitch
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	return wv
+End
+
 ///  wave is used to relate it's index to sweepWave and deviceWave.
 Function/Wave GetAnalysisChannelStorage(dataFolder, device)
 	String dataFolder, device
