@@ -340,6 +340,7 @@ threadsafe Function/DF NWB_ASYNC_Worker(DFREF dfr)
 	AddModificationTimeEntry(s.locationID, s.nwbVersion)
 	NWB_AddDevice(s)
 	NWB_WriteLabnoteBooksAndComments(s)
+	NWB_WriteResultsWaves(s)
 	NWB_AppendSweepLowLevel(s)
 
 	NWB_Flush(s.locationID)
@@ -409,6 +410,37 @@ threadsafe static Function NWB_WriteLabnoteBooksAndComments(STRUCT NWBAsyncParam
 
 	HDF5CloseGroup/Z groupID
 	// END USERCOMMENT
+End
+
+threadsafe static Function NWB_WriteResultsWaves(STRUCT NWBAsyncParameters &s)
+	string path
+	variable groupID
+
+	if(s.nwbVersion == 1)
+		return NaN
+	endif
+
+	path = "/general/results"
+
+	H5_CreateGroupsRecursively(s.locationID, path)
+	WriteNeuroDataType(s.locationID, path, "Results")
+
+	groupID = H5_OpenGroup(s.locationID, path)
+
+	WAVE numericalResultsValuesTrimmed = RemoveUnusedRows(s.numericalResultsValues)
+	H5_WriteDataset(groupID, "numericalResultsValues", wv=numericalResultsValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = s.compressionMode)
+	H5_WriteTextDataset(groupID, "numericalResultsKeys", wvText=s.numericalResultsKeys, writeIgorAttr=1, overwrite=1, compressionMode = s.compressionMode)
+
+	WAVE textualResultsValuesTrimmed = RemoveUnusedRows(s.textualResultsValues)
+	H5_WriteTextDataset(groupID, "textualResultsValues", wvText=textualResultsValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = s.compressionMode)
+	H5_WriteTextDataset(groupID, "textualResultsKeys", wvText=s.textualResultsKeys, writeIgorAttr=1, overwrite=1, compressionMode = s.compressionMode)
+
+	WriteNeuroDataType(groupID, "numericalResultsValues", "ResultsNumericalValues")
+	WriteNeuroDataType(groupID, "numericalResultsKeys", "ResultsNumericalKeys")
+	WriteNeuroDataType(groupID, "textualResultsValues", "ResultsTextualValues")
+	WriteNeuroDataType(groupID, "textualResultsKeys", "ResultsTextualKeys")
+
+	HDF5CloseGroup/Z groupID
 End
 
 static Function NWB_AddDeviceSpecificData(STRUCT NWBAsyncParameters &s, variable writeStoredTestPulses)
@@ -566,6 +598,11 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	s.nwbVersion = nwbVersion
 	s.nwbFilePath = ROStr(GetNWBFilePathExport())
 
+	WAVE s.numericalResultsValues = GetNumericalResultsValues()
+	WAVE/T s.numericalResultsKeys = GetNumericalResultsKeys()
+	WAVE/T s.textualResultsValues = GetTextualResultsValues()
+	WAVE/T s.textualResultsKeys   = GetTextualResultsKeys()
+
 	numEntries = ItemsInList(devicesWithContent)
 	for(i = 0; i < numEntries; i += 1)
 		device = StringFromList(i, devicesWithContent)
@@ -620,6 +657,8 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 	if(writeIgorHistory)
 		NWB_AppendIgorHistoryAndLogFile(nwbVersion, s.locationID)
 	endif
+
+	NWB_WriteResultsWaves(s)
 
 	if(!keepFileOpen)
 		CloseNWBFile()
@@ -915,6 +954,11 @@ Function NWB_AppendSweepDuringDAQ(string device, WAVE DAQDataWave, WAVE DAQConfi
 	WAVE/T s.numericalKeys = GetLBNumericalKeys(device)
 	WAVE/T s.textualValues = GetLBTextualValues(device)
 	WAVE/T s.textualKeys   = GetLBTextualKeys(device)
+
+	WAVE s.numericalResultsValues = GetNumericalResultsValues()
+	WAVE/T s.numericalResultsKeys = GetNumericalResultsKeys()
+	WAVE/T s.textualResultsValues = GetTextualResultsValues()
+	WAVE/T s.textualResultsKeys   = GetTextualResultsKeys()
 
 	workload = NWB_ASYNC_WorkLoadName(s.device)
 
