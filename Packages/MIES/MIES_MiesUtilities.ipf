@@ -2613,7 +2613,15 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
 	WAVE/D/Z statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 	if(!WaveExists(statusHS))
-		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCs[p]) && IsFinite(DACs[p])
+		// 5872e556 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
+		WAVE/Z DACsFromLBN = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+		ASSERT_TS(WaveExists(DACsFromLBN), "Labnotebook is too old for workaround.")
+
+		// 5872e556 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
+		WAVE/Z ADCsFromLBN = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
+		ASSERT_TS(WaveExists(ADCsFromLBN), "Labnotebook is too old for workaround.")
+
+		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCsFromLBN[p]) && IsFinite(DACsFromLBN[p])
 	endif
 
 	BSP_RemoveDisabledChannels(channelSelWave, ADCs, DACs, statusHS, numericalValues, sweepNo)
