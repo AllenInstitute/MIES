@@ -164,6 +164,11 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	keys[] = key
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	values[] = NaN
+	values[0][0][0] = I_CLAMP_MODE
+	keys[] = CLAMPMODE_ENTRY_KEY
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
 	// textual entries
 
 	// DAC 4: unassoc (old)
@@ -226,6 +231,11 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	keys[] = key
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
+	values[] = NaN
+	values[0][0][0] = V_CLAMP_MODE
+	keys[] = CLAMPMODE_ENTRY_KEY
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
 	// textual entries
 
 	// DAC 5: unassoc (new)
@@ -266,6 +276,11 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	values[0][0][1] = 1
 	keys[] = "Headstage Active"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	values[] = NaN
+	values[0][0][0] = I_EQUAL_ZERO_MODE
+	keys[] = CLAMPMODE_ENTRY_KEY
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// indep headstage
 	values[] = NaN
