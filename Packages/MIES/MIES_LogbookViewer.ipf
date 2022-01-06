@@ -62,7 +62,6 @@ End
 
 /// @brief Returns the combined keys from the numerical and textual MD key loogbook waves as 1D text wave
 static Function/WAVE LBV_GetAllLogbookKeys(string win, WAVE/T textualKeys, WAVE/T numericalKeys)
-	variable s
 	variable existText, existNum
 
 	WAVE/Z/T textualKeys1D = LBV_GetLabNotebookKeys(textualKeys)
