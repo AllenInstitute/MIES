@@ -113,11 +113,10 @@ Function ARDInitialiseSeqGlobals()		// Launches the globals required
 	Variable/G gPulseInterval = 0		// ms
 	Variable/G gPulseNumber = 0	// number
 	Variable/G gDutyCycle = 0	// percent
-	
-	
+
 	Variable/G gActivePin = NaN
 	Variable/G gWhichCom
-	
+
 	String/G gVDT2Message = "Not Intitialised"
 	Variable/G gAllowParallel = 0	// default is to allow only one pin to be active at a time
 	Variable/G gAI5 = 0
@@ -129,17 +128,17 @@ Function ARDInitialiseSeqGlobals()		// Launches the globals required
 	Variable/G gPortDBitValue
 	Variable/G gPortBBitValue
 	Variable/G gActiveInputPin = Nan
-	
+
 	String/G gProtocolListStr = ""
 
 	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
 	NewPath/O/Q ArdSeqPath, ArdSeqPathStr
 	gProtocolListStr = IndexedFile(ArdSeqPath,-1,".ibw")
-	
+
 	Make /O/N=1 wp2,wp3,wp4,wp5,wp6,wp7,wp8,wp9,wp10,wp11,wp12,wp13
 	wp2=0;wp3=0;wp4=0;wp5=0;wp6=0;wp7=0;wp8=0;wp9=0;wp10=0;wp11=0;wp12=0;wp13=0
 	// Should try to load default sequence wave and if not found, create it
-	
+
 	String FileNameStr = "Default Sequence.ibw"
 	LoadWave/Q/O/P=ArdSeqPath FileNameStr
 	if (V_Flag == 1)		// then one wave has been successfully loaded
@@ -148,26 +147,24 @@ Function ARDInitialiseSeqGlobals()		// Launches the globals required
 		ARDCreateDefaultSeqWave()
 		ARDSaveSeqWave("Default Sequence")
 	endif
-	
+
 //	STRUCT ArduinoSeqSettings ards
 //	ARDSetSeqSettings(ards)
 	Variable/G gSeqRepeats = 0
 	Variable/G gSeqInterval = 0
 	String/G gMessageStr ="Awaiting Command"
-	
-	
-	
+
 	Variable/G gSeqRepeats = wSeqDefaults[0][0]
 	Variable/G gSeqDuration = wSeqDefaults[1][0]
 	Variable/G gSeqInterval = wSeqDefaults[2][0]
 	Variable/G gWhichCom = wSeqDefaults[3][0]
-	
+
 	Variable/G gTotalDuration = Nan
 	Variable/G gEndToStartInterval = Nan
 	String/G gWhichComStr = ""
 	VDTGetPortList2
 	gWhichComStr = stringFromList(gWhichCom, S_VDT)	// this should be the real position of the com is S_VDT
-	
+
 	SetDataFolder $cdf
 End
 
@@ -182,9 +179,9 @@ Function ARDCreateDefaultSeqWave()
 		NewDataFolder Arduino
 	endif
 	SetDataFolder Arduino
-	
+
 	Make /O/N=(8,11) wSeqDefaults	// this is a wave that holds all of the data for the various parameters
-	
+
 	// Rows 0-7 represent EventType, Event Duration, Pulse Duration, PulseInterval, PulseNumber, DutyCycle (for PWM),PortDBitPattern, PortCBitPattern
 	// the last two rows represent values for the bitpatterns for ports D and C
 	// Bit 1 is 8, 2 is 9, 3 is 10, 4 is 11, 5 is 12 and 6 is 13
@@ -192,10 +189,10 @@ Function ARDCreateDefaultSeqWave()
 	// Columns 1 - 10 represent epochs A - J
 	wSeqDefaults = nan
 	// use the first column for sequence repeats and sequence duration, the start to start interval of the sequence and then the position in S_VDT of the COM
-	
+
 	// We should save the actual position of the port in the S_VDT list which will start from zero
 	// Therefore, if -1 is stored, then we should no that we don't know.
-	
+
 	wSeqDefaults [][0] = {1,1.5,1.5,2}		// if we have 3 COM options, then need to add one because the first option in the pop string will be "none"
 	wSeqDefaults [][1] = {3,500,1,50,1,0,0,1}	//EventType, Event Duration, Pulse Duration, PulseInterval, PulseNumber, DutyCycle (for PWM)
 	wSeqDefaults [][2] = {3,1000,1,50,1,20,0,2}
@@ -219,7 +216,7 @@ Function ARDSaveSeqWave(FileNameStr)
 	String ArdSeqPathStr = ParseFilePath(1, FunctionPath(""), ":", 1, 0) + "Sequence Files:"
 	NewPath/O/Q ArdSeqPath, ArdSeqPathStr
 
-	SetDataFolder root:ImageHardware:Arduino 
+	SetDataFolder root:ImageHardware:Arduino
 	Wave wSeqDefaults =wSeqDefaults
 	Save/O/P=ArdSeqPath wSeqDefaults as FileNameStr
 	SetDataFolder $cdf
@@ -239,7 +236,7 @@ Function ARDSaveCurrentSeqWave()
 	FileNameStr = replaceString(".ibw", FileNameStr, "")	// if this is already present, remove it
 	FileNameStr += ".ibw"
 	Save/O/P=ArdSeqPath wSeqDefaults as FileNameStr
-	// update the wave list and 
+	// update the wave list and
 	String cdf = getdatafolder(1)
 	SetDataFolder root:ImageHardware:Arduino
 	SVAR ProtocolListStr = gProtocolListStr
@@ -269,7 +266,7 @@ End
 
 Function/T ARDCOMListForPop()
 	VDTGetPortList2	// this now puts the list into S_VDT
-	
+
 	string PopStr = "\"None"
 	Variable Counter
 	String tmpStr
@@ -293,7 +290,7 @@ Function ARDLaunchSeqPanel()
 	ARDInitialiseSeqGlobals()
 
 	Variable Left, Top, Right, Bottom
-	Left = 300	
+	Left = 300
 	Top = 50
 	Right = 542
 	Bottom = 700
@@ -306,21 +303,21 @@ Function ARDLaunchSeqPanel()
 	DoWindow/K ArduinoSeq_Panel
 	NewPanel /W=(Left, Top, Right, Bottom)/K=1 as "Arduino Sequencer"
 	DoWindow/C ArduinoSeq_Panel
-	
+
 	SetDrawLayer UserBack
 	SetDrawEnv linefgc= (48059,48059,48059)
 	DrawLine 14,218,226,218
-	
+
 	GroupBox SeqGroup,pos={4,5},size={234,640},title="Sequence Controller"
-	
+
 	GroupBox ArduinoControls,pos={9,24},size={224,66},title="Arduino"
-	
+
 	// The mode will be 1 for None and 2 for the first in the S_VDT list. Therefore, need to add 2 to the gWhichCom
-	
+
 	PopupMenu WhichCOMPop,pos={62,45},size={164,20},bodyWidth=166,title="COM Port", proc=ARDWhichComPopMenuProc
 	PopupMenu WhichCOMPop,mode=(2+ards.gWhichCom),value= #ARDCOMListForPop()
 	PopupMenu WhichCOMPop help={"Select the COM port to which your Arduino is connected"}
-	
+
 	SetVariable MessageStrSetVar,pos={15,70},size={211,15},bodyWidth=176,title="\\K(65535,0,0)Status:"
 	SetVariable MessageStrSetVar,frame=0
 	SetVariable MessageStrSetVar,value= root:ImageHardware:Arduino:gMessageStr,noedit= 1
@@ -342,11 +339,9 @@ Function ARDLaunchSeqPanel()
 	SetVariable PulseNumberSetvar,pos={108,198},size={118,15},bodyWidth=60,proc=ARDStorePinValuesSetVarProc,title="Pulse Number"
 	SetVariable PulseNumberSetvar,format="%2.1f"
 	SetVariable PulseNumberSetvar,limits={0,1000,1},value= root:ImageHardware:Arduino:gPulsenumber
-	
+
 	TitleBox PinTitle,pos={17,201},size={17,12},title="Pins",frame=0
 
-	
-	
 	CheckBox EpochCheck13,pos={14,235},size={16,14},proc=ARDPortDBitCheckProc,title=""
 	CheckBox EpochCheck13,value= 0
 	CheckBox EpochCheck12,pos={30,235},size={16,14},proc=ARDPortDBitCheckProc,title=""
@@ -383,7 +378,7 @@ Function ARDLaunchSeqPanel()
 	TitleBox Pin4,pos={182,222},size={6,12},title="4",frame=0
 	TitleBox Pin3,pos={199,222},size={6,12},title="3",frame=0
 	TitleBox Pin2,pos={216,222},size={6,12},title="2",frame=0
-	
+
 	// Buttons start disabled so that they can only be enabled once the arduino is contacted and a pattern has been sent
 
 	GroupBox SequenceRepeatGroup,pos={9,428},size={224,66},title="Sequence Repeater"
@@ -399,10 +394,10 @@ Function ARDLaunchSeqPanel()
 	SetVariable SeqIntervalSetVar,pos={78,469},size={152,15},bodyWidth=50,proc=ARDStorePinValuesSetVarProc,title="Start-Start Interval (s)"
 	SetVariable SeqIntervalSetVar,format="%2.2f"
 	SetVariable SeqIntervalSetVar,value= root:ImageHardware:Arduino:gSeqInterval
-	
+
 	Button SendSequenceButton,pos={16,502},size={210,20},proc=ARDSeqButtonProc,title="Send Sequence To Arduino"
 	Button SendSequenceButton,fColor=(49151,49152,65535),disable=2
-	
+
 	GroupBox SequenceLoadGroup,pos={9,530},size={224,74},title="Sequence Loader"
 	Button LoadSeqButton,pos={16,549},size={100,20},proc=ARDSeqButtonProc,title="Load New"
 	Button SaveSeqButton,pos={125,549},size={100,20},proc=ARDSeqButtonProc,title="Save Current"
@@ -412,7 +407,7 @@ Function ARDLaunchSeqPanel()
 	Button ArduinoStartButton,fColor=(32768,65280,32768),disable=2
 	Button ArduinoStopButton,pos={16,611},size={100,28},disable=2,proc=ARDSeqButtonProc,title="Stop"
 	Button ArduinoStopButton,fColor=(65535,32768,32768)
-		
+
 	DefineGuide UGV0={FL,10}
 	DefineGuide UGV1={FR,-10}
 	DefineGuide UGH0={FT,260}
@@ -420,7 +415,7 @@ Function ARDLaunchSeqPanel()
 	Display/W=(10,208,231,378)/FG=(UGV0,UGH0,UGV1,UGH1)/HOST=#
 	String fldrSav0= GetDataFolder(1)
 	SetDataFolder root:ImageHardware:Arduino:
-	
+
 	AppendToGraph /L=wp2 wp2
 	AppendToGraph /L=wp3 wp3
 	AppendToGraph /L=wp4 wp4
@@ -438,59 +433,59 @@ Function ARDLaunchSeqPanel()
 	ModifyGraph axisEnab(bottom)={0.06,1}
 	Label bottom "Time (ms)"
 	ModifyGraph margin(left)=24,margin(bottom)=34,margin(top)=6,margin(right)=12
-	
+
 	ModifyGraph nticks(wp2)=1, noLabel(wp2)=1,lblPos(wp2)=16,freePos(wp2)=-3,axisEnab(wp2)={0.01,0.08},lblRot(wp2)=-90
 	SetAxis wp2 0,1
 	Label wp2 "2"
-	
+
 	ModifyGraph nticks(wp3)=1, noLabel(wp3)=1,lblPos(wp3)=16,freePos(wp3)=-3,axisEnab(wp3)={0.09,0.16},lblRot(wp3)=-90
 	SetAxis wp3 0,1
 	Label wp3 "3"
-	
+
 	ModifyGraph nticks(wp4)=1, noLabel(wp4)=1,lblPos(wp4)=16,freePos(wp4)=-3,axisEnab(wp4)={0.17,0.24},lblRot(wp4)=-90
 	SetAxis wp4 0,1
 	Label wp4 "4"
-	
+
 	ModifyGraph nticks(wp5)=1, noLabel(wp5)=1,lblPos(wp5)=16,freePos(wp5)=-3,axisEnab(wp5)={0.25,0.32},lblRot(wp5)=-90
 	SetAxis wp5 0,1
 	Label wp5 "5"
-	
+
 	ModifyGraph nticks(wp6)=1, noLabel(wp6)=1,lblPos(wp6)=16,freePos(wp6)=-3,axisEnab(wp6)={0.33,0.40},lblRot(wp6)=-90
 	SetAxis wp6 0,1
 	Label wp6 "6"
-	
+
 	ModifyGraph nticks(wp7)=1, noLabel(wp7)=1,lblPos(wp7)=16,freePos(wp7)=-3,axisEnab(wp7)={0.41,0.48},lblRot(wp7)=-90
 	SetAxis wp7 0,1
 	Label wp7 "7"
-	
+
 	ModifyGraph nticks(wp8)=1, noLabel(wp8)=1,lblPos(wp8)=16,freePos(wp8)=-3,axisEnab(wp8)={0.49,0.56},lblRot(wp8)=-90
 	SetAxis wp8 0,1
 	Label wp8 "8"
-	
+
 	ModifyGraph nticks(wp9)=1, noLabel(wp9)=1,lblPos(wp9)=16,freePos(wp9)=-3,axisEnab(wp9)={0.57,0.64},lblRot(wp9)=-90
 	SetAxis wp9 0,1
 	Label wp9 "9"
-	
+
 	ModifyGraph nticks(wp10)=1, noLabel(wp10)=1,lblPos(wp10)=21,freePos(wp10)=-3,axisEnab(wp10)={0.65,0.72},lblRot(wp10)=-90
 	SetAxis wp10 0,1
 	Label wp10 "10"
-	
+
 	ModifyGraph nticks(wp11)=1, noLabel(wp11)=1,lblPos(wp11)=21,freePos(wp11)=-3,axisEnab(wp11)={0.73,0.80},lblRot(wp11)=-90
 	SetAxis wp11 0,1
 	Label wp11 "11"
-	
+
 	ModifyGraph nticks(wp12)=1, noLabel(wp12)=1,lblPos(wp12)=21,freePos(wp12)=-3,axisEnab(wp12)={0.81,0.88},lblRot(wp12)=-90
 	SetAxis wp12 0,1
 	Label wp12 "12"
-	
+
 	ModifyGraph nticks(wp13)=1, noLabel(wp13)=1,lblPos(wp13)=21,freePos(wp13)=-3,axisEnab(wp13)={0.89,0.96},lblRot(wp13)=-90
 	SetAxis wp13 0,1
 	Label wp13 "13"
-	
+
 	RenameWindow #,G0
 	SetActiveSubwindow ##
 	ARDEpochPopMenuProc("EpochPopup",1,"A")
-	
+
 	ARDCalculateWavesPnts()
 	// Try this to ensure that the send sequence is active if the arduino responds
 	ARDWhichComPopMenuProc("WhichCOMPop",ards.gWhichCom,ards.gWhichComStr)
@@ -501,7 +496,7 @@ Function ARDWhichComPopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
 	Variable popNum
 	String popStr
-	
+
 	STRUCT ArduinoSeqSettings ards
 	ARDSetSeqSettings(ards)
 	ards.gWhichComStr = popStr
@@ -509,7 +504,7 @@ Function ARDWhichComPopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 	if (ARDInitialise(0) == 1)	// then we initialised succesfully
 		// need to save this in the defaults wave
 		ards.wSeqDefaults[3][0] = popNum		// 1 will be "none" so need to take this into account
-		
+
 		// now we should be able to send a sequence to the arduino so activate the button
 		ShowHide = 0
 	//	Button SendSequenceButton, disable = 0
@@ -533,7 +528,7 @@ Function ARDEpochPopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
 	Variable popNum
 	String popStr
-	
+
 	STRUCT ArduinoSeqSettings ards
 	ARDSetSeqSettings(ards)
 	Variable PopMode
@@ -571,7 +566,7 @@ Function ARDRetrieveEpochValues(WhichEpoch)
 	// These commands set the checkboxes for ports D and C
 	ARDBitty("D", ards.gPortDBitValue)
 	ARDBitty("B", ards.gPortBBitValue)
-	
+
 End
 
 Function ARDStoreEpochValues()		// this needs to be called to save any updates to the sequenc wave
@@ -608,7 +603,7 @@ Function ARDStoreEpochValues()		// this needs to be called to save any updates t
 	ARDCalculateWavesPnts()
 	// whenever this is called, we must have updated the wave pattern so we have to sent this to the arduino
 	Variable ShowHide = 0	// enable so it can be sent
-	ARDToggleButtons(ShowHide)	
+	ARDToggleButtons(ShowHide)
 End
 
 Function ARDCalculateMinimumTimes()
@@ -619,10 +614,10 @@ Function ARDCalculateMinimumTimes()
 	Variable WhichEpoch = V_Value
 	ControlInfo /W=ArduinoSeq_Panel EpochEvent
 	Variable WhichEvent = V_Value		// this will be whether we are looking at DC or Pulse events
-	
+
 	Variable MinimumDuration = (ards.gPulseInterval) * ards.gPulseNumber
 	if (WhichEvent <=2)	// then we are looking at DC so no need to interfere
-	
+
 	else
 		if (ards.gPulseDuration > ards.gPulseInterval)
 			ards.gPulseInterval += 0.1
@@ -642,11 +637,11 @@ Function ARDMinIntervalCheckProc(ctrlName,checked) : CheckBoxControl
 	Variable checked
 	STRUCT ArduinoSeqSettings ards
 	ARDSetSeqSettings(ards)
-	
+
 		if ((checked == 1) || (ards.gSeqInterval < ards.gSeqDuration))	// then either checked or the minimum start to start interval should be minimised
 			ards.gSeqInterval = ards.gSeqDuration
 		else
-			
+
 		endif
 		ards.gEndToStartInterval = ards.gSeqInterval - ards.gSeqDuration
 End
@@ -655,7 +650,7 @@ Function ARDEpochEventPopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
 	Variable popNum
 	String popStr
-	
+
 	STRUCT ArduinoSeqSettings ards
 	ARDSetSeqSettings(ards)
 	String cdf = getdatafolder(1)
@@ -681,10 +676,10 @@ Function ARDEpochEventPopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 			ards.gPulseDuration = 0
 			ards.gPulseInterval = 0
 			ards.gPulseNumber = 0
-			
+
 			// if this is now off, then we should make sure that the values in the wSeqDefaults are set to zero
 			// Also need to update the length of the waves
-			
+
 			// Find out which epoch we are looking at
 			ControlInfo /W=ArduinoSeq_Panel EpochPopup
 			WhichEpoch = V_Value
@@ -735,13 +730,13 @@ Function ARDStorePinValuesSetVarProc(ctrlName,varNum,varStr,varName) : SetVariab
 	Variable varNum
 	String varStr
 	String varName
-	
+
 	if (stringmatch(ctrlName, "SeqIntervalSetVar") == 1)	// then we need to uncheck auto
 		CheckBox MinSeqIntervalCheck value = 0
 	else
-	
+
 	endif
-	
+
 	ARDStoreEpochValues()	// ensure that updates are saved to the wave file
 	ARDCalculateWavesPnts()
 End
@@ -758,10 +753,10 @@ Function ARDPortDBitCheckProc(ctrlName,checked) : CheckBoxControl
 		sprintf WhichCheck, "EpochCheck%g", Counter
 		ControlInfo /W=ArduinoSeq_Panel $WhichCheck
 		if (V_Value == 1)	// then the control is checked
-			ards.gPortDBitValue += 2^(Counter-8)	
+			ards.gPortDBitValue += 2^(Counter-8)
 		else
 		endif
-	
+
 	EndFor
 	ARDStoreEpochValues()
 End
@@ -778,10 +773,10 @@ Function ARDPortBBitCheckProc(ctrlName,checked) : CheckBoxControl
 		sprintf WhichCheck, "EpochCheck%g", Counter
 		ControlInfo /W=ArduinoSeq_Panel $WhichCheck
 		if (V_Value == 1)	// then the control is checked
-			ards.gPortBBitValue += 2^(Counter-2)	
+			ards.gPortBBitValue += 2^(Counter-2)
 		else
 		endif
-	
+
 	EndFor
 	ARDStoreEpochValues()
 End
@@ -858,9 +853,9 @@ Function ARDLoadNamedProtocol(FileNameStr)
 	NewPath/O/Q ArdSeqPath, ArdSeqPathStr
 
 	Loadwave/H/O/P=ArdSeqPath FileNameStr
-	
+
 	SetDataFolder $cdf
-	
+
 End
 
 Function ARDBitty(WhichPort, BitValue)	// function that will tell if various bits are set or not and set check boxes accordingly
@@ -868,7 +863,7 @@ Function ARDBitty(WhichPort, BitValue)	// function that will tell if various bit
 	Variable BitValue
 	Variable StartPoint
 	Variable/G Bit0, Bit1, Bit2, Bit3, Bit4, Bit5
-	
+
 	String WhichCheck, WhichBit
 	if (Stringmatch(WhichPort,"D") == 1)
 		StartPoint = 8
@@ -877,13 +872,13 @@ Function ARDBitty(WhichPort, BitValue)	// function that will tell if various bit
 	endif
 	Variable/G  tmpBitValue
 	BitValue = trunc(BitValue)				// Makes sense with integers only
-	if ((BitValue & 2^0) != 0)		// Test if bit 0 is set 
-		Bit0 = 1	
+	if ((BitValue & 2^0) != 0)		// Test if bit 0 is set
+		Bit0 = 1
 	else
 		Bit0 = 0
 	endif
-	if ((BitValue & 2^1) != 0)		// Test if bit 1 is set 
-		Bit1 = 1	
+	if ((BitValue & 2^1) != 0)		// Test if bit 1 is set
+		Bit1 = 1
 	else
 		Bit1 = 0
 	endif
@@ -934,7 +929,7 @@ Function ARDCalculateWavesPnts()
 	String GateOnStr = ""
 	String GateOffStr = ""
 	String PulseOnStr = ""
-	
+
 	String destWaveList = ""
 	String/G Pin2wList, Pin3wList, Pin4wList, Pin5wList, Pin6wList, Pin7wList
 	String/G Pin8wList, Pin9wList, Pin10wList, Pin11wList, Pin12wList, Pin13wList
@@ -955,13 +950,13 @@ Function ARDCalculateWavesPnts()
 		For (Counter = 1; Counter <=10; Counter +=1)		// goes through each epoch at a time
 			PortDBitValue = ards.wSeqDefaults[6][Counter]	// get the bit values for ports D and C
 			PortBBitValue = ards.wSeqDefaults[7][Counter]
-			
+
 			if (ards.wSeqDefaults[0][Counter] > 1)	// then it must be DC or pulses so make some points
 				NumPoints = (SampleRate * ards.wSeqDefaults[1][Counter])	// this is the duration x sample rate
 				sprintf GateOnStr, "Epoch%gGateOn", Counter
 				sprintf GateOffStr, "Epoch%gGateOff", Counter
 				sprintf PulseOnStr, "Epoch%gPulseOn", Counter
-				
+
 				make/O/N=(NumPoints) $GateOnStr, $GateOffStr, $PulseOnStr
 				Wave wGateOn = $GateOnStr
 				Wave wGateOff = $GateOffStr
@@ -969,13 +964,13 @@ Function ARDCalculateWavesPnts()
 				wGateOn = 1
 				wGateOff = 0
 				wPulseOn = 0
-				
+
 				if (ards.wSeqDefaults[0][Counter] == 2)	// then this is DC
 				elseif (ards.wSeqDefaults[0][Counter] == 3)	// then this is Pulses so set up some code to make suitable waves
 					PulseDuration = ards.wSeqDefaults[2][Counter]	// get the bit values for ports D and C
 					PulseInterval = ards.wSeqDefaults[3][Counter]
 					PulseNumber = ards.wSeqDefaults[4][Counter]
-				
+
 					EndPnts = PulseDuration*10
 					PulseStartToStart =  (PulseInterval*10)	// make the interval independent of pulse duration
 					EndOfPulsePnt = PulseStartToStart *PulseNumber
@@ -983,156 +978,153 @@ Function ARDCalculateWavesPnts()
 					For (i=0; i<EndOfPulsePnt; i+=PulseStartToStart )
 						wPulseOn[i+StartPnts,i+EndPnts]=1
 					EndFor
-					
+
 				else
 				endif
-		
+
 				// now find out if the bits for port C are set or not
-				if ((PortBBitValue & 2^0) != 0)		// Test if bit 0 is set 
+				if ((PortBBitValue & 2^0) != 0)		// Test if bit 0 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin2wList, "%s%s;", Pin2wList, GateOnStr
 					else
 						sprintf Pin2wList, "%s%s;", Pin2wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin2wList, "%s%s;", Pin2wList, GateOffStr
 				endif
-				
-				if ((PortBBitValue & 2^1) != 0)		// Test if bit 1 is set 
+
+				if ((PortBBitValue & 2^1) != 0)		// Test if bit 1 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin3wList, "%s%s;", Pin3wList, GateOnStr
 					else
 						sprintf Pin3wList, "%s%s;", Pin3wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin3wList, "%s%s;", Pin3wList, GateOffStr
 				endif
-				
+
 				if ((PortBBitValue & 2^2) != 0)		// Test if bit 2 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin4wList, "%s%s;", Pin4wList, GateOnStr
 					else
 						sprintf Pin4wList, "%s%s;", Pin4wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin4wList, "%s%s;", Pin4wList, GateOffStr
 				endif
-				
+
 				if ((PortBBitValue & 2^3) != 0)		// Test if bit 3 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin5wList, "%s%s;", Pin5wList, GateOnStr
 					else
 						sprintf Pin5wList, "%s%s;", Pin5wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin5wList, "%s%s;", Pin5wList, GateOffStr
 				endif
-				
+
 				if ((PortBBitValue & 2^4) != 0)		// Test if bit 4 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin6wList, "%s%s;", Pin6wList, GateOnStr
 					else
 						sprintf Pin6wList, "%s%s;", Pin6wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin6wList, "%s%s;", Pin6wList, GateOffStr
 				endif
-				
+
 				if ((PortBBitValue & 2^5) != 0)		// Test if bit 4 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin7wList, "%s%s;", Pin7wList, GateOnStr
 					else
 						sprintf Pin7wList, "%s%s;", Pin7wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin7wList, "%s%s;", Pin7wList, GateOffStr
 				endif
-				
-				
-				
+
 				// now find out if the bits for port D are set or not
-				if ((PortDBitValue & 2^0) != 0)		// Test if bit 0 is set 
+				if ((PortDBitValue & 2^0) != 0)		// Test if bit 0 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin8wList, "%s%s;", Pin8wList, GateOnStr
 					else
 						sprintf Pin8wList, "%s%s;", Pin8wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin8wList, "%s%s;", Pin8wList, GateOffStr
 				endif
-				
-				if ((PortDBitValue & 2^1) != 0)		// Test if bit 1 is set 
+
+				if ((PortDBitValue & 2^1) != 0)		// Test if bit 1 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin9wList, "%s%s;", Pin9wList, GateOnStr
 					else
 						sprintf Pin9wList, "%s%s;", Pin9wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin9wList, "%s%s;", Pin9wList, GateOffStr
 				endif
-				
+
 				if ((PortDBitValue & 2^2) != 0)		// Test if bit 2 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin10wList, "%s%s;", Pin10wList, GateOnStr
 					else
 						sprintf Pin10wList, "%s%s;", Pin10wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin10wList, "%s%s;", Pin10wList, GateOffStr
 				endif
-				
+
 				if ((PortDBitValue & 2^3) != 0)		// Test if bit 3 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin11wList, "%s%s;", Pin11wList, GateOnStr
 					else
 						sprintf Pin11wList, "%s%s;", Pin11wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin11wList, "%s%s;", Pin11wList, GateOffStr
 				endif
-				
+
 				if ((PortDBitValue & 2^4) != 0)		// Test if bit 4 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin12wList, "%s%s;", Pin12wList, GateOnStr
 					else
 						sprintf Pin12wList, "%s%s;", Pin12wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin12wList, "%s%s;", Pin12wList, GateOffStr
 				endif
-				
+
 				if ((PortDBitValue & 2^5) != 0)		// Test if bit 4 is set
 					if (ards.wSeqDefaults[0][Counter] == 2)
 						sprintf Pin13wList, "%s%s;", Pin13wList, GateOnStr
 					else
 						sprintf Pin13wList, "%s%s;", Pin13wList, PulseOnStr
 					endif
-					
+
 				else
 					sprintf Pin13wList, "%s%s;", Pin13wList, GateOffStr
 				endif
-				
-				
+
 			else
 			endif
-		
+
 		EndFor
-	
+
 		string WhichPin = ""
 		string tmpList
 		string/G WhichList = ""
-		
+
 		For (Counter = 2; Counter <=13; Counter +=1)
 			sprintf WhichPin, "wp%g", Counter
 			sprintf tmpList, "Pin%gwList", Counter
@@ -1143,15 +1135,15 @@ Function ARDCalculateWavesPnts()
 			else
 			endif
 		EndFor
-		
+
 		// use oen of the waves to get the final sequence duration
 		ards.gSeqDuration = (dimsize(wP2,0)/10000)	// this will convert to seconds
-		
+
 		ControlInfo /W=ArduinoSeq_Panel MinSeqIntervalCheck
 		if ((V_Value == 1) || (ards.gSeqInterval < ards.gSeqDuration))	// then either checked or the minimum start to start interval should be minimised
 			ards.gSeqInterval = ards.gSeqDuration
 		else
-			
+
 		endif
 		ards.gEndToStartInterval = ards.gSeqInterval - ards.gSeqDuration
 End
@@ -1167,14 +1159,14 @@ Function ARDSendEpochs()
 	Variable Command
 	String OutStr= ""
 	// Need to have a function to send these parameters to the arduino as well
-	
+
 	if (ARDSendRepSeq() != 1)
 		sprintf  ards.gMessageStr, "Failed to send Sequence Data"
 		Return 0
 	else
 		sprintf  ards.gMessageStr, "Sequence Data Sent"
 	endif
-	
+
 	Variable CurrentTicks
 	Variable TargetTicks
 	Variable Outcome
@@ -1186,7 +1178,7 @@ Function ARDSendEpochs()
 			elseif (Outcome == -1)	// then the arduino has failed to receive an epoch
 				 sprintf  ards.gMessageStr, "Data for epoch %s was not received", num2char(WhichEpoch+64)
 			else		// then the epoch is off and so not required to be sent
-				
+
 			endif
 			CurrentTicks = ticks
 			TargetTicks = CurrentTicks + 5
@@ -1217,9 +1209,9 @@ Function ARDSendRepSeq()
 	Variable CurrentTicks
 	Variable TargetTicks
 	Variable Attempts
-	Variable Success = 0		
+	Variable Success = 0
 	VDT2 killio
-	Do	
+	Do
 		VDTWrite2 /O=0.1 OutStr
 		VDTRead2 /N=255 /O=0.1 /Q /T=";"ArduinoStr
 		ards.gVDT2Message = ArduinoStr
@@ -1234,7 +1226,7 @@ Function ARDSendRepSeq()
 		Do		// add a bit of a delay to make sure the information is sent
 			CurrentTicks = ticks
 		While(CurrentTicks < TargetTicks)
-		
+
 	While(Attempts < 10)
 	if (Success == 1)
 		sprintf  ards.gMessageStr, "Sequence Data Sent"
@@ -1250,7 +1242,7 @@ Function ARDSendEpoch(WhichEpoch)
 	// Get information from wSeqDefaults
 	STRUCT ArduinoSeqSettings ards
 	ARDSetSeqSettings(ards)
-	
+
 	Variable Event = ards.wSeqDefaults[0][WhichEpoch]
 	Variable EpochDuration = ards.wSeqDefaults[1][WhichEpoch]
 	Variable PulseDuration = ards.wSeqDefaults[2][WhichEpoch]
@@ -1259,19 +1251,19 @@ Function ARDSendEpoch(WhichEpoch)
 	Variable DutyCycle = ards.wSeqDefaults[5][WhichEpoch]
 	Variable PortDBitValue = ards.wSeqDefaults[6][WhichEpoch]
 	Variable PortBBitValue = ards.wSeqDefaults[7][WhichEpoch]
-	
+
 	String ArduinoStr = "Waiting ... "
 	Variable Command
 	String OutStr= ""
-	
+
 	Command = 13
 	sprintf OutStr, "%d, %d, %d, %d,%d,%d,%d,%d,%d;", Command, WhichEpoch, Event, EpochDuration, PulseDuration, PulseInterval, PulseNumber,PortDBitValue, PortBBitValue
-	
+
 	Variable Attempts
-		
+
 	if (Event >1)	// then it is not off so it should be sent to the arduino
-		Variable Success = 0		
-		Do	
+		Variable Success = 0
+		Do
 			VDT2 killio
 			VDTWrite2 /O=0.1 OutStr
 			VDTRead2 /N=255 /O=0.1 /Q /T=";"ArduinoStr
@@ -1283,7 +1275,7 @@ Function ARDSendEpoch(WhichEpoch)
 				Attempts +=1
 			endif
 		While(Attempts < 20)
-		
+
 		if (Success !=1)
 			sprintf  ards.gMessageStr, "Failed to set epoch %s after %g attempts\r", num2char(WhichEpoch+64), Attempts
 			Return -1
@@ -1293,7 +1285,7 @@ Function ARDSendEpoch(WhichEpoch)
 	else
 		Return 0	// this means that this epoch was not sent to the arduino because it is off
 	endif
-	
+
 End
 
 // This calls fuction 5 and resets all of the values held in the arduino to zero
@@ -1349,7 +1341,7 @@ Function ARDInitialise(Quiet)
 	endif
 
 	sprintf ards.gMessageStr, "Arduino failed to respond"
-	Return -1 	
+	Return -1
 End
 
 Function ARDCloseCOMPort()
@@ -1361,16 +1353,16 @@ End
 Function ARDStartSequence()
 	STRUCT ArduinoSeqSettings ards
 	ARDSetSeqSettings(ards)
-	
+
 	String ArduinoStr = "Waiting ... "
 	Variable Command
 	String OutStr= ""
-	
+
 	Command = 14
 	sprintf OutStr, "%d;", Command
 	Variable Attempts
-	Variable Success = 0		
-	Do	
+	Variable Success = 0
+	Do
 		VDT2 killio
 		VDTWrite2 /O=0.1 OutStr
 		VDTRead2 /N=255 /O=0.1 /Q /T=";"ArduinoStr
@@ -1383,15 +1375,15 @@ Function ARDStartSequence()
 			Attempts +=1
 		endif
 	While(Attempts < 10)
-	
+
 	if (Success !=1)
 		sprintf  ards.gMessageStr, "Failed to send start signal after %g attempts",  Attempts
 		Return -1
 	else
-		
+
 	endif
 	Return 1	// this is good and succesful
-	
+
 End
 
 Function ARDEndSequence()
@@ -1400,22 +1392,22 @@ End
 
 //Function SelectCOMPort()
 //	if (exists("root:ImageHardware:Arduino:gWhichCom") == 2)	// then it exists
-//	
+//
 //	else
 //		ARDLaunch
 //		SeqPanel()
-//		
+//
 //	endif
-//	
+//
 //	STRUCT ArduinoSeqSettings ards
 //	ARDSetSeqSettings(ards)
 //	DoWindow/K COMSelectionPanel
 //	NewPanel /W=(600,150,890,350)
 //	DoWindow/C/T  COMSelectionPanel  "COM Selection Panel"
-//	
+//
 //	TitleBox COTitle,pos={58,21},size={171,32},title="\\JCChoose which COM port\r your arduino is connected to"
 //	TitleBox COTitle,fSize=12,frame=0
-//	
+//
 //	VDTGetPortList2	// this now puts the list into S_VDT
 //
 //	string PopStr = "\"None"
@@ -1432,10 +1424,10 @@ End
 //		PopStr = PopStr + ";"
 //	endif
 //	PopStr += "\""
-//	
+//
 //	PopupMenu COMSelectorPop,pos={40,77},size={204,20},bodyWidth=160,title="COM Port"
 //	PopupMenu COMSelectorPop,mode=(ards.gWhichCom+1),value= #PopStr,proc=WhichComPopMenuProc
-//	
+//
 //	Button COMCancelButton,pos={55,148},size={60,20},proc=COMSelectButtonProc,title="Cancel"
 //	Button COMAcceptButton,pos={165,148},size={60,20},proc=COMSelectButtonProc,title="OK"
 //
@@ -1448,7 +1440,7 @@ End
 //	ARDSetSeqSettings(ards)
 //	if (Stringmatch(ctrlName, "COMCancelButton") == 1)
 //		DoWindow/K COMSelectionPanel
-//		
+//
 //	else
 //		ControlInfo /W=COMSelectionPanel COMSelectorPop
 //		ards.gWhichComStr = S_Value
