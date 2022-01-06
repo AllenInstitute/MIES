@@ -91,7 +91,7 @@ static Function/WAVE LBV_GetLabNotebookKeys(WAVE/Z/T keyWave)
 	row = FindDimLabel(keyWave, ROWS, "Parameter")
 
 	Duplicate/FREE/RMD=[row][] keyWave, keys
-	Redimension/N=(numpnts(keyWave))/E=1 keys
+	Redimension/N=(numpnts(keys))/E=1 keys
 
 	WAVE/T hiddenDefaultKeys = ListToTextWave(LABNOTEBOOK_KEYS_INITIAL, ";")
 
