@@ -13,19 +13,22 @@
 ///
 /// @see ED_createTextNotes, ED_createWaveNote
 Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, string device, variable entrySourceType)
+	ED_CheckValuesAndKeys(vals, keys)
 
+	if(IsTextWave(vals))
+		ED_createTextNotes(vals, keys, sweepNo, entrySourceType, LBT_LABNOTEBOOK, device = device)
+	else
+		ED_createWaveNotes(vals, keys, sweepNo, entrySourceType, LBT_LABNOTEBOOK, device = device)
+	endif
+End
+
+static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
 	ASSERT(DimSize(vals, ROWS)   == 1, "Mismatched row count")
 	ASSERT(DimSize(vals, COLS)   == DimSize(keys, COLS), "Mismatched column count")
 	ASSERT(DimSize(vals, LAYERS) <= LABNOTEBOOK_LAYER_COUNT, "Mismatched layer count")
 
 	ASSERT(DimSize(keys, ROWS)   == 1 || DimSize(keys, ROWS) == 3, "Mismatched row count")
 	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
-
-	if(IsTextWave(vals))
-		ED_createTextNotes(vals, keys, sweepNo, device, entrySourceType)
-	else
-		ED_createWaveNotes(vals, keys, sweepNo, device, entrySourceType)
-	endif
 End
 
 /// @brief Add textual entries to the labnotebook
