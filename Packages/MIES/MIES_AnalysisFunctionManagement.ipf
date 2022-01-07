@@ -68,7 +68,6 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 			continue
 		endif
 
-
 		if((eventType == PRE_SET_EVENT && !setEventFlag[DAC][%PRE_SET_EVENT]) \
 		   || (eventType == POST_SET_EVENT && !setEventFlag[DAC][%POST_SET_EVENT]))
 			sprintf msg, "Skipping event \"%s\" on headstage %d", StringFromList(eventType, EVENT_NAME_LIST), i

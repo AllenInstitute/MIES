@@ -2572,7 +2572,6 @@ Function UnassociatedChannelsAndTTLs_REENTRY([str])
 					CHECK_EQUAL_WAVES(bits, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 10}, mode = WAVE_DATA)
 					WAVE/Z bits = GetLastSetting(numericalValues, j, "TTL rack one bits", DATA_ACQUISITION_MODE)
 
-
 					if(HW_ITC_GetNumberOfRacks(device) > 1)
 						// TTL 5 and 7 are active -> 2^(5 - 4) + 2^(7 - 4) = 10
 						CHECK_EQUAL_WAVES(bits, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 10}, mode = WAVE_DATA)

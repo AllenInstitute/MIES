@@ -353,7 +353,6 @@ static Function/S CONF_GetSettingsPath(type)
 		return symbPath
 	endif
 
-
 	return ""
 End
 
@@ -795,7 +794,6 @@ End
 static Function/S CONF_TraversalFinder(jsonID, basePath, niceName)
 	variable jsonID
 	string basePath, niceName
-
 
 	variable i, numElems
 	string result
@@ -1594,7 +1592,6 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 
 	variable ctrlType, pos, i, numUdataKeys, setVarType, arrayIndex, oldSize, preferCode, arrayElemType
 	string wList, ctrlPath, controlPath, niceName, jsonPath, udataPath, uDataKey, uData, s, arrayName, arrayElemPath
-
 
 	ASSERT((saveMask & (EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY | EXPCONFIG_SAVE_POPUPMENU_AS_INDEX_ONLY)) != (EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY | EXPCONFIG_SAVE_POPUPMENU_AS_INDEX_ONLY), "Invalid popup menu save selection. String only and Index only can not be set at the same time.")
 	ASSERT(WinType(wName), "Window " + wName + " does not exist!")

@@ -3070,7 +3070,6 @@ threadsafe Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, c
 		return output
 	endif
 
-
 	for(rowNr = 0; rowNr < rowMaxSize; rowNr += 1)
 		WAVE/T colEntries = ListToTextWave(rowEntries[rowNr], colSep)
 		colSize = DimSize(colEntries, ROWS)
@@ -3736,8 +3735,6 @@ threadsafe static Function [WAVE result, variable index] GetSetDifferenceText(WA
 
 	return [result, j]
 End
-
-
 
 /// @brief Return a wave with the set theory style intersection of wave1 and wave2
 ///

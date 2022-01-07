@@ -144,7 +144,6 @@ Function/S CA_Deconv(wv, tau)
 	crc = StringCRC(crc, num2str(DimDelta(wv, ROWS)))
 	crc = StringCRC(crc, num2str(tau))
 
-
 	return num2istr(crc) + "Version 1"
 End
 

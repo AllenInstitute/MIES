@@ -1855,7 +1855,6 @@ Function P_UpdatePressureModeTabs(device, headStage)
 	PGC_SetAndActivateControl(device, "setvar_DataAcq_SSPressure", val = pressureWave[headStage][%ManSSPressure])
 End
 
-
 /// @brief Checks if all the pressure settings for a headStage are valid
 ///
 /// @returns 1 if all settings are valid, 0 otherwise

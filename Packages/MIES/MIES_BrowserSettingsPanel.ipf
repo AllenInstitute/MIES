@@ -275,7 +275,6 @@ Function BSP_UnsetDynamicStartupSettingsOfDataBrowser(mainPanel)
 	EnableControls(shPanel, "popup_Device;popup_Experiment")
 End
 
-
 Function BSP_BindListBoxWaves(win)
 	string win
 

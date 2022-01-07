@@ -1,4 +1,4 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
@@ -176,7 +176,6 @@ static Function BWO_CheckAndClearPipettes(device)
 	make/FREE/n = (NUM_HEADSTAGES) PressureTracking = BWO_INIT_PRESSURE + BWO_PRESSURE_INCREMENT
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-
 
 		if(!P_ValidatePressureSetHeadstage(device, i) || TPResults[%ResistanceSteadyState][i] < BWO_MAX_RESISTANCE)
 			continue

@@ -2838,7 +2838,6 @@ Function num2strHighPrecWorks5()
 End
 /// @}
 
-
 /// RoundNumber
 /// @{
 
@@ -4605,7 +4604,6 @@ Function DFED_FailsRegular3()
 	dfr = GetWavesDataFolderDFR(wDfr)
 	CHECK(DataFolderExistsDFR(dfr))
 
-
 	wDfr[0] = root:
 
 	dfr = GetWavesDataFolderDFR(wDfr)
@@ -5004,7 +5002,6 @@ Function BST_Works()
 End
 
 /// @}
-
 
 // GetWaveSize
 /// @{

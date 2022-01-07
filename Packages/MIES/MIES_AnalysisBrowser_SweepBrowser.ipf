@@ -401,7 +401,6 @@ Function/DF SB_OpenSweepBrowser()
 	SetWindow $mainWin, hook(cleanup)=SB_SweepBrowserWindowHook
 	SB_SetUserData(mainWin)
 
-
 	DFREF sweepBrowserDFR = BSP_GetFolder(mainWin, MIES_BSP_PANEL_FOLDER)
 	GetSweepBrowserMap(sweepBrowserDFR)
 

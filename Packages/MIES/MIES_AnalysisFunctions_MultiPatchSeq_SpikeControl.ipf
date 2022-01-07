@@ -123,7 +123,6 @@ static Function/WAVE SC_GetHeadstageQCForSetCount(string device, variable sweepN
 	return headstageQCTotalPerSweepCount
 End
 
-
 /// @brief Return the stimulus set sweep count for the given sweep
 static Function SC_GetSetSweepCount(WAVE numericalValues, variable sweepNo)
 

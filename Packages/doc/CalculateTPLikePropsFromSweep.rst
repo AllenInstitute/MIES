@@ -90,7 +90,6 @@ The steady state resistance is then:
 .. math::
    R_{SS} = \frac{\Delta U}{\Delta I}
 
-
 Retrieving settings
 ===================
 
@@ -175,7 +174,6 @@ The following is **done for each head stage** up to ``NUM_HEADSTAGES`` (default 
      Make/FREE/D levels
      FindLevels/Q/P/DEST=levels/R=(first, last)/N=2 DA, level
      ASSERT(V_LevelsFound >= 2, "Could not find enough levels")
-
 
   The first found location is saved to ``firstEdge`` and the second to
   ``secondEdge``. By default ``DA`` contains a pulse so the linear interpolation

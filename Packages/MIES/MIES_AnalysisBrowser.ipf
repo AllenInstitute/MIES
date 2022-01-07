@@ -2515,7 +2515,6 @@ Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 			break
 	endswitch
 
-
 	return 0
 End
 

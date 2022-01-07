@@ -95,7 +95,6 @@ a `"` is an disallowed character.
      "a_string"
    ]
 
-
 A function is defined as a string that is directly followed by an opening
 parenthesis. The parenthesis token causes to force a collect state until all
 parentheses are closed.
@@ -135,7 +134,6 @@ follow each other, they are concatenated into the same array level as for
        }
      ]
    }
-
 
 The formula is sent to a preparser that checks for the correct
 amount of brackets and converts multi-character operations to their multi-character
@@ -315,7 +313,6 @@ Central differences are used. The same amount of points as the input is returned
    derivative(1, 2, 4) == [1, 1.5, 2]
 
    derivative([1, 2, 4],[2, 3, 2],[4, 2, 1]) == [1, 1, -2],[1.5, 0, -1.5],[2, -1, -1]
-
 
 integrate
 """""""""
@@ -678,7 +675,6 @@ Apply the decadic (base 10) logarithm to its input.
 .. code-block:: bash
 
    log10(1, 10, 100) == [0,1,2]
-
 
 Plotting
 ^^^^^^^^

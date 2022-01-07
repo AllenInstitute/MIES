@@ -755,7 +755,6 @@ static Function ASSERT(var, errorMsg)
 
 	string stracktrace, miesVersionStr
 
-
 	try
 		AbortOnValue var==0, 1
 	catch

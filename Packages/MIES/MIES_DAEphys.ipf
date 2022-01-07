@@ -1497,7 +1497,6 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 				EqualizeCheckBoxes(device, "Check_DataAcq1_IndexingLocked", "check_Settings_Option_3", cba.checked)
 			endif
 
-
 			break
 	endswitch
 

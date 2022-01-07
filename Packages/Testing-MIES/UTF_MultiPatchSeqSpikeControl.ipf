@@ -912,7 +912,6 @@ static Function SC_Test7_REENTRY([str])
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
 End
 
-
 static Function SC_Test8_IGNORE(device)
 	string device
 
