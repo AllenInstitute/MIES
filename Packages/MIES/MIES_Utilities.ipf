@@ -2141,7 +2141,7 @@ End
 /// In case the regular expression does not match, the string is returned unaltered.
 ///
 /// See also `DisplayHelpTopic "Regular Expressions"`.
-Function/S RemoveEndingRegExp(str, endingRegExp)
+threadsafe Function/S RemoveEndingRegExp(str, endingRegExp)
 	string str, endingRegExp
 
 	string endStr
@@ -2151,7 +2151,7 @@ Function/S RemoveEndingRegExp(str, endingRegExp)
 	endif
 
 	SplitString/E="(" + endingRegExp + ")$" str, endStr
-	ASSERT(V_flag == 0 || V_flag == 1, "Unexpected number of matches")
+	ASSERT_TS(V_flag == 0 || V_flag == 1, "Unexpected number of matches")
 
 	return RemoveEnding(str, endStr)
 End
@@ -2939,62 +2939,141 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 End
 
 /// @brief Convert a text wave to string list
-/// @param[in] txtWave     1D or 2D input text wave
-/// @param[in] sep         separator for row entries
-/// @param[in] colSep      [optional, default = ","] separator for column entries
-/// @param[in] stopOnEmpty [optional, default = 0] when 1 stops generating the list when an empty string entry in txtWave is encountered
+///
+/// @param txtWave     input text wave
+/// @param rowSep      separator for row entries
+/// @param colSep      [optional, default = ","] separator for column entries
+/// @param layerSep    [optional, default = ":"] separator for layer entries
+/// @param chunkSep    [optional, default = "/"] separator for chunk entries
+/// @param stopOnEmpty [optional, default = 0] when 1 stops generating the list when an empty string entry in txtWave is encountered
+/// @param maxElements [optional, defaults to inf] output only the first `maxElements` entries
+///
 /// @return string with wave entries separated as list using given separators
 ///
 /// Counterpart @see ConvertListToTextWave
 /// @see NumericWaveToList
-threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string sep, [string colSep, variable stopOnEmpty])
-	string entry, colList
+threadsafe Function/S TextWaveToList(WAVE/T/Z txtWave, string rowSep, [string colSep, string layerSep, string chunkSep, variable stopOnEmpty, variable maxElements])
+	string entry, seps
 	string list = ""
-	variable i, j, numRows, numCols
+	variable i, j, k, l, lasti, lastj, lastk, lastl, numRows, numCols, numLayers, numChunks, count, done
 
 	if(!WaveExists(txtWave))
 		return ""
 	endif
 
 	ASSERT_TS(IsTextWave(txtWave), "Expected a text wave")
-	ASSERT_TS(DimSize(txtWave, LAYERS) == 0, "Expected a 1D or 2D wave")
-	ASSERT_TS(!IsEmpty(sep), "Expected a non-empty row list separator")
+	ASSERT_TS(!IsEmpty(rowSep), "Expected a non-empty row list separator")
 
 	if(ParamIsDefault(colSep))
 		colSep = ","
 	else
 		ASSERT_TS(!IsEmpty(colSep), "Expected a non-empty column list separator")
 	endif
+
+	if(ParamIsDefault(layerSep))
+		layerSep = ":"
+	else
+		ASSERT_TS(!IsEmpty(layerSep), "Expected a non-empty layer list separator")
+	endif
+
+	if(ParamIsDefault(chunkSep))
+		chunkSep = "/"
+	else
+		ASSERT_TS(!IsEmpty(chunkSep), "Expected a non-empty chunk list separator")
+	endif
+
+	if(ParamIsDefault(maxElements))
+		maxElements = inf
+	else
+		ASSERT_TS((IsInteger(maxElements) && maxElements >= 0) || maxElements == inf, "maxElements must be >=0 and an integer")
+	endif
+
 	stopOnEmpty = ParamIsDefault(stopOnEmpty) ? 0 : !!stopOnEmpty
 
 	numRows = DimSize(txtWave, ROWS)
-	numCols = DimSize(txtWave, COLS)
-	if(!numCols)
-		for(i = 0; i < numRows; i += 1)
-			entry = txtWave[i]
-			if(stopOnEmpty && isEmpty(entry))
-				return list
-			endif
-			list = AddListItem(entry, list, sep, Inf)
-		endfor
-	else
-		for(i = 0; i < numRows; i += 1)
-			colList = ""
-			for(j = 0; j < numCols; j += 1)
-				entry = txtWave[i][j]
-				if(stopOnEmpty && isEmpty(entry))
+
+	if(numRows == 0)
+		return list
+	endif
+
+	numCols = max(1, DimSize(txtWave, COLS))
+	numLayers = max(1, DimSize(txtWave, LAYERS))
+	numChunks = max(1, DimSize(txtWave, CHUNKS))
+
+	for(i = 0; i < numRows; i += 1)
+		for(j = 0; j < numCols; j += 1)
+			for(k = 0; k < numLayers; k += 1)
+				for(l = 0; l < numChunks; l += 1)
+					entry = txtWave[i][j][k][l]
+
+					if(stopOnEmpty && IsEmpty(entry))
+						done = 1
+					elseif(count >= maxElements)
+						done = 1
+					endif
+
+					if(done)
+						break
+					endif
+
+					seps = ""
+
+					if(lastl != l)
+						lastl = l
+						seps += chunkSep
+					endif
+
+					if(lastk != k)
+						lastk = k
+						seps += layerSep
+					endif
+
+					if(lastj != j)
+						lastj = j
+						seps += colSep
+					endif
+
+					if(lasti != i)
+						lasti = i
+						seps += rowSep
+					endif
+
+					list += seps + entry
+					count += 1
+				endfor
+
+				if(done)
 					break
 				endif
-				colList = AddListItem(entry, colList, colSep, Inf)
 			endfor
-			if(!(stopOnEmpty && isEmpty(colList)))
-				list = AddListItem(colList, list, sep, Inf)
-			endif
-			if(stopOnEmpty && isEmpty(entry))
-				return list
+
+			if(done)
+				break
 			endif
 		endfor
+
+		if(done)
+			break
+		endif
+	endfor
+
+	if(IsEmpty(list))
+		return list
 	endif
+
+	if(numChunks > 1)
+		list += chunkSep
+	endif
+
+	if(numLayers > 1)
+		list += layerSep
+	endif
+
+	if(numCols > 1)
+		list += colSep
+	endif
+
+	list += rowSep
 
 	return list
 End
@@ -3116,6 +3195,26 @@ threadsafe Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, c
 	return output
 End
 
+#if IgorVersion() < 9.0
+
+threadsafe Function/S ReplicateString(string str, variable numTotalCopies)
+
+	variable i
+	string list = ""
+
+	if(!IsFinite(numTotalCopies) || numTotalCopies <= 0)
+		return str
+	endif
+
+	for(i = 0; i < numTotalCopies; i += 1)
+		list += str
+	endfor
+
+	return list
+End
+
+#endif
+
 /// @brief Convert a numeric wave to string list
 ///
 /// Counterpart @see ListToNumericWave
@@ -3123,10 +3222,12 @@ End
 ///
 /// @param wv     numeric wave
 /// @param sep    separator
+/// @param colSep [optional, default = `,`] separator for column entries
 /// @param format [optional, defaults to `%g`] sprintf conversion specifier
-threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format])
-
+threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format, string colSep])
 	string list = ""
+	string fullFormat
+	variable numCols
 
 	if(!WaveExists(wv))
 		return ""
@@ -3136,14 +3237,28 @@ threadsafe Function/S NumericWaveToList(WAVE/Z wv, string sep, [string format])
 		format = "%g"
 	endif
 
+	if(ParamIsDefault(colSep))
+		colSep = ","
+	else
+		ASSERT_TS(!IsEmpty(colSep), "Expected a non-empty column list separator")
+	endif
+
 	ASSERT_TS(IsNumericWave(wv), "Expected a numeric wave")
-	ASSERT_TS(DimSize(wv, COLS) == 0, "Expected a 1D wave")
+	ASSERT_TS(DimSize(wv, LAYERS) <= 1, "Unexpected layer count")
+
+	numCols = DimSize(wv, COLS)
 
 	if(IsFloatingPointWave(wv))
 		ASSERT_TS(!GrepString(format, "%.*d"), "%d triggers an Igor bug")
 	endif
 
-	wfprintf list, format + sep, wv
+	if(numCols > 1)
+		fullFormat = ReplicateString(format + sep, numCols) + colSep
+	else
+		fullFormat = format + sep
+	endif
+
+	wfprintf list, fullFormat, wv
 
 	return list
 End
@@ -4485,21 +4600,27 @@ End
 /// Input numbers are rounded using the "round-half-to-even" rule to the given precision.
 /// The default precision is 5.
 /// If val is complex only the real part is converted to a string.
+///
 /// @param[in] val       number that should be converted to a string
 /// @param[in] precision [optional, default 5] number of precision digits after the decimal dot using "round-half-to-even" rounding rule.
 ///                      Precision must be in the range 0 to #MAX_DOUBLE_PRECISION.
+/// @param[in] shorten   [optional, defaults to false] Remove trailing zeros and optionally the decimal dot to get a minimum length string
+///
 /// @return string with textual number representation
-threadsafe Function/S num2strHighPrec(val, [precision])
-	variable val, precision
-
+threadsafe Function/S num2strHighPrec(variable val, [variable precision, variable shorten])
 	string str
 
 	precision = ParamIsDefault(precision) ? 5 : precision
+	shorten   = ParamIsDefault(shorten) ? 0 : !!shorten
 	ASSERT_TS(precision >= 0 && precision <= MAX_DOUBLE_PRECISION, "Invalid precision, must be >= 0 and <= MAX_DOUBLE_PRECISION")
 
 	sprintf str, "%.*f", precision, val
 
-	return str
+	if(!shorten)
+		return str
+	endif
+
+	return RemoveEndingRegExp(str, "\.?0+")
 End
 
 /// @brief Round the given number to the given number of decimal digits
