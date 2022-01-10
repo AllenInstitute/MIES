@@ -78,17 +78,7 @@ End
 Function AdjustAnalysisParamsForPSQ(string device, string stimset)
 
 	variable samplingFrequency
-
-	switch(GetHardwareType(device))
-		case HARDWARE_ITC_DAC:
-			samplingFrequency = 50
-			break
-		case HARDWARE_NI_DAC:
-			samplingFrequency = 125
-			break
-		default:
-			ASSERT(0, "Unknown hardware")
-	endswitch
+	samplingFrequency = PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(device)
 
 	AFH_AddAnalysisParameter(stimset, "SamplingMultiplier", var = 4)
 	AFH_AddAnalysisParameter(stimset, "SamplingFrequency", var = samplingFrequency)
