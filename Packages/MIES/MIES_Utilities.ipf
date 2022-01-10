@@ -6098,3 +6098,25 @@ Function/S ElideText(string str, variable returnLength)
 	// just cut it off
 	return str[0, first] + suffix
 End
+
+/// @brief Load the wave `$name.itx` from the folder of this procedure file and store
+/// it in the static data folder.
+Function/WAVE LoadWaveFromDisk(string name)
+	string path
+
+	path = GetFolder(FunctionPath("")) + name + ".itx"
+
+	LoadWave/Q/C/T path
+	if(!V_flag)
+		return $""
+	endif
+
+	ASSERT(ItemsInList(S_waveNames) == 1, "Could not find exactly one wave")
+
+	WAVE wv = $StringFromList(0, S_waveNames)
+
+	DFREF dfr = GetStaticDataFolder()
+	MoveWave wv, dfr
+
+	return wv
+End
