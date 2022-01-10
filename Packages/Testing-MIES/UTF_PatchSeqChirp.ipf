@@ -104,23 +104,23 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 
 	WAVE/WAVE wv = GetLBNEntriesWave_IGNORE()
 
-	wv[%sweepPass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
-	wv[%setPass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
-	wv[%insideBounds] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
-	wv[%baselinePass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
-	wv[%spikePass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_SPIKE_PASS)
-	wv[%boundsState] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
-	wv[%boundsAction] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
-	wv[%initialDAScale] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
-	wv[%DAScale] = GetResults_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
-	wv[%resistance] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
-	wv[%spikeCheck] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_SPIKE_CHECK)
-	wv[%samplingPass] = GetResults_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
+	wv[%sweepPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	wv[%setPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SET_PASS)
+	wv[%insideBounds] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
+	wv[%baselinePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
+	wv[%spikePass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_SPIKE_PASS)
+	wv[%boundsState] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_STATE)
+	wv[%boundsAction] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
+	wv[%initialDAScale] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_INITIAL_SCALE)
+	wv[%DAScale] = GetLBNSingleEntry_IGNORE(device, sweepNo, STIMSET_SCALE_FACTOR_KEY)
+	wv[%resistance] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
+	wv[%spikeCheck] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_CR_SPIKE_CHECK)
+	wv[%samplingPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, PSQ_FMT_LBN_SAMPLING_PASS)
 
 	return wv
 End
 
-static Function/WAVE GetResults_IGNORE(device, sweepNo, name)
+static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, name)
 	string device
 	variable sweepNo
 	string name

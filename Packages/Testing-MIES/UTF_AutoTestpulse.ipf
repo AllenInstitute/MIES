@@ -74,7 +74,7 @@ static Function/WAVE GetEntriesWave_IGNORE()
 	return wv
 End
 
-static Function/WAVE GetResults_IGNORE(string device)
+static Function/WAVE GetLBNSingleEntry_IGNORE(string device)
 
 	WAVE TPStorage = GetTPstorage(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
@@ -136,7 +136,7 @@ static Function AutoTP_OptimumValues_REENTRY([string str])
 
 	WAVE TPStorage = GetTPstorage(str)
 
-	WAVE/WAVE entries = GetResults_IGNORE(str)
+	WAVE/WAVE entries = GetLBNSingleEntry_IGNORE(str)
 
 	CHECK(IsConstant(entries[%amplitudePass_HS0], 1))
 	CHECK(IsConstant(entries[%amplitudePass_HS1], 1))
@@ -191,7 +191,7 @@ static Function AutoTP_BadValues_REENTRY([string str])
 
 	WAVE TPStorage = GetTPstorage(str)
 
-	WAVE/WAVE entries = GetResults_IGNORE(str)
+	WAVE/WAVE entries = GetLBNSingleEntry_IGNORE(str)
 
 	CHECK_WAVE(entries[%amplitudePass_HS0], NULL_WAVE)
 	CHECK_WAVE(entries[%amplitudePass_HS1], NULL_WAVE)
@@ -251,7 +251,7 @@ static Function AutoTP_MixedOptimumBadValues_REENTRY([string str])
 
 	WAVE TPStorage = GetTPstorage(str)
 
-	WAVE/WAVE entries = GetResults_IGNORE(str)
+	WAVE/WAVE entries = GetLBNSingleEntry_IGNORE(str)
 
 	CHECK(IsConstant(entries[%amplitudePass_HS0], 1))
 	CHECK_WAVE(entries[%amplitudePass_HS1], NULL_WAVE)
@@ -311,7 +311,7 @@ End
 static Function AutoTP_SpecialCases_REENTRY([string str])
 	WAVE TPStorage = GetTPstorage(str)
 
-	WAVE/WAVE entries = GetResults_IGNORE(str)
+	WAVE/WAVE entries = GetLBNSingleEntry_IGNORE(str)
 
 	Duplicate/FREE entries[%amplitudePass_HS0], ampPassRef_HS0
 	ampPassRef_HS0[]  = 1
