@@ -17,6 +17,7 @@ StrConstant LBV_UD_SOURCE_WAVE = "sourceWave"
 StrConstant LBV_UD_HEADSTAGE   = "headstage"
 StrConstant LBV_UD_KEY         = "key"
 StrConstant LBV_UD_ISTEXT      = "text"
+StrConstant LBV_UD_YAXIS       = "yaxis"
 
 Function/S LBV_GetSettingsHistoryPanel(string win)
 
@@ -445,7 +446,7 @@ static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 End
 
 static Function/WAVE LBV_GetTraceUserDataNames()
-	Make/FREE/T wv = {LBV_UD_KEY, LBV_UD_ISTEXT, LBV_UD_SOURCE_WAVE, LBV_UD_HEADSTAGE}
+	Make/FREE/T wv = {LBV_UD_KEY, LBV_UD_ISTEXT, LBV_UD_SOURCE_WAVE, LBV_UD_HEADSTAGE, LBV_UD_YAXIS}
 
 	return wv
 End
@@ -533,7 +534,8 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 								 {key,                                   \
 								  num2str(isTextData),                   \
 								  GetWavesDataFolder(values, 2),         \
-								  num2str(i < NUM_HEADSTAGES ? i : NaN ) \
+								  num2str(i < NUM_HEADSTAGES ? i : NaN ),\
+								  axis                                   \
 								 })
 
 		[s] = GetHeadstageColor(i)
@@ -707,7 +709,8 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 									 {key,                                   \
 									  "0",                                   \
 									  GetWavesDataFolder(TPStorage, 2),      \
-									  num2str(headstage)                     \
+									  num2str(headstage),                    \
+									  axis                                   \
 									 })
 
 			[s] = GetHeadstageColor(headstage)
