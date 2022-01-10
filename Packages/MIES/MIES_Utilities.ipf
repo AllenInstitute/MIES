@@ -6120,3 +6120,19 @@ Function/WAVE LoadWaveFromDisk(string name)
 
 	return wv
 End
+
+/// @brief Store the given wave as `$name.itx` in the same folder as this
+/// procedure file on disk.
+Function StoreWaveOnDisk(WAVE wv, string name)
+	string path
+
+	ASSERT(IsValidObjectName(name), "Name is not a valid igor object name")
+
+	DFREF dfr = GetUniqueTempPath()
+	Duplicate wv, dfr:$name/WAVE=storedWave
+
+	path = GetFolder(FunctionPath("")) + name + ".itx"
+	Save/O/T/M="\n" storedWave as path
+	KillOrMoveToTrash(wv = storedWave)
+	RemoveEmptyDataFolder(dfr)
+End
