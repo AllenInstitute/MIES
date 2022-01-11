@@ -2178,10 +2178,7 @@ End
 /// \endrst
 ///
 /// @return 1 if word was found in str and word was not "". 0 if not.
-Function SearchWordInString(str, word, [prefix, suffix])
-	string str, word
-	string &prefix, &suffix
-
+Function SearchWordInString(string str, string word, [string &prefix, string &suffix])
 	WAVE/Z/T wv = SearchStringBase(str, "(.*)\\b\\Q" + word + "\\E\\b(.*)")
 	if(!WaveExists(wv))
 		return 0
