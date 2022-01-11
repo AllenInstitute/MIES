@@ -7,15 +7,22 @@
 #endif
 
 /// @brief Set column dimension labels from the first row of the key wave
-Function LBN_SetDimensionLabels(WAVE/T keys, WAVE values)
+Function LBN_SetDimensionLabels(WAVE/T keys, WAVE values, [variable start])
 	variable i, numCols
 	string text
 
 	numCols = DimSize(values, COLS)
+
+	if(ParamIsDefault(start))
+		start = 0
+	else
+		ASSERT(start < numCols && IsInteger(start), "start is too large or not an integer")
+	endif
+
 	ASSERT(DimSize(keys, COLS) == numCols, "Mismatched column sizes")
 	ASSERT(DimSize(keys, ROWS) > 0 , "Expected at least one row in the key wave")
 
-	for(i = 0; i < numCols; i += 1)
+	for(i = start; i < numCols; i += 1)
 		text = keys[0][i]
 		text = text[0,MAX_OBJECT_NAME_LENGTH_IN_BYTES - 1]
 		ASSERT(!isEmpty(text), "Empty key")

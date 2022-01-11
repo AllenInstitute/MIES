@@ -102,8 +102,6 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	endfor
 
 	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
-
-	LBN_SetDimensionLabels(keys, values)
 End
 
 /// @brief Add numerical entries to the labnotebook
@@ -162,8 +160,6 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 	endfor
 
 	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
-
-	LBN_SetDimensionLabels(keys, values)
 End
 
 /// @brief Add custom entries to the numerical/textual labnotebook for the very last sweep acquired.
@@ -473,17 +469,20 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 		numAdditions += 1
 	endfor
 
-	// for further performance enhancement we must add "support for enhancing multiple dimensions at once"
-	// to EnsureLargeEnoughWave
-	if(numAdditions)
-		Redimension/N=(-1, numKeyCols + numAdditions, -1) key, values
-	endif
-
 	rowIndex = GetNumberFromWaveNote(values, NOTE_INDEX)
 	if(!IsFinite(rowIndex))
 		// old waves don't have that info
 		// use the last row
 		rowIndex = DimSize(values, ROWS)
+	endif
+
+	// for further performance enhancement we must add "support for enhancing multiple dimensions at once"
+	// to EnsureLargeEnoughWave
+	if(numAdditions)
+		Redimension/N=(-1, numKeyCols + numAdditions, -1) key, values
+
+		// rowIndex will be zero for empty waves only and these also need dimension labels for all columns
+		LBN_SetDimensionLabels(key, values, start = (rowIndex == 0 ? 0 : numKeyCols))
 	endif
 
 	if(IsNumericWave(values))
