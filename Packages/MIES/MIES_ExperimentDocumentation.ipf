@@ -702,8 +702,8 @@ Function ED_TPDocumentation(device)
 	TPKeyWave[2][6]  = "1e-6"
 	TPKeyWave[2][7]  = "1e-6"
 	TPKeyWave[2][8]  = LABNOTEBOOK_NO_TOLERANCE
-	TPKeyWave[2][9]  = "0.0001"
-	TPKeyWave[2][10] = "0.0001"
+	TPKeyWave[2][9]  = "0.1"
+	TPKeyWave[2][10] = "0.1"
 	TPKeyWave[2][11] = LABNOTEBOOK_NO_TOLERANCE
 
 	TPSettingsWave[0][2][0, NUM_HEADSTAGES - 1]  = TPResults[%ResistanceInst][r]

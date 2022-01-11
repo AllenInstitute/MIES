@@ -2101,11 +2101,11 @@ Function/Wave GetSweepSettingsKeyWave(device)
 
 	wv[%Parameter][1] = "DAC"
 	wv[%Units][1]     = "a. u."
-	wv[%Tolerance][1] = "1"
+	wv[%Tolerance][1] = "0.1"
 
 	wv[%Parameter][2] = "ADC"
 	wv[%Units][2]     = "a. u."
-	wv[%Tolerance][2] = "1"
+	wv[%Tolerance][2] = "0.1"
 
 	wv[%Parameter][3] = "DA Gain"
 	wv[%Units][3]     = ""
@@ -2117,7 +2117,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 
 	wv[%Parameter][5] = "Set Sweep Count"
 	wv[%Units][5]     = "a. u."
-	wv[%Tolerance][5] = "1"
+	wv[%Tolerance][5] = "0.1"
 
 	wv[%Parameter][6] = "TP Insert Checkbox"
 	wv[%Units][6]     = LABNOTEBOOK_BINARY_UNIT
@@ -2197,7 +2197,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 
 	wv[%Parameter][25] = "Stim set length"
 	wv[%Units][25]     = "a. u." // points not time
-	wv[%Tolerance][25] = "1"
+	wv[%Tolerance][25] = "0.1"
 
 	wv[%Parameter][26] = "oodDAQ Pre Feature"
 	wv[%Units][26]     = "ms"
@@ -2289,11 +2289,11 @@ Function/Wave GetSweepSettingsKeyWave(device)
 
 	wv[%Parameter][48] = "DA ChannelType"
 	wv[%Units][48]     = "a. u."
-	wv[%Tolerance][48] = "1"
+	wv[%Tolerance][48] = "0.1"
 
 	wv[%Parameter][49] = "AD ChannelType"
 	wv[%Units][49]     = "a. u."
-	wv[%Tolerance][49] = "1"
+	wv[%Tolerance][49] = "0.1"
 
 	wv[%Parameter][50] = "oodDAQ member"
 	wv[%Units][50]     = LABNOTEBOOK_BINARY_UNIT
@@ -3082,13 +3082,13 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][33] =  ""
 
 	wv[0][34] =  "Series Resistance"
-	wv[1][34] =  "MOhms"
-	wv[2][34] =  "0.9"
+	wv[1][34] =  "MOhm"
+	wv[2][34] =  LABNOTEBOOK_NO_TOLERANCE
 
 	// new keys starting from 29a161c
 	wv[0][35] =  "Pipette Offset"
 	wv[1][35] =  "mV"
-	wv[2][35] =  ""
+	wv[2][35] =  "0.1"
 
 	wv[0][36] =  "Slow current injection"
 	wv[1][36] =  LABNOTEBOOK_BINARY_UNIT
@@ -3096,7 +3096,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 
 	wv[0][37] =  "Slow current injection level"
 	wv[1][37] =  "V"
-	wv[2][37] =  ""
+	wv[2][37] =  "0.1"
 
 	wv[0][38] =  "Slow current injection settling time"
 	wv[1][38] =  "s"
@@ -3104,19 +3104,19 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 
 	wv[0][39] =  "Fast compensation capacitance"
 	wv[1][39] =  "F"
-	wv[2][39] =  ""
+	wv[2][39] =  "1e-12"
 
 	wv[0][40] =  "Slow compensation capacitance"
 	wv[1][40] =  "F"
-	wv[2][40] =  ""
+	wv[2][40] =  "1e-12"
 
 	wv[0][41] =  "Fast compensation time"
 	wv[1][41] =  "s"
-	wv[2][41] =  ""
+	wv[2][41] =  "1e-6"
 
 	wv[0][42] =  "Slow compensation time"
 	wv[1][42] =  "s"
-	wv[2][42] =  ""
+	wv[2][42] =  "1e-6"
 
 	wv[0][43] =  "Autobias Vcom"
 	wv[1][43] =  "mV"
@@ -4091,7 +4091,7 @@ Function/Wave GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, strin
 
 	wv[%Parameter][5] = prefix
 	wv[%Units][5]     = unit
-	wv[%Tolerance][5] = ".0001"
+	wv[%Tolerance][5] = "" // tolerance is calculated in ED_createAsyncWaveNoteTags()
 
 	return wv
 End
@@ -7159,7 +7159,7 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 
 	wv[%Parameter][0]  = "TP Baseline Fraction" // fraction of total TP duration
 	wv[%Units][0]      = ""
-	wv[%Tolerance][0]  = ""
+	wv[%Tolerance][0]  = "0.01"
 
 	wv[%Parameter][1]  = TP_AMPLITUDE_VC_ENTRY_KEY
 	wv[%Units][1]      = "pA"
@@ -7190,8 +7190,8 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 	wv[%Tolerance][7]  = "0.1"
 
 	wv[%Parameter][8]  = "TP buffer size"
-	wv[%Units][8]      = "a. u."
-	wv[%Tolerance][8]  = "1"
+	wv[%Units][8]      = ""
+	wv[%Tolerance][8]  = "0.1"
 
 	wv[%Parameter][9]  = "Minimum TP resistance for tolerance"
 	wv[%Units][9]      = "MOhm"
@@ -7214,7 +7214,7 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 	wv[%Tolerance][13] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][14] = "TP Cycle ID"
-	wv[%Units][14]     = "a. u."
+	wv[%Units][14]     = ""
 	wv[%Tolerance][14] = "1"
 
 	return wv
