@@ -7,10 +7,7 @@
 #endif
 
 /// @brief Set column dimension labels from the first row of the key wave
-Function LBN_SetDimensionLabels(keys, values)
-	Wave/T keys
-	Wave values
-
+Function LBN_SetDimensionLabels(WAVE/T keys, WAVE values)
 	variable i, numCols
 	string text
 
