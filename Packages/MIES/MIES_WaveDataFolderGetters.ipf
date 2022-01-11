@@ -1392,6 +1392,13 @@ static Function/S FixInvalidLabnotebookKey(string name)
 	return CleanupName(name, 1)
 End
 
+static Function SetLBKeysRowDimensionLabels(WAVE wv)
+
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units,     wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+End
+
 /// @brief Return a wave reference to the text labnotebook keys
 ///
 /// Rows:
@@ -1436,9 +1443,7 @@ Function/Wave GetLBTextualKeys(device)
 	ASSERT(INITIAL_KEY_WAVE_COL_COUNT == ItemsInList(LABNOTEBOOK_KEYS_INITIAL), "Mismatched default keys")
 	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
 
-	SetDimLabel ROWS, 0, Parameter, wv
-	SetDimLabel ROWS, 1, Units,     wv
-	SetDimLabel ROWS, 2, Tolerance, wv
+	SetLBKeysRowDimensionLabels(wv)
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1490,9 +1495,7 @@ Function/Wave GetLBNumericalKeys(device)
 	ASSERT(INITIAL_KEY_WAVE_COL_COUNT == ItemsInList(LABNOTEBOOK_KEYS_INITIAL), "Mismatched default keys")
 	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
 
-	SetDimLabel ROWS, 0, Parameter, wv
-	SetDimLabel ROWS, 1, Units,     wv
-	SetDimLabel ROWS, 2, Tolerance, wv
+	SetLBKeysRowDimensionLabels(wv)
 
 	SetWaveVersion(wv, versionOfNewWave)
 
