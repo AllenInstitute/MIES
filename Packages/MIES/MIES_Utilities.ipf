@@ -6062,3 +6062,35 @@ Function StoreCurrentPanelsResizeInfo(string panel)
 	ResizeControlsPanel#ResetListboxWaves()
 	ResizeControlsPanel#SaveControlPositions(panel, 0)
 End
+
+/// @brief Elide the given string to the requested length
+Function/S ElideText(string str, variable returnLength)
+	variable length, totalLength, i, first, suffixLength
+	string ch, suffix
+
+	totalLength = strlen(str)
+
+	ASSERT(IsInteger(returnLength), "Invalid return length")
+
+	if(totalLength <= returnLength)
+		return str
+	endif
+
+	suffix = "..."
+	suffixLength = strlen(suffix)
+
+	ASSERT(returnLength > suffixLength, "Invalid return length")
+
+	first = returnLength - suffixLength - 1
+
+	for(i = first; i > 0; i -= 1)
+		ch = str[i]
+		if(GrepString(ch, "^[[:space:]]$"))
+			return str[0, i - 1] + suffix
+		endif
+	endfor
+
+	// could not find any whitespace
+	// just cut it off
+	return str[0, first] + suffix
+End
