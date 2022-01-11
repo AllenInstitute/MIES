@@ -460,18 +460,17 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 			row = V_value - col * numKeyRows
 			ASSERT(row == 0, "Unexpected match in a row not being zero")
 			indizes[i] = col
-			sprintf msg, "Found key \"%s\" from incoming column %d in key column %d", incomingKey[0][i], i, idx
-			DEBUGPRINT(msg)
-		else
-			ASSERT(IsValidLiberalObjectName(searchStr), "Incoming key is not a valid liberal object name: " + searchStr)
-			idx = numKeyCols + numAdditions
-			EnsureLargeEnoughWave(key, minimumSize=idx, dimension=COLS)
-			key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
-			indizes[i] = idx
-			numAdditions += 1
-			sprintf msg, "Created key \"%s\" from incoming column %d in key column %d", incomingKey[0][i], i, idx
-			DEBUGPRINT(msg)
+			continue
 		endif
+
+		ASSERT(IsValidLiberalObjectName(searchStr), "Incoming key is not a valid liberal object name: " + searchStr)
+
+		// need to add new entry
+		idx = numKeyCols + numAdditions
+		EnsureLargeEnoughWave(key, minimumSize=idx, dimension=COLS)
+		key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
+		indizes[i] = idx
+		numAdditions += 1
 	endfor
 
 	// for further performance enhancement we must add "support for enhancing multiple dimensions at once"
