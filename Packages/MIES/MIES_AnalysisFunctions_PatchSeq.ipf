@@ -545,7 +545,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 	if(HasOneValidEntry(avgVoltage))
 		// mV -> V
-		avgVoltage[] *= 1000
+		avgVoltage[] *= 1e-3
 		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_TARGETV, chunk = chunk)
 		ED_AddEntryToLabnotebook(device, key, avgVoltage, unit = "Volt", overrideSweepNo = s.sweepNo)
 	endif
