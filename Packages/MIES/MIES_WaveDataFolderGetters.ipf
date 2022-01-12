@@ -1548,6 +1548,8 @@ Function/WAVE GetLBNumericalDescription([variable forceReload])
 	ASSERT(WaveExists(wv), "Missing wave")
 	ASSERT(!IsFreeWave(wv), "Not a permanent wave")
 
+	MatrixTranspose wv
+
 	SetLBKeysRowDimensionLabels(wv)
 
 	Duplicate/FREE/RMD=[0][] wv, labels
@@ -1568,6 +1570,8 @@ Function SaveLBNumericalDescription()
 	RemoveAllDimLabels(wv)
 
 	Duplicate/FREE wv, dup
+
+	MatrixTranspose dup
 
 	SetWaveVersion(dup, LBN_NUMERICAL_DESCRIPTION_VERSION)
 
