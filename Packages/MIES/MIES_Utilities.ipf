@@ -2178,10 +2178,7 @@ End
 /// \endrst
 ///
 /// @return 1 if word was found in str and word was not "". 0 if not.
-Function SearchWordInString(str, word, [prefix, suffix])
-	string str, word
-	string &prefix, &suffix
-
+Function SearchWordInString(string str, string word, [string &prefix, string &suffix])
 	WAVE/Z/T wv = SearchStringBase(str, "(.*)\\b\\Q" + word + "\\E\\b(.*)")
 	if(!WaveExists(wv))
 		return 0
@@ -6061,4 +6058,36 @@ Function StoreCurrentPanelsResizeInfo(string panel)
 
 	ResizeControlsPanel#ResetListboxWaves()
 	ResizeControlsPanel#SaveControlPositions(panel, 0)
+End
+
+/// @brief Elide the given string to the requested length
+Function/S ElideText(string str, variable returnLength)
+	variable length, totalLength, i, first, suffixLength
+	string ch, suffix
+
+	totalLength = strlen(str)
+
+	ASSERT(IsInteger(returnLength), "Invalid return length")
+
+	if(totalLength <= returnLength)
+		return str
+	endif
+
+	suffix = "..."
+	suffixLength = strlen(suffix)
+
+	ASSERT(returnLength > suffixLength, "Invalid return length")
+
+	first = returnLength - suffixLength - 1
+
+	for(i = first; i > 0; i -= 1)
+		ch = str[i]
+		if(GrepString(ch, "^[[:space:]]$"))
+			return str[0, i - 1] + suffix
+		endif
+	endfor
+
+	// could not find any whitespace
+	// just cut it off
+	return str[0, first] + suffix
 End

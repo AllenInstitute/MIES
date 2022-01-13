@@ -239,6 +239,20 @@ static Function AB_LoadFile(discLocation)
 		return NaN
 	endif
 
+	strswitch(map[%FileType])
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			AB_LoadResultsFromIgor(map[%DiscLocation], map[%DataFolder])
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWBv1:
+			// nothing to load
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWBv2:
+			AB_LoadResultsFromNWB(map[%DiscLocation], map[%DataFolder])
+			break
+		default:
+			ASSERT(0, "invalid file type")
+	endswitch
+
 	deviceList = AB_LoadLabNotebook(discLocation)
 	Wave/T deviceWave = AB_SaveDeviceList(deviceList, map[%DataFolder])
 
@@ -760,6 +774,59 @@ static Function AB_LoadStoredTestpulsesFromNWB(nwbFilePath, expFolder, device)
 	SetNumberInWaveNote(wv, NOTE_INDEX, numEntries)
 
 	HDF5CloseGroup/Z testpulseGroup
+	H5_CloseFile(h5_fileID)
+End
+
+static Function AB_LoadResultsFromIgor(string expFilePath, string expFolder)
+	string dataFolderPath
+	variable numWavesLoaded
+
+	DFREF targetDFR = GetAnalysisResultsFolder(expFolder)
+	dataFolderPath  = GetResultsFolderAsString()
+	DFREF saveDFR   = GetDataFolderDFR()
+
+	numWavesLoaded  = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "")
+
+	SetDataFolder saveDFR
+	return numWavesLoaded
+End
+
+static Function AB_LoadResultsFromNWB(string nwbFilePath, string expFolder)
+	variable h5_fileID, resultsGroup, numEntries, i
+	string list, name, groupName
+
+	DFREF dfr = GetAnalysisResultsFolder(expFolder)
+
+	if(!IsDataFolderEmpty(dfr))
+		return NaN
+	endif
+
+	h5_fileID = H5_OpenFile(nwbFilePath)
+
+	groupName = NWB_RESULTS
+	resultsGroup = H5_OpenGroup(h5_fileID, groupName)
+
+	if(IsNaN(resultsGroup))
+		// results waves do not exist
+		return NaN
+	endif
+
+	list = H5_ListGroupMembers(resultsGroup, groupName)
+
+	numEntries = ItemsInList(list)
+
+	for(i = 0; i < numEntries; i += 1)
+		name = StringFromList(i, list)
+		WAVE/Z wv = H5_LoadDataset(resultsGroup, name)
+
+		if(!WaveExists(wv))
+			continue
+		endif
+
+		MoveWave wv, dfr
+	endfor
+
+	HDF5CloseGroup/Z resultsGroup
 	H5_CloseFile(h5_fileID)
 End
 

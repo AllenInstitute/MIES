@@ -27,6 +27,10 @@ In PXP files, the *analysis browser* stores *labnotebooks* in
 stores files in `root:MIES:LabNoteBook:$hardware:$device:`.  In NWB files, the
 *labnotebook* arrays reside in `/general/labnotebook/$device`.
 
+The *results* waves with analysis results have the same layout as the
+*labnotebook* waves. They are stored for PXP files in `root:MIES:Results` and
+for NWBv2 files in `/general/results`.
+
 Layout
 ======
 

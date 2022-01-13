@@ -155,8 +155,8 @@ static Function AD_FillWaves(win, list, info)
 	WAVE/Z totalSweepsPresent = GetPlainSweepList(win)
 
 	// as many sweeps as entries in numericalValuesWave/textualValuesWave
-	WAVE/WAVE/Z numericalValuesWave = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES)
-	WAVE/WAVE/Z textualValuesWave   = BSP_GetLBNWave(win, LBN_TEXTUAL_VALUES)
+	WAVE/WAVE/Z numericalValuesWave = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES)
+	WAVE/WAVE/Z textualValuesWave   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES)
 
 	if(!WaveExists(numericalValuesWave) || !WaveExists(textualValuesWave) || !WaveExists(totalSweepsPresent))
 		return 0

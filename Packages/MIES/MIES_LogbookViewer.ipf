@@ -51,37 +51,48 @@ End
 
 /// @brief Returns the list of LNB keys for the settings history window menu
 Function/WAVE LBV_PopupExtGetLBKeys(string win)
-	WAVE/Z entries = LBV_GetLBKeys(win)
+
+	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+
+	WAVE/Z entries = LBV_GetAllLogbookKeys(win, textualKeys, numericalKeys)
 
 	return LBV_PopupExtFormatEntries(entries)
 End
 
-/// @brief Returns the combined keys from the numerical and textual MD key labnotebook waves as 1D text wave
-static Function/WAVE LBV_GetLBKeys(string win)
-	variable s
+/// @brief Returns the list of results keys for the settings history window menu
+Function/WAVE LBV_PopupExtGetResultsKeys(string win)
+
+	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+
+	WAVE/Z entries = LBV_GetAllLogbookKeys(win, textualKeys, numericalKeys)
+
+	return LBV_PopupExtFormatEntries(entries)
+End
+
+/// @brief Returns the combined keys from the numerical and textual MD key loogbook waves as 1D text wave
+static Function/WAVE LBV_GetAllLogbookKeys(string win, WAVE/T textualKeys, WAVE/T numericalKeys)
 	variable existText, existNum
 
-	WAVE/T/Z textualKeys   = BSP_GetLBNWave(win, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
-	WAVE/T/Z numericalKeys = BSP_GetLBNWave(win, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z/T textualKeys1D = LBV_GetLogbookKeys(textualKeys)
+	WAVE/Z/T numericalKeys1D = LBV_GetLogbookKeys(numericalKeys)
 
-	WAVE/Z/T textualKeys1D = LBV_GetLabNotebookKeys(textualKeys)
-	WAVE/Z/T numericalKeys1D = LBV_GetLabNotebookKeys(numericalKeys)
-
-	existText = WaveExists(textualKeys)
-	existNum = WaveExists(numericalKeys)
+	existText = WaveExists(textualKeys1D)
+	existNum = WaveExists(numericalKeys1D)
 	if(existText && existNum)
 		return GetSetUnion(textualKeys1D, numericalKeys1D)
 	elseif(existText && !existNum)
-		return textualKeys
+		return textualKeys1D
 	elseif(!existText && existNum)
-		return numericalKeys
+		return numericalKeys1D
 	endif
 
 	return $""
 End
 
-/// @brief Return a wave with all keys in the labnotebook key wave
-static Function/WAVE LBV_GetLabNotebookKeys(WAVE/Z/T keyWave)
+/// @brief Return a wave with all keys in the logbook key wave
+static Function/WAVE LBV_GetLogbookKeys(WAVE/Z/T keyWave)
 	variable row
 
 	if(!WaveExists(keyWave))
@@ -91,7 +102,7 @@ static Function/WAVE LBV_GetLabNotebookKeys(WAVE/Z/T keyWave)
 	row = FindDimLabel(keyWave, ROWS, "Parameter")
 
 	Duplicate/FREE/RMD=[row][] keyWave, keys
-	Redimension/N=(numpnts(keyWave))/E=1 keys
+	Redimension/N=(numpnts(keys))/E=1 keys
 
 	WAVE/T hiddenDefaultKeys = ListToTextWave(LABNOTEBOOK_KEYS_INITIAL, ";")
 
@@ -216,7 +227,7 @@ Function LBV_ButtonProc_SwitchXAxis(STRUCT WMButtonAction &ba) : ButtonControl
 	return 0
 End
 
-Function LBV_PopMenuProc_LabNotebook(STRUCT WMPopupAction &pa) : PopupMenuControl
+Function LBV_PopMenuProc_LabNotebookAndResults(STRUCT WMPopupAction &pa) : PopupMenuControl
 	string key, win, lbGraph
 
 	switch(pa.eventCode)
@@ -229,7 +240,7 @@ Function LBV_PopMenuProc_LabNotebook(STRUCT WMPopupAction &pa) : PopupMenuContro
 			endif
 
 			WAVE/Z keys, values
-			[keys, values] = LBV_GetLNBWavesForEntry(win, key)
+			[keys, values] = LBV_GetLogbookWavesForEntry(win, key)
 
 			lbGraph = LBV_GetLabNoteBookGraph(win)
 			LBV_AddTraceToLBGraph(lbGraph, keys, values, key)
@@ -239,16 +250,16 @@ Function LBV_PopMenuProc_LabNotebook(STRUCT WMPopupAction &pa) : PopupMenuContro
 	return 0
 End
 
-/// @brief Return the keys/values labnotebook pair for the given key
+/// @brief Return the keys/values logbook pair for the given key
 ///
 /// @return valid waves or null if it can not be found.
-Function [WAVE keys, WAVE values] LBV_GetLNBWavesForEntry(string win, string key)
+Function [WAVE keys, WAVE values] LBV_GetLogbookWavesForEntry(string win, string key)
 
 	variable col
 
-	WAVE/Z numericalKeys   = BSP_GetLBNWave(win, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z numericalKeys = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 	ASSERT(WaveExists(numericalKeys), "Numerical LabNotebook Keys not found.")
-	WAVE/Z numericalValues = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
+	WAVE/Z numericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
 	ASSERT(WaveExists(numericalValues), "Numerical LabNotebook not found.")
 
 	col = FindDimLabel(numericalValues, COLS, key)
@@ -256,14 +267,32 @@ Function [WAVE keys, WAVE values] LBV_GetLNBWavesForEntry(string win, string key
 		return [numericalKeys, numericalValues]
 	endif
 
-	WAVE/Z textualKeys   = BSP_GetLBNWave(win, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z textualKeys = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	ASSERT(WaveExists(textualKeys), "Textual LabNotebook keys not found.")
-	WAVE/Z textualValues = BSP_GetLBNWave(win, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
+	WAVE/Z textualValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
 	ASSERT(WaveExists(textualValues), "Textual LabNotebook not found.")
 
 	col = FindDimLabel(textualValues, COLS, key)
 	if(col >= 0)
 		return [textualKeys, textualValues]
+	endif
+
+	WAVE/Z numericalResultsKeys   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z numericalResultsValues = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
+
+	col = WaveExists(numericalResultsKeys) ? FindDimLabel(numericalResultsKeys, COLS, key) : -1
+	if(col >= 0)
+		ASSERT(WaveExists(numericalResultsValues), "Missing wave")
+		return [numericalResultsKeys, numericalResultsValues]
+	endif
+
+	WAVE/Z textualResultsKeys   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/Z textualResultsValues = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
+
+	col = WaveExists(textualResultsKeys) ? FindDimLabel(textualResultsKeys, COLS, key) : -1
+	if(col >= 0)
+		ASSERT(WaveExists(textualResultsValues), "Missing wave")
+		return [textualResultsKeys, textualResultsValues]
 	endif
 
 	return [$"", $""]
@@ -440,7 +469,7 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 	string unit, lbl, axis, trace, text, tagString, tmp, axisBaseName
 	string traceList = ""
 	variable i, j, row, col, numRows, sweepCol, marker
-	variable isTimeAxis, isTextData, xPos
+	variable isTimeAxis, isTextData, xPos, logbookType
 	STRUCT RGBColor s
 
 	WAVE/T/Z traces
@@ -450,13 +479,24 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 		return NaN
 	endif
 
+	logbookType = GetLogbookType(keys)
+
 	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
 
 	isTimeAxis = LBV_CheckIfXAxisIsTime(graph)
 	isTextData = IsTextWave(values)
 	sweepCol   = GetSweepColumn(values)
 
-	axisBaseName = "lbn_" + VERT_AXIS_BASE_NAME
+	switch(logbookType)
+		case LBT_LABNOTEBOOK:
+			axisBaseName = "lbn_" + VERT_AXIS_BASE_NAME
+			break
+		case LBT_RESULTS:
+			axisBaseName = "results_" + VERT_AXIS_BASE_NAME
+			break
+		default:
+			ASSERT(0, "Unexpected logbook type")
+	endswitch
 
 	axis = GetNextFreeAxisName(graph, axisBaseName)
 
@@ -574,7 +614,7 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 
 	axisBaseName = "tpstorage_" + VERT_AXIS_BASE_NAME
 
-	WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
+	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
 	ASSERT(WaveExists(numericalValues), "LabNotebook not found.")
 
 	// 5872e556 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
@@ -798,27 +838,33 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 
 		logbookType = GetLogbookType(sourceWave)
 
-		if(logbookType == LBT_LABNOTEBOOK)
-			if(isTimeAxis)
-				if(isTextData)
-					WAVE valuesSweep = ExtractLogbookSliceSweep(sourceWave)
-					ReplaceWave/W=$graph/X trace=$trace, valuesSweep
-				else
-					sweepCol = GetSweepColumn(sourceWave)
-					ReplaceWave/W=$graph/X trace=$trace, sourceWave[][sweepCol][0]
+		switch(logbookType)
+			case LBT_LABNOTEBOOK:
+			case LBT_RESULTS:
+				if(isTimeAxis)
+					if(isTextData)
+						WAVE valuesSweep = ExtractLogbookSliceSweep(sourceWave)
+						ReplaceWave/W=$graph/X trace=$trace, valuesSweep
+					else
+						sweepCol = GetSweepColumn(sourceWave)
+						ReplaceWave/W=$graph/X trace=$trace, sourceWave[][sweepCol][0]
+					endif
+				else // other direction
+					WAVE dat = ExtractLogbookSliceTimeStamp(sourceWave)
+
+					ReplaceWave/W=$graph/X trace=$trace, dat
 				endif
-			else // other direction
-				WAVE dat = ExtractLogbookSliceTimeStamp(sourceWave)
+				break
+			case LBT_TPSTORAGE:
+				key = TUD_GetUserData(graph, trace, "key")
+				RemoveTracesFromGraph(graph, trace = trace)
+				TUD_RemoveUserData(graph, trace)
 
-				ReplaceWave/W=$graph/X trace=$trace, dat
-			endif
-		elseif(logbookType == LBT_TPSTORAGE)
-			key = TUD_GetUserData(graph, trace, "key")
-			RemoveTracesFromGraph(graph, trace = trace)
-			TUD_RemoveUserData(graph, trace)
-
-			keysToReadd = AddListItem(key, keysToReadd, ";", inf)
-		endif
+				keysToReadd = AddListItem(key, keysToReadd, ";", inf)
+				break
+		default:
+			ASSERT(0, "Invalid logbook type")
+		endswitch
 	endfor
 
 	keysToReadd = GetUniqueTextEntriesFromList(keysToReadd)

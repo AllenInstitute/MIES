@@ -376,6 +376,11 @@ Structure NWBAsyncParameters
 	WAVE/T numericalKeys
 	WAVE/T textualValues
 	WAVE/T textualKeys
+
+	WAVE numericalResultsValues
+	WAVE/T numericalResultsKeys
+	WAVE/T textualResultsValues
+	WAVE/T textualResultsKeys
 EndStructure
 
 Function NWB_ASYNC_SerializeStruct(STRUCT NWBAsyncParameters &s, DFREF threadDFR)
@@ -396,6 +401,11 @@ Function NWB_ASYNC_SerializeStruct(STRUCT NWBAsyncParameters &s, DFREF threadDFR
 	ASYNC_AddParam(threadDFR, w = s.numericalKeys, name = "numericalKeys")
 	ASYNC_AddParam(threadDFR, w = s.textualValues, name = "textualValues")
 	ASYNC_AddParam(threadDFR, w = s.textualKeys, name = "textualKeys")
+
+	ASYNC_AddParam(threadDFR, w = s.numericalResultsValues, name = "numericalResultsValues")
+	ASYNC_AddParam(threadDFR, w = s.numericalResultsKeys, name = "numericalResultsKeys")
+	ASYNC_AddParam(threadDFR, w = s.textualResultsValues, name = "textualResultsValues")
+	ASYNC_AddParam(threadDFR, w = s.textualResultsKeys, name = "textualResultsKeys")
 End
 
 threadsafe Function [STRUCT NWBAsyncParameters s] NWB_ASYNC_DeserializeStruct(DFREF threadDFR)
@@ -429,6 +439,18 @@ threadsafe Function [STRUCT NWBAsyncParameters s] NWB_ASYNC_DeserializeStruct(DF
 
 	WAVE/T s.textualKeys = ASYNC_FetchWave(threadDFR, "textualKeys")
 	ChangeWaveLock(s.textualKeys, 1)
+
+	WAVE s.numericalResultsValues = ASYNC_FetchWave(threadDFR, "numericalResultsValues")
+	ChangeWaveLock(s.numericalResultsValues, 1)
+
+	WAVE/T s.numericalResultsKeys = ASYNC_FetchWave(threadDFR, "numericalResultsKeys")
+	ChangeWaveLock(s.numericalResultsKeys, 1)
+
+	WAVE/T s.textualResultsValues = ASYNC_FetchWave(threadDFR, "textualResultsValues")
+	ChangeWaveLock(s.textualResultsValues, 1)
+
+	WAVE/T s.textualResultsKeys = ASYNC_FetchWave(threadDFR, "textualResultsKeys")
+	ChangeWaveLock(s.textualResultsKeys, 1)
 End
 
 /// @brief Structure to hold the result of data configuration from DC_GetConfiguration()

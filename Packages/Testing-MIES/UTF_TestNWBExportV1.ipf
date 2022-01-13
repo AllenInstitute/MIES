@@ -642,6 +642,8 @@ Function TestNwbExportV1()
 	// check LBNs
 	TestLabnotebooks(fileID, device)
 
+	// no check for results as these are not exported
+
 	// check TPStorage
 	TestTpStorage(fileID, device)
 

@@ -96,6 +96,26 @@ static Function TestLabnotebooks(fileID, device)
 	CHECK_EQUAL_WAVES(textualValuesNWB, textualValues)
 End
 
+static Function TestResults(variable fileID)
+	string prefix
+
+	WAVE numericalValues = RemoveUnusedRows(GetNumericalResultsValues())
+	WAVE/T numericalKeys = GetNumericalResultsKeys()
+	WAVE/T textualValues = RemoveUnusedRows(GetTextualResultsValues())
+	WAVE/T textualKeys = GetTextualResultsKeys()
+
+	prefix = NWB_RESULTS + "/"
+
+	WAVE/Z numericalKeysNWB = H5_LoadDataSet(fileID, prefix + "numericalResultsKeys")
+	CHECK_EQUAL_WAVES(numericalKeysNWB, numericalKeys)
+	WAVE/Z numericalValuesNWB = H5_LoadDataSet(fileID, prefix + "numericalResultsValues")
+	CHECK_EQUAL_WAVES(numericalValuesNWB, numericalValues)
+	WAVE/Z textualKeysNWB = H5_LoadDataSet(fileID, prefix + "textualResultsKeys")
+	CHECK_EQUAL_WAVES(textualKeysNWB, textualKeys)
+	WAVE/Z textualValuesNWB = H5_LoadDataSet(fileID, prefix + "textualResultsValues")
+	CHECK_EQUAL_WAVES(textualValuesNWB, textualValues)
+End
+
 static Function TestTPStorage(fileID, device)
 	variable fileID
 	string device
@@ -674,6 +694,9 @@ Function TestNwbExportV2()
 
 	// check LBNs
 	TestLabnotebooks(fileID, device)
+
+	// check results
+	TestResults(fileID)
 
 	// check TPStorage
 	TestTpStorage(fileID, device)

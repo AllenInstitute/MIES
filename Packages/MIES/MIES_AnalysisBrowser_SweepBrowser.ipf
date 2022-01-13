@@ -471,65 +471,81 @@ End
 
 /// @brief Generic getter for the labnotebook waves
 ///
-/// Use case 1:
+/// LBT_LABNOTEBOOK:
+///
+/// Use case 1 ( only):
 /// - No optional parameters given: Returns a wave reference wave with all labnotebook waves from all displayed sweeps, ordered by index
 ///
-/// Use case 2:
+/// Use case 2 (LBT_LABNOTEBOOK only):
 /// - sweepNumber given: Return the labnotebook wave of that sweep only
 ///
 /// Use case 3:
 /// - dataFolder and device given: Return the labnotebook for the given nwb/pxp data folder and device combination
 ///
-/// @param win         panel
-/// @param type        One of @ref LabnotebookWaveTypes
-/// @param sweepNumber [optional] sweep number
-/// @param dataFolder  [optional] nwb/pxp data folder (aka experiment)
-/// @param device      [optional] device of the experiment
+/// LBT_RESULTS:
+///
+/// - Return one of the four results waves from the given nwb/pxp data folder
+///
+/// @param win             panel
+/// @param logbookType     one of @ref LogbookTypes
+/// @param logbookWaveType one of @ref LabnotebookWaveTypes
+/// @param sweepNumber     [optional] sweep number
+/// @param dataFolder      [optional] nwb/pxp data folder (aka experiment)
+/// @param device          [optional] device of the experiment
 ///
 /// @return valid labnotebook wave or a null wave in case it does not exist
-Function/WAVE SB_GetLBNWave(string win, variable type, [variable sweepNumber, string dataFolder, string device])
+Function/WAVE SB_GetLogbookWave(string win, variable logbookType, variable logbookWaveType, [variable sweepNumber, string dataFolder, string device])
 
 	variable numRows
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
 
-	switch(type)
-		case LBN_NUMERICAL_KEYS:
-			FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBNumericalKeys
-			break
-		case LBN_NUMERICAL_VALUES:
-			FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBNumericalValues
-			break
-		case LBN_TEXTUAL_KEYS:
-			FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBTextualKeys
-			break
-		case LBN_TEXTUAL_VALUES:
-			FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBTextualValues
-			break
+	switch(logbookType)
+		case LBT_LABNOTEBOOK:
+			switch(logbookWaveType)
+				case LBN_NUMERICAL_KEYS:
+					FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBNumericalKeys
+					break
+				case LBN_NUMERICAL_VALUES:
+					FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBNumericalValues
+					break
+				case LBN_TEXTUAL_KEYS:
+					FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBTextualKeys
+					break
+				case LBN_TEXTUAL_VALUES:
+					FUNCREF ANALYSIS_LBN_GETTER_PROTO func = GetAnalysLBTextualValues
+					break
+				default:
+					ASSERT(0, "Invalid logbookWaveType")
+			endswitch
+
+			if(!ParamIsDefault(sweepNumber))
+				WAVE/Z indices = FindIndizes(map, colLabel = "Sweep", var = sweepNumber)
+				if(!WaveExists(indices))
+					return $""
+				endif
+
+				return func(map[indices[0]][%DataFolder], map[indices[0]][%Device])
+			elseif(!ParamIsDefault(dataFolder) && !ParamIsDefault(device))
+				return func(dataFolder, device)
+			endif
+
+			numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
+
+			if(!numRows)
+				return $""
+			endif
+
+			Make/WAVE/FREE/N=(numRows) waves = func(map[p][%DataFolder], map[p][%Device])
+
+			return waves
+		case LBT_RESULTS:
+			ASSERT(!ParamIsDefault(dataFolder), "Missing datafolder")
+
+			return GetAnalysisResultsWave(dataFolder, logbookWaveType)
 		default:
-			ASSERT(0, "Invalid type")
+			ASSERT(0, "Unsupported logbookType")
 	endswitch
-
-	if(!ParamIsDefault(sweepNumber))
-		WAVE/Z indices = FindIndizes(map, colLabel = "Sweep", var = sweepNumber)
-		if(!WaveExists(indices))
-			return $""
-		endif
-
-		return func(map[indices[0]][%DataFolder], map[indices[0]][%Device])
-	elseif(!ParamIsDefault(dataFolder) && !ParamIsDefault(device))
-		return func(dataFolder, device)
-	endif
-
-	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
-
-	if(!numRows)
-		return $""
-	endif
-
-	Make/WAVE/FREE/N=(numRows) waves = func(map[p][%DataFolder], map[p][%Device])
-
-	return waves
 End
 
 Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl

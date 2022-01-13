@@ -16,11 +16,16 @@ static Constant SF_TEST_VC_HEADSTAGE = 2
 static Constant SF_TEST_IC_HEADSTAGE = 3
 
 /// @brief Acquire data with the given DAQSettings on two headstages
-static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ, onsetDelayUser, terminationDelay, analysisFunction])
+static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDAQ, onsetDelayUser, terminationDelay, analysisFunction, postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
 	string devices
 	string stimSetName1, stimSetName2, analysisFunction
 	variable dDAQ, oodDAQ, onsetDelayUser, terminationDelay
+	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
+
+	if(!ParamIsDefault(postInitializeFunc))
+		postInitializeFunc(devices)
+	endif
 
 	string unlockedDevice, device
 	variable i, numEntries
@@ -119,6 +124,10 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 	ARDLaunchSeqPanel()
 	PGC_SetAndActivateControl("ArduinoSeq_Panel", "SendSequenceButton")
 #endif
+
+	if(!ParamIsDefault(preAcquireFunc))
+		preAcquireFunc(device)
+	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
@@ -246,4 +255,89 @@ static Function SF_TPTest_REENTRY([str])
 	string str
 
 	TestSweepFormulaTP(str)
+End
+
+static Function TestSweepFormulaCodeResults_IGNORE(string device)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(SF_TEST_IC_HEADSTAGE, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function TestSweepFormulaCodeResults([string str])
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, "StimulusSetA_DA_0", "StimulusSetA_DA_0", analysisFunction = "SetSweepFormula", preAcquireFunc = TestSweepFormulaCodeResults_IGNORE)
+End
+
+static Function TestSweepFormulaCodeResults_REENTRY([string str])
+	string content, contentRef, graph, trace, bsPanel
+
+	WAVE/T textualResultsValues = GetTextualResultsValues()
+
+	WAVE/Z indizes = GetNonEmptyLBNRows(textualResultsValues, "Sweep Formula code")
+	CHECK_WAVE(indizes, NUMERIC_WAVE)
+
+	Make/FREE/T/N=(DimSize(indizes, ROWS)) code = textualResultsValues[indizes[p]][%$"Sweep Formula code"][INDEP_HEADSTAGE]
+
+	Make/FREE/T/N=(3) ref = {"data(TP, channels(AD), [0])", "data(TP, channels(AD), [1])", "data(TP, channels(AD), [2])"}
+	CHECK_EQUAL_TEXTWAVES(ref, code, mode = WAVE_DATA)
+
+	// set cursors and execute formula again
+	graph = DB_FindDataBrowser(str)
+	trace = StringFromList(0, TraceNameList(graph, ";", 1))
+	Cursor/W=$graph A $trace 0
+	Cursor/W=$graph J $trace 50
+
+	bsPanel = BSP_GetPanel(graph)
+	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
+
+	// check other entries of last invocation
+	CHECK_EQUAL_VAR(DimSize(textualResultsValues, COLS), 20)
+
+	content    = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula displayed sweeps", UNKNOWN_MODE)
+	contentRef = "2;"
+	CHECK_EQUAL_STR(content, contentRef)
+
+	content    = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula active channels", UNKNOWN_MODE)
+	contentRef = "1;0;,0;1;,"
+	CHECK_EQUAL_STR(content, contentRef)
+
+	content    = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula experiment", UNKNOWN_MODE)
+	contentRef = NONE
+	CHECK_EQUAL_STR(content, contentRef)
+
+	content    = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula device", UNKNOWN_MODE)
+	contentRef = NONE
+	CHECK_EQUAL_STR(content, contentRef)
+
+	// cursors A-J
+	content = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula cursor A", UNKNOWN_MODE)
+	CHECK_PROPER_STR(content)
+
+	content = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula cursor B", UNKNOWN_MODE)
+	CHECK_EMPTY_STR(content)
+
+	content = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula cursor C", UNKNOWN_MODE)
+	CHECK_EMPTY_STR(content)
+
+	content = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula cursor D", UNKNOWN_MODE)
+	CHECK_EMPTY_STR(content)
+
+	content = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula cursor E", UNKNOWN_MODE)
+	CHECK_EMPTY_STR(content)
+
+	content = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula cursor F", UNKNOWN_MODE)
+	CHECK_EMPTY_STR(content)
+
+	content = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula cursor G", UNKNOWN_MODE)
+	CHECK_EMPTY_STR(content)
+
+	content = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula cursor H", UNKNOWN_MODE)
+	CHECK_EMPTY_STR(content)
+
+	content = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula cursor I", UNKNOWN_MODE)
+	CHECK_EMPTY_STR(content)
+
+	content = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula cursor J", UNKNOWN_MODE)
+	CHECK_PROPER_STR(content)
 End

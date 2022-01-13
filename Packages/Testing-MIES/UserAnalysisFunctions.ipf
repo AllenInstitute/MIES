@@ -873,6 +873,8 @@ Function AcquisitionStateTrackingFunc(device, s)
 
 	name = "AcqStateTrackingValue_" + AS_StateToString(acqState)
 
+	CHECK_EQUAL_VAR(s.sweepNo, AS_GetSweepNumber(device))
+
 	CHECK_EQUAL_VAR(acqState, expectedAcqState)
 	values[s.headstage] = expectedAcqState
 	ED_AddEntryToLabnotebook(device, name, values, overrideSweepNo = s.sweepNo)
@@ -943,6 +945,26 @@ Function ChangeTPSettings(device, s)
 				PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitudeIC", val = -90)
 				PGC_SetAndActivateControl(device, "SetVar_DataAcq_TPAmplitude", val = 50)
 			endif
+			break
+		default:
+			// do nothing
+	endswitch
+End
+
+Function SetSweepFormula(string device, STRUCT AnalysisFunction_V3& s)
+	string win, bsPanel, sweepFormulaNB, code
+
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			win = DB_OpenDataBrowser()
+			bsPanel = BSP_GetPanel(win)
+			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = CHECKBOX_SELECTED)
+			break
+		case PRE_SWEEP_CONFIG_EVENT:
+			win = DB_FindDataBrowser(device)
+			sweepFormulaNB = BSP_GetSFFormula(win)
+			sprintf code, "data(TP, channels(AD), [%d])\r", s.sweepNo
+			ReplaceNotebookText(sweepFormulaNB, code)
 			break
 		default:
 			// do nothing

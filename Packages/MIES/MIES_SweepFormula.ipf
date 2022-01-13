@@ -84,6 +84,7 @@ static StrConstant SF_OP_WAVE = "wave"
 static StrConstant SF_OP_FINDLEVEL = "findlevel"
 static StrConstant SF_OP_EPOCHS = "epochs"
 static StrConstant SF_OP_TP = "tp"
+static StrConstant SF_OP_STORE = "store"
 
 static StrConstant SF_OP_EPOCHS_TYPE_RANGE = "range"
 static StrConstant SF_OP_EPOCHS_TYPE_NAME = "name"
@@ -760,6 +761,9 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 		case SF_OP_TP:
 			WAVE out = SF_OperationTP(jsonId, jsonPath, graph)
 			break
+		case SF_OP_STORE:
+			WAVE out = SF_OperationStore(jsonId, jsonPath, graph)
+			break
 		default:
 			SF_ASSERT(0, "Undefined Operation", jsonId=jsonId)
 	endswitch
@@ -1004,11 +1008,12 @@ static Function/WAVE SF_GetRangeFromEpoch(string graph, string epochName, variab
 		return range
 	endif
 
-	WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
+	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
 	if(!WaveExists(numericalValues))
 		return range
 	endif
-	WAVE/Z textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweep)
+
+	WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweep)
 	if(!WaveExists(textualValues))
 		return range
 	endif
@@ -1034,7 +1039,7 @@ static Function SF_GetDAChannel(string graph, variable sweep, variable channelTy
 
 	variable DAC, index
 
-	WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
+	WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
 	if(!WaveExists(numericalValues))
 		return NaN
 	endif
@@ -1285,7 +1290,7 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 			continue
 		endif
 
-		WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
 		if(!WaveExists(numericalValues))
 			continue
 		endif
@@ -1472,21 +1477,29 @@ Function SF_IsActive(win)
 	return BSP_IsActive(win, MIES_BSP_SF)
 End
 
+/// @brief Return the sweep formula code in raw and with all necessary preprocesssing
+Function [string raw, string preProc] SF_GetCode(string win)
+	string formula_nb, code
+
+	formula_nb = BSP_GetSFFormula(win)
+	code = GetNotebookText(formula_nb)
+
+	return [code, SF_PreprocessInput(code)]
+End
+
 Function SF_button_sweepFormula_display(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	String mainPanel, code, formula_nb, bsPanel
+	String mainPanel, rawCode, bsPanel, preProcCode
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			formula_nb = BSP_GetSFFormula(ba.win)
 			mainPanel = GetMainWindow(ba.win)
 			bsPanel = BSP_GetPanel(mainPanel)
 
-			code = GetNotebookText(formula_nb)
-			code = SF_PreprocessInput(code)
+			[rawCode, preProcCode] = SF_GetCode(mainPanel)
 
-			if(IsEmpty(code))
+			if(IsEmpty(preProcCode))
 				break
 			endif
 
@@ -1505,7 +1518,12 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 
 			// catch Abort from SF_ASSERT
 			try
-				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortOnRTE
+				SF_FormulaPlotter(mainPanel, preProcCode, dfr = dfr); AbortOnRTE
+
+				WAVE/T/Z keys, values
+				[keys, values] = SF_CreateResultsWaveWithCode(mainPanel, rawCode)
+
+				ED_AddEntriesToResults(values, keys, UNKNOWN_MODE)
 			catch
 				SetValDisplay(bsPanel, "status_sweepFormula_parser", var=0)
 				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result, setHelp = 1)
@@ -1515,6 +1533,107 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+static Function/S SF_PrepareDataForResultsWave(WAVE data)
+	variable numEntries, maxEntries
+
+	if(IsNumericWave(data))
+		Make/T/FREE/N=(DimSize(data, ROWS), DimSize(data, COLS), DimSize(data, LAYERS), DimSize(data, CHUNKS)) dataTxT
+		MultiThread dataTxT[][][][] = num2strHighPrec(data[p][q][r][s], precision = MAX_DOUBLE_PRECISION, shorten = 1)
+	else
+		WAVE/T dataTxT = data
+	endif
+
+	// assuming 100 sweeps on average
+	maxEntries = 100 * NUM_HEADSTAGES * 10
+	numEntries = numpnts(dataTxT)
+
+	if(numpnts(dataTxT) > maxEntries)
+		printf "The store operation received too much data to store, it will only store the first %d entries\r.", maxEntries
+		ControlWindowToFront()
+		numEntries = maxEntries
+	endif
+
+	return TextWaveToList(dataTxT, ";", maxElements = numEntries)
+End
+
+static Function [WAVE/T keys, WAVE/T values] SF_CreateResultsWaveWithCode(string graph, string code, [WAVE data, string name])
+	variable numEntries, numOptParams, hasStoreEntry, numCursors, numBasicEntries
+	string shPanel, dataFolder, device
+
+	numOptParams = ParamIsDefault(data) + ParamIsDefault(name)
+	ASSERT(numOptParams == 0 || numOptParams == 2, "Invalid optional parameters")
+	hasStoreEntry = (numOptParams == 0)
+
+	ASSERT(!IsEmpty(code), "Unexpected empty code")
+	numCursors = ItemsInList(CURSOR_NAMES)
+	numBasicEntries = 5
+	numEntries = numBasicEntries + numCursors + hasStoreEntry
+
+	Make/T/FREE/N=(1, numEntries) keys
+	Make/T/FREE/N=(1, numEntries, LABNOTEBOOK_LAYER_COUNT) values
+
+	keys[0][0]                                                 = "Sweep Formula code"
+	keys[0][1]                                                 = "Sweep Formula displayed sweeps"
+	keys[0][2]                                                 = "Sweep Formula active channels"
+	keys[0][3]                                                 = "Sweep Formula experiment"
+	keys[0][4]                                                 = "Sweep Formula device"
+	keys[0][numBasicEntries, numBasicEntries + numCursors - 1] = "Sweep Formula cursor " + StringFromList(q - numBasicEntries, CURSOR_NAMES)
+
+	if(hasStoreEntry)
+		keys[0][numEntries - 1] = "Sweep Formula store [" + name + "]"
+	endif
+
+	LBN_SetDimensionLabels(keys, values)
+
+	values[0][%$"Sweep Formula code"][INDEP_HEADSTAGE] = NormalizeToEOL(TrimString(code), "\n")
+
+	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
+
+	WAVE/Z sweeps = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser("sweeps(displayed)")), graph = graph)
+	values[0][%$"Sweep Formula displayed sweeps"][INDEP_HEADSTAGE] = NumericWaveToList(sweeps, ";")
+
+	// todo: use plain `channels()` once https://github.com/AllenInstitute/MIES/issues/1135 is resolved
+	WAVE/Z channels_AD = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser("channels(AD)")), graph = graph)
+	WAVE/Z channels_DA = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser("channels(DA)")), graph = graph)
+
+	if(WaveExists(sweeps) && WaveExists(channels_DA) && WaveExists(channels_AD))
+		WAVE/Z activeChannels_DA = SF_GetActiveChannelNumbers(graph, channels_DA, sweeps, DATA_ACQUISITION_MODE)
+		WAVE/Z activeChannels_AD = SF_GetActiveChannelNumbers(graph, channels_AD, sweeps, DATA_ACQUISITION_MODE)
+
+		if(!WaveExists(activeChannels_DA) && !WaveExists(activeChannels_AD))
+			WAVE/Z activeChannels
+		elseif(WaveExists(activeChannels_DA) && WaveExists(activeChannels_AD))
+			Concatenate/FREE/NP=(ROWS) {activeChannels_DA, activeChannels_AD}, activeChannels
+		elseif(WaveExists(activeChannels_DA) && !WaveExists(activeChannels_AD))
+			WAVE activeChannels = activeChannels_DA
+		elseif(!WaveExists(activeChannels_DA) && WaveExists(activeChannels_AD))
+			WAVE activeChannels = activeChannels_AD
+		else
+			ASSERT(0, "Unexpected case")
+		endif
+
+		values[0][%$"Sweep Formula active channels"][INDEP_HEADSTAGE] = NumericWaveToList(activeChannels, ";")
+	endif
+
+	shPanel = LBV_GetSettingsHistoryPanel(graph)
+
+	dataFolder = GetPopupMenuString(shPanel, "popup_experiment")
+	values[0][%$"Sweep Formula experiment"][INDEP_HEADSTAGE] = dataFolder
+
+	device = GetPopupMenuString(shPanel, "popup_Device")
+	values[0][%$"Sweep Formula device"][INDEP_HEADSTAGE] = device
+
+	if(WaveExists(cursorInfos))
+		values[0][numBasicEntries, numBasicEntries + numCursors - 1][INDEP_HEADSTAGE] = cursorInfos[q - numBasicEntries]
+	endif
+
+	if(hasStoreEntry)
+		values[0][numEntries - 1][INDEP_HEADSTAGE] = SF_PrepareDataForResultsWave(data)
+	endif
+
+	return [keys, values]
 End
 
 Function SF_TabProc_Formula(tca) : TabControl
@@ -1605,12 +1724,12 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 			continue
 		endif
 
-		WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
-		WAVE/Z textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweep)
+		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweep)
+		WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweep)
 		if(!WaveExists(numericalValues) || !WaveExists(textualValues))
 			continue
 		endif
-		WAVE/Z keyValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_KEYS, sweepNumber=sweep)
+		WAVE/Z keyValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, sweepNumber=sweep)
 
 		for(j = 0; j < activeChannelCnt; j += 1)
 
@@ -1815,8 +1934,8 @@ static Function/WAVE SF_OperationEpochs(variable jsonId, string jsonPath, string
 			continue
 		endif
 
-		WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-		WAVE/Z textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 		if(!WaveExists(numericalValues) || !WaveExists(textualValues))
 			continue
 		endif
@@ -2355,8 +2474,8 @@ static Function/WAVE SF_OperationLabnotebook(variable jsonId, string jsonPath, s
 			continue
 		endif
 
-		WAVE/Z numericalValues = BSP_GetLBNWave(graph, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
-		WAVE/Z textualValues = BSP_GetLBNWave(graph, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z numericalValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+		WAVE/Z textualValues = BSP_GetLogbookWave(graph, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
 		if(!WaveExists(numericalValues) || !WaveExists(textualValues))
 			continue
 		endif
@@ -2515,6 +2634,31 @@ static Function/WAVE SF_OperationApFrequency(variable jsonId, string jsonPath, s
 	return outD
 End
 
+// `store(name, ...)`
+static Function/WAVE SF_OperationStore(variable jsonId, string jsonPath, string graph)
+	string rawCode, preProcCode
+	variable maxEntries, numEntries
+
+	SF_ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 2, "Function accepts only two arguments")
+
+	WAVE/T name = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	SF_ASSERT(IsTextWave(name), "name parameter must be textual")
+	SF_ASSERT(DimSize(name, ROWS) == 1, "name parameter must be a plain string")
+	SF_ASSERT(IsValidLiberalObjectName(name[0]), "Can not use the given name for the labnotebook key")
+
+	WAVE out = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+
+	[rawCode, preProcCode] = SF_GetCode(graph)
+
+	WAVE/T/Z keys, values
+	[keys, values] = SF_CreateResultsWaveWithCode(graph, rawCode, data = out, name = name[0])
+
+	ED_AddEntriesToResults(values, keys, SWEEP_FORMULA_RESULT)
+
+	// return second argument unmodified
+	return out
+End
+
 static Function/WAVE SF_SplitCodeToGraphs(string code)
 
 	string group0, group1
@@ -2655,4 +2799,67 @@ End
 static Function SF_AverageTPFromSweepImpl(WAVE tpData, WAVE tpStart, WAVE sweepData, variable i)
 
 	MultiThread tpData += sweepData[tpStart[i] + p]
+End
+
+Function/WAVE SF_GetAllOldCodeForGUI(string win) // parameter required for popup menu ext
+	WAVE/T/Z entries = SF_GetAllOldCode()
+
+	if(!WaveExists(entries))
+		return $""
+	endif
+
+	entries[] = num2str(p) + ": " + ElideText(ReplaceString("\n", entries[p], " "), 60)
+
+	WAVE/T/Z splittedMenu = PEXT_SplitToSubMenus(entries, method = PEXT_SUBSPLIT_ALPHA)
+
+	PEXT_GenerateSubMenuNames(splittedMenu)
+
+	return splittedMenu
+End
+
+static Function/WAVE SF_GetAllOldCode()
+	string entry
+
+	WAVE/T textualResultsValues = GetLogbookWaves(LBT_RESULTS, LBN_TEXTUAL_VALUES)
+
+	entry = "Sweep Formula code"
+	WAVE/Z indizes = GetNonEmptyLBNRows(textualResultsValues, entry)
+
+	if(!WaveExists(indizes))
+		return $""
+	endif
+
+	Make/FREE/T/N=(DimSize(indizes, ROWS)) entries = textualResultsValues[indizes[p]][%$entry][INDEP_HEADSTAGE]
+
+	return GetUniqueEntries(entries)
+End
+
+Function SF_PopMenuProc_OldCode(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	string sweepFormulaNB, bsPanel, code
+	variable index
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			if(!cmpstr(pa.popStr, NONE))
+				break
+			endif
+
+			bsPanel = BSP_GetPanel(pa.win)
+			sweepFormulaNB = BSP_GetSFFormula(bsPanel)
+			WAVE/T/Z entries = SF_GetAllOldCode()
+			// -2 as we have NONE
+			index = str2num(pa.popStr)
+			code = entries[index]
+
+			// translate back from \n to \r
+			code = ReplaceString("\n", code, "\r")
+
+			ReplaceNotebookText(sweepFormulaNB, code)
+			PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display", val = CHECKBOX_SELECTED)
+			break
+	endswitch
+
+	return 0
 End

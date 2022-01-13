@@ -139,9 +139,15 @@ End
 /// The ITI between sweeps belongs to the earlier sweep. The main use is to add
 /// a labnotebook entry during data acquisition. The similiar named function
 /// AFH_GetLastSweepAcquired() returns the last acquired sweep in comparison.
-Function AS_GetSweepNumber(string device)
+Function AS_GetSweepNumber(string device, [variable allowFallback])
 
 	variable acqState, sweepNo
+
+	if(ParamIsDefault(allowFallback))
+		allowFallback = 0
+	else
+		allowFallback = !!allowFallback
+	endif
 
 	acqState = ROVAR(GetAcquisitionState(device))
 
@@ -149,7 +155,11 @@ Function AS_GetSweepNumber(string device)
 	switch(acqState)
 		case AS_INACTIVE:
 		case AS_EARLY_CHECK:
-			// early return as this is not a valid sweep number
+			// early return as this is not always a valid sweep number
+			if(allowFallback)
+				return AFH_GetLastSweepAcquired(device)
+			endif
+
 			return NaN
 		case AS_PRE_DAQ:
 		case AS_PRE_SWEEP_CONFIG:

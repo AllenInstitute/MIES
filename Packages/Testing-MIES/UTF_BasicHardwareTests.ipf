@@ -4594,6 +4594,10 @@ Function CheckAcquisitionStates(string str)
 				FAIL()
 		endswitch
 	endfor
+
+	CHECK_EQUAL_VAR(ROVar(GetAcquisitionState(str)), AS_INACTIVE)
+	CHECK_EQUAL_VAR(AS_GetSweepNumber(str), NaN)
+	CHECK_EQUAL_VAR(AS_GetSweepNumber(str, allowFallback = 1), sweepNo)
 End
 
 Function ConfigureFails_IGNORE(string device)

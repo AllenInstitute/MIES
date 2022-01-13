@@ -707,7 +707,7 @@ Function PEXT_GenerateSubMenuNames(splitMenu[, method])
 		endfor
 
 		for(i = 0; i < subMenuCnt; i++)
-			subItem = subMenuShort[2 * i] + " .. " + subMenuShort[2 * i + 1]
+			subItem = CleanupName(subMenuShort[2 * i], 1, 20) + " .. " + CleanupName(subMenuShort[2 * i + 1], 1, 20)
 			SetDimLabel ROWS, i, $subItem, splitMenu
 		endfor
 

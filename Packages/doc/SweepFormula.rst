@@ -676,6 +676,20 @@ Apply the decadic (base 10) logarithm to its input.
 
    log10(1, 10, 100) == [0,1,2]
 
+store
+"""""
+
+Write entries into the textual results wave for documentation purposes and
+later querying. The second parameter which can be any numerical/textual array
+will be serialized and stored under the given name.
+
+.. code-block:: bash
+
+   store("fancy feature", [10, 100])
+
+adds the entry "Sweep Formula store [fancy feature]" with a serialized version
+of given array. The operation returns the second parameter unchanged.
+
 Plotting
 ^^^^^^^^
 

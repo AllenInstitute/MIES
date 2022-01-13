@@ -216,7 +216,7 @@ Function OVS_UpdatePanel(string win, [variable fullUpdate])
 		return NaN
 	endif
 
-	WAVE/Z/WAVE allNumericalValues = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES)
+	WAVE/Z/WAVE allNumericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES)
 	ASSERT(WaveExists(allNumericalValues), "Numerical LabNotebook not found.")
 
 	numEntries = DimSize(sweeps, ROWS)
@@ -289,9 +289,9 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 		return NaN
 	endif
 
-	WAVE/Z/WAVE allNumericalValues = BSP_GetLBNWave(win, LBN_NUMERICAL_VALUES)
+	WAVE/Z/WAVE allNumericalValues = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES)
 	ASSERT(WaveExists(allNumericalValues), "Numerical LabNotebook not found.")
-	WAVE/Z/WAVE allTextualValues   = BSP_GetLBNWave(win, LBN_TEXTUAL_VALUES)
+	WAVE/Z/WAVE allTextualValues   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES)
 	ASSERT(WaveExists(allTextualValues), "Textual LabNotebook not found.")
 
 	numEntries = DimSize(sweeps, ROWS)

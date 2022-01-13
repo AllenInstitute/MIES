@@ -5503,3 +5503,61 @@ Function RPI_WorksWithOldData()
 
 	CHECK_EQUAL_WAVES(pulseInfos_d150d896e, pulseInfos_22c735d7, mode = WAVE_DATA)
 End
+
+Function/WAVE ETValidInput()
+
+   // input string, output string, passed length
+	Make/FREE/T wv0 = {"a", "a", "1"}
+	Make/FREE/T wv1 = {"abcd", "abcd", "10"}
+	Make/FREE/T wv2 = {"abcd ef gh", "ab...", "5"}
+	Make/FREE/T wv3 = {"a bcd ef gh", "a...", "5"}
+	Make/FREE/T wv4 = {"a\rbcd\ref\rgh", "a...", "5"}
+	Make/FREE/T wv5 = {"a\rbcd\ref\rgh", "a\rbcd...", "9"}
+	Make/FREE/T wv6 = {" \t\r\nabcd", " ...", "4"}
+
+	Make/WAVE/FREE wv = {wv0, wv1, wv2, wv3, wv4, wv5, wv6}
+
+	return wv
+End
+
+// UTF_TD_GENERATOR ETValidInput
+Function ET_Works([WAVE/T wv])
+	string ref, str, result
+	variable length
+
+	str    = wv[0]
+	ref    = wv[1]
+	length = str2num(wv[2])
+
+	result = ElideText(str, length)
+	CHECK_EQUAL_STR(ref, result)
+	CHECK_LE_VAR(strlen(ref), length)
+End
+
+Function/WAVE ETInvalidInput()
+
+   // input string, passed length
+	Make/FREE/T wv0 = {" \t\r\n", "1"}
+	Make/FREE/T wv1 = {" abcd", "1"}
+	Make/FREE/T wv2 = {" abcd", "1.5"}
+
+	Make/WAVE/FREE wv = {wv0, wv1, wv2}
+
+	return wv
+End
+
+// UTF_TD_GENERATOR ETInvalidInput
+Function ET_Fails([WAVE/T wv])
+	string str
+	variable length
+
+	str    = wv[0]
+	length = str2num(wv[1])
+
+	try
+		ElideText(str, length)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End

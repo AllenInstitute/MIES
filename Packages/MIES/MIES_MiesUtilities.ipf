@@ -88,8 +88,74 @@ End
 
 /// @brief Return the logbook type, one of @ref LogbookTypes
 Function GetLogbookType(WAVE wv)
+	string name
 
-	return GrepString(NameOfWave(wv), TP_STORAGE_REGEXP) == 1 ? LBT_TPSTORAGE : LBT_LABNOTEBOOK
+	name = NameOfWave(wv)
+
+	if(GrepString(name, TP_STORAGE_REGEXP))
+		return LBT_TPSTORAGE
+	elseif(GrepString(name, "(?i)(numerical|textual)(Keys|Values)"))
+		return LBT_LABNOTEBOOK
+	elseif(GrepString(name, "(?i)(numerical|textual)Results(Keys|Values)"))
+		return LBT_RESULTS
+	endif
+
+	ASSERT(0, "Unrecognized wave: " + name)
+End
+
+/// @brief Return the logbook waves
+///
+/// @param device          [optional only for LBT_RESULTS] device
+/// @param logbookType     one of @ref LogbookTypes
+/// @param logbookWaveType one of @ref LabnotebookWaveTypes
+Function/WAVE GetLogbookWaves(variable logbookType, variable logbookWaveType, [string device])
+
+	switch(logbookType)
+		case LBT_TPSTORAGE:
+			ASSERT(logbookWaveType == LBN_NUMERICAL_VALUES, "Invalid logbookDataType")
+			ASSERT(!ParamIsDefault(device), "Invalid device parameter")
+
+			return GetTPStorage(device)
+		case LBT_LABNOTEBOOK:
+			ASSERT(!ParamIsDefault(device), "Invalid device parameter")
+
+			switch(logbookWaveType)
+				case LBN_NUMERICAL_KEYS:
+					FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBNumericalKeys
+					break
+				case LBN_NUMERICAL_VALUES:
+					FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBNumericalValues
+					break
+				case LBN_TEXTUAL_KEYS:
+					FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBTextualKeys
+					break
+				case LBN_TEXTUAL_VALUES:
+					FUNCREF DAQ_LBN_GETTER_PROTO func = GetLBTextualValues
+					break
+				default:
+					ASSERT(0, "Invalid type")
+			endswitch
+
+			return func(device)
+		case LBT_RESULTS:
+			// ignore device parameter to ease call sites
+
+			switch(logbookWaveType)
+				case LBN_NUMERICAL_KEYS:
+					return GetNumericalResultsKeys()
+				case LBN_NUMERICAL_VALUES:
+					return GetNumericalResultsValues()
+				case LBN_TEXTUAL_KEYS:
+					return GetTextualResultsKeys()
+				case LBN_TEXTUAL_VALUES:
+					return GetTextualResultsValues()
+				default:
+					ASSERT(0, "Invalid type")
+			endswitch
+			break
+		default:
+			ASSERT(0, "Invalid logbook type")
+	endswitch
 End
 
 /// @brief Extract a date/time slice of the logbook wave
@@ -101,6 +167,7 @@ Function/WAVE ExtractLogbookSliceTimeStamp(WAVE logbook)
 
 	switch(logbookType)
 		case LBT_LABNOTEBOOK:
+		case LBT_RESULTS:
 			colOrLayer = 1
 			break
 		case LBT_TPSTORAGE:
@@ -122,6 +189,7 @@ Function/WAVE ExtractLogbookSliceDeltaTime(WAVE logbook)
 
 	switch(logbookType)
 		case LBT_LABNOTEBOOK:
+		case LBT_RESULTS:
 			ASSERT(0, "Unsupported")
 			break
 		case LBT_TPSTORAGE:
@@ -164,6 +232,7 @@ static Function/WAVE ExtractLogbookSlice(WAVE logbook, variable logbookType, var
 
 	switch(logbookType)
 		case LBT_LABNOTEBOOK:
+		case LBT_RESULTS:
 			entryName = GetDimLabel(logbook, COLS, colOrLayer)
 			col   = colOrLayer
 			layer = -1
@@ -444,7 +513,7 @@ threadsafe static Function FindRange(wv, col, val, forwardORBackward, entrySourc
 
 	// still correct without startLayer/endLayer coordinates
 	// as we always have sweepNumber/etc. in the first layer
-	if(IsNaN(val))
+	if(IsNaN(val) && IsNumericWave(wv))
 		WAVE/Z indizesSetting = FindIndizes(wv, col=col, prop=PROP_EMPTY)
 	else
 		WAVE/Z indizesSetting = FindIndizes(wv, col=col, var=val)
@@ -1613,7 +1682,7 @@ threadsafe Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValue
 End
 
 /// @brief Return a wave with all labnotebook rows which have a non-empty entry for setting
-threadsafe static Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
+threadsafe Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
    WAVE labnotebookValues
    string setting
 
@@ -2544,7 +2613,15 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
 	WAVE/D/Z statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 	if(!WaveExists(statusHS))
-		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCs[p]) && IsFinite(DACs[p])
+		// 5872e556 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
+		WAVE/Z DACsFromLBN = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+		ASSERT_TS(WaveExists(DACsFromLBN), "Labnotebook is too old for workaround.")
+
+		// 5872e556 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
+		WAVE/Z ADCsFromLBN = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
+		ASSERT_TS(WaveExists(ADCsFromLBN), "Labnotebook is too old for workaround.")
+
+		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCsFromLBN[p]) && IsFinite(DACsFromLBN[p])
 	endif
 
 	BSP_RemoveDisabledChannels(channelSelWave, ADCs, DACs, statusHS, numericalValues, sweepNo)

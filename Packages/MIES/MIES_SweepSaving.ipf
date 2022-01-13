@@ -46,11 +46,6 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 	WAVE sweepWave = GetSweepWave(device, sweepNo)
 	WAVE configWave = GetConfigWave(sweepWave)
 
-	SetSetVariableLimits(device, "SetVar_Sweep", 0, sweepNo + 1, 1)
-	// SetVar_Sweep currently disabled so we have to write manually in the GUIStateWave
-	SetSetVariable(device, "SetVar_Sweep", sweepNo + 1)
-	DAG_Update(device, "SetVar_Sweep", val = sweepNo + 1)
-
 	EP_WriteEpochInfoIntoSweepSettings(device, sweepWave, configWave)
 
 	// Add labnotebook entries for the acquired sweep
@@ -61,6 +56,11 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 	endif
 
 	SWS_AfterSweepDataChangeHook(device)
+
+	SetSetVariableLimits(device, "SetVar_Sweep", 0, sweepNo + 1, 1)
+	// SetVar_Sweep currently disabled so we have to write manually in the GUIStateWave
+	SetSetVariable(device, "SetVar_Sweep", sweepNo + 1)
+	DAG_Update(device, "SetVar_Sweep", val = sweepNo + 1)
 
 	AS_HandlePossibleTransition(device, AS_POST_SWEEP, call = !forcedStop)
 

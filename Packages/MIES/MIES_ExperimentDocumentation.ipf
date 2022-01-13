@@ -13,22 +13,36 @@
 ///
 /// @see ED_createTextNotes, ED_createWaveNote
 Function ED_AddEntriesToLabnotebook(WAVE vals, WAVE/T keys, variable sweepNo, string device, variable entrySourceType)
+	ED_CheckValuesAndKeys(vals, keys)
 
+	if(IsTextWave(vals))
+		ED_createTextNotes(vals, keys, sweepNo, entrySourceType, LBT_LABNOTEBOOK, device = device)
+	else
+		ED_createWaveNotes(vals, keys, sweepNo, entrySourceType, LBT_LABNOTEBOOK, device = device)
+	endif
+End
+
+/// @brief Add numerical/textual entries to results
+Function ED_AddEntriesToResults(WAVE vals, WAVE/T keys, variable entrySourceType)
+	ED_CheckValuesAndKeys(vals, keys)
+
+	if(IsTextWave(vals))
+		ED_createTextNotes(vals, keys, NaN, entrySourceType, LBT_RESULTS)
+	else
+		ED_createWaveNotes(vals, keys, NaN, entrySourceType, LBT_RESULTS)
+	endif
+End
+
+static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
 	ASSERT(DimSize(vals, ROWS)   == 1, "Mismatched row count")
 	ASSERT(DimSize(vals, COLS)   == DimSize(keys, COLS), "Mismatched column count")
 	ASSERT(DimSize(vals, LAYERS) <= LABNOTEBOOK_LAYER_COUNT, "Mismatched layer count")
 
 	ASSERT(DimSize(keys, ROWS)   == 1 || DimSize(keys, ROWS) == 3, "Mismatched row count")
 	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
-
-	if(IsTextWave(vals))
-		ED_createTextNotes(vals, keys, sweepNo, device, entrySourceType)
-	else
-		ED_createWaveNotes(vals, keys, sweepNo, device, entrySourceType)
-	endif
 End
 
-/// @brief Add textual entries to the labnotebook
+/// @brief Add textual entries to the logbook
 ///
 /// The text documentation wave will use layers to report the different headstages.
 ///
@@ -36,55 +50,60 @@ End
 /// first eight layers are for headstage dependent data, the last layer for
 /// headstage independent data.
 ///
-/// @param incomingTextualValues  incoming Text Documentation Wave sent by the each reporting subsystem
-/// @param incomingTextualKeys    incoming Text Documentation key wave that is used to reference the incoming settings wave
-/// @param sweepNo                sweep number
-/// @param device             device
-/// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
-static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo, device, entrySourceType)
-	wave/T incomingTextualValues
-	wave/T incomingTextualKeys
-	string device
-	variable sweepNo, entrySourceType
-
+/// @param incomingTextualValues incoming Text Documentation Wave sent by the each reporting subsystem
+/// @param incomingTextualKeys   incoming Text Documentation key wave that is used to reference the incoming settings wave
+/// @param sweepNo               sweep number
+/// @param device                [optional for logbookType LBT_RESULTS only] device
+/// @param entrySourceType       type of reporting subsystem, one of @ref DataAcqModes
+/// @param logbookType           type of the logbook, one of @ref LogbookTypes
+static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incomingTextualKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
 	variable rowIndex, numCols, i, lastValidIncomingLayer, state
 	string timestamp
 
-	WAVE/T textualValues = GetLBTextualValues(device)
-	WAVE/T textualKeys   = GetLBTextualKeys(device)
+	if(ParamIsDefault(device))
+		ASSERT(logbookType == LBT_RESULTS, "Invalid logbook type")
+		state = AS_INACTIVE
 
-	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
+		WAVE/T values = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES)
+		WAVE/T keys = GetLogbookWaves(logbookType, LBN_TEXTUAL_KEYS)
+	else
+		WAVE/T values = GetLogbookWaves(logbookType, LBN_TEXTUAL_VALUES, device = device)
+		WAVE/T keys = GetLogbookWaves(logbookType, LBN_TEXTUAL_KEYS, device = device)
 
-	textualValues[rowIndex][0][] = num2istr(sweepNo)
-	textualValues[rowIndex][3][] = num2istr(entrySourceType)
+		state = ROVar(GetAcquisitionState(device))
+	endif
 
-	state = ROVar(GetAcquisitionState(device))
-	textualValues[rowIndex][4][] = num2istr(state)
+	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, keys, values, rowIndex)
+
+	values[rowIndex][0][] = num2istr(sweepNo)
+	values[rowIndex][3][] = num2istr(entrySourceType)
+
+	values[rowIndex][4][] = num2istr(state)
 
 	// store the current time in a variable first
 	// so that all layers have the same timestamp
 	timestamp = num2strHighPrec(DateTime, precision = 3)
-	textualValues[rowIndex][1][] = timestamp
+	values[rowIndex][1][] = timestamp
 	timestamp = num2strHighPrec(DateTimeInUTC(), precision = 3)
-	textualValues[rowIndex][2][] = timestamp
+	values[rowIndex][2][] = timestamp
 
-	WAVE textualValuesDat = ExtractLogbookSliceTimeStamp(textualValues)
-	EnsureLargeEnoughWave(textualValuesDat, minimumSize=rowIndex, dimension=ROWS)
-	textualValuesDat[rowIndex] = str2num(textualValues[rowIndex][1])
+	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
+	EnsureLargeEnoughWave(valuesDat, minimumSize=rowIndex, dimension=ROWS)
+	valuesDat[rowIndex] = str2num(values[rowIndex][1])
 
-	WAVE textualValuesSweep = ExtractLogbookSliceSweep(textualValues)
-	EnsureLargeEnoughWave(textualValuesSweep, minimumSize=rowIndex, dimension=ROWS)
-	textualValuesSweep[rowIndex] = str2num(textualValues[rowIndex][0])
+	WAVE valuesSweep = ExtractLogbookSliceSweep(values)
+	EnsureLargeEnoughWave(valuesSweep, minimumSize=rowIndex, dimension=ROWS)
+	valuesSweep[rowIndex] = str2num(values[rowIndex][0])
 
 	numCols = DimSize(incomingTextualValues, COLS)
 	lastValidIncomingLayer = DimSize(incomingTextualValues, LAYERS) == 0 ? 0 : DimSize(incomingTextualValues, LAYERS) - 1
 	for(i = 0; i < numCols; i += 1)
-		textualValues[rowIndex][indizes[i]][0, lastValidIncomingLayer] = NormalizeToEOL(incomingTextualValues[0][i][r], "\n")
+		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = NormalizeToEOL(incomingTextualValues[0][i][r], "\n")
 	endfor
 
-	SetNumberInWaveNote(textualValues, NOTE_INDEX, rowIndex + 1)
+	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
 
-	LBN_SetDimensionLabels(textualKeys, textualValues)
+	LBN_SetDimensionLabels(keys, values)
 End
 
 /// @brief Add numerical entries to the labnotebook
@@ -98,48 +117,53 @@ End
 /// @param incomingNumericalValues settingsWave sent by the each reporting subsystem
 /// @param incomingNumericalKeys   key wave that is used to reference the incoming settings wave
 /// @param sweepNo                 sweep number
-/// @param device              device
+/// @param device                  [optional for logbooktype LBT_RESULTS only] device
 /// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
-static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKeys, sweepNo, device, entrySourceType)
-	wave incomingNumericalValues
-	wave/T incomingNumericalKeys
-	string device
-	variable sweepNo
-	variable entrySourceType
-
+/// @param logbookType             one of @ref LogbookTypes
+static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incomingNumericalKeys, variable sweepNo, variable entrySourceType, variable logbookType, [string device])
 	variable rowIndex, numCols, lastValidIncomingLayer, i, timestamp, state
 
-	WAVE/T numericalKeys = GetLBNumericalKeys(device)
-	WAVE numericalValues = GetLBNumericalValues(device)
+	if(ParamIsDefault(device))
+		ASSERT(logbookType == LBT_RESULTS, "Invalid logbook type")
 
-	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, numericalKeys, numericalValues, rowIndex)
+		WAVE values = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES)
+		WAVE/T keys = GetLogbookWaves(logbookType, LBN_NUMERICAL_KEYS)
 
-	numericalValues[rowIndex][0][] = sweepNo
-	numericalValues[rowIndex][3][] = entrySourceType
+		state = AS_INACTIVE
+	else
+		WAVE values = GetLogbookWaves(logbookType, LBN_NUMERICAL_VALUES, device = device)
+		WAVE/T keys = GetLogbookWaves(logbookType, LBN_NUMERICAL_KEYS, device = device)
 
-	state = ROVar(GetAcquisitionState(device))
-	numericalValues[rowIndex][4][] = state
+		state = ROVar(GetAcquisitionState(device))
+	endif
+
+	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, keys, values, rowIndex)
+
+	values[rowIndex][0][] = sweepNo
+	values[rowIndex][3][] = entrySourceType
+
+	values[rowIndex][4][] = state
 
 	// store the current time in a variable first
 	// so that all layers have the same timestamp
 	timestamp = DateTime
-	numericalValues[rowIndex][1][] = timestamp
+	values[rowIndex][1][] = timestamp
 	timestamp = DateTimeInUTC()
-	numericalValues[rowIndex][2][] = timestamp
+	values[rowIndex][2][] = timestamp
 
-	WAVE numericalValuesDat = ExtractLogbookSliceTimeStamp(numericalValues)
-	EnsureLargeEnoughWave(numericalValuesDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
-	numericalValuesDat[rowIndex] = numericalValues[rowIndex][1]
+	WAVE valuesDat = ExtractLogbookSliceTimeStamp(values)
+	EnsureLargeEnoughWave(valuesDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
+	valuesDat[rowIndex] = values[rowIndex][1]
 
 	numCols = DimSize(incomingNumericalValues, COLS)
 	lastValidIncomingLayer = DimSize(incomingNumericalValues, LAYERS) == 0 ? 0 : DimSize(incomingNumericalValues, LAYERS) - 1
 	for(i = 0; i < numCols; i += 1)
-		numericalValues[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingNumericalValues[0][i][r]
+		values[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingNumericalValues[0][i][r]
 	endfor
 
-	SetNumberInWaveNote(numericalValues, NOTE_INDEX, rowIndex + 1)
+	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
 
-	LBN_SetDimensionLabels(numericalKeys, numericalValues)
+	LBN_SetDimensionLabels(keys, values)
 End
 
 /// @brief Add custom entries to the numerical/textual labnotebook for the very last sweep acquired.
@@ -164,7 +188,7 @@ End
 /// \rst
 /// .. code-block:: igorpro
 ///
-///		WAVE/Z settings = GetLastSetting(numericalValues, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
+///		WAVE/Z settings = GetLastSetting(values, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
 /// \endrst
 ///
 /// @param device      device
@@ -336,12 +360,6 @@ static Function ED_WriteChangedValuesToNoteText(device, sweepNo)
 	string key, factor, text, frontLabel
 	string str = ""
 	variable tolerance, i, j, numRows, numCols
-
-	// GetLastSetting will overwrite that on the first call
-	variable firstCurrent  = LABNOTEBOOK_GET_RANGE
-	variable lastCurrent   = LABNOTEBOOK_GET_RANGE
-	variable firstPrevious = LABNOTEBOOK_GET_RANGE
-	variable lastPrevious  = LABNOTEBOOK_GET_RANGE
 
 	WAVE/T textualValues = GetLBTextualValues(device)
 	WAVE/T textualKeys   = GetLBTextualKeys(device)
