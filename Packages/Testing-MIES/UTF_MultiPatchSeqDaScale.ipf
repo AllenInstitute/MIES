@@ -73,7 +73,7 @@ static Constant EACH_SCI       = 0x02
 static Constant INDEP          = 0x04
 static Constant SINGLE_SCI     = 0x08
 
-static Function/WAVE GetResults_IGNORE(sweepNo, device, str, headstage, mode)
+static Function/WAVE GetLBNSingleEntry_IGNORE(sweepNo, device, str, headstage, mode)
 	variable sweepNo
 	string device
 	variable headstage, mode
@@ -119,19 +119,19 @@ static Function MSQ_DS1_REENTRY([str])
 
 	sweepNo = 4
 
-	WAVE/Z headstageActive = GetResults_IGNORE(sweepNo, str, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	WAVE/Z headstageActive = GetLBNSingleEntry_IGNORE(sweepNo, str, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(headstageActive, {1, 0, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z setPass = GetResults_IGNORE(sweepNo, str, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(sweepNo, str, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {1}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(sweepNo, str, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(sweepNo, str, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(sweepNo, str, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(sweepNo, str, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z stimScale = GetResults_IGNORE(sweepNo, str, STIMSET_SCALE_FACTOR_KEY, 0, EACH_SCI)
+	WAVE/Z stimScale = GetLBNSingleEntry_IGNORE(sweepNo, str, STIMSET_SCALE_FACTOR_KEY, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(stimScale, {33, 43, 53, 63, 73}, mode = WAVE_DATA)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, setPass)

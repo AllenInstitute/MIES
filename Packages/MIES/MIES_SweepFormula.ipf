@@ -1754,17 +1754,17 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 			endif
 			if(!IsEmpty(unitKey))
 				[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, unitKey, channelNr, channelType, DATA_ACQUISITION_MODE)
-				ASSERT(WaveExists(settings), "Failed to retrieve channel unit from LBN")
+				SF_ASSERT(WaveExists(settings), "Failed to retrieve channel unit from LBN")
 				WAVE/T settingsT = settings
 				unit = settingsT[index]
 			endif
 
 			headstage = GetHeadstageForChannel(numericalValues, sweep, channelType, channelNr, DATA_ACQUISITION_MODE)
-			ASSERT(IsFinite(headstage), "Associated headstage must not be NaN")
+			SF_ASSERT(IsFinite(headstage), "Associated headstage must not be NaN")
 			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, "DAC", channelNr, channelType, DATA_ACQUISITION_MODE)
-			ASSERT(WaveExists(settings), "Failed to retrieve DAC channels from LBN")
+			SF_ASSERT(WaveExists(settings), "Failed to retrieve DAC channels from LBN")
 			dacChannelNr = settings[headstage]
-			ASSERT(IsFinite(dacChannelNr), "DAC channel number must be finite")
+			SF_ASSERT(IsFinite(dacChannelNr), "DAC channel number must be finite")
 
 			WAVE/Z/T epochMatches = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epochTPRegExp)
 			if(!WaveExists(epochMatches))
@@ -1774,9 +1774,9 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 			// Use first TP as reference for pulse length and baseline
 			epShortName = EP_GetShortName(epochMatches[0][EPOCH_COL_TAGS])
 			WAVE/Z/T epochTPPulse = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epShortName + "_P")
-			ASSERT(WaveExists(epochTPPulse) && DimSize(epochTPPulse, ROWS) == 1, "No TP Pulse epoch found for TP epoch")
+			SF_ASSERT(WaveExists(epochTPPulse) && DimSize(epochTPPulse, ROWS) == 1, "No TP Pulse epoch found for TP epoch")
 			WAVE/Z/T epochTPBaseline = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epShortName + "_B0")
-			ASSERT(WaveExists(epochTPBaseline) && DimSize(epochTPBaseline, ROWS) == 1, "No TP Baseline epoch found for TP epoch")
+			SF_ASSERT(WaveExists(epochTPBaseline) && DimSize(epochTPBaseline, ROWS) == 1, "No TP Baseline epoch found for TP epoch")
 			tpBaseLineT = (str2num(epochTPBaseline[0][EPOCH_COL_ENDTIME]) - str2num(epochTPBaseline[0][EPOCH_COL_STARTTIME])) * 1E3
 
 			// Assemble TP data
@@ -1786,7 +1786,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 			tpInput.baselineFrac =  TP_CalculateBaselineFraction(tpInput.duration, tpInput.duration + 2 * tpBaseLineT)
 
 			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, CLAMPMODE_ENTRY_KEY, dacChannelNr, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
-			ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Mode from LBN")
+			SF_ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Mode from LBN")
 			tpInput.clampMode = settings[index]
 
 			if(tpInput.clampMode == V_CLAMP_MODE)
@@ -1798,7 +1798,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 			endif
 
 			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, tpAmpKey, dacChannelNr, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
-			ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Ampitude from LBN")
+			SF_ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Ampitude from LBN")
 			tpInput.clampAmp = settings[index]
 
 			// values not required for calculation result
@@ -2784,7 +2784,7 @@ static Function/WAVE SF_AverageTPFromSweep(WAVE/T epochMatches, WAVE sweepData)
 	Make/FREE/D/N=(numTPEpochs) tpStart = trunc(str2num(epochMatches[p][EPOCH_COL_STARTTIME]) * 1E3 / sweepDelta)
 	Make/FREE/D/N=(numTPEpochs) tpDelta = trunc(str2num(epochMatches[p][EPOCH_COL_ENDTIME]) * 1E3 / sweepDelta) - tpStart[p]
 	[tpDataSizeMin, tpDataSizeMax] = WaveMinAndMaxWrapper(tpDelta)
-	ASSERT(tpDataSizeMax - tpDataSizeMin <= 1, "TP data size from TP epochs mismatch within sweep.")
+	SF_ASSERT(tpDataSizeMax - tpDataSizeMin <= 1, "TP data size from TP epochs mismatch within sweep.")
 
 	Make/FREE/D/N=(tpDataSizeMin) tpData
 	CopyScales/P sweepData, tpData

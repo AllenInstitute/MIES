@@ -123,7 +123,7 @@ static Constant INDEP            = 0x04
 static Constant SINGLE_SCI       = 0x08
 static Constant INDEP_SINGLE_SCI = 0x10
 
-static Function/WAVE GetResults_IGNORE(string device, variable sweepNo, string str, variable headstage, variable mode, [variable textualEntry])
+static Function/WAVE GetLBNSingleEntry_IGNORE(string device, variable sweepNo, string str, variable headstage, variable mode, [variable textualEntry])
 
 	string key
 
@@ -192,37 +192,37 @@ static Function/WAVE GetLBNEntries_IGNORE(string device, variable sweepNo)
 
 	WAVE/WAVE wv = GetLBNEntriesWave_IGNORE()
 
-	wv[%sweepPass] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
-	wv[%setPass] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
-	wv[%failedPulseLevel] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_FAILED_PULSE_LEVEL, 0, INDEP_SINGLE_SCI)
-	wv[%idealSpikeCounts] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS, 0, INDEP_SINGLE_SCI)
+	wv[%sweepPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	wv[%setPass] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	wv[%failedPulseLevel] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_FAILED_PULSE_LEVEL, 0, INDEP_SINGLE_SCI)
+	wv[%idealSpikeCounts] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_IDEAL_SPIKE_COUNTS, 0, INDEP_SINGLE_SCI)
 
-	wv[%headstagePass_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
-	wv[%headstagePass_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	wv[%headstagePass_HS0] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	wv[%headstagePass_HS1] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 
 	wv[%setSweepCount_HS0] = GetLastSettingEachSCI(numericalValues, sweepNo, "Set Sweep Count", 0, DATA_ACQUISITION_MODE)
 	wv[%setSweepCount_HS1] = GetLastSettingEachSCI(numericalValues, sweepNo, "Set Sweep Count", 1, DATA_ACQUISITION_MODE)
 
-	wv[%rerunTrials_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL, 0, EACH_SCI)
-	wv[%rerunTrials_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL, 1, EACH_SCI)
+	wv[%rerunTrials_HS0] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL, 0, EACH_SCI)
+	wv[%rerunTrials_HS1] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL, 1, EACH_SCI)
 
-	wv[%rerunTrialsExceeded_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL_EXC, 0, EACH_SCI)
-	wv[%rerunTrialsExceeded_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL_EXC, 1, EACH_SCI)
+	wv[%rerunTrialsExceeded_HS0] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL_EXC, 0, EACH_SCI)
+	wv[%rerunTrialsExceeded_HS1] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_RERUN_TRIAL_EXC, 1, EACH_SCI)
 
-	wv[%spikeCounts_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_COUNTS, 0, EACH_SCI, textualEntry = 1)
-	wv[%spikeCounts_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_COUNTS, 1, EACH_SCI, textualEntry = 1)
+	wv[%spikeCounts_HS0] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_COUNTS, 0, EACH_SCI, textualEntry = 1)
+	wv[%spikeCounts_HS1] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_COUNTS, 1, EACH_SCI, textualEntry = 1)
 
-	wv[%spikeCountsState_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, 0, EACH_SCI, textualEntry = 1)
-	wv[%spikeCountsState_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, 1, EACH_SCI, textualEntry = 1)
+	wv[%spikeCountsState_HS0] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, 0, EACH_SCI, textualEntry = 1)
+	wv[%spikeCountsState_HS1] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_COUNTS_STATE, 1, EACH_SCI, textualEntry = 1)
 
-	wv[%spikePositionQC_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_POSITION_PASS, 0, EACH_SCI)
-	wv[%spikePositionQC_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_POSITION_PASS, 1, EACH_SCI)
+	wv[%spikePositionQC_HS0] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_POSITION_PASS, 0, EACH_SCI)
+	wv[%spikePositionQC_HS1] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_POSITION_PASS, 1, EACH_SCI)
 
-	wv[%spikePositions_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_POSITIONS, 0, EACH_SCI, textualEntry = 1)
-	wv[%spikePositions_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_POSITIONs, 1, EACH_SCI, textualEntry = 1)
+	wv[%spikePositions_HS0] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_POSITIONS, 0, EACH_SCI, textualEntry = 1)
+	wv[%spikePositions_HS1] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPIKE_POSITIONs, 1, EACH_SCI, textualEntry = 1)
 
-	wv[%spontSpikeQC_HS0] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPONT_SPIKE_PASS, 0, EACH_SCI)
-	wv[%spontSpikeQC_HS1] = GetResults_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPONT_SPIKE_PASS, 1, EACH_SCI)
+	wv[%spontSpikeQC_HS0] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPONT_SPIKE_PASS, 0, EACH_SCI)
+	wv[%spontSpikeQC_HS1] = GetLBNSingleEntry_IGNORE(device, sweepNo, MSQ_FMT_LBN_SPONT_SPIKE_PASS, 1, EACH_SCI)
 
 	wv[%stimScale_HS0] = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
 	wv[%stimScale_HS1] = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)

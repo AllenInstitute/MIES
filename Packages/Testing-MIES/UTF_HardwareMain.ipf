@@ -1302,7 +1302,13 @@ Function CheckPSQChunkTimes(string dev, WAVE chunkTimes[, variable sweep])
 				endTime = str2num(userChunkEpochs[k][EPOCH_COL_ENDTIME])
 				startRef = chunkTimes[k << 1] / 1E3
 				endRef = chunkTimes[k << 1 + 1] / 1E3
-				CHECK_CLOSE_VAR(startTime, startRef, tol = 0.0005)
+
+				if(CheckIfSmall(startRef, tol = 1e-12))
+					CHECK_SMALL_VAR(startTime)
+				else
+					CHECK_CLOSE_VAR(startTime, startRef, tol = 0.0005)
+				endif
+
 				CHECK_CLOSE_VAR(endTime, endRef, tol = 0.0005)
 			endfor
 		endfor

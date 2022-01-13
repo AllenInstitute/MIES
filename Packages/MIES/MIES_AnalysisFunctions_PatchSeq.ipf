@@ -1244,6 +1244,20 @@ static Function PSQ_GetDefaultSamplingFrequency(variable type)
 	endswitch
 End
 
+/// @brief Returns the sampling frequency in kHz of our supported NI and ITC
+/// hardware for one active headstage and no TTL channels.
+Function PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(string device)
+
+	switch(GetHardwareType(device))
+		case HARDWARE_ITC_DAC:
+			return 50
+		case HARDWARE_NI_DAC:
+			return 125
+		default:
+			ASSERT(0, "Unknown hardware")
+	endswitch
+End
+
 /// @brief Return the QC state of the sampling interval/frequency check and store it also in the labnotebook
 static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, variable type, struct AnalysisFunction_V3& s)
 	variable samplingFrequency, expected, actual, samplingFrequencyPassed, defaultFreq
@@ -1254,8 +1268,12 @@ static Function PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(string device, v
 
 	ASSERT(!cmpstr(StringByKey("XUNITS", WaveInfo(s.scaledDACWave, 0)), "ms"), "Unexpected wave x unit")
 
+#ifdef EVIL_KITTEN_EATING_MODE
+	actual = PSQ_GetDefaultSamplingFrequencyForSingleHeadstage(device) * 1e3
+#else
 	// dimension delta [ms]
 	actual = 1.0 / (DimDelta(s.scaledDACWave, ROWS) * 1e-3)
+#endif
 
 	// samplingFrequency [kHz]
 	expected = samplingFrequency * 1e3

@@ -79,7 +79,7 @@ static Constant EACH_SCI       = 0x02
 static Constant INDEP          = 0x04
 static Constant SINGLE_SCI     = 0x08
 
-static Function/WAVE GetResults_IGNORE(device, sweepNo, str, headstage, mode)
+static Function/WAVE GetLBNSingleEntry_IGNORE(device, sweepNo, str, headstage, mode)
 	string device
 	variable sweepNo, headstage, mode
 	string str
@@ -126,25 +126,25 @@ static Function MSQ_FRE1_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE/Z setPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, UNKNOWN_MODE)
@@ -153,28 +153,28 @@ static Function MSQ_FRE1_REENTRY([str])
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
-	WAVE/Z activeHS = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(activeHS, {1, 1, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
 	WaveTransform/O zapNaNs, activeHS
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
 
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
@@ -183,10 +183,10 @@ static Function MSQ_FRE1_REENTRY([str])
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	CHECK_CLOSE_VAR(DAG_GetNumericalValue(str, lbl, index = 1), 2100)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
@@ -216,25 +216,25 @@ static Function MSQ_FRE2_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE/Z setPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
@@ -243,28 +243,28 @@ static Function MSQ_FRE2_REENTRY([str])
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
-	WAVE/Z activeHS = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(activeHS, {1, 1, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
 	WaveTransform/O zapNaNs, activeHS
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
 
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
@@ -275,10 +275,10 @@ static Function MSQ_FRE2_REENTRY([str])
 
 	CHECK_CLOSE_VAR(DAG_GetNumericalValue(str, lbl, index = 1), 2100)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
@@ -308,25 +308,25 @@ static Function MSQ_FRE3_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE/Z setPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
@@ -335,28 +335,28 @@ static Function MSQ_FRE3_REENTRY([str])
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320},  mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10}, mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10}, mode = WAVE_DATA)
 
-	WAVE/Z activeHS = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(activeHS, {1, 1, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
 	WaveTransform/O zapNaNs, activeHS
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
 
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
@@ -365,10 +365,10 @@ static Function MSQ_FRE3_REENTRY([str])
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	CHECK_CLOSE_VAR(DAG_GetNumericalValue(str, lbl, index = 1), 330)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
@@ -401,25 +401,25 @@ static Function MSQ_FRE4_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE/Z setPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
@@ -428,28 +428,28 @@ static Function MSQ_FRE4_REENTRY([str])
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z activeHS = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(activeHS, {1, 1, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
 	WaveTransform/O zapNaNs, activeHS
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
 
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
@@ -460,10 +460,10 @@ static Function MSQ_FRE4_REENTRY([str])
 
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, lbl, index = 1), 0)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
@@ -499,25 +499,25 @@ static Function MSQ_FRE5_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE/Z setPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {1}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 1, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 1, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 1, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
@@ -526,31 +526,31 @@ static Function MSQ_FRE5_REENTRY([str])
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 0, 0, 0, 0},  mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, -50, 10, 10}, mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z activeHS = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(activeHS, {1, 1, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
 	WaveTransform/O zapNaNs, activeHS
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, 560e-12}, mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, 160e-12, NaN, NaN, NaN, NaN},  mode = WAVE_DATA, tol = 1e-14)
 
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
@@ -561,10 +561,10 @@ static Function MSQ_FRE5_REENTRY([str])
 
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, lbl, index = 1), 0)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
@@ -604,25 +604,25 @@ static Function MSQ_FRE6_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE/Z setPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {1}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
 	CHECK_WAVE(sweepPass, NULL_WAVE)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 	CHECK_WAVE(headstagePass, NULL_WAVE)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 1, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
 	CHECK_WAVE(spikeDetectionWave, NULL_WAVE)
 
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
@@ -631,36 +631,36 @@ static Function MSQ_FRE6_REENTRY([str])
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(stimScale, NULL_WAVE)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, -50, 10, 10}, mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
 	CHECK_WAVE(stepsizes, NULL_WAVE)
 
-	WAVE/Z activeHS = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(activeHS, {1, 1, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
 	WaveTransform/O zapNaNs, activeHS
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
 	CHECK_WAVE(rangeExceeded, NULL_WAVE)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, 560e-12}, mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
 
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, lbl, index = 0), 0)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
@@ -705,25 +705,25 @@ static Function MSQ_FRE7_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE/Z setPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {1}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 1, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 1, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 1, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
@@ -732,31 +732,31 @@ static Function MSQ_FRE7_REENTRY([str])
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 0, 0, 0, 0},  mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, -50, 10, 10}, mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z activeHS = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(activeHS, {1, 1, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
 	WaveTransform/O zapNaNs, activeHS
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, 560e-12}, mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, 160e-12, NaN, NaN, NaN, NaN},  mode = WAVE_DATA, tol = 1e-14)
 
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
@@ -767,10 +767,10 @@ static Function MSQ_FRE7_REENTRY([str])
 
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, lbl, index = 1), 160 * 1.5)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
@@ -805,25 +805,25 @@ static Function MSQ_FRE8_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE/Z setPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 1, 0, 1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
@@ -832,31 +832,31 @@ static Function MSQ_FRE8_REENTRY([str])
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, -50, 10, 10, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100}, mode = WAVE_DATA)
 
-	WAVE/Z activeHS = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(activeHS, {1, 1, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
 	WaveTransform/O zapNaNs, activeHS
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, 560e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
 
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
@@ -867,10 +867,10 @@ static Function MSQ_FRE8_REENTRY([str])
 
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, lbl, index = 1), 1250)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
@@ -907,25 +907,25 @@ static Function MSQ_FRE9_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE/Z setPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
@@ -934,31 +934,31 @@ static Function MSQ_FRE9_REENTRY([str])
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200},  mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100}, mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100}, mode = WAVE_DATA)
 
-	WAVE/Z activeHS = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(activeHS, {1, 1, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
 	WaveTransform/O zapNaNs, activeHS
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
 
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
@@ -967,10 +967,10 @@ static Function MSQ_FRE9_REENTRY([str])
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, lbl, index = 1), 200)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {0, 0})
@@ -1015,25 +1015,25 @@ static Function MSQ_FRE10_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	WAVE/Z setPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
+	WAVE/Z setPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SET_PASS, NaN, INDEP)
 	CHECK_EQUAL_WAVES(setPass, {1}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 0, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z sweepPass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
+	WAVE/Z sweepPass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SWEEP_PASS, 1, INDEP_EACH_SCI)
 	CHECK_EQUAL_WAVES(sweepPass, {0, 0, 0, 0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 0, 0, 0, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z headstagePass = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
+	WAVE/Z headstagePass = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_HEADSTAGE_PASS, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(headstagePass, {0, 0, 0, 1, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 1, 0, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
+	WAVE/Z spikeDetectionWave = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_SPIKE_DETECT, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 1, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, DATA_ACQUISITION_MODE)
@@ -1042,31 +1042,31 @@ static Function MSQ_FRE10_REENTRY([str])
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 1, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 0, 0, 0, 0},  mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 0, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, 100, 100, 100, 100, -50, 10, 10}, mode = WAVE_DATA)
 
-	WAVE/Z stepsizes = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
+	WAVE/Z stepsizes = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_STEPSIZE, 1, EACH_SCI)
 	stepsizes *= 1e12
 	CHECK_EQUAL_WAVES(stepsizes, {100, -50, 10, 10, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z activeHS = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
+	WAVE/Z activeHS = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_ACTIVE_HS, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(activeHS, {1, 1, 0, 0, 0, 0, 0, 0, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z statusHS = DAG_GetChannelState(str, CHANNEL_TYPE_HEADSTAGE)
 	WaveTransform/O zapNaNs, activeHS
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z rangeExceeded = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
+	WAVE/Z rangeExceeded = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, 560e-12}, mode = WAVE_DATA, tol = 1e-14)
 
-	WAVE/Z finalDAScale = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
+	WAVE/Z finalDAScale = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 1, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, 160e-12, NaN, NaN, NaN, NaN},  mode = WAVE_DATA, tol = 1e-14)
 
 	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
@@ -1077,10 +1077,10 @@ static Function MSQ_FRE10_REENTRY([str])
 
 	CHECK_EQUAL_VAR(DAG_GetNumericalValue(str, lbl, index = 1), 160 + 100)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
-	WAVE/Z pulseDuration = GetResults_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
+	WAVE/Z pulseDuration = GetLBNSingleEntry_IGNORE(str, sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 
 	CommonAnalysisFunctionChecks(str, sweepNo, {1, 1})
