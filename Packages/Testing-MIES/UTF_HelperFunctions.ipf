@@ -19,7 +19,7 @@ End
 Function AdditionalExperimentCleanup()
 
 	string win, list, name
-	variable i, numWindows
+	variable i, numWindows, reopenDebugPanel
 
 	list = WinList("*", ";", "WIN:67") // Panels, Graphs and tables
 
@@ -27,8 +27,12 @@ Function AdditionalExperimentCleanup()
 	for(i = 0; i < numWindows; i += 1)
 		win = StringFromList(i, list)
 
-		if(!cmpstr(win, "BW_MiesBackgroundWatchPanel") || !cmpstr(win, "DP_DebugPanel"))
+		if(!cmpstr(win, "BW_MiesBackgroundWatchPanel"))
 			continue
+		endif
+
+		if(!cmpstr(win, "DP_DebugPanel"))
+			reopenDebugPanel = 1
 		endif
 
 		KillWindow $win
@@ -45,6 +49,10 @@ Function AdditionalExperimentCleanup()
 
 	NewDataFolder root:MIES
 	MoveDataFolder root:$name, root:MIES
+
+	if(reopenDebugPanel)
+		DP_OpenDebugPanel()
+	endif
 
 	// currently superfluous as we remove root:MIES above
 	// but might be needed in the future and helps in understanding the code

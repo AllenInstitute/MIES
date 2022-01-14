@@ -23,6 +23,12 @@ Function DP_DebuggingEnabledForFile(file)
 	WAVE listSelWave = GetDebugPanelListSelWave()
 
 	FindValue/TXOP=4/TEXT=file listWave
+	if(V_Value == -1)
+		// list waves are out of date
+		DP_FillDebugPanelWaves()
+	endif
+
+	FindValue/TXOP=4/TEXT=file listWave
 	ASSERT(V_Value != -1, "Invalid filename")
 
 	return listSelWave[V_Value] & LISTBOX_CHECKBOX_SELECTED
@@ -99,7 +105,7 @@ Window DP_DebugPanel() : Panel
 	SetWindow kwTopWin,hook(MainHook)=DP_WindowHook
 EndMacro
 
-Function DP_FillDebugPanelWaves()
+static Function DP_FillDebugPanelWaves()
 	string symbPath, path, allProcFiles
 
 	WAVE/T listWave  = GetDebugPanelListWave()

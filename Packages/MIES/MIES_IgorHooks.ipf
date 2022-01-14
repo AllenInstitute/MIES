@@ -280,6 +280,7 @@ static Function BeforeUncompiledHook(changeCode, procedureWindowTitleStr, textCh
 End
 
 static Function AfterCompiledHook()
+	ClearRTError()
 
 	variable modifiedBefore
 

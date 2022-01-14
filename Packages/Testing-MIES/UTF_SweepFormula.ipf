@@ -1319,6 +1319,12 @@ static Function TestOperationEpochs()
 	Make/FREE/T refDataT = {"Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;"}
 	REQUIRE_EQUAL_WAVES(data, refDataT, mode = WAVE_DATA)
 
+	// works with wrong casing
+	str = "epochs(\"e0_pt_p48_B\", channels(DA4), 9, name)"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	Make/FREE/T refDataT = {"Epoch=0;Type=Pulse Train;Pulse=48;Baseline;ShortName=E0_PT_P48_B;"}
+	REQUIRE_EQUAL_WAVES(data, refDataT, mode = WAVE_DATA)
+
 	str = "epochs(\"E0_PT_P48_B\", channels(DA), sweeps())"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	Make/FREE/D/N=(2, numSweeps * activeChannelsDA) refData
