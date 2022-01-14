@@ -3520,12 +3520,12 @@ End
 ///
 /// @f$ x > a @f$ where @f$ x = c^p @f$ holds and @f$ x @f$ is
 /// the smallest possible value.
-Function FindNextPower(a, p)
+threadsafe Function FindNextPower(a, p)
 	variable a, p
 
-	ASSERT(p > 1, "Invalid power")
-	ASSERT(a > 0, "Invalid value")
-	ASSERT(IsInteger(a), "Value has to be an integer")
+	ASSERT_TS(p > 1, "Invalid power")
+	ASSERT_TS(a > 0, "Invalid value")
+	ASSERT_TS(IsInteger(a), "Value has to be an integer")
 
 	return ceil(log(a)/log(p))
 End
