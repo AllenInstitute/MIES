@@ -428,7 +428,7 @@ static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 		decimatedSampleInterval = sampleInterval
 
 		if(powerSpectrum)
-			tpOrPowerSpectrumLength  = floor(tpLength / 2) + 1
+			tpOrPowerSpectrumLength = floor(tpLength / 2) + 1
 		else
 			tpOrPowerSpectrumLength = tpLength
 		endif
