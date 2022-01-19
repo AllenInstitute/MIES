@@ -564,7 +564,7 @@ End
 /// @param sweepWave  sweep wave
 /// @param configWave config wave
 Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE configWave)
-	variable i, numDACEntries, channel, headstage, acquiredTime
+	variable i, numDACEntries, channel, headstage, acquiredTime, plannedTime
 	string entry
 
 	// all channels are acquired simultaneously we can just check if the last
@@ -574,7 +574,8 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE 
 		ASSERT(V_row >= 0, "Unexpected result")
 
 		acquiredTime = IndexToScale(sweepWave, max(V_row - 1, 0), ROWS) / 1e3
-		EP_AdaptEpochInfo(device, configWave, acquiredTime)
+		plannedTime  = IndexToScale(sweepWave, DimSize(sweepWave, ROWS) - 1, ROWS) / 1e3
+		EP_AdaptEpochInfo(device, configWave, acquiredTime, plannedTime)
 	endif
 
 	EP_SortEpochs(device)
@@ -634,9 +635,9 @@ End
 /// @param device    device
 /// @param configWave    DAQ config wave
 /// @param acquiredTime  Last acquired time point [s]
-static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acquiredTime)
+/// @param plannedTime   Last time point in the sweep [s]
+static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acquiredTime, variable plannedTime)
 	variable i, channel, epoch, numEntries, endTime, startTime, epochCnt
-	variable lastEnd = -inf
 	string tags
 
 	WAVE/T epochWave = GetEpochsWave(device)
@@ -662,8 +663,6 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 			startTime = str2num(epochWave[epoch][%StartTime][channel])
 			endTime   = str2num(epochWave[epoch][%EndTime][channel])
 
-			lastEnd = max(endTime, lastEnd)
-
 			if(acquiredTime >= endTime)
 				continue
 			endif
@@ -681,7 +680,7 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 
 		// Add unacquired epoch
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		EP_AddEpoch(device, channel, acquiredTime * 1e6 , lastEnd * 1e6, tags , EPOCH_SN_UNACQUIRED, 0)
+		EP_AddEpoch(device, channel, acquiredTime * 1e6 , plannedTime * 1e6, tags , EPOCH_SN_UNACQUIRED, 0)
 	endfor
 End
 

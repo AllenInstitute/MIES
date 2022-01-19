@@ -905,9 +905,14 @@ Function ModifyStimSet(string device, STRUCT AnalysisFunction_V3& s)
 End
 
 Function StopMidSweep_V3(string device, STRUCT AnalysisFunction_V3& s)
+	variable DAC
 
 	switch(s.eventType)
 		case MID_SWEEP_EVENT:
+			DAC = AFH_GetDACFromHeadstage(device, s.headstage)
+
+			EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, 0, 1e9, "key=value")
+
 			return ANALYSIS_FUNC_RET_EARLY_STOP
 	endswitch
 
