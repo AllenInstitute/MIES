@@ -407,7 +407,8 @@ static Function TestEpochsGeneric(device)
 
 	// further checks of data from LabNotebook Entries
 	WAVE/Z samplInt = GetLastSetting(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
-	samplingInterval = samplInt[INDEP_HEADSTAGE] * 1000
+	CHECK_WAVE(samplInt, NUMERIC_WAVE)
+	samplingInterval = samplInt[INDEP_HEADSTAGE] * 1e-3
 
 	FindValue/FNAN sweep
 	if(V_row >= 0)
@@ -416,7 +417,7 @@ static Function TestEpochsGeneric(device)
 		lastPoint = DimSize(sweep, ROWS)
 	endif
 
-	endTimeDAC = samplingInterval * lastPoint  / 1E6
+	endTimeDAC = samplingInterval * lastPoint
 
 	WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
 	WAVE/T setNameLBEntries = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
@@ -433,9 +434,9 @@ static Function TestEpochsGeneric(device)
 
 		// does the latest end time exceed the 'acquiring part of the' DA wave?
 		endT[] = str2num(epochChannel[p][1])
-		// allow epochEnd to exceed range by less than one sample point
-		endTimeEpochs = trunc(WaveMax(endT) / samplingInterval) * samplingInterval
-		CHECK_LE_VAR(endTimeEpochs, endTimeDAC)
+		endTimeEpochs = WaveMax(endT)
+		// allow endTimeEpochs to exceed range by less than one sample point
+		CHECK_LE_VAR(endTimeEpochs, endTimeDAC + samplingInterval)
 		Duplicate/FREE/RMD=[][i] sweep, DAchannel
 		Redimension/N=(-1, 0) DAchannel
 
