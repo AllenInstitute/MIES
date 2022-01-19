@@ -796,9 +796,9 @@ static Function SCOPE_ITC_AdjustFIFOPos(device, fifopos)
 		return 0
 	elseif(IsNaN(fifoPos))
 		// we are done
-		// return the length of the DAQDataWave
+		// return the total length we wanted to acquire
 		stopCollectionPoint = ROVAR(GetStopCollectionPoint(device))
-		fifoPos = stopCollectionPoint - GetDataOffset(DAQConfigWave)
+		fifoPos = stopCollectionPoint
 	elseif(fifoPos < 0)
 		printf "fifoPos was clipped to zero, old value %g\r", fifoPos
 		return 0

@@ -357,6 +357,90 @@ static Function PS_RA2_REENTRY([str])
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RA2a([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, PSQ_TEST_HEADSTAGE, PSQ_RAMP)
+	// the duration will change midsweep, so we will have more chunks in the end
+	Redimension/N=(16, -1, -1, -1) wv
+
+	// pre pulse baseline QC passes, post pulse always fails
+	// one spike
+	wv = 0
+	wv[0][][0] = 1
+	wv[0][][1] = SPIKE_POSITION_MS
+End
+
+static Function PS_RA2a_REENTRY([str])
+	string str
+
+	variable sweepNo, i, numEntries, chunkStart, chunkEnd
+
+	sweepNo = 1
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	WAVE/Z setPassed = GetSetQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(setPassed, {0}, mode = WAVE_DATA)
+
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z sweepQCWave = GetSweepQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(sweepQCWave, {0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z samplingIntervalQCWave = GetSamplingIntervalQCResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(samplingIntervalQCWave, {1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo, str)
+	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"10000;", "10000;"}, mode = WAVE_DATA)
+
+	WAVE/T/Z userEpochs = GetUserEpochs_IGNORE(sweepNo, str)
+	CHECK_WAVE(userEpochs, TEXT_WAVE)
+
+	WAVE/Z foundUserEpochs = FindUserEpochs(userEpochs)
+	CHECK_WAVE(foundUserEpochs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(foundUserEpochs, {1, 1})
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 2)
+
+	WAVE/Z durations = GetPulseDurations_IGNORE(sweepNo, str)
+	if(TestHelperFunctions#DoInstrumentation())
+		CHECK_WAVE(durations, NUMERIC_WAVE)
+	else
+		CHECK_GT_VAR(durations[0], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
+		CHECK_LT_VAR(durations[0], SPIKE_POSITION_TEST_DELAY_MS)
+		CHECK_GT_VAR(durations[1], SPIKE_POSITION_MS - PSQ_BL_EVAL_RANGE)
+		CHECK_LT_VAR(durations[1], SPIKE_POSITION_TEST_DELAY_MS)
+	endif
+
+	CommonAnalysisFunctionChecks(str, sweepNo, setPassed)
+
+	Make/FREE/D/N=(16 * 2) chunkTimes
+	chunkTimes[0] = 20
+	chunkTimes[1] = 520
+
+	for(i = 1; i < 16; i += 1)
+		[chunkStart, chunkEnd] = GetPostBaseLineInterval(str, 0, i)
+
+		chunkTimes[2 * i]     = chunkStart
+		chunkTimes[2 * i + 1] = chunkEnd
+	endfor
+
+	CheckPSQChunkTimes(str, chunkTimes, sweep = 0)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function PS_RA3([str])
 	string str
 
