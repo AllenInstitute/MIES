@@ -1054,101 +1054,84 @@ static Function SF_GetDAChannel(string graph, variable sweep, variable channelTy
 	return NaN
 End
 
-static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
-	String graph
-	WAVE range, channels, sweeps
+static Function/WAVE SF_GetSweepForFormula(string graph, WAVE range, WAVE channels, WAVE sweeps)
 
-	variable i, j, rangeStart, rangeEnd, pOffset, delta, numRows, DAChannel
-	string dimLabel
-	variable channelType = -1
-	variable xStart = NaN, xEnd = NaN
+	variable i, j, rangeStart, rangeEnd, pOffset, delta, numRows, DAChannel, numSweeps, sweepNo
+	variable chanNr, chanType, numChannels, indexOffset, iStart, iLength, cIndex, isSweepBrowser
+	string dimLabel, device, dataFolder
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
 	if(IsTextWave(range))
 		SF_ASSERT(DimSize(range, ROWS) == 1, "A epoch range must be a single string with the epoch name.")
 		WAVE/T wEpochName = range
 	else
-		SF_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is of the form [rangeStart, rangeEnd].")
+		SF_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is must have two rows for range start and end.")
 	endif
 	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
-	SF_ASSERT(DimSize(range, COLS) <= 1, "Multidimensional ranges not fully implemented.")
-
-	WAVE/T/Z traces = GetTraceInfos(graph)
-	if(!WaveExists(traces))
-		DebugPrint("No traces found for extracting sweep wave locations.")
-		return $""
+	numSweeps = DimSize(sweeps, ROWS)
+	numChannels = DimSize(channels, ROWS)
+	if(!numSweeps || !numChannels)
+		WAVE wv = SF_GetDefaultEmptyWave()
+		return wv
 	endif
 
-	SortColumns/A/DIML/KNDX={FindDimLabel(traces, COLS, "channelType"), FindDimLabel(traces, COLS, "channelNumber"), FindDimLabel(traces, COLS, "sweepNumber")} sortWaves=traces
+	if(DimSize(range, COLS) > 0)
+		SF_ASSERT(DimSize(range, COLS) == numSweeps, "Multidimensional range column size must equal number of sweeps.")
+		SF_ASSERT(DimSize(range, LAYERS) == numChannels, "Multidimensional range layers size must equal number of channels.")
+	endif
 
-	Make/FREE/N=(DimSize(sweeps, ROWS), DimSize(channels, ROWS)) indices = NaN
-	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
-		WAVE/Z sweepListIndex = FindIndizes(traces, colLabel = "sweepNumber", var = sweeps[i])
-		if(!WaveExists(sweepListIndex))
-			continue
+	isSweepBrowser = BSP_IsSweepBrowser(graph)
+
+	if(isSweepBrowser)
+		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+		WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+	else
+		SF_ASSERT(BSP_HasBoundDevice(graph), "No device bound.")
+		device = BSP_GetDevice(graph)
+		DFREF deviceDFR = GetDeviceDataPath(device)
+	endif
+
+	Make/FREE/WAVE/N=(numSweeps, numChannels) sweepRefs
+	Make/FREE/U/I/N=(numSweeps, numChannels) indexStart, indexEnd
+
+	for(i = 0; i < numSweeps; i += 1)
+
+		sweepNo = sweeps[i]
+
+		if(isSweepBrowser)
+			cIndex = FindDimLabel(sweepMap, COLS, "Sweep")
+			FindValue/RMD=[][cIndex]/TEXT=num2istr(sweepNo)/TXOP=4 sweepMap
+			if(V_value == -1)
+				continue
+			endif
+			dataFolder = sweepMap[V_row][%DataFolder]
+			device     = sweepMap[V_row][%Device]
+			DFREF deviceDFR  = GetAnalysisSweepPath(dataFolder, device)
 		endif
-		for(j = 0; j < DimSize(channels, ROWS); j += 1)
-			if(channelType != channels[j][%channelType])
-				channelType = channels[j][%channelType]
-				WAVE/Z channelTypeIndex = FindIndizes(traces, colLabel = "channelType", str = StringFromList(channelType, XOP_CHANNEL_NAMES))
-			endif
-			if(!WaveExists(channelTypeIndex))
-				continue
-			endif
-			WAVE/Z channelNumberIndex = FindIndizes(traces, colLabel = "channelNumber", var = channels[j][%channelNumber])
-			if(!WaveExists(channelNumberIndex))
+		DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
+
+		for(j = 0; j < numChannels; j += 1)
+
+			chanNr = channels[j][%channelNumber]
+			chanType = channels[j][%channelType]
+			WAVE/Z sweep = GetDAQDataSingleColumnWave(sweepDFR, chanType, chanNr)
+			if(!WaveExists(sweep))
 				continue
 			endif
 
-			// find matching index in @c traces wave
-			Concatenate/FREE {sweepListIndex, channelTypeIndex, channelNumberIndex}, index
-			Redimension/N=(numpnts(index))/E=1 index
-			Sort index, index
-			Extract/FREE index, matches, (p > 1 && (index[p] == index[p - 1]) && (index[p] == index[p - 2]))
-			WaveClear index
-			if(DimSize(matches, ROWS) == 0)
-				continue
+			if(delta == 0)
+				delta = DimDelta(sweep, ROWS)
+			else
+				SF_ASSERT(delta == DimDelta(sweep, ROWS), "Sweeps have not the same delta.")
 			endif
-			SF_ASSERT(DimSize(matches, ROWS) == 1, "More than one matching sweep for this sweepNumber, channelType, and channelNumber combination.")
-			indices[i][j] = matches[0]
-			WaveClear matches
-		endfor
-	endfor
-
-	// ASSERT if sweeps are from different experiments
-	Duplicate/FREE indices wv
-	Redimension/N=(numpnts(wv))/E=1 wv
-	WAVE/z wvReduced = ZapNaNs(wv)
-	if(!WaveExists(wvReduced))
-		DebugPrint("No matching sweep.")
-		return $""
-	endif
-	Make/FREE/T/N=(DimSize(wv, ROWS)) experiments
-	experiments[] = traces[wv][%experiment]
-	WaveClear wv
-	WAVE/Z uniqueExperiments = GetUniqueEntries(experiments)
-	SF_ASSERT(DimSize(uniqueExperiments, ROWS) == 1, "Sweep data is from more than one experiment. This is currently not supported.")
-
-	// get data wave dimensions
-	Make/FREE/U/I/N=(DimSize(sweeps, ROWS), DimSize(channels, ROWS)) pStart, pEnd
-	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
-		for(j = 0; j < DimSize(channels, ROWS); j += 1)
-			if(IsNaN(indices[i][j]))
-				continue
-			endif
-			WAVE sweep = $(traces[indices[i][j]][%fullPath])
-			SF_ASSERT(DimSize(sweep, COLS) <= 1, "Sweeps need to be one-dimensional.")
-
-			delta = max(delta, DimDelta(sweep, ROWS))
-			SF_ASSERT(delta == DimDelta(sweep, ROWS), "Sweeps are not equally spaced. Data would need to get resampled.")
 
 			if(WaveExists(wEpochName))
-				DAChannel = SF_GetDAChannel(graph, sweeps[i], channels[j][0], channels[j][1])
-				WAVE range = SF_GetRangeFromEpoch(graph, wEpochName[0], sweeps[i], DAChannel)
+				DAChannel = SF_GetDAChannel(graph, sweepNo, chanType, chanNr)
+				WAVE range = SF_GetRangeFromEpoch(graph, wEpochName[0], sweepNo, DAChannel)
 			endif
 
-			if(DimSize(range, COLS) == DimSize(sweeps, ROWS) && DimSize(range, LAYERS) == DimSize(channels, ROWS))
+			if(DimSize(range, COLS) > 0)
 				rangeStart = range[0][i][j]
 				rangeEnd = range[1][i][j]
 			else
@@ -1156,37 +1139,33 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 				rangeEnd = range[1]
 			endif
 			SF_ASSERT(!IsNaN(rangeStart) && !IsNaN(rangeEnd), "Specified range not valid.")
+			SF_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
+			SF_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
 
-			SF_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range does not lie completely inside the sweep.")
-			SF_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range does not lie completely inside the sweep.")
-
-			pStart[i][j] = ScaleToIndexWrapper(sweep, rangeStart, ROWS)
-			pEnd[i][j] = ScaleToIndexWrapper(sweep, rangeEnd, ROWS)
-
-			if(IsNaN(xStart) && IsNaN(xEnd))
-				xStart = IndexToScale(sweep, pStart[i][j], ROWS)
-				xEnd = IndexToScale(sweep, pEnd[i][j], ROWS)
-			else
-				xStart = min(IndexToScale(sweep, pStart[i][j], ROWS), xStart)
-				xEnd = max(IndexToScale(sweep, pEnd[i][j], ROWS), xEnd)
-			endif
+			indexStart[i][j] = ScaleToIndexWrapper(sweep, rangeStart, ROWS)
+			indexEnd[i][j] = ScaleToIndexWrapper(sweep, rangeEnd, ROWS)
+			sweepRefs[i][j] = sweep
 		endfor
 	endfor
 
-	numRows = round((xEnd - xStart) / delta + 1)
+	indexOffset = WaveMin(indexStart)
+	numRows = WaveMax(indexEnd) + 1 - indexOffset
 
 	// combine sweeps to data wave
-	Make/FREE/D/N=(numRows, DimSize(sweeps, ROWS), DimSize(channels, ROWS)) sweepData = NaN
-	SetScale/P x, xStart, delta, sweepData
-	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
-		for(j = 0; j < DimSize(channels, ROWS); j += 1)
-			if(IsNaN(indices[i][j]))
+	Make/FREE/N=(numRows, numSweeps, numChannels) sweepData = NaN
+	SetScale/P x, indexOffset * delta, delta, sweepData
+	for(i = 0; i < numSweeps; i += 1)
+		for(j = 0; j < numChannels; j += 1)
+
+			WAVE/Z sweep = sweepRefs[i][j]
+			if(!WaveExists(sweep))
 				continue
 			endif
-			WAVE sweep = $(traces[indices[i][j]][%fullPath])
 
-			pOffset = ScaleToIndexWrapper(sweepData, IndexToScale(sweep, pStart[i][j], ROWS), ROWS)
-			MultiThread sweepData[pOffset, pOffSet + (pEnd[i][j] - pStart[i][j])][i][j] = sweep[pStart[i][j] + (p - pOffset)]
+			iStart = indexStart[i][j]
+			iLength = indexEnd[i][j] - iStart
+			pOffset = iStart - indexOffset
+			MultiThread sweepData[pOffset, pOffset + iLength][i][j] = sweep[iStart + p - pOffset]
 
 			if(i == 0)
 				dimLabel = StringFromList(channels[j][%channelType], XOP_CHANNEL_NAMES) + num2istr(channels[j][%channelNumber])
