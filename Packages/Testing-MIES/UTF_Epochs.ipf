@@ -410,13 +410,7 @@ static Function TestEpochsGeneric(device)
 	CHECK_WAVE(samplInt, NUMERIC_WAVE)
 	samplingInterval = samplInt[INDEP_HEADSTAGE] * 1e-3
 
-	FindValue/FNAN sweep
-	if(V_row >= 0)
-		lastPoint = V_row - 1
-	else
-		lastPoint = DimSize(sweep, ROWS)
-	endif
-
+	lastPoint = DimSize(sweep, ROWS)
 	endTimeDAC = samplingInterval * lastPoint
 
 	WAVE/T epochLBEntries = GetLastSetting(textualValues, sweepNo, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
