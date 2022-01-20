@@ -560,7 +560,8 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 	variable headstage
 
 	variable i, chunkQC
-	string key, msg
+	string key
+	string msg = ""
 
 	switch(anaFuncType)
 		case PSQ_DA_SCALE:
@@ -596,7 +597,9 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 					endif
 				endfor
 
-				ASSERT(!IsEmpty(msg), "Could not find a failing chunk")
+				if(IsEmpty(msg))
+					BUG("Could not find a failing chunk")
+				endif
 			endif
 			break
 	endswitch
