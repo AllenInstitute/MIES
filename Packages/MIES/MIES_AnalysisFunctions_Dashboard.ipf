@@ -156,9 +156,9 @@ static Function AD_FillWaves(win, list, info)
 	string win
 	WAVE/T list, info
 
-	variable i, j, headstage, passed, sweepNo, numEntries, ongoingDAQ
+	variable i, j, headstage, passed, sweepNo, numEntries, ongoingDAQ, acqState
 	variable index, anaFuncType, stimsetCycleID, firstValid, lastValid
-	string key, anaFunc, stimset, msg
+	string key, anaFunc, stimset, msg, device
 
 	WAVE/Z totalSweepsPresent = GetPlainSweepList(win)
 
@@ -168,6 +168,13 @@ static Function AD_FillWaves(win, list, info)
 
 	if(!WaveExists(numericalValuesWave) || !WaveExists(textualValuesWave) || !WaveExists(totalSweepsPresent))
 		return 0
+	endif
+
+	if(BSP_IsDataBrowser(win))
+		device = BSP_GetDevice(win)
+		acqState = ROVar(GetAcquisitionState(device))
+	else
+		acqState = AS_INACTIVE
 	endif
 
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
@@ -243,7 +250,7 @@ static Function AD_FillWaves(win, list, info)
 			else
 				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
 				passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-				ongoingDAQ = IsNaN(passed)
+				ongoingDAQ = IsNaN(passed) && (acqState != AS_INACTIVE)
 			endif
 
 			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, headstage, ongoingDAQ)
