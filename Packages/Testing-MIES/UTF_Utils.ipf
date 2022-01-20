@@ -5561,3 +5561,41 @@ Function ET_Fails([WAVE/T wv])
 		PASS()
 	endtry
 End
+
+Function PUN_Works()
+	string str, ref
+
+	str = PossiblyUnquoteName("", "'")
+	CHECK_EMPTY_STR(str)
+
+	str = PossiblyUnquoteName("'a", "'")
+	ref = "'a"
+	CHECK_EQUAL_STR(str, ref)
+
+	str = PossiblyUnquoteName("'a'", "'")
+	ref = "a"
+	CHECK_EQUAL_STR(str, ref)
+End
+
+Function PUN_ChecksParams()
+	try
+		PossiblyUnquoteName("abcd", "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		PossiblyUnquoteName("abcd", "''")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		PossiblyUnquoteName("a", "a")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End

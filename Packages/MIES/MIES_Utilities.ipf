@@ -1232,17 +1232,21 @@ threadsafe Function SetStringInWaveNote(wv, key, str)
 	Note/K wv, ReplaceStringByKey(key, note(wv), str)
 End
 
-/// @brief Remove the single quotes from a liberal wave name if they can be found
-Function/S PossiblyUnquoteName(name)
-	string name
+/// @brief Remove the surrounding quotes from the string if they are present
+Function/S PossiblyUnquoteName(string name, string quote)
+	variable len
 
 	if(isEmpty(name))
 		return name
 	endif
 
-	if(!CmpStr(name[0], "'") && !CmpStr(name[strlen(name) - 1], "'"))
-		ASSERT(strlen(name) > 1, "name is too short")
-		return name[1, strlen(name) - 2]
+	len = strlen(name)
+
+	ASSERT(strlen(quote) == 1, "Invalid quote string")
+
+	if(!CmpStr(name[0], quote) && !CmpStr(name[len - 1], quote))
+		ASSERT(len > 1, "name is too short")
+		return name[1, len - 2]
 	endif
 
 	return name
