@@ -3757,6 +3757,35 @@ Function TPDuringDAQWithTTL_REENTRY([str])
 	endfor
 End
 
+Function RunPowerSpectrum_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, "check_settings_show_power", val = 1)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function RunPowerSpectrum([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc=RunPowerSpectrum_IGNORE, startTPInstead = 1)
+
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+End
+
+Function RunPowerSpectrum_REENTRY([str])
+	string str
+
+	variable sweepNo, col, tpAmplitude, daGain, i
+	string ctrl
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+End
+
 Function CheckIZeroClampMode_IGNORE(device)
 	string device
 

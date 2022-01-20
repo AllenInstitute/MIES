@@ -280,10 +280,7 @@ End
 ///
 /// @param device  panel title
 /// @param dataAcqOrTP acquisition mode, one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_CalculateDAQDataWaveLength(device, dataAcqOrTP)
-	string device
-	variable dataAcqOrTP
-
+static Function DC_CalculateDAQDataWaveLength(string device, variable dataAcqOrTP)
 	variable hardwareType = GetHardwareType(device)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(device)
 
@@ -388,15 +385,12 @@ End
 /// @brief Initializes the waves used for displaying DAQ/TP results in the
 /// oscilloscope window and the scaled data wave
 ///
-/// @param device  panel title
-/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_MakeHelperWaves(device, dataAcqOrTP)
-	string device
-	variable dataAcqOrTP
-
+/// @param device        panel title
+/// @param dataAcqOrTP   one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+static Function DC_MakeHelperWaves(string device, variable dataAcqOrTP)
 	variable numRows, sampleInterval, col, hardwareType, decimatedNumRows, numPixels, dataPointsPerPixel
 	variable decMethod, decFactor, tpLength, numADCs, numDACs, numTTLs, decimatedSampleInterval
-	variable tpOrPowerSpectrumLength
+	variable tpOrPowerSpectrumLength, powerSpectrum
 
 	WAVE config = GetDAQConfigWave(device)
 	WAVE OscilloscopeData = GetOscilloscopeWave(device)
@@ -422,17 +416,20 @@ static Function DC_MakeHelperWaves(device, dataAcqOrTP)
 	endswitch
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		tpLength = TPSettingsCalc[%totalLengthPointsTP]
+		tpLength      = TPSettingsCalc[%totalLengthPointsTP]
+		powerSpectrum = DAG_GetNumericalValue(device, "check_settings_show_power")
+
 		numRows = tpLength
 
 		decMethod = DECIMATION_NONE
 		decFactor = NaN
 
-		decimatedNumRows        = tpLength
+		decimatedNumRows        = numRows
 		decimatedSampleInterval = sampleInterval
 
-		if(DAG_GetNumericalValue(device, "check_settings_show_power"))
-			tpOrPowerSpectrumLength  = floor(tpLength / 2) + 1
+		if(powerSpectrum)
+			// see DisplayHelpTopic `FFT` for the explanation of the calculation
+			tpOrPowerSpectrumLength = floor(TP_GetPowerSpectrumLength(tpLength) / 2) + 1
 		else
 			tpOrPowerSpectrumLength = tpLength
 		endif
@@ -488,7 +485,7 @@ static Function DC_MakeHelperWaves(device, dataAcqOrTP)
 	SetNumberInWaveNote(OscilloscopeData, "DecimationMethod", decMethod)
 	SetNumberInWaveNote(OscilloscopeData, "DecimationFactor", decFactor)
 
-	DC_InitDataHoldingWave(TPOscilloscopeData, tpOrPowerSpectrumLength, sampleInterval, numDACs, numADCs, numTTLs, isFourierTransform=DAG_GetNumericalValue(device, "check_settings_show_power") && dataAcqOrTP == TEST_PULSE_MODE)
+	DC_InitDataHoldingWave(TPOscilloscopeData, tpOrPowerSpectrumLength, sampleInterval, numDACs, numADCs, numTTLs, isFourierTransform=(powerSpectrum && dataAcqOrTP == TEST_PULSE_MODE))
 	DC_InitDataHoldingWave(OscilloscopeData, decimatedNumRows, decimatedSampleInterval, numDACs, numADCs, numTTLs)
 
 	DC_InitDataHoldingWave(scaledDataWave, dataAcqOrTP == DATA_ACQUISITION_MODE ? stopCollectionPoint : tpLength, sampleInterval, numDACs, numADCs, numTTLs, type = SWS_GetRawDataFPType(device))
@@ -1274,7 +1271,7 @@ static Function DC_FillDAQDataWaveForDAQ(string device, STRUCT DataConfiguration
 End
 
 static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string device, variable numActiveChannels, variable dataAcqOrTP, variable multiDevice)
-	variable powerSpectrum, channel, headstage, channelMode
+	variable channel, headstage, channelMode
 	variable onsetDelayUserLocal, onsetDelayAutoLocal, terminationDelayLocal, distributedDAQDelayLocal
 	variable scalingZero, indexingLocked, indexing
 	variable i, j, ret, setCycleCountLocal
@@ -1293,7 +1290,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 	s.distributedDAQOptOv   = DAG_GetNumericalValue(device, "Check_DataAcq1_dDAQOptOv")
 	s.distributedDAQOptPre  = DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPre")
 	s.distributedDAQOptPost = DAG_GetNumericalValue(device, "Setvar_DataAcq_dDAQOptOvPost")
-	powerSpectrum           = DAG_GetNumericalValue(device, "check_settings_show_power")
+	s.powerSpectrum         = DAG_GetNumericalValue(device, "check_settings_show_power")
 
 	// MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
 	// whereas the source data generated waves for ITC min sample rate are at 200 kHz
@@ -1417,7 +1414,7 @@ static Function [STRUCT DataConfigurationResult s] DC_GetConfiguration(string de
 				// do nothing
 			endif
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
-			if(powerSpectrum)
+			if(s.powerSpectrum)
 				s.DACAmp[i][%TPAMP] = 0
 			endif
 		else
@@ -2035,12 +2032,9 @@ static Function DC_ReturnTotalLengthIncrease(device, [onsetDelayUser, onsetDelay
 End
 
 /// @brief Calculate the stop collection point, includes all required global adjustments
-static Function DC_GetStopCollectionPoint(device, dataAcqOrTP, setLengths)
-	string device
-	variable dataAcqOrTP
-	WAVE setLengths
-
+static Function DC_GetStopCollectionPoint(string device, variable dataAcqOrTP, WAVE setLengths)
 	variable DAClength, TTLlength, totalIncrease
+
 	DAClength = DC_CalculateLongestSweep(device, dataAcqOrTP, CHANNEL_TYPE_DAC)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)

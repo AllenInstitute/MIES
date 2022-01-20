@@ -443,24 +443,37 @@ Function SCOPE_SetADAxisLabel(device, dataAcqOrTP, activeHeadStage)
 	endfor
 End
 
+/// @brief Perform FFT on input[col] and write the result into output[col]
+threadsafe static Function DoFFT(WAVE input, WAVE output, variable col)
+	variable numRows = DimSize(input, ROWS)
+
+	Duplicate/FREE/RMD=[*][col] input, slice
+	Redimension/N=(numRows) slice
+
+	FFT/PAD={TP_GetPowerSpectrumLength(numRows)}/DEST=powerSpectrum/FREE slice
+
+	output[][col] = magsqr(powerSpectrum[p])
+End
+
 static Function SCOPE_UpdatePowerSpectrum(device)
 	String device
 
-	variable startOfADColumns
+	variable startOfADColumns, numADCs
 
 	if(DAG_GetNumericalValue(device, "check_settings_show_power"))
 		WAVE OscilloscopeData = GetOscilloscopeWave(device)
 		WAVE TPOscilloscopeData = GetTPOscilloscopeWave(device)
 		startOfADColumns = ROVar(GetADChannelToMonitor(device))
+		numADCs = DimSize(OscilloscopeData, COLS) - startOfADColumns
 
 		// FFT knows how to transform units without prefix so transform them temporarly
 		SetScale/P x, DimOffset(OscilloscopeData, ROWS) / 1000, DimDelta(OscilloscopeData, ROWS) / 1000, "s", OscilloscopeData
 
-		// work around an IP8 bug where we can't reuse an existing permanent wave
-		FFT/DEST=powerSpectrum/COLS/FREE OscilloscopeData
-		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * 1000, DimDelta(OscilloscopeData, ROWS) * 1000, "ms", OscilloscopeData
+		Make/FREE/N=(numADCs) junk
 
-		MultiThread TPOscilloscopeData[][startOfADColumns, DimSize(powerSpectrum, COLS) - 1] = magsqr(powerSpectrum[p][q])
+		MultiThread junk[] = DoFFT(OscilloscopeData, TPOscilloscopeData, (startOfADColumns + p))
+
+		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * 1000, DimDelta(OscilloscopeData, ROWS) * 1000, "ms", OscilloscopeData
 	endif
 End
 

@@ -1671,3 +1671,8 @@ static Function TP_GetTPCycleID(device)
 		return GetNextRandomNumberForDevice(device)
 	endif
 End
+
+/// @brief Return the length in points of the power spectrum generated via FFT
+threadsafe Function TP_GetPowerSpectrumLength(variable tpLength)
+	return 2^FindNextPower(tpLength, 2)
+End
