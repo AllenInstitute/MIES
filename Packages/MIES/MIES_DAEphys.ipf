@@ -1752,7 +1752,7 @@ End
 static Function DAP_UpdateSweepLimitsAndDisplay(string device, [variable initial])
 
 	string panelList
-	variable sweep, nextSweep, maxNextSweep, numPanels, i
+	variable sweep, nextSweep, maxNextSweep, numPanels, i, noEditDefault
 
 	panelList = GetListofLeaderAndPossFollower(device)
 
@@ -1797,13 +1797,17 @@ static Function DAP_UpdateSweepLimitsAndDisplay(string device, [variable initial
 		endif
 	endfor
 
+	noEditDefault = GetControlSettingVar(StringFromList(0, device), "SetVar_Sweep", "noEdit", defValue = 0)
+
 	for(i = 0; i < numPanels; i += 1)
 		device = StringFromList(i, panelList)
 
+		SetVariable SetVar_Sweep win = $device, noEdit=noEditDefault
+
 		if(DeviceIsFollower(device))
-			SetVariable SetVar_Sweep win = $device, noEdit=1, limits = {0, maxNextSweep, 0}
-		else
-			SetVariable SetVar_Sweep win = $device, noEdit=0, limits = {0, maxNextSweep, 1}
+			SetVariable SetVar_Sweep win = $device, limits = {0, maxNextSweep, 0}
+		elseif(!noEditDefault)
+			SetVariable SetVar_Sweep win = $device, limits = {0, maxNextSweep, 1}
 		endif
 	endfor
 End
