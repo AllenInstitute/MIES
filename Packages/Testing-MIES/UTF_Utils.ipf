@@ -5599,3 +5599,53 @@ Function PUN_ChecksParams()
 		PASS()
 	endtry
 End
+
+Function/S CreateTestPanel_IGNORE()
+	string win
+
+	NewPanel/K=1
+	win = S_name
+
+	SetVariable setVar0, noEdit=1, format="%g"
+
+	return win
+End
+
+Function GCP_Var_Works()
+	string win
+	variable var
+
+	win = CreateTestPanel_IGNORE()
+
+	// existing
+	var = GetControlSettingVar(win, "setVar0", "noEdit")
+	CHECK_EQUAL_VAR(var, 1)
+
+	// non-present, default defValue
+	var = GetControlSettingVar(win, "setVar0", "I DONT EXIST")
+	CHECK_EQUAL_VAR(var, NaN)
+
+	// non-present, custom defValue
+	var = GetControlSettingVar(win, "setVar0", "I DONT EXIST", defValue = 123)
+	CHECK_EQUAL_VAR(var, 123)
+End
+
+Function GCP_Str_Works()
+	string win, ref, str
+
+	win = CreateTestPanel_IGNORE()
+
+	// existing
+	str = GetControlSettingStr(win, "setVar0", "format")
+	ref = "%g"
+	CHECK_EQUAL_STR(str, ref)
+
+	// non-present, default defValue
+	str = GetControlSettingStr(win, "setVar0", "I DONT EXIST")
+	CHECK_EMPTY_STR(str)
+
+	// non-present, custom defValue
+	str = GetControlSettingStr(win, "setVar0", "I DONT EXIST", defValue = "123")
+	ref = "123"
+	CHECK_EQUAL_STR(str, ref)
+End

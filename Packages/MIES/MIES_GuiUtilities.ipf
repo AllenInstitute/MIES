@@ -2105,6 +2105,55 @@ Function [string recMacro, variable type] GetRecreationMacroAndType(string win, 
 	return [S_recreation, abs(V_flag)]
 End
 
+/// @brief Query a numeric GUI control property
+Function GetControlSettingVar(string win, string control, string setting, [variable defValue])
+	string match
+	variable found
+
+	if(ParamIsDefault(defValue))
+		defValue = NaN
+	endif
+
+	[match, found] = GetControlSettingImpl(win, control, setting)
+
+	if(!found)
+		return defValue
+	endif
+
+	return str2numSafe(match)
+End
+
+/// @brief Query a string GUI control property
+Function/S GetControlSettingStr(string win, string control, string setting, [string defValue])
+	string match
+	variable found
+
+	if(ParamIsDefault(defValue))
+		defValue = ""
+	endif
+
+	[match, found] = GetControlSettingImpl(win, control, setting)
+
+	if(!found)
+		return defValue
+	endif
+
+	return PossiblyUnquoteName(match, "\"")
+End
+
+static Function [string match, variable found] GetControlSettingImpl(string win, string control, string setting)
+	string recMacro, str
+	variable controlType
+
+	[recMacro, controlType] = GetRecreationMacroAndType(win, control)
+
+	SplitString/E=("(?i)\\Q" + setting + "\\E[[:space:]]*=[[:space:]]*([^,]+)") recMacro, str
+
+	ASSERT(V_Flag == 0 || V_Flag == 1, "Unexpected number of matches")
+
+	return [str, !!V_flag]
+End
+
 /// @brief Check and disable dependent controls
 ///
 /// Enables a list of checkbox controls and stores their
