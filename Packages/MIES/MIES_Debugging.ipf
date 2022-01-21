@@ -512,6 +512,8 @@ Function BUG(msg)
 	string func, line, file
 	FindFirstOutsideCaller(func, line, file)
 
+	msg = RemoveEnding(msg, "\r")
+
 	if(!isEmpty(func))
 		printf "BUG %s(...)#L%s: %s\r", func, line, msg
 	else
