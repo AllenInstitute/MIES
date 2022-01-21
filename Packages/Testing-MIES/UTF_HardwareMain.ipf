@@ -360,13 +360,22 @@ Function TEST_CASE_END_OVERRIDE(name)
 	StopAllBackgroundTasks()
 
 	NVAR bugCount = $GetBugCount()
-	CHECK_EQUAL_VAR(bugCount, 0)
+	if(IsFinite(bugCount))
+		CHECK_EQUAL_VAR(bugCount, 0)
+	else
+		CHECK_EQUAL_VAR(bugCount, NaN)
+	endif
 
 #if IgorVersion() >= 9.0
 	TUFXOP_AcquireMutex/N=(TSDS_BUGCOUNT)
 	bugCount_ts = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0)
 	TUFXOP_ReleaseMutex/N=(TSDS_BUGCOUNT)
-	CHECK_EQUAL_VAR(bugCount_ts, 0)
+
+	if(IsFinite(bugCount_ts))
+		CHECK_EQUAL_VAR(bugCount_ts, 0)
+	else
+		CHECK_EQUAL_VAR(bugCount_ts, NaN)
+	endif
 #endif
 
 	if(expensiveChecks)
