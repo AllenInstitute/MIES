@@ -1145,6 +1145,127 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 End
 
+static Function TestDataOperation()
+
+	variable numChannels, sweepNo, rStart, rDelta
+	string str, epochStr
+	string win = DATABROWSER_WINDOW_TITLE
+	variable mode = DATA_ACQUISITION_MODE
+	variable rangeStart0 = 3
+	variable rangeEnd0 = 6
+	variable rangeStart1 = 1
+	variable rangeEnd1 = 8
+	string device = HW_ITC_BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+	Make/FREE/T/N=(1, 1) epochKeys = EPOCHS_ENTRY_KEY
+
+	if(windowExists(win))
+		DoWindow/K $win
+	endif
+
+	Display/N=$win as device
+	BSP_SetDataBrowser(win)
+	BSP_SetDevice(win, device)
+
+	sweepNo = 0
+
+	CreateFakeSweepData(device, sweepNo=sweepNo)
+	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo)
+	CreateFakeSweepData(device, sweepNo=sweepNo + 1)
+	MIES_DB#DB_SplitSweepsIfReq(win, sweepNo + 1)
+
+	epochStr = "0.00" + num2istr(rangeStart0) + ",0.00" + num2istr(rangeEnd0) + ",ShortName=TestEpoch,0"
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = epochStr
+	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, sweepNo, device, mode)
+	epochStr = "0.00" + num2istr(rangeStart1) + ",0.00" + num2istr(rangeEnd1) + ",ShortName=TestEpoch,0"
+	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = epochStr
+	ED_AddEntriesToLabnotebook(epochInfo, epochKeys, sweepNo + 1, device, mode)
+
+	numChannels = 4 // from LBN creation in CreateFakeSweepData->PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
+	Make/FREE/N=0 sweepTemplate
+	WAVE sweepRef = FakeSweepDataGeneratorDefault(sweepTemplate, numChannels)
+
+	Make/FREE/N=(DimSize(sweepRef, ROWS), 1, numChannels / 2) dataRef
+	dataRef[][][] = sweepRef[p]
+	str = "data(cursors(A,B),channels(AD),[" + num2istr(sweepNo) + "])"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+
+	Make/FREE/N=(DimSize(sweepRef, ROWS), 1, 1) dataRef
+	dataRef[][][] = sweepRef[p]
+	str = "data(cursors(A,B),channels(AD6),[" + num2istr(sweepNo) + "])"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+
+	Make/FREE/N=(rangeEnd0 - rangeStart0 + 1, 1, numChannels / 2) dataRef
+	dataRef[][][] = sweepRef[p + rangeStart0]
+	str = "data(TestEpoch,channels(AD),[" + num2istr(sweepNo) + "])"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+
+	Make/FREE/N=(rangeEnd1 - rangeStart1 + 1, 1, numChannels / 2) dataRef
+	dataRef[][][] = sweepRef[p + rangeStart1]
+	str = "data(TestEpoch,channels(AD),[" + num2istr(sweepNo + 1) + "])"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+
+	rStart = min(rangeStart0, rangeStart1)
+	Make/FREE/N=(max(rangeEnd0, rangeEnd1) - rStart + 1, 2, numChannels / 2) dataRef = NaN
+	dataRef[rangeStart0 - rStart, rangeEnd0 - rStart][0][] = sweepRef[p + rStart]
+	dataRef[rangeStart1 - rStart, rangeEnd1 - rStart][1][] = sweepRef[p + rStart]
+	SetDimLabel COLS, 0, sweep0, dataRef
+	SetDimLabel COLS, 1, sweep1, dataRef
+	SetDimLabel LAYERS, 0, AD6, dataRef
+	SetDimLabel LAYERS, 1, AD7, dataRef
+	str = "data(TestEpoch,channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "])"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA | DIMENSION_LABELS)
+
+	// use a 3-dim range specification
+	str = "[[[" + num2istr(rangeStart0) + "," + num2istr(rangeStart0) + "],[" + num2istr(rangeStart1) + "," + num2istr(rangeStart1) + "]],"
+	str = str + "[[" + num2istr(rangeEnd0) + "," + num2istr(rangeEnd0) + "],[" + num2istr(rangeEnd1) + "," + num2istr(rangeEnd1) + "]]]"
+	str = "data(" + str + ",channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 1) + "])"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+
+	// FAIL Tests
+	WAVE dataRef = MIES_SF#SF_GetDefaultEmptyWave()
+
+	// non existing channel
+	str = "data(TestEpoch,channels(AD4),[" + num2istr(sweepNo) + "])"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+
+	// non existing sweep
+	str = "data(TestEpoch,channels(AD4),[" + num2istr(sweepNo + 2) + "])"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+
+	// range begin
+	str = "data([12, 10],channels(AD),[" + num2istr(sweepNo) + "])"
+	try
+		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// range end
+	str = "data([0, 11],channels(AD),[" + num2istr(sweepNo) + "])"
+	try
+		WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// One sweep does not exist
+	Make/FREE/N=(DimSize(sweepRef, ROWS), 2, numChannels / 2) dataRef = NaN
+	dataRef[][0][] = sweepRef[p]
+	str = "data(cursors(A,B),channels(AD),[" + num2istr(sweepNo) + "," + num2istr(sweepNo + 2) + "])"
+	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(dataRef, data, mode = WAVE_DATA)
+End
+
 Function TestLabNotebook()
 	Variable i, j, sweepNumber, channelNumber
 	String str, trace, key, name, epochStr
@@ -1177,9 +1298,6 @@ Function TestLabNotebook()
 	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
 	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
-	epochStr = "0,0." + num2istr(datasize - 1) + ",ShortName=TestEpoch,0"
-	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) epochInfo = epochStr
-	Make/FREE/T/N=(1, 1) epochKeys = EPOCHS_ENTRY_KEY
 	Make/FREE/T/N=(1, 1) dacKeys = "DAC"
 
 	Make/FREE/N=(dataSize, numSweeps, numChannels) input = q + p^r // + gnoise(1)
@@ -1202,8 +1320,6 @@ Function TestLabNotebook()
 		ED_AddEntriesToLabnotebook(values, dacKeys, sweepNumber, device, mode)
 		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values
 		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
-
-		ED_AddEntriesToLabnotebook(epochInfo, epochKeys, sweepNumber, device, mode)
 	endfor
 	ModifyGraph/W=$win log(left)=1
 
@@ -1214,19 +1330,6 @@ Function TestLabNotebook()
 	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + channelTypeC + ",channels(AD),sweeps(),UNKNOWN_MODE)"
 	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
 	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
-
-	str = "data(cursors(A,B),channels(AD),sweeps())"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(input, data, mode = WAVE_DATA)
-
-	str = "data(TestEpoch,channels(AD),sweeps())"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	REQUIRE_EQUAL_WAVES(input, data, mode = WAVE_DATA)
-
-	str = "data(TestEpoch,channels(AD4),sweeps())"
-	WAVE data = SF_FormulaExecutor(DirectToFormulaParser(str), graph = win)
-	Duplicate/FREE/RMD=[][][2] input, singleChannelData
-	REQUIRE_EQUAL_WAVES(singleChannelData, data, mode = WAVE_DATA)
 End
 
 /// @brief Test Epoch operation of SweepFormula
