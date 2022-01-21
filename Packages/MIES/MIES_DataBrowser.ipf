@@ -599,10 +599,16 @@ Function DB_AddSweepToGraph(string win, variable index[, STRUCT BufferedDrawInfo
 		return NaN
 	endif
 
+	WAVE config = GetConfigWave(sweepWave)
+
+	if(!IsValidSweepAndConfig(sweepWave, config, configVersion = 0))
+		printf "The sweep %d of device %s does not match its configuration data. Therefore we can't display it.\r", sweepNo, device
+		return 1
+	endif
+
 	WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, sweepNo=sweepNo)
 
 	DB_SplitSweepsIfReq(win, sweepNo)
-	WAVE config = GetConfigWave(sweepWave)
 
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
 
