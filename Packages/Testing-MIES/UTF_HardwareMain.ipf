@@ -17,6 +17,7 @@
 #include "UTF_BasicHardwareTests"
 #include "UTF_DAEphys"
 #include "UTF_Epochs"
+#include "UTF_HardwareTestsWithBUG"
 #include "UTF_HelperFunctions"
 #include "UTF_IVSCC"
 #include "UTF_MultiPatchSeqDAScale"
@@ -108,6 +109,9 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_IVSCC.ipf", list)
 	list = AddListItem("UTF_AutoTestpulse.ipf", list)
 	list = AddListItem("UTF_VeryLastTestSuite.ipf", list, ";", inf)
+
+	// tests which BUG out must come after the test-all tests in UTF_VeryLastTestSuite.ipf
+	list = AddListItem("UTF_HardwareTestsWithBUG.ipf", list, ";", inf)
 
 	if(ParamIsDefault(testsuite))
 		testsuite = list

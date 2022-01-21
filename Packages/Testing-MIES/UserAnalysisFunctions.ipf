@@ -970,3 +970,22 @@ Function SetSweepFormula(string device, STRUCT AnalysisFunction_V3& s)
 			// do nothing
 	endswitch
 End
+
+Function BreakConfigWave(string device, STRUCT AnalysisFunction_V3& s)
+
+	switch(s.eventType)
+		case MID_SWEEP_EVENT:
+			if(s.lastKnownRowIndex > 0)
+				WAVE/Z configWave = GetDAQConfigWave(device)
+				CHECK_WAVE(configWave, NUMERIC_WAVE)
+				CHECK(IsValidSweepAndConfig(s.scaledDACWave, configWave))
+
+				// add one more row so that IsValidSweepAndConfig fails
+				Redimension/N=(DimSize(configWave, ROWS) + 1, -1) configWave
+				CHECK(!IsValidSweepAndConfig(s.scaledDACWave, configWave))
+
+				return ANALYSIS_FUNC_RET_EARLY_STOP
+			endif
+			break
+	endswitch
+End
