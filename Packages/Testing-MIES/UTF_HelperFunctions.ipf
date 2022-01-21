@@ -329,30 +329,52 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	return [key, keyTxt]
 End
 
-Function CreateFakeSweepData(string device)
+Function/WAVE FakeSweepDataGeneratorProto(WAVE sweep, variable numChannels)
+
+	ASSERT(0, "Prototype Function FakeSweepDataGeneratorProto called.")
+End
+
+Function/WAVE FakeSweepDataGeneratorDefault(WAVE sweep, variable numChannels)
+
+	Redimension/N=(10, numChannels) sweep
+	sweep = p
+
+	return sweep
+End
+
+Function CreateFakeSweepData(string device, [variable sweepNo, FUNCREF FakeSweepDataGeneratorProto sweepGen])
+
 	string list, key, keyTxt
-	variable sweepNo
+	variable numChannels
+
+	sweepNo = ParamIsDefault(sweepNo) ? 0: sweepNo
+	if(ParamIsDefault(sweepGen))
+		FUNCREF FakeSweepDataGeneratorProto sweepGen = FakeSweepDataGeneratorDefault
+	endif
 
 	GetDAQDeviceID(device)
 
-	WAVE sweep = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-	WAVE config = GetDAQConfigWave(device)
-
-	Redimension/N=(10, 2) sweep
-	sweep = p
-
 	[key, keyTxt] = PrepareLBN_IGNORE(device)
+	numChannels = 4 // from LBN creation in PrepareLBN_IGNORE -> DA2, AD6, DA3, AD7
 
+	WAVE sweepTemplate = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+	WAVE sweep = sweepGen(sweepTemplate, numChannels)
+
+	WAVE config = GetDAQConfigWave(device)
+	Redimension/N=(4, -1) config
 	// creates HS 0 with DAC 2 and ADC 6
-	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
-	Make/FREE/N=(1, 1)/T keys = CLAMPMODE_ENTRY_KEY
-
-	Redimension/N=(2, -1) config
 	config[0][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
 	config[0][%ChannelNumber] = 2
 
 	config[1][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
 	config[1][%ChannelNumber] = 6
+
+	// creates HS 1 with DAC 3 and ADC 7
+	config[2][%ChannelType]   = XOP_CHANNEL_TYPE_DAC
+	config[2][%ChannelNumber] = 3
+
+	config[3][%ChannelType]   = XOP_CHANNEL_TYPE_ADC
+	config[3][%ChannelNumber] = 7
 
 	DFREF dfr = GetDeviceDataPath(device)
 	MoveWave sweep, dfr:$GetSweepWaveName(sweepNo)
