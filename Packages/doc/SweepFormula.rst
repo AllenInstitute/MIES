@@ -620,11 +620,11 @@ The tp function returns analysis values for test pulses that are part of sweeps.
 type sets what test pulse analysis value is returned.
 The following types are supported:
 
-base or 0: Returns the baseline level in pA or mV depending on the clamp mode.
+``base`` or ``0``: Returns the baseline level in pA or mV depending on the clamp mode.
 
-inst or 1: Returns the instantaneous resistance values in MΩ.
+``inst`` or ``1``: Returns the instantaneous resistance values in MΩ.
 
-ss or 2: Returns the steady state resistance values in MΩ.
+``ss`` or ``2``: Returns the steady state resistance values in MΩ.
 
 The returned array is 1 x M x N, where M indexes the sweeps and N indexes the channels. Thus,
 sweep and channel information gets transferred as well.
