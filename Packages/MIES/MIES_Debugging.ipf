@@ -501,7 +501,7 @@ End
 /// @brief Complain and ask the user to report the error
 ///
 /// In nearly all cases ASSERT() is the more appropriate method to use.
-Function Bug(msg)
+Function BUG(msg)
 	string msg
 
 	string func, line, file
