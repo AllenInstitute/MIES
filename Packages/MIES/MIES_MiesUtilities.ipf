@@ -1683,19 +1683,19 @@ End
 
 /// @brief Return a wave with all labnotebook rows which have a non-empty entry for setting
 threadsafe Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
-   WAVE labnotebookValues
-   string setting
+	WAVE labnotebookValues
+	string setting
 
-   variable col
+	variable col
 
-   col = FindDimLabel(labnotebookValues, COLS, setting)
+	col = FindDimLabel(labnotebookValues, COLS, setting)
 
-   if(col < 0)
-	   return $""
-   endif
+	if(col < 0)
+		return $""
+	endif
 
-   return FindIndizes(labnotebookValues, col = col, prop = PROP_NON_EMPTY, \
-					  startLayer = 0, endLayer = DimSize(labnotebookValues, LAYERS) - 1)
+	return FindIndizes(labnotebookValues, col = col, prop = PROP_NON_EMPTY,               \
+	                   startLayer = 0, endLayer = DimSize(labnotebookValues, LAYERS) - 1)
 End
 
 /// @brief Return a wave with all sweep numbers which have a non-empty entry for setting

@@ -26,14 +26,14 @@ Function BWO_SelectDevice()
 	If(noOfLockedDevices == 0)
 		return NaN
 	elseif(noOfLockedDevices == 1)
-	   if(interactiveMode)
-	     DoAlert 1, "Proceed with automated blowout routine?"
-	     if(V_flag != 1)
-	        return NaN
-	     endif
-	   endif
+		if(interactiveMode)
+			DoAlert 1, "Proceed with automated blowout routine?"
+			if(V_flag != 1)
+				return NaN
+			endif
+		endif
 
-   		BWO_Go(StringFromList(0, lockedDeviceList))
+		BWO_Go(StringFromList(0, lockedDeviceList))
 	elseif(noOfLockedDevices > 1)
 		print "Blowout is not available for multiple locked devices"
 		return Nan

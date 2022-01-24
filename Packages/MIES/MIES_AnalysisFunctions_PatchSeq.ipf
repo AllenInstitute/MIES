@@ -1454,9 +1454,9 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 		case "MaximumSpikeCount":
 			if(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params)    \
 			   >= AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params))
-			   return "The minimum/maximum spike counts are not ordered properly"
-		   endif
-		   break
+				return "The minimum/maximum spike counts are not ordered properly"
+			endif
+			break
 	endswitch
 
 	// check that all three are present
@@ -1467,12 +1467,12 @@ Function/S PSQ_DAScale_CheckParam(string name, struct CheckParametersStruct &s)
 			if(IsNaN(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params))    \
 			   || IsNaN(AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params)) \
 			   || IsNaN(AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params)))
-			   return "One of MinimumSpikeCount/MaximumSpikeCount/DAScaleModifier is not present"
-		   endif
-		   break
-   endswitch
+				return "One of MinimumSpikeCount/MaximumSpikeCount/DAScaleModifier is not present"
+			endif
+			break
+	endswitch
 
-   return ""
+	return ""
 End
 
 /// @brief Patch Seq Analysis function to find a suitable DAScale

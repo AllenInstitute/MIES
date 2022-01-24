@@ -5,7 +5,7 @@
 
 static Function CheckInstallation()
 
-   CHECK_EQUAL_VAR(CHI_CheckInstallation(), 0)
+	CHECK_EQUAL_VAR(CHI_CheckInstallation(), 0)
 End
 
 static Function CheckTestingInstallation()

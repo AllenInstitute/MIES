@@ -512,22 +512,22 @@ Function switchHolding(Vm2)
 	switchSweep = floor(numSweeps/2)
 	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
-    if(SweepsRemaining == switchSweep)
-        for(i=0; i<NUM_HEADSTAGES; i+=1)
-            if(statusHS[i])
+	if(SweepsRemaining == switchSweep)
+		for(i=0; i<NUM_HEADSTAGES; i+=1)
+			if(statusHS[i])
 				clampMode = DAG_GetHeadstageMode(DEFAULT_DEVICE, i)
-                PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = i)
+				PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = i)
 				if(clampMode == V_CLAMP_MODE)
-                    PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_VC", val = Vm2)
+					PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_VC", val = Vm2)
 				elseif(clampMode == I_CLAMP_MODE)
-                    PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_IC", val = Vm2)
-					else
-						ASSERT(0, "Unsupported clamp mode")
-					endif
+					PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_IC", val = Vm2)
+				else
+					ASSERT(0, "Unsupported clamp mode")
 				endif
-        endfor
+			endif
+		endfor
 		printf "Half-way through stim set, changing holding potential to: %d\r", Vm2
-    endif
+	endif
 
 	return SweepsRemaining
 End
@@ -537,17 +537,17 @@ Function InitoodDAQ()
 
 	// disable dDAQ
 
-   	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq1_DistribDaq", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq1_DistribDaq", val = CHECKBOX_UNSELECTED)
 
-   // make sure oodDAQ is enabled
+	// make sure oodDAQ is enabled
 
-   	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq1_dDAQOptOv", val = CHECKBOX_SELECTED)
+	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq1_dDAQOptOv", val = CHECKBOX_SELECTED)
 
-   // make sure Get/Set ITI is disabled
+	// make sure Get/Set ITI is disabled
 
-   	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
 
-   	PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_dDAQOptOvPost", val = POST_DELAY)
+	PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_dDAQOptOvPost", val = POST_DELAY)
 
 End
 

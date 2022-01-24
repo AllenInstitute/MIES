@@ -669,7 +669,7 @@ Function ARDEpochEventPopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 			DurationHide = 1
 			PDurHide = 1
 			PIntHide = 1
- 			PNumHide = 1
+			PNumHide = 1
 			DutyHide = 1
 			CheckHide = 1
 			ards.gEpochDuration = 0
@@ -692,7 +692,7 @@ Function ARDEpochEventPopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 			DurationHide = 0
 			PDurHide = 1
 			PIntHide = 1
- 			PNumHide = 1
+			PNumHide = 1
 			DutyHide = 1
 			CheckHide = 0
 			break
@@ -700,7 +700,7 @@ Function ARDEpochEventPopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 			DurationHide = 0
 			PDurHide = 0
 			PIntHide = 0
- 			PNumHide = 0
+			PNumHide = 0
 			DutyHide = 1
 			CheckHide = 0
 			break

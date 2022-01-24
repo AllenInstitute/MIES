@@ -1050,36 +1050,36 @@ End
 ///
 /// @param index index where one point in the given dimension is deleted
 static Function DeleteWavePoint(wv, dim, index)
-   WAVE wv
-   variable dim, index
+	WAVE wv
+	variable dim, index
 
-   variable size
+	variable size
 
-   ASSERT(WaveExists(wv), "wave does not exist")
-   ASSERT(dim >= 0 && dim < 4, "dim must be 0, 1, 2 or 3")
-   size = DimSize(wv, dim)
-   if(index >= 0 && index < size)
-	   if(size > 1)
-		   DeletePoints/M=(dim) index, 1, wv
-	   else
-		   switch(dim)
-			   case 0:
-				   Redimension/N=(0, -1, -1, -1) wv
-				   break
-			   case 1:
-				   Redimension/N=(-1, 0, -1, -1) wv
-				   break
-			   case 2:
-				   Redimension/N=(-1, -1, 0, -1) wv
-				   break
-			   case 3:
-				   Redimension/N=(-1, -1, -1, 0) wv
-				   break
-		   endswitch
-	   endif
-   else
-	   ASSERT(0, "index out of range")
-   endif
+	ASSERT(WaveExists(wv), "wave does not exist")
+	ASSERT(dim >= 0 && dim < 4, "dim must be 0, 1, 2 or 3")
+	size = DimSize(wv, dim)
+	if(index >= 0 && index < size)
+		if(size > 1)
+			DeletePoints/M=(dim) index, 1, wv
+		else
+			switch(dim)
+				case 0:
+					Redimension/N=(0, -1, -1, -1) wv
+					break
+				case 1:
+					Redimension/N=(-1, 0, -1, -1) wv
+					break
+				case 2:
+					Redimension/N=(-1, -1, 0, -1) wv
+					break
+				case 3:
+					Redimension/N=(-1, -1, -1, 0) wv
+					break
+			endswitch
+		endif
+	else
+		ASSERT(0, "index out of range")
+	endif
 End
 
 /// @brief Check if a name for an object adheres to the strict naming rules
