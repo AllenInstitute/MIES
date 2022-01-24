@@ -170,11 +170,11 @@ End
 
 static Function/WAVE GetLBNEntriesWave_IGNORE()
 
-	string list = "sweepPass;setPass;failedPulseLevel;idealSpikeCounts;"                               \
-                  + "setSweepCount_HS0;setSweepCount_HS1;"                                             \
-	               + "headstagePass_HS0;headstagePass_HS1;stimScale_HS0;stimScale_HS1;" \
-	               + "rerunTrials_HS0;rerunTrials_HS1;rerunTrialsExceeded_HS0;rerunTrialsExceeded_HS1;"           \
-	               + "spikeCounts_HS0;spikeCounts_HS1;spikeCountsState_HS0;spikeCountsState_HS1;" \
+	string list = "sweepPass;setPass;failedPulseLevel;idealSpikeCounts;"                                                                \
+	               + "setSweepCount_HS0;setSweepCount_HS1;"                                                                             \
+	               + "headstagePass_HS0;headstagePass_HS1;stimScale_HS0;stimScale_HS1;"                                                 \
+	               + "rerunTrials_HS0;rerunTrials_HS1;rerunTrialsExceeded_HS0;rerunTrialsExceeded_HS1;"                                 \
+	               + "spikeCounts_HS0;spikeCounts_HS1;spikeCountsState_HS0;spikeCountsState_HS1;"                                       \
 	               + "spikePositions_HS0;spikePositions_HS1;spikePositionQC_HS0;spikePositionQC_HS1;spontSpikeQC_HS0;spontSpikeQC_HS1;" \
 	               + "autoBiasV_HS0;autoBiasV_HS1;"
 

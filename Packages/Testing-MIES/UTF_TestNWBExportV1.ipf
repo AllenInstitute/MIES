@@ -5,7 +5,7 @@
 
 static Constant NWB_VERSION = 1
 
- // This file does not hold test suites
+// This file does not hold test suites
 static Function NoTestSuite()
 	FAIL()
 End

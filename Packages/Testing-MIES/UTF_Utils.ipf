@@ -2745,7 +2745,7 @@ Function TWTLStopOnEmpty()
 	list = TextWaveToList(w, ";", stopOnEmpty = 1)
 	CHECK_EQUAL_STR(list, refList)
 
-   // stop at new row
+	// stop at new row
 	w = {{"1", "", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
 	refList = "1,4,7,;"
 	list = TextWaveToList(w, ";", stopOnEmpty = 1)
@@ -5506,7 +5506,7 @@ End
 
 Function/WAVE ETValidInput()
 
-   // input string, output string, passed length
+	// input string, output string, passed length
 	Make/FREE/T wv0 = {"a", "a", "1"}
 	Make/FREE/T wv1 = {"abcd", "abcd", "10"}
 	Make/FREE/T wv2 = {"abcd ef gh", "ab...", "5"}
@@ -5536,7 +5536,7 @@ End
 
 Function/WAVE ETInvalidInput()
 
-   // input string, passed length
+	// input string, passed length
 	Make/FREE/T wv0 = {" \t\r\n", "1"}
 	Make/FREE/T wv1 = {" abcd", "1"}
 	Make/FREE/T wv2 = {" abcd", "1.5"}
