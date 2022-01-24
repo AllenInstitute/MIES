@@ -90,21 +90,21 @@ End
 
 /// @brief Return a list of possible axes for the export panel
 Function/S SBE_GetSelectedAxis(graphPopup, axisOrientation)
-   string graphPopup
-   variable axisOrientation
+	string graphPopup
+	variable axisOrientation
 
-   string graph
-   string list = "New;"
+	string graph
+	string list = "New;"
 
-   ASSERT(axisOrientation == AXIS_ORIENTATION_HORIZ || axisOrientation == AXIS_ORIENTATION_VERT, "Invalid axis orientation")
+	ASSERT(axisOrientation == AXIS_ORIENTATION_HORIZ || axisOrientation == AXIS_ORIENTATION_VERT, "Invalid axis orientation")
 
-   graph = GetPopupMenuString(SBE_EXPORT_PANEL, graphPopup)
+	graph = GetPopupMenuString(SBE_EXPORT_PANEL, graphPopup)
 
-   if(!WindowExists(graph))
-	   return list
-   endif
+	if(!WindowExists(graph))
+		return list
+	endif
 
-   return list + GetAllAxesWithOrientation(graph, axisOrientation)
+	return list + GetAllAxesWithOrientation(graph, axisOrientation)
 End
 
 /// @brief Add all available sweep data to traceData

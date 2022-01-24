@@ -52,9 +52,9 @@ static Constant     ACCESS_USER                     = 2
 
 /// @brief Filled by P_GetPressureForDA()
 static Structure P_PressureDA
-   variable calPressure, calPressureOffset ///< preconditioned for the DAC hardware
-   variable pressure ///< [psi]
-   variable first, last
+	variable calPressure, calPressureOffset ///< preconditioned for the DAC hardware
+	variable pressure ///< [psi]
+	variable first, last
 EndStructure
 
 /// @brief Applies pressure methods based on data in PressureDataWv
@@ -314,7 +314,7 @@ static Function P_MethodSeal(device, headStage)
 		P_MethodAtmospheric(device, headstage) // set to atmospheric pressure
 		if(PressureDataWv[headStage][%UserSelectedHeadStage] == headstage && !GetTabID(device, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
 			P_UpdatePressureMode(device, 1, StringFromList(1,PRESSURE_CONTROLS_BUTTON_LIST), 0)
- 		else
+		else
 			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = PRESSURE_METHOD_ATM // remove the seal mode
 			P_ResetPressureData(device, headStageNo = headstage)
 		endif
@@ -405,7 +405,7 @@ static Function P_MethodBreakIn(device, headStage)
 
 		if(PressureDataWv[headStage][%UserSelectedHeadStage] == headstage && !GetTabID(device, "tab_DataAcq_Pressure")) // only update buttons if selected headstage matches headstage with seal
 			P_UpdatePressureMode(device, 2, StringFromList(2,PRESSURE_CONTROLS_BUTTON_LIST), 0) // sets break-in button back to base state and sets to atmospheric
- 		else
+		else
 			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] 	= PRESSURE_METHOD_ATM // remove the seal mode
 			P_ResetPressureData(device, headStageNo = headStage)
 		endif
@@ -786,7 +786,7 @@ Function P_GetUserAccess(device, headStage, pressureMode)
 End
 
 /// @brief Maps the access (defined in @ref PRESSURE_CONSTANTS) to the TTL settings
- Function P_SetPressureValves(device, headStage, Access)
+Function P_SetPressureValves(device, headStage, Access)
 	string device
 	variable headStage
 	variable Access
@@ -1364,7 +1364,7 @@ static Function/WAVE P_NI_GetDAWave(device, headStage)
 	variable DAC
 	string wvName
 
-   DFREF dfr = P_DeviceSpecificPressureDFRef(device)
+	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
 
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
 	DAC = pressureDataWv[headStage][%DAC]
@@ -1388,7 +1388,7 @@ static Function/WAVE P_NI_GetADWave(device, headStage)
 	variable ADC
 	string wvName
 
-   DFREF dfr = P_DeviceSpecificPressureDFRef(device)
+	DFREF dfr = P_DeviceSpecificPressureDFRef(device)
 
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(device)
 	ADC = pressureDataWv[headStage][%ADC]

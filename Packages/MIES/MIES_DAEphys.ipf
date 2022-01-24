@@ -691,40 +691,40 @@ Function DAP_EphysPanelStartUpSettings()
 	DisableControl(device, "button_Hardware_PUser_Disable")
 	PGC_SetAndActivateControl(device, "ADC", val = 6)
 
-   ValDisplay valdisp_DataAcq_P_LED_0 WIN = $device, value= _NUM:-1
-   ValDisplay valdisp_DataAcq_P_LED_1 WIN = $device, value= _NUM:-1
-   ValDisplay valdisp_DataAcq_P_LED_2 WIN = $device, value= _NUM:-1
-   ValDisplay valdisp_DataAcq_P_LED_3 WIN = $device, value= _NUM:-1
-   ValDisplay valdisp_DataAcq_P_LED_4 WIN = $device, value= _NUM:-1
-   ValDisplay valdisp_DataAcq_P_LED_5 WIN = $device, value= _NUM:-1
-   ValDisplay valdisp_DataAcq_P_LED_6 WIN = $device, value= _NUM:-1
-   ValDisplay valdisp_DataAcq_P_LED_7 WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_0 WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_1 WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_2 WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_3 WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_4 WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_5 WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_6 WIN = $device, value= _NUM:-1
+	ValDisplay valdisp_DataAcq_P_LED_7 WIN = $device, value= _NUM:-1
 
-   ValDisplay valdisp_DataAcq_P_LED_0,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-   ValDisplay valdisp_DataAcq_P_LED_1,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-   ValDisplay valdisp_DataAcq_P_LED_2,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-   ValDisplay valdisp_DataAcq_P_LED_3,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-   ValDisplay valdisp_DataAcq_P_LED_4,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-   ValDisplay valdisp_DataAcq_P_LED_5,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-   ValDisplay valdisp_DataAcq_P_LED_6,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
-   ValDisplay valdisp_DataAcq_P_LED_7,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+	ValDisplay valdisp_DataAcq_P_LED_0,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+	ValDisplay valdisp_DataAcq_P_LED_1,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+	ValDisplay valdisp_DataAcq_P_LED_2,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+	ValDisplay valdisp_DataAcq_P_LED_3,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+	ValDisplay valdisp_DataAcq_P_LED_4,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+	ValDisplay valdisp_DataAcq_P_LED_5,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+	ValDisplay valdisp_DataAcq_P_LED_6,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+	ValDisplay valdisp_DataAcq_P_LED_7,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 
-   ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535,0)
-   ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-   ValDisplay valdisp_DataAcq_P_1,valueBackColor=(65535,65535,65535,0)
-   ValDisplay valdisp_DataAcq_P_1,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-   ValDisplay valdisp_DataAcq_P_2,valueBackColor=(65535,65535,65535,0)
-   ValDisplay valdisp_DataAcq_P_2,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-   ValDisplay valdisp_DataAcq_P_3,valueBackColor=(65535,65535,65535,0)
-   ValDisplay valdisp_DataAcq_P_3,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-   ValDisplay valdisp_DataAcq_P_4,valueBackColor=(65535,65535,65535,0)
-   ValDisplay valdisp_DataAcq_P_4,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-   ValDisplay valdisp_DataAcq_P_5,valueBackColor=(65535,65535,65535,0)
-   ValDisplay valdisp_DataAcq_P_5,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-   ValDisplay valdisp_DataAcq_P_6,valueBackColor=(65535,65535,65535,0)
-   ValDisplay valdisp_DataAcq_P_6,limits={0,0,0},barmisc={0,1000},value= #"0.00"
-   ValDisplay valdisp_DataAcq_P_7,valueBackColor=(65535,65535,65535,0)
-   ValDisplay valdisp_DataAcq_P_7,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+	ValDisplay valdisp_DataAcq_P_1,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_1,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+	ValDisplay valdisp_DataAcq_P_2,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_2,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+	ValDisplay valdisp_DataAcq_P_3,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_3,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+	ValDisplay valdisp_DataAcq_P_4,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_4,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+	ValDisplay valdisp_DataAcq_P_5,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_5,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+	ValDisplay valdisp_DataAcq_P_6,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_6,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+	ValDisplay valdisp_DataAcq_P_7,valueBackColor=(65535,65535,65535,0)
+	ValDisplay valdisp_DataAcq_P_7,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 
 	ValDisplay valdisp_DataAcq_P_LED_Approach WIN = $device, value= _NUM:0
 	ValDisplay valdisp_DataAcq_P_LED_Seal WIN = $device, value= _NUM:0
@@ -1170,7 +1170,7 @@ Function GetHeadstageFromSettings(device, channelType, channelNumber, clampMode)
 	endfor
 
 	return NaN
- End
+End
 
 /// @brief Adapt the state of the associated headstage on DA/AD channel change
 ///
@@ -3419,7 +3419,7 @@ Function DAP_ChangeHeadStageMode(device, clampMode, headstage, options)
 	WAVE ChanAmpAssign = GetChanAmpAssign(device)
 	WAVE GuiState = GetDA_EphysGuiStateNum(device)
 
-   Make/FREE/N=(NUM_HEADSTAGES) changeHS = 0
+	Make/FREE/N=(NUM_HEADSTAGES) changeHS = 0
 	if(headstage < 0)
 		changeHS[] = 1
 		DAP_SetAmpModeControls(device, headstage, clampMode)

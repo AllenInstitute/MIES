@@ -175,27 +175,27 @@ End
 /// @param supress      supress assertion that ctrl must have a title
 /// @return Returns     the title or an empty string
 Function/S GetTitle(recMacro, [supress])
- 	string recMacro
- 	variable supress
+	string recMacro
+	variable supress
 
- 	string title, errorMessage
+	string title, errorMessage
 
- 	if(ParamIsDefault(supress))
- 		supress = 0
- 	endif
+	if(ParamIsDefault(supress))
+		supress = 0
+	endif
 
-    // [^\"\\\\] matches everything except escaped quotes
-    // \\\\.     eats backslashes
-    // [^\"\\\\] up to the next escaped quote
-    // does only match valid strings
- 	SplitString/E="(?i)title=\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"" recMacro, title
+	// [^\"\\\\] matches everything except escaped quotes
+	// \\\\.     eats backslashes
+	// [^\"\\\\] up to the next escaped quote
+	// does only match valid strings
+	SplitString/E="(?i)title=\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"" recMacro, title
 
- 	if(!V_Flag)
-	 	sprintf errorMessage, "recreation macro %.30s does not contain a title", recMacro
- 		ASSERT(supress, errorMessage)
- 	endif
+	if(!V_Flag)
+		sprintf errorMessage, "recreation macro %.30s does not contain a title", recMacro
+		ASSERT(supress, errorMessage)
+	endif
 
-  	return title
+	return title
 End
 
 /// @brief Change color of the title of mulitple controls
@@ -1092,24 +1092,24 @@ End
 
 /// @brief Generic wrapper for getting a controls state (enabled, hidden, disabled)
 Function/S GetGuiControlState(win, control)
-    string win, control
+	string win, control
 
-    ControlInfo/W=$win $control
-    ASSERT(V_flag != 0, "Non-existing control or window")
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
-    return num2str(V_disable)
+	return num2str(V_disable)
 End
 
 /// @brief Generic wrapper for setting a controls state (enabled, hidden, disabled)
 Function SetGuiControlState(win, control, controlState)
-    string win, control
-    string controlState
-    variable controlType
+	string win, control
+	string controlState
+	variable controlType
 
-    ControlInfo/W=$win $control
-    ASSERT(V_flag != 0, "Non-existing control or window")
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
-    ModifyControl $control, win=$win, disable=str2num(controlState)
+	ModifyControl $control, win=$win, disable=str2num(controlState)
 End
 
 /// @brief Return one if the given control is disabled,
@@ -1319,9 +1319,9 @@ Function GetLimitConstrainedSetVar(string recMacro, variable val)
 	variable minVal, maxVal, incVal
 	if(!ExtractLimitsFromRecMacro(recMacro, minVal, maxVal, incVal))
 		val = limit(val, minVal, maxVal)
-   	endif
+	endif
 
-   	return val
+	return val
 End
 
 /// @brief Return the parameter type a function parameter

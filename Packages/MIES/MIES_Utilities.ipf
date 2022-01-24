@@ -593,7 +593,7 @@ End
 threadsafe static Function GetWaveSizeImplementation(wv)
 	Wave wv
 
- #if IgorVersion() >= 9.0 && (NumberByKey("BUILD", IgorInfo(0)) >= 37431)
+#if IgorVersion() >= 9.0 && (NumberByKey("BUILD", IgorInfo(0)) >= 37431)
 	return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
 #else
 	return PROPRIETARY_HEADER_SIZE + GetSizeOfType(wv) * numpnts(wv) + strlen(note(wv))
@@ -1031,20 +1031,20 @@ end
 /// @brief Recursively remove all folders from the datafolder path,
 /// if and only if all are empty.
 Function RecursiveRemoveEmptyDataFolder(dfr)
-    dfref dfr
+	dfref dfr
 
-    variable numItems, i
-    string path, partialPath
+	variable numItems, i
+	string path, partialPath
 
-    if(!DataFolderExistsDFR(dfr))
-        return 0
-    endif
+	if(!DataFolderExistsDFR(dfr))
+		return 0
+	endif
 
-    path = GetDataFolder(1, dfr)
-    path = RemoveEnding(path, ":")
-    numItems = ItemsInList(path, ":")
-    partialPath = path
-    for(i=numItems-1; i >= 1; i-=1)
+	path = GetDataFolder(1, dfr)
+	path = RemoveEnding(path, ":")
+	numItems = ItemsInList(path, ":")
+	partialPath = path
+	for(i=numItems-1; i >= 1; i-=1)
 		if(!RemoveEmptyDataFolder($partialPath))
 			break
 		endif
@@ -3515,7 +3515,7 @@ threadsafe Function IsValidLiberalObjectName(string name)
 End
 
 threadsafe static Function NameChecker(string name, variable liberal)
-   // @todo remove the IsEmpty check once this is resolved upstream.
+	// @todo remove the IsEmpty check once this is resolved upstream.
 	return !IsEmpty(name) && !cmpstr(name, CleanupName(name, !!liberal, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
 End
 
@@ -4566,36 +4566,36 @@ End
 ///
 /// @param index index where one point in the given dimension is deleted
 Function DeleteWavePoint(wv, dim, index)
-   WAVE wv
-   variable dim, index
+	WAVE wv
+	variable dim, index
 
-   variable size
+	variable size
 
-   ASSERT(WaveExists(wv), "wave does not exist")
-   ASSERT(dim >= 0 && dim < 4, "dim must be 0, 1, 2 or 3")
-   size = DimSize(wv, dim)
-   if(index >= 0 && index < size)
-	   if(size > 1)
-		   DeletePoints/M=(dim) index, 1, wv
-	   else
-		   switch(dim)
-			   case 0:
-				   Redimension/N=(0, -1, -1, -1) wv
-				   break
-			   case 1:
-				   Redimension/N=(-1, 0, -1, -1) wv
-				   break
-			   case 2:
-				   Redimension/N=(-1, -1, 0, -1) wv
-				   break
-			   case 3:
-				   Redimension/N=(-1, -1, -1, 0) wv
-				   break
-		   endswitch
-	   endif
-   else
-	   ASSERT(0, "index out of range")
-   endif
+	ASSERT(WaveExists(wv), "wave does not exist")
+	ASSERT(dim >= 0 && dim < 4, "dim must be 0, 1, 2 or 3")
+	size = DimSize(wv, dim)
+	if(index >= 0 && index < size)
+		if(size > 1)
+			DeletePoints/M=(dim) index, 1, wv
+		else
+			switch(dim)
+				case 0:
+					Redimension/N=(0, -1, -1, -1) wv
+					break
+				case 1:
+					Redimension/N=(-1, 0, -1, -1) wv
+					break
+				case 2:
+					Redimension/N=(-1, -1, 0, -1) wv
+					break
+				case 3:
+					Redimension/N=(-1, -1, -1, 0) wv
+					break
+			endswitch
+		endif
+	else
+		ASSERT(0, "index out of range")
+	endif
 End
 
 /// @brief Converts a number to a string with specified precision (digits after decimal dot).
