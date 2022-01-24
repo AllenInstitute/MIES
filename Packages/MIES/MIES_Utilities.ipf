@@ -975,11 +975,9 @@ End
 /// @brief Removes the datafolder reference if there are no objects in it anymore
 ///
 /// @param dfr data folder reference to kill
-/// @returns 	1 in case the folder was removed and 0 in all other cases
+/// @returns 1 in case the folder was removed and 0 in all other cases
 Function RemoveEmptyDataFolder(dfr)
 	dfref dfr
-
-	variable objectsInFolder
 
 	if(!DataFolderExistsDFR(dfr))
 		return 0
