@@ -513,9 +513,9 @@ Function BUG(msg)
 		printf "BUG: %s\r", msg
 	endif
 
-	LOG_AddEntry(PACKAGE_MIES, "report",                 \
-	             keys = {"msg", "func", "line", "file"}, \
-	             values = {msg, func, line, file})
+	LOG_AddEntry(PACKAGE_MIES, "report",            \
+	             keys = {"msg", "stacktrace"},      \
+	             values = {msg, GetStackTrace()})
 
 	ControlWindowToFront()
 
