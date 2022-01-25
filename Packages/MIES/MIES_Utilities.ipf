@@ -4434,7 +4434,7 @@ End
 /// @brief Helper function to ensure that there is no pending RTE before entering a critical section.
 ///        If there is a pending RTE then an ASSERTion is thrown.
 ///
-///        Not catching and pending RTE would clear this condition silently and valid errors would be
+///        Not catching any pending RTE would clear this condition silently and valid errors would be
 ///        suppressed. This is dangerous in regards of data consistency.
 ///
 ///        Not clearing the RTE before calling `AbortOnRTE` will always trigger the
