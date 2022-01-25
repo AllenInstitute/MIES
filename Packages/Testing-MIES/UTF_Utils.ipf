@@ -5649,3 +5649,20 @@ Function GCP_Str_Works()
 	ref = "123"
 	CHECK_EQUAL_STR(str, ref)
 End
+
+Function BUGWorks()
+	variable bugCount
+
+	bugCount = ROVar(GetBugCount())
+	CHECK_EQUAL_VAR(bugCount, 0)
+
+	try
+		BUG("abcd")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	bugCount = ROVar(GetBugCount())
+	CHECK_EQUAL_VAR(bugCount, 1)
+End
