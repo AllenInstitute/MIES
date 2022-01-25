@@ -5772,3 +5772,91 @@ Function PU_Works([WAVE/T wv])
 	CHECK_EQUAL_VAR(numPrefix, numPrefix)
 	CHECK_EQUAL_STR(unit, unit)
 End
+
+Function FBD_CheckParams()
+
+	Make/FREE/N=0/T input = {""}
+
+	try
+		FilterByDate(input, NaN, 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		FilterByDate(input, 0, NaN)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		FilterByDate(input, 0, -1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		FilterByDate(input, -1, 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		FilterByDate(input, 2, 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function FBD_Works()
+	variable last, first
+
+	// empty gives null
+	Make/FREE/T/N=0 input
+	WAVE/Z result = FilterByDate(input, 0, 1)
+	CHECK_WAVE(result, NULL_WAVE)
+
+	// non-matching entries are included
+	Make/FREE/T input = {"a", "{}", "{\"ts\" : \"2022\"}"}
+	WAVE/Z result = FilterByDate(input, 0, 1)
+	CHECK_EQUAL_TEXTWAVES(result, input)
+
+	Make/FREE/T input = {"{\"ts\" : \"2021-12-24T00:00:00Z\", \"stuff\" : \"abcd\"}", \
+	                     "{\"ts\" : \"2022-01-20T00:00:00Z\", \"stuff\" : \"efgh\"}", \
+	                     "{\"ts\" : \"2022-01-25T00:00:00Z\", \"stuff\" : \"ijkl\"}"}
+
+	// borders are included (1)
+	Make/FREE/T ref = {"{\"ts\" : \"2021-12-24T00:00:00Z\", \"stuff\" : \"abcd\"}", \
+	                   "{\"ts\" : \"2022-01-20T00:00:00Z\", \"stuff\" : \"efgh\"}"}
+
+	first = 0
+	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	WAVE/Z result = FilterByDate(input, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, ref)
+
+	// borders are included (2)
+	Make/FREE/T ref = {"{\"ts\" : \"2021-12-24T00:00:00Z\", \"stuff\" : \"abcd\"}", \
+	                   "{\"ts\" : \"2022-01-20T00:00:00Z\", \"stuff\" : \"efgh\"}"}
+
+	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z")
+	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z")
+	WAVE/Z result = FilterByDate(input, first, last)
+	CHECK_EQUAL_TEXTWAVES(result, ref)
+
+	// will result null if nothing is in range (1)
+	first = ParseIsO8601TimeStamp("2021-12-24T00:00:00Z") + 1
+	last  = ParseIsO8601TimeStamp("2022-01-20T00:00:00Z") - 1
+	WAVE/Z result = FilterByDate(input, first, last)
+	CHECK_WAVE(result, NULL_WAVE)
+
+	// will result null if nothing is in range (2)
+	first = ParseIsO8601TimeStamp("2020-01-01T00:00:00Z")
+	last  = ParseIsO8601TimeStamp("2020-12-31T00:00:00Z")
+	WAVE/Z result = FilterByDate(input, first, last)
+	CHECK_WAVE(result, NULL_WAVE)
+End

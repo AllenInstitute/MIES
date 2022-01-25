@@ -7202,6 +7202,69 @@ Function UploadLogFiles()
 	printf "Successfully uploaded the MIES and ZeroMQ-XOP logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
 End
 
+/// @brief Filter the entries text wave so that the result only includes entries between first and last
+///
+/// @param entries 1D wave with a JSON document in each entry. Each JSON must contain a `ts` object with a ISO8601 timestamp.
+/// @param first   Seconds since igor epoch in UTC of the first entry to include
+/// @param last    Seconds since igor epoch in UTC of the last entry to include
+Function/WAVE FilterByDate(WAVE/T entries, variable first, variable last)
+	variable i, numRows, jsonID, include
+	string entry, dat
+	variable ts, idx
+
+	ASSERT(!IsNaN(first) && !IsNaN(last), "first and last can not be NaN.")
+	ASSERT(first >= 0 && last >= 0 && first < last, "first and last must not be negative and first < last.")
+
+	numRows = DimSize(entries, ROWS)
+
+	if(numRows == 0)
+		return $""
+	endif
+
+	Make/T/FREE/N=(numRows) filtered
+
+	for(i = 0; i < numRows; i += 1)
+		entry = entries[i]
+
+		jsonID = JSON_Parse(entry, ignoreErr = 1)
+		if(IsNaN(jsonID))
+			// include invalid entries
+			dat = ""
+		else
+			dat = JSON_GetString(jsonID, "ts", ignoreErr=1)
+			JSON_Release(jsonID)
+		endif
+
+		include = 0
+
+		if(IsEmpty(dat))
+			// include entries without ts
+			include = 1
+		else
+			ts = ParseISO8601TimeStamp(dat)
+
+			if(IsNaN(ts))
+				// include entries with invalid ts
+				include = 1
+			elseif(ts >= first && ts <= last)
+				include = 1
+			endif
+		endif
+
+		if(include)
+			filtered[idx++] = entry
+		endif
+	endfor
+
+	if(idx == 0)
+		return $""
+	endif
+
+	Redimension/N=(idx) filtered
+
+	return filtered
+End
+
 /// @brief Update the logging template used by the ZeroMQ-XOP
 Function UpdateZeroMQXOPLoggingTemplate()
 	variable JSONid
