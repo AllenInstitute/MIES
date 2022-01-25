@@ -297,7 +297,7 @@ Function TEST_CASE_END_OVERRIDE(name)
 	string name
 
 	string dev, experimentNWBFile, baseFolder, nwbFile
-	variable numEntries, i, fileID, nwbVersion, expensiveChecks
+	variable numEntries, i, fileID, nwbVersion, expensiveChecks, bugCount_ts
 
 	expensiveChecks = DoExpensiveChecks()
 
@@ -361,6 +361,13 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 	NVAR bugCount = $GetBugCount()
 	CHECK_EQUAL_VAR(bugCount, 0)
+
+#if IgorVersion() >= 9.0
+	TUFXOP_AcquireMutex/N=(TSDS_BUGCOUNT)
+	bugCount_ts = TSDS_ReadVar(TSDS_BUGCOUNT, defValue = 0)
+	TUFXOP_ReleaseMutex/N=(TSDS_BUGCOUNT)
+	CHECK_EQUAL_VAR(bugCount_ts, 0)
+#endif
 
 	if(expensiveChecks)
 		// store experiment NWB file for later validation
