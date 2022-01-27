@@ -5640,7 +5640,7 @@ End
 /// successfull connection with zeromq_client_connect() is established.
 Function StartZeroMQSockets([variable forceRestart])
 
-	variable i, port, err, numBinds
+	variable i, port, err, numBinds, flags
 
 	if(ParamIsDefault(forceRestart))
 		forceRestart = 0
@@ -5660,10 +5660,14 @@ Function StartZeroMQSockets([variable forceRestart])
 
 	zeromq_stop()
 
+	flags = ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV
+
+	zeromq_set(flags)
+
 #if defined(DEBUGGING_ENABLED)
-	zeromq_set(ZeroMQ_SET_FLAGS_DEBUG | ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV)
-#else
-	zeromq_set(ZeroMQ_SET_FLAGS_DEFAULT | ZeroMQ_SET_FLAGS_LOGGING | ZeroMQ_SET_FLAGS_NOBUSYWAITRECV)
+	if(DP_DebuggingEnabledForCaller())
+		zeromq_set(flags | ZeroMQ_SET_FLAGS_DEBUG)
+	endif
 #endif
 
 	for(i = 0; i < ZEROMQ_NUM_BIND_TRIALS; i += 1)
