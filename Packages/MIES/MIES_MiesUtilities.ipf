@@ -7177,29 +7177,81 @@ Function UploadCrashDumps()
 	return 1
 End
 
-Function UploadLogFiles()
-	string file, ticket
-	variable jsonID
+/// @brief Upload the MIES and ZeroMQ logfiles
+///
+/// @param verbose   [optional, defaults to true] Only in verbose mode the ticket ID is output to the history
+/// @param firstDate [optional, defaults to false] Allows to filter the logfiles to include entries within the given dates.
+///                  Both `firstDate` and `lastDate` must be present for filtering. The timestamps are in seconds since Igor Pro epoch.
+/// @param lastDate  [optional, defaults to false] See `firstDate`
+Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate])
+	string file, ticket, path, data, location, basePath
+	variable jsonID, numEntries, i, doFilter, isBinary
 
-	file = LOG_GetFile(PACKAGE_MIES)
+	isBinary = 1
+
+	if(ParamIsDefault(verbose))
+		verbose = 1
+	else
+		verbose = !!verbose
+	endif
+
+	if(ParamIsDefault(firstDate) && ParamIsDefault(lastDate))
+		doFilter = 0
+	elseif(!ParamIsDefault(firstDate) && !ParamIsDefault(lastDate))
+		doFilter = 1
+	else
+		ASSERT(0, "Invalid firstDate/lastDate combination")
+	endif
+
+	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist"}}
 	jsonID = GenerateJSONTemplateForUpload()
 
-	AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = 1)
+	numEntries = DimSize(files, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		file = files[i][0]
 
-	file = GetZeroMQXOPLogfile()
-	if(FileExists(file))
-		AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = 1)
-	else
-		AddPayloadEntries(jsonID, {"ZeroMQ-XOP-log-file-does-not-exist"}, {""})
+		if(!FileExists(file))
+			AddPayloadEntries(jsonID, {file}, {files[i][1]}, isBinary = isBinary)
+			continue
+		endif
+
+		if(doFilter)
+			WAVE/T/Z keys, values
+			[keys, values] = FilterLogfileByDate(file, firstDate, lastDate)
+
+			AddPayloadEntries(jsonID, keys, values, isBinary = isBinary)
+		else
+			AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = isBinary)
+		endif
+	endfor
+
+	if(doFilter)
+		AddPayloadEntries(jsonID, {"firstDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = firstDate)}, isBinary = isBinary)
+		AddPayloadEntries(jsonID, {"lastDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = lastDate)}, isBinary = isBinary)
 	endif
 
 	ticket = GenerateRFC4122UUID()
-	AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = 1)
+	AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = isBinary)
+
+#ifdef DEBUGGING_ENABLED
+	if(DP_DebuggingEnabledForCaller())
+		basePath = GetUniqueSymbolicPath()
+		path = SpecialDirPath("Temporary", 0, 0, 1) + "MIES:"
+		NewPath/C/Q/O/Z $basePath path
+
+		location = path + UniqueFileOrFolder(basePath, "logfiles", suffix = ".json")
+		SaveTextFile(JSON_dump(jsonID, indent=4), location)
+
+		printf "Stored the logfile JSON in %s.\r", location
+	endif
+#endif // DEBUGGING_ENABLED
 
 	UploadJSONPayload(jsonID)
 	JSON_Release(jsonID)
 
-	printf "Successfully uploaded the MIES and ZeroMQ-XOP logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+	if(verbose)
+		printf "Successfully uploaded the MIES and ZeroMQ-XOP logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+	endif
 End
 
 /// @brief Filter the entries text wave so that the result only includes entries between first and last
