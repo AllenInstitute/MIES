@@ -6763,6 +6763,10 @@ End
 ///                              when no crash dumps have been uploadad.
 /// - "analysisbrowser": Groups settings related to the Analysisbrowser
 /// - "analysisbrowser/directory": The directory initially opened for browsing existing NWB/PXP files
+/// - "logfiles": Groups settings related to log files
+/// - "logfiles/last upload": ISO8601 timestamp when the last successfull
+///                              upload of log files was tried. This is also set
+///                              when no log files have been uploadad.
 /// - "*[/*]/coordinates": window coordinates
 ///
 /// @return JSONid
@@ -6789,6 +6793,11 @@ Function UpgradeSettings(JSONid)
 	if(!JSON_Exists(JSONid, "/analysisbrowser"))
 		JSON_AddTreeObject(JSONid, "/analysisbrowser")
 		JSON_AddString(JSONid, "/analysisbrowser/directory", "C:")
+	endif
+
+	if(!JSON_Exists(JSONid, "/logfiles"))
+		JSON_AddTreeObject(JSONid, "/logfiles")
+		JSON_AddString(JSONid, "/logfiles/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch=0))
 	endif
 End
 
@@ -6817,6 +6826,50 @@ Function UploadCrashDumpsDaily()
 	catch
 		ClearRTError()
 		BUG("Could not upload crash dumps!")
+	endtry
+End
+
+/// @brief Call UploadLogFiles() if we haven't called it since at least a day.
+Function UploadLogFilesDaily()
+	string ts
+	variable lastWrite, now, first, last
+
+	AssertOnAndClearRTError()
+	try
+		NVAR JSONid = $GetSettingsJSONid()
+
+		ts = JSON_GetString(jsonID, "/logfiles/last upload")
+		lastWrite = ParseISO8601TimeStamp(ts)
+		now = DateTimeInUTC()
+
+		if((lastWrite + 24 * 3600) > now)
+			// nothing to do
+			return NaN
+		endif
+
+		// Algorithm:
+		// Upload everything from yesterday and the last time we tried to
+		// upload taking the earliest time of each day. Borders included.
+
+		// earliest time of the day of the last upload
+		if(IsEmpty(ts))
+			first = 0
+		else
+			first = ParseISO8601TimeStamp(ts[0, 9] + "T00:00:00Z")
+			ASSERT(IsFinite(first), "Could not parse ts")
+		endif
+
+		// earliest time today
+		last = ParseISO8601TimeStamp(Secs2Date(now, -2) + "T00:00:00Z")
+		ASSERT(IsFinite(last), "Could not parse now")
+
+		UploadLogFiles(verbose = 0, firstDate = first, lastDate = last)
+
+		JSON_SetString(jsonID, "/logfiles/last upload", GetIso8601TimeStamp())
+		AbortOnRTE
+	catch
+		ClearRTError()
+		ASSERT(0, "Could not upload logfiles!")
 	endtry
 End
 
