@@ -7265,6 +7265,29 @@ Function/WAVE FilterByDate(WAVE/T entries, variable first, variable last)
 	return filtered
 End
 
+static Function [WAVE/T keys, WAVE/T values] FilterLogfileByDate(string file, variable firstDate, variable lastDate)
+	string data, path
+
+	[data, path] = LoadTextFile(file)
+
+	data = NormalizeToEOL(data, "\n")
+	WAVE/Z contents = ListToTextWave(data, "\n")
+	ASSERT(WaveExists(contents), "Missing contents")
+	WAVE/Z filteredContents = FilterByDate(contents, firstDate, lastDate)
+
+	if(!WaveExists(filteredContents))
+		data = "{}"
+	else
+		data = TextWaveToList(filteredContents, "\n")
+	endif
+
+	Make/FREE/T keys = {GetFile(path)}
+	// remove duplicated empty entries
+	Make/FREE/T values = {ReplaceString("{}\n{}\n", data, "")}
+
+	return [keys, values]
+End
+
 /// @brief Update the logging template used by the ZeroMQ-XOP
 Function UpdateZeroMQXOPLoggingTemplate()
 	variable JSONid
