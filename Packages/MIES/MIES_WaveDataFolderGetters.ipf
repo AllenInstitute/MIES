@@ -1397,6 +1397,12 @@ static Function SetLBKeysRowDimensionLabels(WAVE wv)
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units,     wv
 	SetDimLabel ROWS, 2, Tolerance, wv
+
+	if(DimSize(wv, ROWS) == 6)
+		SetDimLabel ROWS, 3, Description, wv
+		SetDimLabel ROWS, 4, HeadstageContingency, wv
+		SetDimLabel ROWS, 5, ClampMode, wv
+	endif
 End
 
 /// @brief Return a wave reference to the text labnotebook keys
@@ -1500,6 +1506,72 @@ Function/Wave GetLBNumericalKeys(device)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
+End
+
+/// @brief Return a wave reference to the static and read-only labnotebook descriptions
+///        for the numerical entries
+///
+/// Requirements for each entry [@sa CheckLBNDescriptions()]:
+///
+/// - 0: Parameter
+///   Not empty
+/// - 1: Units
+///   Something ParseUnit() can grok or `degC`, `bitMask`, `%` or `On/Off`
+/// - 2: Tolerance
+///   LABNOTEBOOK_NO_TOLERANCE or a positive number including zero
+/// - 3: Description
+///   Not empty
+/// - 4: Headstage Contingency
+///   One of `ALL`, `DEPEND`, `INDEP`
+/// - 5: Clamp Mode
+///   One of `IC`, `VC`, `IC;I=0`, `IC;VC`, `IC;VC;I=0` or empty
+Function/WAVE GetLBNumericalDescription([variable forceReload])
+
+	if(ParamIsDefault(forceReload))
+		forceReload = 0
+	else
+		forceReload = !!forceReload
+	endif
+
+	DFREF dfr = GetStaticDataFolder()
+	WAVE/T/Z/SDFR=dfr wv = labnotebook_numerical_description
+
+	if(WaveExists(wv))
+		if(forceReload)
+			KillOrMoveToTrash(wv = wv)
+		else
+			return wv
+		endif
+	endif
+
+	WAVE/T/Z wv = LoadWaveFromDisk("labnotebook_numerical_description")
+	ASSERT(WaveExists(wv), "Missing wave")
+	ASSERT(!IsFreeWave(wv), "Not a permanent wave")
+
+	SetLBKeysRowDimensionLabels(wv)
+
+	Duplicate/FREE/RMD=[0][] wv, labels
+	Redimension/N=(numpnts(labels)) labels
+	SetDimensionLabels(wv, TextWaveToList(labels, ";"), COLS)
+
+	return wv
+End
+
+Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 1
+
+Function SaveLBNumericalDescription()
+
+	DFREF dfr = GetStaticDataFolder()
+	WAVE/T/Z/SDFR=dfr wv = labnotebook_numerical_description
+	ASSERT(WaveExists(wv), "Missing wave")
+
+	RemoveAllDimLabels(wv)
+
+	Duplicate/FREE wv, dup
+
+	SetWaveVersion(dup, LBN_NUMERICAL_DESCRIPTION_VERSION)
+
+	StoreWaveOnDisk(dup, "labnotebook_numerical_description")
 End
 
 /// @brief Return a wave reference to the numeric labnotebook keys
