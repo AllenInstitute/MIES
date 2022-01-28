@@ -642,7 +642,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 54
+Constant LABNOTEBOOK_VERSION = 55
 Constant RESULTS_VERSION     = 2
 /// @}
 

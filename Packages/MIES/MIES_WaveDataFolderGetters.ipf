@@ -1169,6 +1169,7 @@ End
 /// - Fix unit and tolerance of "Repeat Sets"
 /// - Reapplying the dimension labels as the old ones were cut off after 31 bytes
 /// - Making dimension labels valid liberal object names
+/// - Extending the row dimension to 6 for the key waves
 static Function UpgradeLabNotebook(device)
 	string device
 
@@ -1369,6 +1370,16 @@ static Function UpgradeLabNotebook(device)
 		LBN_SetDimensionLabels(textualKeys, textualValues)
 	endif
 	// END IP9 dimension labels
+
+	// BEGIN extending rows
+	if(WaveVersionIsSmaller(numericalKeys, 55))
+		Redimension/N=(6, -1) numericalKeys
+	endif
+
+	if(WaveVersionIsSmaller(textualKeys, 55))
+		Redimension/N=(6, -1) textualKeys
+	endif
+	// END extending rows
 End
 
 static Function/S FixInvalidLabnotebookKey(string name)
@@ -1459,9 +1470,12 @@ End
 /// @brief Return a wave reference to the numeric labnotebook keys
 ///
 /// Rows:
-/// - 0: Parameter Name
-/// - 1: Parameter Unit
-/// - 2: Parameter Tolerance
+/// - 0: Name
+/// - 1: Units
+/// - 2: Tolerance
+/// - 3: Description
+/// - 4: Headstage Contingency
+/// - 5: ClampMode
 ///
 /// Columns:
 /// - 0: Sweep Number
@@ -1493,15 +1507,19 @@ Function/Wave GetLBNumericalKeys(device)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
-		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
 
-	ASSERT(INITIAL_KEY_WAVE_COL_COUNT == ItemsInList(LABNOTEBOOK_KEYS_INITIAL), "Mismatched default keys")
-	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
-
 	SetLBKeysRowDimensionLabels(wv)
+
+	WAVE/T desc = GetLBNumericalDescription(forceReload = 1)
+	ASSERT(DimSize(desc, ROWS) == DimSize(wv, ROWS), "Non-matching number of rows")
+	ASSERT(DimSize(wv, COLS) == INITIAL_KEY_WAVE_COL_COUNT, "Non-matching number of rows")
+
+	// copy the "always present entries"
+	wv = desc
 
 	SetWaveVersion(wv, versionOfNewWave)
 

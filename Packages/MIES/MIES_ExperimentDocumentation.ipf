@@ -38,7 +38,7 @@ static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
 	ASSERT(DimSize(vals, COLS)   == DimSize(keys, COLS), "Mismatched column count")
 	ASSERT(DimSize(vals, LAYERS) <= LABNOTEBOOK_LAYER_COUNT, "Mismatched layer count")
 
-	ASSERT(DimSize(keys, ROWS)   == 1 || DimSize(keys, ROWS) == 3, "Mismatched row count")
+	ASSERT(DimSize(keys, ROWS)   == 1 || DimSize(keys, ROWS) == 3 || DimSize(keys, ROWS) == 6, "Mismatched row count")
 	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
 End
 
@@ -74,7 +74,7 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	endif
 
 	WAVE/Z indizes
-	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, keys, values)
+	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
 
 	values[rowIndex][0][] = num2istr(sweepNo)
@@ -138,7 +138,7 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 	endif
 
 	WAVE/Z indizes
-	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, keys, values)
+	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
 
 	values[rowIndex][0][] = sweepNo
@@ -434,12 +434,13 @@ End
 /// @param incomingKey text wave with the keys to add
 /// @param key         key wave of the labnotebook (Rows: 1/3/6, Columns: Same as values, Layers: 1)
 /// @param values      values/data wave of the labnotebook
+/// @param logbookType type of the logbook, one of @ref LogbookTypes
 ///
 /// @retval colIndizes column indizes of the entries from incomingKey
 /// @retval rowIndex   returns the row index into values at which the new values should be written
-static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE/T key, WAVE values)
-	variable numCols, col, row, numKeyRows, numKeyCols, i, numAdditions, idx
-	variable lastValidIncomingKeyRow
+static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE/T key, WAVE values, variable logbookType)
+	variable numCols, col, row, numKeyRows, numKeyCols, i, j, numAdditions, idx
+	variable lastValidIncomingKeyRow, descIndex, isUserEntry
 	string msg, searchStr
 
 	numKeyRows = DimSize(key, ROWS)
@@ -447,6 +448,15 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 	lastValidIncomingKeyRow = DimSize(incomingKey, ROWS) - 1
 
 	Make/FREE/U/I/N=(DimSize(incomingKey, COLS)) indizes = NaN
+
+	WAVE/T/Z desc
+	if(logbookType == LBT_LABNOTEBOOK)
+		if(IsNumericWave(values))
+			WAVE/T desc = GetLBNumericalDescription()
+		else
+			// @todo not yet done for text waves
+		endif
+	endif
 
 	numCols = DimSize(incomingKey, COLS)
 	for(i = 0; i < numCols; i += 1)
@@ -470,6 +480,63 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 		key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
 		indizes[i] = idx
 		numAdditions += 1
+
+		// check description wave if available
+		if(!WaveExists(desc))
+			continue
+		endif
+
+		isUserEntry = (strsearch(searchStr, LABNOTEBOOK_USER_PREFIX, 0) == 0)
+
+		if(isUserEntry)
+			continue
+		endif
+
+		descIndex = FindDimLabel(desc, COLS, searchStr)
+
+		if(descIndex < 0)
+			// retry with removing unassociated suffix
+			searchStr = RemoveUNassocLBNKeySuffix(searchStr)
+			descIndex = FindDimLabel(desc, COLS, searchStr)
+		endif
+
+		if(descIndex < 0)
+			// retry as that might be a dynamic Async key, see the fifth column in
+			// GetAsyncSettingsKeyWave()
+
+			if(GrepString(searchStr, "^Async AD [[:digit:]] \[.+\]$"))
+				// continue as the entry is fully dynamic and we can't check anything
+				continue
+			endif
+		endif
+
+		if(descIndex < 0)
+			sprintf msg, "Could not find a description for entry: %s", searchStr
+			BUG(msg)
+			continue
+		endif
+
+		// check that metadata is consistent
+		for(j = 1; j <= lastValidIncomingKeyRow; j +=  1)
+			if(!cmpstr(desc[j][descIndex], incomingKey[j][i]))
+				continue
+			endif
+
+			// some LBN entries have a runtime tolerance, ignore those
+			if(!cmpstr(GetDimLabel(desc, ROWS, j), "Tolerance") && !cmpstr(desc[j][descIndex], "runtime"))
+				continue
+			endif
+
+			sprintf msg, "The metadata in row \"%s\" differs for entry \"%s\": stock: \"%s\", incoming: \"%s\"", GetDimLabel(desc, ROWS, j), searchStr, desc[j][descIndex], incomingKey[j][i]
+			BUG(msg)
+		endfor
+
+		// copy additional entries from desc into key
+		// in case the incoming key wave provided all entries
+		// there is nothing left to do
+		if(DimSize(incomingKey, ROWS) != DimSize(desc, ROWS))
+			key[lastValidIncomingKeyRow + 1, inf][idx] = desc[p][descIndex]
+		endif
 	endfor
 
 	rowIndex = GetNumberFromWaveNote(values, NOTE_INDEX)
