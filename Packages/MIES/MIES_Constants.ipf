@@ -1666,3 +1666,12 @@ Constant TP_GETVALUES_LATEST_AUTOTPCYCLE = 0x1
 /// @{
 StrConstant TSDS_BUGCOUNT = "BugCount"
 /// @}
+
+/// Headstage contingency modes
+///
+/// @anchor HeadstageContingencyModes
+/// @{
+Constant HCM_EMPTY  = 0x00
+Constant HCM_DEPEND = 0x01
+Constant HCM_INDEP  = 0x02
+/// @}

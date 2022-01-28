@@ -106,6 +106,29 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
 End
 
+/// @brief Return the headstage contigency mode for values
+static Function ED_GetHeadstageContingency(WAVE values)
+
+	if(IsTextWave(values))
+		WAVE/T valuesText = values
+		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) stats = strlen(valuesText[p]) == 0 ? NaN : 1
+	else
+		Wave stats = values
+	endif
+
+	WaveStats/Q/M=1 stats
+
+	if(V_numNaNs == LABNOTEBOOK_LAYER_COUNT)
+		return HCM_EMPTY
+	elseif(!IsNaN(stats[INDEP_HEADSTAGE]) && V_numNaNs == NUM_HEADSTAGES)
+		return HCM_INDEP
+	elseif(IsNaN(stats[INDEP_HEADSTAGE]))
+		return HCM_DEPEND
+	endif
+
+	return (HCM_DEPEND | HCM_INDEP)
+End
+
 /// @brief Add numerical entries to the labnotebook
 ///
 /// The history wave will use layers to report the different headstages.
@@ -210,7 +233,7 @@ Function ED_AddEntryToLabnotebook(device, key, values, [unit, tolerance, overrid
 	variable tolerance, overrideSweepNo
 
 	string toleranceStr
-	variable sweepNo
+	variable sweepNo, headstageCont
 
 	ASSERT(!IsEmpty(key), "Empty key")
 	ASSERT(DimSize(values, ROWS) == LABNOTEBOOK_LAYER_COUNT, "wv has the wrong number of rows")
@@ -218,19 +241,8 @@ Function ED_AddEntryToLabnotebook(device, key, values, [unit, tolerance, overrid
 	ASSERT(IsTextWave(values) || IsFloatingPointWave(values), "Wave must be text or floating point")
 	ASSERT(strsearch(key, LABNOTEBOOK_USER_PREFIX, 0, 2) != 0, "Don't prefix key with LABNOTEBOOK_USER_PREFIX")
 
-	// check input
-	if(IsTextWave(values))
-		WAVE/T valuesText = values
-		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) stats = strlen(valuesText[p]) == 0 ? NaN : 1
-	else
-		Wave stats = values
-	endif
-
-	// either INDEP_HEADSTAGE is set or one of the headstage entries but never both
-	WaveStats/Q/M=1 stats
-	ASSERT((IsFinite(stats[INDEP_HEADSTAGE]) && V_numNaNs == NUM_HEADSTAGES) || !IsFinite(stats[INDEP_HEADSTAGE]), \
-	  "The independent headstage entry can not be combined with headstage dependent entries.")
-
+	headstageCont = ED_GetHeadstageContingency(values)
+	ASSERT(headstageCont != (HCM_INDEP | HCM_DEPEND), "The independent headstage entry can not be combined with headstage dependent entries.")
 	// we allow all entries to be NaN or empty
 
 	if(ParamIsDefault(unit))
