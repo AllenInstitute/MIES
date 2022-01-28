@@ -2626,20 +2626,23 @@ threadsafe Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
 	variable &numPrefix
 	string &unit
 
-	string expr
-
-	ASSERT_TS(!isEmpty(unitWithPrefix), "empty unit")
+	string expr, unitInt, prefixInt
 
 	prefix    = ""
 	numPrefix = NaN
 	unit      = ""
 
-	expr = "(Y|Z|E|P|T|G|M|k|h|d|c|m|mu|n|p|f|a|z|y)?[[:space:]]*(m|kg|s|A|K|mol|cd|Hz|V|N|W|J|a.u.)"
+	ASSERT_TS(!isEmpty(unitWithPrefix), "empty unit")
 
-	SplitString/E=(expr) unitWithPrefix, prefix, unit
+	expr = "^(Y|Z|E|P|T|G|M|k|h|d|c|m|mu|n|p|f|a|z|y)?[[:space:]]*(m|kg|s|A|K|mol|cd|Hz|V|N|W|J|F|Ω|a.u.)$"
+
+	SplitString/E=(expr) unitWithPrefix, prefixInt, unitInt
 	ASSERT_TS(V_flag >= 1, "Could not parse unit string")
+	ASSERT_TS(!IsEmpty(unitInt), "Could not find a unit")
 
+	prefix = prefixInt
 	numPrefix = GetDecimalMultiplierValue(prefix)
+	unit = unitInt
 End
 
 /// @brief Return the numerical value of a SI decimal multiplier

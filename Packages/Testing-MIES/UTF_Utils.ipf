@@ -5719,3 +5719,56 @@ Function BUG_TSWorks2()
 End
 
 #endif
+
+Function/WAVE InvalidUnits()
+	Make/FREE/T result = {"", "ab", "MOhm", "xs", "sx"}
+
+	return result
+End
+
+// UTF_TD_GENERATOR InvalidUnits
+Function PU_Fails([string str])
+	string unit, prefix
+	variable numPrefix = NaN
+
+	try
+		ParseUnit(str, prefix, numPrefix, unit)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	CHECK_EMPTY_STR(prefix)
+	CHECK_EQUAL_VAR(numPrefix, NaN)
+	CHECK_EMPTY_STR(unit)
+End
+
+Function/WAVE ValidUnits()
+	// unitWithPrefix, prefix, numPrefix, unit
+	Make/FREE/T wv0 = {"s", "", "NaN", "s"}
+	Make/FREE/T wv1 = {"Gs", "G", "1e9", "s"}
+	Make/FREE/T wv2 = {"m 	Ω", "m", "1e-3", "Ω"}
+
+	Make/FREE/WAVE/N=1 result = {wv0, wv1, wv2}
+
+	return result
+End
+
+// UTF_TD_GENERATOR ValidUnits
+Function PU_Works([WAVE/T wv])
+	string unit, prefix, unitWithPrefix
+	string refUnit, refPrefix
+	variable numPrefix, refNumPrefix
+
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 4)
+
+	unitWithPrefix = wv[0]
+	refPrefix      = wv[1]
+	refNumPrefix   = str2num(wv[2])
+	refUnit        = wv[3]
+
+	ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
+	CHECK_EQUAL_STR(prefix, refPrefix)
+	CHECK_EQUAL_VAR(numPrefix, numPrefix)
+	CHECK_EQUAL_STR(unit, unit)
+End
