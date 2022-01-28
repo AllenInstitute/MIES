@@ -680,8 +680,8 @@ Function ED_TPDocumentation(device)
 
 	TPKeyWave[1][0]  = "mV"
 	TPKeyWave[1][1]  = "pA"
-	TPKeyWave[1][2]  = "Mohm"
-	TPKeyWave[1][3]  = "Mohm"
+	TPKeyWave[1][2]  = "MΩ"
+	TPKeyWave[1][3]  = "MΩ"
 	TPKeyWave[1][4]  = "F"
 	TPKeyWave[1][5]  = "F"
 	TPKeyWave[1][6]  = "s"

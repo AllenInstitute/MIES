@@ -247,7 +247,7 @@ End
 
 /// @brief Run the initial access resistance check from the WSE
 ///
-/// This will check must be < 20MOhm or 15% of the R input.
+/// This will check must be < 20MΩ or 15% of the R input.
 /// The EXTPBREAKN wave will also be run as a way of making sure the reading
 /// is recorded into the data set for post-experiment analysis
 Function IVS_runInitAccessResisQC()
@@ -426,7 +426,7 @@ Function IVS_finishGigOhmSealQCCheck(s)
 	// added a second pass....if we don't pass the QC on the first go, check again before you fail out of the QC
 	AssertOnAndClearRTError()
 	try
-		if(ssResistanceVal > 1000) // ssResistance value is in MOhms
+		if(ssResistanceVal > 1000) // ssResistance value is in MΩ
 			// and now run the EXTPCIIATT wave so that things are saved into the data record
 			PGC_SetAndActivateControl(device, "DataAcquireButton")
 			qcResult = ssResistanceVal
@@ -442,7 +442,7 @@ Function IVS_finishGigOhmSealQCCheck(s)
 
 		printf "Second Pass: Steady State Resistance: %g\r", ssResistanceVal
 
-		if(ssResistanceVal > 1000) // ssResistance value is in MOhms
+		if(ssResistanceVal > 1000) // ssResistance value is in MΩ
 			qcResult = ssResistanceVal
 			IVS_PublishQCState(qcResult, "Second pass: Steady state resistance")
 		endif

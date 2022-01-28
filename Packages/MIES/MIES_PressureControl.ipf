@@ -44,7 +44,7 @@ static Constant     P_NEGATIVE_PULSE                = 0x0
 static Constant     P_POSITIVE_PULSE                = 0x1
 static Constant     P_MANUAL_PULSE                  = 0x2
 static Constant     SEAL_POTENTIAL                  = -70 // mV
-static Constant     SEAL_RESISTANCE_THRESHOLD       = 100 // Mohm
+static Constant     SEAL_RESISTANCE_THRESHOLD       = 100 // MΩ
 static Constant     ACCESS_ATM                      = 0 // Access constants are used to set TTL valve configuration
 static Constant     ACCESS_REGULATOR                = 1
 static Constant     ACCESS_USER                     = 2
@@ -294,7 +294,7 @@ static Function P_MethodSeal(device, headStage)
 
 	WAVE 	PressureDataWv 			= P_GetPressureDataWaveRef(device)
 	variable RSlope
-	variable RSlopeThreshold 			= 4 // with a slope of 8 Mohm/s it will take two minutes for a seal to form.
+	variable RSlopeThreshold 			= 4 // with a slope of 8 MΩ/s it will take two minutes for a seal to form.
 	variable lastRSlopeCheck 		= PressureDataWv[headStage][%TimeOfLastRSlopeCheck] / 60
 	variable timeInSec 				= ticks / 60
 	variable ElapsedTimeInSeconds 	= timeInSec - LastRSlopeCheck

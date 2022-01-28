@@ -2819,9 +2819,9 @@ End
 /// @brief Return the testpulse results wave
 ///
 /// Rows:
-/// - 0: Resistance Instantaneous: [MOhm]
+/// - 0: Resistance Instantaneous: [MΩ]
 /// - 1: Baseline Steady State: [mV] for IC, [pA] for VC
-/// - 2: Resistance Steady State: [MOhm]
+/// - 2: Resistance Steady State: [MΩ]
 /// - 3: Elevated Steady State: [mV] for IC, [pA] for VC
 /// - 4: Elevated Instantaneous: [mV] for IC, [pA] for VC
 /// - 5: Auto TP Amplitude: Pass/Fail
@@ -3057,7 +3057,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][8] =  "0.9"
 
 	wv[0][9] =  "Whole Cell Comp Resist"
-	wv[1][9] =  "MOhm"
+	wv[1][9] =  "MΩ"
 	wv[2][9] =  "0.9"
 
 	wv[0][10] =  "I-Clamp Holding Enable"
@@ -3081,7 +3081,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][14] =  LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][15] =  "Bridge Bal Value"
-	wv[1][15] =  "MOhm"
+	wv[1][15] =  "MΩ"
 	wv[2][15] =  "0.9"
 
 	// and now add the Axon values to the amp settings key
@@ -3158,7 +3158,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][33] =  ""
 
 	wv[0][34] =  "Series Resistance"
-	wv[1][34] =  "MOhm"
+	wv[1][34] =  "MΩ"
 	wv[2][34] =  LABNOTEBOOK_NO_TOLERANCE
 
 	// new keys starting from 29a161c
@@ -7270,7 +7270,7 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 	wv[%Tolerance][8]  = "0.1"
 
 	wv[%Parameter][9]  = "Minimum TP resistance for tolerance"
-	wv[%Units][9]      = "MOhm"
+	wv[%Units][9]      = "MΩ"
 	wv[%Tolerance][9]  = "1"
 
 	wv[%Parameter][10] = "Send TP settings to all headstages"
