@@ -74,7 +74,7 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	endif
 
 	WAVE/Z indizes
-	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, keys, values, logbookType)
+	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, incomingTextualValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
 
 	values[rowIndex][0][] = num2istr(sweepNo)
@@ -104,6 +104,19 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	endfor
 
 	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
+End
+
+static Function ED_ParseHeadstageContigencyMode(string str)
+
+	if(!cmpstr(str, "ALL"))
+		return (HCM_DEPEND | HCM_INDEP)
+	elseif(strsearch(str, "DEPEND", 0) >= 0)
+		return HCM_DEPEND
+	elseif(strsearch(str, "INDEP", 0) >= 0)
+		return HCM_INDEP
+	endif
+
+	return HCM_EMPTY
 End
 
 /// @brief Return the headstage contigency mode for values
@@ -161,7 +174,7 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 	endif
 
 	WAVE/Z indizes
-	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, keys, values, logbookType)
+	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, incomingNumericalValues, keys, values, logbookType)
 	ASSERT(WaveExists(indizes), "Missing indizes")
 
 	values[rowIndex][0][] = sweepNo
@@ -443,16 +456,17 @@ End
 ///
 /// Ensures that key and values have a matching column size at return.
 ///
-/// @param incomingKey text wave with the keys to add
-/// @param key         key wave of the labnotebook (Rows: 1/3/6, Columns: Same as values, Layers: 1)
-/// @param values      values/data wave of the labnotebook
-/// @param logbookType type of the logbook, one of @ref LogbookTypes
+/// @param incomingKey    text wave with the keys to add
+/// @param incomingValues wave with the values to add
+/// @param key            key wave of the labnotebook (Rows: 1/3/6, Columns: Same as values, Layers: 1)
+/// @param values         values/data wave of the labnotebook
+/// @param logbookType    type of the logbook, one of @ref LogbookTypes
 ///
 /// @retval colIndizes column indizes of the entries from incomingKey
 /// @retval rowIndex   returns the row index into values at which the new values should be written
-static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE/T key, WAVE values, variable logbookType)
+static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE incomingValues, WAVE/T key, WAVE values, variable logbookType)
 	variable numCols, col, row, numKeyRows, numKeyCols, i, j, numAdditions, idx
-	variable lastValidIncomingKeyRow, descIndex, isUserEntry
+	variable lastValidIncomingKeyRow, descIndex, isUserEntry, headstageCont, headstageContDesc, isUnAssoc
 	string msg, searchStr
 
 	numKeyRows = DimSize(key, ROWS)
@@ -506,10 +520,16 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 
 		descIndex = FindDimLabel(desc, COLS, searchStr)
 
+		isUnAssoc = 0
+
 		if(descIndex < 0)
 			// retry with removing unassociated suffix
 			searchStr = RemoveUNassocLBNKeySuffix(searchStr)
 			descIndex = FindDimLabel(desc, COLS, searchStr)
+
+			if(descIndex >= 0)
+				isUnAssoc = 1
+			endif
 		endif
 
 		if(descIndex < 0)
@@ -542,6 +562,20 @@ static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimensio
 			sprintf msg, "The metadata in row \"%s\" differs for entry \"%s\": stock: \"%s\", incoming: \"%s\"", GetDimLabel(desc, ROWS, j), searchStr, desc[j][descIndex], incomingKey[j][i]
 			BUG(msg)
 		endfor
+
+		// check for correct headstage contingency
+		Duplicate/FREE/RMD=[0][i][*] incomingValues, valuesSlice
+		headstageCont = ED_GetHeadstageContingency(valuesSlice)
+		headstageContDesc = ED_ParseHeadstageContigencyMode(desc[%HeadstageContingency][descIndex])
+
+		if(isUnAssoc)
+			headstageContDesc = HCM_INDEP
+		endif
+
+		if(headstageCont != HCM_EMPTY && !(headstageCont & headstageContDesc))
+			sprintf msg, "Headstage contingency for entry \"%s\": stock: \"%s\", incoming: %d", searchStr, desc[%HeadstageContingency][descIndex], headstageCont
+			BUG(msg)
+		endif
 
 		// copy additional entries from desc into key
 		// in case the incoming key wave provided all entries
