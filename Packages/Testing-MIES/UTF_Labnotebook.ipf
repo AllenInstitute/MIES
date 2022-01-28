@@ -1005,3 +1005,80 @@ Function Test_GetLastSettingChannel()
 	CHECK_EQUAL_VAR(index, INDEP_HEADSTAGE)
 	CHECK_EQUAL_TEXTWAVES(settings, {"", "", "", "", "", "", "", "", "252627"}, mode = WAVE_DATA)
 End
+
+Function/WAVE AllDescriptionWaves()
+	Make/FREE/WAVE/N=1 wvs
+
+	wvs[0] = GetLBNumericalDescription()
+
+	return wvs
+End
+
+Function IsValidUnit(string unitWithPrefix)
+	string prefix, unit
+	variable numPrefix
+
+	ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
+	CHECK_PROPER_STR(unit)
+	CHECK(IsFinite(numPrefix))
+End
+
+// UTF_TD_GENERATOR AllDescriptionWaves
+Function CheckLBNDescriptions([WAVE/T wv])
+	variable i, numEntries, num
+	string entry
+
+	CHECK_WAVE(wv, TEXT_WAVE)
+
+	numEntries = DimSize(wv, COLS)
+	for(i = 0; i < numEntries; i += 1)
+		// name is not empty
+		entry = wv[%Parameter][i]
+		CHECK_PROPER_STR(entry)
+
+		entry = wv[%Units][i]
+
+		if(IsEmpty(entry))
+			PASS()
+		elseif(!cmpstr(entry, "On/Off"))
+			PASS()
+		elseif(!cmpstr(entry, "%"))
+			PASS()
+		elseif(!cmpstr(entry, "degC"))
+			PASS()
+		elseif(!cmpstr(entry, "bit mask"))
+			PASS()
+		else
+			IsValidUnit(entry)
+		endif
+
+		// tolerance is either -, "runtime" or a positive number including zero
+		entry = wv[%Tolerance][i]
+		CHECK_PROPER_STR(entry)
+
+		if(!cmpstr(entry, "-"))
+			PASS()
+		elseif(!cmpstr(entry, "runtime"))
+			PASS()
+		else
+			num = str2num(entry)
+			CHECK_GE_VAR(num, 0)
+		endif
+
+		// description is not empty
+		entry = wv[%Description][i]
+		CHECK_PROPER_STR(entry)
+
+		// headstage contingency is known
+		entry = wv[%HeadstageContingency][i]
+		Make/FREE/T knownValues = {"ALL", "DEPEND", "INDEP"}
+		FindValue/TEXT=(entry)/TXOP=4 knownValues
+		CHECK_GE_VAR(V_Value, 0)
+
+		// clamp mode is empty or known
+		entry = wv[%ClampMode][i]
+		Make/FREE/T knownValues = {"", "IC", "VC", "IC;I=0", "IC;VC", "IC;VC;I=0"}
+		FindValue/TEXT=(entry)/TXOP=4 knownValues
+		CHECK_GE_VAR(V_Value, 0)
+	endfor
+End
