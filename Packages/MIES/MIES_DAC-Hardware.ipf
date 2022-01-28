@@ -813,10 +813,12 @@ threadsafe Function HW_ITC_HandleReturnValues_TS(flags, ITCError, ITCXOPError)
 		print "- Reseating all connections between the DAC and the computer has also helped in the past."
 	elseif(ITCXOPError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
-		printf "The ITC XOP was called incorrectly, please inform the MIES developers!\r"
 		printf "XOP error message: %s\r", HW_ITC_GetXOPErrorMessage(ITCXOPError)
+		// @todo IP9 add stack trace
 		printf "Responsible function: (not available)\r"
 		printf "Complete call stack: (not available)\r"
+		// @todo prefer BUG_TS once available
+		ASSERT_TS(0, "The ITC XOP was called incorrectly!")
 	endif
 
 #ifndef EVIL_KITTEN_EATING_MODE
@@ -857,10 +859,10 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 		print "- Reseating all connections between the DAC and the computer has also helped in the past."
 	elseif(ITCXOPError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
-		printf "The ITC XOP was called incorrectly, please inform the MIES developers!\r"
 		printf "XOP error message: %s\r", HW_ITC_GetXOPErrorMessage(ITCXOPError)
 		printf "Responsible function: %s\r", GetRTStackInfo(2)
 		printf "Complete call stack: %s\r", GetRTStackInfo(3)
+		BUG("The ITC XOP was called incorrectly!")
 	endif
 
 #ifndef EVIL_KITTEN_EATING_MODE
