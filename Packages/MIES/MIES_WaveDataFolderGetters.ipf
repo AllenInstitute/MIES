@@ -3087,43 +3087,43 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	// and now add the Axon values to the amp settings key
 	wv[0][16] =  "Serial Number"
 	wv[1][16] =  ""
-	wv[2][16] =  ""
+	wv[2][16] =  "-"
 
 	wv[0][17] =  "Channel ID"
 	wv[1][17] =  ""
-	wv[2][17] =  ""
+	wv[2][17] =  "-"
 
 	wv[0][18] =  "ComPort ID"
 	wv[1][18] =  ""
-	wv[2][18] =  ""
+	wv[2][18] =  "-"
 
 	wv[0][19] =  "AxoBus ID"
 	wv[1][19] =  ""
-	wv[2][19] =  ""
+	wv[2][19] =  "-"
 
 	wv[0][20] =  "Operating Mode"
 	wv[1][20] =  ""
-	wv[2][20] =  ""
+	wv[2][20] =  "-"
 
 	wv[0][21] =  "Scaled Out Signal"
 	wv[1][21] =  ""
-	wv[2][21] =  ""
+	wv[2][21] =  "-"
 
 	wv[0][22] =  "Alpha"
 	wv[1][22] =  ""
-	wv[2][22] =  ""
+	wv[2][22] =  "-"
 
 	wv[0][23] =  "Scale Factor"
 	wv[1][23] =  ""
-	wv[2][23] =  ""
+	wv[2][23] =  "-"
 
 	wv[0][24] =  "Scale Factor Units"
 	wv[1][24] =  ""
-	wv[2][24] =  ""
+	wv[2][24] =  "-"
 
 	wv[0][25] =  "LPF Cutoff"
 	wv[1][25] =  ""
-	wv[2][25] =  ""
+	wv[2][25] =  "-"
 
 	wv[0][26] =  "Membrane Cap"
 	wv[1][26] =  "pF"
@@ -3131,31 +3131,31 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 
 	wv[0][27] =  "Ext Cmd Sens"
 	wv[1][27] =  ""
-	wv[2][27] =  ""
+	wv[2][27] =  "-"
 
 	wv[0][28] =  "Raw Out Signal"
 	wv[1][28] =  ""
-	wv[2][28] =  ""
+	wv[2][28] =  "-"
 
 	wv[0][29] =  "Raw Scale Factor"
 	wv[1][29] =  ""
-	wv[2][29] =  ""
+	wv[2][29] =  "-"
 
 	wv[0][30] =  "Raw Scale Factor Units"
 	wv[1][30] =  ""
-	wv[2][30] =  ""
+	wv[2][30] =  "-"
 
 	wv[0][31] =  "Hardware Type"
 	wv[1][31] =  ""
-	wv[2][31] =  ""
+	wv[2][31] =  "-"
 
 	wv[0][32] =  "Secondary Alpha"
 	wv[1][32] =  ""
-	wv[2][32] =  ""
+	wv[2][32] =  "-"
 
 	wv[0][33] =  "Secondary LPF Cutoff"
 	wv[1][33] =  ""
-	wv[2][33] =  ""
+	wv[2][33] =  "-"
 
 	wv[0][34] =  "Series Resistance"
 	wv[1][34] =  "MΩ"
@@ -3176,7 +3176,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 
 	wv[0][38] =  "Slow current injection settling time"
 	wv[1][38] =  "s"
-	wv[2][38] =  ""
+	wv[2][38] =  "-"
 
 	wv[0][39] =  "Fast compensation capacitance"
 	wv[1][39] =  "F"
@@ -7239,15 +7239,15 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 
 	wv[%Parameter][1]  = TP_AMPLITUDE_VC_ENTRY_KEY
 	wv[%Units][1]      = "pA"
-	wv[%Tolerance][1]  = ""
+	wv[%Tolerance][1]  = "-"
 
 	wv[%Parameter][2]  = TP_AMPLITUDE_IC_ENTRY_KEY
 	wv[%Units][2]      = "mV"
-	wv[%Tolerance][2]  = ""
+	wv[%Tolerance][2]  = "-"
 
 	wv[%Parameter][3]  = "TP Pulse Duration"
 	wv[%Units][3]      = "ms"
-	wv[%Tolerance][3]  = ""
+	wv[%Tolerance][3]  = "-"
 
 	wv[%Parameter][4]  = "TP Auto"
 	wv[%Units][4]      = LABNOTEBOOK_BINARY_UNIT
