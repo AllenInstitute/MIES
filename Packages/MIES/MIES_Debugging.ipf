@@ -338,6 +338,7 @@ End
 /// in the same folder as this experiment as timestamped file "run_*_*.log"
 static Function SaveHistoryLog()
 
+	variable err
 	string historyLog
 	sprintf historyLog, "%s.log", IgorInfo(1)//, Secs2Date(DateTime,-2), ReplaceString(":",Secs2Time(DateTime,1),"-")
 
@@ -350,7 +351,8 @@ static Function SaveHistoryLog()
 
 	ASSERT(cmpstr(GetExperimentName(), UNTITLED_EXPERIMENT), "Untitled experiments do not work")
 
-	SaveNoteBook/O/S=3/P=home HistoryCarbonCopy as historyLog
+	AssertOnAndClearRTError()
+	SaveNoteBook/O/S=3/P=home HistoryCarbonCopy as historyLog; err = GetRTError(1)
 End
 
 /// @brief Prints a message to the command history in debug mode,

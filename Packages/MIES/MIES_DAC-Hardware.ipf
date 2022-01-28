@@ -999,9 +999,7 @@ Function HW_ITC_CloseAllDevices([flags])
 			continue // can not select device
 		endif
 
-		if(HW_ITC_IsRunning(i, flags=flags))
-			HW_ITC_StopAcq(i, flags=flags)
-		endif
+		HW_ITC_StopAcq(i, flags=HARDWARE_PREVENT_ERROR_POPUP)
 	endfor
 
 	ITCCloseAll2/Z=(HW_ITC_GetZValue(flags))
@@ -1018,9 +1016,7 @@ Function HW_ITC_CloseDevice(deviceID, [flags])
 		return NaN
 	endif
 
-	if(HW_ITC_IsRunning(deviceID, flags=flags))
-		HW_ITC_StopAcq(deviceID, flags=flags)
-	endif
+	HW_ITC_StopAcq(deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP)
 
 	do
 		ITCCloseDevice2/DEV=(deviceID)/Z=(HW_ITC_GetZValue(flags))
