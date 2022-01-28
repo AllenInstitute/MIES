@@ -16,6 +16,7 @@
 #include "UTF_StimsetAPI"
 #include "UTF_SweepFormula"
 #include "UTF_Testpulse"
+#include "UTF_ThreadsafeDataSharing"
 #include "UTF_TraceUserData"
 #include "UTF_UpgradeDataFolderLocation"
 #include "UTF_UpgradeWaveLocationAndGetIt"

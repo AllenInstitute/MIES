@@ -1660,3 +1660,9 @@ Constant TP_BASELINE_FIT_RESULT_TOO_NOISY = 32
 Constant TP_GETVALUES_DEFAULT            = 0x0
 Constant TP_GETVALUES_LATEST_AUTOTPCYCLE = 0x1
 /// @}
+
+/// Possible names for TSDS_Read*/TSDS_Write
+/// @anchor ThreadsafeDataExchangeNames
+/// @{
+StrConstant TSDS_BUGCOUNT = "BugCount"
+/// @}

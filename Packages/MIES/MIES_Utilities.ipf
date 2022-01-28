@@ -4432,9 +4432,9 @@ Function/S GetHistoryNotebookText()
 End
 
 /// @brief Helper function to ensure that there is no pending RTE before entering a critical section.
-///        If there is a pending RTE then an ASSERTion is thrown.
+///        If there is a pending RTE then a BUG message is output (which is a CI error).
 ///
-///        Not catching and pending RTE would clear this condition silently and valid errors would be
+///        Not catching any pending RTE would clear this condition silently and valid errors would be
 ///        suppressed. This is dangerous in regards of data consistency.
 ///
 ///        Not clearing the RTE before calling `AbortOnRTE` will always trigger the
@@ -4461,7 +4461,10 @@ threadsafe Function AssertOnAndClearRTError()
 
 	msg = GetRTErrMessage()
 	err = ClearRTError()
-	ASSERT_TS(!err, "Encountered pending RTE: " + num2istr(err) + ", " + msg)
+
+	if(err)
+		BUG_TS("Encountered pending RTE: " + num2istr(err) + ", " + msg)
+	endif
 End
 
 /// @brief Helper function to unconditionally clear a RTE condition

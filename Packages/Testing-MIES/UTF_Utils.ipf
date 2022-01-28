@@ -5649,3 +5649,73 @@ Function GCP_Str_Works()
 	ref = "123"
 	CHECK_EQUAL_STR(str, ref)
 End
+
+Function BUGWorks()
+	variable bugCount
+
+	bugCount = ROVar(GetBugCount())
+	CHECK_EQUAL_VAR(bugCount, 0)
+
+	try
+		BUG("abcd")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	bugCount = ROVar(GetBugCount())
+	CHECK_EQUAL_VAR(bugCount, 1)
+End
+
+#if IgorVersion() >= 9.0
+
+Function BUG_TSWorks1()
+	variable bugCount
+
+	TUFXOP_Clear/N=(TSDS_BUGCOUNT)/Q/Z
+
+	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
+	CHECK_EQUAL_VAR(bugCount, NaN)
+
+	try
+		BUG_TS("abcd")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
+	CHECK_EQUAL_VAR(bugCount, 1)
+End
+
+threadsafe static Function BugHelper(variable idx)
+
+	try
+		BUG_TS(num2str(idx))
+		return 1
+	catch
+		return 0
+	endtry
+End
+
+Function BUG_TSWorks2()
+	variable bugCount, numThreads
+
+	TUFXOP_Clear/N=(TSDS_BUGCOUNT)/Q/Z
+
+	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
+	CHECK_EQUAL_VAR(bugCount, NaN)
+
+	numThreads = 10
+
+	Make/FREE/N=(numThreads) junk = NaN
+
+	MultiThread/NT=(numThreads) junk = BugHelper(p)
+
+	CHECK_EQUAL_VAR(Sum(junk), 0)
+
+	bugCount = TSDS_ReadVar(TSDS_BUGCOUNT)
+	CHECK_EQUAL_VAR(bugCount, numThreads)
+End
+
+#endif
