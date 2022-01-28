@@ -73,7 +73,9 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 		state = ROVar(GetAcquisitionState(device))
 	endif
 
-	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, keys, values, rowIndex)
+	WAVE/Z indizes
+	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, keys, values)
+	ASSERT(WaveExists(indizes), "Missing indizes")
 
 	values[rowIndex][0][] = num2istr(sweepNo)
 	values[rowIndex][3][] = num2istr(entrySourceType)
@@ -135,7 +137,9 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 		state = ROVar(GetAcquisitionState(device))
 	endif
 
-	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, keys, values, rowIndex)
+	WAVE/Z indizes
+	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, keys, values)
+	ASSERT(WaveExists(indizes), "Missing indizes")
 
 	values[rowIndex][0][] = sweepNo
 	values[rowIndex][3][] = entrySourceType
@@ -425,16 +429,15 @@ End
 /// Redimensions `key` and `values` waves.
 /// Prefills `key` with `incomingKey` data if necessary.
 ///
-/// Ensures that data and key have a matching column size at return.
-/// @param[in]  incomingKey text wave with the keys to add
-/// @param[in]  key         key wave of the labnotebook
-/// @param[in]  values      values/data wave of the labnotebook
-/// @param[out] rowIndex    returns the row index into values at which the new values should be written
-static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowIndex)
-	WAVE/T incomingKey, key
-	WAVE values
-	variable &rowIndex
-
+/// Ensures that key and values have a matching column size at return.
+///
+/// @param incomingKey text wave with the keys to add
+/// @param key         key wave of the labnotebook (Rows: 1/3/6, Columns: Same as values, Layers: 1)
+/// @param values      values/data wave of the labnotebook
+///
+/// @retval colIndizes column indizes of the entries from incomingKey
+/// @retval rowIndex   returns the row index into values at which the new values should be written
+static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE/T key, WAVE values)
 	variable numCols, col, row, numKeyRows, numKeyCols, i, numAdditions, idx
 	variable lastValidIncomingKeyRow
 	string msg, searchStr
@@ -494,7 +497,7 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 		EnsureLargeEnoughWave(values, minimumSize=rowIndex, dimension=ROWS)
 	endif
 
-	return indizes
+	return [indizes, rowIndex]
 End
 
 /// @brief Remember the "exact" start of the sweep
