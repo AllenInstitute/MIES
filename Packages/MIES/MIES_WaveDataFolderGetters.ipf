@@ -2176,11 +2176,11 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][0] = ".0001"
 
 	wv[%Parameter][1] = "DAC"
-	wv[%Units][1]     = "a. u."
+	wv[%Units][1]     = ""
 	wv[%Tolerance][1] = "0.1"
 
 	wv[%Parameter][2] = "ADC"
-	wv[%Units][2]     = "a. u."
+	wv[%Units][2]     = ""
 	wv[%Tolerance][2] = "0.1"
 
 	wv[%Parameter][3] = "DA Gain"
@@ -2192,7 +2192,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][4] = ".000001"
 
 	wv[%Parameter][5] = "Set Sweep Count"
-	wv[%Units][5]     = "a. u."
+	wv[%Units][5]     = ""
 	wv[%Tolerance][5] = "0.1"
 
 	wv[%Parameter][6] = "TP Insert Checkbox"
@@ -2212,11 +2212,11 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][9] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][10] = "TTL rack zero channel"
-	wv[%Units][10]     = "a. u."
+	wv[%Units][10]     = ""
 	wv[%Tolerance][10] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][11] = "TTL rack one channel"
-	wv[%Units][11]     = "a. u."
+	wv[%Units][11]     = ""
 	wv[%Tolerance][11] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][12] = "Delay onset user"
@@ -2240,7 +2240,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][16] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][17] = "Repeat Sets"
-	wv[%Units][17]     = "a. u."
+	wv[%Units][17]     = ""
 	wv[%Tolerance][17] = "1"
 
 	wv[%Parameter][18] = "Scaling zero"
@@ -2268,11 +2268,11 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][23] = "1"
 
 	wv[%Parameter][24] = "Sampling interval multiplier"
-	wv[%Units][24]     = "a. u."
+	wv[%Units][24]     = ""
 	wv[%Tolerance][24] = "0.1"
 
 	wv[%Parameter][25] = "Stim set length"
-	wv[%Units][25]     = "a. u." // points not time
+	wv[%Units][25]     = "" // points not time
 	wv[%Tolerance][25] = "0.1"
 
 	wv[%Parameter][26] = "oodDAQ Pre Feature"
@@ -2296,11 +2296,11 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][30] = "1"
 
 	wv[%Parameter][31] = RA_ACQ_CYCLE_ID_KEY
-	wv[%Units][31]     = "a. u."
+	wv[%Units][31]     = ""
 	wv[%Tolerance][31] = "1"
 
 	wv[%Parameter][32] = "Stim Wave Checksum"
-	wv[%Units][32]     = "a. u."
+	wv[%Units][32]     = ""
 	wv[%Tolerance][32] = "1"
 
 	wv[%Parameter][33] = "Multi Device mode"
@@ -2316,7 +2316,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][35] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][36] = "Sampling interval multiplier"
-	wv[%Units][36]     = "a. u."
+	wv[%Units][36]     = ""
 	wv[%Tolerance][36] = "1"
 
 	wv[%Parameter][37] = "TP during ITI"
@@ -2336,15 +2336,15 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][40] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][41] = "Set Cycle Count"
-	wv[%Units][41]     = "a. u."
+	wv[%Units][41]     = ""
 	wv[%Tolerance][41] = "1"
 
 	wv[%Parameter][42] = STIMSET_ACQ_CYCLE_ID_KEY
-	wv[%Units][42]     = "a. u."
+	wv[%Units][42]     = ""
 	wv[%Tolerance][42] = "1"
 
 	wv[%Parameter][43] = "Digitizer Hardware Type"
-	wv[%Units][43]     = "a. u."
+	wv[%Units][43]     = ""
 	wv[%Tolerance][43] = "1"
 
 	wv[%Parameter][44] = "Fixed frequency acquisition"
@@ -2356,27 +2356,27 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][45] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][46] = CLAMPMODE_ENTRY_KEY
-	wv[%Units][46]     = "a. u."
+	wv[%Units][46]     = ""
 	wv[%Tolerance][46] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][47] = "Igor Pro bitness"
-	wv[%Units][47]     = "a. u."
+	wv[%Units][47]     = ""
 	wv[%Tolerance][47] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][48] = "DA ChannelType"
-	wv[%Units][48]     = "a. u."
-	wv[%Tolerance][48] = "0.1"
+	wv[%Units][48]     = ""
+	wv[%Tolerance][48] = "1"
 
 	wv[%Parameter][49] = "AD ChannelType"
-	wv[%Units][49]     = "a. u."
-	wv[%Tolerance][49] = "0.1"
+	wv[%Units][49]     = ""
+	wv[%Tolerance][49] = "1"
 
 	wv[%Parameter][50] = "oodDAQ member"
 	wv[%Units][50]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][50] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][51] = "Autobias %"
-	wv[%Units][51]     = "a. u."
+	wv[%Units][51]     = ""
 	wv[%Tolerance][51] = "0.1"
 
 	wv[%Parameter][52] = "Autobias Interval"
@@ -2388,7 +2388,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][53] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][54] = "Epochs version"
-	wv[%Units][54]     = "a. u."
+	wv[%Units][54]     = ""
 	wv[%Tolerance][54] = "1"
 
 	SetSweepSettingsDimLabels(wv, wv)

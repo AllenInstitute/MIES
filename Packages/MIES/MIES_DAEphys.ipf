@@ -1724,7 +1724,7 @@ Function DAP_SweepRollback(string device, variable sweepNo, variable newSweepNo)
 	vals[0][0][INDEP_HEADSTAGE] = newSweepNo
 	Make/T/FREE/N=(3, 1) keys
 	keys[0] = SWEEP_ROLLBACK_KEY
-	keys[1] = "a. u."
+	keys[1] = ""
 	keys[2] = "0.1"
 	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, device, UNKNOWN_MODE)
 

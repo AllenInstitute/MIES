@@ -536,7 +536,7 @@ static Function RA_DocumentSweepSkipping(string device, variable skipCount)
 	vals[0][0][INDEP_HEADSTAGE] = skipCountExisting + skipCount
 	Make/T/FREE/N=(3, 1) keys
 	keys[0] = SKIP_SWEEPS_KEY
-	keys[1] = "a. u."
+	keys[1] = ""
 	keys[2] = "0.1"
 
 	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, device, UNKNOWN_MODE)
