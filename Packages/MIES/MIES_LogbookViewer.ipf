@@ -13,7 +13,7 @@ static StrConstant LABNOTEBOOK_BOTTOM_AXIS_DELTA_TIME  = "Relative time [s]"
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_TIME  = "Timestamp (a. u.)"
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_SWEEP = "Sweep Number (a. u.)"
 
-StrConstant LBV_UD_SOURCE_WAVE = "sourceWave"
+StrConstant LBV_UD_VALUES_WAVE = "values"
 StrConstant LBV_UD_HEADSTAGE   = "headstage"
 StrConstant LBV_UD_KEY         = "key"
 StrConstant LBV_UD_ISTEXT      = "text"
@@ -834,26 +834,26 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 		trace = StringFromList(i, list)
 
 		WAVE yWave = TraceNameToWaveRef(graph, trace)
-		WAVE/Z sourceWave = $TUD_GetUserData(graph, trace, LBV_UD_SOURCE_WAVE)
-		ASSERT(WaveExists(sourceWave), "Missing sourceWave user data")
+		WAVE/Z values = $TUD_GetUserData(graph, trace, LBV_UD_VALUES_WAVE)
+		ASSERT(WaveExists(values), "Missing values user data")
 
 		isTextData = str2num(TUD_GetUserData(graph, trace, LBV_UD_ISTEXT))
 
-		logbookType = GetLogbookType(sourceWave)
+		logbookType = GetLogbookType(values)
 
 		switch(logbookType)
 			case LBT_LABNOTEBOOK:
 			case LBT_RESULTS:
 				if(isTimeAxis)
 					if(isTextData)
-						WAVE valuesSweep = ExtractLogbookSliceSweep(sourceWave)
+						WAVE valuesSweep = ExtractLogbookSliceSweep(values)
 						ReplaceWave/W=$graph/X trace=$trace, valuesSweep
 					else
-						sweepCol = GetSweepColumn(sourceWave)
-						ReplaceWave/W=$graph/X trace=$trace, sourceWave[][sweepCol][0]
+						sweepCol = GetSweepColumn(values)
+						ReplaceWave/W=$graph/X trace=$trace, values[][sweepCol][0]
 					endif
 				else // other direction
-					WAVE dat = ExtractLogbookSliceTimeStamp(sourceWave)
+					WAVE dat = ExtractLogbookSliceTimeStamp(values)
 
 					ReplaceWave/W=$graph/X trace=$trace, dat
 				endif
