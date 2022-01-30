@@ -2201,3 +2201,23 @@ Function AdaptDependentControls(string device, string controls, variable newStat
 		endfor
 	endif
 End
+
+/// @brief Adjust the "Normal" ruler in the notebook so that all text is visible.
+Function ReflowNotebookText(string win)
+	variable width
+
+	GetWindow $win wsizeDC
+	width = V_right - V_left
+	// make it a bit shorter
+	width -= 10
+	// pixel -> points
+	width = width * (72/ScreenResolution)
+	// redefine ruler
+	Notebook $win ruler=Normal, rulerUnits=0, margins={0, 0, width}
+	// select everything
+	Notebook $win selection={startOfFile, endOfFile}
+	// apply ruler to selection
+	Notebook $win ruler=Normal
+	// deselect selection
+	Notebook $win selection={endOfFile, endOfFile}
+End
