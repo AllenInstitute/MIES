@@ -66,7 +66,7 @@ Function/WAVE LBV_PopupExtGetLBKeys(string win)
 	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 
-	WAVE/Z entries = LBV_GetAllLogbookKeys(win, textualKeys, numericalKeys)
+	WAVE/Z entries = LBV_GetAllLogbookKeys(textualKeys, numericalKeys)
 
 	return LBV_PopupExtFormatEntries(entries)
 End
@@ -81,13 +81,13 @@ Function/WAVE LBV_PopupExtGetResultsKeys(string win)
 	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 
-	WAVE/Z entries = LBV_GetAllLogbookKeys(win, textualKeys, numericalKeys)
+	WAVE/Z entries = LBV_GetAllLogbookKeys(textualKeys, numericalKeys)
 
 	return LBV_PopupExtFormatEntries(entries)
 End
 
 /// @brief Returns the combined keys from the numerical and textual MD key loogbook waves as 1D text wave
-static Function/WAVE LBV_GetAllLogbookKeys(string win, WAVE/T textualKeys, WAVE/T numericalKeys)
+static Function/WAVE LBV_GetAllLogbookKeys(WAVE/T/Z textualKeys, WAVE/T/Z numericalKeys)
 	variable existText, existNum
 
 	WAVE/Z/T textualKeys1D = LBV_GetLogbookKeys(textualKeys)
