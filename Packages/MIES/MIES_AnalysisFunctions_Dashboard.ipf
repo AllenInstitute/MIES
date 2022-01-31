@@ -837,6 +837,75 @@ static Function AD_SelectResult(win, [index])
 	OVS_ChangeSweepSelectionState(win, 1, sweeps = sweeps, invertOthers = 1)
 End
 
+/// @brief Plot the inner/outer bounds for `PSQ_CHIRP`
+///
+/// Requires that the sweep is displayed.
+Function AD_PlotBounds(string browser, variable sweepNo)
+	string key, graph, leftAxis
+	variable outerRelativeBound, innerRelativeBound, baselineVoltage, lastX, headstage
+
+	WAVE/Z numericalValues = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, sweepNumber = sweepNo)
+	WAVE/T/Z textualValues = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_TEXTUAL_VALUES, sweepNumber = sweepNo)
+	ASSERT(WaveExists(numericalValues) && WaveExists(textualValues), "Missing labnotebook")
+
+	WAVE/Z statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", UNKNOWN_MODE)
+	ASSERT(WaveExists(statusHS), "No active headstages")
+
+	WAVE/Z indizes = FindIndizes(statusHS, var = 1, col = 0)
+	ASSERT(WaveExists(indizes) && DimSize(indizes, ROWS) == 1, "Could not find one valid entry.")
+	headstage = indizes[0]
+
+	WAVE/T stimsets = GetLastSetting(textualValues, sweepNo, stim_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	WAVE/T params   = GetLastSetting(textualValues, sweepNo, "Function params (encoded)", DATA_ACQUISITION_MODE)
+
+	outerRelativeBound = AFH_GetAnalysisParamNumerical("OuterRelativeBound", params[headstage])
+	innerRelativeBound = AFH_GetAnalysisParamNumerical("InnerRelativeBound", params[headstage])
+
+	key = CreateAnaFuncLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_TARGETV, query = 1, chunk = 0)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	if(!WaveExists(settings))
+		printf "Could not find the baseline voltage (key: %s) of sweep %d.\r", key, sweepNo
+		return NaN
+	endif
+
+	WAVE statusADC = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
+
+	graph = GetMainWindow(browser)
+
+	WAVE/T/Z leftAxisMatches = TUD_GetUserDataAsWave(graph, "YAXIS",                                                   \
+	                                                 keys = {"channelType", "channelNumber", "sweepNumber"},           \
+	                                                 values = {"AD", num2str(statusADC[headstage]), num2str(sweepNo)})
+	ASSERT(WaveExists(leftAxisMatches) && DimSize(leftAxisMatches, ROWS) >= 1, "Could not find sweep displayed")
+	leftAxis = leftAxisMatches[0]
+
+	baselineVoltage = settings[headstage]
+
+	DFREF dfr = BSP_GetFolder(browser, MIES_BSP_PANEL_FOLDER)
+
+	Make/O/N=2 dfr:chirpBoundUpperMax/WAVE=upperMax
+	Make/O/N=2 dfr:chirpBoundUpperMin/WAVE=upperMin
+	Make/O/N=2 dfr:chirpBoundLowerMax/WAVE=lowerMax
+	Make/O/N=2 dfr:chirpBoundLowerMin/WAVE=lowerMin
+
+	upperMax[] = baselineVoltage / 1e3 + outerRelativeBound
+	upperMin[] = baselineVoltage / 1e3 + innerRelativeBound
+	lowerMax[] = baselineVoltage / 1e3 - innerRelativeBound
+	lowerMin[] = baselineVoltage / 1e3 - outerRelativeBound
+
+	GetAxis/W=$graph/Q bottom
+	lastX = V_max
+
+	SetScale/I x, 0, lastX, "ms", upperMax, upperMin, lowerMax, lowerMin
+
+	AppendToGraph/W=$graph/L=$leftAxis upperMax, upperMin, lowerMax, lowerMin
+	ModifyGraph/W=$graph lstyle(chirpBoundUpperMax)=7,rgb(chirpBoundUpperMax)=(0,0,65535)
+	ModifyGraph/W=$graph lstyle(chirpBoundUpperMin)=7,rgb(chirpBoundUpperMin)=(0,0,65535)
+	ModifyGraph/W=$graph lstyle(chirpBoundLowerMax)=7,rgb(chirpBoundLowerMax)=(0,0,65535)
+	ModifyGraph/W=$graph lstyle(chirpBoundLowerMin)=7,rgb(chirpBoundLowerMin)=(0,0,65535)
+End
+
 Function AD_ListBoxProc(lba) : ListBoxControl
 	STRUCT WMListboxAction &lba
 
