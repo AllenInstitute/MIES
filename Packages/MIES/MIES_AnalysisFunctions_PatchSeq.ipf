@@ -27,52 +27,51 @@
 ///
 /// \rst
 ///
-/// =============================== ========================================================= ======================== ============================= =====================  =====================
-/// Naming constant                 Description                                               Labnotebook              Analysis function             Per Chunk?             Headstage dependent?
-/// =============================== ========================================================= ======================== ============================= =====================  =====================
-/// PSQ_FMT_LBN_SPIKE_DETECT        The required number of spikes were detected on the sweep  Numerical                SP, RB, RA, DA (Supra)        No                     Yes
-/// PSQ_FMT_LBN_SPIKE_POSITIONS     Spike positions in ms                                     Numerical                RA                            No                     Yes
-/// PSQ_FMT_LBN_SPIKE_COUNT         Spike count                                               Numerical                DA (Supra)                    No                     Yes
-/// PSQ_FMT_LBN_STEPSIZE            Current DAScale step size                                 Numerical                SP, RB                        No                     No
-/// PSQ_FMT_LBN_STEPSIZE_FUTURE     Future DAScale step size                                  Numerical                RB                            No                     No
-/// PSQ_FMT_LBN_RB_DASCALE_EXC      Range for valid DAScale values is exceeded                Numerical                RB                            No                     Yes
-/// PSQ_FMT_LBN_RB_LIMITED_RES      Failed due to limited DAScale resolution                  Numerical                RB                            No                     Yes
-/// PSQ_FMT_LBN_FINAL_SCALE         Final DAScale of the given headstage, only set on success Numerical                SP, RB                        No                     No
-/// PSQ_FMT_LBN_SPIKE_DASCALE_ZERO  Sweep spiked with DAScale of 0                            Numerical                SP                            No                     No
-/// PSQ_FMT_LBN_INITIAL_SCALE       Initial DAScale                                           Numerical                RB, CR                        No                     No
-/// PSQ_FMT_LBN_RMS_SHORT_PASS      Short RMS baseline QC result                              Numerical                DA, RB, RA, CR, SE            Yes                    Yes
-/// PSQ_FMT_LBN_RMS_SHORT_THRESHOLD Short RMS baseline threshold [V]                          Numerical                DA, RB, RA, CR, SE            No                     Yes
-/// PSQ_FMT_LBN_RMS_LONG_PASS       Long RMS baseline QC result                               Numerical                DA, RB, RA, CR, SE            Yes                    Yes
-/// PSQ_FMT_LBN_RMS_LONG_THRESHOLD  Long RMS baseline threshold [V]                           Numerical                DA, RB, RA, CR, SE            No                     Yes
-/// PSQ_FMT_LBN_TARGETV             Target voltage baseline                                   Numerical                DA, RB, RA, CR                Yes                    Yes
-/// PSQ_FMT_LBN_TARGETV_PASS        Target voltage baseline QC result                         Numerical                DA, RB, RA, CR                Yes                    Yes
-/// PSQ_FMT_LBN_LEAKCUR             Leak current                                              Numerical                PB                            Yes                    Yes
-/// PSQ_FMT_LBN_LEAKCUR_PASS        Leak current QC result                                    Numerical                PB                            Yes                    Yes
-/// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                     Numerical                DA, RB, RA, CR, PB, SE        Yes                    Yes
-/// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                  Numerical                DA, RB, RA, CR, PB, SE        No                     Yes
-/// PSQ_FMT_LBN_SWEEP_PASS          Pass/fail state of the complete sweep                     Numerical                DA, SP, RA, CR, PB, SE        No                     No
-/// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                       Numerical                DA, RB, RA, SP, CR, PB, SE    No                     No
-/// PSQ_FMT_LBN_SAMPLING_PASS       Pass/fail state of the sampling interval check            Numerical                DA, RB, RA, SP, CR, PB, SE    No                     No
-/// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally               Numerical                RB, DA (Supra), CR            No                     Yes
-/// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                              Numerical                DA (Supra)                    No                     Yes
-/// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value         Numerical                DA (Supra)                    No                     No
-/// PSQ_FMT_LBN_DA_OPMODE           Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA            Textual                  DA                            No                     No
-/// PSQ_FMT_LBN_CR_INSIDE_BOUNDS    AD response is inside the given bands                     Numerical                CR                            No                     No
-/// PSQ_FMT_LBN_CR_RESISTANCE       Calculated resistance in Ohm from DAScale sub threshold   Numerical                CR                            No                     No
-/// PSQ_FMT_LBN_CR_BOUNDS_ACTION    Action according to min/max positions                     Numerical                CR                            No                     No
-/// PSQ_FMT_LBN_CR_BOUNDS_STATE     Upper and Lower bounds state according to min/max pos.    Textual                  CR                            No                     No
-/// PSQ_FMT_LBN_CR_SPIKE_CHECK      Spike check was enabled/disabled                          Numerical                CR                            No                     No
-/// PSQ_FMT_LBN_CR_SPIKE_PASS       Pass/fail state of the spike search (No spikes → Pass)    Numerical                CR                            No                     Yes
-/// FMT_LBN_ANA_FUNC_VERSION        Integer version of the analysis function                  Numerical                All                           No                     Yes
-/// PSQ_FMT_LBN_PB_RESISTANCE       Pipette Resistance                                        Numerical                PB                            No                     No
-/// PSQ_FMT_LBN_PB_RESISTANCE_PASS  Pipette Resistance QC                                     Numerical                PB                            No                     No
-/// PSQ_FMT_LBN_SE_TP_GROUP_SEL     Selected Testpulse groups: One of Both/First/Second       Textual                  SE                            No                     No
-/// PSQ_FMT_LBN_SE_RESISTANCE_A     Seal Resistance of TPs in group A                         Numerical                SE                            No                     No
-/// PSQ_FMT_LBN_SE_RESISTANCE_B     Seal Resistance of TPs in group B                         Numerical                SE                            No                     No
-/// PSQ_FMT_LBN_SE_RESISTANCE_MAX   Maximum Seal Resistance of TPs in both groups             Numerical                SE                            No                     No
-/// PSQ_FMT_LBN_SE_RESISTANCE_PASS  Seal Resistance QC                                        Numerical                SE                            No                     No
-///
-/// =============================== ========================================================= ======================== ============================= =====================  =====================
+/// =============================== ========================================================= ======== ======================== =========================== =====================  =====================
+/// Naming constant                 Description                                                Unit    Labnotebook              Analysis function            Per Chunk?             Headstage dependent?
+/// =============================== ========================================================= ======== ======================== =========================== =====================  =====================
+/// PSQ_FMT_LBN_SPIKE_DETECT        The required number of spikes were detected on the sweep   On/Off   Numerical                SP, RB, RA, DA (Supra)      No                     Yes
+/// PSQ_FMT_LBN_SPIKE_POSITIONS     Spike positions                                            ms       Numerical                RA                          No                     Yes
+/// PSQ_FMT_LBN_SPIKE_COUNT         Spike count                                                (none)   Numerical                DA (Supra)                  No                     Yes
+/// PSQ_FMT_LBN_STEPSIZE            Current DAScale step size                                  (none)   Numerical                SP, RB                      No                     No
+/// PSQ_FMT_LBN_STEPSIZE_FUTURE     Future DAScale step size                                   (none)   Numerical                RB                          No                     No
+/// PSQ_FMT_LBN_RB_DASCALE_EXC      Range for valid DAScale values is exceeded                 On/Off   Numerical                RB                          No                     Yes
+/// PSQ_FMT_LBN_RB_LIMITED_RES      Failed due to limited DAScale resolution                   On/Off   Numerical                RB                          No                     Yes
+/// PSQ_FMT_LBN_FINAL_SCALE         Final DAScale of the given headstage, only set on success  (none)   Numerical                SP, RB                      No                     No
+/// PSQ_FMT_LBN_SPIKE_DASCALE_ZERO  Sweep spiked with DAScale of 0                             On/Off   Numerical                SP                          No                     No
+/// PSQ_FMT_LBN_INITIAL_SCALE       Initial DAScale                                            (none)   Numerical                RB, CR                      No                     No
+/// PSQ_FMT_LBN_RMS_SHORT_PASS      Short RMS baseline QC result                               On/Off   Numerical                DA, RB, RA, CR, SE          Yes                    Yes
+/// PSQ_FMT_LBN_RMS_SHORT_THRESHOLD Short RMS baseline threshold                               V        Numerical                DA, RB, RA, CR, SE          No                     Yes
+/// PSQ_FMT_LBN_RMS_LONG_PASS       Long RMS baseline QC result                                On/Off   Numerical                DA, RB, RA, CR, SE          Yes                    Yes
+/// PSQ_FMT_LBN_RMS_LONG_THRESHOLD  Long RMS baseline threshold                                V        Numerical                DA, RB, RA, CR, SE          No                     Yes
+/// PSQ_FMT_LBN_TARGETV             Target voltage baseline                                    Volt     Numerical                DA, RB, RA, CR              Yes                    Yes
+/// PSQ_FMT_LBN_TARGETV_PASS        Target voltage baseline QC result                          On/Off   Numerical                DA, RB, RA, CR              Yes                    Yes
+/// PSQ_FMT_LBN_LEAKCUR             Leak current                                               Amperes  Numerical                PB                          Yes                    Yes
+/// PSQ_FMT_LBN_LEAKCUR_PASS        Leak current QC result                                     On/Off   Numerical                PB                          Yes                    Yes
+/// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                      On/Off   Numerical                DA, RB, RA, CR, PB, SE      Yes                    Yes
+/// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                   On/Off   Numerical                DA, RB, RA, CR, PB, SE      No                     Yes
+/// PSQ_FMT_LBN_SWEEP_PASS          Pass/fail state of the complete sweep                      On/Off   Numerical                DA, SP, RA, CR, PB, SE      No                     No
+/// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                        On/Off   Numerical                DA, RB, RA, SP, CR, PB, SE  No                     No
+/// PSQ_FMT_LBN_SAMPLING_PASS       Pass/fail state of the sampling interval check             On/Off   Numerical                DA, RB, RA, SP, CR, PB, SE  No                     No
+/// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally                ms       Numerical                RB, DA (Supra), CR          No                     Yes
+/// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                               % Hz/pA  Numerical                DA (Supra)                  No                     Yes
+/// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value          On/Off   Numerical                DA (Supra)                  No                     No
+/// PSQ_FMT_LBN_DA_OPMODE           Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA             (none)   Textual                  DA                          No                     No
+/// PSQ_FMT_LBN_CR_INSIDE_BOUNDS    AD response is inside the given bands                      On/Off   Numerical                CR                          No                     No
+/// PSQ_FMT_LBN_CR_RESISTANCE       Calculated resistance in Ohm from DAScale sub threshold    Ohm      Numerical                CR                          No                     No
+/// PSQ_FMT_LBN_CR_BOUNDS_ACTION    Action according to min/max positions                      (none)   Numerical                CR                          No                     No
+/// PSQ_FMT_LBN_CR_BOUNDS_STATE     Upper and Lower bounds state according to min/max pos.     (none)   Textual                  CR                          No                     No
+/// PSQ_FMT_LBN_CR_SPIKE_CHECK      Spike check was enabled/disabled                           (none)   Numerical                CR                          No                     No
+/// PSQ_FMT_LBN_CR_SPIKE_PASS       Pass/fail state of the spike search (No spikes → Pass)     (none)   Numerical                CR                          No                     Yes
+/// FMT_LBN_ANA_FUNC_VERSION        Integer version of the analysis function                   (none)   Numerical                All                         No                     Yes
+/// PSQ_FMT_LBN_PB_RESISTANCE       Pipette Resistance                                         Ohm      Numerical                PB                          No                     No
+/// PSQ_FMT_LBN_PB_RESISTANCE_PASS  Pipette Resistance QC                                      On/Off   Numerical                PB                          No                     No
+/// PSQ_FMT_LBN_SE_TP_GROUP_SEL     Selected Testpulse groups: One of Both/First/Second        (none)   Textual                  SE                          No                     No
+/// PSQ_FMT_LBN_SE_RESISTANCE_A     Seal Resistance of TPs in group A                          Ω        Numerical                SE                          No                     No
+/// PSQ_FMT_LBN_SE_RESISTANCE_B     Seal Resistance of TPs in group B                          Ω        Numerical                SE                          No                     No
+/// PSQ_FMT_LBN_SE_RESISTANCE_MAX   Maximum Seal Resistance of TPs in both groups              Ω        Numerical                SE                          No                     No
+/// PSQ_FMT_LBN_SE_RESISTANCE_PASS  Seal Resistance QC                                         On/Off   Numerical                SE                          No                     No
+/// =============================== ========================================================= ======== ======================== =========================== =====================  =====================
 ///
 /// Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale.
 ///
