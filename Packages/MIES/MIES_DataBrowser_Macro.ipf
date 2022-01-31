@@ -1371,7 +1371,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVCM)="NAME:UGVCM;WIN:DataBrowser#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:487.00;GUIDE1:FL;GUIDE2:FR;RELPOSITION:0.839655;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={441,170,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(200,187,353,501)/FG=(UGVL,FT,UGVR,FB)/HOST=#
-	ModifyGraph margin(right)=74
+	ModifyGraph margin(right)=74, gfSize=10
 	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
 	RenameWindow #,LabNoteBook
 	SetActiveSubwindow ##
