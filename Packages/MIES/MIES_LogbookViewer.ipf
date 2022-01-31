@@ -391,7 +391,7 @@ End
 /// @param traceList   list of traces in the graph
 static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 	string str, trace, header, prefix
-	variable numEntries, i, headstage
+	variable numEntries, i, headstage, hasAllEntry
 
 	if(!windowExists(graph))
 		return NaN
@@ -431,7 +431,10 @@ static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 			hsMarker[headstage] = 1
 			str += prefix + num2str(headstage)
 		else
-			str += prefix + "all"
+			if(!hasAllEntry)
+				str += prefix + "all"
+				hasAllEntry = 1
+			endif
 		endif
 
 		if(mod(i, 2))
@@ -443,7 +446,7 @@ static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 		return NaN
 	endif
 
-	str = RemoveEnding(header + str, "\r")
+	str = RemoveEndingRegExp(header + str, "\r*")
 	TextBox/C/W=$graph/N=text0/F=2 str
 End
 
