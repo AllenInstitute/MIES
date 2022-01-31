@@ -76,11 +76,19 @@ Function AD_Update(win)
 End
 
 static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage, variable ongoingDAQ)
+	variable stopReason
 
 	if(passed)
 		return "Pass"
-	elseif(ongoingDAQ)
-		return "Sweep not yet finished"
+	endif
+
+	if(ongoingDAQ)
+		// introduced in 87f9cbfa (DAQ: Add stopping reason to the labnotebook, 2021-05-13)
+		stopReason = GetLastSettingIndepSCI(numericalValues, sweepNo, "DAQ stop reason", headstage, UNKNOWN_MODE, defValue = NaN)
+
+		if(IsNaN(stopReason))
+			return "Sweep not yet finished"
+		endif
 	endif
 
 	// MSQ_DA
@@ -148,9 +156,9 @@ static Function AD_FillWaves(win, list, info)
 	string win
 	WAVE/T list, info
 
-	variable i, j, headstage, passed, sweepNo, numEntries, ongoingDAQ
+	variable i, j, headstage, passed, sweepNo, numEntries, ongoingDAQ, acqState
 	variable index, anaFuncType, stimsetCycleID, firstValid, lastValid
-	string key, anaFunc, stimset, msg
+	string key, anaFunc, stimset, msg, device
 
 	WAVE/Z totalSweepsPresent = GetPlainSweepList(win)
 
@@ -160,6 +168,13 @@ static Function AD_FillWaves(win, list, info)
 
 	if(!WaveExists(numericalValuesWave) || !WaveExists(textualValuesWave) || !WaveExists(totalSweepsPresent))
 		return 0
+	endif
+
+	if(BSP_IsDataBrowser(win))
+		device = BSP_GetDevice(win)
+		acqState = ROVar(GetAcquisitionState(device))
+	else
+		acqState = AS_INACTIVE
 	endif
 
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
@@ -175,7 +190,12 @@ static Function AD_FillWaves(win, list, info)
 		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 
 		if(WaveExists(anaFuncs))
-			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
+			if(GetLastSettingIndep(numericalValues, sweepNo, "Skip analysis functions", DATA_ACQUISITION_MODE, defValue = 0))
+				anaFuncs[] = anaFuncs[p] + " (Skipped)"
+				Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = INVALID_ANALYSIS_FUNCTION
+			else
+				Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
+			endif
 		else
 			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE/T anaFuncs = NOT_AVAILABLE
 			Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = INVALID_ANALYSIS_FUNCTION
@@ -230,7 +250,7 @@ static Function AD_FillWaves(win, list, info)
 			else
 				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
 				passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-				ongoingDAQ = IsNaN(passed)
+				ongoingDAQ = IsNaN(passed) && (acqState != AS_INACTIVE)
 			endif
 
 			msg = AD_GetResultMessage(anaFuncType, passed, numericalValues, textualValues, sweepNo, headstage, ongoingDAQ)
@@ -540,7 +560,8 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 	variable headstage
 
 	variable i, chunkQC
-	string key, msg
+	string key
+	string msg = ""
 
 	switch(anaFuncType)
 		case PSQ_DA_SCALE:
@@ -576,7 +597,9 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 					endif
 				endfor
 
-				ASSERT(!IsEmpty(msg), "Could not find a failing chunk")
+				if(IsEmpty(msg))
+					BUG("Could not find a failing chunk")
+				endif
 			endif
 			break
 	endswitch

@@ -2082,6 +2082,9 @@ End
 #if IgorVersion() >= 9.0
 
 /// @brief Enable show trace info tags for the current top graph
+///
+/// Callers should call that via the operation queue to avoid
+/// GUI event processing from happening.
 Function ShowTraceInfoTags()
 
 	DoIgorMenu/C "Graph", "Show Trace Info Tags"

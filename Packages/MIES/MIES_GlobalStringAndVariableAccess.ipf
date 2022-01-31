@@ -305,7 +305,9 @@ Function/S GetUserComment(device)
 	return GetSVARAsString(GetDevicePath(device), "userComment")
 End
 
-/// @brief Return the stop collection point as calculated by DC_GetStopCollectionPoint()
+/// @brief Return the stop collection point, this is a *length*.
+///
+/// @sa GetFifoPosition()
 Function/S GetStopCollectionPoint(device)
 	string device
 

@@ -1996,9 +1996,8 @@ static Function CheckThatTestpulseRan_IGNORE(device)
 	CHECK_WAVE(settings, NUMERIC_WAVE)
 End
 
-static Function CheckDAQStopReason(string device, variable stopReason)
+static Function CheckDAQStopReason(string device, variable stopReason, [variable sweepNo])
 	string key
-	variable sweepNo
 
 	key = "DAQ stop reason"
 
@@ -2007,7 +2006,10 @@ static Function CheckDAQStopReason(string device, variable stopReason)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 	CHECK_GE_VAR(DimSize(sweeps, ROWS), 1)
 
-	sweepNo = sweeps[0]
+	if(ParamIsDefault(sweepNo))
+		sweepNo = sweeps[0]
+	endif
+
 	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_WAVE(settings, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(settings[INDEP_HEADSTAGE], stopReason)
@@ -2436,6 +2438,9 @@ Function ChangeStimSetDuringDAQ_REENTRY([str])
 	endfor
 
 	CheckDAQStopReason(str, DQ_STOP_REASON_STIMSET_SELECTION)
+
+	// even with TP after DAQ we have "finished" as reason
+	CheckDAQStopReason(str, DQ_STOP_REASON_FINISHED, sweepNo = 2)
 End
 
 Function EnableUnassocChannels_IGNORE(device)

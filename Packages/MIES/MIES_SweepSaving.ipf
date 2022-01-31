@@ -28,7 +28,11 @@ Function SWS_SaveAcquiredData(device, [forcedStop])
 	WAVE hardwareConfigWave = GetDAQConfigWave(device)
 	WAVE scaledDataWave = GetScaledDataWave(device)
 
-	ASSERT(IsValidSweepAndConfig(DAQDataWave, hardwareConfigWave), "Data and config wave are not compatible")
+	if(!IsValidSweepAndConfig(DAQDataWave, hardwareConfigWave)       \
+	   || !IsValidSweepAndConfig(scaledDataWave, hardwareConfigWave))
+		BUG("Scaled data and config wave are not compatible, nothing will be saved!")
+		return 0
+	endif
 
 	DFREF dfr = GetDeviceDataPath(device)
 

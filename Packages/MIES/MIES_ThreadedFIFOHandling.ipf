@@ -89,7 +89,7 @@ End
 /// - The input queue is not empty
 ///
 /// Pushes the following entries into the thread queue:
-/// - fifoPos:       fifo position
+/// - fifoPos:       fifo position (relative to offset)
 /// - startSequence: (yoking only) inform the main thread
 ///                  that ARDStartSequence() commmand should be called
 threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)

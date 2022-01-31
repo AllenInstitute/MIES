@@ -495,6 +495,7 @@ End
 static Function DC_InitDataHoldingWave(wv, numRows, sampleInterval, numDACs, numADCs, numTTLs, [type, isFourierTransform])
 	WAVE wv
 	variable numRows, sampleInterval, numDACs, numADCs, numTTLs, type, isFourierTransform
+	string msg
 
 	ASSERT(numDACs > 0, "Invalid number of DACs")
 	ASSERT(numADCs > 0, "Invalid number of ADCs")
@@ -507,6 +508,12 @@ static Function DC_InitDataHoldingWave(wv, numRows, sampleInterval, numDACs, num
 		isFourierTransform = 0
 	else
 		isFourierTransform = !!isFourierTransform
+	endif
+
+	if(GetLockState(wv))
+		sprintf msg, "Clearing leftover lock in %s from earlier acquisition runs.\r", GetWavesDataFolder(wv, 2)
+		BUG(msg)
+		ChangeWaveLock(wv, 0)
 	endif
 
 	Redimension/N=(numRows, numDACs + numADCs + numTTLs)/Y=(type) wv

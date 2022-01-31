@@ -77,7 +77,7 @@ Function AS_HandlePossibleTransition(string device, variable newAcqState, [varia
 #endif
 
 	if(!AS_CheckStateTransition(oldAcqState, newAcqState))
-		sprintf msg, "The state transition %s -> %s is not expected.\r", AS_StateToString(oldAcqState), AS_StateToString(newAcqState)
+		sprintf msg, "The state transition %s -> %s is not expected.", AS_StateToString(oldAcqState), AS_StateToString(newAcqState)
 		BUG(msg)
 	endif
 

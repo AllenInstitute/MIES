@@ -1322,7 +1322,6 @@ Function DAP_OneTimeCallBeforeDAQ(device, runMode)
 
 		HW_NI_ResetTaskIDs(device)
 	endif
-	DisableControls(device, "check_Settings_MD")
 
 	DAP_ToggleAcquisitionButton(device, DATA_ACQ_BUTTON_TO_STOP)
 	DisableControls(device, CONTROLS_DISABLE_DURING_DAQ_TP)
@@ -1416,9 +1415,6 @@ Function DAP_OneTimeCallAfterDAQ(string device, variable stopReason, [variable f
 				DisableControl(device, "check_Settings_MD")
 			endif
 			HW_NI_ResetTaskIDs(device)
-			break
-		default:
-			EnableControl(device, "check_Settings_MD")
 			break
 	endswitch
 
@@ -2164,7 +2160,7 @@ Function DAP_CheckSettings(device, mode)
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
 	variable DACchannel, ret
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
-	string list, lastStart
+	string list, lastStart, msg
 
 	ASSERT(mode == DATA_ACQUISITION_MODE || mode == TEST_PULSE_MODE, "Invalid mode")
 
@@ -2595,12 +2591,11 @@ Function DAP_CheckSettings(device, mode)
 		endif
 
 		// unlock DAQDataWave, this happens if user functions error out and we don't catch it
-		// note: seems to work even if WAVE/WAVE would be required for NI
 		WAVE DAQDataWave = GetDAQDataWave(device, mode)
-		if(NumberByKey("LOCK", WaveInfo(DAQDataWave, 0)))
-			printf "(%s) Removing leftover lock on DAQDataWave\r", device
-			ControlWindowToFront()
-			SetWaveLock 0, DAQDataWave
+		if(GetLockState(DAQDataWave))
+			sprintf msg, "(%s) Removing leftover lock on %s.\r", device, GetWavesDataFolder(DAQDataWave, 2)
+			BUG(msg)
+			ChangeWaveLock(DAQDataWave, 0)
 		endif
 	endfor
 

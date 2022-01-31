@@ -136,7 +136,10 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 	IH_KillTemporaries()
 
 	NVAR fileIDExport = $GetNWBFileIDExport()
-	NWB_Flush(fileIDExport)
+
+	if(H5_IsFileOpen(fileIDExport))
+		NWB_Flush(fileIDExport)
+	endif
 
 	LOG_AddEntry(PACKAGE_MIES, "end")
 End

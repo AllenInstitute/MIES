@@ -503,11 +503,16 @@ End
 /// @brief Complain and ask the user to report the error
 ///
 /// In nearly all cases ASSERT() is the more appropriate method to use.
+///
+/// If a testcase wants to trigger a BUG message *and* needs to treat that as non-fatal,
+/// it needs to set `bugCount` to NaN before.
 Function BUG(msg)
 	string msg
 
 	string func, line, file
 	FindFirstOutsideCaller(func, line, file)
+
+	msg = RemoveEnding(msg, "\r")
 
 	if(!isEmpty(func))
 		printf "BUG %s(...)#L%s: %s\r", func, line, msg
@@ -524,7 +529,7 @@ Function BUG(msg)
 #ifdef AUTOMATED_TESTING
 	NVAR bugCount = $GetBugCount()
 	bugCount += 1
-	ASSERT(0, "BUG: Should never be called during automated testing.")
+	ASSERT(IsNaN(bugCount), "BUG: Should never be called during automated testing.")
 #endif
 End
 
@@ -559,7 +564,7 @@ threadsafe Function BUG_TS(string msg)
 	TUFXOP_ReleaseMutex/N=(TSDS_BUGCOUNT)
 #endif
 
-	ASSERT_TS(0, "BUG_TS: Should never be called during automated testing.")
+	ASSERT_TS(IsNaN(bugCount), "BUG_TS: Should never be called during automated testing.")
 #endif
 End
 

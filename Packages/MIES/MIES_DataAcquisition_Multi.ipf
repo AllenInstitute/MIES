@@ -24,7 +24,6 @@ Function DQM_FIFOMonitor(s)
 	variable bufferSize
 	string device, fifoChannelName, fifoName, errMsg
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
-	Make/FREE/N=(0) wNIReadOut
 
 	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1)
 		deviceID   = ActiveDeviceList[i][%DeviceID]
@@ -46,6 +45,7 @@ Function DQM_FIFOMonitor(s)
 						continue // no new data -> next device
 					endif
 
+					Make/FREE/N=(0) wNIReadOut
 					WAVE/WAVE NIDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
 					for(j = 0; j < V_FIFOnchans; j += 1)
 

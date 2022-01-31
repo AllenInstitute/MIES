@@ -88,12 +88,17 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 			case POST_SET_EVENT:
 			case POST_DAQ_EVENT: // fallthrough-by-design
 				sweepNo = DAG_GetNumericalValue(device, "SetVar_Sweep") - 1
-				WAVE scaledDataWave = GetSweepWave(device, sweepNo)
+				WAVE/Z scaledDataWave = GetSweepWave(device, sweepNo)
 				break
 			default:
 				ASSERT(0, "Invalid eventType")
 				break
 		endswitch
+
+		if(!WaveExists(scaledDataWave))
+			BUG("Analysis function could not be called due to missing scaledDataWave")
+			return NaN
+		endif
 
 		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f1 = $func
 		FUNCREF AF_PROTO_ANALYSIS_FUNC_V2 f2 = $func
@@ -104,14 +109,15 @@ Function AFM_CallAnalysisFunctions(device, eventType)
 		valid_f3 = FuncRefIsAssigned(FuncRefInfo(f3))
 
 		// all functions are valid
-		WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
-		ChangeWaveLock(DAQDataWave, 1)
-
-		ChangeWaveLock(scaledDataWave, 1)
 
 		ret = NaN
 		AssertOnAndClearRTError()
 		try
+			WAVE DAQDataWave = GetDAQDataWave(device, DATA_ACQUISITION_MODE)
+			ChangeWaveLock(DAQDataWave, 1)
+
+			ChangeWaveLock(scaledDataWave, 1)
+
 			if(valid_f1)
 				ret = f1(device, eventType, DAQDataWave, i); AbortOnRTE
 			elseif(valid_f2)

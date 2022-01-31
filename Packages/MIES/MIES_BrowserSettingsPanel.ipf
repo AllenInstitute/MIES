@@ -1654,7 +1654,7 @@ Function BSP_AddTracesForEpochs(string win)
 		SetWindow $win tooltipHook(hook) = BSP_EpochGraphToolTip
 
 		DoWindow/F $win
-		ShowTraceInfoTags()
+		Execute/P/Q/Z "ShowTraceInfoTags()"
 
 		SetAxis/W=$win/A
 	endfor
@@ -1677,10 +1677,10 @@ Function BSP_EpochGraphToolTip(s)
 			ASSERT(WaveExists(epochs), "Missing epoch info")
 			hookResult = 1 // 1 tells Igor to use our custom tooltip
 			idx = w[s.row][s.column][1]
-			first = num2strHighPrec(str2num(epochs[idx][0]) * 1000, precision = EPOCHTIME_PRECISION)
-			last  = num2strHighPrec(str2num(epochs[idx][1]) * 1000, precision = EPOCHTIME_PRECISION)
+			first = num2strHighPrec(str2num(epochs[idx][0]) * 1000, precision = EPOCHTIME_PRECISION, shorten = 1)
+			last  = num2strHighPrec(str2num(epochs[idx][1]) * 1000, precision = EPOCHTIME_PRECISION, shorten = 1)
 
-			s.tooltip = first + "<->" + last + "\n" + epochs[idx][2] + "TreeLevel=" + epochs[idx][3]
+			s.tooltip = first + " <-> " + last + "\n" + epochs[idx][2] + "TreeLevel=" + epochs[idx][3]
 		endif
 	endif
 
