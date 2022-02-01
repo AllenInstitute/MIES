@@ -115,7 +115,9 @@ Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 		endif
 
 		if(s.distributedDAQOptOv)
-			EP_AddEpochsFromOodDAQRegions(device, channel, s.regions[i], epochBegin)
+			epochBegin = startOffset * s.samplingInterval
+			epochEnd   = (startOffset + singleSetLength) * s.samplingInterval
+			EP_AddEpochsFromOodDAQRegions(device, channel, s.regions[i], epochBegin, epochEnd)
 		endif
 
 		// if dDAQ is on then channels 0 to numEntries - 1 have a trailing base line
@@ -182,11 +184,12 @@ End
 /// @param[in] channel       number of DA channel
 /// @param[in] oodDAQRegions string containing list of oodDAQ regions as %d-%d;...
 /// @param[in] stimsetBegin offset time in micro seconds where stim set begins
-static Function EP_AddEpochsFromOodDAQRegions(device, channel, oodDAQRegions, stimsetBegin)
+/// @param[in] stimsetEnd   offset time in micro seconds where stim set ends
+static Function EP_AddEpochsFromOodDAQRegions(device, channel, oodDAQRegions, stimsetBegin, stimsetEnd)
 	string device
 	variable channel
 	string oodDAQRegions
-	variable stimsetBegin
+	variable stimsetBegin, stimsetEnd
 
 	variable numRegions, first, last
 	string tags
@@ -201,7 +204,7 @@ static Function EP_AddEpochsFromOodDAQRegions(device, channel, oodDAQRegions, st
 		                                                  str2num(StringFromList(1, regions[p], "-")) * 1E3 + stimsetBegin,                        \
 		                                                  ReplaceNumberByKey(EPOCH_OODDAQ_REGION_KEY, tags, p, STIMSETKEYNAME_SEP, EPOCHNAME_SEP), \
 		                                                  EPOCH_SN_OODAQ + num2str(p),                                                             \
-		                                                  2)
+		                                                  2, lowerLimit = stimsetBegin, upperLimit = stimsetEnd)
 	endif
 End
 
