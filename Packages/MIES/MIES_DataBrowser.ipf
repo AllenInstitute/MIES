@@ -404,7 +404,7 @@ Function DB_UpdateSweepPlot(win)
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 	RemoveFreeAxisFromGraph(graph)
-	TUD_Clear(graph)
+	TUD_Clear(graph, recursive = 0)
 
 	if(!BSP_HasBoundDevice(win))
 		return NaN
