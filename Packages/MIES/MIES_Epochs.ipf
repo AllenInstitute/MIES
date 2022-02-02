@@ -115,7 +115,9 @@ Function EP_CollectEpochInfo(string device, STRUCT DataConfigurationResult &s)
 		endif
 
 		if(s.distributedDAQOptOv)
-			EP_AddEpochsFromOodDAQRegions(device, channel, s.regions[i], epochBegin)
+			epochBegin = startOffset * s.samplingInterval
+			epochEnd   = (startOffset + singleSetLength) * s.samplingInterval
+			EP_AddEpochsFromOodDAQRegions(device, channel, s.regions[i], epochBegin, epochEnd)
 		endif
 
 		// if dDAQ is on then channels 0 to numEntries - 1 have a trailing base line
@@ -182,11 +184,12 @@ End
 /// @param[in] channel       number of DA channel
 /// @param[in] oodDAQRegions string containing list of oodDAQ regions as %d-%d;...
 /// @param[in] stimsetBegin offset time in micro seconds where stim set begins
-static Function EP_AddEpochsFromOodDAQRegions(device, channel, oodDAQRegions, stimsetBegin)
+/// @param[in] stimsetEnd   offset time in micro seconds where stim set ends
+static Function EP_AddEpochsFromOodDAQRegions(device, channel, oodDAQRegions, stimsetBegin, stimsetEnd)
 	string device
 	variable channel
 	string oodDAQRegions
-	variable stimsetBegin
+	variable stimsetBegin, stimsetEnd
 
 	variable numRegions, first, last
 	string tags
@@ -201,7 +204,7 @@ static Function EP_AddEpochsFromOodDAQRegions(device, channel, oodDAQRegions, st
 		                                                  str2num(StringFromList(1, regions[p], "-")) * 1E3 + stimsetBegin,                        \
 		                                                  ReplaceNumberByKey(EPOCH_OODDAQ_REGION_KEY, tags, p, STIMSETKEYNAME_SEP, EPOCHNAME_SEP), \
 		                                                  EPOCH_SN_OODAQ + num2str(p),                                                             \
-		                                                  2)
+		                                                  2, lowerLimit = stimsetBegin, upperLimit = stimsetEnd)
 	endif
 End
 
@@ -564,7 +567,7 @@ End
 /// @param sweepWave  sweep wave
 /// @param configWave config wave
 Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE configWave)
-	variable i, numDACEntries, channel, headstage, acquiredTime
+	variable i, numDACEntries, channel, headstage, acquiredTime, plannedTime
 	string entry
 
 	// all channels are acquired simultaneously we can just check if the last
@@ -574,7 +577,8 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE 
 		ASSERT(V_row >= 0, "Unexpected result")
 
 		acquiredTime = IndexToScale(sweepWave, max(V_row - 1, 0), ROWS) / 1e3
-		EP_AdaptEpochInfo(device, configWave, acquiredTime)
+		plannedTime  = IndexToScale(sweepWave, DimSize(sweepWave, ROWS) - 1, ROWS) / 1e3
+		EP_AdaptEpochInfo(device, configWave, acquiredTime, plannedTime)
 	endif
 
 	EP_SortEpochs(device)
@@ -634,9 +638,9 @@ End
 /// @param device    device
 /// @param configWave    DAQ config wave
 /// @param acquiredTime  Last acquired time point [s]
-static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acquiredTime)
+/// @param plannedTime   Last time point in the sweep [s]
+static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acquiredTime, variable plannedTime)
 	variable i, channel, epoch, numEntries, endTime, startTime, epochCnt
-	variable lastEnd = -inf
 	string tags
 
 	WAVE/T epochWave = GetEpochsWave(device)
@@ -662,8 +666,6 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 			startTime = str2num(epochWave[epoch][%StartTime][channel])
 			endTime   = str2num(epochWave[epoch][%EndTime][channel])
 
-			lastEnd = max(endTime, lastEnd)
-
 			if(acquiredTime >= endTime)
 				continue
 			endif
@@ -681,7 +683,7 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 
 		// Add unacquired epoch
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
-		EP_AddEpoch(device, channel, acquiredTime * 1e6 , lastEnd * 1e6, tags , EPOCH_SN_UNACQUIRED, 0)
+		EP_AddEpoch(device, channel, acquiredTime * 1e6 , plannedTime * 1e6, tags , EPOCH_SN_UNACQUIRED, 0)
 	endfor
 End
 
