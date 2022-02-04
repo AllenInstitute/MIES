@@ -3259,49 +3259,6 @@ Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [string chann
 	[s] = GetTraceColor(colorIndex)
 End
 
-/// @brief Queries the parameter and unit from a labnotebook key wave
-///
-/// @param[in]  keyWave   labnotebook key wave
-/// @param[in]  key       key to look for
-/// @param[out] parameter name of the result [empty if not found]
-/// @param[out] unit      unit of the result [empty if not found]
-/// @param[out] col       column of the result into the keyWave [NaN if not found]
-/// @returns one on error, zero otherwise
-threadsafe Function GetKeyWaveParameterAndUnit(keyWave, key, parameter, unit, col)
-	WAVE/T/Z keyWave
-	string key
-	string &parameter, &unit
-	variable &col
-
-	variable row, numRows
-	string device
-
-	parameter = ""
-	unit      = ""
-	col       = NaN
-
-	if(!WaveExists(keyWave))
-		return 1
-	endif
-
-	FindValue/TXOP=4/TEXT=key keyWave
-
-	numRows = DimSize(keywave, ROWS)
-	col     = floor(V_value / numRows)
-	row     = V_value - col * numRows
-
-	if(V_Value == -1 || row != FindDimLabel(keyWave, ROWS, "Parameter"))
-		printf "Could not find %s in keyWave\r", key
-		col = NaN
-		return 1
-	endif
-
-	parameter = keyWave[%Parameter][col]
-	unit      = keyWave[%Units][col]
-
-	return 0
-End
-
 /// @brief Space the matching axis in an equal manner
 ///
 /// @param graph           graph
