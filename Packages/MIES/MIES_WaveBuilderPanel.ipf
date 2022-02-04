@@ -525,18 +525,6 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 	return 0
 End
 
-Function WBP_ButtonProc_AutoScale(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			SetAxis/A/W=$WaveBuilderGraph
-			break
-	endswitch
-
-	return 0
-End
-
 Function WBP_CheckProc(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
