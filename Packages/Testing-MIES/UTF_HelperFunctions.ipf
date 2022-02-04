@@ -117,7 +117,7 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	// prepare the LBN
 	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values, valuesDAC, valuesADC
 	Make/T/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesTxt
-	Make/T/FREE/N=(1, 1, 1) keys
+	Make/T/FREE/N=(3, 1, 1) keys
 
 	sweepNo = 0
 
@@ -126,45 +126,49 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	valuesDAC[]  = NaN
 	valuesDAC[0][0][0] = 2
 	valuesDAC[0][0][1] = 3
-	keys[] = "DAC"
+	keys[0][0][0] = "DAC"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	valuesADC[]  = NaN
 	valuesADC[0][0][0] = 6
 	valuesADC[0][0][1] = 7
-	keys[] = "ADC"
+	keys[0][0][0] = "ADC"
 	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	values[]  = 0
 	values[0][0][0] = 1
 	values[0][0][1] = 1
-	keys[] = "Headstage Active"
+	keys[0][0][0] = "Headstage Active"
+	keys[1][0][0] = LABNOTEBOOK_BINARY_UNIT
+	keys[2][0][0] = LABNOTEBOOK_NO_TOLERANCE
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+
+	keys = ""
 
 	// numerical entries
 
 	// DAC 4: unassoc (old)
 	values[] = NaN
 	values[0][0][INDEP_HEADSTAGE] = 123
-	keys[] = CreateLBNUnassocKey(key, 4, NaN) // old format does not include the channelType
+	keys[0][0][0] = CreateLBNUnassocKey(key, 4, NaN) // old format does not include the channelType
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// ADC 8: unassoc (old)
 	values[] = NaN
 	values[0][0][INDEP_HEADSTAGE] = 789
-	keys[] = CreateLBNUnassocKey(key, 8, NaN) // old format does not include the channelType
+	keys[0][0][0] = CreateLBNUnassocKey(key, 8, NaN) // old format does not include the channelType
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// associated
 	values[] = NaN
 	values[0][0][0] = 131415
 	values[0][0][1] = 161718
-	keys[] = key
+	keys[0][0][0] = key
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	values[] = NaN
 	values[0][0][0] = I_CLAMP_MODE
-	keys[] = CLAMPMODE_ENTRY_KEY
+	keys[0][0][0] = CLAMPMODE_ENTRY_KEY
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// textual entries
@@ -172,20 +176,20 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	// DAC 4: unassoc (old)
 	valuesTxt[] = ""
 	valuesTxt[0][0][INDEP_HEADSTAGE] = "123"
-	keys[] = CreateLBNUnassocKey(keyTxt, 4, NaN) // old format does not include the channelType
+	keys[0][0][0] = CreateLBNUnassocKey(keyTxt, 4, NaN) // old format does not include the channelType
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// ADC 8: unassoc (old)
 	valuesTxt[] = ""
 	valuesTxt[0][0][INDEP_HEADSTAGE] = "789"
-	keys[] = CreateLBNUnassocKey(keyTxt, 8, NaN) // old format does not include the channelType
+	keys[0][0][0] = CreateLBNUnassocKey(keyTxt, 8, NaN) // old format does not include the channelType
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// associated
 	valuesTxt[] = ""
 	valuesTxt[0][0][0] = "131415"
 	valuesTxt[0][0][1] = "161718"
-	keys[] = keyTxt
+	keys[0][0][0] = keyTxt
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	sweepNo = 1
@@ -193,19 +197,19 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	valuesDAC[]  = NaN
 	valuesDAC[0][0][0] = 2
 	valuesDAC[0][0][1] = 3
-	keys[] = "DAC"
+	keys[0][0][0] = "DAC"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	valuesADC[]  = NaN
 	valuesADC[0][0][0] = 6
 	valuesADC[0][0][1] = 7
-	keys[] = "ADC"
+	keys[0][0][0] = "ADC"
 	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	values[]  = 0
 	values[0][0][0] = 1
 	values[0][0][1] = 1
-	keys[] = "Headstage Active"
+	keys[0][0][0] = "Headstage Active"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// numerical entries
@@ -213,25 +217,25 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	// DAC 5: unassoc (new)
 	values[] = NaN
 	values[0][0][INDEP_HEADSTAGE] = 456
-	keys[] = CreateLBNUnassocKey(key, 5, XOP_CHANNEL_TYPE_DAC)
+	keys[0][0][0] = CreateLBNUnassocKey(key, 5, XOP_CHANNEL_TYPE_DAC)
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// ADC 9: unassoc (new)
 	values[] = NaN
 	values[0][0][INDEP_HEADSTAGE] = 101112
-	keys[] = CreateLBNUnassocKey(key, 9, XOP_CHANNEL_TYPE_ADC)
+	keys[0][0][0] = CreateLBNUnassocKey(key, 9, XOP_CHANNEL_TYPE_ADC)
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// associated
 	values[] = NaN
 	values[0][0][0] = 192021
 	values[0][0][1] = 222324
-	keys[] = key
+	keys[0][0][0] = key
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	values[] = NaN
 	values[0][0][0] = V_CLAMP_MODE
-	keys[] = CLAMPMODE_ENTRY_KEY
+	keys[0][0][0] = CLAMPMODE_ENTRY_KEY
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// textual entries
@@ -239,20 +243,20 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	// DAC 5: unassoc (new)
 	valuesTxt[] = ""
 	valuesTxt[0][0][INDEP_HEADSTAGE] = "456"
-	keys[]= CreateLBNUnassocKey(keyTxt, 5, XOP_CHANNEL_TYPE_DAC)
+	keys[0]= CreateLBNUnassocKey(keyTxt, 5, XOP_CHANNEL_TYPE_DAC)
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// ADC 9: unassoc (new)
 	valuesTxT[] = ""
 	valuesTxT[0][0][INDEP_HEADSTAGE] = "101112"
-	keys[] = CreateLBNUnassocKey(keyTxt, 9, XOP_CHANNEL_TYPE_ADC)
+	keys[0][0][0] = CreateLBNUnassocKey(keyTxt, 9, XOP_CHANNEL_TYPE_ADC)
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// associated
 	valuesTxT[] = ""
 	valuesTxT[0][0][0] = "192021"
 	valuesTxT[0][0][1] = "222324"
-	keys[] = keyTxt
+	keys[0][0][0] = keyTxt
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	sweepNo = 2
@@ -260,35 +264,35 @@ Function [string key, string keyTxt] PrepareLBN_IGNORE(string device)
 	valuesDAC[]  = NaN
 	valuesDAC[0][0][0] = 2
 	valuesDAC[0][0][1] = 3
-	keys[] = "DAC"
+	keys[0][0][0] = "DAC"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	valuesADC[]  = NaN
 	valuesADC[0][0][0] = 6
 	valuesADC[0][0][1] = 7
-	keys[] = "ADC"
+	keys[0][0][0] = "ADC"
 	ED_AddEntriesToLabnotebook(valuesADC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	values[]  = 0
 	values[0][0][0] = 1
 	values[0][0][1] = 1
-	keys[] = "Headstage Active"
+	keys[0][0][0] = "Headstage Active"
 	ED_AddEntriesToLabnotebook(valuesDAC, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	values[] = NaN
 	values[0][0][0] = I_EQUAL_ZERO_MODE
-	keys[] = CLAMPMODE_ENTRY_KEY
+	keys[0][0][0] = CLAMPMODE_ENTRY_KEY
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	// indep headstage
 	values[] = NaN
 	values[0][0][INDEP_HEADSTAGE] = 252627
-	keys[] = key
+	keys[0][0][0] = key
 	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	valuesTxt[] = ""
 	valuesTxt[0][0][INDEP_HEADSTAGE] = "252627"
-	keys[] = keyTxt
+	keys[0][0][0] = keyTxt
 	ED_AddEntriesToLabnotebook(valuesTxt, keys, sweepNo, device, DATA_ACQUISITION_MODE)
 
 	return [key, keyTxt]
