@@ -731,10 +731,12 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 			SetAxis/W=$graph/A=2 $axis
 		endfor
 
-		Label/W=$graph $axis lbl
+		if(!IsEmpty(traceList))
+			Label/W=$graph $axis lbl
 
-		ModifyGraph/W=$graph lblPosMode = 1, standoff($axis) = 0, freePos($axis) = 0
-		ModifyGraph/W=$graph mode = 3
+			ModifyGraph/W=$graph lblPosMode = 1, standoff($axis) = 0, freePos($axis) = 0
+			ModifyGraph/W=$graph mode = 3
+		endif
 
 		LBV_UpdateLBGraphLegend(graph, traceList=traceList)
 	endfor
