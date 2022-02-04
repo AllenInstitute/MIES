@@ -219,6 +219,9 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	CheckBox check_BrowserSettings_VisEpochs WIN = $bsPanel, value=0, disable=0
 
+	// settings history
+	CheckBox check_limit_x_selected_sweeps WIN = $shPanel, value=0
+
 	sfFormula = BSP_GetSFFormula(device)
 	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps()\r)")
 

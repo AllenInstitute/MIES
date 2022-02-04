@@ -578,6 +578,11 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 	LBV_UpdateLBGraphLegend(graph, traceList=traceList)
 End
 
+Function LBV_Update(string win)
+
+	LBV_LimitXRangeToSelected(win)
+End
+
 Function LBV_UpdateTagsForTextualLBNEntries(string win, variable sweepNo)
 	string lbGraph, traceList, key, trace
 	variable i, numTraces
@@ -905,6 +910,8 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 	for(i = 0; i < numEntries; i += 1)
 		SetAxis/W=$graph/A $StringFromList(i, list)
 	endfor
+
+	LBV_LimitXRangeToSelected(graph)
 End
 
 /// @brief Check if the x wave belonging to the first trace in the
@@ -1115,4 +1122,82 @@ Function LBV_PlotAllAnalysisFunctionLBNKeys(string browser, variable anaFuncType
 
 	pa.popStr = "Stimset Acq Cycle ID"
 	LBV_PopMenuProc_LabNotebookAndResults(pa)
+End
+
+/// @brief Limit the bottom axis of the settings history graph to the selected/displayed sweeps
+static Function LBV_LimitXRangeToSelected(string browser)
+	variable minSweep, maxSweep, first, last
+	string graph, shPanel, scPanel, key
+
+	graph = LBV_GetLabNoteBookGraph(browser)
+
+	if(TUD_GetTraceCount(graph) == 0)
+		return NaN
+	endif
+
+	shPanel = LBV_GetSettingsHistoryPanel(browser)
+
+	if(!GetCheckBoxState(shPanel, "check_limit_x_selected_sweeps"))
+		return NaN
+	endif
+
+	WAVE/Z selectedSweeps = OVS_GetSelectedSweeps(browser, OVS_SWEEP_SELECTION_SWEEPNO)
+
+	if(!WaveExists(selectedSweeps))
+		scPanel = BSP_GetSweepControlsPanel(browser)
+		Make/FREE selectedSweeps = {GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")}
+	endif
+
+	[minSweep, maxSweep] = WaveMinAndMaxWrapper(selectedSweeps)
+
+	// display one more sweep on both sides
+	minSweep = max(0, minSweep - 1)
+	maxSweep  = maxSweep + 1
+
+	if(LBV_CheckIfXAxisIsTime(graph))
+		WAVE/T/Z numericalValues = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
+		ASSERT(WaveExists(numericalValues), "numericalValues can not be found")
+
+		// get the timestamps of minSweep/maxSweep, moving inwards if they are empty
+
+		// present since ec6c1ac6 (Labnotebook: Add UTC timestamps, 2015-09-18)
+		key = "TimeStampSinceIgorEpochUTC"
+
+		first = GetLastSettingIndep(numericalValues, minSweep, key, DATA_ACQUISITION_MODE)
+
+		if(IsNaN(first))
+			first = GetLastSettingIndep(numericalValues, minSweep + 1, key, DATA_ACQUISITION_MODE)
+		endif
+
+		last = GetLastSettingIndep(numericalValues, maxSweep, key, DATA_ACQUISITION_MODE)
+
+		if(IsNaN(last))
+			last = GetLastSettingIndep(numericalValues, maxSweep - 1, key, DATA_ACQUISITION_MODE)
+		endif
+
+		// convert to local time zone
+		first += date2secs(-1, -1, -1)
+		last  += date2secs(-1, -1, -1)
+
+		ASSERT(IsFinite(first) && IsFinite(last), "Invalid first/last")
+	else
+		first = minSweep
+		last  = maxSweep
+	endif
+
+	SetAxis/W=$graph bottom, first, last
+End
+
+Function LBV_CheckProc_XRangeSelected(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			if(cba.checked)
+				LBV_LimitXRangeToSelected(cba.win)
+			endif
+			break
+	endswitch
+
+	return 0
 End

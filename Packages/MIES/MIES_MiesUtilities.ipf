@@ -3747,6 +3747,8 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 
 	[tgs] = BSP_GatherTiledGraphSettings(graph)
 	LayoutGraph(graph, tgs)
+
+	LBV_Update(win)
 End
 
 static Function InitPostPlotSettings(win, pps)
