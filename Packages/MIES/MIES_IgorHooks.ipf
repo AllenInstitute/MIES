@@ -302,3 +302,30 @@ static Function AfterCompiledHook()
 End
 
 #endif
+
+Function IH_ResetScaling(struct WMWinHookStruct &s)
+	string activeSW, graph
+
+	switch(s.eventCode)
+		case 11: // keyboard
+			if(cmpstr(s.keyText, "A") || s.eventMod != 8)
+				break
+			endif
+
+			// Got Ctrl + A
+
+			graph = GetMainWindow(s.winName)
+			GetWindow $graph activeSW
+			activeSW = S_Value
+
+			if(IsEmpty(activeSW))
+				break
+			endif
+
+			SetAxis/W=$activeSW/A
+			break
+	endswitch
+
+	// return zero so that other hooks are called as well
+	return 0
+End
