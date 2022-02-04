@@ -1851,8 +1851,8 @@ threadsafe static Function NWB_AddSweepDataSets(numericalKeys, numericalValues, 
 	variable factor
 	string enabledProp
 
-	string lbl, unit
-	variable col
+	string unit
+	variable col, result
 
 	if(ParamIsDefault(factor))
 		factor = 1
@@ -1870,7 +1870,9 @@ threadsafe static Function NWB_AddSweepDataSets(numericalKeys, numericalValues, 
 		return NaN
 	endif
 
-	if(GetKeyWaveParameterAndUnit(numericalKeys, settingsProp, lbl, unit, col))
+	[result, unit, col] = LBN_GetEntryProperties(numericalKeys, settingsProp)
+
+	if(result)
 		AddProperty(tsp, nwbProp, values[headstage] * factor)
 	else
 		AddProperty(tsp, nwbProp, values[headstage] * factor, unit = unit)

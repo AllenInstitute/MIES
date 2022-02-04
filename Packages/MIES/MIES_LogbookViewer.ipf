@@ -746,12 +746,15 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 End
 
 static Function [WAVE/T/Z traces, string name, string unit, variable col] LBV_GetPropertiesForLabnotebookEntry(WAVE/T keys, string key)
+	variable result
 
-	if(GetKeyWaveParameterAndUnit(keys, key, name, unit, col))
+	[result, unit, col] = LBN_GetEntryProperties(keys, key)
+
+	if(result)
 		return [$"", "", "", NaN]
 	endif
 
-	[traces, name] = LBV_GenerateTraceNames(name, LABNOTEBOOK_LAYER_COUNT)
+	[traces, name] = LBV_GenerateTraceNames(key, LABNOTEBOOK_LAYER_COUNT)
 
 	return [traces, name, unit, col]
 End
