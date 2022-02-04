@@ -1075,3 +1075,44 @@ Function LBV_EntryDescription(STRUCT WMWinHookStruct &s)
 
 	return 0
 End
+
+Function LBV_PlotAllAnalysisFunctionLBNKeys(string browser, variable anaFuncType)
+	string key, graph, axes, prefix
+	variable i, numEntries
+
+	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+
+	WAVE/T/Z allKeys = LBV_GetAllLogbookKeys(numericalkeys, textualKeys)
+
+	if(!WaveExists(allKeys))
+		printf "Could not find any labnotebook keys.\r"
+		ControlWindowToFront()
+		return NaN
+	endif
+
+	// remove entries which would clutter everything
+	prefix = CreateAnaFuncLBNKey(anaFuncType, "%s", query = 1)
+	Make/FREE/T ignoredKeys = {prefix + " cycle x values"}
+
+	WAVE/T/Z anaFuncKeys = GrepTextWave(allKeys, prefix + "*")
+	WAVE/T/Z keys = GetSetDifference(anaFuncKeys, ignoredKeys)
+
+	STRUCT WMPopupAction pa
+	pa.win = LBV_GetSettingsHistoryPanel(browser)
+	pa.eventCode = 2
+
+	// add user entries from given analysis function
+	numEntries = DimSize(keys, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		pa.popStr = keys[i]
+		LBV_PopMenuProc_LabNotebookAndResults(pa)
+	endfor
+
+	// add interesting stock entries
+	pa.popStr = STIMSET_SCALE_FACTOR_KEY
+	LBV_PopMenuProc_LabNotebookAndResults(pa)
+
+	pa.popStr = "Stimset Acq Cycle ID"
+	LBV_PopMenuProc_LabNotebookAndResults(pa)
+End
