@@ -85,6 +85,7 @@ static StrConstant SF_OP_FINDLEVEL = "findlevel"
 static StrConstant SF_OP_EPOCHS = "epochs"
 static StrConstant SF_OP_TP = "tp"
 static StrConstant SF_OP_STORE = "store"
+static StrConstant SF_OP_SELECT = "select"
 
 static StrConstant SF_OP_EPOCHS_TYPE_RANGE = "range"
 static StrConstant SF_OP_EPOCHS_TYPE_NAME = "name"
@@ -764,6 +765,9 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 		case SF_OP_STORE:
 			WAVE out = SF_OperationStore(jsonId, jsonPath, graph)
 			break
+		case SF_OP_SELECT:
+			WAVE out = SF_OperationSelect(jsonId, jsonPath, graph)
+			break
 		default:
 			SF_ASSERT(0, "Undefined Operation", jsonId=jsonId)
 	endswitch
@@ -1054,7 +1058,322 @@ static Function SF_GetDAChannel(string graph, variable sweep, variable channelTy
 	return NaN
 End
 
-static Function/WAVE SF_GetSweepForFormula(string graph, WAVE range, WAVE channels, WAVE sweeps)
+static Function/WAVE SF_GetSelectDataForAll(string graph, WAVE activeChannels, WAVE sweeps)
+
+	variable i, j, numSweeps, sweepNo, cIndex, index
+	variable channelNr, channelType, numChannels, isSweepBrowser
+	string device, dataFolder
+
+	ASSERT(WindowExists(graph), "graph window does not exist")
+	SF_ASSERT(DimSize(activeChannels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
+	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+	numSweeps = DimSize(sweeps, ROWS)
+	numChannels = DimSize(activeChannels, ROWS)
+	if(!numSweeps || !numChannels)
+		return $""
+	endif
+
+	isSweepBrowser = BSP_IsSweepBrowser(graph)
+
+	if(isSweepBrowser)
+		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+		WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+	else
+		SF_ASSERT(BSP_HasBoundDevice(graph), "No device bound.")
+		device = BSP_GetDevice(graph)
+		DFREF deviceDFR = GetDeviceDataPath(device)
+	endif
+
+	WAVE selectData = SF_NewSelectDataWave(numSweeps, numChannels)
+
+	for(i = 0; i < numSweeps; i += 1)
+
+		sweepNo = sweeps[i]
+
+		if(isSweepBrowser)
+			cIndex = FindDimLabel(sweepMap, COLS, "Sweep")
+			FindValue/RMD=[][cIndex]/TEXT=num2istr(sweepNo)/TXOP=4 sweepMap
+			if(V_value == -1)
+				continue
+			endif
+			dataFolder = sweepMap[V_row][%DataFolder]
+			device     = sweepMap[V_row][%Device]
+			DFREF deviceDFR  = GetAnalysisSweepPath(dataFolder, device)
+		endif
+		DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
+
+		for(j = 0; j < numChannels; j += 1)
+
+			channelNr = activeChannels[j][%channelNumber]
+			channelType = activeChannels[j][%channelType]
+			WAVE/Z sweep = GetDAQDataSingleColumnWave(sweepDFR, channelType, channelNr)
+			if(!WaveExists(sweep))
+				continue
+			endif
+
+			selectData[index][%SWEEP] = sweepNo
+			selectData[index][%CHANNELTYPE] = channelType
+			selectData[index][%CHANNELNUMBER] = channelNr
+			index += 1
+		endfor
+	endfor
+	if(!index)
+		return $""
+	endif
+	Redimension/N=(index, -1) selectData
+
+	return selectData
+End
+
+static Function/WAVE SF_GetSelectDataForDisplayed(string graph, WAVE activeChannels, WAVE sweeps)
+
+	variable i, j, index
+	variable numSweeps, numChannels
+	variable sweepNo, channelNr
+	variable channelType = -1
+
+	ASSERT(WindowExists(graph), "graph window does not exist")
+	SF_ASSERT(DimSize(activeChannels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
+	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+
+	numSweeps = DimSize(sweeps, ROWS)
+	numChannels = DimSize(activeChannels, ROWS)
+	if(!numSweeps || !numChannels)
+		return $""
+	endif
+
+	WAVE/T/Z traces = GetTraceInfos(graph)
+	if(!WaveExists(traces))
+		DebugPrint("No traces found for extracting sweep wave locations.")
+		return $""
+	endif
+	SortColumns/A/DIML/KNDX={FindDimLabel(traces, COLS, "channelType"), FindDimLabel(traces, COLS, "channelNumber"), FindDimLabel(traces, COLS, "sweepNumber")} sortWaves=traces
+
+	WAVE selectData = SF_NewSelectDataWave(numSweeps, numChannels)
+
+	for(i = 0; i < numSweeps; i += 1)
+
+		sweepNo = sweeps[i]
+		WAVE/Z sweepListIndex = FindIndizes(traces, colLabel = "sweepNumber", var = sweepNo)
+		if(!WaveExists(sweepListIndex))
+			continue
+		endif
+
+		for(j = 0; j < numChannels; j += 1)
+
+			if(channelType != activeChannels[j][%channelType])
+				channelType = activeChannels[j][%channelType]
+				WAVE/Z channelTypeIndex = FindIndizes(traces, colLabel = "channelType", str = StringFromList(channelType, XOP_CHANNEL_NAMES))
+			endif
+			if(!WaveExists(channelTypeIndex))
+				continue
+			endif
+
+			channelNr = activeChannels[j][%channelNumber]
+			WAVE/Z channelNumberIndex = FindIndizes(traces, colLabel = "channelNumber", var = channelNr)
+			if(!WaveExists(channelNumberIndex))
+				continue
+			endif
+
+			// find matching index in @c traces wave
+			Concatenate/FREE {sweepListIndex, channelTypeIndex, channelNumberIndex}, indices
+			Redimension/N=(numpnts(indices))/E=1 indices
+			Sort indices, indices
+			Extract/FREE indices, matches, (p > 1 && (indices[p] == indices[p - 1]) && (indices[p] == indices[p - 2]))
+			WaveClear indices
+			if(DimSize(matches, ROWS) == 0)
+				continue
+			endif
+			SF_ASSERT(DimSize(matches, ROWS) == 1, "More than one matching sweep for this sweepNumber, channelType, and channelNumber combination.")
+			WaveClear matches
+
+			selectData[index][%SWEEP] = sweepNo
+			selectData[index][%CHANNELTYPE] = channelType
+			selectData[index][%CHANNELNUMBER] = channelNr
+			index += 1
+		endfor
+	endfor
+	if(!index)
+		return $""
+	endif
+	Redimension/N=(index, -1) selectData
+
+	return selectData
+End
+
+static Function/WAVE SF_GetSweepsForFormula(string graph, WAVE range, WAVE selectData)
+
+	variable i, j, rangeStart, rangeEnd, pOffset, delta, numRows, DAChannel, numSweeps, sweepNo
+	variable chanNr, chanType, numChannels, indexOffset, iStart, iLength, cIndex, isSweepBrowser
+	variable dimPos, numChannelTypes, numChannelNumbers, index
+	string dimLabel, device, dataFolder
+
+	ASSERT(WindowExists(graph), "graph window does not exist")
+	if(IsTextWave(range))
+		SF_ASSERT(DimSize(range, ROWS) == 1, "A epoch range must be a single string with the epoch name.")
+		WAVE/T wEpochName = range
+	else
+		SF_ASSERT(DimSize(range, ROWS) == 2, "A numerical range is must have two rows for range start and end.")
+	endif
+	if(SF_IsDefaultEmptyWave(selectData))
+		return $""
+	endif
+	SF_ASSERT(DimSize(selectData, COLS) == 3, "Select data must have 3 columns.")
+
+	WAVE/Z sweeps
+	WAVE/Z activeChannels
+	[sweeps, activeChannels] = SF_ReCreateOldSweepsChannelLayout(selectData)
+
+	numSweeps = DimSize(sweeps, ROWS)
+	numChannels = DimSize(activeChannels, ROWS)
+
+	if(DimSize(range, COLS) > 0)
+		SF_ASSERT(DimSize(range, COLS) == numSweeps, "Multidimensional range column size must equal number of sweeps.")
+		SF_ASSERT(DimSize(range, LAYERS) == numChannels, "Multidimensional range layers size must equal number of channels.")
+	endif
+
+	isSweepBrowser = BSP_IsSweepBrowser(graph)
+
+	if(isSweepBrowser)
+		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+		WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+	else
+		SF_ASSERT(BSP_HasBoundDevice(graph), "No device bound.")
+		device = BSP_GetDevice(graph)
+		DFREF deviceDFR = GetDeviceDataPath(device)
+	endif
+
+	Make/FREE/WAVE/N=(numSweeps, numChannels) sweepRefs
+	Make/FREE/U/I/N=(numSweeps, numChannels) indexStart, indexEnd
+
+	for(i = 0; i < numSweeps; i += 1)
+
+		sweepNo = sweeps[i]
+
+		if(isSweepBrowser)
+			cIndex = FindDimLabel(sweepMap, COLS, "Sweep")
+			FindValue/RMD=[][cIndex]/TEXT=num2istr(sweepNo)/TXOP=4 sweepMap
+			if(V_value == -1)
+				continue
+			endif
+			dataFolder = sweepMap[V_row][%DataFolder]
+			device     = sweepMap[V_row][%Device]
+			DFREF deviceDFR  = GetAnalysisSweepPath(dataFolder, device)
+		endif
+		DFREF sweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
+
+		for(j = 0; j < numChannels; j += 1)
+
+			chanNr = activeChannels[j][%channelNumber]
+			chanType = activeChannels[j][%channelType]
+			WAVE/Z sweep = GetDAQDataSingleColumnWave(sweepDFR, chanType, chanNr)
+			if(!WaveExists(sweep))
+				continue
+			endif
+
+			if(delta == 0)
+				delta = DimDelta(sweep, ROWS)
+			else
+				SF_ASSERT(delta == DimDelta(sweep, ROWS), "Sweeps have not the same delta.")
+			endif
+
+			if(WaveExists(wEpochName))
+				DAChannel = SF_GetDAChannel(graph, sweepNo, chanType, chanNr)
+				WAVE range = SF_GetRangeFromEpoch(graph, wEpochName[0], sweepNo, DAChannel)
+			endif
+
+			if(DimSize(range, COLS) > 0)
+				rangeStart = range[0][i][j]
+				rangeEnd = range[1][i][j]
+			else
+				rangeStart = range[0]
+				rangeEnd = range[1]
+			endif
+			SF_ASSERT(!IsNaN(rangeStart) && !IsNaN(rangeEnd), "Specified range not valid.")
+			SF_ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range not inside sweep " + num2istr(sweepNo) + ".")
+			SF_ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range not inside sweep " + num2istr(sweepNo) + ".")
+
+			indexStart[i][j] = ScaleToIndexWrapper(sweep, rangeStart, ROWS)
+			indexEnd[i][j] = ScaleToIndexWrapper(sweep, rangeEnd, ROWS)
+			sweepRefs[i][j] = sweep
+		endfor
+	endfor
+
+	indexOffset = WaveMin(indexStart)
+	numRows = WaveMax(indexEnd) + 1 - indexOffset
+
+	// combine sweeps to data wave
+	Make/FREE/N=(numRows, numSweeps, numChannels) sweepData = NaN
+	SetScale/P x, indexOffset * delta, delta, sweepData
+	for(i = 0; i < numSweeps; i += 1)
+		for(j = 0; j < numChannels; j += 1)
+
+			WAVE/Z sweep = sweepRefs[i][j]
+			if(!WaveExists(sweep))
+				continue
+			endif
+
+			iStart = indexStart[i][j]
+			iLength = indexEnd[i][j] - iStart
+			pOffset = iStart - indexOffset
+			MultiThread sweepData[pOffset, pOffset + iLength][i][j] = sweep[iStart + p - pOffset]
+
+			if(i == 0)
+				dimLabel = StringFromList(activeChannels[j][%channelType], XOP_CHANNEL_NAMES) + num2istr(activeChannels[j][%channelNumber])
+				SetDimLabel LAYERS, j, $dimLabel, sweepData
+			endif
+		endfor
+
+		sprintf dimLabel, "sweep%d", sweeps[i]
+		SetDimLabel COLS, i, $dimLabel, sweepData
+	endfor
+
+	return sweepData
+End
+
+/// @brief Returns the Unique numeric entries as free 1d wave from a column of a 2d wave, where the column is identified by its dimension label
+static Function/WAVE SF_GetReducedColumn(WAVE w, string dimLabel)
+
+	variable dimPos
+
+	dimPos = FindDimLabel(w, COLS, dimLabel)
+	SF_ASSERT(dimPos >= 0, "Columns with dimLabel " + dimlabel + " not found.")
+	Duplicate/FREE/RMD=[][dimPos] w, wTmp
+	Redimension/N=(-1) wTmp
+
+	WAVE wReduced = GetUniqueEntries(wTmp)
+
+	return wReduced
+End
+
+/// @brief Converts from a 1d wave of selected sweeps/channel type/channel number to a 2d wave that
+///        holds the old channel layout where all selected channel type + channel number combinations appear exactly once
+///        independent of the sweep number.
+///        Converts also from a 1d wave of selected sweeps/channel type/channel to a 1d wave that
+///        holds the old sweeps layout, where all selected sweep numbers appear exactly once.
+///        Note: The association between sweep and channel type + channel number in the original selectData is lost by this back conversion.
+static Function [WAVE sweeps, WAVE/D channels] SF_ReCreateOldSweepsChannelLayout(WAVE selectData)
+
+	variable numSelected, numCombined
+	variable shift = ceil(log(NUM_AD_CHANNELS) / log(2))
+
+	WAVE sweepsReduced = SF_GetReducedColumn(selectData, "SWEEP")
+
+	numSelected = DimSize(selectData, ROWS)
+	Make/FREE/D/N=(numSelected) combined = selectData[p][%CHANNELTYPE] << shift + selectData[p][%CHANNELNUMBER]
+	WAVE combReduced = GetUniqueEntries(combined)
+
+	numCombined = DimSize(combReduced, ROWS)
+	WAVE channels = SF_NewChannelsWave(numCombined)
+	if(numCombined)
+		channels[][%channelType] = combReduced[p] >> shift
+		channels[][%channelNumber] = combReduced[p] - channels[p][%channelType] << shift
+	endif
+
+	return [sweepsReduced, channels]
+End
+
+static Function/WAVE SF_GetSweepForFormulaOld(string graph, WAVE range, WAVE channels, WAVE sweeps)
 
 	variable i, j, rangeStart, rangeEnd, pOffset, delta, numRows, DAChannel, numSweeps, sweepNo
 	variable chanNr, chanType, numChannels, indexOffset, iStart, iLength, cIndex, isSweepBrowser
@@ -1758,7 +2077,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 		for(j = 0; j < activeChannelCnt; j += 1)
 
 			singleChannel[0][] = activeChannels[j][q]
-			WAVE/Z sweepData = SF_GetSweepForFormula(graph, {-Inf, Inf}, singleChannel, {sweep})
+			WAVE/Z sweepData = SF_GetSweepForFormulaOld(graph, {-Inf, Inf}, singleChannel, {sweep})
 			if(!WaveExists(sweepData))
 				continue
 			endif
@@ -2404,12 +2723,60 @@ static Function/WAVE SF_OperationSweeps(variable jsonId, string jsonPath, string
 	return out
 End
 
-/// `data(array range,array channels,array sweeps)`
+/// `select(array channels, array sweeps, [string mode])`
 ///
-/// returns [[sweeps][channel]] for all [sweeps] in list sweepNumbers, grouped by channels
+/// returns n x 3 with columns [sweepNr][channelType][channelNr]
+static Function/WAVE SF_OperationSelect(variable jsonId, string jsonPath, string graph)
+
+	variable numIndices
+	string mode
+
+	numIndices = JSON_GetArraySize(jsonID, jsonPath)
+
+	SF_ASSERT(numIndices >= 2 && numIndices <= 3, "Function requires 2 or 3 arguments.")
+	SF_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
+	WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
+
+	WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+
+	if(numIndices == 3)
+		WAVE/T wMode = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+		SF_ASSERT(IsTextWave(wMode), "mode parameter can not be a number. Use \"all\" or \"displayed\".")
+		SF_ASSERT(!DimSize(wMode, COLS) && DimSize(wMode, ROWS) == 1, "mode must be either displayed or all.")
+		mode = wMode[0]
+	else
+		mode = "displayed"
+	endif
+
+	WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, DATA_ACQUISITION_MODE)
+
+	if(!CmpStr(mode, "all"))
+		WAVE/Z out = SF_GetSelectDataForAll(graph, activeChannels, sweeps)
+	else
+		WAVE/Z out = SF_GetSelectDataForDisplayed(graph, activeChannels, sweeps)
+	endif
+
+	if(!WaveExists(out))
+		DebugPrint("Call to SF_GetSweepNumbersForSelect returned no results")
+		WAVE out = SF_GetDefaultEmptyWave()
+	endif
+
+	return out
+End
+
+/// `data(array range, array selectData)`
+///
+/// returns [sweepData][sweeps][channelTypeNumber] for all sweeps selected by selectData
 static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string graph)
 
+	variable numIndices
+
+	numIndices = JSON_GetArraySize(jsonID, jsonPath)
+
 	SF_ASSERT(!IsEmpty(graph), "Graph for extracting sweeps not specified.")
+	SF_ASSERT(numIndices == 2, "Function requires 2 arguments.")
 
 	WAVE range = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
 	if(IsTextWave(range))
@@ -2419,18 +2786,17 @@ static Function/WAVE SF_OperationData(variable jsonId, string jsonPath, string g
 		range[][][] = !IsNaN(range[p][q][r]) ? range[p][q][r] : (p == 0 ? -1 : 1) * inf
 	endif
 
-	WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
-	SF_ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
+	WAVE selectData = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+	if(SF_IsDefaultEmptyWave(selectData))
+		return selectData
+	endif
+	SF_ASSERT(DimSize(selectData, COLS) == 3, "A select input has 3 columns.")
+	SF_ASSERT(IsNumericWave(selectData), "select parameter must be numeric")
 
-	WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
-	SF_ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
-
-	WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, DATA_ACQUISITION_MODE)
-
-	WAVE/Z out = SF_GetSweepForFormula(graph, range, activeChannels, sweeps)
+	WAVE/Z out = SF_GetSweepsForFormula(graph, range, selectData)
 	if(!WaveExists(out))
-		DebugPrint("Call to SF_GetSweepForFormula returned no results")
-		Make/FREE/N=1 out = {NaN}
+		DebugPrint("Call to SF_GetSweepsForFormula returned no results")
+		WAVE out = SF_GetDefaultEmptyWave()
 	endif
 
 	return out
@@ -2761,11 +3127,38 @@ static Function/WAVE SF_NewChannelsWave(variable size)
 	return out
 End
 
+/// @brief Create a new selectData wave
+///        The row counts the selected combinations of sweep, channel type, channel number
+///        The three columns per row store the sweep number, channel type, channel number
+static Function/WAVE SF_NewSelectDataWave(variable numSweeps, variable numChannels)
+
+	ASSERT(numSweeps >= 0 && numChannels >= 0, "Invalid wave size specified")
+
+	Make/FREE/D/N=(numSweeps * numChannels, 3) selectData
+	SetDimLabel COLS, 0, SWEEP, selectData
+	SetDimLabel COLS, 1, CHANNELTYPE, selectData
+	SetDimLabel COLS, 2, CHANNELNUMBER, selectData
+
+	return selectData
+End
+
 static Function/WAVE SF_GetDefaultEmptyWave()
 
 	Make/FREE/D/N=1 out = NaN
 
 	return out
+End
+
+/// @brief Returns a wave that is the default for SweepFormula for "no return value"
+///        The wave is numeric, consists of one element that is {NaN}.
+///        This effectively represent a JSON_NULL: {null}
+static Function SF_IsDefaultEmptyWave(WAVE w)
+
+	if(IsNumericWave(w) && DimSize(w, ROWS) == 1 && !DimSize(w, COLS))
+		return IsNaN(w[0])
+	endif
+
+	return 0
 End
 
 static Function/WAVE SF_AverageTPFromSweep(WAVE/T epochMatches, WAVE sweepData)
