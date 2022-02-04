@@ -66,7 +66,7 @@ Function FFI_GetJSONTemplate(string device, variable headstage)
 	JSON_AddString(jsonID, "device", device)
 	JSON_AddVariable(jsonID, "headstage", headstage)
 	JSON_AddString(jsonID, "timestamp", GetISO8601TimeStamp())
-	JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(device))
+	JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(device, allowFallback = 1))
 
 	return jsonID
 End
