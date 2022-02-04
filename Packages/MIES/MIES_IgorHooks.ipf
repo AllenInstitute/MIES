@@ -304,7 +304,8 @@ End
 #endif
 
 Function IH_ResetScaling(struct WMWinHookStruct &s)
-	string activeSW, graph
+	string activeSW, graph, list, win
+	variable i, numEntries
 
 	switch(s.eventCode)
 		case 11: // keyboard
@@ -314,15 +315,29 @@ Function IH_ResetScaling(struct WMWinHookStruct &s)
 
 			// Got Ctrl + A
 
+			// first try if the selected window is a graph
+
 			graph = GetMainWindow(s.winName)
 			GetWindow $graph activeSW
 			activeSW = S_Value
 
-			if(IsEmpty(activeSW))
+			if(WinType(activeSW) == WINTYPE_GRAPH)
+				SetAxis/W=$activeSW/A
 				break
 			endif
 
-			SetAxis/W=$activeSW/A
+			// if not we rescale all subgraphs
+			list = GetAllWindows(graph)
+			numEntries = ItemsInList(list)
+			for(i = 0; i < numEntries; i += 1)
+				win = StringFromList(i, list)
+
+				if(WinType(win) != WINTYPE_GRAPH)
+					continue
+				endif
+
+				SetAxis/W=$win/A
+			endfor
 			break
 	endswitch
 
