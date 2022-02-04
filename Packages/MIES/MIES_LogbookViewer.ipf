@@ -737,9 +737,10 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 			ModifyGraph/W=$graph lblPosMode = 1, standoff($axis) = 0, freePos($axis) = 0
 			ModifyGraph/W=$graph mode = 3
 		endif
-
-		LBV_UpdateLBGraphLegend(graph, traceList=traceList)
 	endfor
+
+	WAVE/Z allTraces = TUD_GetUserDataAsWave(graph, "traceName")
+	LBV_UpdateLBGraphLegend(graph, traceList=TextWaveToList(allTraces, ";"))
 
 	LBV_SetLabNotebookBottomLabel(graph, isTimeAxis)
 	EquallySpaceAxis(graph, axisRegExp= ".*" + VERT_AXIS_BASE_NAME + ".*", sortOrder = 16)
