@@ -201,23 +201,6 @@ Function LBV_CloseSettingsHistoryHook(STRUCT WMWinHookStruct &s)
 	return 0
 End
 
-Function LBV_ButtonProc_AutoScale(STRUCT WMButtonAction &ba) : ButtonControl
-	string win, lbGraph
-
-	switch(ba.eventcode)
-		case 2: // mouse up
-			win     = ba.win
-			lbGraph = LBV_GetLabNotebookGraph(win)
-
-			if(WindowExists(lbGraph))
-				SetAxis/A=2/W=$lbGraph
-			endif
-			break
-	endswitch
-
-	return 0
-End
-
 Function LBV_ButtonProc_ClearGraph(STRUCT WMButtonAction &ba) : ButtonControl
 
 	switch(ba.eventCode)

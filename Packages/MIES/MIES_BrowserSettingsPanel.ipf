@@ -1476,6 +1476,7 @@ Function BSP_DynamicSettingsHistory(string win)
 
 	SetWindow $shPanel, hook(main)=DB_CloseSettingsHistoryHook
 	SetWindow $shPanel, hook(description)=LBV_EntryDescription
+	SetWindow $shPanel, hook(resetScaling)=IH_ResetScaling
 End
 
 /// @brief Unsets all control properties that are set in DB_DynamicSettingsHistory
@@ -1488,6 +1489,7 @@ Function BSP_UnsetDynamicSettingsHistory(win)
 	ASSERT(WindowExists(shPanel), "external SettingsHistory panel not found")
 	SetWindow $shPanel, hook(main)=$""
 	SetWindow $shPanel, hook(description)=$""
+	SetWindow $shPanel, hook(resetScaling)=$""
 End
 
 Function BSP_UnHideSettingsHistory(win)

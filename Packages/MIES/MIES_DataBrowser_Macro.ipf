@@ -1322,12 +1322,6 @@ Window DataBrowser() : Graph
 	Button button_switchxaxis,userdata(ResizeControlsInfo)=A"!!,I]!!#@r!!#?Y!!#=+z!!#N3Bk1ct<C^(W9`P.nzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
-	Button button_DataBrowser_setaxis,pos={401.00,171.00},size={171.00,25.00},proc=LBV_ButtonProc_AutoScale
-	Button button_DataBrowser_setaxis,title="Autoscale"
-	Button button_DataBrowser_setaxis,help={"Autoscale sweep data"}
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)=A"!!,I.J,hqe!!#A:!!#=+z!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du_\"OASGdjF8u:@zzzzzzzzzzzz!!!"
 	GroupBox group_labnotebook_experiment_device,pos={403.00,5.00},size={173.00,55.00}
 	GroupBox group_labnotebook_experiment_device,userdata(ResizeControlsInfo)=A"!!,I/J,hj-!!#A<!!#>jz!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	GroupBox group_labnotebook_experiment_device,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
