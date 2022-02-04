@@ -59,6 +59,10 @@ End
 /// @brief Returns the list of LNB keys for the settings history window menu
 Function/WAVE LBV_PopupExtGetLBKeys(string win)
 
+	if(!BSP_HasBoundDevice(win))
+		return $""
+	endif
+
 	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 
@@ -69,6 +73,10 @@ End
 
 /// @brief Returns the list of results keys for the settings history window menu
 Function/WAVE LBV_PopupExtGetResultsKeys(string win)
+
+	if(!BSP_HasBoundDevice(win))
+		return $""
+	endif
 
 	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
