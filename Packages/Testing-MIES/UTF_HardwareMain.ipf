@@ -1129,8 +1129,29 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 
 	CheckAnaFuncVersion(device, type)
 	CheckDashboard(device, headstageQC)
+	CheckPublishedMessage(device, type)
 
 	CheckUserEpochsFromChunks(device)
+End
+
+Function CheckPublishedMessage(string device, variable type)
+	string expectedFilter, msg
+	variable jsonID
+
+	switch(type)
+		case PSQ_PIPETTE_BATH:
+			expectedFilter = ANALYSIS_FUNCTION_PB
+			break
+		default:
+			PASS()
+			return NaN
+	endswitch
+
+	msg = FetchPublishedMessage(expectedFilter)
+	CHECK_PROPER_STR(msg)
+	jsonID = JSON_Parse(msg)
+	CHECK_GE_VAR(jsonID, 0)
+	JSON_Release(jsonID)
 End
 
 Function AddLabnotebookEntries_IGNORE(s)

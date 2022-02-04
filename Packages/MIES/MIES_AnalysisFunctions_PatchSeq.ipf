@@ -4469,6 +4469,8 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
+			PSQ_PB_Publish(device, s.sweepNo, s.headstage)
+
 			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
@@ -4623,4 +4625,115 @@ static Function PSQ_PB_CreateTestpulseEpochs(string device, variable headstage)
 	endfor
 
 	return numTestPulses
+End
+
+static Function PSQ_AddLabnotebookEntriesToJSON(variable jsonID, WAVE values, WAVE keys, variable sweepNo, string key, variable headstage, variable labnotebookLayer)
+	variable result, col
+	string unit, path
+
+	ASSERT(IsNumericWave(values), "Only supporting numeric values for now")
+
+	if(labnotebookLayer == INDEP_HEADSTAGE)
+		WAVE/Z settings = GetLastSettingIndepEachSCI(values, sweepNo, key, headstage, UNKNOWN_MODE)
+	else
+		WAVE/Z settings = GetLastSettingEachSCI(values, sweepNo, key, headstage, UNKNOWN_MODE)
+	endif
+
+	if(!WaveExists(settings))
+		WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(values, sweepNo, headstage)
+		ASSERT(WaveExists(sweeps), "No sweeps in current SCI")
+
+		Make/FREE/N=(DimSize(sweeps, ROWS)) settings = NaN
+	endif
+
+	path = "/results/" + key
+
+	JSON_AddTreeObject(jsonID, path)
+	JSON_AddWave(jsonID, path + "/value", settings)
+
+	[result, unit, col] = LBN_GetEntryProperties(keys, key)
+	JSON_AddString(jsonID, path + "/unit", SelectString(result, unit, ""))
+End
+
+/// @brief Published message in POST_SET_EVENT for the analysis function PSQ_PipetteInBath()
+///
+/// Keys under `/results` are labnotebook keys. The arrays under
+/// `/results/XXX/values` are the values for each sweep in the stimset cycle.
+/// This array has currently always one entry as #PSQ_PB_NUM_SWEEPS_PASS is one.
+/// The encoding is UTF-8.
+///
+/// Example:
+///
+/// \rst
+/// .. code-block: json
+///    {
+///     "device": "my_device",
+///     "headstage": 0,
+///     "results": {
+///       "USER_Pipette in Bath Chk0 Leak Current BL": {
+///         "unit": "Amperes",
+///         "value": [
+///           123.0
+///         ]
+///       },
+///       "USER_Pipette in Bath Chk0 Leak Current BL QC": {
+///         "unit": "On/Off",
+///         "value": [
+///           0.0
+///         ]
+///       },
+///       "USER_Pipette in Bath Set QC": {
+///         "unit": "On/Off",
+///         "value": [
+///           1.0
+///         ]
+///       },
+///       "USER_Pipette in Bath pipette resistance": {
+///         "unit": "Ω",
+///         "value": [
+///           456.0
+///         ]
+///       },
+///       "USER_Pipette in Bath pipette resistance QC": {
+///         "unit": "On/Off",
+///         "value": [
+///           1.0
+///         ]
+///       }
+///     },
+///     "sweep number": "NaN",
+///     "timestamp": "2022-02-10T20:48:22Z"
+///    }
+///
+/// .. Output created with Tests/CheckPipetteInBathPublishing.
+///
+/// \endrst
+static Function PSQ_PB_Publish(string device, variable sweepNo, variable headstage)
+	variable jsonID
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE numericalKeys   = GetLBNumericalKeys(device)
+
+	jsonID = FFI_GetJSONTemplate(device, headstage)
+
+	JSON_AddTreeObject(jsonID, "/results")
+
+	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_SET_PASS, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, headstage)
+
+	// assumes that we only have one chunk
+	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_LEAKCUR, chunk = 0, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, headstage)
+
+	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE_PASS, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	FFI_Publish(jsonID, ANALYSIS_FUNCTION_PB)
 End

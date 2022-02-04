@@ -1593,6 +1593,7 @@ StrConstant PRESSURE_BREAKIN_FILTER       = "pressure:break in"
 StrConstant AUTO_TP_FILTER                = "testpulse:autotune result"
 StrConstant AMPLIFIER_CLAMP_MODE_FILTER   = "amplifier:clamp mode"
 StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE = "amplifier:auto bridge balance"
+StrConstant ANALYSIS_FUNCTION_PB          = "analysis function:pipette in bath"
 /// @}
 
 /// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.

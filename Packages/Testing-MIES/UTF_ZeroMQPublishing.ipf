@@ -201,3 +201,74 @@ static Function CheckAutoTPPublishing()
 
 	JSON_Release(jsonID)
 End
+
+static Function CheckPipetteInBathPublishing()
+	string device, msg, expected, actual
+	variable headstage, i, jsonID, value, sweepNo
+
+	WaitForPubSubHeartbeat()
+
+	device = "my_device"
+	headstage = 0
+	sweepNo = 0
+
+	// BEGIN required entries
+	ED_AddEntryToLabnotebook(device, "Pipette in Bath Set QC", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(device, "Pipette in Bath Chk0 Leak Current BL QC", {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(device, "Pipette in Bath Chk0 Leak Current BL", {123, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, unit = "Amperes", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(device, "Pipette in Bath pipette resistance", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 456}, unit = "Ω", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(device, "Pipette in Bath pipette resistance QC", {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 1}, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
+
+	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values = NaN
+	Make/T/FREE/N=(3, 1, 1) keys
+
+	values[headstage] = GetUniqueInteger()
+	keys[0][0][0] = STIMSET_ACQ_CYCLE_ID_KEY
+	keys[2][0][0] = "1"
+
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, device, DATA_ACQUISITION_MODE)
+	// END required entries
+
+	MIES_PSQ#PSQ_PB_Publish(device, sweepNo, headstage)
+
+	msg = FetchPublishedMessage(ANALYSIS_FUNCTION_PB)
+
+	jsonID = JSON_Parse(msg)
+
+	expected = LABNOTEBOOK_BINARY_UNIT
+	actual   = JSON_GetString(jsonID, "/results/USER_Pipette in Bath Set QC/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Pipette in Bath Set QC/value")
+	CHECK_EQUAL_WAVES(entries, {1}, mode = WAVE_DATA)
+
+	expected = LABNOTEBOOK_BINARY_UNIT
+	actual   = JSON_GetString(jsonID, "/results/USER_Pipette in Bath Chk0 Leak Current BL QC/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Pipette in Bath Chk0 Leak Current BL QC/value")
+	CHECK_EQUAL_WAVES(entries, {0}, mode = WAVE_DATA)
+
+	expected = "Amperes"
+	actual   = JSON_GetString(jsonID, "/results/USER_Pipette in Bath Chk0 Leak Current BL/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Pipette in Bath Chk0 Leak Current BL/value")
+	CHECK_EQUAL_WAVES(entries, {123}, mode = WAVE_DATA)
+
+	expected = "Ω"
+	actual = JSON_GetString(jsonID, "/results/USER_Pipette in Bath pipette resistance/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Pipette in Bath pipette resistance/value")
+	CHECK_EQUAL_WAVES(entries, {456}, mode = WAVE_DATA)
+
+	expected = LABNOTEBOOK_BINARY_UNIT
+	actual = JSON_GetString(jsonID, "/results/USER_Pipette in Bath pipette resistance QC/unit")
+	CHECK_EQUAL_STR(actual, expected)
+
+	WAVE/Z entries = JSON_GetWave(jsonID, "/results/USER_Pipette in Bath pipette resistance QC/value")
+	CHECK_EQUAL_WAVES(entries, {1}, mode = WAVE_DATA)
+
+	JSON_Release(jsonID)
+End

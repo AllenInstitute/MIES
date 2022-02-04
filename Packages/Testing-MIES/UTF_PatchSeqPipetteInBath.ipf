@@ -76,6 +76,13 @@ static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLA
 
 	OpenDatabrowser()
 
+	StartZeroMQSockets(forceRestart = 1)
+
+	zeromq_sub_add_filter("")
+	zeromq_sub_connect("tcp://127.0.0.1:" + num2str(ZEROMQ_BIND_PUB_PORT))
+
+	WaitForPubSubHeartbeat()
+
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
