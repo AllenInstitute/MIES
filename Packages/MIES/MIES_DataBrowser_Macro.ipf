@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(699,80,1210.5,515.75)/K=1  as "DataBrowser"
+	Display /W=(659.25,40.25,1043.25,367.25)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel
 	Button button_BSP_open,title="<<",help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)=A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -22,14 +22,14 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,hook(traceUserDataCleanup)=TUD_RemoveUserDataWave
 	SetWindow kwTopWin,hook(sweepScrolling)=BSP_SweepsAndMouseWheel
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(BROWSER)= "D"
-	SetWindow kwTopWin,userdata(DEVICE)= "- none -"
-	SetWindow kwTopWin,userdata(Config_PanelType)= "DataBrowser"
+	SetWindow kwTopWin,userdata(BROWSER)="D"
+	SetWindow kwTopWin,userdata(DEVICE)="- none -"
+	SetWindow kwTopWin,userdata(Config_PanelType)="DataBrowser"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#Cd^]6aThuE`Wzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)= "1"
-	SetWindow kwTopWin,userdata(JSONSettings_WindowName)= "datasweepbrowser"
+	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)="1"
+	SetWindow kwTopWin,userdata(JSONSettings_WindowName)="datasweepbrowser"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={383.25,326.25,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewPanel/HOST=#/EXT=2/W=(0,0,580,70)  as "Sweep Control"
 	Button button_SweepControl_NextSweep,pos={331.00,4.00},size={150.00,36.00},proc=BSP_ButtonProc_ChangeSweep
@@ -112,7 +112,7 @@ Window DataBrowser() : Graph
 	GroupBox group_channels,userdata(ResizeControlsInfo)=A"!!,EL!!#=;!!#BH!!#?%z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_channels,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_channels,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_properties_sweepFormula,pos={5.00,85.00},size={475.00,499.00},disable=1
+	GroupBox group_properties_sweepFormula,pos={5.00,85.00},size={475.00,499.00},disable=3
 	GroupBox group_properties_sweepFormula,userdata(tabnum)="5"
 	GroupBox group_properties_sweepFormula,userdata(tabcontrol)="Settings"
 	GroupBox group_properties_sweepFormula,userdata(ResizeControlsInfo)=A"!!,?X!!#?c!!#CRJ,ht4J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
@@ -947,14 +947,14 @@ Window DataBrowser() : Graph
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)=A"!!,EP!!#BPJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="- none -",value=#"DB_GetAllDevicesWithData()"
 	GroupBox group_enable_sweepFormula,pos={5.00,25.00},size={475.00,50.00},disable=1
 	GroupBox group_enable_sweepFormula,title="SweepFormula",userdata(tabnum)="5"
 	GroupBox group_enable_sweepFormula,userdata(tabcontrol)="Settings"
 	GroupBox group_enable_sweepFormula,userdata(ResizeControlsInfo)=A"!!,?X!!#=+!!#CRJ,ho,z!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	GroupBox group_enable_sweepFormula,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#N3Bk1ctAStpcCh5qOGZ8U#zzzzzzzz"
 	GroupBox group_enable_sweepFormula,userdata(ResizeControlsInfo)+=A"zzz!!#N3Bk1ctAStpcCh5qOGX?=jFDl!rzzzzzzzzzz!!!"
-	SetVariable setvar_sweepFormula_parseResult,pos={28.00,535.00},size={446.00,18.00},disable=1
+	SetVariable setvar_sweepFormula_parseResult,pos={28.00,535.00},size={446.00,18.00},disable=3
 	SetVariable setvar_sweepFormula_parseResult,userdata(tabnum)="5"
 	SetVariable setvar_sweepFormula_parseResult,userdata(tabcontrol)="Settings"
 	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo)=A"!!,CD!!#Cj^]6aZ!!#<Hz!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
@@ -962,7 +962,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_sweepFormula_parseResult,frame=0
 	SetVariable setvar_sweepFormula_parseResult,limits={-inf,inf,0},value=_STR:"",noedit=1,live=1
-	ValDisplay status_sweepFormula_parser,pos={14.00,541.00},size={10.00,8.00},bodyWidth=10,disable=1
+	ValDisplay status_sweepFormula_parser,pos={14.00,541.00},size={10.00,8.00},bodyWidth=10,disable=3
 	ValDisplay status_sweepFormula_parser,help={"Current parsing status of the entered formula."}
 	ValDisplay status_sweepFormula_parser,userdata(tabnum)="5"
 	ValDisplay status_sweepFormula_parser,userdata(tabcontrol)="Settings"
@@ -971,7 +971,7 @@ Window DataBrowser() : Graph
 	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ValDisplay status_sweepFormula_parser,limits={-1,1,0},barmisc={0,0},mode=1,highColor=(0,65535,0),lowColor=(0,0,0),zeroColor=(65535,0,0)
 	ValDisplay status_sweepFormula_parser,value=#"1"
-	Button button_sweepFormula_display,pos={9.00,553.00},size={51.00,22.00},disable=1,proc=SF_button_sweepFormula_display
+	Button button_sweepFormula_display,pos={9.00,553.00},size={51.00,22.00},disable=3,proc=SF_button_sweepFormula_display
 	Button button_sweepFormula_display,title="Display"
 	Button button_sweepFormula_display,help={"Display the given sweep formula in a graph"}
 	Button button_sweepFormula_display,userdata(tabnum)="5"
@@ -979,7 +979,7 @@ Window DataBrowser() : Graph
 	Button button_sweepFormula_display,userdata(ResizeControlsInfo)=A"!!,@s!!#Co5QF,E!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_display,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_display,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	Button button_sweepFormula_check,pos={65.00,553.00},size={46.00,22.00},disable=1,proc=SF_button_sweepFormula_check
+	Button button_sweepFormula_check,pos={65.00,553.00},size={46.00,22.00},disable=3,proc=SF_button_sweepFormula_check
 	Button button_sweepFormula_check,title="Check"
 	Button button_sweepFormula_check,help={"Check the sweep formula for syntax errors"}
 	Button button_sweepFormula_check,userdata(tabnum)="5"
@@ -1216,7 +1216,7 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_VisEpochs,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_VisEpochs,userdata(Config_RestorePriority)="20"
 	CheckBox check_BrowserSettings_VisEpochs,value=0
-	Button button_sweepFormula_tofront,pos={115.00,553.00},size={51.00,22.00},disable=1,proc=SF_button_sweepFormula_tofront
+	Button button_sweepFormula_tofront,pos={115.00,553.00},size={51.00,22.00},disable=3,proc=SF_button_sweepFormula_tofront
 	Button button_sweepFormula_tofront,title="To Front"
 	Button button_sweepFormula_tofront,help={"Check the sweep formula for syntax errors"}
 	Button button_sweepFormula_tofront,userdata(ResizeControlsInfo)=A"!!,FK!!#Co5QF,E!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
@@ -1224,13 +1224,16 @@ Window DataBrowser() : Graph
 	Button button_sweepFormula_tofront,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	Button button_sweepFormula_tofront,userdata(tabnum)="5"
 	Button button_sweepFormula_tofront,userdata(tabcontrol)="Settings"
-	Button button_sweepformula_all_code,pos={275.00,550.00},size={195.00,19.00},disable=1,bodyWidth=80,proc=PEXT_ButtonProc
+	Button button_sweepformula_all_code,pos={275.00,550.00},size={195.00,19.00},bodyWidth=80,disable=3,proc=PEXT_ButtonProc
 	Button button_sweepformula_all_code,title="Formerly executed code ▼"
 	Button button_sweepformula_all_code,help={"All formerly executed code from this session can be executed again by selecting it."}
 	Button button_sweepformula_all_code,userdata(popupProc)="SF_PopMenuProc_OldCode"
 	Button button_sweepformula_all_code,userdata(Items)="SF_GetAllOldCodeForGUI"
 	Button button_sweepformula_all_code,userdata(tabnum)="5"
 	Button button_sweepformula_all_code,userdata(tabcontrol)="Settings"
+	Button button_sweepformula_all_code,userdata(ResizeControlsInfo)=A"!!,HDJ,htDJ,hr(!!#<Pz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
+	Button button_sweepformula_all_code,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	Button button_sweepformula_all_code,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	DefineGuide UGVL={FL,15},UGVR={FR,-20},UGVT={FT,113},UGVB={FB,-50},enableBoxTop={FT,25}
 	DefineGuide enableBoxBottom={enableBoxTop,50},MainBoxBottom={FB,3},MainBoxTop={enableBoxBottom,10}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -1238,22 +1241,22 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#CX!!#D\"5QCcazzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin,userdata(ResizeControlsGuides)= "UGVL;UGVR;UGVT;UGVB;enableBoxTop;enableBoxBottom;MainBoxBottom;MainBoxTop;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVL)= "NAME:UGVL;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVR)= "NAME:UGVR;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:466.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-20;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVT)= "NAME:UGVT;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:113.00;GUIDE1:FT;GUIDE2:;RELPOSITION:113;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVB)= "NAME:UGVB;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:535.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-50;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxTop)= "NAME:enableBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:25.00;GUIDE1:FT;GUIDE2:;RELPOSITION:25;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxBottom)= "NAME:enableBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:75.00;GUIDE1:enableBoxTop;GUIDE2:;RELPOSITION:50;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxBottom)= "NAME:MainBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:585.00;GUIDE1:FB;GUIDE2:;RELPOSITION:3;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxTop)= "NAME:MainBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:85.00;GUIDE1:enableBoxBottom;GUIDE2:;RELPOSITION:10;"
+	SetWindow kwTopWin,userdata(ResizeControlsGuides)="UGVL;UGVR;UGVT;UGVB;enableBoxTop;enableBoxBottom;MainBoxBottom;MainBoxTop;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVL)="NAME:UGVL;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVR)="NAME:UGVR;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:466.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-20;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVT)="NAME:UGVT;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:113.00;GUIDE1:FT;GUIDE2:;RELPOSITION:113;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVB)="NAME:UGVB;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:535.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-50;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxTop)="NAME:enableBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:25.00;GUIDE1:FT;GUIDE2:;RELPOSITION:25;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxBottom)="NAME:enableBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:75.00;GUIDE1:enableBoxTop;GUIDE2:;RELPOSITION:50;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxBottom)="NAME:MainBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:585.00;GUIDE1:FB;GUIDE2:;RELPOSITION:3;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxTop)="NAME:MainBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:85.00;GUIDE1:enableBoxBottom;GUIDE2:;RELPOSITION:10;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={305.25,330,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewNotebook /F=0 /N=sweepFormula_json /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=12
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(tabnum)= "1"
-	SetWindow kwTopWin,userdata(tabcontrol)= "SF_InfoTab"
+	SetWindow kwTopWin,userdata(tabnum)="1"
+	SetWindow kwTopWin,userdata(tabcontrol)="SF_InfoTab"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
@@ -1265,8 +1268,8 @@ Window DataBrowser() : Graph
 	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z*!1@=S>)+F`2^BZWLb84b@(eDO%R/Lo%!.b8RgERN@q:!Q;Rb=g(\\Ea=4.iptUKJmo0`?;1F7@M*q"
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(tabnum)= "0"
-	SetWindow kwTopWin,userdata(tabcontrol)= "SF_InfoTab"
+	SetWindow kwTopWin,userdata(tabnum)="0"
+	SetWindow kwTopWin,userdata(tabcontrol)="SF_InfoTab"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
@@ -1276,8 +1279,8 @@ Window DataBrowser() : Graph
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1, showRuler=0, rulerUnits=2
 	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,251}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(tabnum)= "2"
-	SetWindow kwTopWin,userdata(tabcontrol)= "SF_InfoTab"
+	SetWindow kwTopWin,userdata(tabnum)="2"
+	SetWindow kwTopWin,userdata(tabcontrol)="SF_InfoTab"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
@@ -1287,8 +1290,8 @@ Window DataBrowser() : Graph
 	Notebook kwTopWin, defaultTab=36, autoSave= 0, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(tabnum)= "6"
-	SetWindow kwTopWin,userdata(tabcontrol)= "Settings"
+	SetWindow kwTopWin,userdata(tabnum)="6"
+	SetWindow kwTopWin,userdata(tabcontrol)="Settings"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
@@ -1296,7 +1299,7 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	RenameWindow #,BrowserSettingsPanel
 	SetActiveSubwindow ##
-	NewPanel/HOST=#/EXT=2/W=(0,0,581,201)  as " "
+	NewPanel/HOST=#/EXT=2/W=(0,0,580,200)  as " "
 	ModifyPanel fixedSize=0
 	SetDrawLayer UserBack
 	Button popupext_TPStorageKeys,pos={414.00,67.00},size={150.00,19.00},bodyWidth=150,proc=PEXT_ButtonProc
@@ -1304,80 +1307,83 @@ Window DataBrowser() : Graph
 	Button popupext_TPStorageKeys,help={"Select TPStorage data to display"}
 	Button popupext_TPStorageKeys,userdata(popupProc)="LBV_PopMenuProc_TPStorage"
 	Button popupext_TPStorageKeys,userdata(Items)="LBV_PopupExtGetTPStorageKeys"
-	Button popupext_TPStorageKeys,userdata(ResizeControlsInfo)=A"!!,I4J,hoj!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button popupext_TPStorageKeys,userdata(ResizeControlsInfo)=A"!!,I5!!#??!!#A%!!#<Pz!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	Button popupext_TPStorageKeys,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	Button popupext_TPStorageKeys,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	Button popupext_TPStorageKeys,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
 	Button button_clearlabnotebookgraph,pos={402.00,142.00},size={80.00,25.00},proc=LBV_ButtonProc_ClearGraph
 	Button button_clearlabnotebookgraph,title="Clear graph"
 	Button button_clearlabnotebookgraph,help={"Clear the labnotebook visualization graph"}
-	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)=A"!!,I.J,hqH!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)=A"!!,I/!!#@r!!#?Y!!#=+z!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#N3Bk1ct<C^(W9`P.n"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
 	Button button_switchxaxis,pos={494.00,142.00},size={80.00,25.00},proc=LBV_ButtonProc_SwitchXAxis
 	Button button_switchxaxis,title="Switch X-axis"
 	Button button_switchxaxis,help={"Toggle lab notebook horizontal axis between time of day or sweep number"}
-	Button button_switchxaxis,userdata(ResizeControlsInfo)=A"!!,I\\J,hqH!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_switchxaxis,userdata(ResizeControlsInfo)=A"!!,I]!!#@r!!#?Y!!#=+z!!#N3Bk1ct<C^(W9`P.nzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	Button button_switchxaxis,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	Button button_switchxaxis,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
 	Button button_DataBrowser_setaxis,pos={401.00,171.00},size={171.00,25.00},proc=LBV_ButtonProc_AutoScale
 	Button button_DataBrowser_setaxis,title="Autoscale"
 	Button button_DataBrowser_setaxis,help={"Autoscale sweep data"}
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)=A"!!,I.!!#A:!!#A:!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)=A"!!,I.J,hqe!!#A:!!#=+z!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du_\"OASGdjF8u:@zzzzzzzzzzzz!!!"
 	GroupBox group_labnotebook_experiment_device,pos={403.00,5.00},size={173.00,55.00}
-	GroupBox group_labnotebook_experiment_device,userdata(ResizeControlsInfo)=A"!!,I/!!#9W!!#A<!!#>jz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	GroupBox group_labnotebook_experiment_device,userdata(ResizeControlsInfo)=A"!!,I/J,hj-!!#A<!!#>jz!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	GroupBox group_labnotebook_experiment_device,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	GroupBox group_labnotebook_experiment_device,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	GroupBox group_labnotebook_experiment_device,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
 	PopupMenu popup_experiment,pos={406.00,11.00},size={164.00,19.00},bodyWidth=95
 	PopupMenu popup_experiment,title="Experiment: "
 	PopupMenu popup_experiment,help={"Experiment selection (SweepBrowser only)"}
-	PopupMenu popup_experiment,userdata(ResizeControlsInfo)=A"!!,I0J,hkh!!#A3!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	PopupMenu popup_experiment,userdata(ResizeControlsInfo)=A"!!,I1!!#;=!!#A3!!#<Pz!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	PopupMenu popup_experiment,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	PopupMenu popup_experiment,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	PopupMenu popup_experiment,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
 	PopupMenu popup_experiment,mode=1,popvalue="- none -",value=#"\"- none -\""
 	PopupMenu popup_Device,pos={431.00,34.00},size={139.00,19.00},bodyWidth=95
 	PopupMenu popup_Device,title="Device: "
 	PopupMenu popup_Device,help={"Device selection (SweepBrowser only)"}
-	PopupMenu popup_Device,userdata(ResizeControlsInfo)=A"!!,I=!!#=k!!#@o!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	PopupMenu popup_Device,userdata(ResizeControlsInfo)=A"!!,I=J,hnA!!#@o!!#<Pz!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	PopupMenu popup_Device,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	PopupMenu popup_Device,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	PopupMenu popup_Device,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
 	PopupMenu popup_Device,mode=1,popvalue="- none -",value=#"\"- none -\""
 	Button popupext_LBKeys,pos={414.00,91.00},size={150.00,19.00},bodyWidth=150,proc=PEXT_ButtonProc
 	Button popupext_LBKeys,title="Lab Notebook Entries ▼"
 	Button popupext_LBKeys,help={"Select lab notebook data to display"}
 	Button popupext_LBKeys,userdata(popupProc)="LBV_PopMenuProc_LabNotebookAndResults"
 	Button popupext_LBKeys,userdata(Items)="LBV_PopupExtGetLBKeys"
-	Button popupext_LBKeys,userdata(ResizeControlsInfo)=A"!!,I4J,hpE!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button popupext_LBKeys,userdata(ResizeControlsInfo)=A"!!,I5!!#?o!!#A%!!#<Pz!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	Button popupext_LBKeys,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	Button popupext_LBKeys,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	Button popupext_LBKeys,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
 	GroupBox group_labnotebook_experiment_device1,pos={402.00,61.00},size={174.00,78.00}
-	GroupBox group_labnotebook_experiment_device1,userdata(ResizeControlsInfo)=A"!!,I.J,hoX!!#A=!!#?Uz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	GroupBox group_labnotebook_experiment_device1,userdata(ResizeControlsInfo)=A"!!,I/!!#?-!!#A=!!#?Uz!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	GroupBox group_labnotebook_experiment_device1,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	GroupBox group_labnotebook_experiment_device1,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	GroupBox group_labnotebook_experiment_device1,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
 	Button popupext_resultsKeys,pos={414.00,115.00},size={150.00,19.00},bodyWidth=150,proc=PEXT_ButtonProc
 	Button popupext_resultsKeys,title="Results Entries ▼"
 	Button popupext_resultsKeys,help={"Select results data to display"}
 	Button popupext_resultsKeys,userdata(popupProc)="LBV_PopMenuProc_LabNotebookAndResults"
 	Button popupext_resultsKeys,userdata(Items)="LBV_PopupExtGetResultsKeys"
-	Button popupext_resultsKeys,userdata(ResizeControlsInfo)=A"!!,I4J,hpu!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button popupext_resultsKeys,userdata(ResizeControlsInfo)=A"!!,I5!!#@J!!#A%!!#<Pz!!#N3Bk1ct<C^(fzzzzzzzzzzzzz!!#o2B4uAe<C^(fz"
 	Button popupext_resultsKeys,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	Button popupext_resultsKeys,userdata(ResizeControlsInfo)+=A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	DefineGuide UGV0={FR,-187}
+	Button popupext_resultsKeys,userdata(ResizeControlsInfo)+=A"zzz!!#u:Duafn!(TR6zzzzzzzzzzzzz!!!"
+	DefineGuide UGVL={FL,125},UGVR={FR,-200},UGVCM={FR,-100}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#D!!!#AYzzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#D!!!#AXzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin,userdata(ResizeControlsGuides)= "UGV0;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= "NAME:UGV0;WIN:DB_ITC16_Dev_0#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:393.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-187;"
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={441,105,inf,inf}" // sizeLimit requires Igor 7 or later
-	Display/W=(200,187,395,501)/FG=(FL,FT,UGV0,FB)/HOST=#
+	SetWindow kwTopWin,userdata(ResizeControlsGuides)="UGVL;UGVR;UGVCM;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVL)="NAME:UGVL;WIN:DataBrowser#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:145.00;GUIDE1:FL;GUIDE2:FR;RELPOSITION:0.25;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVR)="NAME:UGVR;WIN:DataBrowser#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:397.00;GUIDE1:FL;GUIDE2:FR;RELPOSITION:0.685026;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVCM)="NAME:UGVCM;WIN:DataBrowser#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:487.00;GUIDE1:FL;GUIDE2:FR;RELPOSITION:0.839655;"
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={441,170,inf,inf}" // sizeLimit requires Igor 7 or later
+	Display/W=(200,187,353,501)/FG=(UGVL,FT,UGVR,FB)/HOST=#
 	ModifyGraph margin(right)=74
 	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#C)J,hrfJ,fQLzzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzzzzzzzzz!!!"
 	RenameWindow #,LabNoteBook
+	SetActiveSubwindow ##
+	NewNotebook /F=1 /N=Description /W=(145,49,436,148)/FG=(FL,FT,UGVL,FB) /HOST=# /OPTS=3
+	Notebook kwTopWin, autoSave= 0, magnification=1, showRuler=0,changeableByCommandOnly=1
+	RenameWindow #,Description
 	SetActiveSubwindow ##
 	RenameWindow #,SettingsHistoryPanel
 	SetActiveSubwindow ##

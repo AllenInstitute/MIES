@@ -13,10 +13,12 @@ static StrConstant LABNOTEBOOK_BOTTOM_AXIS_DELTA_TIME  = "Relative time [s]"
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_TIME  = "Timestamp (a. u.)"
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_SWEEP = "Sweep Number (a. u.)"
 
-StrConstant LBV_UD_SOURCE_WAVE = "sourceWave"
+StrConstant LBV_UD_VALUES_WAVE = "values"
+StrConstant LBV_UD_KEYS_WAVE   = "keys"
 StrConstant LBV_UD_HEADSTAGE   = "headstage"
 StrConstant LBV_UD_KEY         = "key"
 StrConstant LBV_UD_ISTEXT      = "text"
+StrConstant LBV_UD_YAXIS       = "yaxis"
 
 Function/S LBV_GetSettingsHistoryPanel(string win)
 
@@ -26,6 +28,11 @@ End
 Function/S LBV_GetLabNoteBookGraph(string win)
 
 	return LBV_GetSettingsHistoryPanel(win) + "#Labnotebook"
+End
+
+Function/S LBV_GetDescriptionNotebook(string win)
+
+	return LBV_GetSettingsHistoryPanel(win) + "#Description"
 End
 
 static Function/WAVE LBV_PopupExtFormatEntries(WAVE/T/Z entries)
@@ -362,7 +369,9 @@ End
 
 Function LBV_ClearGraph(string win)
 
-	string graph = LBV_GetLabNoteBookGraph(win)
+	string graph, descNB
+
+	graph = LBV_GetLabNoteBookGraph(win)
 	if(!WindowExists(graph))
 		return 0
 	endif
@@ -372,6 +381,9 @@ Function LBV_ClearGraph(string win)
 	RemoveDrawLayers(graph)
 	LBV_UpdateLBGraphLegend(graph)
 	TUD_Clear(graph)
+
+	descNB = LBV_GetDescriptionNotebook(graph)
+	ReplaceNotebookText(descNB, "")
 End
 
 /// @brief Update the legend in the labnotebook graph
@@ -445,7 +457,7 @@ static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 End
 
 static Function/WAVE LBV_GetTraceUserDataNames()
-	Make/FREE/T wv = {LBV_UD_KEY, LBV_UD_ISTEXT, LBV_UD_SOURCE_WAVE, LBV_UD_HEADSTAGE}
+	Make/FREE/T wv = {LBV_UD_KEY, LBV_UD_ISTEXT, LBV_UD_KEYS_WAVE, LBV_UD_VALUES_WAVE, LBV_UD_HEADSTAGE, LBV_UD_YAXIS}
 
 	return wv
 End
@@ -528,13 +540,14 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 		endif
 
 		TUD_SetUserDataFromWaves(graph,                                  \
-								 trace,                                  \
-								 userDataKeys,                           \
-								 {key,                                   \
-								  num2str(isTextData),                   \
-								  GetWavesDataFolder(values, 2),         \
-								  num2str(i < NUM_HEADSTAGES ? i : NaN ) \
-								 })
+		                         trace,                                  \
+		                         userDataKeys,                           \
+		                         {key,                                   \
+		                         num2str(isTextData),                    \
+		                         GetWavesDataFolder(keys, 2),            \
+		                         GetWavesDataFolder(values, 2),          \
+		                         num2str(i < NUM_HEADSTAGES ? i : NaN ), \
+		                         axis})
 
 		[s] = GetHeadstageColor(i)
 		marker = i == 0 ? 39 : i
@@ -702,13 +715,15 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 			endif
 
 			TUD_SetUserDataFromWaves(graph,                                  \
-									 trace,                                  \
-									 userDataKeys,                           \
-									 {key,                                   \
-									  "0",                                   \
-									  GetWavesDataFolder(TPStorage, 2),      \
-									  num2str(headstage)                     \
-									 })
+			                         trace,                                  \
+			                         userDataKeys,                           \
+			                         {key,                                   \
+			                          "0",                                   \
+			                          "",                                    \
+			                          GetWavesDataFolder(TPStorage, 2),      \
+			                          num2str(headstage),                    \
+			                          axis                                   \
+			                         })
 
 			[s] = GetHeadstageColor(headstage)
 			marker = headstage == 0 ? 39 : headstage
@@ -716,13 +731,16 @@ static Function LBV_AddTraceToLBGraphTPStorage(string graph, DFREF dfr, string k
 			SetAxis/W=$graph/A=2 $axis
 		endfor
 
-		Label/W=$graph $axis lbl
+		if(!IsEmpty(traceList))
+			Label/W=$graph $axis lbl
 
-		ModifyGraph/W=$graph lblPosMode = 1, standoff($axis) = 0, freePos($axis) = 0
-		ModifyGraph/W=$graph mode = 3
-
-		LBV_UpdateLBGraphLegend(graph, traceList=traceList)
+			ModifyGraph/W=$graph lblPosMode = 1, standoff($axis) = 0, freePos($axis) = 0
+			ModifyGraph/W=$graph mode = 3
+		endif
 	endfor
+
+	WAVE/Z allTraces = TUD_GetUserDataAsWave(graph, "traceName")
+	LBV_UpdateLBGraphLegend(graph, traceList=TextWaveToList(allTraces, ";"))
 
 	LBV_SetLabNotebookBottomLabel(graph, isTimeAxis)
 	EquallySpaceAxis(graph, axisRegExp= ".*" + VERT_AXIS_BASE_NAME + ".*", sortOrder = 16)
@@ -831,26 +849,26 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 		trace = StringFromList(i, list)
 
 		WAVE yWave = TraceNameToWaveRef(graph, trace)
-		WAVE/Z sourceWave = $TUD_GetUserData(graph, trace, LBV_UD_SOURCE_WAVE)
-		ASSERT(WaveExists(sourceWave), "Missing sourceWave user data")
+		WAVE/Z values = $TUD_GetUserData(graph, trace, LBV_UD_VALUES_WAVE)
+		ASSERT(WaveExists(values), "Missing values user data")
 
 		isTextData = str2num(TUD_GetUserData(graph, trace, LBV_UD_ISTEXT))
 
-		logbookType = GetLogbookType(sourceWave)
+		logbookType = GetLogbookType(values)
 
 		switch(logbookType)
 			case LBT_LABNOTEBOOK:
 			case LBT_RESULTS:
 				if(isTimeAxis)
 					if(isTextData)
-						WAVE valuesSweep = ExtractLogbookSliceSweep(sourceWave)
+						WAVE valuesSweep = ExtractLogbookSliceSweep(values)
 						ReplaceWave/W=$graph/X trace=$trace, valuesSweep
 					else
-						sweepCol = GetSweepColumn(sourceWave)
-						ReplaceWave/W=$graph/X trace=$trace, sourceWave[][sweepCol][0]
+						sweepCol = GetSweepColumn(values)
+						ReplaceWave/W=$graph/X trace=$trace, values[][sweepCol][0]
 					endif
 				else // other direction
-					WAVE dat = ExtractLogbookSliceTimeStamp(sourceWave)
+					WAVE dat = ExtractLogbookSliceTimeStamp(values)
 
 					ReplaceWave/W=$graph/X trace=$trace, dat
 				endif
@@ -964,4 +982,102 @@ Function LBV_SelectExperimentAndDevice(string win)
 	else
 		SetPopupMenuIndex(shPanel, "popup_Device", 0)
 	endif
+End
+
+static Function/S LBV_FormatDescription(WAVE/T/Z keys, string name)
+	variable idx, i, numEntries
+	string template, result, str, text
+
+	idx = FindDimLabel(keys, COLS, name)
+
+	if(idx < 0 || FindDimLabel(keys, ROWS, "Description") < 0)
+		return "<None>"
+	endif
+
+	result = ""
+
+	template = "%s: %s\r"
+
+	numEntries = DimSize(keys, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		text = keys[i][idx]
+
+		if(IsEmpty(text))
+			continue
+		endif
+
+		sprintf str, template, GetDimLabel(keys, ROWS, i), text
+		result += str
+	endfor
+
+	return result
+End
+
+Function LBV_EntryDescription(STRUCT WMWinHookStruct &s)
+	string win, info, list, axis, descNB, key
+	variable numEntries, i, axisOrientation, first, last, relYPos, width, yAxisHorizPos
+
+	switch(s.eventCode)
+		case 4: // mouse moved
+			win = LBV_GetLabNoteBookGraph(s.winName)
+			if(cmpstr(s.winName, win))
+				// not our subwindow
+				break
+			endif
+
+			list = AxisList(win)
+			if(IsEmpty(list))
+				// empty graph
+				break
+			endif
+
+			GetAxis/Q/W=$win bottom
+
+			yAxisHorizPos = AxisValFromPixel(win, "bottom", s.mouseLoc.h)
+
+			if(yAxisHorizPos > V_min)
+				// to the right of the y-axis
+				break
+			endif
+
+			list = GrepList(list, "lbn_.*")
+			numEntries = ItemsInList(list)
+
+			for(i = 0; i < numEntries; i += 1)
+				axis = StringFromList(i, list)
+
+				axisOrientation = GetAxisOrientation(win, axis)
+				if(axisOrientation != AXIS_ORIENTATION_LEFT)
+					continue
+				endif
+
+				info = AxisInfo(win, axis)
+
+				first = GetNumFromModifyStr(info, "axisEnab", "{", 0)
+				last  = GetNumFromModifyStr(info, "axisEnab", "{", 1)
+
+				relYPos = 1 - (s.mouseloc.v / (s.winRect.bottom - s.winRect.top))
+
+				if(first < relYPos && relYPos < last)
+					WAVE/T/Z matches = TUD_GetUserDataAsWave(win, LBV_UD_KEY, keys = {LBV_UD_YAXIS}, values = {axis})
+					ASSERT(WaveExists(matches), "Invalid key")
+					key = matches[0]
+
+					WAVE/T/Z matches = TUD_GetUserDataAsWave(win, LBV_UD_KEYS_WAVE, keys = {LBV_UD_YAXIS, LBV_UD_KEY}, values = {axis, key})
+					ASSERT(WaveExists(matches), "Invalid keys")
+					WAVE/T/Z keys = $matches[0]
+
+					descNB = LBV_GetDescriptionNotebook(win)
+					ReplaceNotebookText(descNB, LBV_FormatDescription(keys, key))
+					ReflowNotebookText(descNB)
+				endif
+			endfor
+			break
+		case 6: // resize
+			descNB = LBV_GetDescriptionNotebook(s.winName)
+			ReflowNotebookText(descNB)
+			break
+	endswitch
+
+	return 0
 End

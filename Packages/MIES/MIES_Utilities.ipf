@@ -1603,7 +1603,7 @@ End
 ///
 /// @param str    string to potentially remove something from its beginning
 /// @param start  [optional, defaults to the first character] Remove this from
-///               the begin pf str
+///               the begin of str
 /// @param regExp [optional, defaults to false] If start is a simple string (false)
 ///               or a regular expression (true)
 threadsafe Function/S RemovePrefix(string str, [string start, variable regExp])
@@ -2626,20 +2626,23 @@ threadsafe Function ParseUnit(unitWithPrefix, prefix, numPrefix, unit)
 	variable &numPrefix
 	string &unit
 
-	string expr
-
-	ASSERT_TS(!isEmpty(unitWithPrefix), "empty unit")
+	string expr, unitInt, prefixInt
 
 	prefix    = ""
 	numPrefix = NaN
 	unit      = ""
 
-	expr = "(Y|Z|E|P|T|G|M|k|h|d|c|m|mu|n|p|f|a|z|y)?[[:space:]]*(m|kg|s|A|K|mol|cd|Hz|V|N|W|J|a.u.)"
+	ASSERT_TS(!isEmpty(unitWithPrefix), "empty unit")
 
-	SplitString/E=(expr) unitWithPrefix, prefix, unit
+	expr = "^(Y|Z|E|P|T|G|M|k|h|d|c|m|mu|n|p|f|a|z|y)?[[:space:]]*(m|kg|s|A|K|mol|cd|Hz|V|N|W|J|F|Ω|a.u.)$"
+
+	SplitString/E=(expr) unitWithPrefix, prefixInt, unitInt
 	ASSERT_TS(V_flag >= 1, "Could not parse unit string")
+	ASSERT_TS(!IsEmpty(unitInt), "Could not find a unit")
 
+	prefix = prefixInt
 	numPrefix = GetDecimalMultiplierValue(prefix)
+	unit = unitInt
 End
 
 /// @brief Return the numerical value of a SI decimal multiplier
@@ -6097,4 +6100,42 @@ Function/S ElideText(string str, variable returnLength)
 	// could not find any whitespace
 	// just cut it off
 	return str[0, first] + suffix
+End
+
+/// @brief Load the wave `$name.itx` from the folder of this procedure file and store
+/// it in the static data folder.
+Function/WAVE LoadWaveFromDisk(string name)
+	string path
+
+	path = GetFolder(FunctionPath("")) + name + ".itx"
+
+	LoadWave/Q/C/T path
+	if(!V_flag)
+		return $""
+	endif
+
+	ASSERT(ItemsInList(S_waveNames) == 1, "Could not find exactly one wave")
+
+	WAVE wv = $StringFromList(0, S_waveNames)
+
+	DFREF dfr = GetStaticDataFolder()
+	MoveWave wv, dfr
+
+	return wv
+End
+
+/// @brief Store the given wave as `$name.itx` in the same folder as this
+/// procedure file on disk.
+Function StoreWaveOnDisk(WAVE wv, string name)
+	string path
+
+	ASSERT(IsValidObjectName(name), "Name is not a valid igor object name")
+
+	DFREF dfr = GetUniqueTempPath()
+	Duplicate wv, dfr:$name/WAVE=storedWave
+
+	path = GetFolder(FunctionPath("")) + name + ".itx"
+	Save/O/T/M="\n" storedWave as path
+	KillOrMoveToTrash(wv = storedWave)
+	RemoveEmptyDataFolder(dfr)
 End

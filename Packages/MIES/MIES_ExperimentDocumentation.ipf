@@ -38,7 +38,7 @@ static Function ED_CheckValuesAndKeys(WAVE vals, WAVE keys)
 	ASSERT(DimSize(vals, COLS)   == DimSize(keys, COLS), "Mismatched column count")
 	ASSERT(DimSize(vals, LAYERS) <= LABNOTEBOOK_LAYER_COUNT, "Mismatched layer count")
 
-	ASSERT(DimSize(keys, ROWS)   == 1 || DimSize(keys, ROWS) == 3, "Mismatched row count")
+	ASSERT(DimSize(keys, ROWS)   == 1 || DimSize(keys, ROWS) == 3 || DimSize(keys, ROWS) == 6, "Mismatched row count")
 	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
 End
 
@@ -73,7 +73,9 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 		state = ROVar(GetAcquisitionState(device))
 	endif
 
-	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, keys, values, rowIndex)
+	WAVE/Z indizes
+	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingTextualKeys, incomingTextualValues, keys, values, logbookType)
+	ASSERT(WaveExists(indizes), "Missing indizes")
 
 	values[rowIndex][0][] = num2istr(sweepNo)
 	values[rowIndex][3][] = num2istr(entrySourceType)
@@ -102,8 +104,42 @@ static Function ED_createTextNotes(WAVE/T incomingTextualValues, WAVE/T incoming
 	endfor
 
 	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
+End
 
-	LBN_SetDimensionLabels(keys, values)
+static Function ED_ParseHeadstageContigencyMode(string str)
+
+	if(!cmpstr(str, "ALL"))
+		return (HCM_DEPEND | HCM_INDEP)
+	elseif(strsearch(str, "DEPEND", 0) >= 0)
+		return HCM_DEPEND
+	elseif(strsearch(str, "INDEP", 0) >= 0)
+		return HCM_INDEP
+	endif
+
+	return HCM_EMPTY
+End
+
+/// @brief Return the headstage contigency mode for values
+static Function ED_GetHeadstageContingency(WAVE values)
+
+	if(IsTextWave(values))
+		WAVE/T valuesText = values
+		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) stats = strlen(valuesText[p]) == 0 ? NaN : 1
+	else
+		Wave stats = values
+	endif
+
+	WaveStats/Q/M=1 stats
+
+	if(V_numNaNs == LABNOTEBOOK_LAYER_COUNT)
+		return HCM_EMPTY
+	elseif(!IsNaN(stats[INDEP_HEADSTAGE]) && V_numNaNs == NUM_HEADSTAGES)
+		return HCM_INDEP
+	elseif(IsNaN(stats[INDEP_HEADSTAGE]))
+		return HCM_DEPEND
+	endif
+
+	return (HCM_DEPEND | HCM_INDEP)
 End
 
 /// @brief Add numerical entries to the labnotebook
@@ -137,7 +173,9 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 		state = ROVar(GetAcquisitionState(device))
 	endif
 
-	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, keys, values, rowIndex)
+	WAVE/Z indizes
+	[indizes, rowIndex] = ED_FindIndizesAndRedimension(incomingNumericalKeys, incomingNumericalValues, keys, values, logbookType)
+	ASSERT(WaveExists(indizes), "Missing indizes")
 
 	values[rowIndex][0][] = sweepNo
 	values[rowIndex][3][] = entrySourceType
@@ -162,8 +200,6 @@ static Function ED_createWaveNotes(WAVE incomingNumericalValues, WAVE/T incoming
 	endfor
 
 	SetNumberInWaveNote(values, NOTE_INDEX, rowIndex + 1)
-
-	LBN_SetDimensionLabels(keys, values)
 End
 
 /// @brief Add custom entries to the numerical/textual labnotebook for the very last sweep acquired.
@@ -210,7 +246,7 @@ Function ED_AddEntryToLabnotebook(device, key, values, [unit, tolerance, overrid
 	variable tolerance, overrideSweepNo
 
 	string toleranceStr
-	variable sweepNo
+	variable sweepNo, headstageCont
 
 	ASSERT(!IsEmpty(key), "Empty key")
 	ASSERT(DimSize(values, ROWS) == LABNOTEBOOK_LAYER_COUNT, "wv has the wrong number of rows")
@@ -218,19 +254,8 @@ Function ED_AddEntryToLabnotebook(device, key, values, [unit, tolerance, overrid
 	ASSERT(IsTextWave(values) || IsFloatingPointWave(values), "Wave must be text or floating point")
 	ASSERT(strsearch(key, LABNOTEBOOK_USER_PREFIX, 0, 2) != 0, "Don't prefix key with LABNOTEBOOK_USER_PREFIX")
 
-	// check input
-	if(IsTextWave(values))
-		WAVE/T valuesText = values
-		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) stats = strlen(valuesText[p]) == 0 ? NaN : 1
-	else
-		Wave stats = values
-	endif
-
-	// either INDEP_HEADSTAGE is set or one of the headstage entries but never both
-	WaveStats/Q/M=1 stats
-	ASSERT((IsFinite(stats[INDEP_HEADSTAGE]) && V_numNaNs == NUM_HEADSTAGES) || !IsFinite(stats[INDEP_HEADSTAGE]), \
-	  "The independent headstage entry can not be combined with headstage dependent entries.")
-
+	headstageCont = ED_GetHeadstageContingency(values)
+	ASSERT(headstageCont != (HCM_INDEP | HCM_DEPEND), "The independent headstage entry can not be combined with headstage dependent entries.")
 	// we allow all entries to be NaN or empty
 
 	if(ParamIsDefault(unit))
@@ -429,18 +454,19 @@ End
 /// Redimensions `key` and `values` waves.
 /// Prefills `key` with `incomingKey` data if necessary.
 ///
-/// Ensures that data and key have a matching column size at return.
-/// @param[in]  incomingKey text wave with the keys to add
-/// @param[in]  key         key wave of the labnotebook
-/// @param[in]  values      values/data wave of the labnotebook
-/// @param[out] rowIndex    returns the row index into values at which the new values should be written
-static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowIndex)
-	WAVE/T incomingKey, key
-	WAVE values
-	variable &rowIndex
-
-	variable numCols, col, row, numKeyRows, numKeyCols, i, numAdditions, idx
-	variable lastValidIncomingKeyRow
+/// Ensures that key and values have a matching column size at return.
+///
+/// @param incomingKey    text wave with the keys to add
+/// @param incomingValues wave with the values to add
+/// @param key            key wave of the labnotebook (Rows: 1/3/6, Columns: Same as values, Layers: 1)
+/// @param values         values/data wave of the labnotebook
+/// @param logbookType    type of the logbook, one of @ref LogbookTypes
+///
+/// @retval colIndizes column indizes of the entries from incomingKey
+/// @retval rowIndex   returns the row index into values at which the new values should be written
+static Function [WAVE colIndizes, variable rowIndex] ED_FindIndizesAndRedimension(WAVE/T incomingKey, WAVE incomingValues, WAVE/T key, WAVE values, variable logbookType)
+	variable numCols, col, row, numKeyRows, numKeyCols, i, j, numAdditions, idx
+	variable lastValidIncomingKeyRow, descIndex, isUserEntry, headstageCont, headstageContDesc, isUnAssoc
 	string msg, searchStr
 
 	numKeyRows = DimSize(key, ROWS)
@@ -448,6 +474,15 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 	lastValidIncomingKeyRow = DimSize(incomingKey, ROWS) - 1
 
 	Make/FREE/U/I/N=(DimSize(incomingKey, COLS)) indizes = NaN
+
+	WAVE/T/Z desc
+	if(logbookType == LBT_LABNOTEBOOK)
+		if(IsNumericWave(values))
+			WAVE/T desc = GetLBNumericalDescription()
+		else
+			// @todo not yet done for text waves
+		endif
+	endif
 
 	numCols = DimSize(incomingKey, COLS)
 	for(i = 0; i < numCols; i += 1)
@@ -460,31 +495,110 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 			row = V_value - col * numKeyRows
 			ASSERT(row == 0, "Unexpected match in a row not being zero")
 			indizes[i] = col
-			sprintf msg, "Found key \"%s\" from incoming column %d in key column %d", incomingKey[0][i], i, idx
-			DEBUGPRINT(msg)
-		else
-			ASSERT(IsValidLiberalObjectName(searchStr), "Incoming key is not a valid liberal object name: " + searchStr)
-			idx = numKeyCols + numAdditions
-			EnsureLargeEnoughWave(key, minimumSize=idx, dimension=COLS)
-			key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
-			indizes[i] = idx
-			numAdditions += 1
-			sprintf msg, "Created key \"%s\" from incoming column %d in key column %d", incomingKey[0][i], i, idx
-			DEBUGPRINT(msg)
+			continue
+		endif
+
+		ASSERT(IsValidLiberalObjectName(searchStr), "Incoming key is not a valid liberal object name: " + searchStr)
+
+		// need to add new entry
+		idx = numKeyCols + numAdditions
+		EnsureLargeEnoughWave(key, minimumSize=idx, dimension=COLS)
+		key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
+		indizes[i] = idx
+		numAdditions += 1
+
+		// check description wave if available
+		if(!WaveExists(desc))
+			continue
+		endif
+
+		isUserEntry = (strsearch(searchStr, LABNOTEBOOK_USER_PREFIX, 0) == 0)
+
+		if(isUserEntry)
+			continue
+		endif
+
+		descIndex = FindDimLabel(desc, COLS, searchStr)
+
+		isUnAssoc = 0
+
+		if(descIndex < 0)
+			// retry with removing unassociated suffix
+			searchStr = RemoveUNassocLBNKeySuffix(searchStr)
+			descIndex = FindDimLabel(desc, COLS, searchStr)
+
+			if(descIndex >= 0)
+				isUnAssoc = 1
+			endif
+		endif
+
+		if(descIndex < 0)
+			// retry as that might be a dynamic Async key, see the fifth column in
+			// GetAsyncSettingsKeyWave()
+
+			if(GrepString(searchStr, "^Async AD [[:digit:]] \[.+\]$"))
+				// continue as the entry is fully dynamic and we can't check anything
+				continue
+			endif
+		endif
+
+		if(descIndex < 0)
+			sprintf msg, "Could not find a description for entry: %s", searchStr
+			BUG(msg)
+			continue
+		endif
+
+		// check that metadata is consistent
+		for(j = 1; j <= lastValidIncomingKeyRow; j +=  1)
+			if(!cmpstr(desc[j][descIndex], incomingKey[j][i]))
+				continue
+			endif
+
+			// some LBN entries have a runtime tolerance, ignore those
+			if(!cmpstr(GetDimLabel(desc, ROWS, j), "Tolerance") && !cmpstr(desc[j][descIndex], "runtime"))
+				continue
+			endif
+
+			sprintf msg, "The metadata in row \"%s\" differs for entry \"%s\": stock: \"%s\", incoming: \"%s\"", GetDimLabel(desc, ROWS, j), searchStr, desc[j][descIndex], incomingKey[j][i]
+			BUG(msg)
+		endfor
+
+		// check for correct headstage contingency
+		Duplicate/FREE/RMD=[0][i][*] incomingValues, valuesSlice
+		headstageCont = ED_GetHeadstageContingency(valuesSlice)
+		headstageContDesc = ED_ParseHeadstageContigencyMode(desc[%HeadstageContingency][descIndex])
+
+		if(isUnAssoc)
+			headstageContDesc = HCM_INDEP
+		endif
+
+		if(headstageCont != HCM_EMPTY && !(headstageCont & headstageContDesc))
+			sprintf msg, "Headstage contingency for entry \"%s\": stock: \"%s\", incoming: %d", searchStr, desc[%HeadstageContingency][descIndex], headstageCont
+			BUG(msg)
+		endif
+
+		// copy additional entries from desc into key
+		// in case the incoming key wave provided all entries
+		// there is nothing left to do
+		if(DimSize(incomingKey, ROWS) != DimSize(desc, ROWS))
+			key[lastValidIncomingKeyRow + 1, inf][idx] = desc[p][descIndex]
 		endif
 	endfor
-
-	// for further performance enhancement we must add "support for enhancing multiple dimensions at once"
-	// to EnsureLargeEnoughWave
-	if(numAdditions)
-		Redimension/N=(-1, numKeyCols + numAdditions, -1) key, values
-	endif
 
 	rowIndex = GetNumberFromWaveNote(values, NOTE_INDEX)
 	if(!IsFinite(rowIndex))
 		// old waves don't have that info
 		// use the last row
 		rowIndex = DimSize(values, ROWS)
+	endif
+
+	// for further performance enhancement we must add "support for enhancing multiple dimensions at once"
+	// to EnsureLargeEnoughWave
+	if(numAdditions)
+		Redimension/N=(-1, numKeyCols + numAdditions, -1) key, values
+
+		// rowIndex will be zero for empty waves only and these also need dimension labels for all columns
+		LBN_SetDimensionLabels(key, values, start = (rowIndex == 0 ? 0 : numKeyCols))
 	endif
 
 	if(IsNumericWave(values))
@@ -496,7 +610,7 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 		EnsureLargeEnoughWave(values, minimumSize=rowIndex, dimension=ROWS)
 	endif
 
-	return indizes
+	return [indizes, rowIndex]
 End
 
 /// @brief Remember the "exact" start of the sweep
@@ -682,8 +796,8 @@ Function ED_TPDocumentation(device)
 
 	TPKeyWave[1][0]  = "mV"
 	TPKeyWave[1][1]  = "pA"
-	TPKeyWave[1][2]  = "Mohm"
-	TPKeyWave[1][3]  = "Mohm"
+	TPKeyWave[1][2]  = "MΩ"
+	TPKeyWave[1][3]  = "MΩ"
 	TPKeyWave[1][4]  = "F"
 	TPKeyWave[1][5]  = "F"
 	TPKeyWave[1][6]  = "s"
@@ -703,8 +817,8 @@ Function ED_TPDocumentation(device)
 	TPKeyWave[2][6]  = "1e-6"
 	TPKeyWave[2][7]  = "1e-6"
 	TPKeyWave[2][8]  = LABNOTEBOOK_NO_TOLERANCE
-	TPKeyWave[2][9]  = "0.0001"
-	TPKeyWave[2][10] = "0.0001"
+	TPKeyWave[2][9]  = "0.1"
+	TPKeyWave[2][10] = "0.1"
 	TPKeyWave[2][11] = LABNOTEBOOK_NO_TOLERANCE
 
 	TPSettingsWave[0][2][0, NUM_HEADSTAGES - 1]  = TPResults[%ResistanceInst][r]

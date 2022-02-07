@@ -1169,6 +1169,7 @@ End
 /// - Fix unit and tolerance of "Repeat Sets"
 /// - Reapplying the dimension labels as the old ones were cut off after 31 bytes
 /// - Making dimension labels valid liberal object names
+/// - Extending the row dimension to 6 for the key waves
 static Function UpgradeLabNotebook(device)
 	string device
 
@@ -1369,6 +1370,16 @@ static Function UpgradeLabNotebook(device)
 		LBN_SetDimensionLabels(textualKeys, textualValues)
 	endif
 	// END IP9 dimension labels
+
+	// BEGIN extending rows
+	if(WaveVersionIsSmaller(numericalKeys, 55))
+		Redimension/N=(6, -1) numericalKeys
+	endif
+
+	if(WaveVersionIsSmaller(textualKeys, 55))
+		Redimension/N=(6, -1) textualKeys
+	endif
+	// END extending rows
 End
 
 static Function/S FixInvalidLabnotebookKey(string name)
@@ -1390,6 +1401,19 @@ static Function/S FixInvalidLabnotebookKey(string name)
 	endif
 
 	return CleanupName(name, 1)
+End
+
+static Function SetLBKeysRowDimensionLabels(WAVE wv)
+
+	SetDimLabel ROWS, 0, Parameter, wv
+	SetDimLabel ROWS, 1, Units,     wv
+	SetDimLabel ROWS, 2, Tolerance, wv
+
+	if(DimSize(wv, ROWS) == 6)
+		SetDimLabel ROWS, 3, Description, wv
+		SetDimLabel ROWS, 4, HeadstageContingency, wv
+		SetDimLabel ROWS, 5, ClampMode, wv
+	endif
 End
 
 /// @brief Return a wave reference to the text labnotebook keys
@@ -1436,9 +1460,7 @@ Function/Wave GetLBTextualKeys(device)
 	ASSERT(INITIAL_KEY_WAVE_COL_COUNT == ItemsInList(LABNOTEBOOK_KEYS_INITIAL), "Mismatched default keys")
 	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
 
-	SetDimLabel ROWS, 0, Parameter, wv
-	SetDimLabel ROWS, 1, Units,     wv
-	SetDimLabel ROWS, 2, Tolerance, wv
+	SetLBKeysRowDimensionLabels(wv)
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1448,9 +1470,12 @@ End
 /// @brief Return a wave reference to the numeric labnotebook keys
 ///
 /// Rows:
-/// - 0: Parameter Name
-/// - 1: Parameter Unit
-/// - 2: Parameter Tolerance
+/// - 0: Name
+/// - 1: Units
+/// - 2: Tolerance
+/// - 3: Description
+/// - 4: Headstage Contingency
+/// - 5: ClampMode
 ///
 /// Columns:
 /// - 0: Sweep Number
@@ -1482,21 +1507,93 @@ Function/Wave GetLBNumericalKeys(device)
 		SetWaveVersion(wv, versionOfNewWave)
 		return wv
 	else
-		Make/T/N=(3, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(6, INITIAL_KEY_WAVE_COL_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
 
-	ASSERT(INITIAL_KEY_WAVE_COL_COUNT == ItemsInList(LABNOTEBOOK_KEYS_INITIAL), "Mismatched default keys")
-	wv[0][] = StringFromList(q, LABNOTEBOOK_KEYS_INITIAL)
+	SetLBKeysRowDimensionLabels(wv)
 
-	SetDimLabel ROWS, 0, Parameter, wv
-	SetDimLabel ROWS, 1, Units,     wv
-	SetDimLabel ROWS, 2, Tolerance, wv
+	WAVE/T desc = GetLBNumericalDescription(forceReload = 1)
+	ASSERT(DimSize(desc, ROWS) == DimSize(wv, ROWS), "Non-matching number of rows")
+	ASSERT(DimSize(wv, COLS) == INITIAL_KEY_WAVE_COL_COUNT, "Non-matching number of rows")
+
+	// copy the "always present entries"
+	wv = desc
 
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
+End
+
+/// @brief Return a wave reference to the static and read-only labnotebook descriptions
+///        for the numerical entries
+///
+/// Requirements for each entry [@sa CheckLBNDescriptions()]:
+///
+/// - 0: Parameter
+///   Not empty
+/// - 1: Units
+///   Something ParseUnit() can grok or `degC`, `bitMask`, `%` or `On/Off`
+/// - 2: Tolerance
+///   LABNOTEBOOK_NO_TOLERANCE or a positive number including zero
+/// - 3: Description
+///   Not empty
+/// - 4: Headstage Contingency
+///   One of `ALL`, `DEPEND`, `INDEP`
+/// - 5: Clamp Mode
+///   One of `IC`, `VC`, `IC;I=0`, `IC;VC`, `IC;VC;I=0` or empty
+Function/WAVE GetLBNumericalDescription([variable forceReload])
+
+	if(ParamIsDefault(forceReload))
+		forceReload = 0
+	else
+		forceReload = !!forceReload
+	endif
+
+	DFREF dfr = GetStaticDataFolder()
+	WAVE/T/Z/SDFR=dfr wv = labnotebook_numerical_description
+
+	if(WaveExists(wv))
+		if(forceReload)
+			KillOrMoveToTrash(wv = wv)
+		else
+			return wv
+		endif
+	endif
+
+	WAVE/T/Z wv = LoadWaveFromDisk("labnotebook_numerical_description")
+	ASSERT(WaveExists(wv), "Missing wave")
+	ASSERT(!IsFreeWave(wv), "Not a permanent wave")
+
+	MatrixTranspose wv
+
+	SetLBKeysRowDimensionLabels(wv)
+
+	Duplicate/FREE/RMD=[0][] wv, labels
+	Redimension/N=(numpnts(labels)) labels
+	SetDimensionLabels(wv, TextWaveToList(labels, ";"), COLS)
+
+	return wv
+End
+
+Constant LBN_NUMERICAL_DESCRIPTION_VERSION = 1
+
+Function SaveLBNumericalDescription()
+
+	DFREF dfr = GetStaticDataFolder()
+	WAVE/T/Z/SDFR=dfr wv = labnotebook_numerical_description
+	ASSERT(WaveExists(wv), "Missing wave")
+
+	RemoveAllDimLabels(wv)
+
+	Duplicate/FREE wv, dup
+
+	MatrixTranspose dup
+
+	SetWaveVersion(dup, LBN_NUMERICAL_DESCRIPTION_VERSION)
+
+	StoreWaveOnDisk(dup, "labnotebook_numerical_description")
 End
 
 /// @brief Return a wave reference to the numeric labnotebook keys
@@ -2097,12 +2194,12 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][0] = ".0001"
 
 	wv[%Parameter][1] = "DAC"
-	wv[%Units][1]     = "a. u."
-	wv[%Tolerance][1] = "1"
+	wv[%Units][1]     = ""
+	wv[%Tolerance][1] = "0.1"
 
 	wv[%Parameter][2] = "ADC"
-	wv[%Units][2]     = "a. u."
-	wv[%Tolerance][2] = "1"
+	wv[%Units][2]     = ""
+	wv[%Tolerance][2] = "0.1"
 
 	wv[%Parameter][3] = "DA Gain"
 	wv[%Units][3]     = ""
@@ -2113,8 +2210,8 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][4] = ".000001"
 
 	wv[%Parameter][5] = "Set Sweep Count"
-	wv[%Units][5]     = "a. u."
-	wv[%Tolerance][5] = "1"
+	wv[%Units][5]     = ""
+	wv[%Tolerance][5] = "0.1"
 
 	wv[%Parameter][6] = "TP Insert Checkbox"
 	wv[%Units][6]     = LABNOTEBOOK_BINARY_UNIT
@@ -2133,11 +2230,11 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][9] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][10] = "TTL rack zero channel"
-	wv[%Units][10]     = "a. u."
+	wv[%Units][10]     = ""
 	wv[%Tolerance][10] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][11] = "TTL rack one channel"
-	wv[%Units][11]     = "a. u."
+	wv[%Units][11]     = ""
 	wv[%Tolerance][11] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][12] = "Delay onset user"
@@ -2161,7 +2258,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][16] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][17] = "Repeat Sets"
-	wv[%Units][17]     = "a. u."
+	wv[%Units][17]     = ""
 	wv[%Tolerance][17] = "1"
 
 	wv[%Parameter][18] = "Scaling zero"
@@ -2189,12 +2286,12 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][23] = "1"
 
 	wv[%Parameter][24] = "Sampling interval multiplier"
-	wv[%Units][24]     = "a. u."
+	wv[%Units][24]     = ""
 	wv[%Tolerance][24] = "0.1"
 
 	wv[%Parameter][25] = "Stim set length"
-	wv[%Units][25]     = "a. u." // points not time
-	wv[%Tolerance][25] = "1"
+	wv[%Units][25]     = "" // points not time
+	wv[%Tolerance][25] = "0.1"
 
 	wv[%Parameter][26] = "oodDAQ Pre Feature"
 	wv[%Units][26]     = "ms"
@@ -2217,11 +2314,11 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][30] = "1"
 
 	wv[%Parameter][31] = RA_ACQ_CYCLE_ID_KEY
-	wv[%Units][31]     = "a. u."
+	wv[%Units][31]     = ""
 	wv[%Tolerance][31] = "1"
 
 	wv[%Parameter][32] = "Stim Wave Checksum"
-	wv[%Units][32]     = "a. u."
+	wv[%Units][32]     = ""
 	wv[%Tolerance][32] = "1"
 
 	wv[%Parameter][33] = "Multi Device mode"
@@ -2237,7 +2334,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][35] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][36] = "Sampling interval multiplier"
-	wv[%Units][36]     = "a. u."
+	wv[%Units][36]     = ""
 	wv[%Tolerance][36] = "1"
 
 	wv[%Parameter][37] = "TP during ITI"
@@ -2257,15 +2354,15 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][40] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][41] = "Set Cycle Count"
-	wv[%Units][41]     = "a. u."
+	wv[%Units][41]     = ""
 	wv[%Tolerance][41] = "1"
 
 	wv[%Parameter][42] = STIMSET_ACQ_CYCLE_ID_KEY
-	wv[%Units][42]     = "a. u."
+	wv[%Units][42]     = ""
 	wv[%Tolerance][42] = "1"
 
 	wv[%Parameter][43] = "Digitizer Hardware Type"
-	wv[%Units][43]     = "a. u."
+	wv[%Units][43]     = ""
 	wv[%Tolerance][43] = "1"
 
 	wv[%Parameter][44] = "Fixed frequency acquisition"
@@ -2277,19 +2374,19 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][45] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][46] = CLAMPMODE_ENTRY_KEY
-	wv[%Units][46]     = "a. u."
+	wv[%Units][46]     = ""
 	wv[%Tolerance][46] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][47] = "Igor Pro bitness"
-	wv[%Units][47]     = "a. u."
+	wv[%Units][47]     = ""
 	wv[%Tolerance][47] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][48] = "DA ChannelType"
-	wv[%Units][48]     = "a. u."
+	wv[%Units][48]     = ""
 	wv[%Tolerance][48] = "1"
 
 	wv[%Parameter][49] = "AD ChannelType"
-	wv[%Units][49]     = "a. u."
+	wv[%Units][49]     = ""
 	wv[%Tolerance][49] = "1"
 
 	wv[%Parameter][50] = "oodDAQ member"
@@ -2297,7 +2394,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][50] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][51] = "Autobias %"
-	wv[%Units][51]     = "a. u."
+	wv[%Units][51]     = ""
 	wv[%Tolerance][51] = "0.1"
 
 	wv[%Parameter][52] = "Autobias Interval"
@@ -2309,7 +2406,7 @@ Function/Wave GetSweepSettingsKeyWave(device)
 	wv[%Tolerance][53] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][54] = "Epochs version"
-	wv[%Units][54]     = "a. u."
+	wv[%Units][54]     = ""
 	wv[%Tolerance][54] = "1"
 
 	SetSweepSettingsDimLabels(wv, wv)
@@ -2740,9 +2837,9 @@ End
 /// @brief Return the testpulse results wave
 ///
 /// Rows:
-/// - 0: Resistance Instantaneous: [MOhm]
+/// - 0: Resistance Instantaneous: [MΩ]
 /// - 1: Baseline Steady State: [mV] for IC, [pA] for VC
-/// - 2: Resistance Steady State: [MOhm]
+/// - 2: Resistance Steady State: [MΩ]
 /// - 3: Elevated Steady State: [mV] for IC, [pA] for VC
 /// - 4: Elevated Instantaneous: [mV] for IC, [pA] for VC
 /// - 5: Auto TP Amplitude: Pass/Fail
@@ -2978,7 +3075,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][8] =  "0.9"
 
 	wv[0][9] =  "Whole Cell Comp Resist"
-	wv[1][9] =  "MOhm"
+	wv[1][9] =  "MΩ"
 	wv[2][9] =  "0.9"
 
 	wv[0][10] =  "I-Clamp Holding Enable"
@@ -3002,49 +3099,49 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][14] =  LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][15] =  "Bridge Bal Value"
-	wv[1][15] =  "MOhm"
+	wv[1][15] =  "MΩ"
 	wv[2][15] =  "0.9"
 
 	// and now add the Axon values to the amp settings key
 	wv[0][16] =  "Serial Number"
 	wv[1][16] =  ""
-	wv[2][16] =  ""
+	wv[2][16] =  "-"
 
 	wv[0][17] =  "Channel ID"
 	wv[1][17] =  ""
-	wv[2][17] =  ""
+	wv[2][17] =  "-"
 
 	wv[0][18] =  "ComPort ID"
 	wv[1][18] =  ""
-	wv[2][18] =  ""
+	wv[2][18] =  "-"
 
 	wv[0][19] =  "AxoBus ID"
 	wv[1][19] =  ""
-	wv[2][19] =  ""
+	wv[2][19] =  "-"
 
 	wv[0][20] =  "Operating Mode"
 	wv[1][20] =  ""
-	wv[2][20] =  ""
+	wv[2][20] =  "-"
 
 	wv[0][21] =  "Scaled Out Signal"
 	wv[1][21] =  ""
-	wv[2][21] =  ""
+	wv[2][21] =  "-"
 
 	wv[0][22] =  "Alpha"
 	wv[1][22] =  ""
-	wv[2][22] =  ""
+	wv[2][22] =  "-"
 
 	wv[0][23] =  "Scale Factor"
 	wv[1][23] =  ""
-	wv[2][23] =  ""
+	wv[2][23] =  "-"
 
 	wv[0][24] =  "Scale Factor Units"
 	wv[1][24] =  ""
-	wv[2][24] =  ""
+	wv[2][24] =  "-"
 
 	wv[0][25] =  "LPF Cutoff"
 	wv[1][25] =  ""
-	wv[2][25] =  ""
+	wv[2][25] =  "-"
 
 	wv[0][26] =  "Membrane Cap"
 	wv[1][26] =  "pF"
@@ -3052,40 +3149,40 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 
 	wv[0][27] =  "Ext Cmd Sens"
 	wv[1][27] =  ""
-	wv[2][27] =  ""
+	wv[2][27] =  "-"
 
 	wv[0][28] =  "Raw Out Signal"
 	wv[1][28] =  ""
-	wv[2][28] =  ""
+	wv[2][28] =  "-"
 
 	wv[0][29] =  "Raw Scale Factor"
 	wv[1][29] =  ""
-	wv[2][29] =  ""
+	wv[2][29] =  "-"
 
 	wv[0][30] =  "Raw Scale Factor Units"
 	wv[1][30] =  ""
-	wv[2][30] =  ""
+	wv[2][30] =  "-"
 
 	wv[0][31] =  "Hardware Type"
 	wv[1][31] =  ""
-	wv[2][31] =  ""
+	wv[2][31] =  "-"
 
 	wv[0][32] =  "Secondary Alpha"
 	wv[1][32] =  ""
-	wv[2][32] =  ""
+	wv[2][32] =  "-"
 
 	wv[0][33] =  "Secondary LPF Cutoff"
 	wv[1][33] =  ""
-	wv[2][33] =  ""
+	wv[2][33] =  "-"
 
 	wv[0][34] =  "Series Resistance"
-	wv[1][34] =  "MOhms"
-	wv[2][34] =  "0.9"
+	wv[1][34] =  "MΩ"
+	wv[2][34] =  LABNOTEBOOK_NO_TOLERANCE
 
 	// new keys starting from 29a161c
 	wv[0][35] =  "Pipette Offset"
 	wv[1][35] =  "mV"
-	wv[2][35] =  ""
+	wv[2][35] =  "0.1"
 
 	wv[0][36] =  "Slow current injection"
 	wv[1][36] =  LABNOTEBOOK_BINARY_UNIT
@@ -3093,27 +3190,27 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 
 	wv[0][37] =  "Slow current injection level"
 	wv[1][37] =  "V"
-	wv[2][37] =  ""
+	wv[2][37] =  "0.1"
 
 	wv[0][38] =  "Slow current injection settling time"
 	wv[1][38] =  "s"
-	wv[2][38] =  ""
+	wv[2][38] =  "-"
 
 	wv[0][39] =  "Fast compensation capacitance"
 	wv[1][39] =  "F"
-	wv[2][39] =  ""
+	wv[2][39] =  "1e-12"
 
 	wv[0][40] =  "Slow compensation capacitance"
 	wv[1][40] =  "F"
-	wv[2][40] =  ""
+	wv[2][40] =  "1e-12"
 
 	wv[0][41] =  "Fast compensation time"
 	wv[1][41] =  "s"
-	wv[2][41] =  ""
+	wv[2][41] =  "1e-6"
 
 	wv[0][42] =  "Slow compensation time"
 	wv[1][42] =  "s"
-	wv[2][42] =  ""
+	wv[2][42] =  "1e-6"
 
 	wv[0][43] =  "Autobias Vcom"
 	wv[1][43] =  "mV"
@@ -4088,7 +4185,7 @@ Function/Wave GetAsyncSettingsKeyWave(WAVE settingsWave, variable channel, strin
 
 	wv[%Parameter][5] = prefix
 	wv[%Units][5]     = unit
-	wv[%Tolerance][5] = ".0001"
+	wv[%Tolerance][5] = "" // tolerance is calculated in ED_createAsyncWaveNoteTags()
 
 	return wv
 End
@@ -7156,19 +7253,19 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 
 	wv[%Parameter][0]  = "TP Baseline Fraction" // fraction of total TP duration
 	wv[%Units][0]      = ""
-	wv[%Tolerance][0]  = ""
+	wv[%Tolerance][0]  = "0.01"
 
 	wv[%Parameter][1]  = TP_AMPLITUDE_VC_ENTRY_KEY
 	wv[%Units][1]      = "pA"
-	wv[%Tolerance][1]  = ""
+	wv[%Tolerance][1]  = "-"
 
 	wv[%Parameter][2]  = TP_AMPLITUDE_IC_ENTRY_KEY
 	wv[%Units][2]      = "mV"
-	wv[%Tolerance][2]  = ""
+	wv[%Tolerance][2]  = "-"
 
 	wv[%Parameter][3]  = "TP Pulse Duration"
 	wv[%Units][3]      = "ms"
-	wv[%Tolerance][3]  = ""
+	wv[%Tolerance][3]  = "-"
 
 	wv[%Parameter][4]  = "TP Auto"
 	wv[%Units][4]      = LABNOTEBOOK_BINARY_UNIT
@@ -7187,11 +7284,11 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 	wv[%Tolerance][7]  = "0.1"
 
 	wv[%Parameter][8]  = "TP buffer size"
-	wv[%Units][8]      = "a. u."
-	wv[%Tolerance][8]  = "1"
+	wv[%Units][8]      = ""
+	wv[%Tolerance][8]  = "0.1"
 
 	wv[%Parameter][9]  = "Minimum TP resistance for tolerance"
-	wv[%Units][9]      = "MOhm"
+	wv[%Units][9]      = "MΩ"
 	wv[%Tolerance][9]  = "1"
 
 	wv[%Parameter][10] = "Send TP settings to all headstages"
@@ -7211,7 +7308,7 @@ Function/WAVE GetTPSettingsLabnotebookKeyWave(string device)
 	wv[%Tolerance][13] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][14] = "TP Cycle ID"
-	wv[%Units][14]     = "a. u."
+	wv[%Units][14]     = ""
 	wv[%Tolerance][14] = "1"
 
 	return wv

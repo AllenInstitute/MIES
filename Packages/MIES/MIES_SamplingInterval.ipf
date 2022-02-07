@@ -206,21 +206,9 @@ End
 ///
 /// @returns a lookup wave or an invalid wave ref
 /// if it could not be loaded from disk
-static Function/WAVE SI_LoadMinSampIntFromDisk(deviceType)
-	string deviceType
+static Function/WAVE SI_LoadMinSampIntFromDisk(string deviceType)
 
-	string path = GetFolder(FunctionPath("")) + "SampInt_" + deviceType + ".itx"
-	LoadWave/Q/C/T path
-	if(!V_flag)
-		return $""
-	endif
-
-	WAVE wv = $StringFromList(0, S_waveNames)
-
-	DFREF dfr = GetStaticDataFolder()
-	MoveWave wv, dfr
-
-	return wv
+	return LoadWaveFromDisk("SampInt_" + deviceType)
 End
 
 /// @brief Store the lookup wave on disc

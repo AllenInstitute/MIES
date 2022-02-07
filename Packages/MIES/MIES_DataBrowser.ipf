@@ -39,7 +39,7 @@ End
 ///        after GUI editor adapted controls in development process
 Function DB_ResetAndStoreCurrentDBPanel()
 	string device, bsPanel, scPanel, shPanel, recreationCode
-	string sfFormula, sfJSON
+	string sfFormula, sfJSON, descNB
 
 	device = GetMainWindow(GetCurrentWindow())
 	if(!windowExists(device))
@@ -224,6 +224,9 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	sfJSON = BSP_GetSFJSON(device)
 	ReplaceNotebookText(sfJSON, "")
+
+	descNB = LBV_GetDescriptionNotebook(shPanel)
+	ReplaceNotebookText(descNB, "")
 
 	SetVariable setvar_sweepFormula_parseResult WIN = $bsPanel, value=_STR:""
 	ValDisplay status_sweepFormula_parser, WIN = $bsPanel, value=1

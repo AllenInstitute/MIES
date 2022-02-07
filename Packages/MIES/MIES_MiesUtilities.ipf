@@ -31,6 +31,9 @@ static StrConstant MSQ_FRE_LBN_PREFIX = "F Rheo E"
 static StrConstant MSQ_DS_LBN_PREFIX  = "Da Scale"
 static StrConstant MSQ_SC_LBN_PREFIX  = "Spike Control"
 
+static StrConstant LBN_UNASSOC_REGEXP_LEGACY = "^(.*) UNASSOC_[[:digit:]]+$"
+static StrConstant LBN_UNASSOC_REGEXP = "^(.*) u_(AD|DA)[[:digit:]]+$"
+
 Menu "GraphMarquee"
 	"Horiz Expand (VisX)", HorizExpandWithVisX()
 End
@@ -5631,6 +5634,31 @@ threadsafe Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
 	endif
 
 	return key
+End
+
+/// @brief Check if the given labnotebook entry is from an unassociated DA/AD channel
+threadsafe Function IsUnassocLBNKey(string name)
+
+	return GrepString(name, LBN_UNASSOC_REGEXP_LEGACY) || GrepString(name, LBN_UNASSOC_REGEXP)
+End
+
+/// @brief Remove the unassociated, old and new, prefix of the given labnotebook entry name
+///
+/// @sa CreateLBNUnassocKey()
+Function/S RemoveUnassocLBNKeySuffix(string name)
+	string result, suffix
+
+	SplitString/E=(LBN_UNASSOC_REGEXP) name, result, suffix
+	if(V_flag == 2)
+		return result
+	endif
+
+	SplitString/E=(LBN_UNASSOC_REGEXP_LEGACY) name, result, suffix
+	if(V_flag == 2)
+		return result
+	endif
+
+	return name
 End
 
 /// @brief Start the ZeroMQ sockets and the message handler

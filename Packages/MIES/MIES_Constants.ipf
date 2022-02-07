@@ -629,7 +629,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION           = 55
-Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 36
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 37
 Constant WAVEBUILDER_PANEL_VERSION        = 11
 Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 
@@ -642,7 +642,7 @@ Constant ANALYSISBROWSER_PANEL_VERSION    =  1
 /// - New/Changed layers of entries
 ///
 /// @{
-Constant LABNOTEBOOK_VERSION = 54
+Constant LABNOTEBOOK_VERSION = 55
 Constant RESULTS_VERSION     = 2
 /// @}
 
@@ -1665,4 +1665,13 @@ Constant TP_GETVALUES_LATEST_AUTOTPCYCLE = 0x1
 /// @anchor ThreadsafeDataExchangeNames
 /// @{
 StrConstant TSDS_BUGCOUNT = "BugCount"
+/// @}
+
+/// Headstage contingency modes
+///
+/// @anchor HeadstageContingencyModes
+/// @{
+Constant HCM_EMPTY  = 0x00
+Constant HCM_DEPEND = 0x01
+Constant HCM_INDEP  = 0x02
 /// @}

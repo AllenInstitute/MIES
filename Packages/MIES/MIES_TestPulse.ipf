@@ -9,7 +9,7 @@
 /// @file MIES_TestPulse.ipf
 /// @brief __TP__ Basic Testpulse related functionality
 
-static Constant TP_MAX_VALID_RESISTANCE       = 3000 ///< Units MOhm
+static Constant TP_MAX_VALID_RESISTANCE       = 3000 ///< Units MΩ
 static Constant TP_TPSTORAGE_EVAL_INTERVAL    = 0.18
 static Constant TP_FIT_POINTS                 = 5
 static Constant TP_PRESSURE_INTERVAL          = 0.090  ///< [s]
