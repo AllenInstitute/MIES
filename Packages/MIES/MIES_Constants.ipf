@@ -1026,6 +1026,7 @@ StrConstant PSQ_FMT_LBN_CR_CYCLES          = "%s cycle x values"
 StrConstant PSQ_FMT_LBN_CR_BOUNDS_STATE    = "%s bounds state"
 StrConstant PSQ_FMT_LBN_CR_SPIKE_CHECK     = "%s spike check"
 StrConstant PSQ_FMT_LBN_CR_SPIKE_PASS      = "%s spike QC"
+StrConstant PSQ_FMT_LBN_SC_RESISTANCE      = "%s seal resistance"
 /// @}
 
 StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
@@ -1057,6 +1058,8 @@ Constant PSQ_SQUARE_PULSE  = 0x02
 Constant PSQ_RHEOBASE      = 0x04
 Constant PSQ_RAMP          = 0x08
 Constant PSQ_CHIRP         = 0x80
+Constant PSQ_SEAL_CHECK    = 0x200 // @todo
+
 /// @}
 
 /// @anchor MultiPatchSeqAnalysisFunctionTypes
@@ -1099,6 +1102,11 @@ Constant PSQ_CR_RESISTANCE_FAKE = 1 // GOhm
 Constant PSQ_CR_BASELINE_V_FAKE = 1 // mV
 Constant PSQ_CR_LIMIT_BAND_LOW  = 1 // mV
 Constant PSQ_CR_LIMIT_BAND_HIGH = 100 // mV
+/// @}
+
+/// @name PatchSeq SealCheck
+/// @{
+Constant PSQ_SC_NUM_SWEEPS_PASS = 1
 /// @}
 
 /// @name Bounds action values, see also PSQ_CR_BoundsActionToString()

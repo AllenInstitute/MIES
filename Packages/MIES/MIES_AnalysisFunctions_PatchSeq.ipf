@@ -4028,3 +4028,373 @@ static Function PSQ_SetSamplingIntervalMultiplier(string device, variable multip
 	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = multiplierAsString)
 	ASSERT(!cmpstr(DAG_GetTextualValue(device, "Popup_Settings_SampIntMult"), multiplierAsString), "Sampling interval multiplier could not be set")
 End
+
+Function/S PSQ_SealCheck_CheckParam(string name, struct CheckParametersStruct& s)
+	variable val
+	string str
+
+	strswitch(name)
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			return PSQ_CheckParamCommon(name, s.params)
+		case "MaxLeakCurrent":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0 && val <= 1000))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "MinPipetteResistance":
+		case "MaxPipetteResistance":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0 && val <= 20))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "NumberOfFailedSweeps":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
+				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
+			endif
+			break
+		case "NextStimSetName":
+			str = AFH_GetAnalysisParamTextual(name, s.params)
+			WAVE/Z stimset = WB_CreateAndGetStimSet(str)
+			if(!WaveExists(stimset))
+				return "The stimset can not be created"
+			endif
+			break
+		case "NumberOfTestpulses":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0 && val <= 100))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+	endswitch
+End
+
+Function/S PSQ_SealCheck_GetHelp(string name)
+
+	strswitch(name)
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+			return PSQ_GetHelpCommon(PSQ_SEAL_CHECK, name)
+		case "MaxLeakCurrent":
+			return "Maximum current [pA] which is allowed in the pre pulse baseline"
+		case "MinPipetteResistance":
+			return "Minimum allowed pipette resistance [MOhm]"
+		case "MaxPipetteResistance":
+			return "Maximum allowed pipette resistance [MOhm]"
+		case "NumberOfFailedSweeps":
+			return "Number of failed sweeps which marks the set as failed"
+		case "NextStimSetName":
+			return "Next stimulus set which should be set in case of success"
+		case "NumberOfTestpulses":
+			return "Expected number of testpulses in the stimset"
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+	endswitch
+End
+
+Function/S PSQ_SealCheck_GetParams()
+	return "[SamplingFrequency:variable],[SamplingMultiplier:variable],BaselineRMSShortThreshold:variable," +                         \
+		   "BaselineRMSLongThreshold:variableMaxPipetteResistance:variable," + \
+		   "NumberOfFailedSweeps:variable,NextStimSetName:string,NumberOfTestpulses:variable"
+End
+
+/// @brief Analysis function for XXX
+///
+/// TODO
+///
+/// @endverbatim
+Function PSQ_SealCheck(string device, struct AnalysisFunction_V3& s)
+	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed
+	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
+	variable maxPipetteResistance, minPipetteResistance, expectedNumTestpulses, numTestPulses, pipetteResistance
+	string key, ctrl, stimset, msg, databrowser, bsPanel, scPanel, formula_nb, pipetteResistanceStr, sweepStr
+
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			PGC_SetAndActivateControl(device, "check_Settings_MD", val = 1)
+			PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = 0)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 0)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = 0)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = 1)
+			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
+
+			WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+			if(sum(statusHS) != 1)
+				printf "(%s) Analysis function only supports one headstage.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+
+			WAVE statusTTL = DAG_GetChannelState(device, CHANNEL_TYPE_TTL)
+			if(sum(statusTTL) != 0)
+				printf "(%s) Analysis function does not support TTL channels.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+
+			if(DAG_GetHeadstageMode(device, s.headstage) != V_CLAMP_MODE)
+				printf "(%s) Clamp mode must be voltage clamp.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+
+			databrowser = DB_FindDataBrowser(device)
+			if(IsEmpty(databrowser)) // not yet open
+				databrowser = DB_OpenDataBrowser()
+			endif
+
+			bsPanel = BSP_GetPanel(databrowser)
+			scPanel = BSP_GetSweepControlsPanel(databrowser)
+
+			if(!BSP_HasBoundDevice(bsPanel))
+				PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
+				databrowser = DB_FindDataBrowser(device)
+				bsPanel = BSP_GetPanel(databrowser)
+				scPanel = BSP_GetSweepControlsPanel(databrowser)
+			endif
+
+			formula_nb = BSP_GetSFFormula(databrowser)
+			ReplaceNotebookText(formula_nb, "store(\"Steady state resistance\", tp(ss, channels(AD), sweeps(), [0]))")
+
+			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
+
+			PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = s.headstage)
+			PGC_SetAndActivateControl(device, "button_DataAcq_AutoPipOffset_VC", val = 1)
+			PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnableVC", val = 0)
+
+			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			break
+		case PRE_SET_EVENT:
+			SetAnalysisFunctionVersion(device, PSQ_SEAL_CHECK, s.headstage, s.sweepNo)
+
+			multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
+			PSQ_SetSamplingIntervalMultiplier(device, multiplier)
+			break
+		case PRE_SWEEP_CONFIG_EVENT:
+			expectedNumTestpulses = AFH_GetAnalysisParamNumerical("NumberOfTestpulses", s.params, defValue = 3)
+			numTestpulses = PSQ_PB_CreateTestpulseEpochs(device, s.headstage)
+			if(expectedNumTestpulses != numTestpulses)
+				printf "The number of present (%g) and expected (%g) test pulses in the stimset differs.", numTestpulses, expectedNumTestpulses
+				ControlWindowToFront()
+				return 1
+			endif
+
+			break
+		case POST_SWEEP_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(device)
+			WAVE textualValues   = GetLBTextualValues(device)
+
+			key = CreateAnaFuncLBNKey(PSQ_SEAL_CHECK, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			ASSERT(WaveExists(baselineQCPassedLBN), "Missing baseline QC")
+			baselineQCPassed = baselineQCPassedLBN[s.headstage]
+
+			// TODO
+
+			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
+			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_SEAL_CHECK, s.sweepNo, s.headstage)
+			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(device, s.sweepNo, s.headstage)
+			failsInSet          = acquiredSweepsInSet - passesInSet
+
+			sprintf msg, "Sweep %s, BL QC %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, required passes %d\r", ToPassFail(sweepPassed), ToPassFail(baselineQCPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, PSQ_SC_NUM_SWEEPS_PASS
+			DEBUGPRINT(msg)
+
+			if(!sweepPassed)
+				// not enough sweeps left to pass the set
+				// will only be reached if PSQ_SC_NUM_SWEEPS_PASS is ever increased from 1
+				if((sweepsInSet - acquiredSweepsInSet) < (PSQ_SC_NUM_SWEEPS_PASS - passesInSet))
+					PSQ_ForceSetEvent(device, s.headstage)
+					RA_SkipSweeps(device, inf)
+					return NaN
+				elseif(failsInSet >= numSweepsFailedAllowed)
+					// failed too many sweeps
+					PSQ_ForceSetEvent(device, s.headstage)
+					RA_SkipSweeps(device, inf)
+				endif
+
+				if(!samplingFrequencyQCPassed)
+					PSQ_ForceSetEvent(device, s.headstage)
+					RA_SkipSweeps(device, inf)
+					return NaN
+				endif
+			else
+				if(passesInSet >= PSQ_SC_NUM_SWEEPS_PASS)
+					PSQ_ForceSetEvent(device, s.headstage)
+					RA_SkipSweeps(device, inf, limitToSetBorder = 1)
+					return NaN
+				endif
+			endif
+
+			break
+		case POST_SET_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(device)
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_SEAL_CHECK, s.sweepNo, s.headstage) >= PSQ_SC_NUM_SWEEPS_PASS
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = setPassed
+			key = CreateAnaFuncLBNKey(PSQ_SEAL_CHECK, PSQ_FMT_LBN_SET_PASS)
+			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+			// todo PSQ_PB_Publish(device, s.sweepNo, s.headstage)
+
+			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			AD_UpdateAllDatabrowser()
+			break
+		case POST_DAQ_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(device)
+
+			key = CreateAnaFuncLBNKey(PSQ_SEAL_CHECK, PSQ_FMT_LBN_SET_PASS, query = 1)
+			setPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			ASSERT(IsFinite(setPassed), "Missing setQC labnotebook entry")
+
+			if(setPassed)
+				DAC = AFH_GetDACFromHeadstage(device, s.headstage)
+				ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+				stimset = AFH_GetAnalysisParamTextual("NextStimSetName", s.params)
+				PGC_SetAndActivateControl(device, ctrl, str = stimset, switchTab = 1)
+			endif
+
+			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			AD_UpdateAllDatabrowser()
+			break
+	endswitch
+
+	if(s.eventType != MID_SWEEP_EVENT)
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	key = CreateAnaFuncLBNKey(PSQ_SEAL_CHECK, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+	WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+	baselineQCPassed = WaveExists(baselineQCPassedLBN) ? baselineQCPassedLBN[s.headstage] : NaN
+
+	if(IsFinite(baselineQCPassed)) // already done
+		return NaN
+	endif
+
+//	[ret, chunk] = PSQ_EvaluateBaselineChunks(device, PSQ_SEAL_CHECK, s)
+//
+//	// if baseline QC failed, we are done, otherwise we continue
+//
+//	if(IsFinite(ret))
+//		PSQ_EvaluateBaselinePassed(device, PSQ_SEAL_CHECK, s.sweepNo, s.headstage, chunk, ret)
+//
+//		if(ret != 0)
+//			// baselineQC failed
+//			key = CreateAnaFuncLBNKey(PSQ_SEAL_CHECK, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0, query = 1)
+//			WAVE/Z leakCurQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+//			if(WaveExists(leakCurQCPassedLBN) && !leakCurQCPassedLBN[s.headstage])
+//				PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = s.headstage)
+//				PGC_SetAndActivateControl(device, "button_DataAcq_AutoPipOffset_VC", val = 1)
+//			endif
+//
+//			return ret
+//		endif
+//	endif
+End
+
+static Function PSQ_PB_GetPrePulseBaselineDuration(string device, variable headstage)
+	variable DAC
+	string setName
+
+	DAC     = AFH_GetDACFromHeadstage(device, headstage)
+	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
+
+	return ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)
+End
+
+/// @brief Create user epochs for the testpulse like shapes in the stimset
+///
+/// Assumes that all sweeps in the stimset are the same.
+///
+/// @return number of found testpulses
+static Function PSQ_PB_CreateTestpulseEpochs(string device, variable headstage)
+	variable DAC, numTestPulses, prePulseTP, signalTP, postPulseTP
+	variable amplitude, offset, numEpochs, i, idx, epBegin, epEnd, totalOnsetDelay
+	string setName, shortName, tags
+
+	DAC     = AFH_GetDACFromHeadstage(device, headstage)
+	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
+
+	numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
+	numTestPulses = (numEpochs - 2) / 3
+
+	if(!IsInteger(numTestPulses) || numTestPulses <= 0)
+		printf "(%s) The stimset %s does not follow the expected format", device, setName
+		return NaN
+	endif
+
+	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
+				      + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+
+	offset = (totalOnsetDelay + ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)) * 1e-3
+
+	// 0: pre pulse baseline chunk
+	// 1: testpulse pre baseline
+	// 2: testpulse signal
+	// 3: testpulse post baseline
+	// ...
+	// 1 + n * 3: post pulse baseline
+	for(i = 0; i < numTestPulses; i += 1)
+		// first TP epoch
+		idx = 1 + i * numTestPulses
+
+		prePulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx) * 1e-3
+		amplitude  = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx)
+		ASSERT(amplitude == 0, "Invald amplitude")
+
+		signalTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx + 1) * 1e-3
+		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 1)
+		ASSERT(amplitude == 1, "Invald amplitude")
+
+		postPulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx + 2) * 1e-3
+		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 2)
+		ASSERT(amplitude == 0, "Invald amplitude")
+
+		// full TP
+		epBegin = offset
+		epEnd   = epBegin + prePulseTP + signalTP + postPulseTP
+		sprintf tags, "Type=Testpulse Like;Index=%d", i
+		sprintf shortName, "TP%d", i
+
+		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+		offset = epEnd
+
+		// pre TP baseline
+		// same epBegin as full TP
+		epEnd   = epBegin + prePulseTP
+		sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", i
+		sprintf shortName, "TP%d_B0", i
+
+		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+		// pulse TP
+		epBegin = epEnd
+		epEnd   = epBegin + signalTP
+		sprintf tags, "Type=Testpulse Like;SubType=Pulse;Amplitude=%g;Index=%d;", ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 1), i
+		sprintf shortName, "TP%d_P", i
+
+		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+		// post TP baseline
+		epBegin = epEnd
+		epEnd   = epBegin + postPulseTP
+		sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", i
+		sprintf shortName, "TP%d_B1", i
+
+		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+	endfor
+
+	return numTestPulses
+End
