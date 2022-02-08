@@ -302,3 +302,45 @@ static Function AfterCompiledHook()
 End
 
 #endif
+
+Function IH_ResetScaling(struct WMWinHookStruct &s)
+	string activeSW, graph, list, win
+	variable i, numEntries
+
+	switch(s.eventCode)
+		case 11: // keyboard
+			if(cmpstr(s.keyText, "A") || s.eventMod != 8)
+				break
+			endif
+
+			// Got Ctrl + A
+
+			// first try if the selected window is a graph
+
+			graph = GetMainWindow(s.winName)
+			GetWindow $graph activeSW
+			activeSW = S_Value
+
+			if(WinType(activeSW) == WINTYPE_GRAPH)
+				SetAxis/W=$activeSW/A
+				break
+			endif
+
+			// if not we rescale all subgraphs
+			list = GetAllWindows(graph)
+			numEntries = ItemsInList(list)
+			for(i = 0; i < numEntries; i += 1)
+				win = StringFromList(i, list)
+
+				if(WinType(win) != WINTYPE_GRAPH)
+					continue
+				endif
+
+				SetAxis/W=$win/A
+			endfor
+			break
+	endswitch
+
+	// return zero so that other hooks are called as well
+	return 0
+End

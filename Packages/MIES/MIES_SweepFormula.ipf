@@ -815,7 +815,7 @@ static Function SF_FormulaPlotter(string graph, string formula, [DFREF dfr, vari
 			DefineGuide $guideName1={FT, guidePos, FB}
 		endfor
 
-		SetWindow $panelName hook(resetScaling)=SF_ResetScaling
+		SetWindow $panelName hook(resetScaling)=IH_ResetScaling
 	endif
 
 	WAVE/Z wvX
@@ -2737,33 +2737,6 @@ Function SF_button_sweepFormula_tofront(ba) : ButtonControl
 			break
 	endswitch
 
-	return 0
-End
-
-Function SF_ResetScaling(struct WMWinHookStruct &s)
-	string activeSW, graph
-
-	switch(s.eventCode)
-		case 11: // keyboard
-			if(cmpstr(s.keyText, "A") || s.eventMod != 8)
-				break
-			endif
-
-			// Got Ctrl + A
-
-			graph = GetMainWindow(s.winName)
-			GetWindow $graph activeSW
-			activeSW = S_Value
-
-			if(IsEmpty(activeSW))
-				break
-			endif
-
-			SetAxis/W=$activeSW/A
-			break
-	endswitch
-
-	// return zero so that other hooks are called as well
 	return 0
 End
 

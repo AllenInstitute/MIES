@@ -239,12 +239,6 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_WaveBuilder_op_P71_DD01,userdata(ResizeControlsInfo)+=A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_op_P71_DD01,userdata(tabnum)="7"
 	PopupMenu popup_WaveBuilder_op_P71_DD01,mode=1,popvalue="None",value=#"WBP_GetDeltaModes()"
-	Button button_WaveBuilder_setaxisA,pos={32.00,497.00},size={107.00,22.00},proc=WBP_ButtonProc_AutoScale
-	Button button_WaveBuilder_setaxisA,title="Autoscale"
-	Button button_WaveBuilder_setaxisA,help={"Returns the WaveBuilder graph to full scale. Ctrl-A does not work for panel graphs."}
-	Button button_WaveBuilder_setaxisA,userdata(ResizeControlsInfo)=A"!!,Cd!!#C]J,hpe!!#<hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_WaveBuilder_setaxisA,userdata(ResizeControlsInfo)+=A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	Button button_WaveBuilder_setaxisA,userdata(ResizeControlsInfo)+=A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_OutputType,pos={31.00,45.00},size={123.00,19.00},bodyWidth=55,proc=WBP_PopMenuProc_WaveType
 	PopupMenu popup_WaveBuilder_OutputType,title="Wave Type"
 	PopupMenu popup_WaveBuilder_OutputType,help={"Stimulus set output type. TTL selection limits certain paramater values. This may result in changes to the active parameter values."}
@@ -1221,6 +1215,7 @@ Window WaveBuilder() : Panel
 	SetVariable setvar_WaveBuilder_search,fSize=12,limits={0,10,1},value=_STR:""
 	DefineGuide UGH1={FT,237},UGV0={FL,187}
 	SetWindow kwTopWin,hook(main)=WBP_MainWindowHook
+	SetWindow kwTopWin,hook(resetScaling)=IH_ResetScaling
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,hook(windowCoordinateSaving)=StoreWindowCoordinatesHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)=A"!!*'\"z!!#E<!!#Cm^]4?7zzzzzzzzzzzzzzzzzzzz"
