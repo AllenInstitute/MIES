@@ -83,6 +83,34 @@ Function WaitForPubSubHeartbeat()
 	FAIL()
 End
 
+static Function CheckMessageFilters_IGNORE(string filter)
+	WAVE/T/Z allFilters = FFI_GetAvailableMessageFilters()
+	CHECK_WAVE(allFilters, TEXT_WAVE)
+
+	FindValue/TXOP=4/TEXT=(filter) allFilters
+	CHECK_GE_VAR(V_Value, 0)
+End
+
+Function/S FetchPublishedMessage(string expectedFilter)
+	variable i
+	string msg, filter
+
+	for(i = 0; i < 100; i += 1)
+		msg = zeromq_sub_recv(filter)
+
+		if(!cmpstr(filter, expectedFilter))
+			break
+		endif
+
+		Sleep/S 0.1
+	endfor
+
+	CHECK_EQUAL_STR(filter, expectedFilter)
+	CheckMessageFilters_IGNORE(filter)
+
+	return msg
+End
+
 Function AdjustAnalysisParamsForPSQ(string device, string stimset)
 
 	variable samplingFrequency

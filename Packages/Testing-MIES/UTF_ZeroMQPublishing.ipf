@@ -19,16 +19,8 @@ static Function TEST_CASE_END_OVERRIDE(string testname)
 	zeromq_sub_add_filter("")
 End
 
-Function CheckMessageFilters_IGNORE(string filter)
-	WAVE/T/Z allFilters = FFI_GetAvailableMessageFilters()
-	CHECK_WAVE(allFilters, TEXT_WAVE)
-
-	FindValue/TXOP=4/TEXT=(filter) allFilters
-	CHECK_GE_VAR(V_Value, 0)
-End
-
 static Function CheckPressureStatePublishing()
-	string device, msg, filter, expected, actual
+	string device, msg, expected, actual
 	variable headstage, i, jsonID
 
 	WaitForPubSubHeartbeat()
@@ -38,20 +30,7 @@ static Function CheckPressureStatePublishing()
 
 	MIES_P#P_PublishPressureMethodChange(device, headstage, PRESSURE_METHOD_ATM, PRESSURE_METHOD_APPROACH)
 
-	for(i = 0; i < 100; i += 1)
-		msg = zeromq_sub_recv(filter)
-
-		if(!cmpstr(filter, PRESSURE_STATE_FILTER))
-			break
-		endif
-
-		Sleep/S 0.1
-	endfor
-
-	expected = PRESSURE_STATE_FILTER
-	actual   = filter
-	CHECK_EQUAL_STR(actual, expected)
-	CheckMessageFilters_IGNORE(expected)
+	msg = FetchPublishedMessage(PRESSURE_STATE_FILTER)
 
 	jsonID = JSON_Parse(msg)
 
@@ -67,7 +46,7 @@ static Function CheckPressureStatePublishing()
 End
 
 static Function CheckPressureSealPublishing()
-	string device, msg, filter, expected, actual
+	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
 
 	WaitForPubSubHeartbeat()
@@ -77,20 +56,7 @@ static Function CheckPressureSealPublishing()
 
 	MIES_P#P_PublishSealedState(device, headstage)
 
-	for(i = 0; i < 100; i += 1)
-		msg = zeromq_sub_recv(filter)
-
-		if(!cmpstr(filter, PRESSURE_SEALED_FILTER))
-			break
-		endif
-
-		Sleep/S 0.1
-	endfor
-
-	expected = PRESSURE_SEALED_FILTER
-	actual   = filter
-	CHECK_EQUAL_STR(actual, expected)
-	CheckMessageFilters_IGNORE(expected)
+	msg = FetchPublishedMessage(PRESSURE_SEALED_FILTER)
 
 	jsonID = JSON_Parse(msg)
 
@@ -101,7 +67,7 @@ static Function CheckPressureSealPublishing()
 End
 
 static Function CheckClampModePublishing()
-	string device, msg, filter, expected, actual
+	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
 
 	WaitForPubSubHeartbeat()
@@ -111,20 +77,7 @@ static Function CheckClampModePublishing()
 
 	MIES_DAP#DAP_PublishClampModeChange(device, headstage, I_CLAMP_MODE, V_CLAMP_MODE)
 
-	for(i = 0; i < 100; i += 1)
-		msg = zeromq_sub_recv(filter)
-
-		if(!cmpstr(filter, AMPLIFIER_CLAMP_MODE_FILTER))
-			break
-		endif
-
-		Sleep/S 0.1
-	endfor
-
-	expected = AMPLIFIER_CLAMP_MODE_FILTER
-	actual   = filter
-	CHECK_EQUAL_STR(actual, expected)
-	CheckMessageFilters_IGNORE(expected)
+	msg = FetchPublishedMessage(AMPLIFIER_CLAMP_MODE_FILTER)
 
 	jsonID = JSON_Parse(msg)
 
@@ -140,7 +93,7 @@ static Function CheckClampModePublishing()
 End
 
 static Function CheckAutoBridgeBalancePublishing()
-	string device, msg, filter, expected, actual
+	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
 
 	WaitForPubSubHeartbeat()
@@ -150,20 +103,7 @@ static Function CheckAutoBridgeBalancePublishing()
 
 	MIES_AI#AI_PublishAutoBridgeBalance(device, headstage, 4711)
 
-	for(i = 0; i < 100; i += 1)
-		msg = zeromq_sub_recv(filter)
-
-		if(!cmpstr(filter, AMPLIFIER_AUTO_BRIDGE_BALANCE))
-			break
-		endif
-
-		Sleep/S 0.1
-	endfor
-
-	expected = AMPLIFIER_AUTO_BRIDGE_BALANCE
-	actual   = filter
-	CHECK_EQUAL_STR(actual, expected)
-	CheckMessageFilters_IGNORE(expected)
+	msg = FetchPublishedMessage(AMPLIFIER_AUTO_BRIDGE_BALANCE)
 
 	jsonID = JSON_Parse(msg)
 
@@ -178,7 +118,7 @@ static Function CheckAutoBridgeBalancePublishing()
 End
 
 static Function CheckPressureBreakinPublishing()
-	string device, msg, filter, expected, actual
+	string device, msg
 	variable headstage, i, jsonID, value
 
 	WaitForPubSubHeartbeat()
@@ -188,20 +128,7 @@ static Function CheckPressureBreakinPublishing()
 
 	MIES_P#P_PublishBreakin(device, headstage)
 
-	for(i = 0; i < 100; i += 1)
-		msg = zeromq_sub_recv(filter)
-
-		if(!cmpstr(filter, PRESSURE_BREAKIN_FILTER))
-			break
-		endif
-
-		Sleep/S 0.1
-	endfor
-
-	expected = PRESSURE_BREAKIN_FILTER
-	actual   = filter
-	CHECK_EQUAL_STR(actual, expected)
-	CheckMessageFilters_IGNORE(expected)
+	msg = FetchPublishedMessage(PRESSURE_BREAKIN_FILTER)
 
 	jsonID = JSON_Parse(msg)
 
@@ -212,7 +139,7 @@ static Function CheckPressureBreakinPublishing()
 End
 
 static Function CheckAutoTPPublishing()
-	string device, msg, filter, expected, actual
+	string device, msg, expected, actual
 	variable headstage, i, jsonID, value
 
 	WaitForPubSubHeartbeat()
@@ -240,20 +167,7 @@ static Function CheckAutoTPPublishing()
 
 	MIES_TP#TP_PublishAutoTPResult(device, headstage, 1)
 
-	for(i = 0; i < 100; i += 1)
-		msg = zeromq_sub_recv(filter)
-
-		if(!cmpstr(filter, AUTO_TP_FILTER))
-			break
-		endif
-
-		Sleep/S 0.1
-	endfor
-
-	expected = AUTO_TP_FILTER
-	actual   = filter
-	CHECK_EQUAL_STR(actual, expected)
-	CheckMessageFilters_IGNORE(expected)
+	msg = FetchPublishedMessage(AUTO_TP_FILTER)
 
 	jsonID = JSON_Parse(msg)
 
