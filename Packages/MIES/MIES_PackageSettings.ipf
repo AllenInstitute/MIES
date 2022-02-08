@@ -40,14 +40,16 @@ Function PS_ReadSettings(package, generateDefaults)
 
 	filepath = PS_GetSettingsFile(package)
 
-	if(!FileExists(filepath))
-		JSONid = generateDefaults()
-		PS_WriteSettings(package, JSONid)
+	if(FileExists(filepath))
+		[data, fName] = LoadTextFile(filepath)
+		JSONid = JSON_Parse(data)
+
 		return JSONid
 	endif
 
-	[data, fName] = LoadTextFile(filepath)
-	return JSON_Parse(data)
+	JSONid = generateDefaults()
+	PS_WriteSettings(package, JSONid)
+	return JSONid
 End
 
 /// @brief Write the settings from `JSONid` for `package` to disc
