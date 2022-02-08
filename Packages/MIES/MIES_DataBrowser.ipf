@@ -219,6 +219,9 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	CheckBox check_BrowserSettings_VisEpochs WIN = $bsPanel, value=0, disable=0
 
+	// settings history
+	CheckBox check_limit_x_selected_sweeps WIN = $shPanel, value=0
+
 	sfFormula = BSP_GetSFFormula(device)
 	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps()\r)")
 
@@ -404,7 +407,7 @@ Function DB_UpdateSweepPlot(win)
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 	RemoveFreeAxisFromGraph(graph)
-	TUD_Clear(graph)
+	TUD_Clear(graph, recursive = 0)
 
 	if(!BSP_HasBoundDevice(win))
 		return NaN

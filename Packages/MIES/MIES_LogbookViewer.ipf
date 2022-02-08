@@ -66,7 +66,7 @@ Function/WAVE LBV_PopupExtGetLBKeys(string win)
 	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 
-	WAVE/Z entries = LBV_GetAllLogbookKeys(win, textualKeys, numericalKeys)
+	WAVE/Z entries = LBV_GetAllLogbookKeys(textualKeys, numericalKeys)
 
 	return LBV_PopupExtFormatEntries(entries)
 End
@@ -81,13 +81,13 @@ Function/WAVE LBV_PopupExtGetResultsKeys(string win)
 	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
 	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(win, LBT_RESULTS, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
 
-	WAVE/Z entries = LBV_GetAllLogbookKeys(win, textualKeys, numericalKeys)
+	WAVE/Z entries = LBV_GetAllLogbookKeys(textualKeys, numericalKeys)
 
 	return LBV_PopupExtFormatEntries(entries)
 End
 
 /// @brief Returns the combined keys from the numerical and textual MD key loogbook waves as 1D text wave
-static Function/WAVE LBV_GetAllLogbookKeys(string win, WAVE/T textualKeys, WAVE/T numericalKeys)
+static Function/WAVE LBV_GetAllLogbookKeys(WAVE/T/Z textualKeys, WAVE/T/Z numericalKeys)
 	variable existText, existNum
 
 	WAVE/Z/T textualKeys1D = LBV_GetLogbookKeys(textualKeys)
@@ -391,7 +391,7 @@ End
 /// @param traceList   list of traces in the graph
 static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 	string str, trace, header, prefix
-	variable numEntries, i, headstage
+	variable numEntries, i, headstage, hasAllEntry
 
 	if(!windowExists(graph))
 		return NaN
@@ -431,7 +431,10 @@ static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 			hsMarker[headstage] = 1
 			str += prefix + num2str(headstage)
 		else
-			str += prefix + "all"
+			if(!hasAllEntry)
+				str += prefix + "all"
+				hasAllEntry = 1
+			endif
 		endif
 
 		if(mod(i, 2))
@@ -443,7 +446,7 @@ static Function LBV_UpdateLBGraphLegend(string graph, [string traceList])
 		return NaN
 	endif
 
-	str = RemoveEnding(header + str, "\r")
+	str = RemoveEndingRegExp(header + str, "\r*")
 	TextBox/C/W=$graph/N=text0/F=2 str
 End
 
@@ -573,6 +576,11 @@ static Function LBV_AddTraceToLBGraph(string graph, WAVE keys, WAVE values, stri
 	LBV_SetLabNotebookBottomLabel(graph, isTimeAxis)
 	EquallySpaceAxis(graph, axisRegExp= ".*" + VERT_AXIS_BASE_NAME + ".*", sortOrder = 16)
 	LBV_UpdateLBGraphLegend(graph, traceList=traceList)
+End
+
+Function LBV_Update(string win)
+
+	LBV_LimitXRangeToSelected(win)
 End
 
 Function LBV_UpdateTagsForTextualLBNEntries(string win, variable sweepNo)
@@ -902,6 +910,8 @@ static Function LBV_SwitchLBGraphXAxis(string graph)
 	for(i = 0; i < numEntries; i += 1)
 		SetAxis/W=$graph/A $StringFromList(i, list)
 	endfor
+
+	LBV_LimitXRangeToSelected(graph)
 End
 
 /// @brief Check if the x wave belonging to the first trace in the
@@ -1067,6 +1077,125 @@ Function LBV_EntryDescription(STRUCT WMWinHookStruct &s)
 		case 6: // resize
 			descNB = LBV_GetDescriptionNotebook(s.winName)
 			ReflowNotebookText(descNB)
+			break
+	endswitch
+
+	return 0
+End
+
+Function LBV_PlotAllAnalysisFunctionLBNKeys(string browser, variable anaFuncType)
+	string key, graph, axes, prefix
+	variable i, numEntries
+
+	WAVE/T/Z textualKeys   = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_TEXTUAL_KEYS, selectedExpDevice = 1)
+	WAVE/T/Z numericalKeys = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_KEYS, selectedExpDevice = 1)
+
+	WAVE/T/Z allKeys = LBV_GetAllLogbookKeys(numericalkeys, textualKeys)
+
+	if(!WaveExists(allKeys))
+		printf "Could not find any labnotebook keys.\r"
+		ControlWindowToFront()
+		return NaN
+	endif
+
+	// remove entries which would clutter everything
+	prefix = CreateAnaFuncLBNKey(anaFuncType, "%s", query = 1)
+	Make/FREE/T ignoredKeys = {prefix + " cycle x values"}
+
+	WAVE/T/Z anaFuncKeys = GrepTextWave(allKeys, prefix + "*")
+	WAVE/T/Z keys = GetSetDifference(anaFuncKeys, ignoredKeys)
+
+	STRUCT WMPopupAction pa
+	pa.win = LBV_GetSettingsHistoryPanel(browser)
+	pa.eventCode = 2
+
+	// add user entries from given analysis function
+	numEntries = DimSize(keys, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		pa.popStr = keys[i]
+		LBV_PopMenuProc_LabNotebookAndResults(pa)
+	endfor
+
+	// add interesting stock entries
+	pa.popStr = STIMSET_SCALE_FACTOR_KEY
+	LBV_PopMenuProc_LabNotebookAndResults(pa)
+
+	pa.popStr = "Stimset Acq Cycle ID"
+	LBV_PopMenuProc_LabNotebookAndResults(pa)
+End
+
+/// @brief Limit the bottom axis of the settings history graph to the selected/displayed sweeps
+static Function LBV_LimitXRangeToSelected(string browser)
+	variable minSweep, maxSweep, first, last
+	string graph, shPanel, scPanel, key
+
+	graph = LBV_GetLabNoteBookGraph(browser)
+
+	if(TUD_GetTraceCount(graph) == 0)
+		return NaN
+	endif
+
+	shPanel = LBV_GetSettingsHistoryPanel(browser)
+
+	if(!GetCheckBoxState(shPanel, "check_limit_x_selected_sweeps"))
+		return NaN
+	endif
+
+	WAVE/Z selectedSweeps = OVS_GetSelectedSweeps(browser, OVS_SWEEP_SELECTION_SWEEPNO)
+
+	if(!WaveExists(selectedSweeps))
+		scPanel = BSP_GetSweepControlsPanel(browser)
+		Make/FREE selectedSweeps = {GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")}
+	endif
+
+	[minSweep, maxSweep] = WaveMinAndMaxWrapper(selectedSweeps)
+
+	// display one more sweep on both sides
+	minSweep = max(0, minSweep - 1)
+	maxSweep  = maxSweep + 1
+
+	if(LBV_CheckIfXAxisIsTime(graph))
+		WAVE/T/Z numericalValues = BSP_GetLogbookWave(browser, LBT_LABNOTEBOOK, LBN_NUMERICAL_VALUES, selectedExpDevice = 1)
+		ASSERT(WaveExists(numericalValues), "numericalValues can not be found")
+
+		// get the timestamps of minSweep/maxSweep, moving inwards if they are empty
+
+		// present since ec6c1ac6 (Labnotebook: Add UTC timestamps, 2015-09-18)
+		key = "TimeStampSinceIgorEpochUTC"
+
+		first = GetLastSettingIndep(numericalValues, minSweep, key, DATA_ACQUISITION_MODE)
+
+		if(IsNaN(first))
+			first = GetLastSettingIndep(numericalValues, minSweep + 1, key, DATA_ACQUISITION_MODE)
+		endif
+
+		last = GetLastSettingIndep(numericalValues, maxSweep, key, DATA_ACQUISITION_MODE)
+
+		if(IsNaN(last))
+			last = GetLastSettingIndep(numericalValues, maxSweep - 1, key, DATA_ACQUISITION_MODE)
+		endif
+
+		// convert to local time zone
+		first += date2secs(-1, -1, -1)
+		last  += date2secs(-1, -1, -1)
+
+		ASSERT(IsFinite(first) && IsFinite(last), "Invalid first/last")
+	else
+		first = minSweep
+		last  = maxSweep
+	endif
+
+	SetAxis/W=$graph bottom, first, last
+End
+
+Function LBV_CheckProc_XRangeSelected(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			if(cba.checked)
+				LBV_LimitXRangeToSelected(cba.win)
+			endif
 			break
 	endswitch
 

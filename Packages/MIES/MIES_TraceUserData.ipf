@@ -31,9 +31,20 @@ End
 /// @brief Clear the user data wave and release the indexing JSON document
 ///
 /// Works recursively on all child windows and calls TUD_ClearImpl on each graph.
-Function TUD_Clear(string graph)
+Function TUD_Clear(string graph, [variable recursive])
 	string windows, win
 	variable numEntries, i
+
+	if(ParamIsDefault(recursive))
+		recursive = 1
+	else
+		recursive = !!recursive
+	endif
+
+	if(!recursive)
+		TUD_ClearImpl(graph)
+		return NaN
+	endif
 
 	windows = GetAllWindows(graph)
 

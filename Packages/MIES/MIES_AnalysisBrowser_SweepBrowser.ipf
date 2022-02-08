@@ -291,7 +291,7 @@ Function SB_UpdateSweepPlot(win)
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 	RemoveFreeAxisFromGraph(graph)
-	TUD_Clear(graph)
+	TUD_Clear(graph, recursive = 0)
 
 	WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
 

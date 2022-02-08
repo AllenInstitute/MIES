@@ -337,8 +337,10 @@ static Function AllTests(t, devices)
 
 	CheckDAQStopReason(device, DQ_STOP_REASON_FINISHED)
 
-	TestNwbExportV1()
-	TestNwbExportV2()
+	if(DoExpensiveChecks())
+		TestNwbExportV1()
+		TestNwbExportV2()
+	endif
 End
 
 Function/WAVE GetTrackActiveSetCount()
@@ -2702,8 +2704,10 @@ Function UnassociatedChannelsAndTTLs_REENTRY([str])
 		endfor
 	endfor
 
-	TestNwbExportV1()
-	TestNwbExportV2()
+	if(DoExpensiveChecks())
+		TestNwbExportV1()
+		TestNwbExportV2()
+	endif
 End
 
 static Function GetMinSampInt_IGNORE([unit])

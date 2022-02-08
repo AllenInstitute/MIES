@@ -28,14 +28,26 @@ Function CreatesWave()
 	CHECK(JSON_Exists(GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON), ""))
 End
 
-Function KillGraphAndCheckEmptyUserData_IGNORE(string graph, WAVE/T graphUserData)
+Function KillGraphAndCheckEmptyUserData_IGNORE(string graph, WAVE/T graphUserData, [variable clearInstead])
+	variable modCount
 
-	variable modCount = WaveModCount(graphUserData)
+	if(ParamIsDefault(clearInstead))
+		clearInstead = 0
+	else
+		clearInstead = !!clearInstead
+	endif
 
-	KillWindow $GetMainWindow(graph)
-	DoUpdate
+	modCount = WaveModCount(graphUserData)
 
-	CHECK(!WindowExists(graph))
+	if(clearInstead)
+		TUD_Clear(graph, recursive = 0)
+	else
+		KillWindow $GetMainWindow(graph)
+		DoUpdate
+
+		CHECK(!WindowExists(graph))
+	endif
+
 	CHECK_GT_VAR(WaveModCount(graphUserData), modCount)
 
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(graphUserData, NOTE_INDEX), 0)
@@ -84,6 +96,41 @@ Function ClearsWaveOnKillWindowRecursively()
 	TUD_SetUserData(subGraph, "trace1", "efgh", "ijkl")
 
 	KillGraphAndCheckEmptyUserData_IGNORE(subGraph, graphUserData)
+End
+
+// Test: TUD_Clear
+Function ClearDoesHonourRecursiveFlag()
+	string graph, subGraph, subPanel
+	variable modCount
+
+	// and now with an external subwindow graph
+	Display
+	graph = S_name
+	NewPanel/HOST=$graph/EXT=1
+	subPanel = graph + "#" + S_name
+	Display/HOST=$subPanel
+	subGraph = subPanel + "#" + S_name
+
+	TUD_Init(graph)
+	TUD_SetUserData(graph, "trace1", "efgh", "ijkl")
+
+	TUD_Init(subGraph)
+	TUD_SetUserData(subGraph, "trace1", "efgh", "ijkl")
+
+	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+	WAVE/T/Z subGraphUserData = GetGraphUserData(subGraph)
+
+	modCount = WaveModCount(subGraphUserData)
+
+	KillGraphAndCheckEmptyUserData_IGNORE(graph, graphUserData, clearInstead = 1)
+
+	CHECK_WAVE(subGraphUserData, TEXT_WAVE)
+
+	// subGraph was not touched
+	CHECK_EQUAL_VAR(WaveModCount(subGraphUserData), modCount)
+
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(subGraphUserData, NOTE_INDEX), 1)
+	CHECK_GE_VAR(GetNumberFromWaveNote(subGraphUserData, TUD_INDEX_JSON), 0)
 End
 
 // Test: TUD_SetUserData
