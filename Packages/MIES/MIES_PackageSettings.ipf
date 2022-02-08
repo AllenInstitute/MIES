@@ -42,9 +42,11 @@ Function PS_ReadSettings(package, generateDefaults)
 
 	if(FileExists(filepath))
 		[data, fName] = LoadTextFile(filepath)
-		JSONid = JSON_Parse(data)
+		JSONid = JSON_Parse(data, ignoreErr = 1)
 
-		return JSONid
+		if(IsFinite(JSONid))
+			return JSONid
+		endif
 	endif
 
 	JSONid = generateDefaults()
