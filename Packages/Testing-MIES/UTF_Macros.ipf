@@ -12,9 +12,6 @@ static Function ExecuteAllMacros()
 
 	allMacros = GrepList(allMacros, "FunctionProfilingPanel", 1)
 
-	// remove known broken ones which will be removed in https://github.com/AllenInstitute/MIES/pull/1018
-	allMacros = GrepList(allMacros, "(LabnotebookBrowser|TPStorageBrowser)", 1)
-
 	numEntries = ItemsInList(allMacros)
 	for(i = 0; i < numEntries; i += 1)
 		mac = StringFromList(i, allMacros)
