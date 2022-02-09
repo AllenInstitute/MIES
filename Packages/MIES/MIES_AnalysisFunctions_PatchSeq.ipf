@@ -3268,7 +3268,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 	ED_AddEntryToLabnotebook(device, key, resultText, overrideSweepNo = sweepNo)
 
 #ifdef DEBUGGING_ENABLED
-	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+	if(DP_DebuggingEnabledForCaller())
 		Make/O/N=7/D $("chirpVisDebug_" + num2str(sweepNo))/Wave=chirpVisDebug
 		Make/O/N=7/D $("chirpVisDebugX_" + num2str(sweepNo))/Wave=chirpVisDebugX
 
