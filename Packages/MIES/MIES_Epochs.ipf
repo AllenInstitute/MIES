@@ -735,5 +735,7 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 
 	Make/FREE/T/N=(DimSize(indizes, ROWS), DimSize(epochInfo, COLS)) matches = epochInfo[indizes[p]][q]
 
+	SortColumns/KNDX={EPOCH_COL_STARTTIME} sortWaves={matches}
+
 	return matches
 End
