@@ -6763,6 +6763,10 @@ End
 ///                              when no crash dumps have been uploadad.
 /// - "analysisbrowser": Groups settings related to the Analysisbrowser
 /// - "analysisbrowser/directory": The directory initially opened for browsing existing NWB/PXP files
+/// - "logfiles": Groups settings related to log files
+/// - "logfiles/last upload": ISO8601 timestamp when the last successfull
+///                              upload of log files was tried. This is also set
+///                              when no log files have been uploadad.
 /// - "*[/*]/coordinates": window coordinates
 ///
 /// @return JSONid
@@ -6789,6 +6793,11 @@ Function UpgradeSettings(JSONid)
 	if(!JSON_Exists(JSONid, "/analysisbrowser"))
 		JSON_AddTreeObject(JSONid, "/analysisbrowser")
 		JSON_AddString(JSONid, "/analysisbrowser/directory", "C:")
+	endif
+
+	if(!JSON_Exists(JSONid, "/logfiles"))
+		JSON_AddTreeObject(JSONid, "/logfiles")
+		JSON_AddString(JSONid, "/logfiles/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch=0))
 	endif
 End
 
@@ -6817,6 +6826,50 @@ Function UploadCrashDumpsDaily()
 	catch
 		ClearRTError()
 		BUG("Could not upload crash dumps!")
+	endtry
+End
+
+/// @brief Call UploadLogFiles() if we haven't called it since at least a day.
+Function UploadLogFilesDaily()
+	string ts
+	variable lastWrite, now, first, last
+
+	AssertOnAndClearRTError()
+	try
+		NVAR JSONid = $GetSettingsJSONid()
+
+		ts = JSON_GetString(jsonID, "/logfiles/last upload")
+		lastWrite = ParseISO8601TimeStamp(ts)
+		now = DateTimeInUTC()
+
+		if((lastWrite + 24 * 3600) > now)
+			// nothing to do
+			return NaN
+		endif
+
+		// Algorithm:
+		// Upload everything from yesterday and the last time we tried to
+		// upload taking the earliest time of each day. Borders included.
+
+		// earliest time of the day of the last upload
+		if(IsEmpty(ts))
+			first = 0
+		else
+			first = ParseISO8601TimeStamp(ts[0, 9] + "T00:00:00Z")
+			ASSERT(IsFinite(first), "Could not parse ts")
+		endif
+
+		// earliest time today
+		last = ParseISO8601TimeStamp(Secs2Date(now, -2) + "T00:00:00Z")
+		ASSERT(IsFinite(last), "Could not parse now")
+
+		UploadLogFiles(verbose = 0, firstDate = first, lastDate = last)
+
+		JSON_SetString(jsonID, "/logfiles/last upload", GetIso8601TimeStamp())
+		AbortOnRTE
+	catch
+		ClearRTError()
+		ASSERT(0, "Could not upload logfiles!")
 	endtry
 End
 
@@ -7177,29 +7230,167 @@ Function UploadCrashDumps()
 	return 1
 End
 
-Function UploadLogFiles()
-	string file, ticket
-	variable jsonID
+/// @brief Upload the MIES and ZeroMQ logfiles
+///
+/// @param verbose   [optional, defaults to true] Only in verbose mode the ticket ID is output to the history
+/// @param firstDate [optional, defaults to false] Allows to filter the logfiles to include entries within the given dates.
+///                  Both `firstDate` and `lastDate` must be present for filtering. The timestamps are in seconds since Igor Pro epoch.
+/// @param lastDate  [optional, defaults to false] See `firstDate`
+Function UploadLogFiles([variable verbose, variable firstDate, variable lastDate])
+	string file, ticket, path, data, location, basePath
+	variable jsonID, numEntries, i, doFilter, isBinary
 
-	file = LOG_GetFile(PACKAGE_MIES)
+	isBinary = 1
+
+	if(ParamIsDefault(verbose))
+		verbose = 1
+	else
+		verbose = !!verbose
+	endif
+
+	if(ParamIsDefault(firstDate) && ParamIsDefault(lastDate))
+		doFilter = 0
+	elseif(!ParamIsDefault(firstDate) && !ParamIsDefault(lastDate))
+		doFilter = 1
+	else
+		ASSERT(0, "Invalid firstDate/lastDate combination")
+	endif
+
+	Make/FREE/T files = {{LOG_GetFile(PACKAGE_MIES), GetZeroMQXOPLogfile()}, {"MIES-log-file-does-not-exist", "ZeroMQ-XOP-log-file-does-not-exist"}}
 	jsonID = GenerateJSONTemplateForUpload()
 
-	AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = 1)
+	numEntries = DimSize(files, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		file = files[i][0]
 
-	file = GetZeroMQXOPLogfile()
-	if(FileExists(file))
-		AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = 1)
-	else
-		AddPayloadEntries(jsonID, {"ZeroMQ-XOP-log-file-does-not-exist"}, {""})
+		if(!FileExists(file))
+			AddPayloadEntries(jsonID, {file}, {files[i][1]}, isBinary = isBinary)
+			continue
+		endif
+
+		if(doFilter)
+			WAVE/T/Z keys, values
+			[keys, values] = FilterLogfileByDate(file, firstDate, lastDate)
+
+			AddPayloadEntries(jsonID, keys, values, isBinary = isBinary)
+		else
+			AddPayloadEntriesFromFiles(jsonID, {file}, isBinary = isBinary)
+		endif
+	endfor
+
+	if(doFilter)
+		AddPayloadEntries(jsonID, {"firstDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = firstDate)}, isBinary = isBinary)
+		AddPayloadEntries(jsonID, {"lastDate.txt"}, {GetISO8601TimeStamp(secondsSinceIgorEpoch = lastDate)}, isBinary = isBinary)
 	endif
 
 	ticket = GenerateRFC4122UUID()
-	AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = 1)
+	AddPayloadEntries(jsonID, {"ticket.txt"}, {ticket}, isBinary = isBinary)
+
+#ifdef DEBUGGING_ENABLED
+	if(DP_DebuggingEnabledForCaller())
+		basePath = GetUniqueSymbolicPath()
+		path = SpecialDirPath("Temporary", 0, 0, 1) + "MIES:"
+		NewPath/C/Q/O/Z $basePath path
+
+		location = path + UniqueFileOrFolder(basePath, "logfiles", suffix = ".json")
+		SaveTextFile(JSON_dump(jsonID, indent=4), location)
+
+		printf "Stored the logfile JSON in %s.\r", location
+	endif
+#endif // DEBUGGING_ENABLED
 
 	UploadJSONPayload(jsonID)
 	JSON_Release(jsonID)
 
-	printf "Successfully uploaded the MIES and ZeroMQ-XOP logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+	if(verbose)
+		printf "Successfully uploaded the MIES and ZeroMQ-XOP logfiles. Please mention your ticket \"%s\" if you are contacting support.\r", ticket
+	endif
+End
+
+/// @brief Filter the entries text wave so that the result only includes entries between first and last
+///
+/// @param entries 1D wave with a JSON document in each entry. Each JSON must contain a `ts` object with a ISO8601 timestamp.
+/// @param first   Seconds since igor epoch in UTC of the first entry to include
+/// @param last    Seconds since igor epoch in UTC of the last entry to include
+Function/WAVE FilterByDate(WAVE/T entries, variable first, variable last)
+	variable i, numRows, jsonID, include
+	string entry, dat
+	variable ts, idx
+
+	ASSERT(!IsNaN(first) && !IsNaN(last), "first and last can not be NaN.")
+	ASSERT(first >= 0 && last >= 0 && first < last, "first and last must not be negative and first < last.")
+
+	numRows = DimSize(entries, ROWS)
+
+	if(numRows == 0)
+		return $""
+	endif
+
+	Make/T/FREE/N=(numRows) filtered
+
+	for(i = 0; i < numRows; i += 1)
+		entry = entries[i]
+
+		jsonID = JSON_Parse(entry, ignoreErr = 1)
+		if(IsNaN(jsonID))
+			// include invalid entries
+			dat = ""
+		else
+			dat = JSON_GetString(jsonID, "ts", ignoreErr=1)
+			JSON_Release(jsonID)
+		endif
+
+		include = 0
+
+		if(IsEmpty(dat))
+			// include entries without ts
+			include = 1
+		else
+			ts = ParseISO8601TimeStamp(dat)
+
+			if(IsNaN(ts))
+				// include entries with invalid ts
+				include = 1
+			elseif(ts >= first && ts <= last)
+				include = 1
+			endif
+		endif
+
+		if(include)
+			filtered[idx++] = entry
+		endif
+	endfor
+
+	if(idx == 0)
+		return $""
+	endif
+
+	Redimension/N=(idx) filtered
+
+	return filtered
+End
+
+static Function [WAVE/T keys, WAVE/T values] FilterLogfileByDate(string file, variable firstDate, variable lastDate)
+	string data, path
+
+	[data, path] = LoadTextFile(file)
+
+	data = NormalizeToEOL(data, "\n")
+	WAVE/Z contents = ListToTextWave(data, "\n")
+	ASSERT(WaveExists(contents), "Missing contents")
+	WAVE/Z filteredContents = FilterByDate(contents, firstDate, lastDate)
+
+	if(!WaveExists(filteredContents))
+		data = "{}"
+	else
+		data = TextWaveToList(filteredContents, "\n")
+	endif
+
+	Make/FREE/T keys = {GetFile(path)}
+	// remove duplicated empty entries
+	Make/FREE/T values = {ReplaceString("{}\n{}\n", data, "")}
+
+	return [keys, values]
 End
 
 /// @brief Update the logging template used by the ZeroMQ-XOP
