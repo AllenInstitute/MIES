@@ -1705,7 +1705,7 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 	variable numArgs, sweepCnt, activeChannelCnt, i, j, channelNr, channelType, dacChannelNr
 	variable sweep, index, numTPEpochs
 	variable tpBaseLineT, emptyOutput, headstage, outType
-	string epShortName, tpAmpKey, tmpStr, unit, unitKey
+	string epShortName, tmpStr, unit, unitKey
 	string epochTPRegExp = "^(U_)?TP[[:digit:]]*$"
 	string baselineUnit = ""
 	STRUCT TPAnalysisInput tpInput
@@ -1839,17 +1839,8 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 			SF_ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Mode from LBN")
 			tpInput.clampMode = settings[index]
 
-			if(tpInput.clampMode == V_CLAMP_MODE)
-				tpAmpKey = TP_AMPLITUDE_VC_ENTRY_KEY
-			elseif(tpInput.clampMode == I_CLAMP_MODE)
-				tpAmpKey = TP_AMPLITUDE_IC_ENTRY_KEY
-			else
-				ASSERT(0, "Unsupported TP clamp mode")
-			endif
-
-			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, tpAmpKey, dacChannelNr, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
-			SF_ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Ampitude from LBN")
-			tpInput.clampAmp = settings[index]
+			tpInput.clampAmp = NumberByKey("Amplitude", epochTPPulse[0][EPOCH_COL_TAGS], "=")
+			SF_ASSERT(IsFinite(tpInput.clampAmp), "Could not find amplitude entry in epoch tags")
 
 			// values not required for calculation result
 			tpInput.device = graph
