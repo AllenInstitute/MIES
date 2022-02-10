@@ -357,6 +357,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	PSQ_GetPulseSettingsForType(type, ps)
 
 	if(chunk == 0) // pre pulse baseline
+		// TODO allow to configure offset of chunkStartTime
 		chunkStartTimeMax  = totalOnsetDelay
 		chunkLengthTime    = ps.prePulseChunkLength
 		baselineType       = PSQ_BL_PRE_PULSE
@@ -4039,16 +4040,9 @@ Function/S PSQ_SealCheck_CheckParam(string name, struct CheckParametersStruct& s
 		case "SamplingFrequency":
 		case "SamplingMultiplier":
 			return PSQ_CheckParamCommon(name, s.params)
-		case "MaxLeakCurrent":
+		case "SealThreshold":
 			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 1000))
-				return "Invalid value " + num2str(val)
-			endif
-			break
-		case "MinPipetteResistance":
-		case "MaxPipetteResistance":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 20))
+			if(!(val > 0))
 				return "Invalid value " + num2str(val)
 			endif
 			break
@@ -4065,12 +4059,6 @@ Function/S PSQ_SealCheck_CheckParam(string name, struct CheckParametersStruct& s
 				return "The stimset can not be created"
 			endif
 			break
-		case "NumberOfTestpulses":
-			val = AFH_GetAnalysisParamNumerical(name, s.params)
-			if(!(val > 0 && val <= 100))
-				return "Invalid value " + num2str(val)
-			endif
-			break
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
@@ -4084,27 +4072,20 @@ Function/S PSQ_SealCheck_GetHelp(string name)
 		case "BaselineRMSLongThreshold":
 		case "BaselineRMSShortThreshold":
 			return PSQ_GetHelpCommon(PSQ_SEAL_CHECK, name)
-		case "MaxLeakCurrent":
-			return "Maximum current [pA] which is allowed in the pre pulse baseline"
-		case "MinPipetteResistance":
-			return "Minimum allowed pipette resistance [MOhm]"
-		case "MaxPipetteResistance":
-			return "Maximum allowed pipette resistance [MOhm]"
+		case "SealThreshold":
+			return "Minimum required seal threshold, defaults to 1 [GΩ]"
 		case "NumberOfFailedSweeps":
 			return "Number of failed sweeps which marks the set as failed"
 		case "NextStimSetName":
 			return "Next stimulus set which should be set in case of success"
-		case "NumberOfTestpulses":
-			return "Expected number of testpulses in the stimset"
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 	endswitch
 End
 
 Function/S PSQ_SealCheck_GetParams()
-	return "[SamplingFrequency:variable],[SamplingMultiplier:variable],BaselineRMSShortThreshold:variable," +                         \
-		   "BaselineRMSLongThreshold:variableMaxPipetteResistance:variable," + \
-		   "NumberOfFailedSweeps:variable,NextStimSetName:string,NumberOfTestpulses:variable"
+	return "[SamplingFrequency:variable],[SamplingMultiplier:variable],BaselineRMSShortThreshold:variable," +           \
+		   "BaselineRMSLongThreshold:variable,SealThreshold:variable,NumberOfFailedSweeps:variable,NextStimSetName:string"
 End
 
 /// @brief Analysis function for XXX
@@ -4115,8 +4096,9 @@ End
 Function PSQ_SealCheck(string device, struct AnalysisFunction_V3& s)
 	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
-	variable maxPipetteResistance, minPipetteResistance, expectedNumTestpulses, numTestPulses, pipetteResistance
-	string key, ctrl, stimset, msg, databrowser, bsPanel, scPanel, formula_nb, pipetteResistanceStr, sweepStr
+	variable expectedNumTestpulses, numTestPulses, steadyStateResistance
+	string key, ctrl, stimset, msg, databrowser, bsPanel, formula, formula_nb, pipetteResistanceStr, sweepStr
+	string sealResistanceGroupAStr, sealResistanceGroupBStr
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -4147,29 +4129,25 @@ Function PSQ_SealCheck(string device, struct AnalysisFunction_V3& s)
 				return 1
 			endif
 
-			databrowser = DB_FindDataBrowser(device)
-			if(IsEmpty(databrowser)) // not yet open
-				databrowser = DB_OpenDataBrowser()
-			endif
+			databrowser = DB_GetBoundDataBrowser(device)
 
-			bsPanel = BSP_GetPanel(databrowser)
-			scPanel = BSP_GetSweepControlsPanel(databrowser)
-
-			if(!BSP_HasBoundDevice(bsPanel))
-				PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
-				databrowser = DB_FindDataBrowser(device)
-				bsPanel = BSP_GetPanel(databrowser)
-				scPanel = BSP_GetSweepControlsPanel(databrowser)
-			endif
+          bsPanel = BSP_GetPanel(databrowser)
 
 			formula_nb = BSP_GetSFFormula(databrowser)
-			ReplaceNotebookText(formula_nb, "store(\"Steady state resistance\", tp(ss, channels(AD), sweeps(), [0]))")
+
+			// inserted TP: 0
+			// group A: 1, 2, 3
+			// group B: 4, 5, 6
+			// and `tp` takes the *ignored* list
+			formula = "store(\"Steady state resistance (group A)\", tp(ss, channels(AD), sweeps(), [0, 4, 5, 6]))\n" + \
+			          "and\n"                                                                                        + \
+			          "store(\"Steady state resistance (group B)\", tp(ss, channels(AD), sweeps(), [0, 1, 2, 3]))\n"
+
+			ReplaceNotebookText(formula_nb, formula)
 
 			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
 
 			PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = s.headstage)
-			PGC_SetAndActivateControl(device, "button_DataAcq_AutoPipOffset_VC", val = 1)
-			PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnableVC", val = 0)
 
 			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			break
@@ -4180,13 +4158,7 @@ Function PSQ_SealCheck(string device, struct AnalysisFunction_V3& s)
 			PSQ_SetSamplingIntervalMultiplier(device, multiplier)
 			break
 		case PRE_SWEEP_CONFIG_EVENT:
-			expectedNumTestpulses = AFH_GetAnalysisParamNumerical("NumberOfTestpulses", s.params, defValue = 3)
-			numTestpulses = PSQ_PB_CreateTestpulseEpochs(device, s.headstage)
-			if(expectedNumTestpulses != numTestpulses)
-				printf "The number of present (%g) and expected (%g) test pulses in the stimset differs.", numTestpulses, expectedNumTestpulses
-				ControlWindowToFront()
-				return 1
-			endif
+			PSQ_SC_CreateTestpulseEpochs(device, s.headstage)
 
 			break
 		case POST_SWEEP_EVENT:
@@ -4198,6 +4170,21 @@ Function PSQ_SealCheck(string device, struct AnalysisFunction_V3& s)
 			ASSERT(WaveExists(baselineQCPassedLBN), "Missing baseline QC")
 			baselineQCPassed = baselineQCPassedLBN[s.headstage]
 
+			steadyStateResistance = AFH_GetAnalysisParamNumerical("TPSteadyStateResistance", s.params)
+
+			databrowser = DB_FindDataBrowser(device)
+
+			WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
+
+			sealResistanceGroupAStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [Steady state resistance (group A)]", SWEEP_FORMULA_RESULT)
+			sealResistanceGroupBStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [Steady state resistance (group B)]", SWEEP_FORMULA_RESULT)
+
+			sweepStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula displayed sweeps", SWEEP_FORMULA_RESULT)
+
+			// if(IsEmpty(pipetteResistanceStr) || cmpstr(sweepStr, num2str(s.sweepNo) + ";"))
+			// 	// no pipette resistance value for the current sweep
+			// 	pipetteResistance = NaN
+			// endif
 			// TODO
 
 			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
@@ -4303,98 +4290,88 @@ Function PSQ_SealCheck(string device, struct AnalysisFunction_V3& s)
 //	endif
 End
 
-static Function PSQ_PB_GetPrePulseBaselineDuration(string device, variable headstage)
-	variable DAC
-	string setName
-
-	DAC     = AFH_GetDACFromHeadstage(device, headstage)
-	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
-
-	return ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)
-End
-
 /// @brief Create user epochs for the testpulse like shapes in the stimset
 ///
 /// Assumes that all sweeps in the stimset are the same.
 ///
 /// @return number of found testpulses
-static Function PSQ_PB_CreateTestpulseEpochs(string device, variable headstage)
-	variable DAC, numTestPulses, prePulseTP, signalTP, postPulseTP
-	variable amplitude, offset, numEpochs, i, idx, epBegin, epEnd, totalOnsetDelay
-	string setName, shortName, tags
-
-	DAC     = AFH_GetDACFromHeadstage(device, headstage)
-	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
-
-	numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
-	numTestPulses = (numEpochs - 2) / 3
-
-	if(!IsInteger(numTestPulses) || numTestPulses <= 0)
-		printf "(%s) The stimset %s does not follow the expected format", device, setName
-		return NaN
-	endif
-
-	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
-				      + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
-
-	offset = (totalOnsetDelay + ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)) * 1e-3
-
-	// 0: pre pulse baseline chunk
-	// 1: testpulse pre baseline
-	// 2: testpulse signal
-	// 3: testpulse post baseline
-	// ...
-	// 1 + n * 3: post pulse baseline
-	for(i = 0; i < numTestPulses; i += 1)
-		// first TP epoch
-		idx = 1 + i * numTestPulses
-
-		prePulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx) * 1e-3
-		amplitude  = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx)
-		ASSERT(amplitude == 0, "Invald amplitude")
-
-		signalTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx + 1) * 1e-3
-		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 1)
-		ASSERT(amplitude == 1, "Invald amplitude")
-
-		postPulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx + 2) * 1e-3
-		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 2)
-		ASSERT(amplitude == 0, "Invald amplitude")
-
-		// full TP
-		epBegin = offset
-		epEnd   = epBegin + prePulseTP + signalTP + postPulseTP
-		sprintf tags, "Type=Testpulse Like;Index=%d", i
-		sprintf shortName, "TP%d", i
-
-		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
-
-		offset = epEnd
-
-		// pre TP baseline
-		// same epBegin as full TP
-		epEnd   = epBegin + prePulseTP
-		sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", i
-		sprintf shortName, "TP%d_B0", i
-
-		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
-
-		// pulse TP
-		epBegin = epEnd
-		epEnd   = epBegin + signalTP
-		sprintf tags, "Type=Testpulse Like;SubType=Pulse;Amplitude=%g;Index=%d;", ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 1), i
-		sprintf shortName, "TP%d_P", i
-
-		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
-
-		// post TP baseline
-		epBegin = epEnd
-		epEnd   = epBegin + postPulseTP
-		sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", i
-		sprintf shortName, "TP%d_B1", i
-
-		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
-	endfor
-
-	return numTestPulses
+static Function PSQ_SC_CreateTestpulseEpochs(string device, variable headstage)
+	// variable DAC, numTestPulses, prePulseTP, signalTP, postPulseTP
+	// variable amplitude, offset, numEpochs, i, idx, epBegin, epEnd, totalOnsetDelay
+	// string setName, shortName, tags
+    //
+	// DAC     = AFH_GetDACFromHeadstage(device, headstage)
+	// setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
+    //
+	// numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
+	// numTestPulses = (numEpochs - 2) / 3
+    //
+	// if(!IsInteger(numTestPulses) || numTestPulses <= 0)
+	// 	printf "(%s) The stimset %s does not follow the expected format", device, setName
+	// 	return NaN
+	// endif
+    //
+	// totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
+	// 			      + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+    //
+	// offset = (totalOnsetDelay + ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)) * 1e-3
+    //
+	// // 0: pre pulse baseline chunk
+	// // 1: testpulse pre baseline
+	// // 2: testpulse signal
+	// // 3: testpulse post baseline
+	// // ...
+	// // 1 + n * 3: post pulse baseline
+	// for(i = 0; i < numTestPulses; i += 1)
+	// 	// first TP epoch
+	// 	idx = 1 + i * numTestPulses
+    //
+	// 	prePulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx) * 1e-3
+	// 	amplitude  = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx)
+	// 	ASSERT(amplitude == 0, "Invald amplitude")
+    //
+	// 	signalTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx + 1) * 1e-3
+	// 	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 1)
+	// 	ASSERT(amplitude == 1, "Invald amplitude")
+    //
+	// 	postPulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx + 2) * 1e-3
+	// 	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 2)
+	// 	ASSERT(amplitude == 0, "Invald amplitude")
+    //
+	// 	// full TP
+	// 	epBegin = offset
+	// 	epEnd   = epBegin + prePulseTP + signalTP + postPulseTP
+	// 	sprintf tags, "Type=Testpulse Like;Index=%d", i
+	// 	sprintf shortName, "TP%d", i
+    //
+	// 	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+    //
+	// 	offset = epEnd
+    //
+	// 	// pre TP baseline
+	// 	// same epBegin as full TP
+	// 	epEnd   = epBegin + prePulseTP
+	// 	sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", i
+	// 	sprintf shortName, "TP%d_B0", i
+    //
+	// 	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+    //
+	// 	// pulse TP
+	// 	epBegin = epEnd
+	// 	epEnd   = epBegin + signalTP
+	// 	sprintf tags, "Type=Testpulse Like;SubType=Pulse;Amplitude=%g;Index=%d;", ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 1), i
+	// 	sprintf shortName, "TP%d_P", i
+    //
+	// 	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+    //
+	// 	// post TP baseline
+	// 	epBegin = epEnd
+	// 	epEnd   = epBegin + postPulseTP
+	// 	sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", i
+	// 	sprintf shortName, "TP%d_B1", i
+    //
+	// 	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+	// endfor
+    //
+	// return numTestPulses
 End
