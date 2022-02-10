@@ -2677,9 +2677,6 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 	endif
 
 	if(tgs.dDAQDisplayMode)
-		stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length", DATA_ACQUISITION_MODE)
-		DEBUGPRINT("Stim set length (labnotebook, NaN for oodDAQ)", var=stimSetLength)
-
 		samplingInt = GetSamplingInterval(config) * 1e-3
 
 		// dDAQ data taken with versions prior to
@@ -2733,6 +2730,9 @@ Function CreateTiledChannelGraph(string graph, WAVE config, variable sweepNo, WA
 			sprintf str, "oodDAQRegions (%d) concatenated: _%s_, totalRange=%g", numRegions, oodDAQRegionsAll, totalXRange
 			DEBUGPRINT(str)
 		else
+			stimSetLength = GetLastSettingIndep(numericalValues, sweepNo, "Stim set length", DATA_ACQUISITION_MODE)
+			DEBUGPRINT("Stim set length (labnotebook, NaN for oodDAQ)", var=stimSetLength)
+
 			dDAQActiveHeadstageAll = ""
 
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
