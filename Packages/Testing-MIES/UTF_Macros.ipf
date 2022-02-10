@@ -6,14 +6,15 @@
 static Function ExecuteAllMacros()
 
 	string mac, allMacros
-	variable i, numEntries
+	variable i, numEntries, keepDebugPanel
+
+	// avoid that the default TEST_CASE_BEGIN_OVERRIDE
+	// hook keeps our debug panel open if it did not exist before
+	keepDebugPanel = WindowExists("DP_DebugPanel")
 
 	allMacros = MacroList("*", ";", "")
 
 	allMacros = GrepList(allMacros, "FunctionProfilingPanel", 1)
-
-	// remove known broken ones which will be removed in https://github.com/AllenInstitute/MIES/pull/1018
-	allMacros = GrepList(allMacros, "(LabnotebookBrowser|TPStorageBrowser)", 1)
 
 	numEntries = ItemsInList(allMacros)
 	for(i = 0; i < numEntries; i += 1)
@@ -24,4 +25,8 @@ static Function ExecuteAllMacros()
 	// we only get here if all Macros execute without errrors
 	// so in case we get errors the test case fails as it does not have at least one assertion
 	PASS()
+
+	if(!keepDebugPanel)
+		KillWindow/Z DP_DebugPanel
+	endif
 End

@@ -5461,6 +5461,11 @@ End
 Function SICP_EnsureValidGUIs()
 
 	string panel
+	variable keepDebugPanel
+
+	// avoid that the default TEST_CASE_BEGIN_OVERRIDE
+	// hook keeps our debug panel open if it did not exist before
+	keepDebugPanel = WindowExists("DP_DebugPanel")
 
 	panel = DAP_CreateDAEphysPanel()
 	CHECK_EQUAL_VAR(SearchForInvalidControlProcs(panel), 0)
@@ -5480,6 +5485,10 @@ Function SICP_EnsureValidGUIs()
 
 	panel = DP_OpenDebugPanel()
 	CHECK_EQUAL_VAR(SearchForInvalidControlProcs(panel), 0)
+
+	if(!keepDebugPanel)
+		KillWindow/Z DP_DebugPanel
+	endif
 End
 
 Function RPI_WorksWithOldData()

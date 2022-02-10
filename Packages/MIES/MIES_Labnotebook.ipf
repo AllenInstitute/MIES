@@ -29,3 +29,35 @@ Function LBN_SetDimensionLabels(WAVE/T keys, WAVE values, [variable start])
 		SetDimLabel COLS, i, $text, keys, values
 	endfor
 End
+
+/// @brief Queries the unit and column from the key wave
+///
+/// @param keyWave labnotebook key wave
+/// @param key     key to look for
+///
+/// @retval result one on error, zero otherwise
+/// @retval unit   unit of the result [empty if not found]
+/// @retval col    column of the result into the keyWave [NaN if not found]
+threadsafe Function [variable result, string unit, variable col] LBN_GetEntryProperties(WAVE/T/Z keyWave, string key)
+	variable row
+
+	unit   = ""
+	col    = NaN
+	result = NaN
+
+	if(!WaveExists(keyWave))
+		return [1, unit, col]
+	endif
+
+	row = FindDimLabel(keyWave, ROWS, "Parameter")
+	FindValue/TXOP=4/TEXT=key/RMD=[row] keyWave
+
+	if(!(V_col >= 0))
+		return [1, unit, col]
+	endif
+
+	col  = V_col
+	unit = keyWave[%Units][col]
+
+	return [0, unit, col]
+End
