@@ -181,9 +181,7 @@ End
 
 /// @brief Run the baseline QC check
 ///
-/// This will zero the amp using the pipette offset function call, and look at the baselineSSAvg,
-/// already calculated during the TestPulse. The EXTPINBATH wave will also be run as a way of making
-/// sure the baseline is recorded into the data set for post-experiment analysis
+/// @sa PSQ_PipetteInBath
 Function IVS_runBaselineCheckQC()
 	string device, ctrl
 	variable headstage
@@ -195,54 +193,7 @@ Function IVS_runBaselineCheckQC()
 	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	PGC_SetAndActivateControl(device, ctrl, str = "EXTPINBATH*")
 
-	// Check to see if Test Pulse is already running...if not running, turn it on...
-	if(!TP_CheckIfTestpulseIsRunning(device))
-		PGC_SetAndActivateControl(device, "StartTestPulseButton")
-	endif
-
-	// and now hit the Auto pipette offset
-	AI_UpdateAmpModel(device, "button_DataAcq_AutoPipOffset_VC", headStage)
-
-	CtrlNamedBackground IVS_finishBaselineQCCheck, period=2, proc=IVS_finishBaselineQCCheck
-	CtrlNamedBackground IVS_finishBaselineQCCheck, start
-End
-
-/// @brief Complete the Baseline QC check in the background
-///
-/// @ingroup BackgroundFunctions
-Function IVS_FinishBaselineQCCheck(s)
-	STRUCT WMBackgroundStruct &s
-
-	string device
-	variable headstage, cycles, baselineAverage, qcResult
-
-	device = IVS_DEFAULT_DEVICE
-	headstage  = IVS_DEFAULT_HEADSTAGE
-
-	cycles = 5 //define how many cycles the test pulse must run
-	if(TP_TestPulseHasCycled(device, cycles))
-		print "Enough Cycles passed..."
-	else
-		IVS_PublishQCState(0, "Too few TP cycles")
-		return 0
-	endif
-
-	WAVE TPResults = GetTPResults(device)
-
-	baselineAverage = TPResults[%BaselineSteadyState][headstage]
-
-	printf "baseline Average: %g\r", baselineAverage
-
-	// See if we pass the baseline QC
-	if (abs(baselineAverage) < 100.0)
-		PGC_SetAndActivateControl(device, "DataAcquireButton")
-		qcResult = baselineAverage
-		IVS_PublishQCState(qcResult, "Baseline average")
-	endif
-
-	IVS_PublishQCState(qcResult, "Result before finishing")
-
-	return 1
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
 /// @brief Run the initial access resistance check from the WSE
