@@ -2457,6 +2457,7 @@ End
 
 Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType, WAVE WP, WAVE/T WPT, variable setNumber, variable saveAsBuiltin)
 	string setName, genericFunc, params, errorMessage, childStimsets
+	string tempName
 	variable i
 
 	setName = WB_AssembleSetName(baseName, stimulusType, setNumber)
@@ -2480,16 +2481,20 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 		printf "Naming failure: Stimset can not reference itself. Saving with different name: \"%s\" to remove reference to itself.\r", setName
 	endif
 
-	WB_SaveStimSetParameterWaves(setName, SegWvType, WP, WPT, stimulusType)
+	// now we know that setName is a valid stimset name
+	// but we need to first store it under a temporary name, so that
+	// we can recover from errors when the checks fail
+	tempName = WB_AssembleSetName("MIES_TEMPORARY_STIMSET_WILL_BE_DELETED", stimulusType, setNumber, lengthLimit = MAX_OBJECT_NAME_LENGTH_IN_BYTES)
 
-	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	WB_SaveStimSetParameterWaves(tempName, SegWvType, WP, WPT, stimulusType)
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(tempName)
 	ASSERT(WaveExists(stimset), "Could not recreate stimset")
 
 	// _CheckParam users rely on the stimset being present already
-	// in case of errors the stimulus set is deleted again
 	STRUCT CheckParametersStruct s
 	s.params  = params
-	s.setName = setName
+	s.setName = tempName
 
 	errorMessage = AFH_CheckAnalysisParameter(genericFunc, s)
 
@@ -2497,9 +2502,18 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 		printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"
 		print errorMessage
 		ControlWindowToFront()
-		ST_RemoveStimSet(setName)
+		ST_RemoveStimSet(tempName)
 		return ""
 	endif
+
+	// we now know that the stimset is valid
+	// let's save it under the desired name and delete the temporary one
+	WB_SaveStimSetParameterWaves(setName, SegWvType, WP, WPT, stimulusType)
+
+	ST_RemoveStimSet(tempName)
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	ASSERT(WaveExists(stimset), "Could not recreate stimset")
 
 	// propagate the existence of the new set
 	DAP_UpdateDaEphysStimulusSetPopups()
