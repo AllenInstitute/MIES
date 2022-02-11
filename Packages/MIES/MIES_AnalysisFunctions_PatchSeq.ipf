@@ -4666,7 +4666,8 @@ End
 /// Example:
 ///
 /// \rst
-/// .. code-block: json
+/// .. code-block:: json
+///
 ///    {
 ///     "device": "my_device",
 ///     "headstage": 0,
