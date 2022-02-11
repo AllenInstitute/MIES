@@ -616,9 +616,6 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 				break
 			endif
 
-			DAP_UpdateDaEphysStimulusSetPopups()
-			WB_UpdateEpochCombineList(stimulusType)
-
 			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", DEFAULT_SET_PREFIX)
 			WBP_LoadSet(NONE)
 			break
