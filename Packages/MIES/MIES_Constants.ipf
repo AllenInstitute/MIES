@@ -1008,6 +1008,8 @@ StrConstant PSQ_FMT_LBN_RMS_LONG_PASS      = "%s Chk%d L-RMS QC"
 StrConstant PSQ_FMT_LBN_RMS_LONG_THRESHOLD = "%s L-RMS Threshold"
 StrConstant PSQ_FMT_LBN_TARGETV            = "%s Chk%d T-V BL"
 StrConstant PSQ_FMT_LBN_TARGETV_PASS       = "%s Chk%d T-V BL QC"
+StrConstant PSQ_FMT_LBN_LEAKCUR            = "%s Chk%d Leak Current BL"
+StrConstant PSQ_FMT_LBN_LEAKCUR_PASS       = "%s Chk%d Leak Current BL QC"
 StrConstant PSQ_FMT_LBN_CHUNK_PASS         = "%s Chk%d BL QC"
 StrConstant PSQ_FMT_LBN_BL_QC_PASS         = "%s BL QC"
 StrConstant PSQ_FMT_LBN_SWEEP_PASS         = "%s Sweep QC"
@@ -1026,12 +1028,15 @@ StrConstant PSQ_FMT_LBN_CR_CYCLES          = "%s cycle x values"
 StrConstant PSQ_FMT_LBN_CR_BOUNDS_STATE    = "%s bounds state"
 StrConstant PSQ_FMT_LBN_CR_SPIKE_CHECK     = "%s spike check"
 StrConstant PSQ_FMT_LBN_CR_SPIKE_PASS      = "%s spike QC"
+StrConstant PSQ_FMT_LBN_PB_RESISTANCE      = "%s pipette resistance"
+StrConstant PSQ_FMT_LBN_PB_RESISTANCE_PASS = "%s pipette resistance QC"
 /// @}
 
 StrConstant FMT_LBN_ANA_FUNC_VERSION = "%s version"
 
 /// @name Analysis function versions
 /// @{
+Constant PSQ_PIPETTE_BATH_VERSION  = 0
 Constant PSQ_CHIRP_VERSION         = 6
 Constant PSQ_DA_SCALE_VERSION      = 3
 Constant PSQ_RAMP_VERSION          = 4
@@ -1052,18 +1057,19 @@ Constant INVALID_ANALYSIS_FUNCTION = 0xFFFF
 
 /// @anchor PatchSeqAnalysisFunctionTypes
 /// @{
-Constant PSQ_DA_SCALE      = 0x01
-Constant PSQ_SQUARE_PULSE  = 0x02
-Constant PSQ_RHEOBASE      = 0x04
-Constant PSQ_RAMP          = 0x08
-Constant PSQ_CHIRP         = 0x80
+Constant PSQ_DA_SCALE      = 0x001
+Constant PSQ_SQUARE_PULSE  = 0x002
+Constant PSQ_RHEOBASE      = 0x004
+Constant PSQ_RAMP          = 0x008
+Constant PSQ_CHIRP         = 0x080
+Constant PSQ_PIPETTE_BATH  = 0x100
 /// @}
 
 /// @anchor MultiPatchSeqAnalysisFunctionTypes
 /// @{
-Constant MSQ_FAST_RHEO_EST = 0x10
-Constant MSQ_DA_SCALE      = 0x20
-Constant SC_SPIKE_CONTROL  = 0x40
+Constant MSQ_FAST_RHEO_EST = 0x010
+Constant MSQ_DA_SCALE      = 0x020
+Constant SC_SPIKE_CONTROL  = 0x040
 /// @}
 
 /// @}
@@ -1099,6 +1105,11 @@ Constant PSQ_CR_RESISTANCE_FAKE = 1 // GOhm
 Constant PSQ_CR_BASELINE_V_FAKE = 1 // mV
 Constant PSQ_CR_LIMIT_BAND_LOW  = 1 // mV
 Constant PSQ_CR_LIMIT_BAND_HIGH = 100 // mV
+/// @}
+
+/// @name PatchSeq Pipette
+/// @{
+Constant PSQ_PB_NUM_SWEEPS_PASS = 1
 /// @}
 
 /// @name Bounds action values, see also PSQ_CR_BoundsActionToString()
@@ -1582,6 +1593,7 @@ StrConstant PRESSURE_BREAKIN_FILTER       = "pressure:break in"
 StrConstant AUTO_TP_FILTER                = "testpulse:autotune result"
 StrConstant AMPLIFIER_CLAMP_MODE_FILTER   = "amplifier:clamp mode"
 StrConstant AMPLIFIER_AUTO_BRIDGE_BALANCE = "amplifier:auto bridge balance"
+StrConstant ANALYSIS_FUNCTION_PB          = "analysis function:pipette in bath"
 /// @}
 
 /// which is sufficient to represent each sample point time with a distinctive number up to rates of 10 MHz.

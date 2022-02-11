@@ -21,6 +21,7 @@ static Constant GET_LB_MODE_READ  = 1
 
 static Constant GET_LB_MODE_WRITE = 2
 
+static StrConstant PSQ_PB_LBN_PREFIX = "Pipette in Bath"
 static StrConstant PSQ_CR_LBN_PREFIX = "Chirp"
 static StrConstant PSQ_SP_LBN_PREFIX = "Squ. Pul."
 static StrConstant PSQ_DS_LBN_PREFIX = "DA Scale"
@@ -3257,49 +3258,6 @@ Function [STRUCT RGBColor s] GetHeadstageColor(variable headstage, [string chann
 	DEBUGPRINT(str)
 
 	[s] = GetTraceColor(colorIndex)
-End
-
-/// @brief Queries the parameter and unit from a labnotebook key wave
-///
-/// @param[in]  keyWave   labnotebook key wave
-/// @param[in]  key       key to look for
-/// @param[out] parameter name of the result [empty if not found]
-/// @param[out] unit      unit of the result [empty if not found]
-/// @param[out] col       column of the result into the keyWave [NaN if not found]
-/// @returns one on error, zero otherwise
-threadsafe Function GetKeyWaveParameterAndUnit(keyWave, key, parameter, unit, col)
-	WAVE/T/Z keyWave
-	string key
-	string &parameter, &unit
-	variable &col
-
-	variable row, numRows
-	string device
-
-	parameter = ""
-	unit      = ""
-	col       = NaN
-
-	if(!WaveExists(keyWave))
-		return 1
-	endif
-
-	FindValue/TXOP=4/TEXT=key keyWave
-
-	numRows = DimSize(keywave, ROWS)
-	col     = floor(V_value / numRows)
-	row     = V_value - col * numRows
-
-	if(V_Value == -1 || row != FindDimLabel(keyWave, ROWS, "Parameter"))
-		printf "Could not find %s in keyWave\r", key
-		col = NaN
-		return 1
-	endif
-
-	parameter = keyWave[%Parameter][col]
-	unit      = keyWave[%Units][col]
-
-	return 0
 End
 
 /// @brief Space the matching axis in an equal manner
@@ -7038,6 +6996,8 @@ Function MapAnaFuncToConstant(anaFunc)
 			return PSQ_CHIRP
 		case "PSQ_DaScale":
 			return PSQ_DA_SCALE
+		case "PSQ_PipetteInBath":
+			return PSQ_PIPETTE_BATH
 		case "PSQ_Rheobase":
 			return PSQ_RHEOBASE
 		case "PSQ_SquarePulse":
@@ -7090,6 +7050,9 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 		case PSQ_SQUARE_PULSE:
 			prefix = PSQ_SP_LBN_PREFIX
 			break
+		case PSQ_PIPETTE_BATH:
+			prefix = PSQ_PB_LBN_PREFIX
+			break
 		default:
 			return ""
 			break
@@ -7127,6 +7090,8 @@ Function GetAnalysisFunctionVersion(variable type)
 			return PSQ_CHIRP_VERSION
 		case PSQ_DA_SCALE:
 			return PSQ_DA_SCALE_VERSION
+		case PSQ_PIPETTE_BATH:
+			return PSQ_PIPETTE_BATH_VERSION
 		case PSQ_RAMP:
 			return PSQ_RAMP_VERSION
 		case PSQ_RHEOBASE:

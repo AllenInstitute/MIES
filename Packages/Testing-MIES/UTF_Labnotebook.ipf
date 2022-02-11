@@ -1082,3 +1082,39 @@ Function CheckLBNDescriptions([WAVE/T wv])
 		CHECK_GE_VAR(V_Value, 0)
 	endfor
 End
+
+Function Test_GetEntryProperties()
+	string key, keyTxT, unit, device, ref
+	variable col, result
+
+	device = "ABCD"
+	[key, keyTxt] = PrepareLBN_IGNORE(device)
+
+	WAVE keys = GetLBNumericalKeys(device)
+
+	// no key wave
+	[result, unit, col] = LBN_GetEntryProperties($"", "DAC")
+	CHECK_EQUAL_VAR(result, 1)
+	CHECK_EMPTY_STR(unit)
+	CHECK_EQUAL_VAR(col, NaN)
+
+	// invalid entry
+	[result, unit, col] = LBN_GetEntryProperties(keys, "I DONT EXIST")
+	CHECK_EQUAL_VAR(result, 1)
+	CHECK_EMPTY_STR(unit)
+	CHECK_EQUAL_VAR(col, NaN)
+
+	// no unit
+	[result, unit, col] = LBN_GetEntryProperties(keys, "DAC")
+	CHECK_EQUAL_VAR(result, 0)
+	CHECK_EMPTY_STR(unit)
+	// DAC is the first non-standard key
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT + 0)
+
+	// valid unit
+	[result, unit, col] = LBN_GetEntryProperties(keys, "Headstage Active")
+	CHECK_EQUAL_VAR(result, 0)
+	ref = LABNOTEBOOK_BINARY_UNIT
+	CHECK_EQUAL_STR(unit, ref)
+	CHECK_EQUAL_VAR(col, INITIAL_KEY_WAVE_COL_COUNT + 2)
+End

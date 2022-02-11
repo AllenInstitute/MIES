@@ -25,6 +25,7 @@
 #include "UTF_MultiPatchSeqSpikeControl"
 #include "UTF_PatchSeqChirp"
 #include "UTF_PatchSeqDAScale"
+#include "UTF_PatchSeqPipetteInBath"
 #include "UTF_PatchSeqRamp"
 #include "UTF_PatchSeqRheobase"
 #include "UTF_PatchSeqSquarePulse"
@@ -102,6 +103,7 @@ Function RunWithOpts([string testcase, string testsuite, variable allowdebug, va
 	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqRheobase.ipf", list, ";", inf)
 	list = AddListItem("UTF_PatchSeqRamp.ipf", list, ";", inf)
+	list = AddListItem("UTF_PatchSeqPipetteInBath.ipf", list, ";", inf)
 	list = AddListItem("UTF_ReachTargetVoltage.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", inf)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list, ";", inf)
@@ -1127,8 +1129,29 @@ Function CommonAnalysisFunctionChecks(string device, variable sweepNo, WAVE head
 
 	CheckAnaFuncVersion(device, type)
 	CheckDashboard(device, headstageQC)
+	CheckPublishedMessage(device, type)
 
 	CheckUserEpochsFromChunks(device)
+End
+
+Function CheckPublishedMessage(string device, variable type)
+	string expectedFilter, msg
+	variable jsonID
+
+	switch(type)
+		case PSQ_PIPETTE_BATH:
+			expectedFilter = ANALYSIS_FUNCTION_PB
+			break
+		default:
+			PASS()
+			return NaN
+	endswitch
+
+	msg = FetchPublishedMessage(expectedFilter)
+	CHECK_PROPER_STR(msg)
+	jsonID = JSON_Parse(msg)
+	CHECK_GE_VAR(jsonID, 0)
+	JSON_Release(jsonID)
 End
 
 Function AddLabnotebookEntries_IGNORE(s)

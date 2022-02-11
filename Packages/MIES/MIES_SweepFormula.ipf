@@ -1673,20 +1673,47 @@ Function SF_TabProc_Formula(tca) : TabControl
 	return 0
 End
 
+static Function/WAVE SF_FilterEpochs(WAVE/Z epochs, WAVE/Z ignoreTPs)
+	variable i, numEntries, index
+
+	if(!WaveExists(epochs))
+		return $""
+	elseif(!WaveExists(ignoreTPs))
+		return epochs
+	endif
+
+	// descending sort
+	SortColumns/KNDX={0}/R sortWaves={ignoreTPs}
+
+	numEntries = DimSize(ignoreTPs, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		index = ignoreTPs[i]
+		SF_ASSERT(IsFinite(index), "ignored TP index is non-finite")
+		SF_ASSERT(index >=0 && index < DimSize(epochs, ROWS), "ignored TP index is out of range")
+		DeletePoints/M=(ROWS) index, 1, epochs
+	endfor
+
+	if(DimSize(epochs, ROWS) == 0)
+		return $""
+	endif
+
+	return epochs
+End
+
 static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string graph)
 
 	variable numArgs, sweepCnt, activeChannelCnt, i, j, channelNr, channelType, dacChannelNr
 	variable sweep, index, numTPEpochs
 	variable tpBaseLineT, emptyOutput, headstage, outType
-	string epShortName, tpAmpKey, tmpStr, unit, unitKey
+	string epShortName, tmpStr, unit, unitKey
 	string epochTPRegExp = "^(U_)?TP[[:digit:]]*$"
 	string baselineUnit = ""
 	STRUCT TPAnalysisInput tpInput
 
-	// tp(string type, array channels, array sweeps)
+	// tp(string type, array channels, array sweeps, [array ignoreTPs])
 	// returns 3D wave in the layout: result x sweeps x channels
 	numArgs = JSON_GetArraySize(jsonID, jsonPath)
-	SF_ASSERT(numArgs == 3, "tp requires at exactly 3 arguments")
+	SF_ASSERT(numArgs == 3 || numArgs == 4, "tp requires 3 or 4 arguments")
 
 	WAVE wType = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
 	SF_ASSERT(DimSize(wType, ROWS) == 1, "Too many input values for parameter name")
@@ -1716,6 +1743,14 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 	WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
 	SF_ASSERT(DimSize(sweeps, COLS) < 2, "sweeps must be one-dimensional.")
 	SF_ASSERT(IsNumericWave(sweeps), "sweeps parameter must be numeric")
+
+	if(numArgs == 4)
+		WAVE ignoreTPs = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/3", graph = graph)
+		SF_ASSERT(DimSize(ignoreTPs, COLS) < 2, "ignoreTPs must be one-dimensional.")
+		SF_ASSERT(IsNumericWave(ignoreTPs), "ignoreTPs parameter must be numeric")
+	else
+		WAVE/Z ignoreTPs
+	endif
 
 	WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, DATA_ACQUISITION_MODE)
 	sweepCnt = DimSize(sweeps, ROWS)
@@ -1776,7 +1811,12 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 			dacChannelNr = settings[headstage]
 			SF_ASSERT(IsFinite(dacChannelNr), "DAC channel number must be finite")
 
-			WAVE/Z/T epochMatches = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epochTPRegExp)
+			WAVE/Z epochMatchesAll = EP_GetEpochs(numericalValues, textualValues, sweep, XOP_CHANNEL_TYPE_DAC, dacChannelNr, epochTPRegExp)
+
+			// drop TPs which should be ignored
+			// relies on ascending sorting of start times in epochMatches
+			WAVE/T/Z epochMatches = SF_FilterEpochs(epochMatchesAll, ignoreTPs)
+
 			if(!WaveExists(epochMatches))
 				continue
 			endif
@@ -1799,17 +1839,8 @@ static Function/WAVE SF_OperationTP(variable jsonId, string jsonPath, string gra
 			SF_ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Mode from LBN")
 			tpInput.clampMode = settings[index]
 
-			if(tpInput.clampMode == V_CLAMP_MODE)
-				tpAmpKey = TP_AMPLITUDE_VC_ENTRY_KEY
-			elseif(tpInput.clampMode == I_CLAMP_MODE)
-				tpAmpKey = TP_AMPLITUDE_IC_ENTRY_KEY
-			else
-				ASSERT(0, "Unsupported TP clamp mode")
-			endif
-
-			[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, tpAmpKey, dacChannelNr, XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
-			SF_ASSERT(WaveExists(settings), "Failed to retrieve TP Clamp Ampitude from LBN")
-			tpInput.clampAmp = settings[index]
+			tpInput.clampAmp = NumberByKey("Amplitude", epochTPPulse[0][EPOCH_COL_TAGS], "=")
+			SF_ASSERT(IsFinite(tpInput.clampAmp), "Could not find amplitude entry in epoch tags")
 
 			// values not required for calculation result
 			tpInput.device = graph

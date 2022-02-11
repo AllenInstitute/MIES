@@ -66,7 +66,7 @@ Function FFI_GetJSONTemplate(string device, variable headstage)
 	JSON_AddString(jsonID, "device", device)
 	JSON_AddVariable(jsonID, "headstage", headstage)
 	JSON_AddString(jsonID, "timestamp", GetISO8601TimeStamp())
-	JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(device))
+	JSON_AddVariable(jsonID, "sweep number", AS_GetSweepNumber(device, allowFallback = 1))
 
 	return jsonID
 End
@@ -81,7 +81,7 @@ Function/WAVE FFI_GetAvailableMessageFilters()
 
 	Make/FREE/T wv = {ZeroMQ_HEARTBEAT, IVS_PUB_FILTER, PRESSURE_STATE_FILTER, PRESSURE_SEALED_FILTER, \
 					  PRESSURE_BREAKIN_FILTER, AUTO_TP_FILTER, AMPLIFIER_CLAMP_MODE_FILTER,            \
-					  AMPLIFIER_AUTO_BRIDGE_BALANCE}
+					  AMPLIFIER_AUTO_BRIDGE_BALANCE, ANALYSIS_FUNCTION_PB}
 
 	Note/K wv "Heartbeat is sent every 5 seconds."
 

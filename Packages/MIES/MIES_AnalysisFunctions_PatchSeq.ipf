@@ -10,6 +10,7 @@
 /// @brief __PSQ__ Analysis functions for patch sequence
 ///
 /// The stimsets with the analysis functions attached are executed in the following order:
+/// - PSQ_PipetteInBath
 /// - PSQ_DaScale (sub threshold)
 /// - PSQ_SquarePulse (long pulse)
 /// - PSQ_Rheobase (long pulse)
@@ -45,10 +46,12 @@
 /// PSQ_FMT_LBN_RMS_LONG_THRESHOLD  Long RMS baseline threshold [V]                           Numerical                DA, RB, RA, CR           No                     Yes
 /// PSQ_FMT_LBN_TARGETV             Target voltage baseline                                   Numerical                DA, RB, RA, CR           Yes                    Yes
 /// PSQ_FMT_LBN_TARGETV_PASS        Target voltage baseline QC result                         Numerical                DA, RB, RA, CR           Yes                    Yes
-/// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                     Numerical                DA, RB, RA, CR           Yes                    Yes
-/// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                  Numerical                DA, RB, RA, CR           No                     Yes
-/// PSQ_FMT_LBN_SWEEP_PASS          Pass/fail state of the complete sweep                     Numerical                DA, SP, RA, CR           No                     No
-/// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                       Numerical                DA, RB, RA, SP, CR       No                     No
+/// PSQ_FMT_LBN_LEAKCUR             Leak current                                              Numerical                PB                       Yes                    Yes
+/// PSQ_FMT_LBN_LEAKCUR_PASS        Leak current QC result                                    Numerical                PB                       Yes                    Yes
+/// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                     Numerical                DA, RB, RA, CR, PB       Yes                    Yes
+/// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                  Numerical                DA, RB, RA, CR, PB       No                     Yes
+/// PSQ_FMT_LBN_SWEEP_PASS          Pass/fail state of the complete sweep                     Numerical                DA, SP, RA, CR, PB       No                     No
+/// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                       Numerical                DA, RB, RA, SP, CR, PB   No                     No
 /// PSQ_FMT_LBN_SAMPLING_PASS       Pass/fail state of the sampling interval check            Numerical                DA, RB, RA, SP, CR       No                     No
 /// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally               Numerical                RB, DA (Supra), CR       No                     Yes
 /// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                              Numerical                DA (Supra)               No                     Yes
@@ -61,6 +64,9 @@
 /// PSQ_FMT_LBN_CR_SPIKE_CHECK      Spike check was enabled/disabled                          Numerical                CR                       No                     No
 /// PSQ_FMT_LBN_CR_SPIKE_PASS       Pass/fail state of the spike search (No spikes → Pass)    Numerical                CR                       No                     Yes
 /// FMT_LBN_ANA_FUNC_VERSION        Integer version of the analysis function                  Numerical                All                      No                     Yes
+/// PSQ_FMT_LBN_PB_RESISTANCE       Pipette Resistance                                        Numerical                PB                       No                     No
+/// PSQ_FMT_LBN_PB_RESISTANCE_PASS  Pipette Resistance QC                                     Numerical                PB                       No                     No
+///
 /// =============================== ========================================================= ======================== ======================== =====================  =====================
 ///
 /// Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale.
@@ -71,13 +77,17 @@
 ///
 /// \rst
 ///
-/// ============================ ========== ================== ======================================= =====
-/// Tags                         Short Name Analysis function  Description                             Level
-/// ============================ ========== ================== ======================================= =====
-/// Name=Baseline Chunk;Index=x  U_BLCx     DA, RB, RA, CR     Baseline QC evaluation chunks           -1
-/// Name=DA Suppression          U_RA_DA    RA                 DA was suppressed in this time interval -1
-/// Name=Unacquired DA data      U_RA_UD    RA                 Interval of unacquired data             -1
-/// ============================ ========== ================== ======================================= =====
+/// ========================================================== ========== ================== ======================================= =====
+/// Tags                                                       Short Name Analysis function  Description                             Level
+/// ========================================================== ========== ================== ======================================= =====
+/// Name=Baseline Chunk;Index=x                                U_BLCx     DA, RB, RA, CR     Baseline QC evaluation chunks           -1
+/// Name=DA Suppression                                        U_RA_DA    RA                 DA was suppressed in this time interval -1
+/// Name=Unacquired DA data                                    U_RA_UD    RA                 Interval of unacquired data             -1
+/// Type=Testpulse Like;Index=x                                U_TPx      PB                 Testpulse like region in stimset        -1
+/// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_B0   PB                 pre pulse baseline of testpulse         -1
+/// Type=Testpulse Like;SubType=Pulse;Amplitude=y;Index=x      U_TPx_B1   PB                 post pulse baseline of testpulse        -1
+/// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_P    PB                 pulse of testpulse                      -1
+/// ========================================================== ========== ================== ======================================= =====
 ///
 /// See also :ref:`epoch_time_specialities`.
 /// \endrst
@@ -88,6 +98,7 @@ static Constant PSQ_BL_POST_PULSE  = 0x1
 static Constant PSQ_RMS_SHORT_TEST = 0x0
 static Constant PSQ_RMS_LONG_TEST  = 0x1
 static Constant PSQ_TARGETV_TEST   = 0x2
+static Constant PSQ_LEAKCUR_TEST   = 0x3
 
 static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
@@ -119,6 +130,11 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 		case PSQ_CHIRP:
 			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
 			s.postPulseChunkLength = PSQ_BL_EVAL_RANGE
+			s.pulseDuration        = NaN
+			break
+		case PSQ_PIPETTE_BATH:
+			s.prePulseChunkLength  = PSQ_BL_EVAL_RANGE
+			s.postPulseChunkLength = NaN
 			s.pulseDuration        = NaN
 			break
 		default:
@@ -282,6 +298,8 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 
 	if(type == PSQ_CHIRP)
 		ASSERT(numBaselineChunks >= 3, "Unexpected number of baseline chunks")
+	elseif(type == PSQ_PIPETTE_BATH)
+		ASSERT(numBaselineChunks == 1, "Unexpected number of baseline chunks")
 	endif
 
 	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
@@ -318,7 +336,7 @@ static Function [variable ret, variable chunk] PSQ_EvaluateBaselineChunks(string
 			// 0: passed
 			if(i == 0)
 				// pre pulse baseline
-				// try next chunks
+				// try next chunks, or for PSQ_PIPETTE_BATH we are done
 				continue
 			else
 				// post baseline
@@ -350,7 +368,9 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	variable targetV, index
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
 	variable targetVPassedAll, baselineType, chunkLengthTime
-	variable rmsShortThreshold, rmsLongThreshold, chunkPassedTestOverride
+	variable leakCurPassedAll, maxLeakCurrent
+	variable rmsShortThreshold, rmsLongThreshold
+	variable chunkPassedRMSShortOverride, chunkPassedRMSLongOverride, chunkPassedTargetVOverride, chunkPassedLeakCurOverride
 	string msg, adUnit, ctrl, key, epName, epShortName
 
 	struct PSQ_PulseSettings ps
@@ -361,6 +381,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		chunkLengthTime    = ps.prePulseChunkLength
 		baselineType       = PSQ_BL_PRE_PULSE
 	else // post pulse baseline
+		ASSERT(type != PSQ_PIPETTE_BATH, "Unexpected analysis function")
+
 		if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
 			WAVE durations = PSQ_GetPulseDurations(device, type, s.sweepNo, totalOnsetDelay)
 		else
@@ -398,14 +420,30 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	// - 0: short RMS
 	// - 1: long RMS
 	// - 2: average voltage
+	// - 3: leak current
 	//
 	// Contents:
 	//  0: skip test
 	//  1: perform test
-	Make/FREE/N=(2, 3) testMatrix
+	Make/FREE/N=(2, 4) testMatrix
 
-	testMatrix[PSQ_BL_PRE_PULSE][] = 1 // all tests
-	testMatrix[PSQ_BL_POST_PULSE][PSQ_TARGETV_TEST] = 1
+	if(type == PSQ_PIPETTE_BATH)
+		testMatrix[PSQ_BL_PRE_PULSE][PSQ_RMS_SHORT_TEST] = 1
+		testMatrix[PSQ_BL_PRE_PULSE][PSQ_RMS_LONG_TEST]  = 1
+		testMatrix[PSQ_BL_PRE_PULSE][PSQ_LEAKCUR_TEST]  = 1
+
+		maxLeakCurrent = AFH_GetAnalysisParamNumerical("MaxLeakCurrent", s.params)
+	else
+		// pre pulse: all except leak current
+		testMatrix[PSQ_BL_PRE_PULSE][PSQ_RMS_SHORT_TEST] = 1
+		testMatrix[PSQ_BL_PRE_PULSE][PSQ_RMS_LONG_TEST]  = 1
+		testMatrix[PSQ_BL_PRE_PULSE][PSQ_TARGETV_TEST]   = 1
+
+		// post pulse: only targetV
+		testMatrix[PSQ_BL_POST_PULSE][PSQ_TARGETV_TEST]  = 1
+
+		maxLeakCurrent = NaN
+	endif
 
 	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTimeMax, chunkStartTimeMax + chunkLengthTime, fifoInStimsetTime + totalOnsetDelay
 	DEBUGPRINT(msg)
@@ -418,6 +456,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLongPassed  = NaN
 	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgVoltage     = NaN
 	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) targetVPassed  = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgCurrent     = NaN
+	Make/D/FREE/N = (LABNOTEBOOK_LAYER_COUNT) leakCurPassed  = NaN
 
 	targetV = DAG_GetNumericalValue(device, "setvar_DataAcq_AutoBiasV")
 
@@ -425,7 +465,10 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	if(TestOverrideActive())
 		WAVE overrideResults = GetOverrideResults()
 		NVAR count = $GetCount(device)
-		chunkPassedTestOverride = overrideResults[chunk][count][0]
+		chunkPassedRMSShortOverride = overrideResults[chunk][count][0][PSQ_RMS_SHORT_TEST]
+		chunkPassedRMSLongOverride  = overrideResults[chunk][count][0][PSQ_RMS_LONG_TEST]
+		chunkPassedTargetVOverride  = overrideResults[chunk][count][0][PSQ_TARGETV_TEST]
+		chunkPassedLeakCurOverride  = overrideResults[chunk][count][0][PSQ_LEAKCUR_TEST]
 	endif
 	// END TEST
 
@@ -459,8 +502,11 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 
 		ADunit = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), index = ADC)
 
-		// assuming millivolts
-		ASSERT(!cmpstr(ADunit, "mV"), "Unexpected AD Unit")
+		if(type == PSQ_PIPETTE_BATH) // Vclamp
+			ASSERT(!cmpstr(ADunit, "pA"), "Unexpected AD Unit")
+		else // Iclamp
+			ASSERT(!cmpstr(ADunit, "mV"), "Unexpected AD Unit")
+		endif
 
 		if(testMatrix[baselineType][PSQ_RMS_SHORT_TEST])
 
@@ -471,7 +517,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			rmsShort[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
 
 			if(TestOverrideActive())
-				rmsShortPassed[i] = chunkPassedTestOverride
+				rmsShortPassed[i] = chunkPassedRMSShortOverride
 			else
 				rmsShortPassed[i] = rmsShort[i] < rmsShortThreshold
 			endif
@@ -497,7 +543,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			rmsLong[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_RMS)
 
 			if(TestOverrideActive())
-				rmsLongPassed[i] = chunkPassedTestOverride
+				rmsLongPassed[i] = chunkPassedRMSLongOverride
 			else
 				rmsLongPassed[i] = rmsLong[i] < rmsLongThreshold
 			endif
@@ -523,7 +569,7 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			avgVoltage[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
 
 			if(TestOverrideActive())
-				targetVPassed[i] = chunkPassedTestOverride
+				targetVPassed[i] = chunkPassedTargetVOverride
 			else
 				targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
 			endif
@@ -540,6 +586,33 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			continue
 		endif
 
+		if(testMatrix[baselineType][PSQ_LEAKCUR_TEST])
+			ASSERT(!cmpstr(ADunit, "pA"), "Unexpected AD Unit")
+
+			evalStartTime = chunkStartTime
+			evalRangeTime = chunkLengthTime
+
+			// check 3: leak current is smaller than MaxLeakCurrent
+			avgCurrent[i] = PSQ_Calculate(s.scaledDACWave, ADCol, evalStartTime, evalRangeTime, PSQ_CALC_METHOD_AVG)
+
+			if(TestOverrideActive())
+				leakCurPassed[i] = chunkPassedLeakCurOverride
+			else
+				leakCurPassed[i] = abs(avgCurrent[i]) <= maxLeakCurrent
+			endif
+
+			sprintf msg, "Average leak current of %gms: %g (%s)", evalRangeTime, avgCurrent[i], ToPassFail(leakCurPassed[i])
+			DEBUGPRINT(msg)
+		else
+			sprintf msg, "Average leak current: (%s)\r", "skipped"
+			DEBUGPRINT(msg)
+			leakCurPassed[i] = -1
+		endif
+
+		if(!leakCurPassed[i])
+			continue
+		endif
+
 		// more tests can be added here
 	endfor
 
@@ -550,6 +623,13 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		ED_AddEntryToLabnotebook(device, key, avgVoltage, unit = "Volt", overrideSweepNo = s.sweepNo)
 	endif
 
+	if(HasOneValidEntry(avgCurrent))
+		// pA -> A
+		avgCurrent[] *= 1e-12
+		key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_LEAKCUR, chunk = chunk)
+		ED_AddEntryToLabnotebook(device, key, avgCurrent, unit = "Amperes", overrideSweepNo = s.sweepNo)
+	endif
+
 	// document results per headstage and chunk
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = chunk)
 	ED_AddEntryToLabnotebook(device, key, rmsShortPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
@@ -557,6 +637,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 	ED_AddEntryToLabnotebook(device, key, rmsLongPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_TARGETV_PASS, chunk = chunk)
 	ED_AddEntryToLabnotebook(device, key, targetVPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+	key = CreateAnaFuncLBNKey(type, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = chunk)
+	ED_AddEntryToLabnotebook(device, key, leakCurPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 	if(testMatrix[baselineType][PSQ_RMS_SHORT_TEST])
 		rmsShortPassedAll = WaveMin(rmsShortPassed) == 1
@@ -576,9 +658,15 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 		targetVPassedAll = -1
 	endif
 
-	ASSERT(rmsShortPassedAll != -1 || rmsLongPassedAll != - 1 || targetVPassedAll != -1, "Skipping all tests is not supported.")
+	if(testMatrix[baselineType][PSQ_LEAKCUR_TEST])
+		leakCurPassedAll = WaveMin(leakCurPassed) == 1
+	else
+		leakCurPassedAll = -1
+	endif
 
-	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll
+	ASSERT(rmsShortPassedAll != -1 || rmsLongPassedAll != - 1 || targetVPassedAll != -1 || leakCurPassedAll != -1, "Skipping all tests is not supported.")
+
+	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll && leakCurPassedAll
 
 	sprintf msg, "Chunk %d %s", chunk, ToPassFail(chunkPassed)
 	DEBUGPRINT(msg)
@@ -598,6 +686,8 @@ static Function PSQ_EvaluateBaselineProperties(string device, STRUCT AnalysisFun
 			NVAR repurposedTime = $GetRepurposedSweepTime(device)
 			repurposedTime = 10
 			return ANALYSIS_FUNC_RET_REPURP_TIME
+		elseif(!leakCurPassedAll)
+			return ANALYSIS_FUNC_RET_EARLY_STOP
 		else
 			ASSERT(chunkPassed, "logic error")
 		endif
@@ -652,6 +742,9 @@ static Function PSQ_GetNumberOfChunks(device, sweepNo, headstage, type)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
 			nonBL = totalOnsetDelay + durations[headstage] + PSQ_BL_EVAL_RANGE
 			return DEBUGPRINTv(floor((length - nonBL - PSQ_BL_EVAL_RANGE) / PSQ_BL_EVAL_RANGE) + 1)
+			break
+		case PSQ_PIPETTE_BATH:
+			return DEBUGPRINTv(floor(PSQ_PB_GetPrePulseBaselineDuration(device, headstage) / PSQ_BL_EVAL_RANGE))
 			break
 		default:
 			ASSERT(0, "unsupported type")
@@ -774,6 +867,12 @@ End
 /// - 1: x position in ms where the spike is in each sweep/step
 ///      For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
 ///
+/// Chunks (only for layer 0):
+/// - 0: RMS short baseline QC
+/// - 1: RMS long baseline QC
+/// - 2: target voltage baseline QC
+/// - 3: leak current baseline QC
+///
 /// #PSQ_DA_SCALE:
 ///
 /// Rows:
@@ -787,6 +886,12 @@ End
 /// - 1: x position in ms where the spike is in each sweep/step
 ///      For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
 /// - 2: Number of spikes
+///
+/// Chunks (only for layer 0):
+/// - 0: RMS short baseline QC
+/// - 1: RMS long baseline QC
+/// - 2: target voltage baseline QC
+/// - 3: leak current baseline QC
 ///
 /// #PSQ_CHIRP:
 ///
@@ -804,11 +909,35 @@ End
 ///      others are ignored], use NaN to use the real values
 /// - 3: passing spike check in chirp region or not [first row only,
 ///      others are ignored]
+///
+/// Chunks (only for layer 0):
+/// - 0: RMS short baseline QC
+/// - 1: RMS long baseline QC
+/// - 2: target voltage baseline QC
+/// - 3: leak current baseline QC
+///
+/// #PSQ_PIPETTE_BATH:
+///
+/// Rows:
+/// - chunk indizes
+///
+/// Cols:
+/// - sweeps/steps
+///
+/// Layers:
+/// - 0: 1 if the chunk has passing baseline QC or not
+/// - 1: averaged steady state resistance [MOhm]
+///
+/// Chunks (only for layer 0):
+/// - 0: RMS short baseline QC
+/// - 1: RMS long baseline QC
+/// - 2: target voltage baseline QC
+/// - 3: leak current baseline QC
 Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	string device
 	variable headstage, type
 
-	variable DAC, numCols, numRows, numLayers
+	variable DAC, numCols, numRows, numLayers, numChunks
 	string stimset
 
 	DAC = AFH_GetDACFromHeadstage(device, headstage)
@@ -819,11 +948,13 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	switch(type)
 		case PSQ_RAMP:
 		case PSQ_RHEOBASE:
+			numChunks = 4
 			numLayers = 2
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
 		case PSQ_DA_SCALE:
+			numChunks = 4
 			numLayers = 3
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
@@ -833,7 +964,14 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 			numCols = 0
 			break
 		case PSQ_CHIRP:
+			numChunks = 4
 			numLayers = 4
+			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
+			numCols = IDX_NumberOfSweepsInSet(stimset)
+			break
+		case PSQ_PIPETTE_BATH:
+			numChunks = 4
+			numLayers = 2
 			numRows = PSQ_GetNumberOfChunks(device, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
@@ -844,7 +982,7 @@ Function/WAVE PSQ_CreateOverrideResults(device, headstage, type)
 	WAVE/D/Z/SDFR=root: wv = overrideResults
 
 	if(WaveExists(wv))
-		Redimension/D/N=(numRows, numCols, numLayers) wv
+		Redimension/D/N=(numRows, numCols, numLayers, numChunks) wv
 	else
 		Make/D/N=(numRows, numCols, numLayers) root:overrideResults/Wave=wv
 	endif
@@ -1239,6 +1377,8 @@ static Function PSQ_GetDefaultSamplingFrequency(variable type)
 		case PSQ_RHEOBASE:
 		case PSQ_SQUARE_PULSE:
 			return 50
+		case PSQ_PIPETTE_BATH:
+			return 200
 		default:
 			ASSERT(0,"Unknown analysis function")
 	endswitch
@@ -3268,7 +3408,7 @@ static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_De
 	ED_AddEntryToLabnotebook(device, key, resultText, overrideSweepNo = sweepNo)
 
 #ifdef DEBUGGING_ENABLED
-	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+	if(DP_DebuggingEnabledForCaller())
 		Make/O/N=7/D $("chirpVisDebug_" + num2str(sweepNo))/Wave=chirpVisDebug
 		Make/O/N=7/D $("chirpVisDebugX_" + num2str(sweepNo))/Wave=chirpVisDebugX
 
@@ -4027,4 +4167,573 @@ static Function PSQ_SetSamplingIntervalMultiplier(string device, variable multip
 
 	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = multiplierAsString)
 	ASSERT(!cmpstr(DAG_GetTextualValue(device, "Popup_Settings_SampIntMult"), multiplierAsString), "Sampling interval multiplier could not be set")
+End
+
+Function/S PSQ_PipetteInBath_CheckParam(string name, struct CheckParametersStruct& s)
+	variable val
+	string str
+
+	strswitch(name)
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+			return PSQ_CheckParamCommon(name, s.params)
+		case "MaxLeakCurrent":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0 && val <= 1000))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "MinPipetteResistance":
+		case "MaxPipetteResistance":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0 && val <= 20))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "NumberOfFailedSweeps":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!IsFinite(val) || !IsInteger(val) || val <= 0 ||  val > IDX_NumberOfSweepsInSet(s.setName))
+				return "Must be a finite non-zero integer and smaller or equal to the number of sweeps in the stimset"
+			endif
+			break
+		case "NextStimSetName":
+			str = AFH_GetAnalysisParamTextual(name, s.params)
+			WAVE/Z stimset = WB_CreateAndGetStimSet(str)
+			if(!WaveExists(stimset))
+				return "The stimset can not be created"
+			endif
+			break
+		case "NumberOfTestpulses":
+			val = AFH_GetAnalysisParamNumerical(name, s.params)
+			if(!(val > 0 && val <= 100))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+	endswitch
+End
+
+Function/S PSQ_PipetteInBath_GetHelp(string name)
+
+	strswitch(name)
+		case "SamplingFrequency":
+		case "SamplingMultiplier":
+		case "BaselineRMSLongThreshold":
+		case "BaselineRMSShortThreshold":
+			return PSQ_GetHelpCommon(PSQ_PIPETTE_BATH, name)
+		case "MaxLeakCurrent":
+			return "Maximum current [pA] which is allowed in the pre pulse baseline"
+		case "MinPipetteResistance":
+			return "Minimum allowed pipette resistance [MOhm]"
+		case "MaxPipetteResistance":
+			return "Maximum allowed pipette resistance [MOhm]"
+		case "NumberOfFailedSweeps":
+			return "Number of failed sweeps which marks the set as failed"
+		case "NextStimSetName":
+			return "Next stimulus set which should be set in case of success"
+		case "NumberOfTestpulses":
+			return "Expected number of testpulses in the stimset"
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+	endswitch
+End
+
+Function/S PSQ_PipetteInBath_GetParams()
+	return "[SamplingFrequency:variable],[SamplingMultiplier:variable],BaselineRMSShortThreshold:variable," +                         \
+	       "BaselineRMSLongThreshold:variable,MaxLeakCurrent:variable,MinPipetteResistance:variable,MaxPipetteResistance:variable," + \
+	       "NumberOfFailedSweeps:variable,NextStimSetName:string,NumberOfTestpulses:variable"
+End
+
+/// @brief Analysis function for determining the pipette resistance while that is located in the bath
+///
+/// Prerequisites:
+/// - Does only work for one headstage
+/// - We expect three epochs per test pulse in the stimset, plus one epoch before all TPs, and at the very end
+/// - Assumes that the stimset has `NumberOfTestpulses` test pulses
+/// - Pre pulse baseline length is #PSQ_BL_EVAL_RANGE
+/// - Post pulse baseline is not evaluated
+///
+/// Testing:
+/// For testing the range detection logic, the results can be defined in the wave
+/// root:overrideResults. @see PSQ_CreateOverrideResults()
+///
+/// Decision logic flowchart:
+///
+/// \rst
+///	.. image:: /dot/patch-seq-pipette-bath.svg
+/// \endrst
+///
+/// @verbatim
+///
+/// Sketch of a stimset with three test pulse like epochs
+///
+///                    +-----+       +-----+       +-----+
+///                    |     |       |     |       |     |
+///                    |     |       |     |       |     |
+///                    |     |       |     |       |     |
+/// -------------------+     +-------+     +-------+     +------------------------
+///
+/// Epoch borders
+/// -------------
+///
+///                |   |     |   |   |     |   |   |     |   |
+///
+/// So for this stimset we have two epochs at the very beginning and end, plus
+/// three epochs per test pulse and three test pulses, which gives eleven in
+/// total.
+///
+/// @endverbatim
+Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
+	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed
+	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
+	variable maxPipetteResistance, minPipetteResistance, expectedNumTestpulses, numTestPulses, pipetteResistance
+	string key, ctrl, stimset, msg, databrowser, bsPanel, scPanel, formula_nb, pipetteResistanceStr, sweepStr
+
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			PGC_SetAndActivateControl(device, "check_Settings_MD", val = 1)
+			PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = 0)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_DistribDaq", val = 0)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = 0)
+			PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = 1)
+			PGC_SetAndActivateControl(device, "Check_Settings_InsertTP", val = 1)
+
+			WAVE statusHS = DAG_GetChannelState(device, CHANNEL_TYPE_HEADSTAGE)
+			if(sum(statusHS) != 1)
+				printf "(%s) Analysis function only supports one headstage.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+
+			WAVE statusTTL = DAG_GetChannelState(device, CHANNEL_TYPE_TTL)
+			if(sum(statusTTL) != 0)
+				printf "(%s) Analysis function does not support TTL channels.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+
+			if(DAG_GetHeadstageMode(device, s.headstage) != V_CLAMP_MODE)
+				printf "(%s) Clamp mode must be voltage clamp.\r", device
+				ControlWindowToFront()
+				return 1
+			endif
+
+			databrowser = DB_FindDataBrowser(device)
+			if(IsEmpty(databrowser)) // not yet open
+				databrowser = DB_OpenDataBrowser()
+			endif
+
+			bsPanel = BSP_GetPanel(databrowser)
+			scPanel = BSP_GetSweepControlsPanel(databrowser)
+
+			if(!BSP_HasBoundDevice(bsPanel))
+				PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
+				databrowser = DB_FindDataBrowser(device)
+				bsPanel = BSP_GetPanel(databrowser)
+				scPanel = BSP_GetSweepControlsPanel(databrowser)
+			endif
+
+			formula_nb = BSP_GetSFFormula(databrowser)
+			ReplaceNotebookText(formula_nb, "store(\"Steady state resistance\", tp(ss, channels(AD), sweeps(), [0]))")
+
+			PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_SF", val = 1)
+
+			PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = s.headstage)
+			PGC_SetAndActivateControl(device, "button_DataAcq_AutoPipOffset_VC", val = 1)
+			PGC_SetAndActivateControl(device, "check_DatAcq_HoldEnableVC", val = 0)
+
+			DisableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			break
+		case PRE_SET_EVENT:
+			SetAnalysisFunctionVersion(device, PSQ_PIPETTE_BATH, s.headstage, s.sweepNo)
+
+			multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
+			PSQ_SetSamplingIntervalMultiplier(device, multiplier)
+			break
+		case PRE_SWEEP_CONFIG_EVENT:
+			expectedNumTestpulses = AFH_GetAnalysisParamNumerical("NumberOfTestpulses", s.params, defValue = 3)
+			numTestpulses = PSQ_PB_CreateTestpulseEpochs(device, s.headstage)
+			if(expectedNumTestpulses != numTestpulses)
+				printf "The number of present (%g) and expected (%g) test pulses in the stimset differs.", numTestpulses, expectedNumTestpulses
+				ControlWindowToFront()
+				return 1
+			endif
+
+			break
+		case POST_SWEEP_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(device)
+			WAVE textualValues   = GetLBTextualValues(device)
+
+			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			ASSERT(WaveExists(baselineQCPassedLBN), "Missing baseline QC")
+			baselineQCPassed = baselineQCPassedLBN[s.headstage]
+
+			minPipetteResistance = AFH_GetAnalysisParamNumerical("MinPipetteResistance", s.params)
+			maxPipetteResistance = AFH_GetAnalysisParamNumerical("MaxPipetteResistance", s.params)
+
+			databrowser = DB_FindDataBrowser(device)
+
+			WAVE/T textualResultsValues = BSP_GetLogbookWave(databrowser, LBT_RESULTS, LBN_TEXTUAL_VALUES, selectedExpDevice = 1)
+
+			pipetteResistanceStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula store [Steady state resistance]", SWEEP_FORMULA_RESULT)
+			sweepStr = GetLastSettingTextIndep(textualResultsValues, NaN, "Sweep Formula displayed sweeps", SWEEP_FORMULA_RESULT)
+
+			if(IsEmpty(pipetteResistanceStr) || cmpstr(sweepStr, num2str(s.sweepNo) + ";"))
+				// no pipette resistance value for the current sweep
+				pipetteResistance = NaN
+			else
+				WAVE wv = ListToNumericWave(pipetteResistanceStr, ";")
+				ASSERT(DimSize(wv, ROWS) == 1, "Invalid steady state resistance from Sweep Formula")
+				pipetteResistance = wv[0]
+			endif
+
+			// BEGIN TEST
+			if(TestOverrideActive())
+				WAVE overrideResults = GetOverrideResults()
+				NVAR count = $GetCount(device)
+				pipetteResistance = overrideResults[0][count][1]
+			endif
+			// END TEST
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+			resistance[INDEP_HEADSTAGE] = pipetteResistance * 1e9
+			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE)
+			ED_AddEntryToLabnotebook(device, key, resistance, unit = "Ω", overrideSweepNo = s.sweepNo)
+
+			pipetteResistanceQCPassed = (pipetteResistance >= minPipetteResistance) && (pipetteResistance <= maxPipetteResistance)
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) pipetteResistanceQC = NaN
+			pipetteResistanceQC[INDEP_HEADSTAGE] = pipetteResistanceQCPassed
+			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE_PASS)
+			ED_AddEntryToLabnotebook(device, key, pipetteResistanceQC, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+			samplingFrequencyQCPassed = PSQ_CheckSamplingFrequencyAndStoreInLabnotebook(device, PSQ_PIPETTE_BATH, s)
+
+			sweepPassed = baselineQCPassed && samplingFrequencyQCPassed && pipetteResistanceQCPassed
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = sweepPassed
+			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_SWEEP_PASS)
+			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+			numSweepsFailedAllowed = AFH_GetAnalysisParamNumerical("NumberOfFailedSweeps", s.params)
+
+			WAVE/T stimsets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+			stimset = stimsets[s.headstage]
+
+			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
+			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_PIPETTE_BATH, s.sweepNo, s.headstage)
+			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(device, s.sweepNo, s.headstage)
+			failsInSet          = acquiredSweepsInSet - passesInSet
+
+			sprintf msg, "Sweep %s, BL QC %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, required passes %d\r", ToPassFail(sweepPassed), ToPassFail(baselineQCPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, PSQ_PB_NUM_SWEEPS_PASS
+			DEBUGPRINT(msg)
+
+			if(!sweepPassed)
+				// not enough sweeps left to pass the set
+				// will only be reached if PSQ_PB_NUM_SWEEPS_PASS is ever increased from 1
+				if((sweepsInSet - acquiredSweepsInSet) < (PSQ_PB_NUM_SWEEPS_PASS - passesInSet))
+					PSQ_ForceSetEvent(device, s.headstage)
+					RA_SkipSweeps(device, inf)
+					return NaN
+				elseif(failsInSet >= numSweepsFailedAllowed)
+					// failed too many sweeps
+					PSQ_ForceSetEvent(device, s.headstage)
+					RA_SkipSweeps(device, inf)
+				endif
+
+				if(!samplingFrequencyQCPassed)
+					PSQ_ForceSetEvent(device, s.headstage)
+					RA_SkipSweeps(device, inf)
+					return NaN
+				endif
+			else
+				if(passesInSet >= PSQ_PB_NUM_SWEEPS_PASS)
+					PSQ_ForceSetEvent(device, s.headstage)
+					RA_SkipSweeps(device, inf, limitToSetBorder = 1)
+					return NaN
+				endif
+			endif
+
+			break
+		case POST_SET_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(device)
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_PIPETTE_BATH, s.sweepNo, s.headstage) >= PSQ_PB_NUM_SWEEPS_PASS
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = setPassed
+			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_SET_PASS)
+			ED_AddEntryToLabnotebook(device, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+			PSQ_PB_Publish(device, s.sweepNo, s.headstage)
+
+			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			AD_UpdateAllDatabrowser()
+			break
+		case POST_DAQ_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(device)
+
+			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_SET_PASS, query = 1)
+			setPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			ASSERT(IsFinite(setPassed), "Missing setQC labnotebook entry")
+
+			if(setPassed)
+				DAC = AFH_GetDACFromHeadstage(device, s.headstage)
+				ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+				stimset = AFH_GetAnalysisParamTextual("NextStimSetName", s.params)
+				PGC_SetAndActivateControl(device, ctrl, str = stimset, switchTab = 1)
+			endif
+
+			EnableControls(device, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			AD_UpdateAllDatabrowser()
+			break
+	endswitch
+
+	if(s.eventType != MID_SWEEP_EVENT)
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+
+	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+	WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+	baselineQCPassed = WaveExists(baselineQCPassedLBN) ? baselineQCPassedLBN[s.headstage] : NaN
+
+	if(IsFinite(baselineQCPassed)) // already done
+		return NaN
+	endif
+
+	[ret, chunk] = PSQ_EvaluateBaselineChunks(device, PSQ_PIPETTE_BATH, s)
+
+	// if baseline QC failed, we are done, otherwise we continue
+
+	if(IsFinite(ret))
+		PSQ_EvaluateBaselinePassed(device, PSQ_PIPETTE_BATH, s.sweepNo, s.headstage, chunk, ret)
+
+		if(ret != 0)
+			// baselineQC failed
+			key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0, query = 1)
+			WAVE/Z leakCurQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			if(WaveExists(leakCurQCPassedLBN) && !leakCurQCPassedLBN[s.headstage])
+				PGC_SetAndActivateControl(device, "slider_DataAcq_ActiveHeadstage", val = s.headstage)
+				PGC_SetAndActivateControl(device, "button_DataAcq_AutoPipOffset_VC", val = 1)
+			endif
+
+			return ret
+		endif
+	endif
+End
+
+static Function PSQ_PB_GetPrePulseBaselineDuration(string device, variable headstage)
+	variable DAC
+	string setName
+
+	DAC     = AFH_GetDACFromHeadstage(device, headstage)
+	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
+
+	return ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)
+End
+
+/// @brief Create user epochs for the testpulse like shapes in the stimset
+///
+/// Assumes that all sweeps in the stimset are the same.
+///
+/// @return number of found testpulses
+static Function PSQ_PB_CreateTestpulseEpochs(string device, variable headstage)
+	variable DAC, numTestPulses, prePulseTP, signalTP, postPulseTP, DAScale
+	variable amplitude, offset, numEpochs, i, idx, epBegin, epEnd, totalOnsetDelay
+	string setName, shortName, tags
+
+	DAC     = AFH_GetDACFromHeadstage(device, headstage)
+	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
+
+	numEpochs = ST_GetStimsetParameterAsVariable(setName, "Total number of epochs")
+	numTestPulses = (numEpochs - 2) / 3
+
+	if(!IsInteger(numTestPulses) || numTestPulses <= 0)
+		printf "(%s) The stimset %s does not follow the expected format", device, setName
+		return NaN
+	endif
+
+	totalOnsetDelay = DAG_GetNumericalValue(device, "setvar_DataAcq_OnsetDelayUser") \
+	                  + GetValDisplayAsNum(device, "valdisp_DataAcq_OnsetDelayAuto")
+
+	offset = (totalOnsetDelay + ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = 0)) * 1e-3
+
+	DAScale = DAG_GetNumericalValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DAC)
+
+	// 0: pre pulse baseline chunk
+	// 1: testpulse pre baseline
+	// 2: testpulse signal
+	// 3: testpulse post baseline
+	// ...
+	// 1 + n * 3: post pulse baseline
+	for(i = 0; i < numTestPulses; i += 1)
+		// first TP epoch
+		idx = 1 + i * numTestPulses
+
+		prePulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx) * 1e-3
+		amplitude  = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx)
+		ASSERT(amplitude == 0, "Invald amplitude")
+
+		signalTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx + 1) * 1e-3
+		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 1)
+		ASSERT(amplitude == 1, "Invald amplitude")
+
+		postPulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx + 2) * 1e-3
+		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 2)
+		ASSERT(amplitude == 0, "Invald amplitude")
+
+		// full TP
+		epBegin = offset
+		epEnd   = epBegin + prePulseTP + signalTP + postPulseTP
+		sprintf tags, "Type=Testpulse Like;Index=%d", i
+		sprintf shortName, "TP%d", i
+
+		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+		offset = epEnd
+
+		// pre TP baseline
+		// same epBegin as full TP
+		epEnd   = epBegin + prePulseTP
+		sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", i
+		sprintf shortName, "TP%d_B0", i
+
+		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+		// pulse TP
+		epBegin = epEnd
+		epEnd   = epBegin + signalTP
+		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 1) * DAScale
+		sprintf tags, "Type=Testpulse Like;SubType=Pulse;Amplitude=%g;Index=%d;", amplitude, i
+		sprintf shortName, "TP%d_P", i
+
+		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+		// post TP baseline
+		epBegin = epEnd
+		epEnd   = epBegin + postPulseTP
+		sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", i
+		sprintf shortName, "TP%d_B1", i
+
+		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+	endfor
+
+	return numTestPulses
+End
+
+static Function PSQ_AddLabnotebookEntriesToJSON(variable jsonID, WAVE values, WAVE keys, variable sweepNo, string key, variable headstage, variable labnotebookLayer)
+	variable result, col
+	string unit, path
+
+	ASSERT(IsNumericWave(values), "Only supporting numeric values for now")
+
+	if(labnotebookLayer == INDEP_HEADSTAGE)
+		WAVE/Z settings = GetLastSettingIndepEachSCI(values, sweepNo, key, headstage, UNKNOWN_MODE)
+	else
+		WAVE/Z settings = GetLastSettingEachSCI(values, sweepNo, key, headstage, UNKNOWN_MODE)
+	endif
+
+	if(!WaveExists(settings))
+		WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(values, sweepNo, headstage)
+		ASSERT(WaveExists(sweeps), "No sweeps in current SCI")
+
+		Make/FREE/N=(DimSize(sweeps, ROWS)) settings = NaN
+	endif
+
+	path = "/results/" + key
+
+	JSON_AddTreeObject(jsonID, path)
+	JSON_AddWave(jsonID, path + "/value", settings)
+
+	[result, unit, col] = LBN_GetEntryProperties(keys, key)
+	JSON_AddString(jsonID, path + "/unit", SelectString(result, unit, ""))
+End
+
+/// @brief Published message in POST_SET_EVENT for the analysis function PSQ_PipetteInBath()
+///
+/// Keys under `/results` are labnotebook keys. The arrays under
+/// `/results/XXX/values` are the values for each sweep in the stimset cycle.
+/// This array has currently always one entry as #PSQ_PB_NUM_SWEEPS_PASS is one.
+/// The encoding is UTF-8.
+///
+/// Example:
+///
+/// \rst
+/// .. code-block: json
+///    {
+///     "device": "my_device",
+///     "headstage": 0,
+///     "results": {
+///       "USER_Pipette in Bath Chk0 Leak Current BL": {
+///         "unit": "Amperes",
+///         "value": [
+///           123.0
+///         ]
+///       },
+///       "USER_Pipette in Bath Chk0 Leak Current BL QC": {
+///         "unit": "On/Off",
+///         "value": [
+///           0.0
+///         ]
+///       },
+///       "USER_Pipette in Bath Set QC": {
+///         "unit": "On/Off",
+///         "value": [
+///           1.0
+///         ]
+///       },
+///       "USER_Pipette in Bath pipette resistance": {
+///         "unit": "Ω",
+///         "value": [
+///           456.0
+///         ]
+///       },
+///       "USER_Pipette in Bath pipette resistance QC": {
+///         "unit": "On/Off",
+///         "value": [
+///           1.0
+///         ]
+///       }
+///     },
+///     "sweep number": "NaN",
+///     "timestamp": "2022-02-10T20:48:22Z"
+///    }
+///
+/// .. Output created with Tests/CheckPipetteInBathPublishing.
+///
+/// \endrst
+static Function PSQ_PB_Publish(string device, variable sweepNo, variable headstage)
+	variable jsonID
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE numericalKeys   = GetLBNumericalKeys(device)
+
+	jsonID = FFI_GetJSONTemplate(device, headstage)
+
+	JSON_AddTreeObject(jsonID, "/results")
+
+	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_SET_PASS, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_LEAKCUR_PASS, chunk = 0, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, headstage)
+
+	// assumes that we only have one chunk
+	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_LEAKCUR, chunk = 0, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, headstage)
+
+	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	key = CreateAnaFuncLBNKey(PSQ_PIPETTE_BATH, PSQ_FMT_LBN_PB_RESISTANCE_PASS, query = 1)
+	PSQ_AddLabnotebookEntriesToJSON(jsonID, numericalValues, numericalKeys, sweepNo, key, headstage, INDEP_HEADSTAGE)
+
+	FFI_Publish(jsonID, ANALYSIS_FUNCTION_PB)
 End

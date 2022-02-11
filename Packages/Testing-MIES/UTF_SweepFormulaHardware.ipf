@@ -174,6 +174,34 @@ static Function	TestSweepFormulaTP(string device)
 		PASS()
 	endtry
 
+	formula = "tp(ss, channels(AD), sweeps(), INVALID)"
+	try
+		WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	formula = "tp(ss, channels(AD), sweeps(), [inf])"
+	try
+		WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	formula = "tp(ss, channels(AD), sweeps(), 1)"
+	try
+		WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	formula = "tp(ss, channels(AD), sweeps(), 0)"
+	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
+	CHECK_EQUAL_WAVES(tpResult, {NaN}, mode=WAVE_DATA)
+
 	formula = "tp(ss, channels(AD), sweeps())"
 	WAVE tpResult = SF_FormulaExecutor(DirectToFormulaParser(formula), graph=graph)
 	Make/FREE/D/N=(1, 3, 2) wRef
