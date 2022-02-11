@@ -2522,7 +2522,7 @@ Function WB_ParseStimulusType(string stimulusType)
 End
 
 /// @brief Return the name of a stimulus set build up from the passed parts
-Function/S WB_AssembleSetName(string basename, variable stimulusType, variable setNumber, [string suffix])
+Function/S WB_AssembleSetName(string basename, variable stimulusType, variable setNumber, [string suffix, variable lengthLimit])
 	string result
 	variable maxLength
 
@@ -2530,7 +2530,13 @@ Function/S WB_AssembleSetName(string basename, variable stimulusType, variable s
 		suffix = ""
 	endif
 
-	maxLength = (MAX_OBJECT_NAME_LENGTH_IN_BYTES_SHORT - 1) / 2
+	if(ParamIsDefault(lengthLimit))
+		lengthLimit = MAX_OBJECT_NAME_LENGTH_IN_BYTES_SHORT
+	else
+		ASSERT(IsInteger(lengthLimit) && lengthLimit > 0, "Invalid length limit")
+	endif
+
+	maxLength = (lengthLimit - 1) / 2
 
 	if(ParamIsDefault(suffix))
 		result = basename[0, maxLength]
