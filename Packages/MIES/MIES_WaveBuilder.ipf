@@ -2441,6 +2441,20 @@ Function WB_SetAnalysisFunctionGeneric(variable stimulusType, string analysisFun
 	return 0
 End
 
+static Function WB_SaveStimSetParameterWaves(string setName, WAVE SegWvType, WAVE WP, WAVE/T WPT, variable stimulusType)
+	string segWvTypeName, WPName, WPTName
+
+	segWvTypeName = WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
+	WPName        = WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
+	WPTName       = WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
+
+	DFREF dfr = GetSetParamFolder(stimulusType)
+
+	Duplicate/O SegWvType, dfr:$segWvTypeName
+	Duplicate/O WP, dfr:$WPName
+	Duplicate/O WPT, dfr:$WPTName
+End
+
 Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType, WAVE WP, WAVE/T WPT, variable setNumber, variable saveAsBuiltin)
 	string setName, genericFunc, params, errorMessage, childStimsets
 	variable i
@@ -2456,8 +2470,6 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 	genericFunc = WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
 	params = WPT[%$("Analysis function params (encoded)")][%Set][INDEP_EPOCH_TYPE]
 
-	DFREF dfr = GetSetParamFolder(stimulusType)
-
 	// avoid circular references of any order
 	childStimsets = WB_StimsetRecursion()
 	if(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
@@ -2468,9 +2480,7 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 		printf "Naming failure: Stimset can not reference itself. Saving with different name: \"%s\" to remove reference to itself.\r", setName
 	endif
 
-	Duplicate/O SegWvType, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
-	Duplicate/O WP, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
-	Duplicate/O WPT, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
+	WB_SaveStimSetParameterWaves(setName, SegWvType, WP, WPT, stimulusType)
 
 	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
 	ASSERT(WaveExists(stimset), "Could not recreate stimset")
