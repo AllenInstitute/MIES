@@ -246,14 +246,14 @@ static Function WBP_DisplaySetInPanel()
 		DoAbortNow("Wavebuilder panel is out of date. Please close and reopen it.")
 	endif
 
+	WAVE ranges = GetAxesRanges(waveBuilderGraph)
+
 	RemoveTracesFromGraph(waveBuilderGraph)
 
 	WAVE/Z stimSet = WB_GetStimSetForWaveBuilder()
 	if(!WaveExists(stimSet))
 		return NaN
 	endif
-
-	WAVE ranges = GetAxesRanges(waveBuilderGraph)
 
 	WAVE SegWvType = GetSegmentTypeWave()
 
