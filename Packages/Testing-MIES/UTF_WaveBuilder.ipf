@@ -207,3 +207,50 @@ Function WB_CheckEpochParameters()
 
 	CHECK_GE_VAR(strsearch(existingCode, newCode, 0), 0)
 End
+
+Function WB_SaveErrorsDontDeleteExistingStimSets()
+	string win, setName, history
+	variable refNum, modCount
+
+	setName = "myset"
+	setName = ST_CreateStimSet("myset", CHANNEL_TYPE_DAC)
+	ST_SetStimsetParameter(setName, "Total number of epochs", var = 1)
+	ST_SetStimsetParameter(setName, "Duration", epochIndex = 0, var = 500)
+
+	win = WBP_CreateWaveBuilderPanel()
+
+	// stimset can be loaded
+	PGC_SetAndActivateControl(win, "popup_WaveBuilder_SetList", str = setName)
+
+	// and saved
+	PGC_SetAndActivateControl(win, "button_WaveBuilder_SaveSet")
+
+	// now load it again
+	PGC_SetAndActivateControl(win, "popup_WaveBuilder_SetList", str = setName)
+
+	// attach an analysis function
+	ST_SetStimsetParameter(setName, "Analysis function (generic)", str = "ComplainWithProperString")
+
+	// add analysis parameter
+	AFH_AddAnalysisParameter(setName, "param", str = "some_string")
+
+	// load it
+	PGC_SetAndActivateControl(win, "popup_WaveBuilder_SetList", str = setName)
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	CHECK_WAVE(stimset, NORMAL_WAVE)
+	modCount = WaveModCount(stimset)
+	CHECK_GT_VAR(modCount, 0)
+
+	// and try resaving again
+	refNum = CaptureHistoryStart()
+	PGC_SetAndActivateControl(win, "button_WaveBuilder_SaveSet")
+	history = CaptureHistory(refNum, 1)
+
+	// something was outputted as saving failed
+	CHECK_PROPER_STR(history)
+	CHECK_GT_VAR(strsearch(history, "wrong value", 0), 0)
+
+	// saved stimset was not changed
+	CHECK_EQUAL_VAR(modCount, WaveMOdCount(stimset))
+End

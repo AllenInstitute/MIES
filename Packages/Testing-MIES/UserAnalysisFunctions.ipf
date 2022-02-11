@@ -998,3 +998,33 @@ Function BreakConfigWave(string device, STRUCT AnalysisFunction_V3& s)
 			break
 	endswitch
 End
+
+Function/S ComplainWithProperString_GetHelp(string name)
+
+	strswitch(name)
+		case "param":
+			return "Hi there!"
+		default:
+			FAIL()
+	endswitch
+End
+
+Function/S ComplainWithProperString_CheckParam(string name, string params)
+
+	strswitch(name)
+		case "param":
+			if(!IsEmpty(name))
+				return "wrong value"
+			endif
+		default:
+			FAIL()
+	endswitch
+End
+
+Function/S ComplainWithProperString_GetParams()
+	return "param"
+End
+
+Function ComplainWithProperString(string device, STRUCT AnalysisFunction_V3& s)
+	FAIL()
+End
