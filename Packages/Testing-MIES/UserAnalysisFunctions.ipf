@@ -795,7 +795,11 @@ Function IncrementalLabnotebookUpdate(device, s)
 	STRUCT AnalysisFunction_V3& s
 
 	if(s.eventType == POST_SWEEP_EVENT)
+#if exists("ILCUCheck_IGNORE")
 		ILCUCheck_IGNORE(device, s)
+#else
+		FAIL()
+#endif
 	endif
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()

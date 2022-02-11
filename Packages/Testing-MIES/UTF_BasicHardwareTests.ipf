@@ -343,45 +343,6 @@ static Function AllTests(t, devices)
 	endif
 End
 
-Function/WAVE GetTrackActiveSetCount()
-
-	DFREF dfr = root:
-	WAVE/Z/SDFR=dfr wv = anaFuncActiveSetCount
-
-	if(WaveExists(wv))
-		return wv
-	else
-		Make/N=(100) dfr:anaFuncActiveSetCount/WAVE=wv
-	endif
-
-	wv = NaN
-
-	return wv
-End
-
-/// @brief Track at which sweep count an analysis function was called.
-Function/WAVE GetTrackSweepCounts()
-
-	variable i
-
-	DFREF dfr = root:
-	WAVE/Z/SDFR=dfr wv = anaFuncSweepTracker
-
-	if(WaveExists(wv))
-		return wv
-	else
-		Make/N=(100, TOTAL_NUM_EVENTS, 2) dfr:anaFuncSweepTracker/WAVE=wv
-	endif
-
-	for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
-		SetDimLabel COLS, i, $StringFromList(i, EVENT_NAME_LIST), wv
-	endfor
-
-	wv = NaN
-
-	return wv
-End
-
 Function Events_Common(t)
 	STRUCT TestSettings &t
 
