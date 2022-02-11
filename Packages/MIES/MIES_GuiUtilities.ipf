@@ -1347,7 +1347,7 @@ End
 ///
 /// The recreation macro of a single GUI control looks like:
 /// \rst
-/// .. code-block: igorpro
+/// .. code-block:: igorpro
 ///
 ///		PopupMenu popup_ctrl,pos={1.00,1.00},size={55.00,19.00},proc=PGCT_PopMenuProc
 ///		PopupMenu popup_ctrl,mode=1,popvalue="Entry1",value= #"\"Entry1;Entry2;Entry3\""

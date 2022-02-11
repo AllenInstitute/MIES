@@ -3721,7 +3721,6 @@ End
 ///
 /// \rst
 ///	.. image:: ../patch-seq-chirp-bounds-state-action.png
-/// \endrst
 ///
 /// Depolarized (Upper only):
 ///
@@ -3742,6 +3741,8 @@ End
 ///  AA      Increase
 ///  BB      Decrease
 /// ======= ==========
+///
+/// \endrst
 ///
 /// @verbatim
 ///
@@ -4665,7 +4666,8 @@ End
 /// Example:
 ///
 /// \rst
-/// .. code-block: json
+/// .. code-block:: json
+///
 ///    {
 ///     "device": "my_device",
 ///     "headstage": 0,

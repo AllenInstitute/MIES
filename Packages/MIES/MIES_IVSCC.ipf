@@ -326,7 +326,7 @@ End
 /// Example:
 ///
 /// \rst
-/// .. code-block: json
+/// .. code-block:: json
 ///
 ///    {
 ///      "Description": "some text",
