@@ -707,6 +707,27 @@ Function/S DB_FindDataBrowser(device)
 	return ""
 End
 
+/// @brief Returns a databrowser bound to the given `device`
+///
+/// Creates a new one, if none is found or bound.
+Function/S DB_GetBoundDataBrowser(string device)
+	string databrowser, bsPanel
+
+	databrowser = DB_FindDataBrowser(device)
+	if(IsEmpty(databrowser)) // not yet open
+		databrowser = DB_OpenDataBrowser()
+	endif
+
+	if(BSP_HasBoundDevice(databrowser))
+		return databrowser
+	endif
+
+	bsPanel = BSP_GetPanel(databrowser)
+	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
+
+	return DB_FindDataBrowser(device)
+End
+
 Function DB_WindowHook(s)
 	STRUCT WMWinHookStruct &s
 

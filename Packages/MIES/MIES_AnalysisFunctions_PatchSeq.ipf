@@ -4291,7 +4291,7 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 	variable multiplier, chunk, baselineQCPassed, ret, DAC, pipetteResistanceQCPassed, samplingFrequencyQCPassed
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, sweepPassed, setPassed, numSweepsFailedAllowed, failsInSet
 	variable maxPipetteResistance, minPipetteResistance, expectedNumTestpulses, numTestPulses, pipetteResistance
-	string key, ctrl, stimset, msg, databrowser, bsPanel, scPanel, formula_nb, pipetteResistanceStr, sweepStr
+	string key, ctrl, stimset, msg, databrowser, bsPanel, formula_nb, pipetteResistanceStr, sweepStr
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -4322,20 +4322,8 @@ Function PSQ_PipetteInBath(string device, struct AnalysisFunction_V3& s)
 				return 1
 			endif
 
-			databrowser = DB_FindDataBrowser(device)
-			if(IsEmpty(databrowser)) // not yet open
-				databrowser = DB_OpenDataBrowser()
-			endif
-
+			databrowser = DB_GetBoundDataBrowser(device)
 			bsPanel = BSP_GetPanel(databrowser)
-			scPanel = BSP_GetSweepControlsPanel(databrowser)
-
-			if(!BSP_HasBoundDevice(bsPanel))
-				PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
-				databrowser = DB_FindDataBrowser(device)
-				bsPanel = BSP_GetPanel(databrowser)
-				scPanel = BSP_GetSweepControlsPanel(databrowser)
-			endif
 
 			formula_nb = BSP_GetSFFormula(databrowser)
 			ReplaceNotebookText(formula_nb, "store(\"Steady state resistance\", tp(ss, channels(AD), sweeps(), [0]))")
