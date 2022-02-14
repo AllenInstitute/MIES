@@ -165,7 +165,7 @@ Function/WAVE DeviceNameGeneratorMD1()
 	lblList = AddListItem("ITC600_YOKED", lblList)
 #else
 	devList = AddListItem("ITC1600_Dev_2", devList, ":")
-	lblList = AddListItem("ITC600", lblList)
+	lblList = AddListItem("ITC1600", lblList)
 #endif
 
 #endif
