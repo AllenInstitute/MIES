@@ -238,6 +238,31 @@ static Function/S GetStimset_IGNORE(string device)
 	return AFH_GetStimSetName(device, DAC, CHANNEL_TYPE_DAC)
 End
 
+Function CheckTestPulseLikeEpochs(string device,[variable incomplete])
+
+	if(ParamIsDefault(incomplete))
+		incomplete = 0
+	else
+		incomplete = !!incomplete
+	endif
+
+	// user epochs are the same for all sweeps, so we only check the first sweep
+
+	if(!incomplete)
+		CheckUserEpochs(device, {520, 1030, 1030, 1540, 1540, 2050}, EPOCH_SHORTNAME_USER_PREFIX + "TP%d", sweep = 0)
+		CheckUserEpochs(device, {520, 770, 1030, 1280, 1540, 1790}, EPOCH_SHORTNAME_USER_PREFIX + "TP%d_B0", sweep = 0)
+		CheckUserEpochs(device, {770, 780, 1280, 1290, 1790, 1800}, EPOCH_SHORTNAME_USER_PREFIX + "TP%d_P", sweep = 0)
+		CheckUserEpochs(device, {780, 1030, 1290, 1540, 1800, 2050}, EPOCH_SHORTNAME_USER_PREFIX + "TP%d_B1", sweep = 0)
+	else
+		// due to timing issues on failed sets/sweeps we don't know how many and what epochs we have
+		Make/FREE/N=0 times
+		CheckUserEpochs(device, times, "TP%d", ignoreIncomplete = 1, sweep = 0)
+		CheckUserEpochs(device, times, "TP%d_B0", ignoreIncomplete = 1, sweep = 0)
+		CheckUserEpochs(device, times, "TP%d_P", ignoreIncomplete = 1, sweep = 0)
+		CheckUserEpochs(device, times, "TP%d_B1", ignoreIncomplete = 1, sweep = 0)
+	endif
+End
+
 static Function PS_PB1_IGNORE(device)
 	string device
 
@@ -300,6 +325,7 @@ static Function PS_PB1_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
+	CheckTestPulseLikeEpochs(str, incomplete = 1)
 End
 
 static Function PS_PB2_IGNORE(device)
@@ -365,6 +391,7 @@ static Function PS_PB2_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
+	CheckTestPulseLikeEpochs(str, incomplete = 0)
 End
 
 static Function PS_PB3_IGNORE(device)
@@ -441,6 +468,7 @@ static Function PS_PB3_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
+	CheckTestPulseLikeEpochs(str, incomplete = 0)
 End
 
 static Function PS_PB4_IGNORE(device)
@@ -506,6 +534,7 @@ static Function PS_PB4_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
+	CheckTestPulseLikeEpochs(str, incomplete = 1)
 End
 
 static Function PS_PB5_IGNORE(device)
@@ -574,6 +603,7 @@ static Function PS_PB5_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
+	CheckTestPulseLikeEpochs(str, incomplete = 1)
 End
 
 static Function PS_PB6_IGNORE(device)
@@ -642,6 +672,7 @@ static Function PS_PB6_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
+	CheckTestPulseLikeEpochs(str, incomplete = 1)
 End
 
 static Function PS_PB7_IGNORE(device)
@@ -711,4 +742,5 @@ static Function PS_PB7_REENTRY([str])
 
 	CommonAnalysisFunctionChecks(str, sweepNo, entries[%setPass])
 	CheckPSQChunkTimes(str, {20, 520})
+	CheckTestPulseLikeEpochs(str, incomplete = 0)
 End
