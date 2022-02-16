@@ -2441,8 +2441,23 @@ Function WB_SetAnalysisFunctionGeneric(variable stimulusType, string analysisFun
 	return 0
 End
 
+static Function WB_SaveStimSetParameterWaves(string setName, WAVE SegWvType, WAVE WP, WAVE/T WPT, variable stimulusType)
+	string segWvTypeName, WPName, WPTName
+
+	segWvTypeName = WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
+	WPName        = WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
+	WPTName       = WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
+
+	DFREF dfr = GetSetParamFolder(stimulusType)
+
+	Duplicate/O SegWvType, dfr:$segWvTypeName
+	Duplicate/O WP, dfr:$WPName
+	Duplicate/O WPT, dfr:$WPTName
+End
+
 Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType, WAVE WP, WAVE/T WPT, variable setNumber, variable saveAsBuiltin)
 	string setName, genericFunc, params, errorMessage, childStimsets
+	string tempName
 	variable i
 
 	setName = WB_AssembleSetName(baseName, stimulusType, setNumber)
@@ -2456,8 +2471,6 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 	genericFunc = WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
 	params = WPT[%$("Analysis function params (encoded)")][%Set][INDEP_EPOCH_TYPE]
 
-	DFREF dfr = GetSetParamFolder(stimulusType)
-
 	// avoid circular references of any order
 	childStimsets = WB_StimsetRecursion()
 	if(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
@@ -2468,18 +2481,20 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 		printf "Naming failure: Stimset can not reference itself. Saving with different name: \"%s\" to remove reference to itself.\r", setName
 	endif
 
-	Duplicate/O SegWvType, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
-	Duplicate/O WP, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
-	Duplicate/O WPT, dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
+	// now we know that setName is a valid stimset name
+	// but we need to first store it under a temporary name, so that
+	// we can recover from errors when the checks fail
+	tempName = WB_AssembleSetName("MIES_TEMPORARY_STIMSET_WILL_BE_DELETED", stimulusType, setNumber, lengthLimit = MAX_OBJECT_NAME_LENGTH_IN_BYTES)
 
-	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	WB_SaveStimSetParameterWaves(tempName, SegWvType, WP, WPT, stimulusType)
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(tempName)
 	ASSERT(WaveExists(stimset), "Could not recreate stimset")
 
 	// _CheckParam users rely on the stimset being present already
-	// in case of errors the stimulus set is deleted again
 	STRUCT CheckParametersStruct s
 	s.params  = params
-	s.setName = setName
+	s.setName = tempName
 
 	errorMessage = AFH_CheckAnalysisParameter(genericFunc, s)
 
@@ -2487,9 +2502,18 @@ Function/S WB_SaveStimSet(string baseName, variable stimulusType, WAVE SegWvType
 		printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"
 		print errorMessage
 		ControlWindowToFront()
-		ST_RemoveStimSet(setName)
+		ST_RemoveStimSet(tempName)
 		return ""
 	endif
+
+	// we now know that the stimset is valid
+	// let's save it under the desired name and delete the temporary one
+	WB_SaveStimSetParameterWaves(setName, SegWvType, WP, WPT, stimulusType)
+
+	ST_RemoveStimSet(tempName)
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	ASSERT(WaveExists(stimset), "Could not recreate stimset")
 
 	// propagate the existence of the new set
 	DAP_UpdateDaEphysStimulusSetPopups()
@@ -2522,7 +2546,7 @@ Function WB_ParseStimulusType(string stimulusType)
 End
 
 /// @brief Return the name of a stimulus set build up from the passed parts
-Function/S WB_AssembleSetName(string basename, variable stimulusType, variable setNumber, [string suffix])
+Function/S WB_AssembleSetName(string basename, variable stimulusType, variable setNumber, [string suffix, variable lengthLimit])
 	string result
 	variable maxLength
 
@@ -2530,7 +2554,13 @@ Function/S WB_AssembleSetName(string basename, variable stimulusType, variable s
 		suffix = ""
 	endif
 
-	maxLength = (MAX_OBJECT_NAME_LENGTH_IN_BYTES_SHORT - 1) / 2
+	if(ParamIsDefault(lengthLimit))
+		lengthLimit = MAX_OBJECT_NAME_LENGTH_IN_BYTES_SHORT
+	else
+		ASSERT(IsInteger(lengthLimit) && lengthLimit > 0, "Invalid length limit")
+	endif
+
+	maxLength = (lengthLimit - 1) / 2
 
 	if(ParamIsDefault(suffix))
 		result = basename[0, maxLength]

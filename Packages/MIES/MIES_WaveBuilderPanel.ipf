@@ -246,14 +246,14 @@ static Function WBP_DisplaySetInPanel()
 		DoAbortNow("Wavebuilder panel is out of date. Please close and reopen it.")
 	endif
 
+	WAVE ranges = GetAxesRanges(waveBuilderGraph)
+
 	RemoveTracesFromGraph(waveBuilderGraph)
 
 	WAVE/Z stimSet = WB_GetStimSetForWaveBuilder()
 	if(!WaveExists(stimSet))
 		return NaN
 	endif
-
-	WAVE ranges = GetAxesRanges(waveBuilderGraph)
 
 	WAVE SegWvType = GetSegmentTypeWave()
 
@@ -615,9 +615,6 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 			if(IsEmpty(setName))
 				break
 			endif
-
-			DAP_UpdateDaEphysStimulusSetPopups()
-			WB_UpdateEpochCombineList(stimulusType)
 
 			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", DEFAULT_SET_PREFIX)
 			WBP_LoadSet(NONE)

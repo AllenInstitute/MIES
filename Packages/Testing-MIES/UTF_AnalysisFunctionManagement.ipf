@@ -178,50 +178,6 @@ Function RewriteAnalysisFunctions_IGNORE()
 	SaveStimsets()
 End
 
-Function/WAVE TrackAnalysisFunctionCalls([numHeadstages])
-	variable numHeadstages
-
-	variable i
-
-	DFREF dfr = root:
-	WAVE/Z/SDFR=dfr wv = anaFuncTracker
-
-	if(WaveExists(wv))
-		return wv
-	else
-		Make/N=(TOTAL_NUM_EVENTS, numHeadstages) dfr:anaFuncTracker/WAVE=wv
-	endif
-
-	for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
-		SetDimLabel ROWS, i, $StringFromList(i, EVENT_NAME_LIST), wv
-	endfor
-
-	return wv
-End
-
-Function/WAVE TrackAnalysisFunctionOrder([numHeadstages])
-	variable numHeadstages
-
-	variable i
-
-	DFREF dfr = root:
-	WAVE/D/Z/SDFR=dfr wv = anaFuncOrder
-
-	if(WaveExists(wv))
-		return wv
-	else
-		Make/N=(TOTAL_NUM_EVENTS, numHeadstages)/D dfr:anaFuncOrder/WAVE=wv
-	endif
-
-	wv = NaN
-
-	for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
-		SetDimLabel ROWS, i, $StringFromList(i, EVENT_NAME_LIST), wv
-	endfor
-
-	return wv
-End
-
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(s, stimset, device, [numHeadstages, TTLStimset, postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
