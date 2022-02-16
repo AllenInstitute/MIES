@@ -127,6 +127,10 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 	// - Difference to initial DAScale larger than 60pA?
 	// - Not enough sweeps
 
+	// PSQ_SE
+	// - baseline QC
+	// - seal threshold QC
+
 	// PSQ_SP
 	// - only reached PSQ_FMT_LBN_STEPSIZE step size and not PSQ_SP_INIT_AMP_p10 with a spike
 
@@ -146,6 +150,8 @@ static Function/S AD_GetResultMessage(variable anaFuncType, variable passed, WAV
 			return AD_GetPipetteInBathFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case PSQ_RHEOBASE:
 			return AD_GetRheobaseFailMsg(numericalValues, textualValues, sweepNo, headstage)
+		case PSQ_SEAL_EVALUATION:
+			return AD_GetSealEvaluationFailMsg(numericalValues, textualValues, sweepNo, headstage)
 		case PSQ_SQUARE_PULSE:
 			return AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 		case SC_SPIKE_CONTROL:
@@ -282,6 +288,7 @@ static Function AD_FillWaves(win, list, info)
 				case PSQ_PIPETTE_BATH:
 				case PSQ_RAMP:
 				case PSQ_SQUARE_PULSE:
+				case PSQ_SEAL_EVALUATION:
 				case MSQ_DA_SCALE:
 				case MSQ_FAST_RHEO_EST:
 				case SC_SPIKE_CONTROL:
@@ -487,6 +494,10 @@ static Function/S AD_GetPipetteInBathFailMsg(WAVE numericalValues, WAVE/T textua
 	return AD_GetPerSweepFailMessage(PSQ_PIPETTE_BATH, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_PB_NUM_SWEEPS_PASS)
 End
 
+static Function/S AD_GetSealEvaluationFailMsg(WAVE numericalValues, WAVE/T textualValues, variable sweepNo, variable headstage)
+	return AD_GetPerSweepFailMessage(PSQ_SEAL_EVALUATION, numericalValues, textualValues, sweepNo, headstage, numRequiredPasses = PSQ_PB_NUM_SWEEPS_PASS)
+End
+
 static Function/S AD_GetFastRheoEstFailMsg(WAVE numericalValues, variable sweepNo, variable headstage)
 
 	string key
@@ -577,6 +588,7 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 	switch(anaFuncType)
 		case PSQ_DA_SCALE:
 		case PSQ_PIPETTE_BATH:
+		case PSQ_SEAL_EVALUATION:
 		case PSQ_RHEOBASE:
 		case PSQ_RAMP:
 		case PSQ_CHIRP:
@@ -804,6 +816,22 @@ static Function/S AD_GetPerSweepFailMessage(variable anaFuncType, WAVE numerical
 				// Speciality: Rheobase does not have a Sweep QC entry and only
 				//             baseline QC determines a passing sweep
 				sprintf text, "Sweep %d passed", sweeps[i]
+				break
+			case PSQ_SEAL_EVALUATION:
+				msg = AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, headstage)
+
+				if(!IsEmpty(msg))
+					sprintf text, "Sweep %d failed: %s", sweepNo, msg
+					break
+				endif
+
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SE_RESISTANCE_PASS, query = 1)
+				resistancePass = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+				if(IsFinite(resistancePass) && !resistancePass)
+					sprintf text, "Sweep %d failed: Seal resistance is out of range", sweepNo
+					break
+				endif
 				break
 			default:
 				ASSERT(0, "Unsupported analysis function")
