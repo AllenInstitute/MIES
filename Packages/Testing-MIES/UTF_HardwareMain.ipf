@@ -213,6 +213,9 @@ End
 Function TEST_BEGIN_OVERRIDE(name)
 	string name
 
+	variable needsLoading
+	string filepath
+
 	NVAR interactiveMode = $GetInteractiveMode()
 	interactiveMode = 0
 	variable/G root:interactiveMode = interactiveMode
@@ -237,11 +240,24 @@ Function TEST_BEGIN_OVERRIDE(name)
 	DuplicateDataFolder/Z/O=1 dfr, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
 
+	filepath = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
+	GetFileFolderInfo/Q/Z filePath
+
 	// speedup executing the tests locally
 	if(!DataFolderExists("root:WaveBuilder"))
-		NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
-		DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
-		KillDataFolder/Z root:WaveBuilder:SavedStimulusSets
+		needsLoading = 1
+	else
+		NVAR/Z modTime = root:WaveBuilder:modTime
+
+		if(!NVAR_Exists(modTime) || V_modificationDate != modTime)
+			needsloading = 1
+		endif
+	endif
+
+	if(needsLoading)
+		NWB_LoadAllStimsets(filename = filepath, overwrite = 1)
+		DuplicateDataFolder/O=1 root:MIES:WaveBuilder, root:WaveBuilder; AbortOnRTE
+		variable/G root:WaveBuilder:modTime = V_modificationDate
 	endif
 End
 
