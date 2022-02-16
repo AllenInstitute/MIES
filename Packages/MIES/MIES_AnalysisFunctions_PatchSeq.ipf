@@ -4536,9 +4536,9 @@ End
 ///
 /// @return number of found testpulses
 static Function PSQ_PB_CreateTestpulseEpochs(string device, variable headstage)
-	variable DAC, numTestPulses, prePulseTP, signalTP, postPulseTP, DAScale
-	variable amplitude, offset, numEpochs, i, idx, epBegin, epEnd, totalOnsetDelay
-	string setName, shortName, tags
+	variable DAC, numTestPulses, prePulseTP, DAScale, tpIndex
+	variable offset, numEpochs, i, idx, totalOnsetDelay
+	string setName
 
 	DAC     = AFH_GetDACFromHeadstage(device, headstage)
 	setName = DAG_GetTextualValue(device, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DAC)
@@ -4568,55 +4568,63 @@ static Function PSQ_PB_CreateTestpulseEpochs(string device, variable headstage)
 		// first TP epoch
 		idx = 1 + i * numTestPulses
 
-		prePulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx) * 1e-3
-		amplitude  = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx)
-		ASSERT(amplitude == 0, "Invald amplitude")
-
-		signalTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx + 1) * 1e-3
-		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 1)
-		ASSERT(amplitude == 1, "Invald amplitude")
-
-		postPulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = idx + 2) * 1e-3
-		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 2)
-		ASSERT(amplitude == 0, "Invald amplitude")
-
-		// full TP
-		epBegin = offset
-		epEnd   = epBegin + prePulseTP + signalTP + postPulseTP
-		sprintf tags, "Type=Testpulse Like;Index=%d", i
-		sprintf shortName, "TP%d", i
-
-		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
-
-		offset = epEnd
-
-		// pre TP baseline
-		// same epBegin as full TP
-		epEnd   = epBegin + prePulseTP
-		sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", i
-		sprintf shortName, "TP%d_B0", i
-
-		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
-
-		// pulse TP
-		epBegin = epEnd
-		epEnd   = epBegin + signalTP
-		amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = idx + 1) * DAScale
-		sprintf tags, "Type=Testpulse Like;SubType=Pulse;Amplitude=%g;Index=%d;", amplitude, i
-		sprintf shortName, "TP%d_P", i
-
-		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
-
-		// post TP baseline
-		epBegin = epEnd
-		epEnd   = epBegin + postPulseTP
-		sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", i
-		sprintf shortName, "TP%d_B1", i
-
-		EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+		offset = PSQ_CreateTestpulseLikeEpoch(device, DAC, setName, DAScale, offset, idx, tpIndex++)
 	endfor
 
 	return numTestPulses
+End
+
+static Function PSQ_CreateTestpulseLikeEpoch(string device, variable DAC, string setName, variable DAScale, variable start, variable epochIndex, variable tpIndex)
+	variable prePulseTP, signalTP, postPulseTP
+	variable amplitude, epBegin, epEnd
+	string shortName, tags
+
+	prePulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex) * 1e-3
+	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex)
+	ASSERT(amplitude == 0, "Invald amplitude")
+
+	signalTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex + 1) * 1e-3
+	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex + 1)
+	ASSERT(amplitude == 1, "Invald amplitude")
+
+	postPulseTP = ST_GetStimsetParameterAsVariable(setName, "Duration", epochIndex = epochIndex + 2) * 1e-3
+	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex + 2)
+	ASSERT(amplitude == 0, "Invald amplitude")
+
+	// full TP
+	epBegin = start
+	epEnd   = epBegin + prePulseTP + signalTP + postPulseTP
+	sprintf tags, "Type=Testpulse Like;Index=%d", tpIndex
+	sprintf shortName, "TP%d", tpIndex
+
+	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+	// pre TP baseline
+	// same epBegin as full TP
+	epEnd = epBegin + prePulseTP
+	sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", tpIndex
+	sprintf shortName, "TP%d_B0", tpIndex
+
+	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+	// pulse TP
+	epBegin = epEnd
+	epEnd   = epBegin + signalTP
+	amplitude = ST_GetStimsetParameterAsVariable(setName, "Amplitude", epochIndex = epochIndex + 1) * DAScale
+	sprintf tags, "Type=Testpulse Like;SubType=Pulse;Amplitude=%g;Index=%d;", amplitude, tpIndex
+	sprintf shortName, "TP%d_P", tpIndex
+
+	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+	// post TP baseline
+	epBegin = epEnd
+	epEnd   = epBegin + postPulseTP
+	sprintf tags, "Type=Testpulse Like;SubType=Baseline;Index=%d;", tpIndex
+	sprintf shortName, "TP%d_B1", tpIndex
+
+	EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, epBegin, epEnd, tags, shortName = shortName)
+
+	return epEnd
 End
 
 static Function PSQ_AddLabnotebookEntriesToJSON(variable jsonID, WAVE values, WAVE keys, variable sweepNo, string key, variable headstage, variable labnotebookLayer)
