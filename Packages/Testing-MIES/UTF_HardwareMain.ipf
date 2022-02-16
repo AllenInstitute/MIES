@@ -297,6 +297,12 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	DuplicateDataFolder/O=1/Z source, dest
 	CHECK_EQUAL_VAR(V_flag, 0)
 
+#if IgorVersion() >= 9.0
+	TUFXOP_AcquireMutex/N=(TSDS_BUGCOUNT)
+	TSDS_Write(TSDS_BUGCOUNT, var = 0)
+	TUFXOP_ReleaseMutex/N=(TSDS_BUGCOUNT)
+#endif
+
 #ifndef TESTS_WITH_NI_HARDWARE
 	HW_ITC_CloseAllDevices()
 #endif
