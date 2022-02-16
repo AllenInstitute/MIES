@@ -1,6 +1,6 @@
-breathe==4.31.0
-docutils==0.16.0
-sphinx==4.3.0
+breathe==4.33.1
+docutils==0.17.1
+sphinx==4.4.0
 sphinxcontrib-fulltoc==1.2
 sphinxcontrib-images==0.9.4
 sphinxembeddedvideos==1.1.0.dev20190210
