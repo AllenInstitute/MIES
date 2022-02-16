@@ -139,7 +139,7 @@ if hash sphinx-build 2>/dev/null; then
 
   rm -f sphinx-output.log
 
-  sphinx-build -q -w sphinx-output.log . html
+  sphinx-build -j auto -q -w sphinx-output.log . html
 
   sed -i -e '/WARNING: Duplicate C++ declaration./d' sphinx-output.log
   sed -i -e '/^Declaration is/d' sphinx-output.log
