@@ -1327,17 +1327,36 @@ Function StopTPWhenWeHaveOne(STRUCT WMBackgroundStruct &s)
 	return 0
 End
 
-/// @brief chunkTimes in ms, if sweeps is given, the chunkTimes are only checked for this specific sweep
-Function CheckPSQChunkTimes(string dev, WAVE chunkTimes[, variable sweep])
+Function CheckPSQChunkTimes(string dev, WAVE chunkTimes, [variable sweep])
+	string shortNameFormat
 
+	shortNameFormat = EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "%d"
+
+	if(ParamIsDefault(sweep))
+		CheckUserEpochs(dev, chunkTimes, shortNameFormat)
+	else
+		CheckUserEpochs(dev, chunkTimes, shortNameFormat, sweep = sweep)
+	endif
+End
+
+/// @brief Check the start/end positions of the given user epochs
+///
+/// @param dev              device
+/// @param times            epoch starting/end times [ms]
+/// @param shortNameFormat  short name pattern must contain `%d` (and only that %-pattern)
+/// @param sweep            [optional] Allows to limit checking only a specific sweep,
+///                         by default all sweeps in the stimset cycle are checked
+/// @param ignoreIncomplete [optional, defaults to false] ignore epochs from incomplete sweeps
+Function CheckUserEpochs(string dev, WAVE times, string shortNameFormat, [variable sweep, variable ignoreIncomplete])
 	variable size, numChunks, index, expectedChunkCnt, sweepCnt, DAC
 	variable i, j, k
 	variable startTime, endTime, startRef, endRef
-	string str
+	string str, regexp
 
 	sweep = ParamIsDefault(sweep) ? NaN : sweep
+	ignoreIncomplete = ParamIsDefault(ignoreIncomplete) ? 0 : !!ignoreIncomplete
 
-	size = DimSize(chunkTimes, ROWS)
+	size = DimSize(times, ROWS)
 	REQUIRE(IsEven(size))
 	expectedChunkCnt = size >> 1
 
@@ -1367,7 +1386,17 @@ Function CheckPSQChunkTimes(string dev, WAVE chunkTimes[, variable sweep])
 			endif
 
 			DAC = AFH_GetDACFromHeadstage(dev, j)
-			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + "[0-9]+", treelevel = EPOCH_USER_LEVEL)
+			REQUIRE(IsFinite(DAC))
+
+			WAVE/T/Z unacquiredEpoch = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, "UA")
+
+			if(ignoreIncomplete)
+				CHECK_WAVE(unacquiredEpoch, TEXT_WAVE)
+				continue
+			endif
+
+			regexp = "^" + ReplaceString("%d", shortNameFormat, "[0-9]+") + "$"
+			WAVE/T/Z userChunkEpochs = EP_GetEpochs(numericalValues, textualValues, sweeps[i], XOP_CHANNEL_TYPE_DAC, DAC, regexp, treelevel = EPOCH_USER_LEVEL)
 			if(!WaveExists(userChunkEpochs))
 				continue
 			endif
@@ -1376,14 +1405,14 @@ Function CheckPSQChunkTimes(string dev, WAVE chunkTimes[, variable sweep])
 
 			Make/FREE/T/N=(numChunks) epochShortNames = EP_GetShortName(userChunkEpochs[p][EPOCH_COL_TAGS])
 			for(k = 0; k < numChunks; k += 1)
-				str = EPOCH_SHORTNAME_USER_PREFIX + PSQ_BASELINE_CHUNK_SHORT_NAME_PREFIX + num2istr(k)
+				sprintf str, shortNameFormat, k
 				FindValue/TEXT=str/TXOP=4 epochShortNames
 				index = V_Value
 				CHECK_NEQ_VAR(index, -1)
 				startTime = str2num(userChunkEpochs[k][EPOCH_COL_STARTTIME])
 				endTime = str2num(userChunkEpochs[k][EPOCH_COL_ENDTIME])
-				startRef = chunkTimes[k << 1] / 1E3
-				endRef = chunkTimes[k << 1 + 1] / 1E3
+				startRef = times[k << 1] / 1E3
+				endRef = times[k << 1 + 1] / 1E3
 
 				if(CheckIfSmall(startRef, tol = 1e-12))
 					CHECK_SMALL_VAR(startTime)
