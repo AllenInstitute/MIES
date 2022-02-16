@@ -89,6 +89,9 @@
 /// Type=Testpulse Like;SubType=Baseline;Index=x               U_TPx_P    PB                 pulse of testpulse                      -1
 /// ========================================================== ========== ================== ======================================= =====
 ///
+/// The tag entry ``Index=x`` is a zero-based index, which tracks how often the specific type of user epoch appears. So for different
+/// epoch types duplicated index entries are to be expected.
+///
 /// See also :ref:`epoch_time_specialities`.
 /// \endrst
 
