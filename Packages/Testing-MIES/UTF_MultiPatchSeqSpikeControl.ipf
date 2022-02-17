@@ -13,6 +13,8 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 		postInitializeFunc(device)
 	endif
 
+	EnsureMCCIsOpen()
+
 	string unlockedDevice = DAP_CreateDAEphysPanel()
 
 	PGC_SetAndActivateControl(unlockedDevice, "popup_MoreSettings_Devices", str=device)
@@ -22,12 +24,6 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 
 	PGC_SetAndActivateControl(device, "ADC", val=0)
 	DoUpdate/W=$device
-
-	WAVE ampMCC = GetAmplifierMultiClamps()
-	WAVE ampTel = GetAmplifierTelegraphServers()
-
-	REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
-	REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
 	// HS 0 with Amp
 	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)

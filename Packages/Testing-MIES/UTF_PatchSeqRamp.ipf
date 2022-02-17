@@ -13,6 +13,8 @@ Constant SPIKE_POSITION_TEST_DELAY_MS = 10500
 static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLABLE_PROTO preAcquireFunc])
 	string stimset, unlockedDevice
 
+	EnsureMCCIsOpen()
+
 	// create an empty one so that the preDAQ analysis function can find it
 	Make/N=0/O root:overrideResults
 
@@ -25,12 +27,6 @@ static Function AcquireData(STRUCT DAQSettings& s, string device, [FUNCREF CALLA
 
 	PGC_SetAndActivateControl(device, "ADC", val=0)
 	DoUpdate/W=$device
-
-	WAVE ampMCC = GetAmplifierMultiClamps()
-	WAVE ampTel = GetAmplifierTelegraphServers()
-
-	REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
-	REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
 	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 0)
 	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")

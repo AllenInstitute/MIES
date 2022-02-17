@@ -19,6 +19,8 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 	string unlockedDevice, device
 	variable i, numEntries
 
+	EnsureMCCIsOpen()
+
 	dDAQ = ParamIsDefault(dDAQ) ? 0 : !!dDAQ
 	oodDAQ = ParamIsDefault(oodDAQ) ? 0 : !!oodDAQ
 	analysisFunction = SelectString(ParamIsDefault(analysisFunction), analysisFunction, "")
@@ -39,12 +41,6 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 
 		PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimSetName1)
 		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimSetName2)
-
-		WAVE ampMCC = GetAmplifierMultiClamps()
-		WAVE ampTel = GetAmplifierTelegraphServers()
-
-		REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
-		REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
 		// HS 0 with Amp
 		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)

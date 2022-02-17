@@ -10,6 +10,8 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 
 	string stimset, unlockedDevice
 
+	EnsureMCCIsOpen()
+
 	KillWaves/Z root:overrideResults
 	Make/O/N=(0) root:overrideResults/Wave=overrideResults
 	Note/K overrideResults
@@ -27,12 +29,6 @@ static Function AcquireData(s, device, [postInitializeFunc, preAcquireFunc])
 
 	PGC_SetAndActivateControl(device, "ADC", val=0)
 	DoUpdate/W=$device
-
-	WAVE ampMCC = GetAmplifierMultiClamps()
-	WAVE ampTel = GetAmplifierTelegraphServers()
-
-	REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
-	REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
 	PGC_SetAndActivateControl(device, "Popup_Settings_HEADSTAGE", val = 0)
 	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")

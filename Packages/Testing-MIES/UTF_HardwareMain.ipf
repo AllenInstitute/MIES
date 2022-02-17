@@ -1483,3 +1483,13 @@ Function OpenDatabrowser()
 	bsPanel = BSP_GetPanel(win)
 	PGC_SetAndActivateControl(bsPanel, "check_BrowserSettings_DS", val = 1)
 End
+
+Function EnsureMCCIsOpen()
+	AI_FindConnectedAmps()
+
+	WAVE ampMCC = GetAmplifierMultiClamps()
+	WAVE ampTel = GetAmplifierTelegraphServers()
+
+	REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
+	REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
+End

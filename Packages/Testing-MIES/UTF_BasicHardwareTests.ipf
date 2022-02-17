@@ -75,6 +75,8 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 	string unlockedDevice, device
 	variable i, numEntries
 
+	EnsureMCCIsOpen()
+
 	KillOrMoveToTrash(wv = GetTrackSweepCounts())
 	KillOrMoveToTrash(wv = GetTrackActiveSetCount())
 	KillOrMoveToTrash(wv = TrackAnalysisFunctionCalls())
@@ -117,12 +119,6 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 		PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), str = "StimulusSetB_DA_0")
 		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetC_DA_0")
 		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), str = "StimulusSetD_DA_0")
-
-		WAVE ampMCC = GetAmplifierMultiClamps()
-		WAVE ampTel = GetAmplifierTelegraphServers()
-
-		REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
-		REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
 		// HS 0 with Amp
 		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
