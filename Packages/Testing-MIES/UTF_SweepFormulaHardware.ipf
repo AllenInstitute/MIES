@@ -23,12 +23,12 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 	variable dDAQ, oodDAQ, onsetDelayUser, terminationDelay
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
+	string unlockedDevice, device
+	variable i, numEntries
+
 	if(!ParamIsDefault(postInitializeFunc))
 		postInitializeFunc(devices)
 	endif
-
-	string unlockedDevice, device
-	variable i, numEntries
 
 	dDAQ = ParamIsDefault(dDAQ) ? 0 : !!dDAQ
 	oodDAQ = ParamIsDefault(oodDAQ) ? 0 : !!oodDAQ
