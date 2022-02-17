@@ -17,8 +17,7 @@ def get_version():
 
 # sphinx config
 extensions = ['sphinx.ext.mathjax', 'sphinx.ext.todo', 'breathe', \
-              'sphinxcontrib.images',    \
-              'sphinxembeddedvideos.youtube']
+              'sphinxcontrib.images']
 
 master_doc = "index"
 project= "MIES Igor"

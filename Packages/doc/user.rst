@@ -25,4 +25,4 @@ The following recorded presentation from the `NWB hackathon 2020
 <https://neurodatawithoutborders.github.io/nwb_hackathons/HCK09_2020_Remote/>`__
 gives a overview of the possibilities of MIES.
 
-.. youtube:: Y3I-LDX-R2Q
+.. youtube Y3I-LDX-R2Q
