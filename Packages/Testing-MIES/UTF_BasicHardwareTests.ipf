@@ -4393,7 +4393,7 @@ Function AsyncAcquisitionLBN_REENTRY([str])
 	CHECK_EQUAL_VAR(var, 0.5)
 
 	var = GetLastSettingIndep(numericalValues, 0, "Async AD 2 [myTitle]", DATA_ACQUISITION_MODE)
-	CHECK_GE_VAR(var, 0)
+	CHECK(IsFinite(var))
 
 	readStr = GetLastSettingTextIndep(textualValues, 0, "Async AD2 Title", DATA_ACQUISITION_MODE)
 	refStr = "myTitle"
