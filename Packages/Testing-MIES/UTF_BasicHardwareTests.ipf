@@ -3516,11 +3516,6 @@ End
 
 static Constant TP_WAIT_TIMEOUT = 5
 
-static Constant TP_WIDTH_EPSILON = 1
-static Constant TP_DYN_PERC_TRESHOLD = 0.2
-static Constant TP_EDGE_EPSILON = 0.2
-static Constant TP_SKIP_NUM_TPS_START = 1
-
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 Function TPDuringDAQTPStoreCheck([str])
 	string str
@@ -3546,7 +3541,7 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	WAVE/Z TPStorage = GetTPStorage(device)
 	CHECK_WAVE(TPStorage, NORMAL_WAVE)
 	numStored = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-	CHECK_GT_VAR(numStored, TP_SKIP_NUM_TPS_START)
+	CHECK_GT_VAR(numStored, 0)
 
 	WAVE/Z/WAVE storedTestPulses = GetStoredTestPulseWave(device)
 	CHECK_WAVE(storedTestPulses, WAVE_WAVE)
@@ -3559,7 +3554,7 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	tpLength = TPSettingsCalculated[%totalLengthPointsDAQ]
 	pulseLengthMS = TPSettingsCalculated[%pulseLengthMS]
 
-	for(i = TP_SKIP_NUM_TPS_START; i < numTP; i += 1)
+	for(i = 0; i < numTP; i += 1)
 
 		WAVE/Z singleTPs = storedTestPulses[i]
 		CHECK_WAVE(singleTPs, NUMERIC_WAVE)
@@ -3573,13 +3568,8 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 			Duplicate/FREE/RMD=[][channel] singleTPs, singleTP
 			Redimension/N=(tpLength) singleTP
 
-			m = WaveMin(singleTP)
-			tresh = m + TP_DYN_PERC_TRESHOLD * (WaveMax(singleTP) - m)
-			FindLevels/Q/D=levels/M=(TP_EDGE_EPSILON) singleTP, tresh
-
-			CHECK_EQUAL_VAR(2, V_LevelsFound)
-			CHECK_LT_VAR(abs(pulseLengthMS - levels[1] + levels[0]), TP_WIDTH_EPSILON)
-
+			CHECK_GT_VAR(DimSize(singleTP, ROWS), 0)
+			CHECK_WAVE(singleTP, NUMERIC_WAVE, minorType = FLOAT_WAVE)
 		endfor
 	endfor
 End
