@@ -770,3 +770,29 @@ threadsafe Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualVa
 
 	return epochs
 End
+
+/// @brief Append epoch information from the labnotebook to the newly cleared epoch wave
+Function EP_AppendLBNEpochs(string device, variable sweepNo)
+	variable i, epochCnt, epochChannelCnt
+
+	EP_ClearEpochs(device)
+
+	WAVE/T epochWave = GetEpochsWave(device)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues   = GetLBTextualValues(device)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		WAVE/T/Z epochChannel = EP_FetchEpochs(numericalValues, textualValues, sweepNo, i, XOP_CHANNEL_TYPE_DAC)
+
+		if(!WaveExists(epochChannel))
+			continue
+		endif
+
+		epochChannelCnt = DimSize(epochChannel, ROWS)
+
+		EnsureLargeEnoughWave(epochWave, dimension = ROWS, minimumSize = epochChannelCnt)
+
+		epochWave[0, epochChannelCnt - 1][][i] = epochChannel[p][q]
+	endfor
+End

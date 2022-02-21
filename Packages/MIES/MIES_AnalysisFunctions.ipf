@@ -34,8 +34,8 @@
 /// Mid Sweep            Each time when new data is polled              Available for background DAQ only.                                Write
 ///                                                                     Will always be called at least once and
 ///                                                                     also with the full stimset acquired.
-/// Post Sweep           After each sweep (before possible ITI pause)   None                                                              Read
-/// Post Set             After a *full* set has been acquired           This event is not always reached as the user might not acquire    Read
+/// Post Sweep           After each sweep (before possible ITI pause)   None                                                              Read/Write
+/// Post Set             After a *full* set has been acquired           This event is not always reached as the user might not acquire    Read/Write
 ///                                                                     all steps of a set. With indexing, locked and unlocked, only
 ///                                                                     the post set events for fully acquired stimsets are reached.
 /// Post DAQ             After DAQ has finished and before potential    None                                                              No

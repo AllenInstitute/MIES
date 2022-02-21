@@ -672,45 +672,58 @@ Function EP_TestUserEpochs([str])
 	string str
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
 	AcquireData(s, str, "StimulusSetA_DA_0", "StimulusSetA_DA_0", analysisFunction = "AddUserEpoch_V3")
 End
 
 Function EP_TestUserEpochs_REENTRY([str])
 	string str
 
-	variable i, j
+	variable i, j, k, nextSweep, DAC
 	string tags, shortName
 
 	WAVE/T textualValues = GetLBTextualValues(str)
-	WAVE/T/Z epochLBN = GetLastSetting(textualValues, 0, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
-	CHECK_WAVE(epochLBN, TEXT_WAVE)
 
-	for(i = 0; i < 2; i += 1)
-		WAVE/T/Z epochWave = EP_EpochStrToWave(epochLBN[i])
-		CHECK_WAVE(epochWave, TEXT_WAVE)
+	nextSweep = GetSetVariable(str, "SetVar_Sweep")
 
-		// now check that we can find epochs from the expected events
-		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
-			sprintf tags, "HS=%d;eventType=%d;", i, j
-			// not using /TXOP=4 here as we have an unknown short name as well
-			FindValue/TEXT=tags/RMD=[][EPOCH_COL_TAGS] epochWave
+	for(i = 0; i < nextSweep; i += 1)
+		WAVE/T/Z epochLBN = GetLastSetting(textualValues, i, EPOCHS_ENTRY_KEY, DATA_ACQUISITION_MODE)
+		CHECK_WAVE(epochLBN, TEXT_WAVE)
 
-			switch(j)
-				case PRE_SET_EVENT:
-				case PRE_SWEEP_CONFIG_EVENT:
-				case MID_SWEEP_EVENT:
-					// user epoch was added
-					CHECK_GE_VAR(V_row, 0)
-					tags = epochWave[V_row][EPOCH_COL_TAGS]
-					shortName = EP_GetShortName(tags)
-					CHECK(GrepString(shortName, "^U_"))
-					break
-				default:
-					// no user epochs for all other events
-					CHECK_LT_VAR(V_row, 0)
-					break
-			endswitch
+		for(j = 0; j < 2; j += 1)
+			WAVE/T/Z epochWave = EP_EpochStrToWave(epochLBN[j])
+			CHECK_WAVE(epochWave, TEXT_WAVE)
+
+			DAC = AFH_GetDACFromHeadstage(str, j)
+
+			// now check that we can find epochs from the expected events
+			for(k = 0; k < TOTAL_NUM_EVENTS; k += 1)
+				sprintf tags, "HS=%d;eventType=%d;", j, k
+				// not using /TXOP=4 here as we have an unknown short name as well
+				FindValue/TEXT=tags/RMD=[][EPOCH_COL_TAGS][DAC] epochWave
+
+				switch(k)
+					case PRE_SET_EVENT:
+					case POST_SET_EVENT:
+					case PRE_SWEEP_CONFIG_EVENT:
+					case MID_SWEEP_EVENT:
+					case POST_SWEEP_EVENT:
+						if((k == PRE_SET_EVENT && i == 0)  ||         \
+						   (k == POST_SET_EVENT && i == 2) ||         \
+						   (k != PRE_SET_EVENT && k != POST_SET_EVENT))
+							// user epoch was added
+							CHECK_GE_VAR(V_row, 0)
+							tags = epochWave[V_row][EPOCH_COL_TAGS]
+							shortName = EP_GetShortName(tags)
+							CHECK(GrepString(shortName, "^U_"))
+							break
+						endif
+					default:
+						// no user epochs for all other events
+						CHECK_LT_VAR(V_row, 0)
+						break
+				endswitch
+			endfor
 		endfor
 	endfor
 End
