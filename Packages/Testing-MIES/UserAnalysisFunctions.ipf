@@ -923,6 +923,17 @@ Function StopMidSweep_V3(string device, STRUCT AnalysisFunction_V3& s)
 	return 0
 End
 
+Function AddTooLargeUserEpoch_V3(string device, STRUCT AnalysisFunction_V3& s)
+	variable DAC
+
+	switch(s.eventType)
+		case PRE_SWEEP_CONFIG_EVENT:
+			DAC = AFH_GetDACFromHeadstage(device, s.headstage)
+			EP_AddUserEpoch(device, XOP_CHANNEL_TYPE_DAC, DAC, 0, 1e9, "key=value")
+			break
+	endswitch
+End
+
 Function AddUserEpoch_V3(string device, STRUCT AnalysisFunction_V3& s)
 	variable DAC
 	string tags
