@@ -29,13 +29,13 @@
 ///                                                                     analysis parameters are validated if present. With Indexing ON,
 ///                                                                     only the analysis function of the first stimset will receive
 ///                                                                     that event.
-/// Pre Sweep Config     Before the sweep is configured                 None                                                              Yes
-/// Pre Set              Before a new set starts                        None                                                              Yes
-/// Mid Sweep            Each time when new data is polled              Available for background DAQ only.                                Yes
+/// Pre Sweep Config     Before the sweep is configured                 None                                                              Write
+/// Pre Set              Before a new set starts                        None                                                              Write
+/// Mid Sweep            Each time when new data is polled              Available for background DAQ only.                                Write
 ///                                                                     Will always be called at least once and
 ///                                                                     also with the full stimset acquired.
-/// Post Sweep           After each sweep (before possible ITI pause)   None
-/// Post Set             After a *full* set has been acquired           This event is not always reached as the user might not acquire    No
+/// Post Sweep           After each sweep (before possible ITI pause)   None                                                              Read
+/// Post Set             After a *full* set has been acquired           This event is not always reached as the user might not acquire    Read
 ///                                                                     all steps of a set. With indexing, locked and unlocked, only
 ///                                                                     the post set events for fully acquired stimsets are reached.
 /// Post DAQ             After DAQ has finished and before potential    None                                                              No
