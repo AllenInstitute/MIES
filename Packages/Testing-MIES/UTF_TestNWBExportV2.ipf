@@ -537,7 +537,7 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 			WAVE/T/Z epochsSingleChannel = WaveRef(epochs, row=idx)
 			CHECK_WAVE(epochsSingleChannel, TEXT_WAVE)
 
-			WAVE/Z epochsLBN = MIES_NWB#NWB_FetchEpochs(numericalValues, textualValues, sweep, params.channelNumber, params.channelType)
+			WAVE/Z epochsLBN = EP_FetchEpochs(numericalValues, textualValues, sweep, params.channelNumber, params.channelType)
 			CHECK_WAVE(epochsLBN, TEXT_WAVE)
 			CHECK_EQUAL_TEXTWAVES(epochsLBN, epochsSingleChannel)
 		endif

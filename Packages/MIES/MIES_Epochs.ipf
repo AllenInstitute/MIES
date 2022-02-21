@@ -740,3 +740,28 @@ Function/WAVE EP_GetEpochs(WAVE numericalValues, WAVE textualValues, variable sw
 
 	return matches
 End
+
+/// @brief Return free text wave with the epoch information of the given channel
+///
+/// See GetEpochsWave() for the wave layout.
+threadsafe Function/WAVE EP_FetchEpochs(WAVE numericalValues, WAVE/T/Z textualValues, variable sweep, variable channelNumber, variable channelType)
+	variable index
+
+	/// @todo we don't yet write epoch info into the LBN
+	if(channelType != XOP_CHANNEL_TYPE_DAC)
+		return $""
+	endif
+
+	WAVE/Z setting
+	[setting, index] = GetLastSettingChannel(numericalValues, textualValues, sweep, EPOCHS_ENTRY_KEY, channelNumber, channelType, DATA_ACQUISITION_MODE)
+
+	if(WaveExists(setting))
+		WAVE/T settingText = setting
+		WAVE/T epochs = EP_EpochStrToWave(settingText[index])
+		ASSERT_TS(DimSize(epochs, ROWS) > 0, "Invalid epochs")
+		SetEpochsDimensionLabels(epochs)
+		epochs[][%Tags] = RemoveEnding(epochs[p][%Tags], ";") + ";"
+	endif
+
+	return epochs
+End
