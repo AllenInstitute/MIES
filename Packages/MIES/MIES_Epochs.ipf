@@ -681,7 +681,8 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 			endif
 		endfor
 
-		// Add unacquired epoch
+		// add unacquired epoch
+		// relies on EP_AddEpoch ignoring single point epochs
 		tags = ReplaceStringByKey(EPOCH_TYPE_KEY, "", "Unacquired", STIMSETKEYNAME_SEP, EPOCHNAME_SEP)
 		EP_AddEpoch(device, channel, acquiredTime * 1e6 , plannedTime * 1e6, tags , EPOCH_SN_UNACQUIRED, 0)
 	endfor
