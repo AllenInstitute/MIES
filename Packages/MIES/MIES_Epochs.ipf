@@ -570,6 +570,8 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE 
 	variable i, numDACEntries, channel, headstage, acquiredTime, plannedTime
 	string entry
 
+	plannedTime = IndexToScale(sweepWave, DimSize(sweepWave, ROWS) - 1, ROWS) / 1e3
+
 	// all channels are acquired simultaneously we can just check if the last
 	// channel has NaN in the last element
 	if(IsNaN(sweepWave[inf][inf]))
@@ -577,9 +579,11 @@ Function EP_WriteEpochInfoIntoSweepSettings(string device, WAVE sweepWave, WAVE 
 		ASSERT(V_row >= 0, "Unexpected result")
 
 		acquiredTime = IndexToScale(sweepWave, max(V_row - 1, 0), ROWS) / 1e3
-		plannedTime  = IndexToScale(sweepWave, DimSize(sweepWave, ROWS) - 1, ROWS) / 1e3
-		EP_AdaptEpochInfo(device, configWave, acquiredTime, plannedTime)
+	else
+		acquiredTime = plannedTime
 	endif
+
+	EP_AdaptEpochInfo(device, configWave, acquiredTime, plannedTime)
 
 	EP_SortEpochs(device)
 
@@ -660,7 +664,6 @@ static Function EP_AdaptEpochInfo(string device, WAVE configWave, variable acqui
 		channel = configWave[i][%ChannelNumber]
 
 		epochCnt = EP_GetEpochCount(device, channel)
-		ASSERT(epochCnt > 0, "Unexpected epoch count of zero")
 
 		for(epoch = 0; epoch < epochCnt; epoch += 1)
 			startTime = str2num(epochWave[epoch][%StartTime][channel])
